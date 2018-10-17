@@ -4,7 +4,7 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { EntityBase, EntityType } from '@conversationlearner/models'
+import { EntityBase, EntityType, AppBase } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory' 
@@ -105,14 +105,14 @@ const editEntityFulfilled = (entity: EntityBase): ActionObject => {
     }
 }
 
-export const deleteEntityThunkAsync = (appId: string, entity: EntityBase) => {
+export const deleteEntityThunkAsync = (app: AppBase, entity: EntityBase) => {
     return async (dispatch: Dispatch<any>) => {
         const entityId = entity.entityId
-        dispatch(deleteEntityAsync(appId, entityId))
+        dispatch(deleteEntityAsync(app.appId, entityId))
         const clClient = ClientFactory.getInstance(AT.DELETE_ENTITY_ASYNC)
 
         try {
-            const deleteEditResponse = await clClient.entitiesDelete(appId, entityId);
+            const deleteEditResponse = await clClient.entitiesDelete(app.appId, entityId);
             dispatch(deleteEntityFulfilled(entityId))
             if (entity.isNegatible) {
                 // If entity is negatable assume it has negativeId
@@ -124,21 +124,21 @@ export const deleteEntityThunkAsync = (appId: string, entity: EntityBase) => {
             // that entities in the memory are all up to date
             if(entity.entityType !== EntityType.LOCAL && entity.entityType !== EntityType.LUIS)
             {
-                dispatch(fetchAllEntitiesThunkAsync(appId));
+                dispatch(fetchAllEntitiesThunkAsync(app.appId));
             }
             
 
             // If any actions were modified, reload them
             if (deleteEditResponse.actionIds && deleteEditResponse.actionIds.length > 0) {
-                dispatch(fetchAllActionsThunkAsync(appId))
+                dispatch(fetchAllActionsThunkAsync(app.appId))
             }
 
             // If any train dialogs were modified fetch train dialogs 
             if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
-                dispatch(fetchAllTrainDialogsThunkAsync(appId));
+                dispatch(fetchAllTrainDialogsThunkAsync(app));
             }
 
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
             return true;
         } catch (e) {
             const error = e as AxiosError

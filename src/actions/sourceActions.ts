@@ -4,7 +4,7 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { AppDefinitionChange, AppDefinition } from '@conversationlearner/models'
+import { AppDefinitionChange, AppDefinition, AppBase } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
@@ -17,20 +17,20 @@ export const setUpdatedAppDefinition = (appId: string, appDefinitionChange: AppD
         appDefinitionChange
     })
 
-const promoteUpdatedAppDefinition = (appId: string, updatedAppDefinition: AppDefinition): ActionObject =>
+const promoteUpdatedAppDefinition = (app: AppBase, updatedAppDefinition: AppDefinition): ActionObject =>
     ({
         type: AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION,
-        appId,
+        app,
         updatedAppDefinition
     })
 
-export const promoteUpdatedAppDefinitionThunkAsync = (appId: string, updatedAppDefinition: AppDefinition) => {
+export const promoteUpdatedAppDefinitionThunkAsync = (app: AppBase, updatedAppDefinition: AppDefinition) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION)
 
         try {
-            await clClient.sourcepost(appId, updatedAppDefinition)
-            dispatch(promoteUpdatedAppDefinition(appId, updatedAppDefinition))
+            await clClient.sourcepost(app.appId, updatedAppDefinition)
+            dispatch(promoteUpdatedAppDefinition(app, updatedAppDefinition))
             return updatedAppDefinition
         } catch (e) {
             const error = e as AxiosError

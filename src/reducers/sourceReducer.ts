@@ -20,7 +20,7 @@ const reducer: Reducer<SourceState> = (state = initialState, action: ActionObjec
                 ...state
             }
 
-            delete newState[action.appId]
+            delete newState[action.app.appId]
 
             return newState
         default:

@@ -140,7 +140,7 @@ class Entities extends React.Component<Props, ComponentState> {
 
     @autobind
     handleDelete(entity: EntityBase) {
-        this.props.deleteEntityThunkAsync(this.props.app.appId, entity)
+        this.props.deleteEntityThunkAsync(this.props.app, entity)
         this.setState({
             createEditModalOpen: false
         })

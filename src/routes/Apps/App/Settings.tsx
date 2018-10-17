@@ -192,7 +192,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
     @autobind
     async onSubmitAppCopyModal(app: AppBase) {
-        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<AppDefinition>)
+        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app, this.props.editingPackageId, false) as any as Promise<AppDefinition>)
         this.setState({
             isAppCopyModalOpen: false
         }, () => this.props.onCreateApp(app, appDefinition))
@@ -310,7 +310,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
     @autobind
     async onClickExport() {
-        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<AppDefinition>)
+        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app, this.props.editingPackageId, false) as any as Promise<AppDefinition>)
         const blob = new Blob([JSON.stringify(appDefinition)], {type: "text/plain;charset=utf-8"})
         saveAs(blob, `${this.props.app.appName}.cl`);
     }

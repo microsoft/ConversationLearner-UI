@@ -110,13 +110,13 @@ export const deleteTeachSessionThunkAsync = (
                 await dispatch(deleteTrainDialogThunkAsync(key, app, sourceTrainDialogId));
             }
 
-            dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
+            dispatch(fetchAllTrainDialogsThunkAsync(app));
             dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
             return true;
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_TRAIN_DIALOG_REJECTED))
-            dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
+            dispatch(fetchAllTrainDialogsThunkAsync(app));
             return false;
         }
     }

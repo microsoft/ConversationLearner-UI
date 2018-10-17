@@ -125,7 +125,7 @@ export type SourceAction = {
     appDefinitionChange: AppDefinitionChange
 } | {
     type: AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION,
-    appId: string,
+    app: AppBase,
     updatedAppDefinition: AppDefinition
 }
 
@@ -176,6 +176,7 @@ export type FetchAction = {
     appId: string
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
+    app: AppBase,
     allTrainDialogs: TrainDialog[],
 } | {
     type: AT.FETCH_HISTORY_ASYNC,
@@ -201,6 +202,7 @@ export type FetchAction = {
     allEntities: EntityBase[],
 } | {
     type: AT.FETCH_APPSOURCE_FULFILLED,
+    app: AppBase,
     appDefinition: AppDefinition
 } | {
     type: AT.FETCH_ACTIONS_FULFILLED,

@@ -68,6 +68,17 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                     <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_AFTER_WAIT} customStyle="cl-icon--transparent" />
                 </div>
             )
+        case CLM.ReplayErrorType.LabelDiscrepancy:
+            return (
+                <div className={OF.FontClassNames.mediumPlus}>
+                    <FormattedMessage
+                        id={FM.REPLAYERROR_DESC_LABEL_DISCREPANCY}
+                        defaultMessage={FM.REPLAYERROR_DESC_LABEL_DISCREPANCY}
+                    />
+                    {` "${(replayError as CLM.ReplayErrorLabelDiscrepancy).entityName}"`}
+                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_LABEL_DISCREPANCY} customStyle="cl-icon--transparent" />
+                </div>
+            )
         case CLM.ReplayErrorType.TwoUserInputs:
             return (
                 <div className={OF.FontClassNames.mediumPlus}>

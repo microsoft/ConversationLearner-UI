@@ -76,7 +76,7 @@ class Actions extends React.Component<Props, ComponentState> {
             isActionEditorOpen: false,
             actionSelected: null
         }, () => {
-            this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId)
+            this.props.deleteActionThunkAsync(this.props.app, action.actionId)
             setTimeout(() => this.newActionButton.focus(), 1000)
         })
     }
@@ -88,7 +88,7 @@ class Actions extends React.Component<Props, ComponentState> {
             actionSelected: null
         }, () => {
             const apiFunc = wasEditing
-                ? () => this.props.editActionThunkAsync(this.props.app.appId, action)
+                ? () => this.props.editActionThunkAsync(this.props.app, action)
                 : () => this.props.createActionThunkAsync(this.props.app.appId, action)
             apiFunc()
             setTimeout(() => this.newActionButton.focus(), 500)

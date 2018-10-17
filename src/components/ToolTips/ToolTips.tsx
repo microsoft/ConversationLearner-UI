@@ -58,6 +58,7 @@ export enum TipType {
     REPLAYERROR_DESC_ACTION_UNAVAILABLE = "REPLAYERROR_DESC_ACTION_UNAVAILABLE",
     REPLAYERROR_DESC_ENTITY_UNDEFINED = "REPLAYERROR_DESC_ENTITY_UNDEFINED",
     REPLAYERROR_DESC_ENTITY_EMPTY = "REPLAYERROR_DESC_ENTITY_EMPTY",
+    REPLAYERROR_DESC_LABEL_DISCREPANCY = "REPLAYERROR_DESC_LABEL_DISCREPANCY",
     REPLAYERROR_DESC_ACTION_UNDEFINED = "REPLAYERROR_DESC_ACTION_UNDEFINED",
 
     TAG_EDITING = 'tagEditing',
@@ -521,6 +522,19 @@ export function GetTip(tipType: string) {
                     </ol>
                 </div>
             )
+        
+        case TipType.REPLAYERROR_DESC_LABEL_DISCREPANCY:
+        return (
+            <div>
+                <h2>Error: Inconsistent Entity Labelling</h2>
+                <p>There are two identical instances of this user utterance in your Train Dialogs that have different entity labelling</p>
+                <p>Ways to fix:</p>
+                <ol>
+                    <li>Change Entity labelling so the two instances match</li>
+                    <li>Delete one of the user utterances</li>
+                </ol>
+            </div>
+        )
 
         case TipType.REPLAYERROR_DESC_ACTION_UNDEFINED:
             return (

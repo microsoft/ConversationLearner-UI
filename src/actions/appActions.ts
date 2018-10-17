@@ -362,21 +362,21 @@ const fetchApplicationTrainingStatusExpired = (appId: string): ActionObject => {
     }
 }
 
-export const fetchAppSourceThunkAsync = (appId: string, packageId: string, updateState = true) => {
+export const fetchAppSourceThunkAsync = (app: AppBase, packageId: string, updateState = true) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_APPSOURCE_ASYNC)
-        dispatch(fetchAppSourceAsync(appId, packageId))
+        dispatch(fetchAppSourceAsync(app.appId, packageId))
 
         try {
-            const appDefinitionChange = await clClient.source(appId, packageId)
+            const appDefinitionChange = await clClient.source(app.appId, packageId)
 
             if (appDefinitionChange.isChanged) {
-                dispatch(setUpdatedAppDefinition(appId, appDefinitionChange))
-                dispatch(fetchAppSourceFulfilled(appDefinitionChange.updatedAppDefinition))
+                dispatch(setUpdatedAppDefinition(app.appId, appDefinitionChange))
+                dispatch(fetchAppSourceFulfilled(app, appDefinitionChange.updatedAppDefinition))
                 return appDefinitionChange.updatedAppDefinition
             }
             else {
-                dispatch(fetchAppSourceFulfilled(appDefinitionChange.currentAppDefinition))
+                dispatch(fetchAppSourceFulfilled(app, appDefinitionChange.currentAppDefinition))
                 return appDefinitionChange.currentAppDefinition
             }
         } catch (e) {
@@ -395,10 +395,11 @@ const fetchAppSourceAsync = (appId: string, packageId: string): ActionObject => 
     }
 }
 
-const fetchAppSourceFulfilled = (appDefinition: AppDefinition): ActionObject => {
+const fetchAppSourceFulfilled = (app: AppBase, appDefinition: AppDefinition): ActionObject => {
     return {
         type: AT.FETCH_APPSOURCE_FULFILLED,
-        appDefinition: appDefinition
+        app,
+        appDefinition
     }
 }
 

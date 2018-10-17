@@ -884,7 +884,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let trainDialogWithDefinitions: CLM.TrainDialog = {
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
-            trainDialogId: undefined!,
+            trainDialogId: trainDialog.trainDialogId,  // LARS was undefined.  test well
             sourceLogDialogId: trainDialog.sourceLogDialogId,
             version: undefined!,
             packageCreationId: undefined!,

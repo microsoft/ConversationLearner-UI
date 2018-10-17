@@ -244,7 +244,7 @@ export const deleteTrainDialogThunkAsync = (userId: string, app: AppBase, trainD
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(deleteTrainDialogRejected())
-            dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
+            dispatch(fetchAllTrainDialogsThunkAsync(app));
         }
     }
 }
@@ -272,14 +272,14 @@ const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject => {
 // ----------------------------------------
 // Fetch AllTrainDialogs
 // ----------------------------------------
-export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
+export const fetchAllTrainDialogsThunkAsync = (app: AppBase) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC)
-        dispatch(fetchAllTrainDialogsAsync(appId))
+        dispatch(fetchAllTrainDialogsAsync(app.appId))
 
         try {
-            const trainDialogs = await clClient.trainDialogs(appId)
-            dispatch(fetchAllTrainDialogsFulfilled(trainDialogs))
+            const trainDialogs = await clClient.trainDialogs(app.appId)
+            dispatch(fetchAllTrainDialogsFulfilled(app, trainDialogs))
             return trainDialogs
         } catch (e) {
             const error = e as AxiosError
@@ -296,10 +296,11 @@ const fetchAllTrainDialogsAsync = (appId: string): ActionObject => {
     }
 }
 
-const fetchAllTrainDialogsFulfilled = (trainDialogs: TrainDialog[]): ActionObject => {
+const fetchAllTrainDialogsFulfilled = (app: AppBase, trainDialogs: TrainDialog[]): ActionObject => {
     return {
         type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
-        allTrainDialogs: trainDialogs
+        allTrainDialogs: trainDialogs,
+        app: app
     }
 }
 

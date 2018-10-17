@@ -4,7 +4,7 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { ActionBase } from '@conversationlearner/models'
+import { ActionBase, AppBase } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory' 
@@ -60,21 +60,21 @@ const editActionFulfilled = (action: ActionBase): ActionObject => {
     }
 }
 
-export const editActionThunkAsync = (appId: string, action: ActionBase) => {
+export const editActionThunkAsync = (app: AppBase, action: ActionBase) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_ACTION_ASYNC)
-        dispatch(editActionAsync(appId, action))
+        dispatch(editActionAsync(app.appId, action))
 
         try {
-            let deleteEditResponse = await clClient.actionsUpdate(appId, action)
+            let deleteEditResponse = await clClient.actionsUpdate(app.appId, action)
             dispatch(editActionFulfilled(action))
 
             // Fetch train dialogs if any train dialogs were impacted
             if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
-                dispatch(fetchAllTrainDialogsThunkAsync(appId))
+                dispatch(fetchAllTrainDialogsThunkAsync(app))
             }
             
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+            dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId))
             return action
         }
         catch (e) {
@@ -85,21 +85,21 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
     }
 }
 
-export const deleteActionThunkAsync = (appId: string, actionId: string) => {
+export const deleteActionThunkAsync = (app: AppBase, actionId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteActionAsync(appId, actionId))
+        dispatch(deleteActionAsync(app.appId, actionId))
         const clClient = ClientFactory.getInstance(AT.DELETE_ACTION_ASYNC)
 
         try {
-            const deleteEditResponse = await clClient.actionsDelete(appId, actionId);
+            const deleteEditResponse = await clClient.actionsDelete(app.appId, actionId);
             dispatch(deleteActionFulfilled(actionId));
 
             // Fetch train dialogs if any train dialogs were impacted
             if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
-                dispatch(fetchAllTrainDialogsThunkAsync(appId));
+                dispatch(fetchAllTrainDialogsThunkAsync(app));
             }
 
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
+            dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
             return true;
         } catch (e) {
             const error = e as AxiosError
