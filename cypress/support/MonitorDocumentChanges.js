@@ -9,6 +9,7 @@ var MonitorDocumentChanges = (function()
 {
     var lastMonitorTime = 0
     var lastChangeTime = 0
+    var canRefreshTrainingStatusTime = 0
     var lastHtml
     var StopLookingForChanges = false
     var dumpHtml = false;
@@ -74,6 +75,8 @@ var MonitorDocumentChanges = (function()
 
         Cypress.Commands.add('DumpHtmlOnDomChange', (boolValue) => {dumpHtml = boolValue})
 
+        Cypress.Commands.add('VerifyMonitorFinds', () => { expect(canRefreshTrainingStatusTime).to.equal(0) })
+
         Cypress.on('window:before:load', () => 
         { 
             helpers.ConLog(`window:before:load`, `MillisecondsSinceLastChange: ${MillisecondsSinceLastChange()}`) 
@@ -129,10 +132,15 @@ var MonitorDocumentChanges = (function()
 
             lastChangeTime = currentTime
             lastHtml = currentHtml
-
-            // TODO: Remove this code AFTER we get a good idea of how to capture the best selector for this "Training Status Polling Stopped" icon
-            if (currentHtml.includes('<i data-icon-name="Warning" class="cl-icon root-77" role="presentation" aria-hidden="true"></i>')) 
-                helpers.ConLog(thisFuncName, `HTML has WARNING ICON:\n${currentHtml}`)
+            
+            if (currentHtml.includes('data-testid="training-status-polling-stopped-warning"')) 
+            {    
+                if (currentTime > canRefreshTrainingStatusTime)
+                {
+                    cy.get('[data-testid="training-status-refresh-button"]').click()
+                    canRefreshTrainingStatusTime = currentTime + (20 * 1000)
+                }
+            }
         }
         
         MonitorSpinner()

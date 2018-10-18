@@ -15,6 +15,8 @@ const editDialogModal = require('../../support/components/EditDialogModal')
 
 describe("Disqualifying Entities test", () =>
 {
+  after(() => { cy.VerifyMonitorFinds() })
+  
   it("Disqualifying Entities", () =>
   {
     var modelName = models.ImportModel('Model-disq', 'Model-disq.cl')

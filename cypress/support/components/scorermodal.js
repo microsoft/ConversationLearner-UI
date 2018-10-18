@@ -10,7 +10,7 @@ export function ClickAddActionButton()          { cy.Get('[data-testid="action-s
 
 export function ClickAction(expectedResponse)
 {
-  cy.Get('[data-testid="action-scorer-text-response"]').ExactContent(expectedResponse)
+  cy.Get('[data-testid="action-scorer-text-response"]').ExactMatch(expectedResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .Click()
 

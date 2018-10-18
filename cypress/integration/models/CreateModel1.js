@@ -10,6 +10,8 @@ const helpers = require('../../support/helpers')
 
 describe("Create Model #1 test", () =>
 {
+  after(() => { cy.VerifyMonitorFinds() })
+  
   it("Create Model #1", () =>
   {
     models.CreateNewModel(`Model1-${helpers.ModelNameTime()}`)

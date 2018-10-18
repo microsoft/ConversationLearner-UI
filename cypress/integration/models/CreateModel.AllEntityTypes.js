@@ -9,6 +9,8 @@ const entities = require('../../support/Entities')
 
 describe('Create All Entity Types', () =>
 {
+  after(() => { cy.VerifyMonitorFinds() })
+  
   it('Create Custom and Builtin Entities', () =>
   {
     models.CreateNewModel(`Model-aet-${helpers.ModelNameTime()}`)

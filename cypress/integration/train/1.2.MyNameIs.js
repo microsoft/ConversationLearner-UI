@@ -12,6 +12,8 @@ const editDialogModal = require('../../support/components/EditDialogModal')
 
 describe("My name is", () =>
 {
+  after(() => { cy.VerifyMonitorFinds() })
+  
   it('should be able to train', () => 
   {
     var modelName = models.ImportModel('Model1-mni', 'Model1-wyn.cl')

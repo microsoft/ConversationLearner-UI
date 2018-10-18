@@ -47,18 +47,20 @@ Cypress.Commands.add('UploadFile', (fileName, selector) =>
   })
 })
 
-Cypress.Commands.add('ExactContent', { prevSubject: 'element'}, (elements, content) => 
+// This function operates similar to the "cy.contains" command except that it expects
+// the text content of the elements to contain an EXACT MATCH to the 
+Cypress.Commands.add('ExactMatch', { prevSubject: 'element'}, (elements, expectedText) => 
 {   
   for(var i = 0; i < elements.length; i++)
   {
-    //helpers.Dump(`ExactContent [${i}]`, elements[i])
-    if(elements[i].innerText == content) 
+    //helpers.Dump(`ExactMatch [${i}]`, elements[i])
+    if(elements[i].innerText == expectedText) 
     {
-      //helpers.ConLog('ExactContent', `Found Element[${i}]: ${elements[i].innerText}`)
+      //helpers.ConLog('ExactMatch', `Found Element[${i}]: ${elements[i].innerText}`)
       return elements[i]
     }
   }
-  //helpers.ConLog('ExactContent', `NOT Found: ${content}`)
-  return cy.contains(`Exact Content '${content}' NOT Found`)
+  //helpers.ConLog('ExactMatch', `NOT Found: ${content}`)
+  return cy.contains(`Exact Match '${expectedText}' NOT Found`)
 })
 

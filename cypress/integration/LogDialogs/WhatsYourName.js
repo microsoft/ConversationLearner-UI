@@ -9,6 +9,8 @@ const logDialogPage = require('../../support/components/logdialogspage')
 
 describe("What's your name", () =>
 {
+  after(() => { cy.VerifyMonitorFinds() })
+
   it('Chat up the bot', () => {
     var modelName = models.ImportModel('Model1-chat', 'Model1-mni.cl')
 
