@@ -64,6 +64,7 @@ export default class EntityPicker extends React.Component<MenuProps> {
                         <div className="custom-toolbar__search">
                             <label htmlFor="toolbar-input">Search for entities:</label>
                             <input
+                                data-testid="entity-picker-entity-search"
                                 id="toolbar-input"
                                 type="text"
                                 placeholder="Search input"

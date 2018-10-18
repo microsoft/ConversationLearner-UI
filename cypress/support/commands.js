@@ -26,6 +26,41 @@ import { createPartiallyEmittedExpression } from "typescript";
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-import './document.js'
-const document = require('../support/document.js')
-Cypress.Commands.add("WaitForStableDom", (millisecondsWithoutChange) => {return document.WaitForStableDom(millisecondsWithoutChange)})
+import './helpers'
+const helpers = require('../support/helpers.js')
+Cypress.Commands.add("ConLog", (funcName, message) => {helpers.ConLog(funcName, message)})
+
+// fileName must exist with cypress\fixtures folder
+Cypress.Commands.add('UploadFile', (fileName, selector) => 
+{
+  cy.get(selector).then(elements => 
+  {
+      cy.fixture(fileName).then((content) => 
+      {
+          const element = elements[0]
+          const testFile = new File([content], fileName)
+          const dataTransfer = new DataTransfer()
+
+          dataTransfer.items.add(testFile)
+          element.files = dataTransfer.files
+      })
+  })
+})
+
+// This function operates similar to the "cy.contains" command except that it expects
+// the text content of the elements to contain an EXACT MATCH to the 
+Cypress.Commands.add('ExactMatch', { prevSubject: 'element'}, (elements, expectedText) => 
+{   
+  for(var i = 0; i < elements.length; i++)
+  {
+    //helpers.Dump(`ExactMatch [${i}]`, elements[i])
+    if(elements[i].innerText == expectedText) 
+    {
+      //helpers.ConLog('ExactMatch', `Found Element[${i}]: ${elements[i].innerText}`)
+      return elements[i]
+    }
+  }
+  //helpers.ConLog('ExactMatch', `NOT Found: ${content}`)
+  return cy.contains(`Exact Match '${expectedText}' NOT Found`)
+})
+

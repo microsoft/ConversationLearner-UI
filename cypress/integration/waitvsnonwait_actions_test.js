@@ -3,15 +3,11 @@
  * Licensed under the MIT License.
 */
 
-const actions = require('../support/components/actionspage')
-const actionsModal = require('../support/components/actionsmodal')
-const modelsListPage = require('../support/components/modelsList')
-const entity = require('../support/components/entitiespage')
-const entityModal = require('../support/components/entitymodal')
+const actionsModal = require('../support/components/ActionsModal')
+const actions = require('../../support/Actions')
+const homePage = require('../support/components/HomePage')
 const modelPage = require('../support/components/modelpage')
-const logDialogPage = require('../support/components/logdialogspage')
-const logDialogModal = require('../support/components/logdialogmodal')
-const scorerModal = require('../support/components/scorermodal')
+const scorerModal = require('../support/components/ScorerModal')
 const trainDialogPage = require('../support/components/traindialogspage')
 const editDialogModal = require('../support/components/editdialogmodal')
 
@@ -29,6 +25,8 @@ describe('Wait vs No Wait Action e2e test', function () {
   const trainMessage02 = "Cow"
   const trainMessage03 = "Duck"
 
+  after(() => { cy.VerifyMonitorFinds() })
+  
   afterEach(function () {
     const fileName = `WaitVSNoWait_${this.currentTest.state}-${this.currentTest.title}`
     cy.wait(1000)
@@ -36,8 +34,8 @@ describe('Wait vs No Wait Action e2e test', function () {
   })
 
   it('create a new model', function () {
-    modelsListPage.navigateTo()
-    modelsListPage.createNewModel(modelName)
+    homePage.navigateTo()
+    homePage.createNewModel(modelName)
     modelPage.verifyPageTitle(modelName)
   })
 
@@ -47,22 +45,22 @@ describe('Wait vs No Wait Action e2e test', function () {
 
     // Wait Action:
     actions.clickNewAction()
-    actionsModal.selectTypeText()
-    actionsModal.typeOnResponseBox(action01)
-    actionsModal.clickCreateButton()
+    actions.selectTypeText()
+    actions.typeOnResponseBox(action01)
+    actions.clickCreateButton()
      cy.wait(4000);
     // No Wait Actions:
     actions.clickNewAction()
-    actionsModal.selectTypeText()
-    actionsModal.typeOnResponseBox(action02)
-    actionsModal.clickWaitForResponse()
-    actionsModal.clickCreateButton()
+    actions.selectTypeText()
+    actions.typeOnResponseBox(action02)
+    actions.clickWaitForResponse()
+    actions.clickCreateButton()
      cy.wait(4000);
     actions.clickNewAction()
-    actionsModal.selectTypeText()
-    actionsModal.typeOnResponseBox(action03)
-    actionsModal.clickWaitForResponse()
-    actionsModal.clickCreateButton()
+    actions.selectTypeText()
+    actions.typeOnResponseBox(action03)
+    actions.clickWaitForResponse()
+    actions.clickCreateButton()
      cy.wait(4000);
     
     // Verify that the action has been added
@@ -103,8 +101,8 @@ describe('Wait vs No Wait Action e2e test', function () {
 
   /** FEATURE: Delete a Model */
   it('should delete an existent model', () => {
-    modelsListPage.navigateTo();
-    modelsListPage.deleteModel(modelName);
+    homePage.navigateTo();
+    homePage.deleteModel(modelName);
     cy.end()
   })
 })

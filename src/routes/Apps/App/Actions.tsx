@@ -121,7 +121,7 @@ class Actions extends React.Component<Props, ComponentState> {
         const computedActions = this.getFilteredActions()
         return (
             <div className="cl-page">
-                <span className={OF.FontClassNames.xxLarge}>
+                <span data-testid="actions-title" className={OF.FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.ACTIONS_TITLE}
                         defaultMessage="Actions"
@@ -155,7 +155,7 @@ class Actions extends React.Component<Props, ComponentState> {
                 {actions.length === 0
                     ? <div className="cl-page-placeholder">
                         <div className="cl-page-placeholder__content">
-                            <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create an Action</div>
+                            <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`} data-testid="create-an-action-title">Create an Action</div>
                             <OF.PrimaryButton
                                 iconProps={{
                                     iconName: "Add"

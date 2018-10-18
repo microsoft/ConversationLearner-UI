@@ -52,9 +52,8 @@ class SessionWindow extends React.Component<Props, {}> {
                                 <Icon iconName="UserFollowed" />Log Dialog
                             </div>
                         </div>
-                        <div className="cl-chatmodal_webchat">
+                        <div className="cl-chatmodal_webchat" data-testid="chat-session-modal-webchat">
                             <Webchat
-                                data-testid="chatsession-modal-webchat"
                                 isOpen={this.props.open && this.props.error == null}
                                 app={this.props.app}
                                 history={[]}
@@ -72,7 +71,7 @@ class SessionWindow extends React.Component<Props, {}> {
                         <div className="cl-modal-buttons_secondary"/>
                         <div className="cl-modal-buttons_primary">
                             <PrimaryButton
-                                data-testid="chatsession-modal-footer-button1"
+                                data-testid="chat-session-modal-done-testing-button"
                                 onClick={() => this.onClickDone()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
@@ -84,7 +83,7 @@ class SessionWindow extends React.Component<Props, {}> {
                                 })}
                             />
                             <DefaultButton
-                                data-testid="chatsession-modal-footer-button2"
+                                data-testid="chat-session-modal-session-timeout-button"
                                 onClick={() => this.onClickExpire()}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION,

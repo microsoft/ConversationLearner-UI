@@ -2,19 +2,26 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-export function typeYourMessage(trainmessage) {
-  cy.server()
-  cy.route('PUT', '/sdk/app/*/teach/*/extractor').as('putExtractor')
-  cy.route('GET', '/sdk/app/*/trainingstatus').as('getAppTrainingStatus')
 
-  cy.get('input[class="wc-shellinput"]')
-    .type(`${trainmessage}{enter}`)
+export function TypeYourMessage(trainmessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainmessage}{enter}`) }  // data-testid NOT possible
+export function ClickSetInitialStateButton()          { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
+export function ClickScoreActionsButton()             { cy.Get('[data-testid="entity-extractor-score-actions-button"]').Click() }
+export function ClickSaveButton()                     { cy.Get('[data-testid="teach-session-footer-button-save"]').Click() }
+export function clickAbandonButton()                  { cy.Get('[data-testid="teach-session-footer-button-abandon"]').Click() }
+export function VerifyEntityMemoryIsEmpty()           { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
+export function EntitySearch()                        { cy.Get('[data-testid="entity-picker-entity-search"]') }
+export function AlternativeInputText()                { cy.Get('[data-testid="entity-extractor-alternative-input-text"]') }
+export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
+export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 
-  cy.wait('@putExtractor')
-    .wait(500)
+export function VerifyDetectedEntity(entityName, entityValue)
+{
+  cy.Get('[data-testid="custom-entity-name-button"]').contains(entityName)
+  cy.Get('[data-testid="token-node-entity-value"]').contains(entityValue)
 }
 
-export function highlightWord(word) {
+
+export function HighlightWord(word) {
   cy.get('span[class="cl-token-node"]')
     .trigger('keydown')
     .click(10, 10)
@@ -25,26 +32,8 @@ export function highlightWord(word) {
     .wait()
 }
 
-export function verifyTokenNodeExists() {
+export function VerifyTokenNodeExists() {
   cy.get('.cl-token-node')
     .should('exists')
 }
 
-/** Click on 'Score Action' button */
-export function clickScoreActions() {
-  cy.server()
-  cy.route('PUT', '/sdk/app/*/teach/*/scorer').as('putScorer')
-
-  cy.get('[data-testid="button-proceedto-scoreactions"]')
-    .click()
-
-  cy.wait(1000)
-    .wait('@putScorer')
-}
-
-/** Finalize the training by clicking the Click done Teaching button*/
-export function clickDoneTeaching() {
-  cy.get('[data-testid="teachsession-footer-button-done"]')
-    .click()
-    .wait(1000)
-}

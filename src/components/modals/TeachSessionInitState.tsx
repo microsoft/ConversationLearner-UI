@@ -114,23 +114,26 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                 return (
                                     <div className="teachInitBlock" key={entity.entityId}>
                                         <OF.IconButton
+                                            data-testid="teach-session-add-initial-value"
                                             disabled={!entity.isMultivalue && this.state.filledEntityMap.map[entity.entityName] !== undefined}
                                             onClick={() => this.onClickAdd(entity)}
                                             ariaDescription="Add Initial Value"
                                             iconProps={{ iconName: 'CirclePlus' }}
                                         />
-                                        <OF.Label className="cl-label cl-font--emphasis">{entity.entityName}</OF.Label>
+                                        <OF.Label className="cl-label cl-font--emphasis" data-testid="teach-session-entity-name">{entity.entityName}</OF.Label>
                                         {this.state.filledEntityMap.map[entity.entityName] &&
                                             this.state.filledEntityMap.map[entity.entityName].values.map((memoryValue, index) => {
                                                 let key = `${entity.entityId}+${index}`
                                                 return (
                                                 <div key={key}>
                                                     <OF.IconButton
+                                                        data-testid="teach-session-delete-button"
                                                         onClick={() => this.onClickRemove(index, entity)}
                                                         ariaDescription="Remove Value"
                                                         iconProps={{ iconName: 'Delete' }}
                                                     />
                                                     <OF.TextField
+                                                        data-testid="teach-session-initial-value"
                                                         className="cl-textfield--inline"
                                                         key={key}
                                                         onChanged={text => this.onChanged(index, text, entity)}
@@ -154,6 +157,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_primary">
                             <OF.PrimaryButton
+                                data-testid="teach-session-ok-button"
                                 onClick={this.onClickSubmit}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.BUTTON_OK,
@@ -165,6 +169,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                 })}
                             />
                             <OF.DefaultButton
+                                data-testid="teach-session-cancel-button"
                                 onClick={this.onClickCancel}
                                 ariaDescription={intl.formatMessage({
                                     id: FM.BUTTON_CANCEL,

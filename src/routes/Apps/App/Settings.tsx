@@ -343,7 +343,7 @@ class Settings extends React.Component<Props, ComponentState> {
         let packageOptions = this.packageOptions();
         return (
             <div className="cl-page">
-                <span className={OF.FontClassNames.xxLarge}>
+                <span data-testid="settings-title" className={OF.FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.SETTINGS_TITLE}
                         defaultMessage="Settings"

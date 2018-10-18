@@ -899,7 +899,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 isBlocking={false}
                 containerClassName="cl-modal cl-modal--medium"
             >
-                <div className="cl-modal_header">
+                <div className="cl-modal_header" data-testid="create-an-action-title">
                     <span className={OF.FontClassNames.xxLarge}>{this.state.isEditing ? 'Edit Action' : 'Create an Action'}</span>
                 </div>
 

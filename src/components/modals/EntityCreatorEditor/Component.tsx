@@ -73,6 +73,7 @@ interface Props extends InjectedIntlProps {
 const EditComponent: React.SFC<Props> = (props: Props) => {
     return <div className="cl-entity-creator-form">
         <OF.Dropdown
+            data-testid="entity-creator-entity-type-dropdown"
             ariaLabel={props.intl.formatMessage({
                 id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
                 defaultMessage: 'Entity Type'
@@ -92,7 +93,7 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
             disabled={props.isTypeDisabled}
         />
         <OF.TextField
-            data-testid="entity-creator-input-name"
+            data-testid="entity-creator-entity-name-text"
             onGetErrorMessage={props.onGetNameErrorMessage}
             onChanged={props.onChangedName}
             onKeyDown={props.onKeyDownName}
@@ -110,7 +111,7 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
         />
         <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
             <TC.Checkbox
-                data-testid="entitycreator-checkbox-multivalued"
+                data-testid="entity-creator-multi-valued-checkbox"
                 label={props.intl.formatMessage({
                     id: FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL,
                     defaultMessage: 'Multi-valued'
@@ -121,7 +122,7 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
                 tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
             />
             <TC.Checkbox
-                data-testid="entitycreator-checkbox-negatable"
+                data-testid="entity-creator-negatable-checkbox"
                 label={props.intl.formatMessage({
                     id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL,
                     defaultMessage: 'Negatable'
