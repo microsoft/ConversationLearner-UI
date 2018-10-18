@@ -46,3 +46,19 @@ Cypress.Commands.add('UploadFile', (fileName, selector) =>
       })
   })
 })
+
+Cypress.Commands.add('ExactContent', { prevSubject: 'element'}, (elements, content) => 
+{   
+  for(var i = 0; i < elements.length; i++)
+  {
+    //helpers.Dump(`ExactContent [${i}]`, elements[i])
+    if(elements[i].innerText == content) 
+    {
+      //helpers.ConLog('ExactContent', `Found Element[${i}]: ${elements[i].innerText}`)
+      return elements[i]
+    }
+  }
+  //helpers.ConLog('ExactContent', `NOT Found: ${content}`)
+  return cy.contains(`Exact Content '${content}' NOT Found`)
+})
+

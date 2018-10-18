@@ -2,6 +2,8 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
 */
+
+const helpers = require('../../support/helpers.js')
 const homePage = require('../../support/components/HomePage')
 const scorerModal = require('../../support/components/ScorerModal')
 const actions = require('../../support/Actions')
@@ -9,19 +11,6 @@ const actionsGrid = require('../../support/components/ActionsGrid')
 const memoryTableComponent = require('../../support/components/MemoryTableComponent')
 const trainDialogPage = require('../../support/components/TrainDialogsPage')
 const editDialogModal = require('../../support/components/EditDialogModal')
-
-Cypress.Commands.add('ExactContent', (elements, content) => 
-{   
-  for(var i = 0; i < elements.length; i++)
-  {
-    if(elements[i].innerHtml == content) 
-    {
-      cy.wrap(elements[i])
-      return
-    }
-  }
-  cy.contains(`Exact Content '${content}' NOT Found`)
-})
 
 describe('zzTemp test', () =>
 {
@@ -41,7 +30,7 @@ describe('zzTemp test', () =>
     editDialogModal.VerifyDetectedEntity('name', 'Sam')
     editDialogModal.ClickScoreActionsButton()
     memoryTableComponent.VerifyEntityInMemory('name', 'Sam')
-    ClickAction('Hey Sam')
+    ClickAction('Hey Sam,')
   })
 })
 

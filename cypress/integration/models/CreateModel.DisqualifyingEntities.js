@@ -26,8 +26,8 @@ describe("Create Model for Disqualifying Entities tests", () =>
     // NOTE: the {enter} in these strings are necessary to triger the entity detection.
     actions.CreateNewAction({response: "What's your name?", expectedEntities: 'name', disqualifyingEntities: 'name'})
     actions.CreateNewAction({response: 'Hey $name{enter}', disqualifyingEntities: ['sweets', 'want']})
-    actions.CreateNewAction({response: 'Hey $name{enter}, what do you really want?', disqualifyingEntities: ['sweets', 'want']})
-    actions.CreateNewAction({response: "Sorry $name{enter} I can't help you get $want{enter}"})
+    actions.CreateNewAction({response: 'Hey $name{enter}, what do you really want?', expectedEntities: 'want', disqualifyingEntities: ['sweets', 'want']})
+    actions.CreateNewAction({response: "Sorry $name{enter}, I can't help you get $want{enter}"})
   })
 })
 

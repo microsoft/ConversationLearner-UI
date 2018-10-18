@@ -10,8 +10,7 @@ export function ClickAddActionButton()          { cy.Get('[data-testid="action-s
 
 export function ClickAction(expectedResponse)
 {
-  var expectedResponseRegex = new RegExp(`>${expectedResponse}<`) // Need to make sure it is an exact match.
-  cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponseRegex)
+  cy.Get('[data-testid="action-scorer-text-response"]').ExactContent(expectedResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .Click()
 

@@ -19,3 +19,10 @@ export function Sleep(time) { return new Promise((resolve, reject) => setTimeout
 export function ConLog(funcName, message) { console.log(`-+- ${Cypress.moment().format("HH:mm:ss..SSS")} - ${funcName} - ${message}`) }
 
 export function ModelNameTime() { return Cypress.moment().format("MMMDD-HHmmss-SSS") }
+
+export function Dump(funcName, object)
+{
+  var propertyList = ''
+  for(var property in object) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${object[property]}`
+  ConLog(funcName, propertyList)
+}
