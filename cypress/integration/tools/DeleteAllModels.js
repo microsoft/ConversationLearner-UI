@@ -6,7 +6,23 @@
 const homePage = require('../../support/components/HomePage')
 const helpers = require('../../support/helpers.js')
 
-var deleteFinished
+/// Description: Tests that models can be deleted from the home page AND useful as a clean up tool
+/// Verifications: Can delete a model, Can delete All models
+describe('Delete All Models', function () 
+{
+    after(() => { cy.VerifyMonitorFinds() })
+  
+    it('Delete All Models', () => 
+    {
+        // This is a necessary convolution so that Cypress will have one "Cypress Command" still running
+        // when this function exits. If not for this, only one row will get deleted then test execution 
+        // will stop.
+        Cypress.Commands.add("DeleteTopRow", () => { DeleteTopRow().then(() => { helpers.ConLog(`Delete All Applications Test`, `DONE - All Applications have been Deleted`) }) })
+        
+        homePage.Visit()
+        cy.DeleteTopRow()
+    })
+})
 
 function DeleteTopRow()
 {
@@ -42,19 +58,3 @@ function DeleteTopRow()
     
     return new Promise((resolve) => { _DeleteTopRow(resolve) })
 }
-
-describe('Delete All Models', function () 
-{
-    after(() => { cy.VerifyMonitorFinds() })
-  
-    it('Delete All Models', () => 
-    {
-        // This is a necessary convolution so that Cypress will have one "Cypress Command" still running
-        // when this function exits. If not for this, only one row will get deleted then test execution 
-        // will stop.
-        Cypress.Commands.add("DeleteTopRow", () => { DeleteTopRow().then(() => { helpers.ConLog(`Delete All Applications Test`, `DONE - All Applications have been Deleted`) }) })
-        
-        homePage.Visit()
-        cy.DeleteTopRow()
-    })
-})

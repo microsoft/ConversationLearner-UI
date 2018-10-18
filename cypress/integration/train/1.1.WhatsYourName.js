@@ -10,9 +10,11 @@ const scorerModal = require('../../support/components/ScorerModal')
 const trainDialogPage = require('../../support/components/TrainDialogsPage')
 const editDialogModal = require('../../support/components/EditDialogModal')
 
+/// Description: Part 1 of a a simple training test case involving names
+/// Verifications: Can Train, Entity Detection
 describe("What's your name", () =>
 {
-  after(() => { cy.VerifyMonitorFinds() })
+  afterEach(() => { cy.VerifyMonitorFinds() })
   
   it('should be able to train', () => {
     var modelName = models.ImportModel('Model1-wyn', 'Model1.cl')
