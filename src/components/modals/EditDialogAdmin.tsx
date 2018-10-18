@@ -227,8 +227,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             scorerStep: scorerStep,
             scoreResponse: scoreResponse,
             round: round,
-            memories: memories,
-            prevMemories: prevMemories
+            memories: filterDummyEntities(memories),
+            prevMemories: filterDummyEntities(prevMemories)
         }
     }
     
@@ -337,8 +337,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                         <MemoryTable
                             data-testid="modal-memory-table"
-                            memories={filterDummyEntities(renderData.memories)}
-                            prevMemories={filterDummyEntities(renderData.prevMemories)}
+                            memories={renderData.memories}
+                            prevMemories={renderData.prevMemories}
                         />
                     </div>
                     ) : this.renderHelpText(isLogDialog)

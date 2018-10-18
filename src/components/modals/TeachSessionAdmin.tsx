@@ -194,8 +194,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                             dialogMode: CLM.DialogMode.Scorer,
                             scoreInput: turnData.uiScoreResponse.scoreInput,
                             scoreResponse: turnData.uiScoreResponse.scoreResponse,
-                            memories: turnData.uiScoreResponse.memories,
-                            prevMemories,
+                            memories: filterDummyEntities(turnData.uiScoreResponse.memories),
+                            prevMemories: filterDummyEntities(prevMemories),
                             extractResponses: this.props.teachSession.extractResponses,
                             textVariations: [],
                             roundIndex: this.roundIndex(lookupIndex)
@@ -206,8 +206,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         dialogMode: CLM.DialogMode.Extractor,
                         extractResponses: this.props.teachSession.extractResponses,
                         textVariations: turnData.textVariations,  
-                        memories: turnData.memories || [],
-                        prevMemories,
+                        memories: turnData.memories ? filterDummyEntities(turnData.memories) : [],
+                        prevMemories: filterDummyEntities(prevMemories),
                         roundIndex: this.roundIndex(lookupIndex)
                     }
                 }
@@ -227,8 +227,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 dialogMode: this.props.teachSession.dialogMode,
                 scoreInput: this.props.teachSession.scoreInput!,
                 scoreResponse: this.props.teachSession.scoreResponse!,
-                memories: memories,
-                prevMemories: this.props.teachSession.prevMemories,
+                memories: filterDummyEntities(memories),
+                prevMemories: filterDummyEntities(this.props.teachSession.prevMemories),
                 extractResponses: this.props.teachSession.extractResponses,
                 textVariations: [],
                 roundIndex: null
@@ -302,8 +302,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     <div>
                         <MemoryTable
                             data-testid="teachsessionadmin-memorytable"
-                            memories={filterDummyEntities(renderData.memories)}
-                            prevMemories={filterDummyEntities(renderData.prevMemories)}
+                            memories={renderData.memories}
+                            prevMemories={renderData.prevMemories}
                         />
                     </div>
                 </div>
