@@ -14,7 +14,7 @@ import {
 } from '@conversationlearner/models'
 import { ErrorType } from './const'
 import { AT } from './ActionTypes'
-import { TipType } from '../components/ToolTips'
+import { TipType } from '../components/ToolTips/ToolTips'
 
 export type ActionState = ActionBase[];
 export type EntityState = EntityBase[];

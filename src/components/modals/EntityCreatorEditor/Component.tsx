@@ -9,7 +9,7 @@ import * as TC from '../../tipComponents'
 import ActionDetailsList from '../../ActionDetailsList'
 import ConfirmCancelModal from '../ConfirmCancelModal'
 import { CLDropdownOption } from '../CLDropDownOption'
-import * as ToolTip from '../../ToolTips'
+import * as ToolTip from '../../ToolTips/ToolTips'
 import { ActionBase } from '@conversationlearner/models'
 import './styles.css'
 import { FM } from '../../../react-intl-messages'
@@ -132,6 +132,7 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
                 disabled={props.isNegatableDisabled}
                 tipType={ToolTip.TipType.ENTITY_NEGATABLE}
             />
+            {!props.isAlwaysTagDisabled &&
             <TC.Checkbox	
                 data-testid="entitycreator-checkbox-alwaystag"	
                 label={props.intl.formatMessage({	
@@ -143,7 +144,7 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
                 onChange={props.onAlwaysTagChange}
                 disabled={props.isAlwaysTagDisabled}	
                 tipType={ToolTip.TipType.ENTITY_ALWAYS_EXTRACT}	
-            />
+            />}
         </div>
     </div>
 }

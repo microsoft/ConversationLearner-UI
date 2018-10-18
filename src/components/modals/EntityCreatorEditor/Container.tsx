@@ -11,7 +11,7 @@ import * as OF from 'office-ui-fabric-react'
 import * as TC from '../../tipComponents'
 import { State, PreBuiltEntities } from '../../../types'
 import { CLDropdownOption } from '../CLDropDownOption'
-import * as ToolTip from '../../ToolTips'
+import * as ToolTip from '../../ToolTips/ToolTips'
 import { AppBase, EntityBase, EntityType, ActionBase } from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
 import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
@@ -561,7 +561,7 @@ class Container extends React.Component<Props, ComponentState> {
     }
     render() {
         const { intl } = this.props
-        const isEntityInUse = this.state.isEditing && this.isInUse()
+        // const isEntityInUse = this.state.isEditing && this.isInUse()
         const isTypeDisabled = this.state.isEditing
 
         const title = this.props.entity
@@ -593,11 +593,11 @@ class Container extends React.Component<Props, ComponentState> {
 
             isProgrammatic={this.state.isProgrammaticVal}
             isMultiValue={this.state.isMultivalueVal}
-            isMultiValueDisabled={isEntityInUse}
+            isMultiValueDisabled={false}
             onChangeMultiValue={this.onChangeMultivalue}
 
             isNegatable={this.state.isNegatableVal}
-            isNegatableDisabled={isEntityInUse || this.state.isPrebuilt}
+            isNegatableDisabled={this.state.isPrebuilt}
             onChangeNegatable={this.onChangeReversible}
 
             isEditing={this.state.isEditing}
@@ -625,7 +625,11 @@ class Container extends React.Component<Props, ComponentState> {
             showValidationWarning={this.state.showValidationWarning}
 
             isAlwaysTagged={this.state.isPrebuilt && this.state.isAlwaysTag}
-            isAlwaysTagDisabled={this.state.entityTypeVal === this.PROGRAMMATIC_ENTITY || this.state.entityTypeVal === this.NEW_ENTITY || this.state.isEditing}
+            isAlwaysTagDisabled={this.state.entityTypeVal === this.PROGRAMMATIC_ENTITY 
+                || this.state.entityTypeVal === this.NEW_ENTITY 
+                || this.state.isEditing 
+                // disable always extract check box if built-in entity with doNotMemorize == false exist
+                || typeof this.props.entities.find(e => e.entityType !== EntityType.LOCAL && e.entityType !== EntityType.LUIS && !e.doNotMemorize && e.entityName == Container.getPrebuiltEntityName(this.state.entityTypeVal)) !== 'undefined'}
             onAlwaysTagChange={this.onChangeAlwaysTag}
         />
     }

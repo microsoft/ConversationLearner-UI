@@ -466,8 +466,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Find top scoring Action
             let insertedAction = this.getBestAction(uiScoreResponse.scoreResponse)
 
+            // None were qualified so pick the first (will show in UI as invalid)
+            if (!insertedAction && uiScoreResponse.scoreResponse.unscoredActions[0]) {
+                let scoredAction = {...uiScoreResponse.scoreResponse.unscoredActions[0], score: 1.0}
+                delete scoredAction.reason
+                insertedAction = scoredAction
+            }
             if (!insertedAction) {
-                throw new Error("No actions available")  // LARS todo - handle this better
+                throw new Error("No actions available") 
             }
 
             let scorerStep = {
@@ -495,7 +501,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.clearWebchatScrollPosition()
             }
 
-            await this.onUpdateHistory(newTrainDialog, selectedActivity)
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, true)
         }
         catch (error) {
             console.warn(`Error when attempting to insert an Action `, error)
@@ -676,7 +682,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.clearWebchatScrollPosition()
             }
 
-            await this.onUpdateHistory(newTrainDialog, selectedActivity)
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, true)
         }
         catch (error) {
             console.warn(`Error when attempting to create teach session from history: `, error)
@@ -729,12 +735,17 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null) {
+    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectNextActivity: boolean = false) {
 
         try {
 
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            const activityIndex = selectedActivity ? Util.matchedActivityIndex(selectedActivity, this.state.history) : null
+            let activityIndex = selectedActivity ? Util.matchedActivityIndex(selectedActivity, this.state.history) : null
+            if (activityIndex !== null && selectNextActivity) {
+                // Select next activity, useful for when inserting a step
+                activityIndex = activityIndex + 1
+            }
+            
             this.setState({
                 history: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
@@ -804,7 +815,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             lastRound.scorerSteps = []
         }
         
-        newTrainDialog.invalid = isInvalid
+        newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
         newTrainDialog.definitions = null
         try { 
             await this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog)
@@ -1027,7 +1038,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     trainDialog={this.state.currentTrainDialog!}
                     editingLogDialog={this.state.currentLogDialog}
                     history={this.state.history}
-                    initialSelectedHistoryIndex={this.state.selectedHistoryIndex}
+                    initialSelectedActivityIndex={this.state.selectedHistoryIndex}
                     editType={this.state.editType}
                     onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
                     onInsertInput={(trainDialog, activity, userInput) => this.onInsertInput(trainDialog, activity, userInput)} 

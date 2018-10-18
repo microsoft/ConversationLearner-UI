@@ -12,7 +12,7 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { AppBase, AppDefinition, ActionBase, ActionTypes, ApiAction, CardAction, BotInfo } from '@conversationlearner/models'
+import { AppBase, AppDefinition, ActionBase, ActionTypes, ApiAction, CardAction, BotInfo, Validity } from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { State } from '../../../types';
@@ -140,7 +140,7 @@ class Index extends React.Component<Props, ComponentState> {
     }
 
     hasInvalidTrainDialogs(): boolean {
-        return this.props.trainDialogs.filter(td => td.invalid === true).length > 0;
+        return this.props.trainDialogs.filter(td => td.validity !== undefined && td.validity !== Validity.VALID).length > 0;
     }
     render() {
         const { match, location, intl } = this.props

@@ -108,8 +108,8 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                 <div>
                     {
                         this.props.entities
-                            // Filter out negative entities
-                            .filter(entity => entity.positiveId === undefined)
+                            // Filter out negative entities and entities that should not be memorized                            
+                            .filter(entity => entity.positiveId === undefined && !entity.doNotMemorize)
                             .map(entity => {
                                 return (
                                     <div className="teachInitBlock" key={entity.entityId}>

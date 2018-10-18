@@ -14,7 +14,7 @@ import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
 import * as TC from '../tipComponents'
-import * as ToolTips from '../ToolTips'
+import * as ToolTips from '../ToolTips/ToolTips'
 
 const messages = defineMessages({
     fieldErrorRequired: {

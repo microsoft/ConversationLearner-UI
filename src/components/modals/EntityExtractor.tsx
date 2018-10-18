@@ -12,7 +12,7 @@ import * as OF from 'office-ui-fabric-react'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import actions from '../../actions'
-import * as ToolTips from '../ToolTips'
+import * as ToolTips from '../ToolTips/ToolTips'
 import HelpIcon from '../HelpIcon'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react'
@@ -27,7 +27,7 @@ interface ExtractResponseForDisplay {
 
 interface ComponentState {
     // Has the user made any changes
-    extractionChanged: boolean
+    isPendingSubmit: boolean
     pendingVariationChange: boolean
     entityModalOpen: boolean
     entityTypeFilter: string
@@ -47,7 +47,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         this.state = {
-            extractionChanged: false,
+            isPendingSubmit: false,
             pendingVariationChange: false,
             entityModalOpen: false,
             warningOpen: false,
@@ -84,7 +84,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 extractionChanged: false,
             }
             // If I made an unsaved change, show save prompt before switching
-            if (this.state.extractionChanged) {
+            if (this.state.isPendingSubmit) {
                 nextState = {
                     ...nextState,
                     savedExtractResponses: this.allResponses(),
@@ -163,20 +163,20 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.props.clearExtractResponses();
         this.setState({
             newTextVariations: [...this.props.originalTextVariations],
-            extractionChanged: false,
+            isPendingSubmit: false,
         });
-        if (this.props.onExtractionsChanged) {
-            this.props.onExtractionsChanged(false)
+        if (this.props.onPendingStatusChanged) {
+            this.props.onPendingStatusChanged(false)
         }
     }
 
     @autobind
     onClickSubmitExtractions() {
         this.setState({
-            extractionChanged: false,
+            isPendingSubmit: false,
         });
-        if (this.props.onExtractionsChanged) {
-            this.props.onExtractionsChanged(false)
+        if (this.props.onPendingStatusChanged) {
+            this.props.onPendingStatusChanged(false)
         }
         
         this.submitExtractions(this.allResponses(), this.props.roundIndex)
@@ -198,17 +198,17 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             labelEntities: extractResponse.predictedEntities
         }))
 
-        this.props.onTextVariationsExtracted(primaryExtractResponse, textVariations, roundIndex);
+        this.props.onSumbitExtractions(primaryExtractResponse, textVariations, roundIndex);
     }
 
     onAddExtractResponse(): void {
         this.setState({
-            extractionChanged: true,
+            isPendingSubmit: true,
             pendingVariationChange: false
         });
 
-        if (this.props.onExtractionsChanged) {
-            this.props.onExtractionsChanged(true);
+        if (this.props.onPendingStatusChanged) {
+            this.props.onPendingStatusChanged(true);
         }
     }
 
@@ -226,19 +226,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         let foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text);
         if (foundResponse) {
             this.props.removeExtractResponse(foundResponse);
-            this.setState({ extractionChanged: true });
+            this.setState({ isPendingSubmit: true });
         } else {
             // Otherwise change is in text variation
             let newVariations = this.state.newTextVariations
                 .filter(v => v.text !== extractResponse.text);
             this.setState({
                 newTextVariations: newVariations,
-                extractionChanged: true
+                isPendingSubmit: true
             });
         }
 
-        if (this.props.onExtractionsChanged) {
-            this.props.onExtractionsChanged(true);
+        if (this.props.onPendingStatusChanged) {
+            this.props.onPendingStatusChanged(true);
         }
     }
 
@@ -249,7 +249,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         if (foundResponse) {
             this.props.updateExtractResponse(extractResponse);
             this.setState({
-                extractionChanged: true
+                isPendingSubmit: true
             });
         } else {
             // Replace existing text variation (if any) with new one and maintain ordering
@@ -263,11 +263,11 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             newVariations[index] = newVariation;
             this.setState({
                 newTextVariations: newVariations,
-                extractionChanged: true
+                isPendingSubmit: true
             });
         }
-        if (this.props.onExtractionsChanged) {
-            this.props.onExtractionsChanged(true);
+        if (this.props.onPendingStatusChanged) {
+            this.props.onPendingStatusChanged(true);
         }
     }
     onClickSaveCheckYes() {
@@ -324,13 +324,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         )
 
         this.setState({
-            extractionChanged: true,
+            isPendingSubmit: true,
             pendingVariationChange: false,
             textVariationValue: ''
         })
 
-        if (this.props.onExtractionsChanged) {
-            this.props.onExtractionsChanged(true);
+        if (this.props.onPendingStatusChanged) {
+            this.props.onPendingStatusChanged(true);
         }
     }
 
@@ -427,14 +427,14 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 {editingRound &&
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
-                            disabled={!this.state.extractionChanged || !allExtractResponsesValid || this.state.pendingVariationChange}
+                            disabled={!this.state.isPendingSubmit || !allExtractResponsesValid || this.state.pendingVariationChange}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Submit Changes'}
                             text={'Submit Changes'}
                             componentRef={(ref: any) => { this.doneExtractingButton = ref }}
                         />
                         <OF.PrimaryButton
-                            disabled={!this.state.extractionChanged}
+                            disabled={!this.state.isPendingSubmit}
                             onClick={this.onClickUndoChanges}
                             ariaDescription="Undo Changes"
                             text="Undo"
@@ -534,8 +534,8 @@ export interface ReceivedProps {
     dialogMode: CLM.DialogMode
     extractResponses: CLM.ExtractResponse[]
     originalTextVariations: CLM.TextVariation[]
-    onTextVariationsExtracted: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[], roundIndex: number | null) => void
-    onExtractionsChanged?: (hasChanged: boolean) => void
+    onSumbitExtractions: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[], roundIndex: number | null) => void
+    onPendingStatusChanged?: (hasChanged: boolean) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

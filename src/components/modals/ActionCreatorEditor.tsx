@@ -16,7 +16,7 @@ import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadEditor from './ActionPayloadEditor'
 import { State } from '../../types'
-import * as ToolTip from '../ToolTips'
+import * as ToolTip from '../ToolTips/ToolTips'
 import * as TC from '../tipComponents'
 import * as OF from 'office-ui-fabric-react';
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
@@ -116,7 +116,7 @@ const actionTypeOptions = Object.values(ActionTypes)
     .map<OF.IDropdownOption>(actionTypeString => {
         return {
             key: actionTypeString,
-            text: actionTypeString
+            text: actionTypeString === 'API_LOCAL' ? "API" : actionTypeString
         }
     })
 
@@ -194,8 +194,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     initProps(): ComponentState {
         const { entities, botInfo } = this.props
-
-        const entityTags = entities.map<OF.ITag>(e =>
+        const entityTags = entities.filter(e => !e.doNotMemorize).map<OF.ITag>(e =>
             ({
                 key: e.entityId,
                 name: e.entityName
@@ -230,7 +229,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             // Otherwise reset only if props have changed
             else {
                 if (nextProps.entities !== this.props.entities) {
-                    const entityTags = nextProps.entities.map<OF.ITag>(convertEntityToTag)
+                    const entityTags = nextProps.entities.filter(e => !e.doNotMemorize).map<OF.ITag>(convertEntityToTag)
 
                     const availableExpectedEntityTags = nextProps.entities
                         .filter(e => e.entityType === EntityType.LUIS)
@@ -369,6 +368,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return pairedValues.some(pv => !pv.prev || pv.current.document.text !== pv.prev.document.text)
     }
 
+    areTagsIdentical(tags1: OF.ITag[], tags2: OF.ITag[]): boolean {
+        if (tags1.length !== tags2.length) {
+            return false
+        }
+        return tags1.reduce((acc, x, i) => { return acc && tags1[i].key === tags2[i].key }, true);
+
+    }
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
         const initialEditState = this.state.initialEditState
         if (!initialEditState) {
@@ -378,9 +384,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const isAnyPayloadChanged = this.areSlateValuesChanged(this.state.slateValuesMap, initialEditState.slateValuesMap)
             || this.areSlateValuesChanged(this.state.secondarySlateValuesMap, initialEditState.secondarySlateValuesMap)
         
-        const expectedEntitiesChanged = this.state.expectedEntityTags.filter(tag => !initialEditState.expectedEntityTags.some(t => t.key === tag.key)).length > 0
-        const requiredEntitiesChanged = this.state.requiredEntityTags.filter(tag => !initialEditState.requiredEntityTags.some(t => t.key === tag.key)).length > 0
-        const disqualifyingEntitiesChanged = this.state.negativeEntityTags.filter(tag => !initialEditState.negativeEntityTags.some(t => t.key === tag.key)).length > 0
+        const expectedEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.expectedEntityTags, initialEditState.expectedEntityTags)
+        const requiredEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.requiredEntityTags, initialEditState.requiredEntityTags)
+        const disqualifyingEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.negativeEntityTags, initialEditState.negativeEntityTags)
+
+
         const isTerminalChanged = initialEditState!.isTerminal !== this.state.isTerminal
         const hasPendingChanges = isAnyPayloadChanged
             || expectedEntitiesChanged
@@ -868,6 +876,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .filter(e => !unavailableTags.some(t => t.key === e.entityId))
             // Remove negative entities (Those which have a positiveId)
             .filter(e => typeof e.positiveId !== "string")
+            // Remove do not memorizable entities (Those prebuilt entity types with no default extractor)
+            .filter(e => !e.doNotMemorize)
             .map(convertEntityToOption)
 
         const { intl } = this.props
@@ -916,7 +926,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         selectedKey={this.state.selectedApiOptionKey}
                                         disabled={this.state.apiOptions.length === 0}
                                         placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
-                                        tipType={ToolTip.TipType.ACTION_API}
+                                        tipType={ToolTip.TipType.ACTION_API1}
                                     />
                                     <OF.PrimaryButton
                                         className="cl-dropdownWithButton-button"

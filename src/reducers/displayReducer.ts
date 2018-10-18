@@ -5,7 +5,7 @@
 import { ActionObject, DisplayState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
-import { TipType } from '../components/ToolTips'
+import { TipType } from '../components/ToolTips/ToolTips'
 
 const initialState: DisplayState = {
     displaySpinner: [],

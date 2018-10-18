@@ -11,19 +11,21 @@ import * as BotChat from '@conversationlearner/webchat'
 import { AppBase, CL_USER_NAME_ID } from '@conversationlearner/models'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { Activity, Message } from 'botframework-directlinejs'
+import { EditDialogType } from './modals/.'
 import actions from '../actions'
 
 export function renderActivity(
     activityProps: BotChat.WrappedActivityProps, 
     children: React.ReactNode, 
     setRef: (div: HTMLDivElement | null) => void,
-    renderSelected: (activity: Activity, isLastActivity: boolean) => JSX.Element | null,
-    isLastActivity?: boolean
+    renderSelected: ((activity: Activity, isLastActivity: boolean) => JSX.Element | null) | null,
+    editType: EditDialogType
     ): JSX.Element {
         
     let timeLine = <span> { activityProps.fromMe ? "User" : "Bot" }</span>;
 
-    const who = activityProps.fromMe ? 'me' : 'bot';
+    const isLogDialog = editType === EditDialogType.LOG_ORIGINAL || editType === EditDialogType.LOG_EDITED
+    const who = activityProps.fromMe ? 'me' : 'bot'
 
     let wrapperClassName = 
         ['wc-message-wrapper',
@@ -44,6 +46,9 @@ export function renderActivity(
         }
     }
 
+    const messageColor = `wc-message-color-${activityProps.fromMe ? (isLogDialog ? 'log' : 'train') : 'bot'}`
+    const messageFillColor = `wc-message-fillcolor-${activityProps.fromMe ? (isLogDialog ? 'log' : 'train') : 'bot'}`
+
     return (
         <div 
             data-activity-id={ activityProps.activity.id } 
@@ -51,17 +56,20 @@ export function renderActivity(
             onClick={activityProps.onClickActivity}
             role="button"
         > 
-            <div className={'wc-message wc-message-from-' + who} ref={ div => setRef(div) }>
-                <div className={contentClassName} data-testid="web-chat-utterances">
-                    <svg className="wc-message-callout">
+            <div 
+                className={`wc-message wc-message-from-${who} ${messageColor}`} 
+                ref={div => setRef(div)}
+                data-testid="web-chat-utterances"
+            >
+                <div className={contentClassName}>
+                    <svg className={`wc-message-callout ${messageFillColor}`}>
                         <path className="point-left" d="m0,6 l6 6 v-12 z" />
                         <path className="point-right" d="m6,6 l-6 6 v-12 z" />
                     </svg>
                     { children }
                 </div>
             </div>
-            {activityProps.selected && renderSelected(activityProps.activity, false)}
-            {!activityProps.selected && isLastActivity && renderSelected(activityProps.activity, isLastActivity)}
+            {activityProps.selected && renderSelected && renderSelected(activityProps.activity, false)}
             {activityProps.activity.channelData && activityProps.activity.channelData.validWaitAction !== undefined ? 
                 (
                     <svg className="wc-message-downarrow">

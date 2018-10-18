@@ -52,7 +52,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
     async onEntityExtractorSubmit(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]): Promise<void> {
         
         // If I'm editing an existing round
-        if (this.props.selectedActivityIndex) {
+        if (this.props.selectedActivityIndex !== null) {
             this.props.onEditExtraction(extractResponse, textVariations)
             return
         }
@@ -248,23 +248,27 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const editTypeClass = isLogDialog ? 'log' : 'train'
         
         return (
-            <div className={`cl-dialog-admin ${FontClassNames.large}`}>
-                <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${FontClassNames.xxLarge}`}>
+            <div className={`cl-dialog-admin ${FontClassNames.small}`}>
+                <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${FontClassNames.large}`}>
                     <Icon 
                         iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
                     />
                     {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
                 </div>
-                {renderData.dialogMode === CLM.DialogMode.Extractor && (
+                {(renderData.dialogMode === CLM.DialogMode.Extractor || renderData.dialogMode === CLM.DialogMode.Wait) && 
+                    (
                     <div className="cl-dialog-admin__content">
-                        <div className="cl-wc-message cl-wc-message--user">
+                        <div 
+                            className={`cl-wc-message cl-wc-message--user cl-wc-message--${isLogDialog ? 'log' : 'train'}`}
+                        >
                             <FormattedMessage
                                 data-testid="teach-session-admin-userinput"
                                 id={FM.TEACHSESSIONADMIN_DIALOGMODE_USER}
                                 defaultMessage="User Input"
                             />
                         </div>
-                    </div>)
+                    </div>
+                    )
                 }
                 {renderData.dialogMode === CLM.DialogMode.Scorer && (
                     <div className="cl-dialog-admin__content">
@@ -328,7 +332,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     dialogMode={renderData.dialogMode}
                                     extractResponses={renderData.extractResponses}
                                     originalTextVariations={renderData.textVariations}
-                                    onTextVariationsExtracted={this.onEntityExtractorSubmit}
+                                    onSumbitExtractions={this.onEntityExtractorSubmit}
                                 />}
                         </div>
                     </div>

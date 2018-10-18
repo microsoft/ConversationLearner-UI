@@ -446,7 +446,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
-       return renderActivity(activityProps, children, setRef, this.renderSelectedActivity)
+       return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType)
     }
 
     @autobind
@@ -465,6 +465,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             <div className="cl-wc-buttonbar">
                 <AddButtonInput 
                     onClick={this.onClickAddUserInput}
+                    editType={this.props.editType}
                 />
                 <AddScoreButton 
                     onClick={this.onInsertAction}

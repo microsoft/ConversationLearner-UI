@@ -47,7 +47,7 @@ const returnStringWhenError = (s: string) => {
 const returnErrorStringWhenError = returnStringWhenError("ERR")
 
 function textClassName(trainDialog: CLM.TrainDialog): string {
-    if (trainDialog.invalid === true) {
+    if (trainDialog.validity === CLM.Validity.INVALID) {
         return `${OF.FontClassNames.mediumPlus} cl-font--highlight`;
     }
     return OF.FontClassNames.mediumPlus!;
@@ -97,7 +97,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 let firstInput = getFirstInput(trainDialog);
                 if (firstInput) {
                     return (<span className={textClassName(trainDialog)} data-testid="train-dialogs-first-input">
-                        {trainDialog.invalid === true && <Icon className="cl-icon" iconName="IncidentTriangle" />}
+                        {trainDialog.validity === CLM.Validity.INVALID && <Icon className="cl-icon" iconName="IncidentTriangle" />}
                         {firstInput}
                     </span>)
                 }
@@ -204,7 +204,7 @@ interface ComponentState {
     isTeachDialogModalOpen: boolean
     isEditDialogModalOpen: boolean
     // Item selected in webchat window
-    selectedHistoryIndex: number | null
+    selectedActivityIndex: number | null
     // Current train dialogs being edited
     currentTrainDialog: CLM.TrainDialog | null
     // If Train Dialog was edited, the original one
@@ -236,7 +236,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             lastAction: null,
             isTeachDialogModalOpen: false,
             isEditDialogModalOpen: false,
-            selectedHistoryIndex: null,
+            selectedActivityIndex: null,
             currentTrainDialog: null,
             originalTrainDialogId: null,
             editType: EditDialogType.TRAIN_ORIGINAL,
@@ -258,10 +258,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 .sort((a, b) => {
 
                     // Always put invalid at top (values can also be undefined)
-                    if (a.invalid === true && b.invalid !== true) {
+                    if (a.validity === CLM.Validity.INVALID && b.validity !== CLM.Validity.INVALID) {
                         return -1;
                     }
-                    if (b.invalid === true && a.invalid !== true) {
+                    if (b.validity === CLM.Validity.INVALID && a.validity !== CLM.Validity.INVALID) {
                         return 1;
                     }
 
@@ -471,8 +471,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // Find top scoring Action
             let insertedAction = this.getBestAction(uiScoreResponse.scoreResponse)
 
+            // None were qualified so pick the first (will show in UI as invalid)
+            if (!insertedAction && uiScoreResponse.scoreResponse.unscoredActions[0]) {
+                let scoredAction = {...uiScoreResponse.scoreResponse.unscoredActions[0], score: 1.0}
+                delete scoredAction.reason
+                insertedAction = scoredAction
+            }
             if (!insertedAction) {
-                throw new Error("No actions available")  // LARS todo - handle this better
+                throw new Error("Unable to find an action")
             }
 
             let scorerStep = {
@@ -503,7 +509,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.clearWebchatScrollPosition()
             }
 
-            await this.onUpdateHistory(newTrainDialog, selectedActivity)
+            // true = select next activity after updating
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, true)
         }
         catch (error) {
             console.warn(`Error when attempting to insert an Action `, error)
@@ -735,7 +742,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.clearWebchatScrollPosition()
             }
 
-            await this.onUpdateHistory(newTrainDialog, selectedActivity)
+            // true - select created input
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, true)
         }
         catch (error) {
             console.warn(`Error when attempting to create teach session from history: `, error)
@@ -768,18 +776,23 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.onCloseEditDialogModal();
     }
 
-    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null) {
+    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectNextActivity: boolean = false) {
         const originalId = this.state.originalTrainDialogId || (this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null);
 
         try {
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            const activityIndex = selectedActivity ? Util.matchedActivityIndex(selectedActivity, teachWithHistory.history) : null
+            let activityIndex = selectedActivity ? Util.matchedActivityIndex(selectedActivity, teachWithHistory.history) : null
+            if (activityIndex !== null && selectNextActivity) {
+                // Select next activity, useful for when inserting a step
+                activityIndex = activityIndex + 1
+            }
+            
             this.setState({
                 history: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: newTrainDialog,
                 originalTrainDialogId: originalId,
-                selectedHistoryIndex: activityIndex,
+                selectedActivityIndex: activityIndex,
                 isEditDialogModalOpen: true,
                 isTeachDialogModalOpen: false,
                 editType: this.state.editType === EditDialogType.NEW 
@@ -804,7 +817,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     history: teachWithHistory.history,
                     lastAction: teachWithHistory.lastAction,
                     isEditDialogModalOpen: false,
-                    selectedHistoryIndex: null,
+                    selectedActivityIndex: null,
                     isTeachDialogModalOpen: true,
                     editType: this.state.editType === EditDialogType.NEW 
                         ? EditDialogType.NEW
@@ -834,7 +847,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             lastRound.scorerSteps = []
         }
 
-        newTrainDialog.invalid = isInvalid
+        newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
         newTrainDialog.definitions = null
         try { 
             await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TeachWithHistory>);
@@ -849,7 +862,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     // Create a new trainDialog 
     async onCreateTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
-        newTrainDialog.invalid = isInvalid
+        newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
+
+        // Remove dummy scorer rounds used for rendering
+        newTrainDialog.rounds.forEach(r => r.scorerSteps = r.scorerSteps.filter(ss => {
+            return ss.labelAction !== undefined
+        }))
 
         try { 
             await ((this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>);
@@ -890,7 +908,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     originalTrainDialogId: originalId,
                     editType: EditDialogType.TRAIN_ORIGINAL,
                     isEditDialogModalOpen: true,
-                    selectedHistoryIndex: null
+                    selectedActivityIndex: null
                 })
             })
             .catch(error => {
@@ -906,7 +924,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         this.setState({
             isEditDialogModalOpen: false,
-            selectedHistoryIndex: null,
+            selectedActivityIndex: null,
             currentTrainDialog: null,
             // originalTrainDialogId: Do not clear.  Save for later 
             history: [],
@@ -1162,7 +1180,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     trainDialog={this.state.currentTrainDialog!}
                     editingLogDialog={null}
                     history={this.state.history}
-                    initialSelectedHistoryIndex={this.state.selectedHistoryIndex}
+                    initialSelectedActivityIndex={this.state.selectedActivityIndex}
                     editType={this.state.editType}
                     onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
                     onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
