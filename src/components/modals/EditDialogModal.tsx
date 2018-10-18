@@ -303,8 +303,18 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         if (!this.props.trainDialog || this.props.trainDialog.rounds.length === 0) {
             return false
         }
+        // If last round doesn't have a scorer step (or is a dummy round)
         const lastRound = this.props.trainDialog.rounds[this.props.trainDialog.rounds.length - 1]
-        return (lastRound.scorerSteps.length === 0 || !lastRound.scorerSteps[0].labelAction)
+        if (lastRound.scorerSteps.length === 0 || !lastRound.scorerSteps[0].labelAction) {
+            return true
+        }
+        // If last action is a non-wait action
+        const lastActionLabel = lastRound.scorerSteps[lastRound.scorerSteps.length - 1].labelAction
+        const action = this.props.actions.find(a => a.actionId === lastActionLabel)
+        if (action && !action.isTerminal) {
+            return true
+        }
+        return false
     }
 
     @autobind
