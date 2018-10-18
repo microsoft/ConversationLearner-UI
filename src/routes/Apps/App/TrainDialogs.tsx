@@ -198,7 +198,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 interface ComponentState {
     columns: OF.IColumn[]
     sortColumn: IRenderableColumn
-    teachSession: CLM.Teach | undefined
     history: Activity[]
     lastAction: CLM.ActionBase | null
     isTeachDialogModalOpen: boolean
@@ -231,7 +230,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.state = {
             columns: columns,
             sortColumn: columns[0],
-            teachSession: undefined,
             history: [],
             lastAction: null,
             isTeachDialogModalOpen: false,
@@ -366,9 +364,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @autobind
     async onSetInitialEntities(initialFilledEntities: CLM.FilledEntity[]) {
 
-        if (this.state.teachSession) {
+        if (this.props.teachSession.teach) {
             // Delete existing teach session
-            await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.state.teachSession, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
+            await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
                 
             // Create new one with initial entities
             await this.onClickNewTeachSession(initialFilledEntities)
@@ -380,7 +378,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         ((this.props.createTeachSessionThunkAsync(this.props.app.appId, initialFilledEntities) as any) as Promise<CLM.TeachResponse>)
             .then(teachResponse => {
                 this.setState({
-                    teachSession: teachResponse as CLM.Teach,
                     isTeachDialogModalOpen: true,
                     editType: EditDialogType.NEW
                 })
@@ -392,7 +389,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     onCloseTeachSession() {
         this.setState({
-            teachSession: undefined,
             isTeachDialogModalOpen: false,
             history: [],
             lastAction: null,
@@ -406,9 +402,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async onEditTeach(historyIndex: number, args: EditHandlerArgs|null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any) {
 
         try {
-            if (this.state.teachSession) {
+            if (this.props.teachSession.teach) {
                 // Get train dialog associated with the teach session
-                let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.state.teachSession.trainDialogId, false) as any) as Promise<CLM.TrainDialog>)
+                let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.props.teachSession.teach.trainDialogId, false) as any) as Promise<CLM.TrainDialog>)
                 trainDialog.definitions = {
                     entities: this.props.entities,
                     actions: this.props.actions,
@@ -416,7 +412,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
 
                 // Delete the teach session w/o saving
-                await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.state.teachSession, this.props.app, this.props.editingPackageId, false, null, null)
+                await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null)
 
                 // Generate history
                 let teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
@@ -808,12 +804,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async onContinueTrainDialog(newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) {
 
         try {
+            if (this.props.teachSession && this.props.teachSession.teach) {
+                // Delete the teach session w/o saving
+                await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null)
+            }
+        
             let teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput) as any) as Promise<CLM.TeachWithHistory>)
     
             if (teachWithHistory.replayErrors.length  === 0) {
                 // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
                 this.setState({
-                    teachSession: teachWithHistory.teach,
                     history: teachWithHistory.history,
                     lastAction: teachWithHistory.lastAction,
                     isEditDialogModalOpen: false,
@@ -841,15 +841,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     // Replace the current trainDialog with a new one
     async onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
-        // Remove actionless dummy step (used for rendering) if it exits
-        let lastRound = newTrainDialog.rounds[newTrainDialog.rounds.length - 1] 
-        if (lastRound.scorerSteps.length > 0 && lastRound.scorerSteps[0].labelAction === undefined) {
-            lastRound.scorerSteps = []
-        }
-
-        newTrainDialog.invalid = isInvalid
-        newTrainDialog.definitions = null
         try { 
+            // Remove actionless dummy step (used for rendering) if it exits
+            let lastRound = newTrainDialog.rounds[newTrainDialog.rounds.length - 1] 
+            if (lastRound.scorerSteps.length > 0 && lastRound.scorerSteps[0].labelAction === undefined) {
+                lastRound.scorerSteps = []
+            }
+
+            newTrainDialog.invalid = isInvalid
+            newTrainDialog.definitions = null
+
             await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TeachWithHistory>);
         }
         catch (error) {
@@ -917,6 +918,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     async onCloseEditDialogModal(reload: boolean = false) {
+
+        if (this.props.teachSession && this.props.teachSession.teach) {
+            // Delete the teach session w/o saving
+            await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null)
+        }
 
         if (reload && this.state.originalTrainDialogId) {
             // Reload local copy
@@ -1150,26 +1156,26 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     formattedTitleId={this.state.validationErrorTitleId!}
                     formattedMessageId={this.state.validationErrorMessageId!}
                 />
-                <TeachSessionModal
-                    app={this.props.app}
-                    editingPackageId={this.props.editingPackageId}
-                    teach={this.props.teachSessions.current!}
-                    dialogMode={this.props.teachSessions.mode}
-                    isOpen={this.state.isTeachDialogModalOpen}
-                    onClose={() => this.onCloseTeachSession()}
-                    onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
-                    onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
-                    onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)} 
-                    onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
-                    onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)} 
-                    onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)} 
-                    onSetInitialEntities={this.onSetInitialEntities}
-                    initialHistory={this.state.history}
-                    editType={this.state.editType}
-                    lastAction={this.state.lastAction}
-                    sourceTrainDialog={this.state.currentTrainDialog}
-                    sourceLogDialog={null}
-                />
+                {this.props.teachSession && this.props.teachSession.teach && 
+                    <TeachSessionModal
+                        isOpen={this.state.isTeachDialogModalOpen}
+                        app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
+                        onClose={() => this.onCloseTeachSession()}
+                        onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
+                        onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
+                        onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)} 
+                        onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
+                        onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)} 
+                        onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)} 
+                        onSetInitialEntities={this.onSetInitialEntities}
+                        initialHistory={this.state.history}
+                        editType={this.state.editType}
+                        lastAction={this.state.lastAction}
+                        sourceTrainDialog={this.state.currentTrainDialog}
+                        sourceLogDialog={null}
+                    />
+                }
                 <EditDialogModal
                     data-testid="train-dialog-modal"
                     app={this.props.app}
@@ -1225,7 +1231,7 @@ const mapStateToProps = (state: State) => {
         actions: state.actions,
         entities: state.entities,
         trainDialogs: state.trainDialogs,
-        teachSessions: state.teachSessions
+        teachSession: state.teachSession
     }
 }
 

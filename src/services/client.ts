@@ -474,7 +474,7 @@ export default class ClClient {
             .then(response => response.data.teaches)
     }
 
-    teachSessionsCreate(appId: string, initialFilledEntities: CLM.FilledEntity[] = []): Promise<CLM.TeachResponse> {
+    teachSessionCreate(appId: string, initialFilledEntities: CLM.FilledEntity[] = []): Promise<CLM.TeachResponse> {
         return this.send<CLM.TeachResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/teach`,
@@ -484,7 +484,7 @@ export default class ClClient {
     }
 
     // DELETE_TEACH_SESSION_ASYNC
-    teachSessionsDelete(appId: string, teachSession: CLM.Teach, save: boolean): Promise<void> {
+    teachSessionDelete(appId: string, teachSession: CLM.Teach, save: boolean): Promise<void> {
         return this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/teach/${teachSession.teachId}?save=${save}`
@@ -492,7 +492,7 @@ export default class ClClient {
             .then(response => { })
     }
 
-    teachSessionsAddExtractStep(appId: string, sessionId: string, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
+    teachSessionAddExtractStep(appId: string, sessionId: string, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
         return this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/teach/${sessionId}/extractor`,

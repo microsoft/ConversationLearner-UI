@@ -229,7 +229,6 @@ interface ComponentState {
     dialogKey: number
     history: Activity[]
     lastAction: CLM.ActionBase | null
-    teachSession: CLM.Teach | undefined
     validationErrors: CLM.ReplayError[]
     validationErrorTitleId: string | null
     validationErrorMessageId: string | null
@@ -259,7 +258,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             dialogKey: 0,
             history: [],
             lastAction: null,
-            teachSession: undefined,
             validationErrors: [],
             validationErrorTitleId: null,
             validationErrorMessageId: null
@@ -402,9 +400,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     async onEditTeach(historyIndex: number, args: EditHandlerArgs|null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any) {
 
         try {
-            if (this.state.teachSession) {
+            if (this.props.teachSession.teach) {
                 // Get train dialog associated with the teach session
-                let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.state.teachSession.trainDialogId, false) as any) as Promise<CLM.TrainDialog>)
+                let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.props.teachSession.teach.trainDialogId, false) as any) as Promise<CLM.TrainDialog>)
                 trainDialog.definitions = {
                     entities: this.props.entities,
                     actions: this.props.actions,
@@ -412,7 +410,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 }
 
                 // Delete the teach session w/o saving
-                await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.state.teachSession, this.props.app, this.props.editingPackageId, false, null, null)
+                await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null)
 
                 // Generate history
                 let teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
@@ -707,12 +705,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     async onContinueTrainDialog(newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) {
 
         try {
+            if (this.props.teachSession.teach) {
+                // Delete the teach session w/o saving
+                await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null)
+            }
+
             let teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput) as any) as Promise<CLM.TeachWithHistory>)
     
             if (teachWithHistory.replayErrors.length  === 0) {
                 // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
                 this.setState({
-                    teachSession: teachWithHistory.teach,
                     history: teachWithHistory.history,
                     lastAction: teachWithHistory.lastAction,
                     isEditDialogModalOpen: false,
@@ -796,6 +798,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     async onCloseEditDialogModal(reload: boolean = false) {
 
+        if (this.props.teachSession && this.props.teachSession.teach) {
+            // Delete the teach session w/o saving
+            await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null)
+        }
+
         this.setState({
             isEditDialogModalOpen: false,
             selectedHistoryIndex: null,
@@ -836,7 +843,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     @autobind
     onCloseTeachSession() {
         this.setState({
-            teachSession: undefined,
             isTeachDialogModalOpen: false,
             history: [],
             lastAction: null,
@@ -1008,27 +1014,26 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     formattedTitleId={this.state.validationErrorTitleId!}
                     formattedMessageId={this.state.validationErrorMessageId!}
                 />
-                <TeachSessionModal
-                    app={this.props.app}
-                    editingPackageId={this.props.editingPackageId}
-                    // Assume if `isTeachDialogModalOpen` is true, then `current` is also defined
-                    teach={this.props.teachSessions.current!}
-                    dialogMode={this.props.teachSessions.mode}
-                    isOpen={this.state.isTeachDialogModalOpen}
-                    onClose={this.onCloseTeachSession}
-                    onSetInitialEntities={null} 
-                    onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
-                    onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
-                    onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)} 
-                    onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
-                    onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)} 
-                    onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)} 
-                    editType={this.state.editType} 
-                    initialHistory={this.state.history}
-                    lastAction={this.state.lastAction}
-                    sourceTrainDialog={null}
-                    sourceLogDialog={this.state.currentLogDialog}
-                />
+                {this.props.teachSession.teach &&
+                    <TeachSessionModal
+                        isOpen={this.state.isTeachDialogModalOpen}
+                        app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
+                        onClose={this.onCloseTeachSession}
+                        onSetInitialEntities={null} 
+                        onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
+                        onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
+                        onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)} 
+                        onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
+                        onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)} 
+                        onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)} 
+                        editType={this.state.editType} 
+                        initialHistory={this.state.history}
+                        lastAction={this.state.lastAction}
+                        sourceTrainDialog={null}
+                        sourceLogDialog={this.state.currentLogDialog}
+                    />
+                }
                 <EditDialogModal
                     data-testid="train-dialog-modal"
                     app={this.props.app}
@@ -1083,7 +1088,7 @@ const mapStateToProps = (state: State) => {
         user: state.user.user,
         actions: state.actions,
         entities: state.entities,
-        teachSessions: state.teachSessions
+        teachSession: state.teachSession
     }
 }
 

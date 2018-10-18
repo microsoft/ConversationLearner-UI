@@ -12,6 +12,21 @@ import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { fetchAllTrainDialogsThunkAsync } from './trainActions'
 import { AxiosError } from 'axios';
 
+const createActionAsync = (appId: string, action: ActionBase): ActionObject => {
+    return {
+        type: AT.CREATE_ACTION_ASYNC,
+        action: action,
+        appId: appId
+    }
+}
+
+const createActionFulfilled = (action: ActionBase): ActionObject => {
+    return {
+        type: AT.CREATE_ACTION_FULFILLED,
+        action: action
+    }
+}
+
 export const createActionThunkAsync = (appId: string, action: ActionBase) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(createActionAsync(appId, action))
@@ -27,21 +42,6 @@ export const createActionThunkAsync = (appId: string, action: ActionBase) => {
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_ACTION_ASYNC))
             return false;
         }
-    }
-}
-
-const createActionAsync = (appId: string, action: ActionBase): ActionObject => {
-    return {
-        type: AT.CREATE_ACTION_ASYNC,
-        action: action,
-        appId: appId
-    }
-}
-
-const createActionFulfilled = (action: ActionBase): ActionObject => {
-    return {
-        type: AT.CREATE_ACTION_FULFILLED,
-        action: action
     }
 }
 
@@ -74,7 +74,7 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
                 dispatch(fetchAllTrainDialogsThunkAsync(appId))
             }
             
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+            dispatch(fetchApplicationTrainingStatusThunkAsync(appId)).catch()
             return action
         }
         catch (e) {

@@ -18,7 +18,7 @@ export const createTeachSessionThunkAsync = (appId: string, initialFilledEntitie
         dispatch(createTeachSessionAsync())
 
         try {
-            const teachResponse = await clClient.teachSessionsCreate(appId, initialFilledEntities)
+            const teachResponse = await clClient.teachSessionCreate(appId, initialFilledEntities)
             dispatch(createTeachSessionFulfilled(teachResponse))
             return teachResponse
         }
@@ -102,7 +102,7 @@ export const deleteTeachSessionThunkAsync = (
         const clClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
 
         try {
-            await clClient.teachSessionsDelete(app.appId, teachSession, save);
+            await clClient.teachSessionDelete(app.appId, teachSession, save);
             dispatch(deleteTeachSessionFulfilled(key, teachSession, sourceLogDialogId, app.appId));
 
             // If saving to a TrainDialog, delete any source TrainDialog (LogDialogs not deleted)
@@ -187,7 +187,7 @@ export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogTyp
 
             switch (extractType) {
                 case CLM.DialogType.TEACH:
-                    uiExtractResponse = await clClient.teachSessionsAddExtractStep(appId, sessionId, userInput)
+                    uiExtractResponse = await clClient.teachSessionAddExtractStep(appId, sessionId, userInput)
                   break;
                 case CLM.DialogType.TRAINDIALOG:
                     if (turnIndex === null) {

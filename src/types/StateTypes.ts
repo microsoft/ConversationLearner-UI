@@ -37,9 +37,8 @@ export type BotState = {
     browserId: string
 }
 export type TeachSessionState = {
-    all: Teach[],
-    current: Teach | undefined,
-    mode: DialogMode,
+    teach: Teach | undefined,
+    dialogMode: DialogMode,
     input: string,
     prevMemories: Memory[],
     memories: Memory[],
@@ -90,7 +89,7 @@ export type State = {
     display: DisplayState,
     error: ErrorState,
     logDialogs: LogDialogState,
-    teachSessions: TeachSessionState,
+    teachSession: TeachSessionState,
     chatSessions: ChatSessionState,
     settings: SettingsState,
     source: SourceState
