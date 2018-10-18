@@ -93,6 +93,10 @@ var MonitorDocumentChanges = (function()
         {
             helpers.ConLog(`url:changed`, `New URL ${newUrl} - MillisecondsSinceLastChange: ${MillisecondsSinceLastChange()}`) 
             lastChangeTime = new Date().getTime()
+            
+            // TODO: Remove this UrlNeedsSpinner() function in time if it proves that we no longer need it.
+            //       The code in MillisecondsSinceLastChange that calls LookForChange should have fixed 
+            //       the issue that the UrlNeedsSpinner() function was meant to solve.
             //if(UrlNeedsSpinner(newUrl)) SetExpectingSpinner(true)
         })
 
