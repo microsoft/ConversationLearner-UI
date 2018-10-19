@@ -17,15 +17,7 @@ var MonitorDocumentChanges = (function()
     var expectingSpinner
     var currentSpinnerText = ''
 
-<<<<<<< HEAD
     Initialize();
-=======
-    // Initialize this only once.
-    //   It gets called the first time it is imported, which should be at or near the top of the index.js file
-    //   Then it potentially could get called additional times when the require statement is used.
-    //   BUGBUG: this initialize once logic does not work because lastChangeTime gets zeroed everytime this is imported or required.
-    if (lastChangeTime == 0) initialize();
->>>>>>> origin/master
 
     function MillisecondsSinceLastChange() 
     { 
@@ -35,11 +27,7 @@ var MonitorDocumentChanges = (function()
 
     function Stop() {StopLookingForChanges = true}
 
-<<<<<<< HEAD
     function Initialize()
-=======
-    function initialize()
->>>>>>> origin/master
     {
         helpers.ConLog(`MonitorDocumentChanges.initialize()`, `Start`)
 
@@ -83,13 +71,9 @@ var MonitorDocumentChanges = (function()
 
         Cypress.Commands.add('DumpHtmlOnDomChange', (boolValue) => {dumpHtml = boolValue})
 
-<<<<<<< HEAD
         // This is used to help track down rare situations that this monitor finds.
         // Call it from afterEach() function to help highlight the findings.
         Cypress.Commands.add('VerifyMonitorFindings', () => { expect(canRefreshTrainingStatusTime).to.equal(0) })
-=======
-        Cypress.Commands.add('VerifyMonitorFinds', () => { expect(canRefreshTrainingStatusTime).to.equal(0) })
->>>>>>> origin/master
 
         Cypress.on('window:before:load', () => 
         { 
@@ -114,17 +98,6 @@ var MonitorDocumentChanges = (function()
             //if(UrlNeedsSpinner(newUrl)) SetExpectingSpinner(true)
         })
 
-<<<<<<< HEAD
-=======
-        // Cypress.on('uncaught:exception', (error, runnable) => 
-        // {
-        //     helpers.ConLog(`uncaught:exception`, `Error: ${error} - Runnable: ${runnable} - html:\n${Cypress.$('html')[0].outerHTML}`)
-        //     cy.wait(5000).then(() => helpers.ConLog(`uncaught:exception`, `A bit later...html:\n${Cypress.$('html')[0].outerHTML}`))
-        //     done()
-        //     return false
-        // })
-
->>>>>>> origin/master
         lastChangeTime = new Date().getTime()
         lastHtml = Cypress.$('html')[0].outerHTML
         setTimeout(() => { LookForChange(true) }, 50)   // This will repeat until Stop is called.

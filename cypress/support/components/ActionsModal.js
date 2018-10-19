@@ -12,11 +12,6 @@ export function TypeExpectedEntity(entityNames)         { TypeMultipleEntities('
 export function TypeRequiredEntities(entityNames)       { TypeMultipleEntities('.cl-action-creator--required-entities', entityNames) }
 export function TypeDisqualifyingEntities(entityNames)  { TypeMultipleEntities('.cl-action-creator--disqualifying-entities', entityNames) }
 
-<<<<<<< HEAD
-=======
-//What List? What Item? export function VerifyItemInList(name)  { cy.Get('.ms-DetailsRow-cell').should('contain', name) }
-
->>>>>>> origin/master
 export function TypeResponse(textToType) 
 {
   cy.Get('.cl-modal_body').within(() => 
@@ -24,10 +19,6 @@ export function TypeResponse(textToType)
     cy.Get('div[data-slate-editor="true"]')
       .clear()
       .type(textToType)
-<<<<<<< HEAD
-=======
-      //.trigger('keyup')
->>>>>>> origin/master
   })
 }
 

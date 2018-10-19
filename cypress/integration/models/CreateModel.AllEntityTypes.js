@@ -7,17 +7,10 @@ const helpers = require('../../support/helpers.js')
 const models = require('../../support/Models')
 const entities = require('../../support/Entities')
 
-<<<<<<< HEAD
 /// Description: Create every entity type possible
 /// Verifications: Entity Creation
 describe('Create All Entity Types', () =>
 {
-=======
-describe('Create All Entity Types', () =>
-{
-  after(() => { cy.VerifyMonitorFinds() })
-  
->>>>>>> origin/master
   it('Create Custom and Builtin Entities', () =>
   {
     models.CreateNewModel(`Model-aet-${helpers.ModelNameTime()}`)
