@@ -3,8 +3,11 @@
  * Licensed under the MIT License.
  */
 
+<<<<<<< HEAD
 // When an entity is detected/selected that replaces a previous value
 // the "displacedValue" parameter will verify it is displayed.
+=======
+>>>>>>> origin/master
 export function VerifyEntityInMemory(entityName, entityValue, displacedValue)
 {
   cy.Get('[data-testid="entity-memory-name"]').contains(entityName)

@@ -7,10 +7,17 @@ const models = require('../../support/Models')
 const modelPage = require('../../support/components/ModelPage')
 const logDialogPage = require('../../support/components/logdialogspage')
 
+<<<<<<< HEAD
 /// Description: Simple validation of log dialog starting where "My Name Is" training test left off.
 /// Verifications: Log Dialog
 describe("What's your name", () =>
 {
+=======
+describe("What's your name", () =>
+{
+  after(() => { cy.VerifyMonitorFinds() })
+
+>>>>>>> origin/master
   it('Chat up the bot', () => {
     var modelName = models.ImportModel('Model1-chat', 'Model1-mni.cl')
 

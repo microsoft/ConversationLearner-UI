@@ -48,7 +48,11 @@ Cypress.Commands.add('UploadFile', (fileName, selector) =>
 })
 
 // This function operates similar to the "cy.contains" command except that it expects
+<<<<<<< HEAD
 // the text content of the elements to contain an EXACT MATCH to the expected text.
+=======
+// the text content of the elements to contain an EXACT MATCH to the 
+>>>>>>> origin/master
 Cypress.Commands.add('ExactMatch', { prevSubject: 'element'}, (elements, expectedText) => 
 {   
   for(var i = 0; i < elements.length; i++)

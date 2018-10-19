@@ -25,6 +25,8 @@ describe('Wait vs No Wait Action e2e test', function () {
   const trainMessage02 = "Cow"
   const trainMessage03 = "Duck"
 
+  after(() => { cy.VerifyMonitorFinds() })
+  
   afterEach(function () {
     const fileName = `WaitVSNoWait_${this.currentTest.state}-${this.currentTest.title}`
     cy.wait(1000)

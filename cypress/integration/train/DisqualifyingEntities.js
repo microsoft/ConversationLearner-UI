@@ -13,10 +13,17 @@ const scorerModal = require('../../support/components/ScorerModal')
 const trainDialogPage = require('../../support/components/TrainDialogsPage')
 const editDialogModal = require('../../support/components/EditDialogModal')
 
+<<<<<<< HEAD
 /// Description: Tests Disqualifying Entities affect on Actions
 /// Verifications: Can Train, Entity Detection, Disqualified Entities, Actions Enabled/Disabled
 describe("Disqualifying Entities test", () =>
 {
+=======
+describe("Disqualifying Entities test", () =>
+{
+  after(() => { cy.VerifyMonitorFinds() })
+  
+>>>>>>> origin/master
   it("Disqualifying Entities", () =>
   {
     var modelName = models.ImportModel('Model-disq', 'Model-disq.cl')
