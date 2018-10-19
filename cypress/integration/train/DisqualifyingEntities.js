@@ -22,7 +22,7 @@ describe("Disqualifying Entities test", () =>
     var modelName = models.ImportModel('Model-disq', 'Model-disq.cl')
     
     modelPage.NavigateToTrainDialogs()
-    modelPage.WaitForTrainingStatusCompleted()
+    cy.WaitForTrainingStatusCompleted()
 
     trainDialogPage.CreateNewTrainDialog()
 

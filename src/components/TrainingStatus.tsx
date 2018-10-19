@@ -22,31 +22,36 @@ const internalStatusToUiStateMap = new Map<InternalTrainingStatus, StatusUI>([
         className: "training-status__icon-row--unknown",
         iconName: "Unknown",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_UNKNOWN,
-        additionalIconClasses: ''
+        additionalIconClasses: '',
+        dataTestId: "training-status-unknown"
     }],
     [InternalTrainingStatus.Queued, {
         className: "cl-training-status__icon-row--queued",
         iconName: "Recent",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_QUEUED,
-        additionalIconClasses: ''
+        additionalIconClasses: '',
+        dataTestId: "training-status-queued"
     }],
     [InternalTrainingStatus.Running, {
         className: "cl-training-status__icon-row--running",
         iconName: "Sync",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_RUNNING,
-        additionalIconClasses: 'cl-icon--spin'
+        additionalIconClasses: 'cl-icon--spin',
+        dataTestId: "training-status-running"
     }],
     [InternalTrainingStatus.Completed, {
         className: "cl-training-status__icon-row--success",
         iconName: "CompletedSolid",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_COMPLETED,
-        additionalIconClasses: ''
+        additionalIconClasses: '',
+        dataTestId: "training-status-completed"
     }],
     [InternalTrainingStatus.Failed, {
         className: "cl-training-status__icon-row--error",
         iconName: "StatusErrorFull",
         iconLabelMessageId: FM.APP_TRAINING_STATUS_FAILED,
-        additionalIconClasses: ''
+        additionalIconClasses: '',
+        dataTestId: "training-status-failed"
     }]
 ])
 
@@ -55,6 +60,7 @@ interface StatusUI {
     iconName: string
     iconLabelMessageId: string
     additionalIconClasses: string
+    dataTestId: string
 }
 
 export interface Props {
@@ -74,7 +80,7 @@ const Component: React.SFC<Props> = (props: Props) => {
                     id={FM.APP_TRAINING_STATUS_STATUS}
                     defaultMessage="Status"
                 />: &nbsp;<Icon iconName={uiState.iconName} className={uiState.additionalIconClasses} />
-                &nbsp;<span className="cl-training-status__icon-label">
+                &nbsp;<span className="cl-training-status__icon-label" data-testid={`${uiState.dataTestId}`}>
                     <FormattedMessage
                         id={uiState.iconLabelMessageId}
                         defaultMessage="Status Placeholder"

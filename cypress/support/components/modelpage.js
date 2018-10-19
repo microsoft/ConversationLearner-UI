@@ -19,22 +19,24 @@ export function NavigateToActions()       { cy.Get('[data-testid="app-index-nav-
 export function NavigateToTrainDialogs()  { cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').Click(); trainDialogPage.VerifyPageTitle() }
 export function NavigateToLogDialogs()    { cy.Get('[data-testid="app-index-nav-link-log-dialogs"]').Click();   logDialogPage.VerifyPageTitle() }
 
-// TODO: Need to come up with some logic to fix WaitForTrainingStatusCompleted() to refresh if the warning comes up
-// data-testid="training-status-refresh-button"
-// data-testid="training-status-polling-stopped-warning"
-
+// To test this code search src/action/appActions.ts for these and alter them:
+//   fetchApplicationTrainingStatusThunkAsync
+//   interval:
+//   maxDuration:
 var canRefreshTrainingStatusTime = 0
 export function WaitForTrainingStatusCompleted()  
 {
   var currentHtml = Cypress.$('html')[0].outerHTML
-  var currentTime = lastMonitorTime = new Date().getTime()
-  if (currentHtml.includes('data-testid="training-status-polling-stopped-warning"'))
+  var currentTime = new Date().getTime()
+  if (currentHtml.includes('data-testid="training-status-polling-stopped-warning"') &&
+     (currentTime > canRefreshTrainingStatusTime))
   {    
-  if (currentTime > canRefreshTrainingStatusTime)
-  {
-      //cy.get('[data-testid="training-status-refresh-button"]').click()
-      canRefreshTrainingStatusTime = currentTime + (2 * 1000)
+    canRefreshTrainingStatusTime = currentTime + (2 * 1000)
+    cy.get('[data-testid="training-status-refresh-button"]').click()
+  
+    // The reason we need to call this method once again using cy.WaitForTrainingStatusCompleted()
+    // is because the .click() function causes the time out to change to a default of 4 seconds
+    cy.WaitForTrainingStatusCompleted()
   }
-  }
-  cy.Contains('.cl-training-status__icon-row--success', 'Completed', {timeout: 120000})
+  expect(currentHtml.includes('data-testid="training-status-completed"')).to.equal(true)
 }
