@@ -71,13 +71,11 @@ const Component: React.SFC<Props> = (props: Props) => {
         <div className={`cl-training-status ${FontClassNames.mediumPlus}`} data-testid="training-status-status-group">
             <div className={`cl-training-status__icon-row ${uiState.className} ${props.didPollingExpire ? 'cl-training-status__icon-row--expired': ''}`}>
                 <FormattedMessage
-                    data-testid="trainingstatus-status" // doesn't show up in the DOM
                     id={FM.APP_TRAINING_STATUS_STATUS}
                     defaultMessage="Status"
                 />: &nbsp;<Icon iconName={uiState.iconName} className={uiState.additionalIconClasses} />
                 &nbsp;<span className="cl-training-status__icon-label">
                     <FormattedMessage
-                    data-testid="trainingstatus-statusplaceholder" // doesn't show up in the DOM
                         id={uiState.iconLabelMessageId}
                         defaultMessage="Status Placeholder"
                     />
@@ -91,7 +89,6 @@ const Component: React.SFC<Props> = (props: Props) => {
                         tooltipProps={{
                             onRenderContent: () =>
                                 <FormattedMessage
-                                    data-testid="trainingstatus-statusexpired" // doesn't show up in the DOM
                                     id={FM.APP_TRAINING_STATUS_EXPIRED}
                                     defaultMessage="Status Placeholder"
                                 />
