@@ -7,6 +7,8 @@ const models = require('../../support/Models')
 const modelPage = require('../../support/components/ModelPage')
 const logDialogPage = require('../../support/components/logdialogspage')
 
+/// Description: Simple validation of log dialog starting where "My Name Is" training test left off.
+/// Verifications: Log Dialog
 describe("What's your name", () =>
 {
   after(() => { cy.VerifyMonitorFinds() })

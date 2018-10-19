@@ -8,6 +8,8 @@ const entities = require('../../support/Entities')
 const actions = require('../../support/Actions')
 const helpers = require('../../support/helpers')
 
+/// Description: Create a model that can be used for simple name based training test cases
+/// Verifications: Entity Creation, Action Creation, Action Grid View
 describe("Create Model #1 test", () =>
 {
   after(() => { cy.VerifyMonitorFinds() })

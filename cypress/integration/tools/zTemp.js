@@ -12,9 +12,11 @@ const memoryTableComponent = require('../../support/components/MemoryTableCompon
 const trainDialogPage = require('../../support/components/TrainDialogsPage')
 const editDialogModal = require('../../support/components/EditDialogModal')
 
-describe('zzTemp test', () =>
+/// Description: Create a model that can be used for Disqualifying Entities test cases
+/// Verifications: Entity Creation, Action Creation, Validation of Action Grid
+describe('zTemp test', () =>
 {
-  it('zzTemp test', () => 
+  it('zTemp test', () => 
   {
     homePage.Visit()
 

@@ -13,6 +13,8 @@ const scorerModal = require('../../support/components/ScorerModal')
 const trainDialogPage = require('../../support/components/TrainDialogsPage')
 const editDialogModal = require('../../support/components/EditDialogModal')
 
+/// Description: Create a model that can be used for Disqualifying Entities test cases
+/// Verifications: Entity Creation, Action Creation, Action Grid View
 describe("Create Model for Disqualifying Entities tests", () =>
 {
   after(() => { cy.VerifyMonitorFinds() })
