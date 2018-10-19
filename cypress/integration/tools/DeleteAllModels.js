@@ -10,8 +10,6 @@ const helpers = require('../../support/helpers.js')
 /// Verifications: Can delete a model, Can delete All models
 describe('Delete All Models', function () 
 {
-    after(() => { cy.VerifyMonitorFinds() })
-  
     it('Delete All Models', () => 
     {
         // This is a necessary convolution so that Cypress will have one "Cypress Command" still running

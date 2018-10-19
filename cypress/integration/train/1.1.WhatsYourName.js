@@ -14,8 +14,6 @@ const editDialogModal = require('../../support/components/EditDialogModal')
 /// Verifications: Can Train, Entity Detection
 describe("What's your name", () =>
 {
-  afterEach(() => { cy.VerifyMonitorFinds() })
-  
   it('should be able to train', () => {
     var modelName = models.ImportModel('Model1-wyn', 'Model1.cl')
 

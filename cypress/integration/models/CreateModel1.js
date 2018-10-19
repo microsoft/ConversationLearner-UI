@@ -12,8 +12,6 @@ const helpers = require('../../support/helpers')
 /// Verifications: Entity Creation, Action Creation, Action Grid View
 describe("Create Model #1 test", () =>
 {
-  after(() => { cy.VerifyMonitorFinds() })
-  
   it("Create Model #1", () =>
   {
     models.CreateNewModel(`Model1-${helpers.ModelNameTime()}`)

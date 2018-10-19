@@ -17,8 +17,6 @@ const editDialogModal = require('../../support/components/EditDialogModal')
 /// Verifications: Entity Creation, Action Creation, Action Grid View
 describe("Create Model for Disqualifying Entities tests", () =>
 {
-  after(() => { cy.VerifyMonitorFinds() })
-  
   it("Create Model for Disqualifying Entities tests", () =>
   {
     models.CreateNewModel(`Model-disq-${helpers.ModelNameTime()}`)
