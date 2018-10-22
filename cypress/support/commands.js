@@ -27,8 +27,8 @@ const modelPage = require('./components/ModelPage')
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-import './helpers'
-const helpers = require('../support/helpers.js')
+import './Helpers'
+const helpers = require('./Helpers.js')
 Cypress.Commands.add("ConLog", (funcName, message) => {helpers.ConLog(funcName, message)})
 
 // fileName must exist with cypress\fixtures folder

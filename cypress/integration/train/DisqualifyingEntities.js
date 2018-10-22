@@ -7,7 +7,7 @@ const models = require('../../support/Models')
 const modelPage = require('../../support/components/ModelPage')
 const memoryTableComponent = require('../../support/components/MemoryTableComponent')
 const scorerModal = require('../../support/components/ScorerModal')
-const trainDialogPage = require('../../support/components/TrainDialogsPage')
+const trainDialogsGrid = require('../../support/components/TrainDialogsGrid')
 const editDialogModal = require('../../support/components/EditDialogModal')
 
 /// Description: Tests Disqualifying Entities affect on Actions
@@ -21,7 +21,7 @@ describe("Disqualifying Entities Test", () =>
     modelPage.NavigateToTrainDialogs()
     cy.WaitForTrainingStatusCompleted()
 
-    trainDialogPage.CreateNewTrainDialog()
+    trainDialogsGrid.CreateNewTrainDialog()
 
     editDialogModal.TypeYourMessage('Hey')
     editDialogModal.ClickScoreActionsButton()

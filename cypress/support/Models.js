@@ -3,14 +3,13 @@
  * Licensed under the MIT License.
  */
 
-const helpers = require('./helpers.js')
 const homePage = require('./components/HomePage')
 const modelPage = require('./components/ModelPage')
 
 export function CreateNewModel(modelNamePrefix)
 {
   // Maximum Name Length is 30 Characters
-  const name = `${modelNamePrefix}-${helpers.ModelNameTime()}`
+  const name = `${modelNamePrefix}-${ModelNameTime()}`
 
   homePage.Visit()
   homePage.ClickNewModelButton()
@@ -22,7 +21,7 @@ export function CreateNewModel(modelNamePrefix)
 export function ImportModel(modelNamePrefix, fileName)
 {
   // Maximum Name Length is 30 Characters
-  const name = `${modelNamePrefix}-${helpers.ModelNameTime()}`
+  const name = `${modelNamePrefix}-${ModelNameTime()}`
 
   homePage.Visit()
   homePage.ClickImportModelButton()
@@ -33,3 +32,6 @@ export function ImportModel(modelNamePrefix, fileName)
 
   return name
 }
+
+function ModelNameTime() { return Cypress.moment().format("MMMDD-HHmmss-SSS") }
+

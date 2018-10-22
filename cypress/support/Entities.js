@@ -4,19 +4,19 @@
  */
 
 const modelPage = require('../support/components/ModelPage')
-const entitiesPage = require('./components/EntitiesPage')
+const entitiesGrid = require('./components/EntitiesGrid')
 const entityModal = require('../support/components/EntityModal')
 
 export function CreateNewEntity({name, multiValued, negatable, type = "custom"})
 {
   modelPage.NavigateToEntities()
-  entitiesPage.ClickButtonNewEntity()
+  entitiesGrid.ClickButtonNewEntity()
   if (type != 'custom') SelectEntityType(type)
   if (name) entityModal.TypeEntityName(name)
   if (multiValued) entityModal.ClickMultiValueCheckbox()
   if (negatable) entityModal.ClickNegatableCheckbox()
   entityModal.ClickCreateButton()
-  entitiesPage.VerifyItemInList(name)
+  entitiesGrid.VerifyItemInList(name)
 }
 
 export function SelectEntityType(type)

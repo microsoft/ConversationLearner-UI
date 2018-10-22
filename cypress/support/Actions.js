@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-const actionsModal = require('../support/components/ActionsModal')
+const actionModal = require('../support/components/ActionModal')
 const actionsGrid = require('../support/components/ActionsGrid')
 const modelPage = require('../support/components/ModelPage')
 
@@ -12,14 +12,14 @@ const modelPage = require('../support/components/ModelPage')
 export function CreateNewAction({response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' })
 {
   modelPage.NavigateToActions()
-  actionsModal.ClickNewAction()
+  actionModal.ClickNewAction()
   // TODO: this is the default but we need to get this working... actionsModal.selectTypeText()
-  actionsModal.TypeResponse(response)
-  if (expectedEntities) actionsModal.TypeExpectedEntity(expectedEntities)
-  if (requiredEntities) actionsModal.TypeRequiredEntities(requiredEntities)
-  if (disqualifyingEntities) actionsModal.TypeDisqualifyingEntities(disqualifyingEntities)
-  if (uncheckWaitForResponse) actionsModal.UncheckWaitForResponse()
-  actionsModal.ClickCreateButton()
+  actionModal.TypeResponse(response)
+  if (expectedEntities) actionModal.TypeExpectedEntity(expectedEntities)
+  if (requiredEntities) actionModal.TypeRequiredEntities(requiredEntities)
+  if (disqualifyingEntities) actionModal.TypeDisqualifyingEntities(disqualifyingEntities)
+  if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
+  actionModal.ClickCreateButton()
 
   var requiredEntitiesFromResponse = response.match(/(?<=\$)[^ ]+?(?={enter})/g)
   response = response.replace(/{enter}/g, '')

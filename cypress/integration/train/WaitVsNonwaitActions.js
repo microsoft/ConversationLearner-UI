@@ -4,15 +4,13 @@
 */
 
 const models = require('../../support/Models')
-const modelPage = require('../../support/components/modelpage')
+const modelPage = require('../../support/components/ModelPage')
 const scorerModal = require('../../support/components/ScorerModal')
-const trainDialogPage = require('../../support/components/traindialogspage')
-const editDialogModal = require('../../support/components/editdialogmodal')
+const trainDialogsGrid = require('../../support/components/TrainDialogsGrid')
+const editDialogModal = require('../../support/components/EditdialogModal')
 
-/**
-* Wait action: After the system takes a "wait" action, it will stop taking actions and wait for user input.
-* Non-wait action: After the system takes a "non-wait" action, it will immediately choose another action (without waiting for user input)
-*/
+// Wait Action: After the system takes a "wait" action, it will stop taking actions and wait for user input.
+// Non-wait Action: After the system takes a "non-wait" action, it will immediately choose another action (without waiting for user input)
 describe('Wait vs No Wait Action Test', () => 
 {
   it('Wait vs No Wait Action Test', () => {
@@ -21,7 +19,7 @@ describe('Wait vs No Wait Action Test', () =>
     modelPage.NavigateToTrainDialogs()
     cy.WaitForTrainingStatusCompleted()
 
-    trainDialogPage.CreateNewTrainDialog()
+    trainDialogsGrid.CreateNewTrainDialog()
 
     editDialogModal.TypeYourMessage('Hello')
     editDialogModal.ClickScoreActionsButton()

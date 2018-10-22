@@ -7,7 +7,7 @@ const models = require('../../support/Models')
 const modelPage = require('../../support/components/ModelPage')
 const memoryTableComponent = require('../../support/components/MemoryTableComponent')
 const scorerModal = require('../../support/components/ScorerModal')
-const trainDialogPage = require('../../support/components/TrainDialogsPage')
+const trainDialogsGrid = require('../../support/components/TrainDialogsGrid')
 const editDialogModal = require('../../support/components/EditDialogModal')
 
 /// Description: Part 2 of a a simple training test case involving names
@@ -20,7 +20,7 @@ describe("My name is", () =>
     modelPage.NavigateToTrainDialogs()
     cy.WaitForTrainingStatusCompleted()
 
-    trainDialogPage.CreateNewTrainDialog()
+    trainDialogsGrid.CreateNewTrainDialog()
 
     editDialogModal.TypeYourMessage('My name is David.') // TODO: Add edge cases; 'david', with & without 'period'
     editDialogModal.VerifyDetectedEntity('name', 'David')

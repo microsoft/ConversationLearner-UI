@@ -5,7 +5,8 @@
 
 const models = require('../../support/Models')
 const modelPage = require('../../support/components/ModelPage')
-const logDialogPage = require('../../support/components/logdialogspage')
+const logDialogsGrid = require('../../support/components/LogDialogsGrid')
+const logDialogModal = require('../../support/components/LogDialogModal')
 
 /// Description: Simple validation of log dialog starting where "My Name Is" training test left off.
 /// Verifications: Log Dialog
@@ -17,10 +18,10 @@ describe("What's your name", () =>
     modelPage.NavigateToLogDialogs()
     cy.WaitForTrainingStatusCompleted()
 
-    logDialogPage.CreateNewLogDialogButton()
+    logDialogsGrid.CreateNewLogDialogButton()
 
-    logDialogPage.TypeYourMessage("Hello", "What's your name?")
+    logDialogModal.TypeYourMessage("Hello", "What's your name?")
 
-    logDialogPage.ClickDoneTestingButton()
+    logDialogModal.ClickDoneTestingButton()
   })
 })
