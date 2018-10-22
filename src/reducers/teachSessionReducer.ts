@@ -30,21 +30,17 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
         case AT.CREATE_TEACH_SESSION_FULFILLED:
             return { ...state, teach: action.teachSession, dialogMode: DialogMode.Wait, memories: [] }
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
-            // Only update state if there were no discrepancies
-            if (action.teachWithHistory.replayErrors.length === 0) {
-                return {
-                    ...initialState, 
-                    teach: action.teachWithHistory.teach,
-                    dialogMode: action.teachWithHistory.dialogMode, 
-                    memories: action.teachWithHistory.memories, 
-                    prevMemories: action.teachWithHistory.prevMemories,
-                    scoreResponse: action.teachWithHistory.scoreResponse,
-                    scoreInput: action.teachWithHistory.scoreInput,
-                    extractResponses: action.teachWithHistory.extractResponse ? [action.teachWithHistory.extractResponse] : [],
-                    uiScoreInput: action.teachWithHistory.uiScoreInput
-                }
+            return {
+                ...initialState, 
+                teach: action.teachWithHistory.teach,
+                dialogMode: action.teachWithHistory.dialogMode, 
+                memories: action.teachWithHistory.memories, 
+                prevMemories: action.teachWithHistory.prevMemories,
+                scoreResponse: action.teachWithHistory.scoreResponse,
+                scoreInput: action.teachWithHistory.scoreInput,
+                extractResponses: action.teachWithHistory.extractResponse ? [action.teachWithHistory.extractResponse] : [],
+                uiScoreInput: action.teachWithHistory.uiScoreInput
             }
-            return { ...state };
         case AT.DELETE_TEACH_SESSION_FULFILLED:
             return { ...initialState, teach: undefined }
         case AT.DELETE_MEMORY_FULFILLED:

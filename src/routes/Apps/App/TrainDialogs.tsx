@@ -18,7 +18,6 @@ import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import { getDefaultEntityMap, notNullOrUndefined } from '../../../util'
-import ReplayErrorList from '../../../components/modals/ReplayErrorList'
 import * as moment from 'moment'
 
 export interface EditHandlerArgs {
@@ -214,8 +213,6 @@ interface ComponentState {
     dialogKey: number,
     entityFilter: OF.IDropdownOption | null
     actionFilter: OF.IDropdownOption | null
-    isValidationWarningOpen: boolean
-    validationErrors: CLM.ReplayError[]
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
@@ -239,9 +236,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             searchValue: '',
             dialogKey: 0,
             entityFilter: null,
-            actionFilter: null,
-            isValidationWarningOpen: false,
-            validationErrors: []
+            actionFilter: null
         }
     }
 
@@ -807,26 +802,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         
             let teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput) as any) as Promise<CLM.TeachWithHistory>)
     
-            if (teachWithHistory.replayErrors.length  === 0) {
-                // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
-                this.setState({
-                    history: teachWithHistory.history,
-                    lastAction: teachWithHistory.lastAction,
-                    isEditDialogModalOpen: false,
-                    selectedActivityIndex: null,
-                    isTeachDialogModalOpen: true,
-                    editType: this.state.editType === EditDialogType.NEW 
-                        ? EditDialogType.NEW
-                        : EditDialogType.TRAIN_EDITED
-                })
-            }
-            else {
-                this.setState({
-                    history: this.state.history.splice(-1, 1),
-                    validationErrors: teachWithHistory.replayErrors,
-                    isValidationWarningOpen: true,
-                })
-            }
+            // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
+            this.setState({
+                history: teachWithHistory.history,
+                lastAction: teachWithHistory.lastAction,
+                isEditDialogModalOpen: false,
+                selectedActivityIndex: null,
+                isTeachDialogModalOpen: true,
+                editType: this.state.editType === EditDialogType.NEW 
+                    ? EditDialogType.NEW
+                    : EditDialogType.TRAIN_EDITED
+            })
         }
         catch (error) {
                 console.warn(`Error when attempting to create teach session from train dialog: `, error)
@@ -938,13 +924,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
-        })
-    }
-
-    @autobind
-    onCloseValidationWarning() {
-        this.setState({
-            isValidationWarningOpen: false
         })
     }
 
@@ -1145,13 +1124,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                         />
                     </React.Fragment>}
-                <ReplayErrorList
-                    open={this.state.isValidationWarningOpen}
-                    onClose={this.onCloseValidationWarning}
-                    textItems={this.state.validationErrors}
-                    formattedTitleId={FM.REPLAYERROR_EDIT_TITLE}
-                    formattedMessageId={FM.REPLAYERROR_FAILMESSAGE}
-                />
                 {this.props.teachSession && this.props.teachSession.teach && 
                     <TeachSessionModal
                         isOpen={this.state.isTeachDialogModalOpen}

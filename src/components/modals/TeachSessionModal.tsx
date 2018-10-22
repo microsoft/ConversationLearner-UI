@@ -16,6 +16,7 @@ import { State } from '../../types';
 import Webchat, { renderActivity } from '../Webchat'
 import TeachSessionAdmin, { RenderData } from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
+import { renderReplayError } from './ReplayErrorList'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
 import AddButtonInput from './AddButtonInput'
@@ -24,7 +25,7 @@ import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
-import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { EditDialogType } from '.';
 import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs';
@@ -584,8 +585,43 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    onScrollChange(position: number) {
+    onScrollChange(position: number): void {
         this.props.setWebchatScrollPosition(position)
+    }
+
+    // Does history have any replay errors
+    hasReplayError(): boolean {
+        if (!this.props.initialHistory || this.props.initialHistory.length === 0) {
+            return false
+        }
+
+        return (this.props.initialHistory.filter(h => h.channelData.replayError != null).length > 0)
+    }
+
+    renderWarning() {
+        if (this.state.selectedHistoryActivity && this.state.selectedHistoryActivity.channelData.replayError) {
+            return (
+                <div className="cl-editdialog-error">
+                    {renderReplayError(this.state.selectedHistoryActivity.channelData.replayError)}
+                </div>
+            )
+        }
+        else if (this.hasReplayError()) {
+            // Replay error, but not activity selected
+            return (
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_EXISTS}
+                            defaultMessage={FM.REPLAYERROR_EXISTS}
+                        />
+                    </div>
+                </div>
+            )
+        }
+        else {
+            return null
+        }
     }
 
     render() {
@@ -662,8 +698,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                                 defaultMessage: "Set Initial State"
                                             })}
                                     />
-                                    }
+                                }
+                                <div className="cl-modal-buttons_secondary">
+                                    {this.renderWarning()}
                                 </div>
+                            </div>
 
                             <div className="cl-modal-buttons_primary">
                                 <OF.PrimaryButton

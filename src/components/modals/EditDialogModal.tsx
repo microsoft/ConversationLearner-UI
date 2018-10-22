@@ -541,6 +541,18 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         else if (showDisableInput) {
             return (
                 <div className="wc-console">
+                    <div className="wc-textbox">
+                        <input
+                            type="text"
+                            className="wc-shellinput"
+                            onKeyPress={() =>            
+                                this.setState({
+                                isCantReplayOpen: true
+                                })
+                            }
+                            placeholder={"Type your message..."}
+                        />
+                    </div>
                     <DisabledInputButtom
                         className="cl-button-blockwebchat"
                         onClick={() =>            

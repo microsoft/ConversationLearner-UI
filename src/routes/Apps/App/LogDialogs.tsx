@@ -230,8 +230,6 @@ interface ComponentState {
     history: Activity[]
     lastAction: CLM.ActionBase | null
     validationErrors: CLM.ReplayError[]
-    validationErrorTitleId: string | null
-    validationErrorMessageId: string | null
 }
 
 // TODO: This component is highly redundant with TrainDialogs.  Should collapse
@@ -258,9 +256,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             dialogKey: 0,
             history: [],
             lastAction: null,
-            validationErrors: [],
-            validationErrorTitleId: null,
-            validationErrorMessageId: null
+            validationErrors: []
         }
     }
 
@@ -375,8 +371,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     editType: EditDialogType.LOG_ORIGINAL,
                     validationErrors: teachWithHistory.replayErrors,
                     isValidationWarningOpen: teachWithHistory.replayErrors.length > 0,
-                    validationErrorTitleId: FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE,
-                    validationErrorMessageId: FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE
                 })
             })
             .catch(error => {
@@ -712,25 +706,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
             let teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput) as any) as Promise<CLM.TeachWithHistory>)
     
-            if (teachWithHistory.replayErrors.length  === 0) {
-                // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
-                this.setState({
-                    history: teachWithHistory.history,
-                    lastAction: teachWithHistory.lastAction,
-                    isEditDialogModalOpen: false,
-                    selectedHistoryIndex: null,
-                    isTeachDialogModalOpen: true,
-                    editType: EditDialogType.LOG_EDITED
-                })
-            }
-            else {
-                this.setState({
-                    validationErrors: teachWithHistory.replayErrors,
-                    isValidationWarningOpen: true,
-                    validationErrorTitleId: FM.REPLAYERROR_EDIT_TITLE,
-                    validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
-                })
-            }
+            // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
+            this.setState({
+                history: teachWithHistory.history,
+                lastAction: teachWithHistory.lastAction,
+                isEditDialogModalOpen: false,
+                selectedHistoryIndex: null,
+                isTeachDialogModalOpen: true,
+                editType: EditDialogType.LOG_EDITED
+            })
         }
         catch (error) {
                 console.warn(`Error when attempting to create teach session from train dialog: `, error)
@@ -1011,8 +995,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onClose={this.onCloseValidationWarning}
                     textItems={this.state.validationErrors}
                     // Assume if `isValidationWarningOpen` is true then validationError ids are set
-                    formattedTitleId={this.state.validationErrorTitleId!}
-                    formattedMessageId={this.state.validationErrorMessageId!}
+                    formattedTitleId={FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE}
+                    formattedMessageId={FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE}
                 />
                 {this.props.teachSession.teach &&
                     <TeachSessionModal
