@@ -3,7 +3,6 @@
  * Licensed under the MIT License.
 */
 
-const helpers = require('../../support/helpers.js')
 const models = require('../../support/Models')
 const entities = require('../../support/Entities')
 
@@ -13,7 +12,7 @@ describe('Create All Entity Types', () =>
 {
   it('Create Custom and Builtin Entities', () =>
   {
-    models.CreateNewModel(`Model-aet-${helpers.ModelNameTime()}`)
+    models.CreateNewModel('Model-aet')
 
     entities.CreateNewEntity({name: 'multiValuedEntity', multiValued: true})
     entities.CreateNewEntity({name: 'negatableEntity', negatable: true})

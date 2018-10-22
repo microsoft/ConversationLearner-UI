@@ -4,22 +4,16 @@
 */
 
 const models = require('../../support/Models')
-const modelPage = require('../../support/components/ModelPage')
 const entities = require('../../support/Entities')
 const actions = require('../../support/Actions')
-const helpers = require('../../support/helpers')
-const memoryTableComponent = require('../../support/components/MemoryTableComponent')
-const scorerModal = require('../../support/components/ScorerModal')
-const trainDialogPage = require('../../support/components/TrainDialogsPage')
-const editDialogModal = require('../../support/components/EditDialogModal')
 
 /// Description: Create a model that can be used for Disqualifying Entities test cases
 /// Verifications: Entity Creation, Action Creation, Action Grid View
-describe("Create Model for Disqualifying Entities tests", () =>
+describe("Create Model for Disqualifying Entities Tests", () =>
 {
-  it("Create Model for Disqualifying Entities tests", () =>
+  it("Create Model for Disqualifying Entities Tests", () =>
   {
-    models.CreateNewModel(`Model-disq-${helpers.ModelNameTime()}`)
+    models.CreateNewModel('Model-disq')
     
     entities.CreateNewEntity({name: 'name'})
     entities.CreateNewEntity({name: 'want'})

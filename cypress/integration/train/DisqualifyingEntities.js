@@ -5,9 +5,6 @@
 
 const models = require('../../support/Models')
 const modelPage = require('../../support/components/ModelPage')
-const entities = require('../../support/Entities')
-const actions = require('../../support/Actions')
-const helpers = require('../../support/helpers')
 const memoryTableComponent = require('../../support/components/MemoryTableComponent')
 const scorerModal = require('../../support/components/ScorerModal')
 const trainDialogPage = require('../../support/components/TrainDialogsPage')
@@ -15,9 +12,9 @@ const editDialogModal = require('../../support/components/EditDialogModal')
 
 /// Description: Tests Disqualifying Entities affect on Actions
 /// Verifications: Can Train, Entity Detection, Disqualified Entities, Actions Enabled/Disabled
-describe("Disqualifying Entities test", () =>
+describe("Disqualifying Entities Test", () =>
 {
-  it("Disqualifying Entities", () =>
+  it("Disqualifying Entities Test", () =>
   {
     var modelName = models.ImportModel('Model-disq', 'Model-disq.cl')
     

@@ -6,7 +6,6 @@
 const models = require('../../support/Models')
 const entities = require('../../support/Entities')
 const actions = require('../../support/Actions')
-const helpers = require('../../support/helpers')
 
 /// Description: Create a model that can be used for simple name based training test cases
 /// Verifications: Entity Creation, Action Creation, Action Grid View
@@ -14,7 +13,7 @@ describe("Create Model #1 test", () =>
 {
   it("Create Model #1", () =>
   {
-    models.CreateNewModel(`Model1-${helpers.ModelNameTime()}`)
+    models.CreateNewModel('Model1')
     entities.CreateNewEntity({name: 'name'})
     actions.CreateNewAction({response: "What's your name?", expectedEntity: 'name'})
     

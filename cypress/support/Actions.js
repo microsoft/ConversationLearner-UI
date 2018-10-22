@@ -9,15 +9,16 @@ const modelPage = require('../support/components/ModelPage')
 
 // NOTE: Setting an Expected Entity causes the same entity to be placed in the Disqualified Entity field by default
 //       Currently this is not an issue but you will see it try to re-add the same Disqualified Entity durring a test run.
-export function CreateNewAction({response, expectedEntities, requiredEntities, disqualifyingEntities, type = 'TEXT' })
+export function CreateNewAction({response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' })
 {
   modelPage.NavigateToActions()
   actionsModal.ClickNewAction()
   // TODO: this is the default but we need to get this working... actionsModal.selectTypeText()
   actionsModal.TypeResponse(response)
-  if(expectedEntities) actionsModal.TypeExpectedEntity(expectedEntities)
-  if(requiredEntities) actionsModal.TypeRequiredEntities(requiredEntities)
-  if(disqualifyingEntities) actionsModal.TypeDisqualifyingEntities(disqualifyingEntities)
+  if (expectedEntities) actionsModal.TypeExpectedEntity(expectedEntities)
+  if (requiredEntities) actionsModal.TypeRequiredEntities(requiredEntities)
+  if (disqualifyingEntities) actionsModal.TypeDisqualifyingEntities(disqualifyingEntities)
+  if (uncheckWaitForResponse) actionsModal.UncheckWaitForResponse()
   actionsModal.ClickCreateButton()
 
   var requiredEntitiesFromResponse = response.match(/(?<=\$)[^ ]+?(?={enter})/g)
