@@ -8,8 +8,6 @@ const actionsGrid  = require('../../support/components/ActionsGrid')
 const trainDialogPage = require('../../support/components/TrainDialogsPage')
 const logDialogPage = require('../../support/components/logdialogspage')
  
-//export function WaitForTrainingStatusCompleted()  { cy.Contains('.cl-training-status__icon-row--success', 'Completed', {timeout: 120000})}
-
 export function VerifyModelName(name)     { cy.Get('[data-testid="app-index-model-name"]').should(el => { expect(el).to.contain(name) })}
 export function VerifyPageTitle()         { cy.Get('[data-testid="dashboard-title"]').contains('Log Dialogs') }
 
@@ -19,7 +17,7 @@ export function NavigateToActions()       { cy.Get('[data-testid="app-index-nav-
 export function NavigateToTrainDialogs()  { cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').Click(); trainDialogPage.VerifyPageTitle() }
 export function NavigateToLogDialogs()    { cy.Get('[data-testid="app-index-nav-link-log-dialogs"]').Click();   logDialogPage.VerifyPageTitle() }
 
-// To test this code search src/action/appActions.ts for these and alter them:
+// To validate that this code works, search src/action/appActions.ts for these and alter them:
 //   fetchApplicationTrainingStatusThunkAsync
 //   interval:
 //   maxDuration:
