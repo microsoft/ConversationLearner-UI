@@ -15,7 +15,7 @@ describe("What's your name", () =>
     var modelName = models.ImportModel('Model1-chat', 'Model1-mni.cl')
 
     modelPage.NavigateToLogDialogs()
-    modelPage.WaitForTrainingStatusCompleted()
+    cy.WaitForTrainingStatusCompleted()
 
     logDialogPage.CreateNewLogDialogButton()
 
