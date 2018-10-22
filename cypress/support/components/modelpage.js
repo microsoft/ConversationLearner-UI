@@ -2,43 +2,23 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-export function verifyPageTitle(modelName) {
-  cy.get('[data-testid="app-index-title"]')
-    .should(el => {
-      expect(el).to.contain(modelName)
-    })
-}
 
-/** Navigate back to the Converation Learner Home page */
-export function navigateToHomepage() {
-  cy.server()
-  cy.route('GET', '/sdk/apps?**').as('getHomePage')
-  cy.visit('http://localhost:5050')
-  cy.wait('@getHomePage')
-}
+const entitiesPage = require('../../support/components/EntitiesPage')
+const actionsGrid  = require('../../support/components/ActionsGrid')
+const trainDialogPage = require('../../support/components/TrainDialogsPage')
+const logDialogPage = require('../../support/components/logdialogspage')
+ 
+export function WaitForTrainingStatusCompleted()  { cy.Contains('.cl-training-status__icon-row--success', 'Completed', {timeout: 120000})}
 
-/** Navigate to the Entities page */
-export function navigateToEntities() {
-  cy.get('[data-testid="app-index-nav-link-entities"]')
-    .click()
-    .wait(1000)
-}
+export function VerifyModelName(name)     { cy.Get('[data-testid="app-index-model-name"]').should(el => { expect(el).to.contain(name) })}
+export function VerifyPageTitle()         { cy.Get('[data-testid="dashboard-title"]').contains('Log Dialogs') }
 
-/** Navigate to Actions Page */
-export function navigateToActions() {
-  cy.get('[data-testid="app-index-nav-link-actions"]')
-    .click()
-    .wait(1000)
-}
+export function NavigateToHome()          { cy.Get('[data-testid="app-index-nav-link-home"]').Click();          VerifyPageTitle() }
+export function NavigateToEntities()      { cy.Get('[data-testid="app-index-nav-link-entities"]').Click();      entitiesPage.VerifyPageTitle() }
+export function NavigateToActions()       { cy.Get('[data-testid="app-index-nav-link-actions"]').Click();       actionsGrid.VerifyPageTitle() }
+export function NavigateToTrainDialogs()  { cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').Click(); trainDialogPage.VerifyPageTitle() }
+export function NavigateToLogDialogs()    { cy.Get('[data-testid="app-index-nav-link-log-dialogs"]').Click();   logDialogPage.VerifyPageTitle() }
 
-/** Navitage to Train Dialogs Page */
-export function navigateToTrainDialogs() {
-  cy.get('[data-testid="app-index-nav-link-train-dialogs"]')
-    .click()
-}
-
-/** Navigate to Log Dialogs Page */
-export function navigateToLogDialogs() {
-  cy.get('[data-testid="app-index-nav-link-log-dialogs"]')
-    .click()
-}
+// TODO: Need to come up with some logic to fix WaitForTrainingStatusCompleted() to refresh if the warning comes up
+// data-testid="training-status-refresh-button"
+// data-testid="training-status-polling-stopped-warning"

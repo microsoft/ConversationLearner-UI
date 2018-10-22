@@ -220,7 +220,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         let activityIndex = 0
         do {
             if (this.props.history[activityIndex].channelData.replayError != null) {
-                return false
+                return !this.props.history[activityIndex].channelData.replayError.isBlocking
             }
             activityIndex = activityIndex + 1
         }
@@ -279,7 +279,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 !this.props.onBranchDialog ||
                 this.state.pendingExtractionChanges ||
                 this.props.editState !== EditState.CAN_EDIT ||
-                (this.props.trainDialog && this.props.trainDialog.invalid === true)
+                (this.props.trainDialog && this.props.trainDialog.validity !== undefined && this.props.trainDialog.validity !== CLM.Validity.VALID)
         
         return (
             <div className="cl-wc-buttonbar">

@@ -299,11 +299,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             // This lookup should be done ahead of time instead of on every render
             getSortValue: action => '',
             render: (action, component) => action.requiredEntities.length === 0
-                ? <OF.Icon iconName="Remove" className="cl-icon" />
+                ? <OF.Icon iconName="Remove" className="cl-icon" data-testid="action-details-empty-required-entities" />
                 : action.requiredEntities.map(entityId => {
                     const entity = component.props.entities.find(e => e.entityId === entityId)
                     return (
-                        <div className='ms-ListItem is-selectable ms-ListItem-primaryText' key={entityId}>
+                        <div className='ms-ListItem is-selectable ms-ListItem-primaryText' key={entityId} data-testid="action-details-required-entity">
                             {entity
                                 ? entity.entityName
                                 : `Error - Entity ID: ${entityId}`}
@@ -326,11 +326,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             // This lookup should be done ahead of time instead of on every render
             getSortValue: action => '',
             render: (action, component) => action.negativeEntities.length === 0
-                ? <OF.Icon iconName="Remove" className="cl-icon" />
+                ? <OF.Icon iconName="Remove" className="cl-icon" data-testid="action-details-empty-disqualifying-entities"/>
                 : action.negativeEntities.map(entityId => {
                     const entity = component.props.entities.find(e => e.entityId === entityId)
                     return (
-                        <div className='ms-ListItem is-selectable ms-ListItem-primaryText' key={entityId}>
+                        <div className='ms-ListItem is-selectable ms-ListItem-primaryText' key={entityId} data-testid="action-details-disqualifying-entity">
                             {entity
                                 ? entity.entityName
                                 : `Error - Entity ID: ${entityId}`}
@@ -351,13 +351,13 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             getSortValue: action => '',
             render: (action, component) => {
                 if (!action.suggestedEntity) {
-                    return <OF.Icon iconName="Remove" className="cl-icon" />
+                    return <OF.Icon iconName="Remove" className="cl-icon" data-testid="action-details-empty-expected-entities"/>
                 }
 
                 const entityId = action.suggestedEntity
                 const entity = component.props.entities.find(e => e.entityId === entityId)
                 return (
-                    <div className='ms-ListItem is-selectable ms-ListItem-primaryText'>
+                    <div className='ms-ListItem is-selectable ms-ListItem-primaryText' data-testid="action-details-expected-entity">
                         {entity
                             ? entity.entityName
                             : `Error - Entity ID: ${entityId}`}

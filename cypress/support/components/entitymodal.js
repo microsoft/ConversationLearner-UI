@@ -2,44 +2,12 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-export function typeEntityName(entityName) {
-    cy.get('[data-testid="entity-creator-input-name"]')
-        .type(entityName)
-        .wait(1000)
-}
 
-/** Clicks on Programmatic Only checkbox */
-export function clickOnProgrammaticOnly() {
-    //cy.get('[data-testid="entitycreator-checkbox-programmaticonly"]')
-    cy.get('.cl-modal_body').within(() => {
-        cy.get('.ms-Checkbox-text').contains('Programmatic Only')
-            .click()
-    })
-}
+export function ClickEntityTypeDropdown()       { cy.Get('[data-testid="entity-creator-entity-type-dropdown"]').Click() }
+export function ClickEntityType(type)           { cy.Get(`[aria-label="${type}"]`).Click() }
+export function TypeEntityName(entityName)      { cy.Get('[data-testid="entity-creator-entity-name-text"]').type(entityName) } 
+export function ClickCreateButton()             { cy.Get('[data-testid="entity-creator-button-save"]').Click() }
 
-/** Clicks on multivalue checkbox */
-export function clickOnMultiValue() {
-    cy.get('.cl-modal_body').within(() => {
-        cy.get('.ms-Checkbox-text').contains('Multi-valued')
-            .click()
-    })
-}
+export function ClickMultiValueCheckbox()       { cy.Get('[data-testid="entity-creator-multi-valued-checkbox"] > button.cl-checkbox').Click() }
+export function ClickNegatableCheckbox()        { cy.Get('[data-testid="entity-creator-negatable-checkbox"] > button.cl-checkbox').Click() }
 
-/** Clicks on Negatable checkbox */
-export function clickOnNegatable() {
-    cy.get('.cl-modal_body').within(() => {
-        cy.get('.ms-Checkbox-text').contains('Negatable')
-            .click()
-    })
-}
-
-/** Select the submit button to save the new entity*/
-export function clickCreateButton() {
-    cy.server()
-    cy.route('POST', '/sdk/app/*/entity').as('postEntity')
-
-    cy.get('[data-testid="entity-creator-button-save"]')
-        .click()
-
-    cy.wait('@postEntity')
-}

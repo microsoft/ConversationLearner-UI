@@ -604,7 +604,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         <div className="cl-chatmodal">
                             <div className="cl-chatmodal_webchat">
                                 <Webchat
-                                    data-testid="teachsession-modal-webchat"
+                                    data-testid="teach-session-modal-webchat"
                                     isOpen={this.props.isOpen}
                                     key={this.state.webchatKey}
                                     app={this.props.app}
@@ -623,7 +623,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             <div className="cl-chatmodal_controls">
                                 <div className="cl-chatmodal_admin-controls">
                                     <TeachSessionAdmin
-                                        data-testid="teachsession-admin"
+                                        data-testid="teach-session-admin"
                                         app={this.props.app}
                                         editingPackageId={this.props.editingPackageId}
                                         editType={this.props.editType}
@@ -650,7 +650,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             <div className="cl-modal-buttons_secondary">
                                 {this.state.isInitAvailable && 
                                     <OF.DefaultButton
-                                            data-testid="teachsession-set-initial-state"
+                                            data-testid="teach-session-set-initial-state"
                                             disabled={false}
                                             onClick={this.onInitStateClicked}
                                             ariaDescription={intl.formatMessage({
@@ -667,14 +667,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
                             <div className="cl-modal-buttons_primary">
                                 <OF.PrimaryButton
-                                    data-testid="teachsession-footer-button-done"
+                                    data-testid="teach-session-footer-button-save"
                                     disabled={!this.state.hasTerminalAction || this.props.teachSession.dialogMode === CLM.DialogMode.Extractor}
                                     onClick={this.onClickSave}
                                     ariaDescription={this.renderSaveText(intl)}
                                     text={this.renderSaveText(intl)}
                                 />
                                 <OF.DefaultButton
-                                    data-testid="teachsession-footer-button-abandon"
+                                    data-testid="teach-session-footer-button-abandon"
                                     disabled={false}
                                     className="cl-button-delete"
                                     onClick={this.onClickAbandonTeach}
@@ -686,7 +686,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                     <ConfirmCancelModal
-                        data-testid="teachsession-confirm-cancel"
+                        data-testid="teach-session-confirm-cancel"
                         open={this.state.isConfirmDeleteOpen}
                         onCancel={this.onClickCancelDelete}
                         onConfirm={this.onClickConfirmDelete}

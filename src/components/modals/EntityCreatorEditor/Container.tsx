@@ -500,6 +500,7 @@ class Container extends React.Component<Props, ComponentState> {
         return (
             <div className="cl-entity-creator-form">
                 <OF.Dropdown
+                    data-testid="entity-creator-entity-type-dropdown--isThisUsed"
                     ariaLabel={intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
                         defaultMessage: 'Entity Type'
@@ -515,7 +516,7 @@ class Container extends React.Component<Props, ComponentState> {
                     disabled={typeEditingDisabled || this.props.entityTypeFilter != null}
                 />
                 <OF.TextField
-                    data-testid="entity-creator-input-name"
+                    data-testid="entity-creator-entity-name-text--isThisUsed"
                     onGetErrorMessage={this.onGetNameErrorMessage}
                     onChanged={this.onChangedName}
                     onKeyDown={this.onKeyDownName}
@@ -560,7 +561,7 @@ class Container extends React.Component<Props, ComponentState> {
     }
     render() {
         const { intl } = this.props
-        const isEntityInUse = this.state.isEditing && this.isInUse()
+        // const isEntityInUse = this.state.isEditing && this.isInUse()
         const isTypeDisabled = this.state.isEditing
 
         const title = this.props.entity
@@ -592,11 +593,11 @@ class Container extends React.Component<Props, ComponentState> {
 
             isProgrammatic={this.state.isProgrammaticVal}
             isMultiValue={this.state.isMultivalueVal}
-            isMultiValueDisabled={isEntityInUse}
+            isMultiValueDisabled={false}
             onChangeMultiValue={this.onChangeMultivalue}
 
             isNegatable={this.state.isNegatableVal}
-            isNegatableDisabled={isEntityInUse || this.state.isPrebuilt}
+            isNegatableDisabled={this.state.isPrebuilt}
             onChangeNegatable={this.onChangeReversible}
 
             isEditing={this.state.isEditing}

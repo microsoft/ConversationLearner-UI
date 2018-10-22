@@ -59,6 +59,7 @@ export function renderActivity(
             <div 
                 className={`wc-message wc-message-from-${who} ${messageColor}`} 
                 ref={div => setRef(div)}
+                data-testid="web-chat-utterances"
             >
                 <div className={contentClassName}>
                     <svg className={`wc-message-callout ${messageFillColor}`}>

@@ -233,7 +233,7 @@ class Entities extends React.Component<Props, ComponentState> {
 
         return (
             <div className="cl-page">
-                <span className={OF.FontClassNames.xxLarge}>
+                <span data-testid="entities-title" className={OF.FontClassNames.xxLarge}>
                     <FormattedMessage
                         id={FM.ENTITIES_TITLE}
                         defaultMessage="Entities"

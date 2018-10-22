@@ -68,16 +68,14 @@ export interface Props {
 const Component: React.SFC<Props> = (props: Props) => {
     const uiState = internalStatusToUiStateMap.get(props.status)!
     return (
-        <div className={`cl-training-status ${FontClassNames.mediumPlus}`}>
+        <div className={`cl-training-status ${FontClassNames.mediumPlus}`} data-testid="training-status-status-group">
             <div className={`cl-training-status__icon-row ${uiState.className} ${props.didPollingExpire ? 'cl-training-status__icon-row--expired': ''}`}>
                 <FormattedMessage
-                    data-testid="trainingstatus-status"
                     id={FM.APP_TRAINING_STATUS_STATUS}
                     defaultMessage="Status"
                 />: &nbsp;<Icon iconName={uiState.iconName} className={uiState.additionalIconClasses} />
                 &nbsp;<span className="cl-training-status__icon-label">
                     <FormattedMessage
-                    data-testid="trainingstatus-statusplaceholder"
                         id={uiState.iconLabelMessageId}
                         defaultMessage="Status Placeholder"
                     />
@@ -91,27 +89,24 @@ const Component: React.SFC<Props> = (props: Props) => {
                         tooltipProps={{
                             onRenderContent: () =>
                                 <FormattedMessage
-                                    data-testid="trainingstatus-statusexpired"
                                     id={FM.APP_TRAINING_STATUS_EXPIRED}
                                     defaultMessage="Status Placeholder"
                                 />
                         }}
                     >
-                         &nbsp;<Icon iconName="Warning" className="cl-icon" />
+                         &nbsp;<Icon iconName="Warning" className="cl-icon" data-testid="training-status-polling-stopped-warning"/>
                     </TooltipHost>}
             </div>
-            <div className={`cl-training-status__text-row ${FontClassNames.small}`}>
+            <div className={`cl-training-status__text-row ${FontClassNames.small}`} data-testid="training-status-last-update">
                 <FormattedMessage
-                    data-testid="trainingstatus-last-update"
                     id={FM.APP_TRAINING_STATUS_LAST_UPDATE}
                     defaultMessage="Last Update"
                 />: &nbsp;
                     <span className="cl-training-status__time">
                     {props.lastUpdatedDatetime ? <FormattedRelative value={props.lastUpdatedDatetime} /> : ''}
                 </span>
-                <button className={`cl-training-status__trigger ${FontClassNames.small}`} onClick={props.onClickRefresh}>
+                <button className={`cl-training-status__trigger ${FontClassNames.small}`} onClick={props.onClickRefresh} data-testid="training-status-refresh-button">
                     <FormattedMessage
-                        data-testid="trainingstatus-refresh"
                         id={FM.APP_TRAINING_STATUS_REFRESH}
                         defaultMessage="Refresh"
                     />

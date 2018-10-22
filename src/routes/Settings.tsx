@@ -31,7 +31,7 @@ class Settings extends React.Component<Props, ComponentState> {
     render() {
         return (
             <div className="cl-page">
-                <div className={OF.FontClassNames.superLarge}>
+                <div data-testid="settings-title-2" className={OF.FontClassNames.superLarge}>
                     <FormattedMessage
                         id={FM.PROFILE_SETTINGS_TITLE}
                         defaultMessage="Settings"
