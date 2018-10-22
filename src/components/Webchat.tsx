@@ -210,6 +210,7 @@ class Webchat extends React.Component<Props, {}> {
         chatProps.onScrollChange = this.props.onScrollChange
         chatProps.initialScrollPosition = this.props.initialScrollPosition
         chatProps.renderActivity = this.props.renderActivity
+        chatProps.renderInput = this.props.renderInput
         chatProps.selectedActivityIndex = this.props.selectedActivityIndex
         chatProps.highlightClassName = this.props.highlightClassName
 
@@ -249,6 +250,7 @@ export interface ReceivedProps {
     onPostActivity: (a: Activity) => void,
     onScrollChange?: (position: number) => void,
     renderActivity?: (props: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)
+    renderInput?: () => JSX.Element | null
     highlightClassName?: string
     // Used to select activity from outside webchat
     selectedActivityIndex?: number | null

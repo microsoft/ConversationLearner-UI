@@ -216,8 +216,6 @@ interface ComponentState {
     actionFilter: OF.IDropdownOption | null
     isValidationWarningOpen: boolean
     validationErrors: CLM.ReplayError[]
-    validationErrorTitleId: string | null
-    validationErrorMessageId: string | null
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
@@ -243,9 +241,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             entityFilter: null,
             actionFilter: null,
             isValidationWarningOpen: false,
-            validationErrors: [],
-            validationErrorTitleId: null,
-            validationErrorMessageId: null
+            validationErrors: []
         }
     }
 
@@ -826,10 +822,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
             else {
                 this.setState({
+                    history: this.state.history.splice(-1, 1),
                     validationErrors: teachWithHistory.replayErrors,
                     isValidationWarningOpen: true,
-                    validationErrorTitleId: FM.REPLAYERROR_EDIT_TITLE,
-                    validationErrorMessageId: FM.REPLAYERROR_FAILMESSAGE
                 })
             }
         }
@@ -1153,8 +1148,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isValidationWarningOpen}
                     onClose={this.onCloseValidationWarning}
                     textItems={this.state.validationErrors}
-                    formattedTitleId={this.state.validationErrorTitleId!}
-                    formattedMessageId={this.state.validationErrorMessageId!}
+                    formattedTitleId={FM.REPLAYERROR_EDIT_TITLE}
+                    formattedMessageId={FM.REPLAYERROR_FAILMESSAGE}
                 />
                 {this.props.teachSession && this.props.teachSession.teach && 
                     <TeachSessionModal

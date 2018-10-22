@@ -18,6 +18,7 @@ import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
 import AddButtonInput from './AddButtonInput'
 import AddScoreButton from './AddButtonScore'
+import DisabledInputButtom from './DisabledInputButton'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
@@ -29,6 +30,7 @@ import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
+    isCantReplayOpen: boolean
     isUserInputModalOpen: boolean
     isUserBranchModalOpen: boolean
     selectedActivity: Activity | null
@@ -39,6 +41,7 @@ interface ComponentState {
 
 const initialState: ComponentState = {
     isConfirmAbandonOpen: false,
+    isCantReplayOpen: false,
     isUserInputModalOpen: false,
     isUserBranchModalOpen: false,
     selectedActivity: null,
@@ -71,11 +74,40 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-
     @autobind
     onClickAddUserInput() {
+        if (this.state.selectedActivity) {
+            if (this.canReplay(this.state.selectedActivity)) {
+                this.setState({
+                    isUserInputModalOpen: true
+                })
+            }
+            else {
+                this.setState({
+                    isCantReplayOpen: true
+                })
+            }
+        }
+    }
+
+    @autobind
+    onClickAddScore(activity: BotChat.Activity) {
+        if (this.canReplay(activity)) {
+            if (activity && this.state.currentTrainDialog) {
+                this.props.onInsertAction(this.state.currentTrainDialog, activity)
+            }
+        }
+        else {
+            this.setState({
+                isCantReplayOpen: true
+            })
+        }
+    }
+
+    @autobind 
+    onClickCloseCantReplay() { 
         this.setState({
-            isUserInputModalOpen: true
+            isCantReplayOpen: false
         })
     }
 
@@ -178,6 +210,24 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
+    // Returns false if dialog has fatal replay error occuring before
+    // the selected activity that would prevent a teach 
+    canReplay(activity: BotChat.Activity): boolean {
+        if (this.props.history.length === 0) {
+            return true
+        }
+        // Loop until I hit the current activity
+        let activityIndex = 0
+        do {
+            if (this.props.history[activityIndex].channelData.replayError != null) {
+                return false
+            }
+            activityIndex = activityIndex + 1
+        }
+        while (activity !== this.props.history[activityIndex - 1])
+        return true
+    }
+
     // Does history have any replay errors
     hasReplayError(): boolean {
         if (!this.props.history || this.props.history.length === 0) {
@@ -238,11 +288,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     editType={this.props.editType}
                 />
                 <AddScoreButton 
-                    onClick={() => {
-                        if (activity && this.state.currentTrainDialog) {
-                            this.props.onInsertAction(this.state.currentTrainDialog, activity)
-                        }
-                    }}
+                    onClick={() => this.onClickAddScore(activity)}
                 />
                 {canDeleteRound && !isLastActivity &&
                     <OF.IconButton
@@ -288,15 +334,19 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return true
         }
 
+        // Disable last round has no scorer step
         const lastRound = this.props.trainDialog.rounds[this.props.trainDialog.rounds.length - 1]
-
         if (lastRound.scorerSteps.length === 0) {
             return true
         }
 
+        // Disable if last round's last scorer step isn't terminal
         const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
         const lastAction = this.props.actions.find(a => a.actionId === lastScorerStep.labelAction)
-        return !lastAction || !lastAction.isTerminal
+        if (!lastAction || !lastAction.isTerminal) {
+            return true
+        }
+        return false
     }
 
     shouldShowScoreButton(): boolean {
@@ -476,8 +526,36 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         this.props.setWebchatScrollPosition(position)
     }
 
-    renderWarning() {
+    @autobind
+    renderWebchatInput(showDisableInput: boolean): JSX.Element | null {
+        if (this.shouldShowScoreButton() && this.state.currentTrainDialog) {
+            return (
+                <div className="wc-console">
+                    <OF.PrimaryButton
+                        onClick={() => this.onClickAddScore(this.props.history[this.props.history.length - 1])}
+                        ariaDescription={'Score Actions'}
+                        text={'Score Actions'} // TODO internationalize
+                    />
+                </div>)
+        }
+        else if (showDisableInput) {
+            return (
+                <div className="wc-console">
+                    <DisabledInputButtom
+                        className="cl-button-blockwebchat"
+                        onClick={() =>            
+                            this.setState({
+                            isCantReplayOpen: true
+                            })
+                        }
+                    />
+                </div>
+            )
+        }
+        return null
+    }
 
+    renderWarning() {
         if (this.props.editState === EditState.INVALID_BOT) {
             return (
                 <div className="cl-editdialog-warning">
@@ -532,7 +610,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         // Put mask of webchat if waiting for extraction labelling
         const chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay"/> : null;
+        const canReplay = this.canReplay(this.props.history[this.props.history.length - 1])
         const disableUserInput = this.shouldDisableUserInput()
+        
         const containerClassName = `cl-modal cl-modal--large cl-modal--${this.props.editType === EditDialogType.LOG_EDITED ? "teach" : "log"}`
         return (
             <Modal
@@ -552,10 +632,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 onPostActivity={activity => this.onPostNewActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 onScrollChange={position => this.onScrollChange(position)} 
-                                hideInput={disableUserInput}
+                                hideInput={disableUserInput || !canReplay}
                                 focusInput={false}
                                 disableDL={true} // Prevents ProcessActivity from being called
                                 renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
+                                renderInput={() => this.renderWebchatInput(!disableUserInput && !canReplay)}
                                 highlightClassName={'wc-message-selected'}
                                 selectedActivityIndex={this.props.initialSelectedActivityIndex}
                             />
@@ -582,18 +663,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
-                    {this.shouldShowScoreButton() && this.state.currentTrainDialog &&
-                        <OF.PrimaryButton
-                            className="cl-button-scorewebchat"
-                            onClick={() => {
-                                if (this.state.currentTrainDialog) {
-                                    this.props.onInsertAction(this.state.currentTrainDialog, this.props.history[this.props.history.length - 1])}
-                                }
-                            }
-                            ariaDescription={'Score Actions'}
-                            text={'Score Actions'}
-                        />
-                    }
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary">
                             {this.renderWarning()}
@@ -639,6 +708,16 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onCancel={this.onClickAbandonCancel}
                     onConfirm={this.onClickAbandonApprove}
                     title={this.renderConfirmText(intl)}
+                />
+                <ConfirmCancelModal
+                    open={this.state.isCantReplayOpen}
+                    onCancel={this.onClickCloseCantReplay}
+                    onConfirm={null}
+                    title={
+                        intl.formatMessage({
+                        id: FM.EDITDIALOGMODAL_CANTREPLAY_TITLE,
+                        defaultMessage: `This TD has errors in previous rounds that must be fixed first`
+                    })}
                 />
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
