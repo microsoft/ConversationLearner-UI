@@ -607,6 +607,26 @@ class TeachModal extends React.Component<Props, ComponentState> {
         return (this.props.initialHistory.filter(h => h.channelData.replayError != null).length > 0)
     }
 
+    shouldShowScoreButton(): boolean {
+        return (this.props.teachSession.dialogMode === CLM.DialogMode.Scorer
+            && this.state.selectedActivityIndex !== null)
+    }
+
+    @autobind
+    renderWebchatInput(): JSX.Element | null {
+        if (this.shouldShowScoreButton() && this.state.selectedActivityIndex != null) {
+            return (
+                <div className="wc-console">
+                    <OF.PrimaryButton
+                        onClick={this.onInsertAction}
+                        ariaDescription={'Score Actions'}
+                        text={'Score Actions'} // TODO internationalize
+                    />
+                </div>)
+        }
+        return null
+    }
+
     renderWarning() {
         if (this.state.selectedHistoryActivity && this.state.selectedHistoryActivity.channelData.replayError) {
             return (
@@ -661,6 +681,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     focusInput={this.props.teachSession.dialogMode === CLM.DialogMode.Wait}
                                     highlightClassName={'wc-message-selected'}
                                     renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
+                                    renderInput={() => this.renderWebchatInput()}
                                     selectedActivityIndex={this.state.selectedActivityIndex}
                                 />
                                 {chatDisable}

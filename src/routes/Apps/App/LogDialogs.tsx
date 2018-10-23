@@ -1032,7 +1032,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         editType={this.state.editType} 
                         initialHistory={this.state.history}
                         lastAction={this.state.lastAction}
-                        sourceTrainDialog={null}
+                        sourceTrainDialog={this.state.currentTrainDialog}
                         sourceLogDialog={this.state.currentLogDialog}
                     />
                 }
