@@ -8,9 +8,8 @@ import { UnscoredAction, ScoreReason, DialogMode } from '@conversationlearner/mo
 import { AT } from '../types/ActionTypes'
 
 const initialState: TeachSessionState = {
-    all: [],
-    current: undefined,
-    mode: DialogMode.Wait,
+    teach: undefined,
+    dialogMode: DialogMode.Wait,
     input: '',
     prevMemories: [],
     memories: [],
@@ -25,41 +24,32 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
     switch (action.type) {
         case AT.USER_LOGOUT:
             return { ...initialState };
-        case AT.FETCH_TEACH_SESSIONS_FULFILLED:
-            return { ...state, all: action.allTeachSessions };
         case AT.CREATE_TEACH_SESSION_ASYNC:
             // Start with a clean slate
-            return { ...initialState, all: state.all };
+            return { ...initialState };
         case AT.CREATE_TEACH_SESSION_FULFILLED:
-            return { ...state, all: [...state.all, action.teachSession], current: action.teachSession, mode: DialogMode.Wait, memories: [] }
+            return { ...state, teach: action.teachSession, dialogMode: DialogMode.Wait, memories: [] }
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
-            // Only update state if there were no discrepancies
-            if (action.teachWithHistory.replayErrors.length === 0) {
-                return {
-                    ...initialState, 
-                    all: action.teachWithHistory.teach
-                        ? [...state.all, action.teachWithHistory.teach]
-                        : state.all,
-                    current: action.teachWithHistory.teach,
-                    mode: action.teachWithHistory.dialogMode, 
-                    memories: action.teachWithHistory.memories, 
-                    prevMemories: action.teachWithHistory.prevMemories,
-                    scoreResponse: action.teachWithHistory.scoreResponse,
-                    scoreInput: action.teachWithHistory.scoreInput,
-                    extractResponses: action.teachWithHistory.extractResponse ? [action.teachWithHistory.extractResponse] : [],
-                    uiScoreInput: action.teachWithHistory.uiScoreInput
-                }
+            return {
+                ...initialState, 
+                teach: action.teachWithHistory.teach,
+                dialogMode: action.teachWithHistory.dialogMode, 
+                memories: action.teachWithHistory.memories, 
+                prevMemories: action.teachWithHistory.prevMemories,
+                scoreResponse: action.teachWithHistory.scoreResponse,
+                scoreInput: action.teachWithHistory.scoreInput,
+                extractResponses: action.teachWithHistory.extractResponse ? [action.teachWithHistory.extractResponse] : [],
+                uiScoreInput: action.teachWithHistory.uiScoreInput
             }
-            return { ...state };
         case AT.DELETE_TEACH_SESSION_FULFILLED:
-            return { ...initialState, all: state.all.filter(t => t.teachId !== action.teachSessionGUID) }
+            return { ...initialState }
         case AT.DELETE_MEMORY_FULFILLED:
             return { ...state, memories: [] }
         case AT.RUN_EXTRACTOR_FULFILLED:
             // Replace existing extract response (if any) with new one
             const extractResponses = state.extractResponses.filter(e => e.text !== action.uiExtractResponse.extractResponse.text);
             extractResponses.push(action.uiExtractResponse.extractResponse);
-            return { ...state, mode: DialogMode.Extractor, memories: action.uiExtractResponse.memories, prevMemories: action.uiExtractResponse.memories, extractResponses: extractResponses };
+            return { ...state, dialogMode: DialogMode.Extractor, memories: action.uiExtractResponse.memories, prevMemories: action.uiExtractResponse.memories, extractResponses: extractResponses };
         case AT.UPDATE_EXTRACT_RESPONSE:
             // Replace existing extract response (if any) with new one and maintain ordering
             let index = state.extractResponses.findIndex(e => e.text === action.extractResponse.text);
@@ -69,11 +59,11 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             }
             let editedResponses = state.extractResponses.slice();
             editedResponses[index] = action.extractResponse;
-            return { ...state, mode: DialogMode.Extractor, extractResponses: editedResponses };
+            return { ...state, dialogMode: DialogMode.Extractor, extractResponses: editedResponses };
         case AT.REMOVE_EXTRACT_RESPONSE:
             // Remove existing extract response
             let remainingResponses = state.extractResponses.filter(e => e.text !== action.extractResponse.text);
-            return { ...state, mode: DialogMode.Extractor, extractResponses: remainingResponses };
+            return { ...state, dialogMode: DialogMode.Extractor, extractResponses: remainingResponses };
         case AT.CLEAR_EXTRACT_RESPONSES:
             // Remove existing extract responses
             return { ...state, extractResponses: [] };
@@ -81,9 +71,9 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             return { ...state, uiScoreInput: action.uiScoreInput }
         case AT.GET_SCORES_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:
-            return { ...state, mode: DialogMode.Scorer, memories: action.uiScoreResponse.memories, prevMemories: state.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse };
+            return { ...state, dialogMode: DialogMode.Scorer, memories: action.uiScoreResponse.memories, prevMemories: state.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse };
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
-            return { ...state, mode: action.dialogMode, memories: action.uiPostScoreResponse.memories, extractResponses: []  };
+            return { ...state, dialogMode: action.dialogMode, memories: action.uiPostScoreResponse.memories, extractResponses: []  };
         case AT.TOGGLE_AUTO_TEACH:
             return { ...state, autoTeach: action.autoTeach }
         case AT.CREATE_ACTION_FULFILLED:

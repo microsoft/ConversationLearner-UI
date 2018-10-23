@@ -97,7 +97,6 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_SCOREFROMHISTORY_ASYNC:
         case AT.FETCH_EXTRACTFROMHISTORY_ASYNC:
         case AT.FETCH_TRAINDIALOGREPLAY_ASYNC:
-        case AT.FETCH_TEACH_SESSIONS_ASYNC:
         case AT.FETCH_TRAIN_DIALOG_ASYNC:
         // case AT.FETCH_TRAIN_DIALOGS_ASYNC: Don't block
         case AT.FETCH_TUTORIALS_ASYNC:
@@ -152,7 +151,6 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_TRAIN_DIALOG_FULFILLED:
         case AT.FETCH_TRAINDIALOGREPLAY_FULFILLED:
         // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doeesn't block
-        case AT.FETCH_TEACH_SESSIONS_FULFILLED:
         // case AT.FETCH_TRAIN_DIALOGS_FULFILLED: Doesn't block
         case AT.FETCH_TUTORIALS_FULFILLED:
     

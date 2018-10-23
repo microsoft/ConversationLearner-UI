@@ -18,7 +18,7 @@ export function renderActivity(
     activityProps: BotChat.WrappedActivityProps, 
     children: React.ReactNode, 
     setRef: (div: HTMLDivElement | null) => void,
-    renderSelected: ((activity: Activity, isLastActivity: boolean) => JSX.Element | null) | null,
+    renderSelected: ((activity: Activity) => JSX.Element | null) | null,
     editType: EditDialogType
     ): JSX.Element {
         
@@ -69,7 +69,7 @@ export function renderActivity(
                     { children }
                 </div>
             </div>
-            {activityProps.selected && renderSelected && renderSelected(activityProps.activity, false)}
+            {activityProps.selected && renderSelected && renderSelected(activityProps.activity)}
             {activityProps.activity.channelData && activityProps.activity.channelData.validWaitAction !== undefined ? 
                 (
                     <svg className="wc-message-downarrow">
@@ -211,6 +211,7 @@ class Webchat extends React.Component<Props, {}> {
         chatProps.onScrollChange = this.props.onScrollChange
         chatProps.initialScrollPosition = this.props.initialScrollPosition
         chatProps.renderActivity = this.props.renderActivity
+        chatProps.renderInput = this.props.renderInput
         chatProps.selectedActivityIndex = this.props.selectedActivityIndex
         chatProps.highlightClassName = this.props.highlightClassName
 
@@ -250,6 +251,7 @@ export interface ReceivedProps {
     onPostActivity: (a: Activity) => void,
     onScrollChange?: (position: number) => void,
     renderActivity?: (props: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)
+    renderInput?: () => JSX.Element | null
     highlightClassName?: string
     // Used to select activity from outside webchat
     selectedActivityIndex?: number | null

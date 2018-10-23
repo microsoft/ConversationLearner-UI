@@ -209,12 +209,6 @@ export type FetchAction = {
     type: AT.FETCH_CHAT_SESSIONS_FULFILLED,
     allSessions: Session[]
 } | {
-    type: AT.FETCH_TEACH_SESSIONS_FULFILLED,
-    allTeachSessions: Teach[]
-} | {
-    type: AT.FETCH_TEACH_SESSIONS_ASYNC,
-    appId: string
-} | {
     type: AT.FETCH_PROFILE_ASYNC
 } | {
     type: AT.FETCH_PROFILE_FULFILLED,

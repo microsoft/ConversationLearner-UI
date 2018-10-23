@@ -39,7 +39,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
 
         const { history, location } = this.props
         const appFromLocationState: AppBase | null = location.state && location.state.app
-        if (appFromLocationState) {
+        if (appFromLocationState && this.props.apps && this.props.apps.length > 0) {
             const app = this.props.apps.find(a => a.appId === appFromLocationState.appId)
             if (!app) {
                 console.warn(`Attempted to find selected model in list of models: ${appFromLocationState.appId} but it could not be found. This should not be possible. Contact Support.`)

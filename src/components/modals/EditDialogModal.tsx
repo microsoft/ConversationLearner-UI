@@ -16,8 +16,10 @@ import * as BotChat from '@conversationlearner/webchat'
 import { EditDialogAdmin, EditDialogType, EditState } from '.'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
+import { SelectionType } from '../../types/const'
 import AddButtonInput from './AddButtonInput'
 import AddScoreButton from './AddButtonScore'
+import DisabledInputButtom from './DisabledInputButton'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
@@ -29,7 +31,9 @@ import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
+    isCantReplayOpen: boolean
     isUserInputModalOpen: boolean
+    addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
@@ -39,7 +43,9 @@ interface ComponentState {
 
 const initialState: ComponentState = {
     isConfirmAbandonOpen: false,
+    isCantReplayOpen: false,
     isUserInputModalOpen: false,
+    addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
     selectedActivity: null,
     webchatKey: 0,
@@ -71,11 +77,41 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    @autobind
+    onClickAddUserInput(selectionType: SelectionType) {
+        if (this.state.selectedActivity) {
+            if (this.canReplay(this.state.selectedActivity)) {
+                this.setState({
+                    isUserInputModalOpen: true,
+                    addUserInputSelectionType: selectionType
+                })
+            }
+            else {
+                this.setState({
+                    isCantReplayOpen: true
+                })
+            }
+        }
+    }
 
     @autobind
-    onClickAddUserInput() {
+    onClickAddScore(activity: BotChat.Activity, selectionType: SelectionType) {
+        if (this.canReplay(activity)) {
+            if (activity && this.state.currentTrainDialog) {
+                this.props.onInsertAction(this.state.currentTrainDialog, activity, selectionType)
+            }
+        }
+        else {
+            this.setState({
+                isCantReplayOpen: true
+            })
+        }
+    }
+
+    @autobind 
+    onClickCloseCantReplay() { 
         this.setState({
-            isUserInputModalOpen: true
+            isCantReplayOpen: false
         })
     }
 
@@ -93,7 +129,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
         
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
-            this.props.onInsertInput(this.state.currentTrainDialog, this.state.selectedActivity, userInput)
+            this.props.onInsertInput(this.state.currentTrainDialog, this.state.selectedActivity, userInput, this.state.addUserInputSelectionType)
         }
     }
 
@@ -178,6 +214,24 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
+    // Returns false if dialog has fatal replay error occuring before
+    // the selected activity that would prevent a teach 
+    canReplay(activity: BotChat.Activity): boolean {
+        if (this.props.history.length === 0) {
+            return true
+        }
+        // Loop until I hit the current activity
+        let activityIndex = 0
+        do {
+            if (this.props.history[activityIndex].channelData.replayError != null) {
+                return !this.props.history[activityIndex].channelData.replayError.isBlocking
+            }
+            activityIndex = activityIndex + 1
+        }
+        while (activity !== this.props.history[activityIndex - 1])
+        return true
+    }
+
     // Does history have any replay errors
     hasReplayError(): boolean {
         if (!this.props.history || this.props.history.length === 0) {
@@ -192,7 +246,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    renderSelectedActivity(activity: Activity, isLastActivity: boolean): (JSX.Element | null) {
+    renderSelectedActivity(activity: Activity): (JSX.Element | null) {
 
         if (this.props.editState !== EditState.CAN_EDIT || !this.props.trainDialog) {
             return null
@@ -231,20 +285,19 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 this.props.editState !== EditState.CAN_EDIT ||
                 (this.props.trainDialog && this.props.trainDialog.validity !== undefined && this.props.trainDialog.validity !== CLM.Validity.VALID)
         
+        const isLastActivity = activity === this.props.history[this.props.history.length - 1]
+        const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
         return (
             <div className="cl-wc-buttonbar">
                 <AddButtonInput 
-                    onClick={this.onClickAddUserInput}
+                    onClick={() => this.onClickAddUserInput(selectionType)}
                     editType={this.props.editType}
                 />
                 <AddScoreButton 
-                    onClick={() => {
-                        if (activity && this.state.currentTrainDialog) {
-                            this.props.onInsertAction(this.state.currentTrainDialog, activity)
-                        }
-                    }}
+                    // Don't select an activity if on last step
+                    onClick={() => this.onClickAddScore(activity, selectionType)}
                 />
-                {canDeleteRound && !isLastActivity &&
+                {canDeleteRound &&
                     <OF.IconButton
                         className={`cl-wc-deleteturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
                         iconProps={{ iconName: 'Delete' }}
@@ -288,23 +341,37 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return true
         }
 
+        // Disable last round has no scorer step
         const lastRound = this.props.trainDialog.rounds[this.props.trainDialog.rounds.length - 1]
-
         if (lastRound.scorerSteps.length === 0) {
             return true
         }
 
+        // Disable if last round's last scorer step isn't terminal
         const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
         const lastAction = this.props.actions.find(a => a.actionId === lastScorerStep.labelAction)
-        return !lastAction || !lastAction.isTerminal
+        if (!lastAction || !lastAction.isTerminal) {
+            return true
+        }
+        return false
     }
 
     shouldShowScoreButton(): boolean {
         if (!this.props.trainDialog || this.props.trainDialog.rounds.length === 0) {
             return false
         }
+        // If last round doesn't have a scorer step (or is a dummy round)
         const lastRound = this.props.trainDialog.rounds[this.props.trainDialog.rounds.length - 1]
-        return (lastRound.scorerSteps.length === 0 || !lastRound.scorerSteps[0].labelAction)
+        if (lastRound.scorerSteps.length === 0 || !lastRound.scorerSteps[0].labelAction) {
+            return true
+        }
+        // If last action is a non-wait action
+        const lastActionLabel = lastRound.scorerSteps[lastRound.scorerSteps.length - 1].labelAction
+        const action = this.props.actions.find(a => a.actionId === lastActionLabel)
+        if (action && !action.isTerminal) {
+            return true
+        }
+        return false
     }
 
     @autobind
@@ -466,8 +533,48 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         this.props.setWebchatScrollPosition(position)
     }
 
-    renderWarning() {
+    @autobind
+    renderWebchatInput(showDisableInput: boolean): JSX.Element | null {
+        if (this.shouldShowScoreButton() && this.state.currentTrainDialog) {
+            return (
+                <div className="wc-console">
+                    <OF.PrimaryButton
+                        onClick={() => this.onClickAddScore(this.props.history[this.props.history.length - 1], SelectionType.NONE)}
+                        ariaDescription={'Score Actions'}
+                        text={'Score Actions'} // TODO internationalize
+                    />
+                </div>)
+        }
+        else if (showDisableInput) {
+            return (
+                <div className="wc-console">
+                    <div className="wc-textbox">
+                        <input
+                            type="text"
+                            className="wc-shellinput"
+                            onKeyPress={() =>            
+                                this.setState({
+                                isCantReplayOpen: true
+                                })
+                            }
+                            placeholder={"Type your message..."}
+                        />
+                    </div>
+                    <DisabledInputButtom
+                        className="cl-button-blockwebchat"
+                        onClick={() =>            
+                            this.setState({
+                            isCantReplayOpen: true
+                            })
+                        }
+                    />
+                </div>
+            )
+        }
+        return null
+    }
 
+    renderWarning() {
         if (this.props.editState === EditState.INVALID_BOT) {
             return (
                 <div className="cl-editdialog-warning">
@@ -522,7 +629,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         // Put mask of webchat if waiting for extraction labelling
         const chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay"/> : null;
+        const canReplay = this.canReplay(this.props.history[this.props.history.length - 1])
         const disableUserInput = this.shouldDisableUserInput()
+        
         const containerClassName = `cl-modal cl-modal--large cl-modal--${this.props.editType === EditDialogType.LOG_EDITED ? "teach" : "log"}`
         return (
             <Modal
@@ -542,10 +651,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 onPostActivity={activity => this.onPostNewActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 onScrollChange={position => this.onScrollChange(position)} 
-                                hideInput={disableUserInput}
+                                hideInput={disableUserInput || !canReplay}
                                 focusInput={false}
                                 disableDL={true} // Prevents ProcessActivity from being called
                                 renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
+                                renderInput={() => this.renderWebchatInput(!disableUserInput && !canReplay)}
                                 highlightClassName={'wc-message-selected'}
                                 selectedActivityIndex={this.props.initialSelectedActivityIndex}
                             />
@@ -572,18 +682,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
-                    {this.shouldShowScoreButton() && this.state.currentTrainDialog &&
-                        <OF.PrimaryButton
-                            className="cl-button-scorewebchat"
-                            onClick={() => {
-                                if (this.state.currentTrainDialog) {
-                                    this.props.onInsertAction(this.state.currentTrainDialog, this.props.history[this.props.history.length - 1])}
-                                }
-                            }
-                            ariaDescription={'Score Actions'}
-                            text={'Score Actions'}
-                        />
-                    }
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary">
                             {this.renderWarning()}
@@ -630,6 +728,16 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onConfirm={this.onClickAbandonApprove}
                     title={this.renderConfirmText(intl)}
                 />
+                <ConfirmCancelModal
+                    open={this.state.isCantReplayOpen}
+                    onCancel={this.onClickCloseCantReplay}
+                    onConfirm={null}
+                    title={
+                        intl.formatMessage({
+                        id: FM.EDITDIALOGMODAL_CANTREPLAY_TITLE,
+                        defaultMessage: `This TD has errors in previous rounds that must be fixed first`
+                    })}
+                />
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
                     titleFM={FM.USERINPUT_ADD_TITLE}
@@ -675,8 +783,8 @@ export interface ReceivedProps {
     editType: EditDialogType
     // If starting with activity selected
     initialSelectedActivityIndex: number | null
-    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity) => any
-    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => any
+    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, selectionType: SelectionType) => any
+    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any

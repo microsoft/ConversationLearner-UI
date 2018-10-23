@@ -15,6 +15,7 @@ import EntityExtractor from './EntityExtractor';
 import MemoryTable from './MemoryTable';
 import { FM } from '../../react-intl-messages'
 import { filterDummyEntities } from '../../util'
+import { TeachSessionState } from '../../types/StateTypes'
 import { Icon, FontClassNames, autobind } from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import './TeachSessionAdmin.css'
@@ -58,7 +59,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         }
         
         // Otherwise update teach session
-        if (!this.props.teachSession.current) {
+        if (!this.props.teachSession.teach) {
             throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
         }
 
@@ -70,7 +71,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         }
 
         const appId = this.props.app.appId
-        const teachId = this.props.teachSession.current.teachId
+        const teachId = this.props.teachSession.teach.teachId
         const uiScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
         
         let turnLookup = [...this.state.turnLookup]
@@ -100,7 +101,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             throw new Error(`The provided train scorer step must have scoredAction field, but it was not provided. This should not be possible. Contact Support`)
         }
 
-        if (!this.props.teachSession.current) {
+        if (!this.props.teachSession.teach) {
             throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
         }
 
@@ -117,7 +118,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         } 
 
         const appId = this.props.app.appId;
-        const teachId = this.props.teachSession.current.teachId;
+        const teachId = this.props.teachSession.teach.teachId;
         const waitForUser = scoredAction.isTerminal;
 
         // Pass score input (minus extractor step) for subsequent actions when this one is non-terminal
@@ -147,14 +148,14 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             throw new Error(`You attempted to refresh scores but there was no previous score input to re-use.  This is likely a problem with the code. Please open an issue.`)
         }
         
-        if (!this.props.teachSession.current) {
+        if (!this.props.teachSession.teach) {
             throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
         }
 
         this.props.getScoresThunkAsync(
             this.props.user.id,
             this.props.app.appId,
-            this.props.teachSession.current.teachId,
+            this.props.teachSession.teach.teachId,
             this.props.teachSession.scoreInput)
 
         this.setState({
@@ -194,8 +195,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                             dialogMode: CLM.DialogMode.Scorer,
                             scoreInput: turnData.uiScoreResponse.scoreInput,
                             scoreResponse: turnData.uiScoreResponse.scoreResponse,
-                            memories: turnData.uiScoreResponse.memories,
-                            prevMemories,
+                            memories: filterDummyEntities(turnData.uiScoreResponse.memories),
+                            prevMemories: filterDummyEntities(prevMemories),
                             extractResponses: this.props.teachSession.extractResponses,
                             textVariations: [],
                             roundIndex: this.roundIndex(lookupIndex)
@@ -206,8 +207,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         dialogMode: CLM.DialogMode.Extractor,
                         extractResponses: this.props.teachSession.extractResponses,
                         textVariations: turnData.textVariations,  
-                        memories: turnData.memories || [],
-                        prevMemories,
+                        memories: turnData.memories ? filterDummyEntities(turnData.memories) : [],
+                        prevMemories: filterDummyEntities(prevMemories),
                         roundIndex: this.roundIndex(lookupIndex)
                     }
                 }
@@ -224,11 +225,11 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 : this.props.teachSession.memories
 
             return {
-                dialogMode: this.props.teachSession.mode,
+                dialogMode: this.props.teachSession.dialogMode,
                 scoreInput: this.props.teachSession.scoreInput!,
                 scoreResponse: this.props.teachSession.scoreResponse!,
-                memories: memories,
-                prevMemories: this.props.teachSession.prevMemories,
+                memories: filterDummyEntities(memories),
+                prevMemories: filterDummyEntities(this.props.teachSession.prevMemories),
                 extractResponses: this.props.teachSession.extractResponses,
                 textVariations: [],
                 roundIndex: null
@@ -238,7 +239,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
     render() {
         // Don't render if not in a teach session
-        if (!this.props.teachSession.current) {
+        if (!this.props.teachSession.teach) {
             return null;
         }
 
@@ -302,8 +303,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     <div>
                         <MemoryTable
                             data-testid="teach-session-admin-memory-table"
-                            memories={filterDummyEntities(renderData.memories)}
-                            prevMemories={filterDummyEntities(renderData.prevMemories)}
+                            memories={renderData.memories}
+                            prevMemories={renderData.prevMemories}
                         />
                     </div>
                 </div>
@@ -325,8 +326,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     canEdit={true}
                                     extractType={CLM.DialogType.TEACH}
                                     editType={this.props.editType}
-                                    teachId={this.props.teachSession.current.teachId}
-                                    dialogId={this.props.teachSession.current.trainDialogId}
+                                    teachId={this.props.teachSession.teach.teachId}
+                                    dialogId={this.props.teachSession.teach.trainDialogId}
                                     roundIndex={renderData.roundIndex}
                                     autoTeach={this.props.teachSession.autoTeach}
                                     dialogMode={renderData.dialogMode}
@@ -397,7 +398,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 canEdit={true}
                                 hideScore={false}
                                 dialogType={CLM.DialogType.TEACH}
-                                sessionId={this.props.teachSession.current.teachId}
                                 autoTeach={this.props.teachSession.autoTeach}
                                 dialogMode={renderData.dialogMode}
                                 scoreResponse={renderData.scoreResponse}
@@ -427,7 +427,6 @@ const mapStateToProps = (state: State) => {
 
     return {
         user: state.user.user,
-        teachSession: state.teachSessions,
         entities: state.entities
     }
 }
@@ -437,6 +436,7 @@ export interface ReceivedProps {
     onEditExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onEditAction: (trainScorerStep: CLM.TrainScorerStep) => any
     app: CLM.AppBase
+    teachSession: TeachSessionState
     editingPackageId: string
     editType: EditDialogType,
     initialEntities: CLM.FilledEntityMap | null,

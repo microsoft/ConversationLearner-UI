@@ -13,6 +13,13 @@ export enum AppCreatorType {
     COPY = "COPY"
 }
 
+// After an edit takes place which activity should I select in webchat
+export enum SelectionType {
+    CURRENT = "CURRENT",
+    NEXT = "NEXT",
+    NONE = "NONE"
+}
+
 export const CL_IMPORT_ID = '9c110735ea8b440d8f31c5c68ffb767d'
 
 export const previousBotPort = 5000

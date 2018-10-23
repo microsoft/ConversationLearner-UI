@@ -145,21 +145,29 @@ class App extends React.Component<Props, ComponentState> {
             }
             <Switch>
                 <Route exact path="/" render={() => <Redirect to="/home" />} />
-                <Route path="/home" render={props => <React.Fragment>
-                  {this.state.loadingState === LoadingState.LOADING
-                    && <p>Loading...</p>}
-                  {this.state.loadingState === LoadingState.FAILED
-                    && <div>
-                      <p>Loading Failed.</p>
-                      <div>
-                        <OF.PrimaryButton onClick={this.loadBotInfo}>Retry</OF.PrimaryButton>
-                      </div>
-                    </div>}
-                  {this.state.loadingState === LoadingState.SUCCEEDED
-                    && this.props.botInfo !== null
-                    && <AppsIndex {...props} />}
-                </React.Fragment>
-                } />
+                <Route 
+                  path="/home" 
+                  render={props => 
+                      <React.Fragment>
+                        {this.state.loadingState === LoadingState.LOADING && 
+                          <p>Loading...</p>
+                        }
+                        {this.state.loadingState === LoadingState.FAILED && 
+                          <div>
+                            <p>Loading Failed.</p>
+                            <div>
+                              <OF.PrimaryButton onClick={this.loadBotInfo}>Retry</OF.PrimaryButton>
+                            </div>
+                          </div>
+                        }
+                        {this.state.loadingState === LoadingState.SUCCEEDED && this.props.botInfo !== null && 
+                          <AppsIndex 
+                            {...props} 
+                          />
+                        }
+                      </React.Fragment>
+                    } 
+                />
                 <Route path="/settings" component={Settings} />
                 <Route component={NoMatch} />
               </Switch>
