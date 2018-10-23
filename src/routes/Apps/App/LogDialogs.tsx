@@ -642,7 +642,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             const extractResponse = await ((this.props.extractFromHistoryThunkAsync(this.props.app.appId, history, userInput) as any) as Promise<CLM.ExtractResponse>)
 
             if (!extractResponse) {
-                throw new Error("No extract response")  // LARS todo - handle this better
+                throw new Error("No extract response")  
             }
 
             let textVariations = CLM.ModelUtils.ToTextVariations([extractResponse])
