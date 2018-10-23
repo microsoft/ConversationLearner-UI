@@ -18,7 +18,7 @@ export function renderActivity(
     activityProps: BotChat.WrappedActivityProps, 
     children: React.ReactNode, 
     setRef: (div: HTMLDivElement | null) => void,
-    renderSelected: ((activity: Activity, isLastActivity: boolean) => JSX.Element | null) | null,
+    renderSelected: ((activity: Activity) => JSX.Element | null) | null,
     editType: EditDialogType
     ): JSX.Element {
         
@@ -69,7 +69,7 @@ export function renderActivity(
                     { children }
                 </div>
             </div>
-            {activityProps.selected && renderSelected && renderSelected(activityProps.activity, false)}
+            {activityProps.selected && renderSelected && renderSelected(activityProps.activity)}
             {activityProps.activity.channelData && activityProps.activity.channelData.validWaitAction !== undefined ? 
                 (
                     <svg className="wc-message-downarrow">

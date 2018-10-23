@@ -16,6 +16,7 @@ import * as BotChat from '@conversationlearner/webchat'
 import { EditDialogAdmin, EditDialogType, EditState } from '.'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
+import { SelectionType } from '../../types/const'
 import AddButtonInput from './AddButtonInput'
 import AddScoreButton from './AddButtonScore'
 import DisabledInputButtom from './DisabledInputButton'
@@ -32,6 +33,7 @@ interface ComponentState {
     isConfirmAbandonOpen: boolean
     isCantReplayOpen: boolean
     isUserInputModalOpen: boolean
+    addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
@@ -43,6 +45,7 @@ const initialState: ComponentState = {
     isConfirmAbandonOpen: false,
     isCantReplayOpen: false,
     isUserInputModalOpen: false,
+    addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
     selectedActivity: null,
     webchatKey: 0,
@@ -75,11 +78,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickAddUserInput() {
+    onClickAddUserInput(selectionType: SelectionType) {
         if (this.state.selectedActivity) {
             if (this.canReplay(this.state.selectedActivity)) {
                 this.setState({
-                    isUserInputModalOpen: true
+                    isUserInputModalOpen: true,
+                    addUserInputSelectionType: selectionType
                 })
             }
             else {
@@ -91,10 +95,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickAddScore(activity: BotChat.Activity) {
+    onClickAddScore(activity: BotChat.Activity, selectionType: SelectionType) {
         if (this.canReplay(activity)) {
             if (activity && this.state.currentTrainDialog) {
-                this.props.onInsertAction(this.state.currentTrainDialog, activity)
+                this.props.onInsertAction(this.state.currentTrainDialog, activity, selectionType)
             }
         }
         else {
@@ -125,7 +129,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
         
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
-            this.props.onInsertInput(this.state.currentTrainDialog, this.state.selectedActivity, userInput)
+            this.props.onInsertInput(this.state.currentTrainDialog, this.state.selectedActivity, userInput, this.state.addUserInputSelectionType)
         }
     }
 
@@ -242,7 +246,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    renderSelectedActivity(activity: Activity, isLastActivity: boolean): (JSX.Element | null) {
+    renderSelectedActivity(activity: Activity): (JSX.Element | null) {
 
         if (this.props.editState !== EditState.CAN_EDIT || !this.props.trainDialog) {
             return null
@@ -281,16 +285,19 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 this.props.editState !== EditState.CAN_EDIT ||
                 (this.props.trainDialog && this.props.trainDialog.validity !== undefined && this.props.trainDialog.validity !== CLM.Validity.VALID)
         
+        const isLastActivity = activity === this.props.history[this.props.history.length - 1]
+        const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
         return (
             <div className="cl-wc-buttonbar">
                 <AddButtonInput 
-                    onClick={this.onClickAddUserInput}
+                    onClick={() => this.onClickAddUserInput(selectionType)}
                     editType={this.props.editType}
                 />
                 <AddScoreButton 
-                    onClick={() => this.onClickAddScore(activity)}
+                    // Don't select an activity if on last step
+                    onClick={() => this.onClickAddScore(activity, selectionType)}
                 />
-                {canDeleteRound && !isLastActivity &&
+                {canDeleteRound &&
                     <OF.IconButton
                         className={`cl-wc-deleteturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
                         iconProps={{ iconName: 'Delete' }}
@@ -532,7 +539,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return (
                 <div className="wc-console">
                     <OF.PrimaryButton
-                        onClick={() => this.onClickAddScore(this.props.history[this.props.history.length - 1])}
+                        onClick={() => this.onClickAddScore(this.props.history[this.props.history.length - 1], SelectionType.NONE)}
                         ariaDescription={'Score Actions'}
                         text={'Score Actions'} // TODO internationalize
                     />
@@ -776,8 +783,8 @@ export interface ReceivedProps {
     editType: EditDialogType
     // If starting with activity selected
     initialSelectedActivityIndex: number | null
-    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity) => any
-    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => any
+    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, selectionType: SelectionType) => any
+    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any

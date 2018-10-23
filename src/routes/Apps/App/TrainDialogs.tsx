@@ -10,6 +10,7 @@ import * as OF from 'office-ui-fabric-react'
 import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../util'
+import { SelectionType } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'
 import { Icon } from 'office-ui-fabric-react/lib/Icon'
@@ -26,6 +27,7 @@ export interface EditHandlerArgs {
     extractResponse?: CLM.ExtractResponse, 
     textVariations?: CLM.TextVariation[],
     trainScorerStep?: CLM.TrainScorerStep
+    selectionType?: SelectionType
 }
 
 interface IRenderableColumn extends OF.IColumn {
@@ -437,7 +439,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
+    async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, selectionType: SelectionType) {
 
         try {
             const senderType = selectedActivity.channelData.senderType
@@ -509,7 +511,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
 
             // true = select next activity after updating
-            await this.onUpdateHistory(newTrainDialog, selectedActivity, true)
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, selectionType)
         }
         catch (error) {
             console.warn(`Error when attempting to insert an Action `, error)
@@ -538,7 +540,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.onUpdateHistory(newTrainDialog, selectedActivity)
+            this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
         }
         catch (error) {
             console.warn(`Error when attempting to change an Action: `, error)
@@ -566,7 +568,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.onUpdateHistory(newTrainDialog, selectedActivity)
+            this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
         }
         catch (error) {
                 console.warn(`Error when attempting to change extraction: `, error)
@@ -605,7 +607,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            await this.onUpdateHistory(newTrainDialog, null)
+            await this.onUpdateHistory(newTrainDialog, null, SelectionType.NONE)
         }
         else if (senderType === CLM.SenderType.Bot) {
             // If Action deleted remove it
@@ -614,7 +616,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            await this.onUpdateHistory(newTrainDialog, null)
+            await this.onUpdateHistory(newTrainDialog, null, SelectionType.NONE)
         }
     }
 
@@ -661,7 +663,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // Allow to scroll to bottom
             this.props.clearWebchatScrollPosition()
 
-            await this.onUpdateHistory(newTrainDialog, selectedActivity)
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
         }
         catch (error) {
             console.warn(`Error when attempting to create teach session from history: `, error)
@@ -669,7 +671,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string | undefined) {
+    async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string, selectionType: SelectionType) {
 
         if (!inputText) {
             throw new Error("inputText is null")
@@ -742,7 +744,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
 
             // true - select created input
-            await this.onUpdateHistory(newTrainDialog, selectedActivity, true)
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, selectionType)
         }
         catch (error) {
             console.warn(`Error when attempting to create teach session from history: `, error)
@@ -775,15 +777,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.onCloseEditDialogModal();
     }
 
-    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectNextActivity: boolean = false) {
+    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType) {
         const originalId = this.state.originalTrainDialogId || (this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null);
 
         try {
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
             let activityIndex = selectedActivity ? Util.matchedActivityIndex(selectedActivity, teachWithHistory.history) : null
-            if (activityIndex !== null && selectNextActivity) {
+            if (activityIndex !== null && selectionType === SelectionType.NEXT) {
                 // Select next activity, useful for when inserting a step
                 activityIndex = activityIndex + 1
+            }
+            else if (selectionType === SelectionType.NONE) {
+                activityIndex = null
             }
             
             this.setState({
@@ -1147,8 +1152,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         editingPackageId={this.props.editingPackageId}
                         onClose={() => this.onCloseTeachSession()}
                         onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
-                        onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
-                        onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)} 
+                        onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.selectionType!)}
+                        onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput!, editHandlerArgs.selectionType!)} 
                         onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                         onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)} 
                         onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)} 
@@ -1172,8 +1177,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     initialSelectedActivityIndex={this.state.selectedActivityIndex}
                     editType={this.state.editType}
                     onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
-                    onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
-                    onInsertInput={(trainDialog, activity, userInput) => this.onInsertInput(trainDialog, activity, userInput)} 
+                    onInsertAction={(trainDialog, activity, selectionType) => this.onInsertAction(trainDialog, activity, selectionType)}
+                    onInsertInput={(trainDialog, activity, userInput, selectionType) => this.onInsertInput(trainDialog, activity, userInput, selectionType)} 
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}
                     onChangeAction={(trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainDialog, activity, trainScorerStep)}

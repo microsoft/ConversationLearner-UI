@@ -10,6 +10,7 @@ import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../util'
+import { SelectionType } from '../../../types/const'
 import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -504,7 +505,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.clearWebchatScrollPosition()
             }
 
-            await this.onUpdateHistory(newTrainDialog, selectedActivity, true)
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NEXT)
         }
         catch (error) {
             console.warn(`Error when attempting to insert an Action `, error)
@@ -533,7 +534,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.onUpdateHistory(newTrainDialog, selectedActivity)
+            this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
         }
         catch (error) {
             console.warn(`Error when attempting to change an Action: `, error)
@@ -561,7 +562,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.onUpdateHistory(newTrainDialog, selectedActivity)
+            this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
         }
         catch (error) {
                 console.warn(`Error when attempting to change extraction: `, error)
@@ -600,7 +601,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            await this.onUpdateHistory(newTrainDialog, null)
+            await this.onUpdateHistory(newTrainDialog, null, SelectionType.NONE)
         }
         else if (senderType === CLM.SenderType.Bot) {
             // If Action deleted remove it
@@ -609,7 +610,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            await this.onUpdateHistory(newTrainDialog, null)
+            await this.onUpdateHistory(newTrainDialog, null, SelectionType.NONE)
         }
     }
 
@@ -685,7 +686,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.clearWebchatScrollPosition()
             }
 
-            await this.onUpdateHistory(newTrainDialog, selectedActivity, true)
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NEXT)
         }
         catch (error) {
             console.warn(`Error when attempting to create teach session from history: `, error)
@@ -732,14 +733,17 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectNextActivity: boolean = false) {
+    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType) {
 
         try {
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
             let activityIndex = selectedActivity ? Util.matchedActivityIndex(selectedActivity, this.state.history) : null
-            if (activityIndex !== null && selectNextActivity) {
+            if (activityIndex !== null && selectionType === SelectionType.NEXT) {
                 // Select next activity, useful for when inserting a step
                 activityIndex = activityIndex + 1
+            }
+            else if (selectionType === SelectionType.NONE) {
+                activityIndex = null
             }
             
             this.setState({

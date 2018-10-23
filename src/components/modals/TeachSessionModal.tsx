@@ -26,6 +26,7 @@ import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
 import { filterDummyEntities } from '../../util'
+import { SelectionType } from '../../types/const'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { EditDialogType } from '.';
@@ -34,6 +35,7 @@ import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs';
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
     isUserInputModalOpen: boolean,
+    addUserInputSelectionType: SelectionType
     isInitStateOpen: boolean,
     isInitAvailable: boolean,
     initialEntities: CLM.FilledEntityMap | null,
@@ -52,6 +54,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isConfirmDeleteOpen: false,
         isUserInputModalOpen: false,
+        addUserInputSelectionType: SelectionType.NONE,
         isInitStateOpen: false,
         isInitAvailable: true,
         initialEntities: null,
@@ -403,8 +406,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickAddUserInput() {
+        const isLastActivity = this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1)
+        const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
         this.setState({
-            isUserInputModalOpen: true
+            isUserInputModalOpen: true,
+            addUserInputSelectionType: selectionType
         })
     }
 
@@ -421,14 +427,16 @@ class TeachModal extends React.Component<Props, ComponentState> {
             isUserInputModalOpen: false
         })
         if (this.state.selectedActivityIndex != null) { 
-            this.props.onEditTeach(this.state.selectedActivityIndex, {userInput}, this.props.onInsertInput) 
+            this.props.onEditTeach(this.state.selectedActivityIndex, {userInput, selectionType: this.state.addUserInputSelectionType}, this.props.onInsertInput) 
         }
     }
 
     @autobind
     onInsertAction() {
         if (this.state.selectedActivityIndex != null) { 
-            this.props.onEditTeach(this.state.selectedActivityIndex, null, this.props.onInsertAction) 
+            const isLastActivity = this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1)
+            const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
+            this.props.onEditTeach(this.state.selectedActivityIndex, {selectionType}, this.props.onInsertAction) 
         }
     }
 
@@ -775,7 +783,7 @@ export interface ReceivedProps {
     isOpen: boolean
     onClose: Function
     onEditTeach: (historyIndex: number, args: EditHandlerArgs|null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any) => void
-    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity) => any
+    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
