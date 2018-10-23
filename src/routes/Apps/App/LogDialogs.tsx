@@ -16,6 +16,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'r
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
 import { EditHandlerArgs } from './TrainDialogs'
+import { TeachSessionState } from '../../../types/StateTypes'
 import { getDefaultEntityMap } from '../../../util';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import ReplayErrorList from '../../../components/modals/ReplayErrorList';
@@ -230,6 +231,9 @@ interface ComponentState {
     history: Activity[]
     lastAction: CLM.ActionBase | null
     validationErrors: CLM.ReplayError[]
+    // Hack to keep screen from flashing when transition to Edit Page
+    lastTeachSession: TeachSessionState | null
+
 }
 
 // TODO: This component is highly redundant with TrainDialogs.  Should collapse
@@ -256,7 +260,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             dialogKey: 0,
             history: [],
             lastAction: null,
-            validationErrors: []
+            validationErrors: [],
+            lastTeachSession: null
         }
     }
 
@@ -307,7 +312,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(newProps: Props) {
-
+        // A hack to prevent the screen from flashing
+        // Will go away once Edit/Teach dialogs are merged
+        if (newProps.teachSession && newProps.teachSession !== this.props.teachSession) {
+            this.setState({
+                lastTeachSession: this.props.teachSession
+            })
+        }
         // If log dialogs have been updated, update selected logDialog too
         if (this.props.logDialogs !== newProps.logDialogs) {
             const logDialog = this.state.currentLogDialog
@@ -724,7 +735,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectNextActivity: boolean = false) {
 
         try {
-
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
             let activityIndex = selectedActivity ? Util.matchedActivityIndex(selectedActivity, this.state.history) : null
             if (activityIndex !== null && selectNextActivity) {
@@ -887,6 +897,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             ? EditState.INVALID_BOT
             : EditState.CAN_EDIT
 
+        const teachSession = (this.props.teachSession && this.props.teachSession.teach) ?
+            this.props.teachSession : this.state.lastTeachSession
+
         return (
             <div className="cl-page">
                 <div data-testid="log-dialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
@@ -998,10 +1011,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     formattedTitleId={FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE}
                     formattedMessageId={FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE}
                 />
-                {this.props.teachSession.teach &&
+                {teachSession && teachSession.teach &&
                     <TeachSessionModal
                         isOpen={this.state.isTeachDialogModalOpen}
                         app={this.props.app}
+                        teachSession={teachSession}
                         editingPackageId={this.props.editingPackageId}
                         onClose={this.onCloseTeachSession}
                         onSetInitialEntities={null} 

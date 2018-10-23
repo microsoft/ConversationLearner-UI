@@ -42,7 +42,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
                 uiScoreInput: action.teachWithHistory.uiScoreInput
             }
         case AT.DELETE_TEACH_SESSION_FULFILLED:
-            return { ...initialState, teach: undefined }
+            return { ...initialState }
         case AT.DELETE_MEMORY_FULFILLED:
             return { ...state, memories: [] }
         case AT.RUN_EXTRACTOR_FULFILLED:

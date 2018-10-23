@@ -12,7 +12,7 @@ import { AT } from '../../types/ActionTypes'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as BotChat from '@conversationlearner/webchat'
 import * as OF from 'office-ui-fabric-react';
-import { State } from '../../types';
+import { State, TeachSessionState } from '../../types';
 import Webchat, { renderActivity } from '../Webchat'
 import TeachSessionAdmin, { RenderData } from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
@@ -25,6 +25,7 @@ import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
+import { filterDummyEntities } from '../../util'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { EditDialogType } from '.';
@@ -391,8 +392,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 scoreInput: scorerStep ? scorerStep.input : undefined,
                 scoreResponse: scoreResponse,
                 roundIndex,
-                memories: memories,
-                prevMemories: prevMemories,
+                memories: filterDummyEntities(memories),
+                prevMemories: filterDummyEntities(prevMemories),
                 extractResponses: [],
                 textVariations: textVariations
             }       
@@ -661,6 +662,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     <TeachSessionAdmin
                                         data-testid="teach-session-admin"
                                         app={this.props.app}
+                                        teachSession={this.props.teachSession}
                                         editingPackageId={this.props.editingPackageId}
                                         editType={this.props.editType}
                                         initialEntities={this.state.initialEntities}
@@ -765,8 +767,7 @@ const mapStateToProps = (state: State) => {
     return {
         user: state.user.user,
         entities: state.entities,
-        actions: state.actions,
-        teachSession: state.teachSession
+        actions: state.actions
     }
 }
 
@@ -781,6 +782,7 @@ export interface ReceivedProps {
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onSetInitialEntities: ((initialFilledEntities: CLM.FilledEntity[]) => void) | null
     app: CLM.AppBase
+    teachSession: TeachSessionState
     editingPackageId: string
     // Is it new, from a TrainDialog or LogDialog
     editType: EditDialogType,

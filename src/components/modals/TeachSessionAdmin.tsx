@@ -15,6 +15,7 @@ import EntityExtractor from './EntityExtractor';
 import MemoryTable from './MemoryTable';
 import { FM } from '../../react-intl-messages'
 import { filterDummyEntities } from '../../util'
+import { TeachSessionState } from '../../types/StateTypes'
 import { Icon, FontClassNames, autobind } from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import './TeachSessionAdmin.css'
@@ -426,7 +427,6 @@ const mapStateToProps = (state: State) => {
 
     return {
         user: state.user.user,
-        teachSession: state.teachSession,
         entities: state.entities
     }
 }
@@ -436,6 +436,7 @@ export interface ReceivedProps {
     onEditExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onEditAction: (trainScorerStep: CLM.TrainScorerStep) => any
     app: CLM.AppBase
+    teachSession: TeachSessionState
     editingPackageId: string
     editType: EditDialogType,
     initialEntities: CLM.FilledEntityMap | null,

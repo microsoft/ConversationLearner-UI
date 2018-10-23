@@ -88,4 +88,12 @@ export function getDefaultEntityMap(entities: CLM.EntityBase[]): Map<string, str
     return entities.reduce((m, e) => m.set(e.entityId, `$${e.entityName}`), new Map<string, string>())
 }
 
+export function setStatePromise(that: any, newState: any) {
+    return new Promise((resolve) => {
+        that.setState(newState, () => {
+            resolve();
+        });
+    });
+}
+
 export const delay = <T>(ms: number, value?: T): Promise<T> => new Promise<T>(resolve => setTimeout(() => resolve(value), ms))

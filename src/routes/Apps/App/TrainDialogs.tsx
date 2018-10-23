@@ -17,6 +17,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'r
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
+import { TeachSessionState } from '../../../types/StateTypes'
 import { getDefaultEntityMap, notNullOrUndefined } from '../../../util'
 import * as moment from 'moment'
 
@@ -213,6 +214,8 @@ interface ComponentState {
     dialogKey: number,
     entityFilter: OF.IDropdownOption | null
     actionFilter: OF.IDropdownOption | null
+    // Hack to keep screen from flashing when transition to Edit Page
+    lastTeachSession: TeachSessionState | null
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
@@ -236,7 +239,46 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             searchValue: '',
             dialogKey: 0,
             entityFilter: null,
-            actionFilter: null
+            actionFilter: null,
+            lastTeachSession: null
+        }
+    }
+
+    componentDidMount() {
+        this.newTeachSessionButton.focus();
+        if (this.props.filteredAction) {
+            this.setState({
+                actionFilter: this.toActionFilter(this.props.filteredAction, this.props.entities)
+            })
+        }
+        if (this.props.filteredEntity) {
+            this.setState({
+                entityFilter: this.toEntityFilter(this.props.filteredEntity)
+            })
+        }
+    }
+
+    componentWillReceiveProps(newProps: Props) {
+        // A hack to prevent the screen from flashing
+        // Will go away once Edit/Teach dialogs are merged
+        if (newProps.teachSession && newProps.teachSession !== this.props.teachSession) {
+            this.setState({
+                lastTeachSession: this.props.teachSession
+            })
+        }
+        if (newProps.filteredAction && this.props.filteredAction !== newProps.filteredAction) {
+            this.setState({
+                actionFilter: this.toActionFilter(newProps.filteredAction, newProps.entities)
+            })
+        }
+        if (newProps.filteredEntity && this.props.filteredEntity !== newProps.filteredEntity) {
+            this.setState({
+                entityFilter: this.toEntityFilter(newProps.filteredEntity)
+            })
+        }
+        // If train dialogs have been updated, update selected trainDialog too
+        if (this.props.trainDialogs !== newProps.trainDialogs) {
+            this.newTeachSessionButton.focus();
         }
     }
 
@@ -307,37 +349,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentDidMount() {
-        this.newTeachSessionButton.focus();
-        if (this.props.filteredAction) {
-            this.setState({
-                actionFilter: this.toActionFilter(this.props.filteredAction, this.props.entities)
-            })
-        }
-        if (this.props.filteredEntity) {
-            this.setState({
-                entityFilter: this.toEntityFilter(this.props.filteredEntity)
-            })
-        }
-    }
-
-    componentWillReceiveProps(newProps: Props) {
-        if (newProps.filteredAction && this.props.filteredAction !== newProps.filteredAction) {
-            this.setState({
-                actionFilter: this.toActionFilter(newProps.filteredAction, newProps.entities)
-            })
-        }
-        if (newProps.filteredEntity && this.props.filteredEntity !== newProps.filteredEntity) {
-            this.setState({
-                entityFilter: this.toEntityFilter(newProps.filteredEntity)
-            })
-        }
-        // If train dialogs have been updated, update selected trainDialog too
-        if (this.props.trainDialogs !== newProps.trainDialogs) {
-            this.newTeachSessionButton.focus();
-        }
-    }
-
     @autobind
     onSelectEntityFilter(item: OF.IDropdownOption) {
         this.setState({
@@ -393,6 +404,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async onEditTeach(historyIndex: number, args: EditHandlerArgs|null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any) {
 
         try {
+
             if (this.props.teachSession.teach) {
                 // Get train dialog associated with the teach session
                 let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.props.teachSession.teach.trainDialogId, false) as any) as Promise<CLM.TrainDialog>)
@@ -1012,6 +1024,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             ? EditState.INVALID_BOT
             : EditState.CAN_EDIT
 
+        const teachSession = (this.props.teachSession && this.props.teachSession.teach) ?
+            this.props.teachSession : this.state.lastTeachSession
+
         return (
             <div className="cl-page">
                 <div data-testid="train-dialogs-title" className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
@@ -1124,10 +1139,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                         />
                     </React.Fragment>}
-                {this.props.teachSession && this.props.teachSession.teach && 
+                {teachSession && teachSession.teach && 
                     <TeachSessionModal
                         isOpen={this.state.isTeachDialogModalOpen}
                         app={this.props.app}
+                        teachSession={teachSession}
                         editingPackageId={this.props.editingPackageId}
                         onClose={() => this.onCloseTeachSession()}
                         onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
