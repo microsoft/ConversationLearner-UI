@@ -7,6 +7,8 @@ const actionsModal = require('../support/components/ActionsModal')
 const actionsGrid = require('../support/components/ActionsGrid')
 const modelPage = require('../support/components/ModelPage')
 
+// NOTE: Setting an Expected Entity causes the same entity to be placed in the Disqualified Entity field by default
+//       Currently this is not an issue but you will see it try to re-add the same Disqualified Entity durring a test run.
 export function CreateNewAction({response, expectedEntities, requiredEntities, disqualifyingEntities, type = 'TEXT' })
 {
   modelPage.NavigateToActions()

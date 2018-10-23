@@ -126,15 +126,6 @@ var MonitorDocumentChanges = (function()
 
             lastChangeTime = currentTime
             lastHtml = currentHtml
-            
-            if (currentHtml.includes('data-testid="training-status-polling-stopped-warning"')) 
-            {    
-                if (currentTime > canRefreshTrainingStatusTime)
-                {
-                    cy.get('[data-testid="training-status-refresh-button"]').click()
-                    canRefreshTrainingStatusTime = currentTime + (20 * 1000)
-                }
-            }
         }
         
         MonitorSpinner()

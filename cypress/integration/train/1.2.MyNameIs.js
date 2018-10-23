@@ -18,7 +18,7 @@ describe("My name is", () =>
   {
     var modelName = models.ImportModel('Model1-mni', 'Model1-wyn.cl')
     modelPage.NavigateToTrainDialogs()
-    modelPage.WaitForTrainingStatusCompleted()
+    cy.WaitForTrainingStatusCompleted()
 
     trainDialogPage.CreateNewTrainDialog()
 
