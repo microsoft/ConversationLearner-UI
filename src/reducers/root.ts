@@ -30,7 +30,7 @@ const rootReducer: Reducer<State> = combineReducers<State>({
     display: displayReducer,
     error: errorReducer,
     logDialogs: logDialogsReducer,
-    teachSessions: teachSessionReducer,
+    teachSession: teachSessionReducer,
     chatSessions: chatSessionReducer,
     settings: settingsReducer,
     source: sourceReducer

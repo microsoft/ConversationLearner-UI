@@ -28,7 +28,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
             }
             const newApp: App = {
                 ...app,
-                trainingStatus: TrainingStatusCode.Running,
+                trainingStatus: TrainingStatusCode.Queued,
                 didPollingExpire: false
             }
 

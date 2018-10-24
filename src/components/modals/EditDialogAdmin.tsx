@@ -227,8 +227,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             scorerStep: scorerStep,
             scoreResponse: scoreResponse,
             round: round,
-            memories: memories,
-            prevMemories: prevMemories
+            memories: filterDummyEntities(memories),
+            prevMemories: filterDummyEntities(prevMemories)
         }
     }
     
@@ -337,8 +337,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                         <MemoryTable
                             data-testid="modal-memory-table"
-                            memories={filterDummyEntities(renderData.memories)}
-                            prevMemories={filterDummyEntities(renderData.prevMemories)}
+                            memories={renderData.memories}
+                            prevMemories={renderData.prevMemories}
                         />
                     </div>
                     ) : this.renderHelpText(isLogDialog)
@@ -370,7 +370,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     roundIndex={this.state.roundIndex}
                                     autoTeach={false}
                                     dialogMode={renderData.dialogMode}
-                                    extractResponses={this.props.extractResponses}
+                                    extractResponses={this.props.teachSession ? this.props.teachSession.extractResponses : []}
                                     originalTextVariations={renderData.round.extractorStep.textVariations}
                                     onSumbitExtractions={this.props.onSubmitExtraction}
                                     onPendingStatusChanged={this.props.onPendingStatusChanged}
@@ -405,7 +405,6 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 canEdit={this.props.editState === EditState.CAN_EDIT}
                                 hideScore={false}  // LARS
                                 dialogType={CLM.DialogType.TRAINDIALOG}
-                                sessionId={this.props.trainDialog.trainDialogId}
                                 autoTeach={false}
                                 dialogMode={renderData.dialogMode}
                                 scoreResponse={renderData.scoreResponse}
@@ -429,7 +428,7 @@ const mapStateToProps = (state: State) => {
     return {
         actions: state.actions,
         entities: state.entities,
-        extractResponses: state.teachSessions.extractResponses
+        teachSession: state.teachSession
     }
 }
 

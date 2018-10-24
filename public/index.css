@@ -41,8 +41,9 @@ html {
   min-width: 32px !important;
 }
 
-.cl-button-scorewebchat {
-  top: -60px;
+.cl-button-blockwebchat {
+  left: 339px;
+  position: relative;
 }
 
 .cl-textfield--withButton {
@@ -212,7 +213,19 @@ html {
   background: transparent !important
 }
 
-.cl-label{
+.ms-Button-icon[data-icon-name="MessageFill"] {
+  font-size: 30px;
+  color: var(--color-error);
+  background: transparent !important
+}
+
+
+.ms-Button-icon[data-icon-name="MessageFill"]:not(:disabled):hover {
+  color: var(--color-red) !important;
+  background: transparent !important
+}
+
+.cl-label {
   display: inline-block !important;
 }
 
@@ -639,6 +652,9 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   flex-shrink: 0;
 }
 
+.cl-disabledinputbutton-svg {
+  fill: red !important
+}
 /**
  Should not use margins on components, this is external affect based on usage but the component should not know where it's used
  the parents should define the spacing responsibilities of children, otherwise chil */

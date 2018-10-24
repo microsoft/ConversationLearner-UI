@@ -767,7 +767,6 @@ export interface ReceivedProps {
     app: AppBase
     editingPackageId: string,
     dialogType: DialogType,  // LARS = make this not train dialog specific
-    sessionId: string,
     autoTeach: boolean,
     dialogMode: DialogMode,
     scoreResponse: ScoreResponse,
