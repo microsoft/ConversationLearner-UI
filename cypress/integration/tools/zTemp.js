@@ -4,13 +4,15 @@
 */
 
 const homePage = require('../../support/components/HomePage')
+const testList = require('../../support/TestList')
 
 /// Description: A temporary workspace for experimental code
 describe('zTemp test', () =>
 {
-  it.skip('zTemp test', () => 
+  it('zTemp test', () => 
   {
-    homePage.Visit()
-    cy.pause()
+    // homePage.Visit()
+    // cy.pause()
+    testList.AddToCypressTestList()
   })
 })
