@@ -107,6 +107,7 @@ export function WhatsYourName1()
 
   editDialogModal.TypeYourMessage('Hello')
   editDialogModal.ClickScoreActionsButton()
+  scorerModal.VerifyContainsEnabledAction("What's your name?")
   scorerModal.VerifyContainsDisabledAction('Hello $name')
   scorerModal.ClickAction("What's your name?")
 
@@ -114,6 +115,8 @@ export function WhatsYourName1()
   editDialogModal.VerifyDetectedEntity('name', 'David')
   editDialogModal.ClickScoreActionsButton()
   memoryTableComponent.VerifyEntityInMemory('name', 'David')
+  scorerModal.VerifyContainsDisabledAction("What's your name?")
+  scorerModal.VerifyContainsEnabledAction('Hello David')
   scorerModal.ClickAction('Hello David')
 
   editDialogModal.ClickSaveButton()
@@ -132,6 +135,7 @@ export function WhatsYourName2()
   editDialogModal.ClickScoreActionsButton()
   memoryTableComponent.VerifyEntityInMemory('name', 'David')
   scorerModal.VerifyContainsDisabledAction("What's your name?")
+  scorerModal.VerifyContainsEnabledAction('Hello David')
   scorerModal.ClickAction('Hello David')
 
   // Wait for the training to complete.
@@ -143,6 +147,7 @@ export function WhatsYourName2()
   editDialogModal.ClickScoreActionsButton()
   memoryTableComponent.VerifyEntityInMemory('name', 'Susan', 'David')
   scorerModal.VerifyContainsDisabledAction("What's your name?")
+  scorerModal.VerifyContainsEnabledAction('Hello Susan')
   scorerModal.ClickAction('Hello Susan')
 
   editDialogModal.ClickSaveButton()

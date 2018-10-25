@@ -53,7 +53,7 @@ Cypress.Commands.add('UploadFile', (fileName, selector) =>
 Cypress.Commands.add('ExactMatch', { prevSubject: 'element'}, (elements, expectedText) => 
 {   
   for(var i = 0; i < elements.length; i++) if(elements[i].innerText == expectedText) return elements[i]
-  return cy.contains(`Exact Match '${expectedText}' NOT Found`)
+  throw `Exact Match '${expectedText}' NOT Found`
 })
 
 Cypress.Commands.add("WaitForTrainingStatusCompleted", () => 
