@@ -15,7 +15,7 @@ var testGroups =
 [
   { name: 'CreateModels', tests:
   [
-    {name: "Custom and Builtin Entities", func: createModels.AllEntityTypes},
+    {name: "All Entity Types", func: createModels.AllEntityTypes},
     {name: "Disqualifying Entities", func: createModels.DisqualifyingEntities},
     {name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions},
     {name: "What's Your Name", func: createModels.WhatsYourName},
@@ -27,7 +27,7 @@ var testGroups =
   { name: 'Train', tests:
   [
     {name: "Disqualifying Entities", func: train.DisqualifyingEntities},
-    {name: "Wait vs No Wait Action", func: train.WaitVsNoWaitAction},
+    {name: "Wait vs No Wait Action", func: train.WaitVsNoWaitActions},
     {name: "What's Your Name 1", func: train.WhatsYourName1},
     {name: "What's Your Name 2", func: train.WhatsYourName2},
   ]},

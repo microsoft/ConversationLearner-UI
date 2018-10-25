@@ -59,7 +59,7 @@ export function DisqualifyingEntities()
   editDialogModal.ClickSaveButton()
 }
 
-export function WaitVsNoWaitAction()
+export function WaitVsNoWaitActions()
 {
   var modelName = models.ImportModel('Model-0wait', 'Model-0wait.cl')
   
