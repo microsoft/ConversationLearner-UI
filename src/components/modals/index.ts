@@ -22,6 +22,7 @@ export enum EditDialogType {
     TRAIN_ORIGINAL = 'TRAIN_ORIGINAL',
     LOG_EDITED = 'LOG_EDITED',
     LOG_ORIGINAL = 'LOG_ORIGINAL',
+    BRANCH = 'BRANCH'
 }
 
 // State of current edited dialog

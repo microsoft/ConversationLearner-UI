@@ -467,12 +467,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Get a score for this step
             let uiScoreResponse = await ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, history) as any) as Promise<CLM.UIScoreResponse>)
 
+            // LARS todo catch error here and clear !'s below
             // Find top scoring Action
-            let insertedAction = this.getBestAction(uiScoreResponse.scoreResponse)
+            let insertedAction = this.getBestAction(uiScoreResponse.scoreResponse!)
 
             // None were qualified so pick the first (will show in UI as invalid)
-            if (!insertedAction && uiScoreResponse.scoreResponse.unscoredActions[0]) {
-                let scoredAction = {...uiScoreResponse.scoreResponse.unscoredActions[0], score: 1.0}
+            if (!insertedAction && uiScoreResponse.scoreResponse!.unscoredActions[0]) {
+                let scoredAction = {...uiScoreResponse.scoreResponse!.unscoredActions[0], score: 1.0}
                 delete scoredAction.reason
                 insertedAction = scoredAction
             }

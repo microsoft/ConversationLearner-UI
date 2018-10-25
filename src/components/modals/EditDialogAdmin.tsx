@@ -8,7 +8,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import { clearExtractResponses } from '../../actions/teachActions'
+import actions from '../../actions'
 import EntityExtractor from './EntityExtractor';
 import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
@@ -80,6 +80,42 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 scoreIndex: null
             })
         }
+    }
+
+    async hasConflicts(textVariations: CLM.TextVariation[]): Promise<boolean> {
+
+        // Check for conflics on text variation that have changed
+        const renderData = this.getRenderData()
+        const originalTextVariations = renderData.round!.extractorStep.textVariations
+        let changedTextVariations: CLM.TextVariation[] = []
+        textVariations.map(tv => {
+            const found = originalTextVariations.find(otv => CLM.ModelUtils.areEqualTextVariations(tv, otv))
+            if (!found) {
+                changedTextVariations.push(tv)
+            }
+        })
+    
+        // Check the changes ones, return if conflict found
+        for (let changedTextVariation of changedTextVariations) {
+            let conflict = await this.props.fetchTextVariationConflictThunkAsync(this.props.app.appId, this.props.trainDialog.trainDialogId, changedTextVariation)
+            if (conflict) {
+                return true
+            }
+        }
+        return false
+    }
+    
+    @OF.autobind
+    async onEntityExtractorSubmit(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]): Promise<void> {
+        
+        if (await this.hasConflicts(textVariations)) {
+            return
+        }
+        
+        this.props.clearExtractResponses() 
+
+        // If no conflicts, submit the extractions
+        this.props.onSubmitExtraction(extractResponse, textVariations)
     }
 
     getPrevMemories(): CLM.Memory[] {
@@ -371,8 +407,9 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     autoTeach={false}
                                     dialogMode={renderData.dialogMode}
                                     extractResponses={this.props.teachSession ? this.props.teachSession.extractResponses : []}
+                                    extractConflict={this.props.teachSession ? this.props.teachSession.extractConflict : null} 
                                     originalTextVariations={renderData.round.extractorStep.textVariations}
-                                    onSumbitExtractions={this.props.onSubmitExtraction}
+                                    onSubmitExtractions={this.onEntityExtractorSubmit}
                                     onPendingStatusChanged={this.props.onPendingStatusChanged}
                                 />
                                 : <span>
@@ -421,7 +458,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        clearExtractResponses
+        clearExtractResponses: actions.teach.clearExtractResponses,
+        fetchTextVariationConflictThunkAsync: actions.train.fetchTextVariationConflictThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -449,7 +487,7 @@ export interface ReceivedProps {
     editState: EditState,
     editType: EditDialogType,
     onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
-    onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void                              
+    onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void                            
     onPendingStatusChanged: (changed: boolean) => void
 }
 

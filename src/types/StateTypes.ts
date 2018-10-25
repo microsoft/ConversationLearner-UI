@@ -2,60 +2,52 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import {
-    DialogMode,
-    AppBase,
-    Banner,
-    BotInfo,
-    EntityBase,
-    ActionBase,
-    TrainDialog, LogDialog, Teach, Session,
-    Memory, UIScoreInput, ScoreInput, ExtractResponse, ScoreResponse, AppDefinitionChange
-} from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import { ErrorType } from './const'
 import { AT } from './ActionTypes'
 import { TipType } from '../components/ToolTips/ToolTips'
 
-export type ActionState = ActionBase[];
-export type EntityState = EntityBase[];
+export type ActionState = CLM.ActionBase[];
+export type EntityState = CLM.EntityBase[];
 export type ErrorState = {
     type: ErrorType,
     title: string | null,
     messages: string[],
     actionType: AT | null
 }
-export type TrainDialogState = TrainDialog[];
+export type TrainDialogState = CLM.TrainDialog[];
 
-export type LogDialogState = LogDialog[]
+export type LogDialogState = CLM.LogDialog[]
 
 export type AppsState = {
-    all: AppBase[],
+    all: CLM.AppBase[],
     activeApps: { [appId: string]: string };  // appId: packageId
 }
 export type BotState = {
-    botInfo: BotInfo | null
+    botInfo: CLM.BotInfo | null
     browserId: string
 }
 export type TeachSessionState = {
-    teach: Teach | undefined,
-    dialogMode: DialogMode,
+    teach: CLM.Teach | undefined,
+    dialogMode: CLM.DialogMode,
     input: string,
-    prevMemories: Memory[],
-    memories: Memory[],
-    scoreInput: ScoreInput | undefined,
-    uiScoreInput: UIScoreInput | undefined,
-    extractResponses: ExtractResponse[],
-    scoreResponse: ScoreResponse | undefined,
+    prevMemories: CLM.Memory[],
+    memories: CLM.Memory[],
+    scoreInput: CLM.ScoreInput | undefined,
+    uiScoreInput: CLM.UIScoreInput | undefined,
+    extractResponses: CLM.ExtractResponse[],
+    extractConflict: CLM.ExtractResponse | null,
+    scoreResponse: CLM.ScoreResponse | undefined,
     autoTeach: boolean
 }
 export type ChatSessionState = {
-    all: Session[],
-    current: Session | null
+    all: CLM.Session[],
+    current: CLM.Session | null
 }
 export type DisplayState = {
     displaySpinner: string[],
     tipType: TipType,
-    clearedBanner: Banner | null,
+    clearedBanner: CLM.Banner | null,
     webchatScrollPosition: number | undefined
 }
 
@@ -76,7 +68,7 @@ export interface SettingsState {
     botPort: number
 }
 
-export type SourceState = { [appId: string]: AppDefinitionChange }
+export type SourceState = { [appId: string]: CLM.AppDefinitionChange }
 
 export type State = {
     profile: ProfileState,
