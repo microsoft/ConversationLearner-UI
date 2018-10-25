@@ -3,6 +3,6 @@
  * Licensed under the MIT License.
 */
 
-const testList = require('../../support/TestList')
+const testList = require('../../../support/TestList')
 
 testList.AddToCypressTestList()
