@@ -14,4 +14,3 @@ export function Created()                         { cy.Get('[data-testid="train-
 export function SearchBox()                       { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
 export function EntityDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-entity"]')}
 export function ActionDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-action"]')}
-export function WaitForTrainingStatusCompleted()  { cy.Contains('.cl-training-status__icon-row--success', 'Completed', {timeout: 120000})}

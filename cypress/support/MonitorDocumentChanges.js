@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
 */
 
-const helpers = require('../support/helpers.js')
+const helpers = require('./Helpers.js')
 
 var MonitorDocumentChanges = (function()
 {
@@ -43,12 +43,12 @@ var MonitorDocumentChanges = (function()
             return originalFn(subject, chainers, value)
         })
 
-        Cypress.Commands.add('Get', (selector) => 
+        Cypress.Commands.add('Get', (selector, options) => 
         {   
             helpers.ConLog(`cy.Get()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector: \n${selector}`)
             cy.wrap(700, {timeout: 60000}).should('lte', 'MillisecondsSinceLastChange').then(() => {
             helpers.ConLog(`cy.Get()`, `DOM Is Stable`)
-            cy.get(selector)
+            cy.get(selector, options)
         })})
 
         // Special case version that allows a 1 minute time out.

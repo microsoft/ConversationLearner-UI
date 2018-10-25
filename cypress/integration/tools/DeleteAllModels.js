@@ -4,7 +4,7 @@
 */
 
 const homePage = require('../../support/components/HomePage')
-const helpers = require('../../support/helpers.js')
+const helpers = require('../../support/Helpers.js')
 
 /// Description: Tests that models can be deleted from the home page AND useful as a clean up tool
 /// Verifications: Can delete a model, Can delete All models

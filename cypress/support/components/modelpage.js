@@ -3,19 +3,19 @@
  * Licensed under the MIT License.
  */
 
-const entitiesPage = require('../../support/components/EntitiesPage')
+const entitiesGrid = require('../../support/components/EntitiesGrid')
 const actionsGrid  = require('../../support/components/ActionsGrid')
-const trainDialogPage = require('../../support/components/TrainDialogsPage')
-const logDialogPage = require('../../support/components/logdialogspage')
+const trainDialogsGrid = require('./TrainDialogsGrid')
+const logDialogsGrid = require('../../support/components/LogDialogsGrid')
  
 export function VerifyModelName(name)     { cy.Get('[data-testid="app-index-model-name"]').should(el => { expect(el).to.contain(name) })}
 export function VerifyPageTitle()         { cy.Get('[data-testid="dashboard-title"]').contains('Log Dialogs') }
 
 export function NavigateToHome()          { cy.Get('[data-testid="app-index-nav-link-home"]').Click();          VerifyPageTitle() }
-export function NavigateToEntities()      { cy.Get('[data-testid="app-index-nav-link-entities"]').Click();      entitiesPage.VerifyPageTitle() }
+export function NavigateToEntities()      { cy.Get('[data-testid="app-index-nav-link-entities"]').Click();      entitiesGrid.VerifyPageTitle() }
 export function NavigateToActions()       { cy.Get('[data-testid="app-index-nav-link-actions"]').Click();       actionsGrid.VerifyPageTitle() }
-export function NavigateToTrainDialogs()  { cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').Click(); trainDialogPage.VerifyPageTitle() }
-export function NavigateToLogDialogs()    { cy.Get('[data-testid="app-index-nav-link-log-dialogs"]').Click();   logDialogPage.VerifyPageTitle() }
+export function NavigateToTrainDialogs()  { cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').Click(); trainDialogsGrid.VerifyPageTitle() }
+export function NavigateToLogDialogs()    { cy.Get('[data-testid="app-index-nav-link-log-dialogs"]').Click();   logDialogsGrid.VerifyPageTitle() }
 
 // To validate that this code works, search src/action/appActions.ts for these and alter them:
 //   fetchApplicationTrainingStatusThunkAsync
