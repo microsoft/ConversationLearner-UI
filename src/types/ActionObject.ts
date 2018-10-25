@@ -11,7 +11,7 @@ import {
     TrainDialog, LogDialog, Session, Teach, ScoreInput,
     UserInput, ExtractResponse, DialogType,
     UIExtractResponse, UITrainScorerStep, DialogMode,
-    UIPostScoreResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus, AppDefinitionChange
+    UIPostScoreResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus, AppDefinitionChange, TextVariation
 } from '@conversationlearner/models'
 import { TipType } from '../components/ToolTips/ToolTips'
 import { ErrorType } from './const'
@@ -264,6 +264,14 @@ export type FetchAction = {
     type: AT.FETCH_TRAINDIALOGREPLAY_FULFILLED,
     trainDialog: TrainDialog
 } | {
+    type: AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC,
+    appId: string,
+    trainDialogId: string,
+    textVariation: TextVariation
+} | {
+    type: AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED,
+    extractResponse: ExtractResponse | null
+} | {
     type: AT.FETCH_TUTORIALS_ASYNC,
     userId: string
 } | {
@@ -440,6 +448,8 @@ export type TeachAction = {
 } | {
     type: AT.CLEAR_EXTRACT_RESPONSES
 } | {
+    type: AT.CLEAR_EXTRACT_CONFLICT
+}| {
     type: AT.GET_SCORES_ASYNC,
     key: string,
     appId: string,

@@ -16,6 +16,7 @@ const initialState: TeachSessionState = {
     scoreInput: undefined,
     uiScoreInput: undefined,
     extractResponses: [],
+    extractConflict: null,
     scoreResponse: undefined,
     autoTeach: false
 };
@@ -67,11 +68,39 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
         case AT.CLEAR_EXTRACT_RESPONSES:
             // Remove existing extract responses
             return { ...state, extractResponses: [] };
+        case AT.CLEAR_EXTRACT_CONFLICT:
+            return { ...state, extractConflict: null };
         case AT.RUN_SCORER_ASYNC:
             return { ...state, uiScoreInput: action.uiScoreInput }
         case AT.GET_SCORES_FULFILLED:
+            return { ...state, 
+                dialogMode: DialogMode.Scorer,
+                memories: action.uiScoreResponse.memories!, 
+                prevMemories: state.memories, 
+                scoreInput: action.uiScoreResponse!.scoreInput, 
+                scoreResponse: action.uiScoreResponse!.scoreResponse 
+            }
+        case AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED:
+            if (action.extractResponse) {
+                return {...state, extractConflict: action.extractResponse}
+            }
+            else {
+                return {...state, extractConflict: null}
+            }
         case AT.RUN_SCORER_FULFILLED:
-            return { ...state, dialogMode: DialogMode.Scorer, memories: action.uiScoreResponse.memories, prevMemories: state.memories, scoreInput: action.uiScoreResponse.scoreInput, scoreResponse: action.uiScoreResponse.scoreResponse };
+            if (action.uiScoreResponse.extractConflict) {
+                return { ...state, extractConflict: action.uiScoreResponse.extractConflict}
+            }
+            else {
+                return { ...state, 
+                    dialogMode: DialogMode.Scorer,
+                    memories: action.uiScoreResponse.memories!, 
+                    prevMemories: state.memories, 
+                    scoreInput: action.uiScoreResponse.scoreInput, 
+                    scoreResponse: action.uiScoreResponse.scoreResponse,
+                    extractConflict: null 
+                }
+            }
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
             return { ...state, dialogMode: action.dialogMode, memories: action.uiPostScoreResponse.memories, extractResponses: []  };
         case AT.TOGGLE_AUTO_TEACH:

@@ -120,6 +120,8 @@ export enum FM {
     // Generic Buttons
     BUTTON_ABANDON = 'Button.ABANDON',
     BUTTON_ABANDON_EDIT = 'Button.ABANDON_EDIT',
+    BUTTON_ABANDON_BRANCH = 'Button.ABANDON_BRANCH',
+    BUTTON_ACCEPT = 'Button.ACCEPT',
     BUTTON_CANCEL = 'Button.CANCEL',
     BUTTON_CLOSE = 'Button.CLOSE',
     BUTTON_DELETE = 'Button.DELETE',
@@ -129,6 +131,7 @@ export enum FM {
     BUTTON_SAVE = 'Button.SAVE',
     BUTTON_SAVE_AS_TRAIN_DIALOG = 'Button.SAVE_AS_TD',
     BUTTON_SAVE_EDIT = 'Button.SAVE_EDIT',
+    BUTTON_SAVE_BRANCH = 'Button.SAVE_BRANCH',
     BUTTON_SUBMIT = 'Button.SUMBIT',
 
     // ChatSessionModal
@@ -213,6 +216,9 @@ export enum FM {
     ERROR_WARNING = 'Error.warning',
     ERROR_PRIMARYBUTTON_ARIADESCRIPTION = 'Error.ariaDescription',
     ERROR_PRIMARYBUTTON_TEXT = 'Error.text',
+
+    // ExtractConflictModal
+    EXTRACTCONFLICTMODAL_TITLE = 'ExtractConflictModal.title',
 
     // LogDialogModal
     LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'LogDialogModal.defaultButton.ariaDescription',
@@ -423,6 +429,7 @@ export enum FM {
     EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION = 'EditDialogModal.branch.ariaDescription',
     EDITDIALOGMODAL_BRANCH_TEXT = 'EditDialogModal.branch.text',
     EDITDIALOGMODAL_BRANCH_TIP = 'EditDialogModal.branch.tip',
+    EDITDIALOGMODAL_CANTBRANCH_TITLE = 'EditDialogModal.cantbranch.title',
     EDITDIALOGMODAL_CANTREPLAY_TITLE = 'EditDialogModal.cantreplay.title',
     EDITDIALOGMODAL_CONFIRMDELETELOG_TITLE = 'EditDialogModal.confirmDeleteLog.title',
     EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE = 'EditDialogModal.confirmDeleteTrain.title',
@@ -574,7 +581,9 @@ export default {
 
         // Generic Buttons
         [FM.BUTTON_ABANDON]: 'Abandon',
+        [FM.BUTTON_ABANDON_BRANCH]: 'Abandon Branch',
         [FM.BUTTON_ABANDON_EDIT]: 'Abandon Edit',
+        [FM.BUTTON_ACCEPT]: 'Accept',
         [FM.BUTTON_CANCEL]: 'Cancel',
         [FM.BUTTON_CLOSE]: 'Close',
         [FM.BUTTON_DELETE]: 'Delete',
@@ -583,6 +592,7 @@ export default {
         [FM.BUTTON_OK]: 'OK',
         [FM.BUTTON_SAVE]: 'Save',
         [FM.BUTTON_SAVE_AS_TRAIN_DIALOG]: 'Save As Train Dialog',
+        [FM.BUTTON_SAVE_BRANCH]: 'Save Branch',
         [FM.BUTTON_SAVE_EDIT]: 'Save Edit',
         [FM.BUTTON_SUBMIT]: 'Submit',
 
@@ -841,6 +851,9 @@ export default {
         [FM.ERROR_PRIMARYBUTTON_ARIADESCRIPTION]: 'Ok',
         [FM.ERROR_PRIMARYBUTTON_TEXT]: 'Ok',
 
+        // ExtractConflictModal
+        [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Entity labelling conflicts with an existing labelling',
+
         // LogDialogModal
         [FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
         [FM.LOGDIALOGMODAL_DEFAULTBUTTON_TEXT]: 'Delete',
@@ -885,7 +898,7 @@ export default {
         [FM.TEACHSESSIONINIT_TITLE]: 'Set Initial Entity Values',
 
         // TeachSessionModal
-        [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this teach session?',
+        [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this dialog?',
         [FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon your edits?',
         [FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION]: 'Set Initial State',
         [FM.TEACHSESSIONMODAL_INITSTATE_TEXT]: 'Set Initial State',
@@ -908,6 +921,7 @@ export default {
         [FM.EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION]: 'Branch',
         [FM.EDITDIALOGMODAL_BRANCH_TEXT]: 'Branch',
         [FM.EDITDIALOGMODAL_BRANCH_TIP] : 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
+        [FM.EDITDIALOGMODAL_CANTBRANCH_TITLE]: 'This Train Dialog has errors in previous rounds that must be resolved before it can be branched',
         [FM.EDITDIALOGMODAL_CANTREPLAY_TITLE]: 'This Train Dialog has errors in previous rounds that must be resolved before a new round can be inserted',
         [FM.EDITDIALOGMODAL_CONFIRMDELETELOG_TITLE]: 'Are you sure you want to delete this Log Dialog?',
         [FM.EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE]: 'Are you sure you want to delete this Training Dialog?',
