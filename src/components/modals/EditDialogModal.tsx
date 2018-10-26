@@ -31,7 +31,7 @@ import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
-    isCantReplayOpen: boolean
+    cantReplayMessage: string | null
     isUserInputModalOpen: boolean
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
@@ -43,7 +43,7 @@ interface ComponentState {
 
 const initialState: ComponentState = {
     isConfirmAbandonOpen: false,
-    isCantReplayOpen: false,
+    cantReplayMessage: null,
     isUserInputModalOpen: false,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
@@ -88,7 +88,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             }
             else {
                 this.setState({
-                    isCantReplayOpen: true
+                    cantReplayMessage: FM.EDITDIALOGMODAL_CANTREPLAY_TITLE
                 })
             }
         }
@@ -103,7 +103,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         else {
             this.setState({
-                isCantReplayOpen: true
+                cantReplayMessage: FM.EDITDIALOGMODAL_CANTREPLAY_TITLE
             })
         }
     }
@@ -111,7 +111,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     @autobind 
     onClickCloseCantReplay() { 
         this.setState({
-            isCantReplayOpen: false
+            cantReplayMessage: null
         })
     }
 
@@ -149,9 +149,16 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickBranch() {
-        this.setState({
-            isUserBranchModalOpen: true
-        })
+        if (this.canReplay(this.state.selectedActivity!)) {
+            this.setState({
+                isUserBranchModalOpen: true
+            }) 
+        }
+        else {
+            this.setState({
+                cantReplayMessage: FM.EDITDIALOGMODAL_CANTBRANCH_TITLE
+            })
+        }
     }
 
     @autobind
@@ -282,8 +289,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 !canBranch || 
                 !this.props.onBranchDialog ||
                 this.state.pendingExtractionChanges ||
-                this.props.editState !== EditState.CAN_EDIT ||
-                (this.props.trainDialog && this.props.trainDialog.validity !== undefined && this.props.trainDialog.validity !== CLM.Validity.VALID)
+                this.props.editState !== EditState.CAN_EDIT
         
         const isLastActivity = activity === this.props.history[this.props.history.length - 1]
         const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
@@ -387,6 +393,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             case EditDialogType.NEW:
                 this.props.onDeleteDialog()
                 break;
+            case EditDialogType.BRANCH:
+                this.props.onCloseModal(false) // false -> no need to reload original
+                break;
             case EditDialogType.LOG_EDITED:
                 this.props.onCloseModal(false) // false -> no need to reload original
                 break;
@@ -409,6 +418,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 return intl.formatMessage({
                     id: FM.BUTTON_ABANDON,
                     defaultMessage: 'Abandon'
+                })
+            case EditDialogType.BRANCH:
+                return intl.formatMessage({
+                    id: FM.BUTTON_ABANDON_BRANCH,
+                    defaultMessage: 'Abandon Branch'
                 })
             case EditDialogType.LOG_EDITED:
                 return intl.formatMessage({
@@ -447,6 +461,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     onClickSave() {
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.BRANCH:
                 this.props.onCreateDialog(this.props.trainDialog, this.hasReplayError())
                 break;
             case EditDialogType.LOG_EDITED:
@@ -471,6 +486,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 return intl.formatMessage({
                     id: FM.BUTTON_SAVE,
                     defaultMessage: 'Save'
+                })  
+            case EditDialogType.BRANCH:
+                return intl.formatMessage({
+                    id: FM.BUTTON_SAVE_BRANCH,
+                    defaultMessage: 'Save Branch'
                 })  
             case EditDialogType.LOG_EDITED:
                 return intl.formatMessage({
@@ -500,6 +520,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     renderConfirmText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.BRANCH:
                 return intl.formatMessage({
                     id: FM.EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE,
                     defaultMessage: `Are you sure you want to abandon this Training Dialog?`
@@ -554,7 +575,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                             className="wc-shellinput"
                             onKeyPress={() =>            
                                 this.setState({
-                                isCantReplayOpen: true
+                                    cantReplayMessage: FM.EDITDIALOGMODAL_CANTREPLAY_TITLE
                                 })
                             }
                             placeholder={"Type your message..."}
@@ -564,7 +585,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         className="cl-button-blockwebchat"
                         onClick={() =>            
                             this.setState({
-                            isCantReplayOpen: true
+                                cantReplayMessage: FM.EDITDIALOGMODAL_CANTREPLAY_TITLE
                             })
                         }
                     />
@@ -728,16 +749,18 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onConfirm={this.onClickAbandonApprove}
                     title={this.renderConfirmText(intl)}
                 />
-                <ConfirmCancelModal
-                    open={this.state.isCantReplayOpen}
-                    onCancel={this.onClickCloseCantReplay}
-                    onConfirm={null}
-                    title={
-                        intl.formatMessage({
-                        id: FM.EDITDIALOGMODAL_CANTREPLAY_TITLE,
-                        defaultMessage: `This TD has errors in previous rounds that must be fixed first`
-                    })}
-                />
+                {this.state.cantReplayMessage &&
+                    <ConfirmCancelModal
+                        open={true}
+                        onCancel={this.onClickCloseCantReplay}
+                        onConfirm={null}
+                        title={
+                            intl.formatMessage({
+                            id: this.state.cantReplayMessage || "",
+                            defaultMessage: `This TD has errors in previous rounds that must be fixed first`
+                        })}
+                    />
+                }
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
                     titleFM={FM.USERINPUT_ADD_TITLE}

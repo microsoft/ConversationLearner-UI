@@ -259,6 +259,13 @@ export const clearExtractResponses = (): ActionObject => {
     }
 }
 
+// Clear extract responses
+export const clearExtractConflict = (): ActionObject => {
+    return {
+        type: AT.CLEAR_EXTRACT_CONFLICT
+    }
+}
+
 // --------------------------
 // GetScores
 // --------------------------
@@ -316,7 +323,7 @@ export const runScorerThunkAsync = (key: string, appId: string, teachId: string,
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.RUN_SCORER_ASYNC))
             throw error
-        }
+         }
     }
 }
 
@@ -332,10 +339,10 @@ const runScorerAsync = (key: string, appId: string, teachId: string, uiScoreInpu
 const runScorerFulfilled = (key: string, appId: string, teachId: string, uiScoreResponse: CLM.UIScoreResponse): ActionObject => {
     return {
         type: AT.RUN_SCORER_FULFILLED,
-        key: key,
-        appId: appId,
+        key,
+        appId,
         sessionId: teachId,
-        uiScoreResponse: uiScoreResponse
+        uiScoreResponse
     }
 }
 

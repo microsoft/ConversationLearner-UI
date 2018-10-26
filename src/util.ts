@@ -88,7 +88,7 @@ export function getDefaultEntityMap(entities: CLM.EntityBase[]): Map<string, str
     return entities.reduce((m, e) => m.set(e.entityId, `$${e.entityName}`), new Map<string, string>())
 }
 
-export function setStatePromise(that: any, newState: any) {
+export function setStateAsync(that: any, newState: any) {
     return new Promise((resolve) => {
         that.setState(newState, () => {
             resolve();

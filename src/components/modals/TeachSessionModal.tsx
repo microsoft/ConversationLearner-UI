@@ -169,7 +169,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
     @autobind
     onClickSave() {
         // If source was a trainDialog, delete the original
-        let sourceTrainDialogId = this.props.sourceTrainDialog ? this.props.sourceTrainDialog.trainDialogId : null;
+        let sourceTrainDialogId = this.props.sourceTrainDialog && this.props.editType !== EditDialogType.BRANCH 
+            ? this.props.sourceTrainDialog.trainDialogId : null;
         let sourceLogDialogId = this.props.sourceLogDialog ? this.props.sourceLogDialog.logDialogId : null;
 
         if (this.props.teachSession.teach) {
@@ -505,6 +506,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     id: FM.BUTTON_ABANDON,
                     defaultMessage: 'Abandon'
                 }) 
+            case EditDialogType.BRANCH:
+                return intl.formatMessage({
+                    id: FM.BUTTON_ABANDON_BRANCH,
+                    defaultMessage: 'Abandon Branch'
+                })
             case EditDialogType.LOG_EDITED:
                 return intl.formatMessage({
                     id: FM.BUTTON_ABANDON_EDIT,
@@ -537,6 +543,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     id: FM.BUTTON_SAVE,
                     defaultMessage: 'Save'
                 })
+            case EditDialogType.BRANCH:
+                return intl.formatMessage({
+                    id: FM.BUTTON_SAVE_BRANCH,
+                    defaultMessage: 'Save Branch'
+                })
             case EditDialogType.LOG_EDITED:
                 return intl.formatMessage({
                     id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
@@ -565,29 +576,30 @@ class TeachModal extends React.Component<Props, ComponentState> {
     renderConfirmText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.BRANCH:
                 return intl.formatMessage({
                     id: FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE,
-                    defaultMessage: 'Are you sure you want to abandon this teach session?'
+                    defaultMessage: 'Are you sure you want to abandon this dialog?'
                 }) 
             case EditDialogType.LOG_EDITED:
                 return intl.formatMessage({
                     id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
-                    defaultMessage: 'Are you sure you want to abondon your edits?'
+                    defaultMessage: 'Are you sure you want to abandon your edits?'
                 })
             case EditDialogType.LOG_ORIGINAL:
                 return intl.formatMessage({
                     id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
-                    defaultMessage: 'Are you sure you want to abondon your edits?'
+                    defaultMessage: 'Are you sure you want to abandon your edits?'
                 })
             case EditDialogType.TRAIN_EDITED:
                 return intl.formatMessage({
                     id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
-                    defaultMessage: 'Are you sure you want to abondon your edits?'
+                    defaultMessage: 'Are you sure you want to abandon your edits?'
                 })
             case EditDialogType.TRAIN_ORIGINAL:
                 return intl.formatMessage({
                     id: FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE,
-                    defaultMessage: 'Are you sure you want to abandon this teach session?'
+                    defaultMessage: 'Are you sure you want to abandon this dialog?'
                 })
             default:
                 return ""
@@ -785,7 +797,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
         toggleAutoTeach: actions.teach.toggleAutoTeach,
-        setWebchatScrollPosition: actions.display.setWebchatScrollPosition
+        setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

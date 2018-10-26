@@ -180,6 +180,7 @@
     display: inline-block;
     background-color: transparent !important;
 }
+
 .label-error {
     color: var(--color-red);
 }
