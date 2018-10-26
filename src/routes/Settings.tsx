@@ -14,10 +14,7 @@ import { FM } from '../react-intl-messages'
 import * as OF from 'office-ui-fabric-react'
 import './Settings.css'
 
-interface ComponentState {
-}
-
-class Settings extends React.Component<Props, ComponentState> {
+class Settings extends React.Component<Props> {
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
         const botPort = parseInt(event.target.value, 10)

@@ -73,7 +73,7 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
                     onRenderColumnHeaderTooltip: (tooltipHostProps: OF.ITooltipHostProps) => {
 
                         let id = tooltipHostProps.id ? tooltipHostProps.id.split('-')[1] : 'unknown-tip-id'
-                        let tip = GetTip(id);
+                        let tip = getTip(id);
                         if (tip) {
                             let ttHP = {
                                 ...tooltipHostProps,
@@ -100,7 +100,7 @@ export function onRenderPivotItem(link: OF.IPivotItemProps, defaultRenderer: (li
     const typType = link.ariaLabel ? link.ariaLabel : 'unknown-tip-type'
     return (
         <OF.TooltipHost
-            tooltipProps={{ onRenderContent: () => { return GetTip(typType) } }}
+            tooltipProps={{ onRenderContent: () => { return getTip(typType) } }}
             delay={OF.TooltipDelay.medium}
             directionalHint={OF.DirectionalHint.bottomCenter}
         >
@@ -109,10 +109,10 @@ export function onRenderPivotItem(link: OF.IPivotItemProps, defaultRenderer: (li
     )
 }
 
-export function Wrap(content: JSX.Element, tooltip: string, directionalHint: OF.DirectionalHint = OF.DirectionalHint.topCenter): JSX.Element {
+export function wrap(content: JSX.Element, tooltip: string, directionalHint: OF.DirectionalHint = OF.DirectionalHint.topCenter): JSX.Element {
     return (
         <OF.TooltipHost
-            tooltipProps={{ onRenderContent: () => { return GetTip(tooltip) } }}
+            tooltipProps={{ onRenderContent: () => { return getTip(tooltip) } }}
             delay={OF.TooltipDelay.medium}
             directionalHint={directionalHint}
         >
@@ -161,7 +161,7 @@ memoryManager.ForgetAllEntities(saveEntityNames: string[]): void
 memoryManager.CopyEntity(entityNameFrom: string, entityNameTo: string): void
 `;
 
-export function GetTip(tipType: string) {
+export function getTip(tipType: string) {
     switch (tipType) {
         case TipType.ACTION_API1:
             return renderAPIPage1()
@@ -570,7 +570,7 @@ function render(title: FM, body: FM[], example: string | null = null, tableItems
     );
 }
 
-export function Prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.Element {
+export function prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.Element {
     if (!memoryValue.builtinType && !memoryValue.resolution) {
         return content;
     }
@@ -592,7 +592,7 @@ export function Prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.El
     )
 }
 
-export function EntityObject(object: Object, content: JSX.Element): JSX.Element {
+export function entityObject(object: Object, content: JSX.Element): JSX.Element {
     return (
         <span>
             <OF.TooltipHost

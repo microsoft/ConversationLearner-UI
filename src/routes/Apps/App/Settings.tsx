@@ -430,7 +430,6 @@ class Settings extends React.Component<Props, ComponentState> {
                         />
                     </div>
 
-
                     <Expando
                         className={'cl-settings-container-header'}
                         isOpen={this.state.isPackageExpandoOpen}

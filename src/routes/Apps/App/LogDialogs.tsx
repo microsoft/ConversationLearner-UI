@@ -18,7 +18,6 @@ import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
 import { EditHandlerArgs } from './TrainDialogs'
 import { TeachSessionState } from '../../../types/StateTypes'
-import { getDefaultEntityMap } from '../../../util';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import ReplayErrorList from '../../../components/modals/ReplayErrorList';
 import * as moment from 'moment'
@@ -78,9 +77,9 @@ function getLastResponse(logDialog: CLM.LogDialog, component: LogDialogs): strin
         let scorerSteps = logDialog.rounds[logDialog.rounds.length - 1].scorerSteps;
         if (scorerSteps.length > 0) {
             let actionId = scorerSteps[scorerSteps.length - 1].predictedAction;
-            let action = component.props.actions.find(a => a.actionId == actionId);
+            let action = component.props.actions.find(a => a.actionId === actionId);
             if (action) {
-                return CLM.ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))
+                return CLM.ActionBase.GetPayload(action, Util.getDefaultEntityMap(component.props.entities))
             }
         }
     }
@@ -399,7 +398,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         if (this.state.currentLogDialog) {
             await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
         }
-        this.onCloseEditDialogModal();
+        await this.onCloseEditDialogModal();
     }
 
     // User has edited an Activity in a TeachSession
@@ -477,7 +476,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
             // None were qualified so pick the first (will show in UI as invalid)
             if (!insertedAction && uiScoreResponse.scoreResponse.unscoredActions[0]) {
-                let scoredAction = {...uiScoreResponse.scoreResponse.unscoredActions[0], score: 1.0}
+                let scoredAction = {...uiScoreResponse.scoreResponse.unscoredActions[0], score: 1}
                 delete scoredAction.reason
                 insertedAction = scoredAction
             }
@@ -540,7 +539,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
         }
         catch (error) {
             console.warn(`Error when attempting to change an Action: `, error)
@@ -569,7 +568,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
         }
         catch (error) {
                 console.warn(`Error when attempting to change extraction: `, error)

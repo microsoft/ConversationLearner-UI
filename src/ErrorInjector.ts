@@ -12,11 +12,11 @@ export class ErrorInjector {
             ErrorInjector.disabledActions.push(actionType);
         }
         else {
-            ErrorInjector.disabledActions = ErrorInjector.disabledActions.filter(s => s != actionType);
+            ErrorInjector.disabledActions = ErrorInjector.disabledActions.filter(s => s !== actionType);
         }
     }
 
     public static ShouldError(actionType: AT) {
-        return (ErrorInjector.disabledActions.find(s => s == AT[AT[actionType]]) != null)
+        return (ErrorInjector.disabledActions.find(s => s === AT[AT[actionType]]) != null)
     }
 }

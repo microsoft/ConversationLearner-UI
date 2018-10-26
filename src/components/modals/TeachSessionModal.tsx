@@ -21,12 +21,11 @@ import { renderReplayError } from './ReplayErrorList'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
 import AddButtonInput from './AddButtonInput'
-import AddScoreButton from './AddButtonScore'
+import AddButtonScore from './AddButtonScore'
 import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
-import { filterDummyEntities } from '../../util'
 import { SelectionType } from '../../types/const'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
@@ -367,7 +366,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         actionId: selectedAction.actionId,
                         payload: selectedAction.payload,
                         isTerminal: selectedAction.isTerminal,
-                        score: 1.0,
+                        score: 1,
                         actionType: selectedAction.actionType
                     }
 
@@ -401,8 +400,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 scoreInput: scorerStep ? scorerStep.input : undefined,
                 scoreResponse: scoreResponse,
                 roundIndex,
-                memories: filterDummyEntities(memories),
-                prevMemories: filterDummyEntities(prevMemories),
+                memories: Utils.filterDummyEntities(memories),
+                prevMemories: Utils.filterDummyEntities(prevMemories),
                 extractResponses: [],
                 textVariations: textVariations
             }       
@@ -489,7 +488,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     onClick={this.onClickAddUserInput}
                     editType={this.props.editType}
                 />
-                <AddScoreButton 
+                <AddButtonScore 
                     onClick={this.onInsertAction}
                 />
                 {canDeleteRound &&

@@ -68,17 +68,17 @@ const convertEntityIdsToTags = (ids: string[], entities: EntityBase[]): OF.ITag[
 }
 
 const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude: OF.ITag[]): OF.ITag[] => {
-    filterText = (filterText.startsWith(ActionPayloadEditor.triggerCharacter) ? filterText.substring(1) : filterText).trim()
+    let fText = (filterText.startsWith(ActionPayloadEditor.triggerCharacter) ? filterText.substring(1) : filterText).trim()
 
     const availableTags = allTags
         .filter(tag => !tagsToExclude.some(t => t.key === tag.key))
 
-    if (filterText.length === 0) {
+    if (fText.length === 0) {
         return availableTags
     }
 
     return availableTags
-        .filter(tag => tag.name.toLowerCase().startsWith(filterText.toLowerCase()))
+        .filter(tag => tag.name.toLowerCase().startsWith(fText.toLowerCase()))
 }
 
 const tryCreateSlateValue = (actionType: string, slotName: string, content: object | string, options: ActionPayloadEditor.IOption[]): ActionPayloadEditor.SlateValue => {
@@ -524,9 +524,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
          */
         switch (this.state.selectedActionTypeOptionKey) {
             case ActionTypes.TEXT: {
-                const value = this.state.slateValuesMap[TEXT_SLOT]
+                const textValue = this.state.slateValuesMap[TEXT_SLOT]
                 payload = JSON.stringify({
-                    json: value.toJSON()
+                    json: textValue.toJSON()
                 } as TextPayload)
                 break;
             }

@@ -13,7 +13,6 @@ import { BehaviorSubject, Observable } from 'rxjs'
 import { Activity, Message } from 'botframework-directlinejs'
 import { EditDialogType } from './modals/.'
 import actions from '../actions'
-import { ReplayErrorLevel } from '@conversationlearner/models';
 
 export function renderActivity(
     activityProps: BotChat.WrappedActivityProps, 
@@ -38,7 +37,7 @@ export function renderActivity(
 
     if (clData) {
         if (clData.replayError) {
-            if (clData.replayError.errorLevel === ReplayErrorLevel.WARNING) {
+            if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
                 wrapperClassName += ' wc-message-warning-from-' + who;
             } 
             else { // ERROR or BLOCKING
@@ -70,7 +69,7 @@ export function renderActivity(
                         <path className="point-left" d="m0,6 l6 6 v-12 z" />
                         <path className="point-right" d="m6,6 l-6 6 v-12 z" />
                     </svg>
-                    { children }
+                    {children}
                 </div>
             </div>
             {activityProps.selected && renderSelected && renderSelected(activityProps.activity)}
@@ -86,7 +85,7 @@ export function renderActivity(
                     </svg>
                 ) :
                 (
-                    <div className={'wc-message-from wc-message-from-' + who}>{timeLine}</div>
+                    <div className={`wc-message-from wc-message-from-${who}`}>{timeLine}</div>
                 )
             }
         </div>
