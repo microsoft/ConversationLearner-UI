@@ -4,15 +4,21 @@
 */
 
 const homePage = require('../../support/components/HomePage')
-const testList = require('../../support/TestList')
+const trainDialogsGrid = require('../../support/components/TrainDialogsGrid')
 
 /// Description: A temporary workspace for experimental code
 describe('zTemp test', () =>
 {
   it('zTemp test', () => 
   {
-    // homePage.Visit()
-    // cy.pause()
-    testList.AddToCypressTestList()
+    homePage.Visit()
+    cy.pause()
+
+    Cypress.Commands.add("zTemp", () => 
+    {
+      var turns = trainDialogsGrid.GetTurns()
+      console.log(`turns.length: ${turns.length} ${turns}`)
+    })
+    cy.zTemp()
   })
 })

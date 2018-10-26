@@ -1,5 +1,6 @@
 import { createPartiallyEmittedExpression } from "typescript";
 const modelPage = require('./components/ModelPage')
+const train = require('../support/Train')
 
 // ***********************************************
 // This example commands.js shows you how to
@@ -62,3 +63,7 @@ Cypress.Commands.add("WaitForTrainingStatusCompleted", () =>
   // the document object which is why we need to wrap it.
   cy.wrap(cy.document, {timeout: 120000}).should(() => {return modelPage.WaitForTrainingStatusCompleted()})
 })
+
+//Cypress.Commands.add("VerifyTrainingSummaryIsInGrid", train.VerifyTrainingSummaryIsInGrid)
+
+

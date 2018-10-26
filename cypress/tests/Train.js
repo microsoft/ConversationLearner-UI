@@ -7,6 +7,7 @@ const models = require('../support/Models')
 const modelPage = require('../support/components/ModelPage')
 const memoryTableComponent = require('../support/components/MemoryTableComponent')
 const scorerModal = require('../support/components/ScorerModal')
+const train = require('../support/Train')
 const trainDialogsGrid = require('../support/components/TrainDialogsGrid')
 const editDialogModal = require('../support/components/EditDialogModal')
 
@@ -98,28 +99,29 @@ export function WaitVsNoWaitActions()
 
 export function WhatsYourName1()
 {
+  console.log('##1##')
   var modelName = models.ImportModel('Model1-wyn', 'Model1.cl')
 
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
-  
-  trainDialogsGrid.CreateNewTrainDialog()
+  console.log('##2##')
+  train.CreateNewTrainDialog()
 
-  editDialogModal.TypeYourMessage('Hello')
+  train.TypeYourMessage('Hello')
   editDialogModal.ClickScoreActionsButton()
   scorerModal.VerifyContainsEnabledAction("What's your name?")
   scorerModal.VerifyContainsDisabledAction('Hello $name')
-  scorerModal.ClickAction("What's your name?")
+  train.SelectAction("What's your name?")
 
-  editDialogModal.TypeYourMessage('David')
+  train.TypeYourMessage('David')
   editDialogModal.VerifyDetectedEntity('name', 'David')
   editDialogModal.ClickScoreActionsButton()
   memoryTableComponent.VerifyEntityInMemory('name', 'David')
   scorerModal.VerifyContainsDisabledAction("What's your name?")
   scorerModal.VerifyContainsEnabledAction('Hello David')
-  scorerModal.ClickAction('Hello David')
+  train.SelectAction('Hello David', 'Hello $name')
 
-  editDialogModal.ClickSaveButton()
+  train.Save()
 }
 
 export function WhatsYourName2()
