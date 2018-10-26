@@ -7,6 +7,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as OF from 'office-ui-fabric-react';
+import * as Utils from '../../util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import actions from '../../actions'
@@ -28,6 +29,7 @@ import { TipType } from '../ToolTips/ToolTips';
 import { renderReplayError } from './ReplayErrorList'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
+import { ReplayErrorLevel } from '@conversationlearner/models';
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
@@ -230,8 +232,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         // Loop until I hit the current activity
         let activityIndex = 0
         do {
-            if (this.props.history[activityIndex].channelData.replayError != null) {
-                return !this.props.history[activityIndex].channelData.replayError.isBlocking
+            const clData: CLM.CLChannelData = this.props.history[activityIndex].channelData.clData
+            if (clData && clData.replayError) {
+                return clData.replayError.errorLevel !== ReplayErrorLevel.BLOCKING
             }
             activityIndex = activityIndex + 1
         }
@@ -245,7 +248,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return false
         }
 
-        return (this.props.history.filter(h => h.channelData.replayError != null).length > 0)
+        return (this.props.history.filter(h => {
+            const clData: CLM.CLChannelData = h.channelData.clData
+            return (clData && clData.replayError)
+        }).length > 0)
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
@@ -259,16 +265,17 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return null
         }
         
+        const clData: CLM.CLChannelData = activity.channelData.clData
         const canBranch = 
             activity && 
             // Can only branch on user turns
-            activity.channelData.senderType === CLM.SenderType.User &&
+            clData.senderType === CLM.SenderType.User &&
             // Can only branch on un-edited dialogs
             (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.TRAIN_ORIGINAL)
 
-        const roundIndex = activity.channelData.roundIndex
-        const senderType = activity.channelData.senderType
-        const curRound = this.props.trainDialog.rounds[roundIndex]
+        const roundIndex = clData.roundIndex
+        const senderType = clData.senderType
+        const curRound = this.props.trainDialog.rounds[roundIndex!]
 
         // Round could have been deleted
         if (!curRound) {
@@ -305,7 +312,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 />
                 {canDeleteRound &&
                     <OF.IconButton
-                        className={`cl-wc-deleteturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
+                        className={`cl-wc-deleteturn ${clData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
                         iconProps={{ iconName: 'Delete' }}
                         onClick={() => {
                             if (this.state.selectedActivity && this.state.currentTrainDialog) {
@@ -596,6 +603,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     renderWarning() {
+        const replayError = Utils.getReplayError(this.state.selectedActivity)
         if (this.props.editState === EditState.INVALID_BOT) {
             return (
                 <div className="cl-editdialog-warning">
@@ -621,10 +629,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 </div>
             )
         }
-        else if (this.state.selectedActivity && this.state.selectedActivity.channelData.replayError) {
+        else if (replayError) {
+            
             return (
                 <div className="cl-editdialog-error">
-                    {renderReplayError(this.state.selectedActivity.channelData.replayError)}
+                    {renderReplayError(replayError)}
                 </div>
             )
         }

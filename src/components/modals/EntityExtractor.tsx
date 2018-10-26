@@ -325,12 +325,12 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
         
         let extractType = this.props.extractType
-        // Can't extract on running teach session for existing round
-        if (this.props.roundIndex) { 
+        // Can't extract on running teach session on existing round
+        if (this.props.roundIndex !== null) { 
             if (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.LOG_EDITED) {
                 extractType = CLM.DialogType.LOGDIALOG
             }
-            else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL || this.props.editType === EditDialogType.TRAIN_EDITED) {
+            else {
                 extractType = CLM.DialogType.TRAINDIALOG
             }
         }
