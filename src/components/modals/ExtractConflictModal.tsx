@@ -58,12 +58,12 @@ const ExtractConflictModal: React.SFC<Props> = (props: Props) => {
                         {...editorProps}
 
                         onChangeCustomEntities={onChangeCustomEntities}
-                        onClickNewEntity={() => {}}  // LARS
+                        onClickNewEntity={() => {}} 
                     />
                 }
                 entities={props.entities}
                 extractorResponse={props.extractResponse}
-                onChange={() => {}}  // LARS
+                onChange={() => {}} 
             />
             <OF.DialogFooter>
                 <OF.DefaultButton
