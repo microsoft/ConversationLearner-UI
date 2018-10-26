@@ -415,7 +415,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             <button type="button" className={`editor-button-delete ${OF.FontClassNames.large}`} onClick={() => this.onRemoveExtractResponse(extractResponse)}>
                                 <OF.Icon iconName="Delete" />
                             </button>
-                            {!isValid && ToolTips.Wrap(
+                            {!isValid && ToolTips.wrap(
                                 <OF.Icon iconName="IncidentTriangle" className="editor-button-invalid" />,
                                 ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
                         </div>}

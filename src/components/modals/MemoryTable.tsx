@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
 import * as OF from 'office-ui-fabric-react';
-import { onRenderDetailsHeader, Prebuilt, EntityObject } from '../ToolTips/ToolTips'
+import { onRenderDetailsHeader, prebuilt, entityObject } from '../ToolTips/ToolTips'
 import { EntityBase, EntityType, Memory } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
@@ -63,13 +63,13 @@ const columns: IRenderableColumn[] = [
                     let valuesAsObject = component.valuesAsObject(value.displayText)
                     if (valuesAsObject && value.displayText) {
                         renderedValue = <span>{value.prefix}<span className={`${changeClass} cl-font--action`} data-testid="entity-memory-value">{value.displayText.slice(0,20)}...</span></span>
-                        renderedValue = EntityObject(valuesAsObject, renderedValue)
+                        renderedValue = entityObject(valuesAsObject, renderedValue)
                     }
                     else {
                         renderedValue = <span>{value.prefix}<span className={`${changeClass} ${value.isPrebuilt ? 'cl-font--action' : ''}`} data-testid="entity-memory-value">{value.displayText}</span></span>
                         
                         if (value.isPrebuilt) {
-                            renderedValue = Prebuilt(value.memoryValue, renderedValue)
+                            renderedValue = prebuilt(value.memoryValue, renderedValue)
                         }
                     }
 

@@ -174,7 +174,7 @@ const ifStringReturnLowerCase = (s: string | number) => {
     return (typeof s === "string") ? s.toLowerCase() : s
 }
 
-export class Comopnent extends React.Component<Props, ComponentState> {
+export class Component extends React.Component<Props, ComponentState> {
     constructor(props: Props) {
         super(props)
 
@@ -322,4 +322,4 @@ export class Comopnent extends React.Component<Props, ComponentState> {
     }
 }
 
-export default Comopnent
+export default Component
