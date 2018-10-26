@@ -325,7 +325,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
         
         let extractType = this.props.extractType
-        // Can't extract on running teach session for existing round
+        // Can't extract on running teach session on existing round
         if (this.props.roundIndex !== null) { 
             if (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.LOG_EDITED) {
                 extractType = CLM.DialogType.LOGDIALOG
@@ -333,9 +333,6 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             else {
                 extractType = CLM.DialogType.TRAINDIALOG
             }
-           /* LARS else if (this.props.editType === EditDialogType.TRAIN_ORIGINAL || this.props.editType === EditDialogType.TRAIN_EDITED) {
-                extractType = CLM.DialogType.TRAINDIALOG
-            }*/
         }
 
         // Use teach session Id when in teach, otherwise use dialog Id
