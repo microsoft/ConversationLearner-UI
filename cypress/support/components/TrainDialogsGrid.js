@@ -10,6 +10,13 @@ export function SearchBox()                       { cy.Get('label[for="traindial
 export function EntityDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-entity"]')}
 export function ActionDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-action"]')}
 
+// Cypress Flaw: Wanted to do this the first way, but it does not work due to the variable
+//               being passed in at the time cy.Get command is queued and not at the time
+//               that the command is run.
+//export function GridIsReady(expectedCount)        { cy.Get('[data-testid="train-dialogs-turns"]').should('have.length', expectedCount)}
+export function GridIsReady(countValidationFunc)  { cy.Get('[data-testid="train-dialogs-turns"]').should(countValidationFunc) }
+
+// These functions circumvent the Cypress retry logic by using jQuery
 export function GetFirstInputs()                  { return StringArrayFromInnerHtml('[data-testid="train-dialogs-first-input"]')}
 export function GetLastInputs()                   { return StringArrayFromInnerHtml('[data-testid="train-dialogs-last-input"]')}
 export function GetLastResponses()                { return StringArrayFromInnerHtml('[data-testid="train-dialogs-last-response"]')}
@@ -24,6 +31,7 @@ export function StringArrayFromInnerHtml(selector)
   var elements = Cypress.$(selector)
   var returnValues = new Array()
   for (var i = 0; i < elements.length; i++) { returnValues.push(elements[i].innerHTML) }
+  helpers.ConLog(`StringArrayFromInnerHtml`, `${selector} -- ${returnValues}`)
   return returnValues
 }
 
@@ -32,9 +40,6 @@ export function NumericArrayFromInnerHtml(selector)
   var elements = Cypress.$(selector)
   var returnValues = new Array()
   for (var i = 0; i < elements.length; i++) { returnValues.push(Number(elements[i].innerHTML)) }
+  helpers.ConLog(`NumericArrayFromInnerHtml`, `${selector} -- ${returnValues}`)
   return returnValues
 }
-
-// var elements = Cypress.$('[data-testid="train-dialogs-first-input"]'); for (var i = 0; i < elements.length; i++) { console.log(elements[i].innerHTML) }
-// $('[data-testid="train-dialogs-turns"]').textContent
-// Cypress.$('[data-testid="train-dialogs-turns"]')[1].innerHTML
