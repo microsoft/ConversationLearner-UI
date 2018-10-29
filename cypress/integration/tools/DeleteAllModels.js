@@ -10,7 +10,7 @@ const helpers = require('../../support/Helpers.js')
 /// Verifications: Can delete a model, Can delete All models
 describe('Delete All Models', function () 
 {
-    it('Delete All Models', () => 
+    it.skip('Delete All Models', () => 
     {
         // This is a necessary convolution so that Cypress will have one "Cypress Command" still running
         // when this function exits. If not for this, only one row will get deleted then test execution 
