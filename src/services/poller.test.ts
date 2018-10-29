@@ -102,7 +102,7 @@ describe('Poller', () => {
         const poller1 = new poller.Poller({ interval: 100 })
         const p1 = poller1.addPoll(pollConfig1)
         await delay(200)
-        poller1.addPoll(pollConfig2)
+        void poller1.addPoll(pollConfig2)
         await p1
         const after = new Date().getTime()
 
@@ -138,7 +138,7 @@ describe('Poller', () => {
         const now = new Date().getTime()
         const p1 = poller1.addPoll(pollConfig1)
         await delay(200)
-        poller1.addPoll(pollConfig2)
+        void poller1.addPoll(pollConfig2)
 
         await p1 // Will still resolve after 400 expiration
         const after = new Date().getTime()
@@ -164,7 +164,7 @@ describe('Poller', () => {
         }
 
         const poller1 = new poller.Poller({ interval: 100 })
-        poller1.addPoll(pollConfig)
+        void poller1.addPoll(pollConfig)
         poller1.removePoll(pollConfig.id)
 
         expect(requestMock.mock.calls.length).toBe(0)

@@ -138,14 +138,14 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         }
 
         // Send channel data to add to activity so can process when clicked on later
-        const channelData = { 
+        const clData: CLM.CLChannelData = { 
             activityIndex: this.props.activityIndex,
             validWaitAction: !scoredAction.isTerminal || undefined  // Draws carrot under card if a wait action
         }
 
         const uiTrainScorerStep: CLM.UITrainScorerStep = {
             trainScorerStep,
-            channelData,
+            clData,
             entities: this.props.entities
         } 
 
@@ -195,7 +195,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         })
     }
 
-    // Calculate round index from selectedActivityIndedx
+    // Calculate round index from selectedActivityIndex
     roundIndex(activityIndex: number): number {
         let roundIndex = -1
         let activityLeft = activityIndex

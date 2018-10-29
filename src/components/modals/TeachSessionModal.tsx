@@ -12,6 +12,7 @@ import { AT } from '../../types/ActionTypes'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as BotChat from '@conversationlearner/webchat'
 import * as OF from 'office-ui-fabric-react';
+import * as Utils from '../../util'
 import { State, TeachSessionState } from '../../types';
 import Webchat, { renderActivity } from '../Webchat'
 import TeachSessionAdmin, { RenderData } from './TeachSessionAdmin'
@@ -20,12 +21,11 @@ import { renderReplayError } from './ReplayErrorList'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
 import AddButtonInput from './AddButtonInput'
-import AddScoreButton from './AddButtonScore'
+import AddButtonScore from './AddButtonScore'
 import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
-import { filterDummyEntities } from '../../util'
 import { SelectionType } from '../../types/const'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
@@ -216,9 +216,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 return
             }
         }
-        // Otherwise newly create activities with have index in channelData
+        const clData: CLM.CLChannelData = activity.channelData.clData
+        // Otherwise newly create activities with have index in channel data
         this.setState({
-            selectedActivityIndex: activity.channelData.activityIndex,
+            selectedActivityIndex: clData.activityIndex!,
             selectedHistoryActivity: null
         })        
     }
@@ -242,9 +243,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
             }
 
             // Add channel data to activity so can process when clicked on later
-            activity.channelData = { 
+            const clData: CLM.CLChannelData = { 
                 activityIndex: this.state.nextActivityIndex,
             }
+            activity.channelData.clData = clData
               
             this.setState({ 
                  // No initialization allowed after first input
@@ -269,7 +271,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
             throw new Error("historyRender missing data")
         }
 
-        let roundIndex = this.state.selectedHistoryActivity.channelData.roundIndex
+        let clData: CLM.CLChannelData = this.state.selectedHistoryActivity.channelData.clData
+        let roundIndex = clData.roundIndex!
 
         if (roundIndex === null) {
             throw new Error(`Cannot get previous memories because roundIndex is null. This is likely a problem with code. Please open an issue.`)
@@ -311,9 +314,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
             throw new Error("historyRender missing data")
         }
 
-        let roundIndex = this.state.selectedHistoryActivity.channelData.roundIndex
-        let scoreIndex = this.state.selectedHistoryActivity.channelData.scoreIndex
-        let senderType = this.state.selectedHistoryActivity.channelData.senderType
+        const clData: CLM.CLChannelData = this.state.selectedHistoryActivity.channelData.clData
+        let roundIndex = clData.roundIndex!
+        let scoreIndex = clData.scoreIndex
+        let senderType = clData.senderType
 
         if (roundIndex !== null && roundIndex < sourceDialog.rounds.length) {
             round = sourceDialog.rounds[roundIndex];
@@ -362,7 +366,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         actionId: selectedAction.actionId,
                         payload: selectedAction.payload,
                         isTerminal: selectedAction.isTerminal,
-                        score: 1.0,
+                        score: 1,
                         actionType: selectedAction.actionType
                     }
 
@@ -396,8 +400,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 scoreInput: scorerStep ? scorerStep.input : undefined,
                 scoreResponse: scoreResponse,
                 roundIndex,
-                memories: filterDummyEntities(memories),
-                prevMemories: filterDummyEntities(prevMemories),
+                memories: Utils.filterDummyEntities(memories),
+                prevMemories: Utils.filterDummyEntities(prevMemories),
                 extractResponses: [],
                 textVariations: textVariations
             }       
@@ -484,7 +488,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     onClick={this.onClickAddUserInput}
                     editType={this.props.editType}
                 />
-                <AddScoreButton 
+                <AddButtonScore 
                     onClick={this.onInsertAction}
                 />
                 {canDeleteRound &&
@@ -616,7 +620,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
             return false
         }
 
-        return (this.props.initialHistory.filter(h => h.channelData.replayError != null).length > 0)
+        return (this.props.initialHistory.filter(h => { 
+            const clData: CLM.CLChannelData = h.channelData.clData
+            return (clData && clData.replayError) 
+        }).length > 0)
     }
 
     shouldShowScoreButton(): boolean {
@@ -640,10 +647,12 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     renderWarning() {
-        if (this.state.selectedHistoryActivity && this.state.selectedHistoryActivity.channelData.replayError) {
+
+        let replayError = Utils.getReplayError(this.state.selectedHistoryActivity)
+        if (replayError) {
             return (
                 <div className="cl-editdialog-error">
-                    {renderReplayError(this.state.selectedHistoryActivity.channelData.replayError)}
+                    {renderReplayError(replayError)}
                 </div>
             )
         }

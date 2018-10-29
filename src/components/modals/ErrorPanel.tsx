@@ -13,7 +13,7 @@ import { ErrorHandler } from '../../ErrorHandler'
 import { injectIntl, InjectedIntlProps, InjectedIntl, FormattedMessage } from 'react-intl'
 import { AT } from '../../types/ActionTypes'
 import { FM } from '../../react-intl-messages'
-import { GetTip, TipType } from '../ToolTips/ToolTips'
+import { getTip, TipType } from '../ToolTips/ToolTips'
 
 class ErrorPanel extends React.Component<Props, {}> {
     static customErrors = {
@@ -81,7 +81,7 @@ class ErrorPanel extends React.Component<Props, {}> {
                             return (
                                 <div key={key}>
                                     <div>{message}</div>
-                                    {GetTip(TipType.LUIS_AUTHORING_KEY)}
+                                    {getTip(TipType.LUIS_AUTHORING_KEY)}
                                 </div>
                             )
                         }

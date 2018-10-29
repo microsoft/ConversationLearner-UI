@@ -16,16 +16,16 @@ import messages from './react-intl-messages'
 import { Fabric, loadTheme } from 'office-ui-fabric-react'
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons'
 
-/** Required for Office UI Fabric to load icon fonts  */
+// Required for Office UI Fabric to load icon fonts  
 initializeIcons()
-/** Override default colors */
+// Override default colors 
 loadTheme({
   palette: {
-    /* 'themePrimary': 'red' */
+    // 'themePrimary': 'red' 
   }
 });
 
-/** Initialize react-intl-messages */
+// Initialize react-intl-messages 
 addLocaleData([...en, ...ko])
 
 console.log(`process.env.NODE_ENV: `, process.env.NODE_ENV)

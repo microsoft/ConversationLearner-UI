@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../types'
 import * as BotChat from '@conversationlearner/webchat'
-import { AppBase, CL_USER_NAME_ID } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { Activity, Message } from 'botframework-directlinejs'
 import { EditDialogType } from './modals/.'
@@ -22,7 +22,7 @@ export function renderActivity(
     editType: EditDialogType
     ): JSX.Element {
         
-    let timeLine = <span> { activityProps.fromMe ? "User" : "Bot" }</span>;
+    let timeLine = <span> {activityProps.fromMe ? "User" : "Bot"}</span>;
 
     const isLogDialog = editType === EditDialogType.LOG_ORIGINAL || editType === EditDialogType.LOG_EDITED
     const who = activityProps.fromMe ? 'me' : 'bot'
@@ -33,13 +33,16 @@ export function renderActivity(
         activityProps.onClickActivity && 'clickable'].filter(Boolean).join(' ')
 
     let contentClassName = 'wc-message-content'
+    const clData: CLM.CLChannelData | null = activityProps.activity.channelData ? activityProps.activity.channelData.clData : null
 
-    if (activityProps.activity.channelData) {
-        if (activityProps.activity.channelData.highlight === "warning") {
-            wrapperClassName += ' wc-message-warning-from-' + who;
-        } 
-        else if (activityProps.activity.channelData.highlight === "error") {
-            wrapperClassName += ' wc-message-error-from-' + who;
+    if (clData) {
+        if (clData.replayError) {
+            if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
+                wrapperClassName += ' wc-message-warning-from-' + who;
+            } 
+            else { // ERROR or BLOCKING
+                wrapperClassName += ' wc-message-error-from-' + who;
+            }
         }
         if (activityProps.selected) {
             wrapperClassName += ` wc-message-selected`
@@ -66,15 +69,15 @@ export function renderActivity(
                         <path className="point-left" d="m0,6 l6 6 v-12 z" />
                         <path className="point-right" d="m6,6 l-6 6 v-12 z" />
                     </svg>
-                    { children }
+                    {children}
                 </div>
             </div>
             {activityProps.selected && renderSelected && renderSelected(activityProps.activity)}
-            {activityProps.activity.channelData && activityProps.activity.channelData.validWaitAction !== undefined ? 
+            {clData && clData.validWaitAction !== undefined ? 
                 (
                     <svg className="wc-message-downarrow">
                         <polygon 
-                            className={activityProps.activity.channelData.validWaitAction 
+                            className={clData.validWaitAction 
                                 ? "wc-message-downarrow-points" 
                                 : "wc-message-downarrow-points-red"}
                             points="0,0 50,0 25,15"
@@ -82,7 +85,7 @@ export function renderActivity(
                     </svg>
                 ) :
                 (
-                    <div className={'wc-message-from wc-message-from-' + who}>{timeLine}</div>
+                    <div className={`wc-message-from wc-message-from-${who}`}>{timeLine}</div>
                 )
             }
         </div>
@@ -185,7 +188,7 @@ class Webchat extends React.Component<Props, {}> {
                     showHeader: false
                 },
                 user: { name: this.props.user.name, id: this.props.user.id },
-                bot: { name: CL_USER_NAME_ID, id: `BOT-${this.props.user.id}` },
+                bot: { name: CLM.CL_USER_NAME_ID, id: `BOT-${this.props.user.id}` },
                 resize: 'detect',
             } as any
         }
@@ -241,7 +244,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
 export interface ReceivedProps {
     isOpen: boolean,
-    app: AppBase | null,
+    app: CLM.AppBase | null,
     history: Activity[],
     hideInput: boolean,
     focusInput: boolean,

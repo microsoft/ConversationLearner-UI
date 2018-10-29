@@ -43,33 +43,34 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(newProps: Props) {
 
         if (newProps.selectedActivity && newProps.trainDialog) {
+            let clData: CLM.CLChannelData = newProps.selectedActivity.channelData.clData
             // If rounds were trimmed, selectedActivity could have been in deleted rounds
-            if (newProps.selectedActivity.channelData.roundIndex > newProps.trainDialog.rounds.length - 1) {
+            if (clData.roundIndex && clData.roundIndex > newProps.trainDialog.rounds.length - 1) {
                 this.setState({
-                    senderType: newProps.selectedActivity.channelData.senderType,
+                    senderType: clData.senderType!,
                     roundIndex: newProps.trainDialog.rounds.length - 1,
                     scoreIndex: 0
                 })
             }
-            else if (newProps.selectedActivity.channelData.scoreIndex === 0) {
+            else if (clData.scoreIndex === 0) {
                 this.setState({
-                    senderType: newProps.selectedActivity.channelData.senderType,
-                    roundIndex: newProps.selectedActivity.channelData.roundIndex,
+                    senderType: clData.senderType!,
+                    roundIndex: clData.roundIndex!,
                     scoreIndex: 0
                 })
             }
-            else if (newProps.selectedActivity.channelData.scoreIndex > newProps.trainDialog.rounds[newProps.selectedActivity.channelData.roundIndex].scorerSteps.length - 1) {
+            else if (clData.scoreIndex! > newProps.trainDialog.rounds[clData.roundIndex!].scorerSteps.length - 1) {
                 this.setState({
-                    senderType: newProps.selectedActivity.channelData.senderType,
-                    roundIndex: newProps.selectedActivity.channelData.roundIndex,
-                    scoreIndex: newProps.selectedActivity.channelData.scoreIndex - 1
+                    senderType: clData.senderType!,
+                    roundIndex: clData.roundIndex!,
+                    scoreIndex: clData.scoreIndex! - 1
                 })
             }
             else {
                 this.setState({
-                    senderType: newProps.selectedActivity.channelData.senderType,
-                    roundIndex: newProps.selectedActivity.channelData.roundIndex,
-                    scoreIndex: newProps.selectedActivity.channelData.scoreIndex
+                    senderType: clData.senderType!,
+                    roundIndex: clData.roundIndex!,
+                    scoreIndex: clData.scoreIndex!
                 })
             }
         }

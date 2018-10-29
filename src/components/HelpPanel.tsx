@@ -29,7 +29,7 @@ class HelpPanel extends React.Component<Props, {}> {
                 customWidth="400px"
                 closeButtonAriaLabel="Close"
             >
-                <span>{ToolTip.GetTip(this.props.tipType)}</span>
+                <span>{ToolTip.getTip(this.props.tipType)}</span>
             </OF.Panel>
         )
     }

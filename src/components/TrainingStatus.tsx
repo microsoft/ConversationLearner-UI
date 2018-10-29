@@ -75,7 +75,7 @@ const Component: React.SFC<Props> = (props: Props) => {
     const uiState = internalStatusToUiStateMap.get(props.status)!
     return (
         <div className={`cl-training-status ${FontClassNames.mediumPlus}`} data-testid="training-status-status-group">
-            <div className={`cl-training-status__icon-row ${uiState.className} ${props.didPollingExpire ? 'cl-training-status__icon-row--expired': ''}`}>
+            <div className={`cl-training-status__icon-row ${uiState.className} ${props.didPollingExpire ? 'cl-training-status__icon-row--expired' : ''}`}>
                 <FormattedMessage
                     id={FM.APP_TRAINING_STATUS_STATUS}
                     defaultMessage="Status"
@@ -123,4 +123,3 @@ const Component: React.SFC<Props> = (props: Props) => {
 }
 
 export default Component
-

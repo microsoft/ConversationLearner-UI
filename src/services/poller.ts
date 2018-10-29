@@ -45,23 +45,19 @@ export class Poller {
         if (activeApp) {
             console.log(`Existing polling found for id: ${id} increasing end from ${activeApp.end} to: ${end}`)
             activeApp.end = end
-            const promise = new Promise((resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 activeApp.deferred.push({ resolve, reject, pollConfig })
             })
-
-            return promise
         }
 
         console.log(`No polling found for id: ${id}. Starting new polling until: ${end}`)
-        const promise = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             this.polls.push({
                 id,
                 end,
                 deferred: [{ resolve, reject, pollConfig }]
             })
         })
-
-        return promise
     }
 
     removePoll(pollId: string) {
