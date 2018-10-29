@@ -24,14 +24,11 @@ export function GetTurns()                        { return NumericArrayFromInner
 export function GetLastModifiedDates()            { return StringArrayFromInnerHtml('[data-testid="train-dialogs-last-modified"]')}
 export function GetCreatedDates()                 { return StringArrayFromInnerHtml('[data-testid="train-dialogs-created"]')}
 
-const helpers = require('../../support/helpers')
-
 export function StringArrayFromInnerHtml(selector) 
 { 
   var elements = Cypress.$(selector)
   var returnValues = new Array()
   for (var i = 0; i < elements.length; i++) { returnValues.push(elements[i].innerHTML) }
-  helpers.ConLog(`StringArrayFromInnerHtml`, `${selector} -- ${returnValues}`)
   return returnValues
 }
 
@@ -40,6 +37,5 @@ export function NumericArrayFromInnerHtml(selector)
   var elements = Cypress.$(selector)
   var returnValues = new Array()
   for (var i = 0; i < elements.length; i++) { returnValues.push(Number(elements[i].innerHTML)) }
-  helpers.ConLog(`NumericArrayFromInnerHtml`, `${selector} -- ${returnValues}`)
   return returnValues
 }

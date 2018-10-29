@@ -10,23 +10,12 @@ const helpers = require('./Helpers.js')
 
 function Today() { return Cypress.moment().format("MM/DD/YYYY") }
 
-const newTrainingSummary =
-{
-  FirstInput: undefined,
-  LastInput: undefined,
-  LastResponse: undefined,
-  Turns: 0,
-  LastModifiedDate: undefined,
-  CreatedDate: undefined,
-}
-
 // Cypress Flaw: to get true global data it must be attached to the window object.
-window.trainingSummary = newTrainingSummary
+window.trainingSummary = undefined
 window.expectedTrainGridRowCount = 9999
 
 export function CreateNewTrainDialog()
 {
-ConLogTrainingSummary('CreateNewTrainDialog')
   cy.Train_CreateNewTrainDialog()
   trainDialogsGrid.CreateNewTrainDialog()
 }
@@ -57,7 +46,6 @@ export function Save()
   trainDialogsGrid.GridIsReady(elements => { expect(elements).to.have.length(window.expectedTrainGridRowCount)})
 
   cy.Train_VerifyTrainingSummaryIsInGrid()
-  ConLogTrainingSummary("Save")
 }
 
 export function OneTimeInitialization()
@@ -66,8 +54,15 @@ export function OneTimeInitialization()
   {
     var turns = trainDialogsGrid.GetTurns()
     window.expectedTrainGridRowCount = (turns ? turns.length : 0) + 1
-    window.trainingSummary = newTrainingSummary
-ConLogTrainingSummary('Train_CreateNewTrainDialog')    
+    window.trainingSummary = 
+    {
+      FirstInput: undefined,
+      LastInput: undefined,
+      LastResponse: undefined,
+      Turns: 0,
+      LastModifiedDate: undefined,
+      CreatedDate: undefined,
+    }    
   })
 
   Cypress.Commands.add("Train_TypeYourMessage", (message) =>
@@ -90,8 +85,6 @@ ConLogTrainingSummary('Train_CreateNewTrainDialog')
   Cypress.Commands.add("Train_VerifyTrainingSummaryIsInGrid", () =>
   {
     var turns = trainDialogsGrid.GetTurns()
-
-ConLogTrainingSummary("Train_VerifyTrainingSummaryIsInGrid")
 
     // Cypress Flaw: Can NOT do this here because cypress does not do its retry on this method.
     // expect(window.expectedTrainGridRowCount).to.equal(turns.length)
@@ -118,6 +111,5 @@ ConLogTrainingSummary("Train_VerifyTrainingSummaryIsInGrid")
 
 function ConLogTrainingSummary(message)
 {
-  //helpers.ConLog(`######==> ${message}`, `FirstInput: ${window.trainingSummary.FirstInput} -- LastInput: ${window.trainingSummary.LastInput} -- LastResponse: ${window.trainingSummary.LastResponse} -- Turns: ${window.trainingSummary.Turns} -- LastModifiedDate: ${window.trainingSummary.LastModifiedDate} -- CreatedDate: ${window.trainingSummary.CreatedDate}`)
-  helpers.ConLog(`######==> ${message}`, `FirstInput: ${newTrainingSummary.FirstInput} -- LastInput: ${newTrainingSummary.LastInput} -- LastResponse: ${newTrainingSummary.LastResponse} -- Turns: ${newTrainingSummary.Turns} -- LastModifiedDate: ${newTrainingSummary.LastModifiedDate} -- CreatedDate: ${newTrainingSummary.CreatedDate}`)
+  helpers.ConLog(`######==> ${message}`, `FirstInput: ${window.trainingSummary.FirstInput} -- LastInput: ${window.trainingSummary.LastInput} -- LastResponse: ${window.trainingSummary.LastResponse} -- Turns: ${window.trainingSummary.Turns} -- LastModifiedDate: ${window.trainingSummary.LastModifiedDate} -- CreatedDate: ${window.trainingSummary.CreatedDate}`)
 }
