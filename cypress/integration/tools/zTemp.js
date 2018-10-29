@@ -19,18 +19,17 @@ describe('zTemp test', () =>
 
     //cy.pause()
     cy.WaitForTrainingStatusCompleted()
-    train.RemoveThisFunction()
 
-    // console.log('##2##')
-    // train.CreateNewTrainDialog()
+    console.log('##2##')
+    train.CreateNewTrainDialog()
   
-    // train.TypeYourMessage('Hello')
+    train.TypeYourMessage('Hello')
   
-    // Cypress.Commands.add("zTemp", () => 
-    // {
-    //   var turns = trainDialogsGrid.GetTurns()
-    //   console.log(`turns.length: ${turns.length} ${turns}`)
-    // })
-    // cy.zTemp()
+    Cypress.Commands.add("zTemp", () => 
+    {
+      var turns = trainDialogsGrid.GetTurns()
+      console.log(`turns.length: ${turns.length} ${turns}`)
+    })
+    cy.zTemp()
   })
 })

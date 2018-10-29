@@ -18,17 +18,17 @@ export function DisqualifyingEntities()
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
 
-  trainDialogsGrid.CreateNewTrainDialog()
+  train.CreateNewTrainDialog()
 
-  editDialogModal.TypeYourMessage('Hey')
+  train.TypeYourMessage('Hey')
   editDialogModal.ClickScoreActionsButton()
   scorerModal.VerifyContainsEnabledAction("What's your name?")
   scorerModal.VerifyContainsDisabledAction('Hey $name')
   scorerModal.VerifyContainsDisabledAction('Hey $name, what do you really want?')
   scorerModal.VerifyContainsDisabledAction("Sorry $name, I can't help you get $want")
-  scorerModal.ClickAction("What's your name?")
+  train.SelectAction("What's your name?")
 
-  editDialogModal.TypeYourMessage('Sam')
+  train.TypeYourMessage('Sam')
   editDialogModal.VerifyDetectedEntity('name', 'Sam')
   editDialogModal.ClickScoreActionsButton()
   memoryTableComponent.VerifyEntityInMemory('name', 'Sam')
@@ -36,18 +36,18 @@ export function DisqualifyingEntities()
   scorerModal.VerifyContainsEnabledAction('Hey Sam')
   scorerModal.VerifyContainsEnabledAction('Hey Sam, what do you really want?')
   scorerModal.VerifyContainsDisabledAction("Sorry Sam, I can't help you get $want")
-  scorerModal.ClickAction('Hey Sam')
+  train.SelectAction('Hey Sam', 'Hey $name')
 
-  editDialogModal.TypeYourMessage('Hey')
+  train.TypeYourMessage('Hey')
   editDialogModal.ClickScoreActionsButton()
   memoryTableComponent.VerifyEntityInMemory('name', 'Sam')
   scorerModal.VerifyContainsDisabledAction("What's your name?")
   scorerModal.VerifyContainsEnabledAction('Hey Sam')
   scorerModal.VerifyContainsEnabledAction('Hey Sam, what do you really want?')
   scorerModal.VerifyContainsDisabledAction("Sorry Sam, I can't help you get $want")
-  scorerModal.ClickAction('Hey Sam, what do you really want?')
+  train.SelectAction('Hey Sam, what do you really want?', 'Hey $name, what do you really want?')
 
-  editDialogModal.TypeYourMessage('world peace')
+  train.TypeYourMessage('world peace')
   editDialogModal.ClickScoreActionsButton()
   memoryTableComponent.VerifyEntityInMemory('name', 'Sam')
   memoryTableComponent.VerifyEntityInMemory('want', 'world peace')
@@ -55,9 +55,9 @@ export function DisqualifyingEntities()
   scorerModal.VerifyContainsDisabledAction('Hey Sam')
   scorerModal.VerifyContainsDisabledAction('Hey Sam, what do you really want?')
   scorerModal.VerifyContainsEnabledAction("Sorry Sam, I can't help you get world peace")
-  scorerModal.ClickAction("Sorry Sam, I can't help you get world peace")
+  train.SelectAction("Sorry Sam, I can't help you get world peace", "Sorry $name, I can't help you get $want")
 
-  editDialogModal.ClickSaveButton()
+  train.Save()
 }
 
 export function WaitVsNoWaitActions()
@@ -67,44 +67,42 @@ export function WaitVsNoWaitActions()
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
 
-  trainDialogsGrid.CreateNewTrainDialog()
+  train.CreateNewTrainDialog()
 
-  editDialogModal.TypeYourMessage('Hello')
+  train.TypeYourMessage('Hello')
   editDialogModal.ClickScoreActionsButton()
   scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
   scorerModal.VerifyContainsEnabledAction('Cows say moo!')
   scorerModal.VerifyContainsEnabledAction('Ducks say quack!')
-  scorerModal.ClickAction('Which animal would you like?')
+  train.SelectAction('Which animal would you like?')
 
-  editDialogModal.TypeYourMessage('Cow')
+  train.TypeYourMessage('Cow')
   editDialogModal.ClickScoreActionsButton()
   scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
   scorerModal.VerifyContainsEnabledAction('Cows say moo!')
   scorerModal.VerifyContainsEnabledAction('Ducks say quack!')
-  scorerModal.ClickAction('Cows say moo!')
+  train.SelectAction('Cows say moo!')
   
-  scorerModal.ClickAction('Which animal would you like?')
+  train.SelectAction('Which animal would you like?')
 
-  editDialogModal.TypeYourMessage('Duck')
+  train.TypeYourMessage('Duck')
   editDialogModal.ClickScoreActionsButton()
   scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
   scorerModal.VerifyContainsEnabledAction('Cows say moo!')
   scorerModal.VerifyContainsEnabledAction('Ducks say quack!')
-  scorerModal.ClickAction('Ducks say quack!')
+  train.SelectAction('Ducks say quack!')
 
-  scorerModal.ClickAction('Which animal would you like?')
+  train.SelectAction('Which animal would you like?')
 
-  editDialogModal.ClickSaveButton()
+  train.Save()
 }
 
 export function WhatsYourName1()
 {
-  console.log('##1##')
   var modelName = models.ImportModel('Model1-wyn', 'Model1.cl')
 
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
-  console.log('##2##')
   train.CreateNewTrainDialog()
 
   train.TypeYourMessage('Hello')
@@ -130,28 +128,28 @@ export function WhatsYourName2()
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
 
-  trainDialogsGrid.CreateNewTrainDialog()
+  train.CreateNewTrainDialog()
 
-  editDialogModal.TypeYourMessage('My name is David.') // TODO: Add edge cases; 'david', with & without 'period'
+  train.TypeYourMessage('My name is David.') // TODO: Add edge cases; 'david', with & without 'period'
   editDialogModal.VerifyDetectedEntity('name', 'David')
   editDialogModal.ClickScoreActionsButton()
   memoryTableComponent.VerifyEntityInMemory('name', 'David')
   scorerModal.VerifyContainsDisabledAction("What's your name?")
   scorerModal.VerifyContainsEnabledAction('Hello David')
-  scorerModal.ClickAction('Hello David')
+  train.SelectAction('Hello David', 'Hello $name')
 
   // Wait for the training to complete.
   // At the time this was added, there is no UI elements to let us know it is complete.
   cy.wait(20000)
 
-  editDialogModal.TypeYourMessage('My name is Susan.')
+  train.TypeYourMessage('My name is Susan.')
   editDialogModal.VerifyDetectedEntity('name', 'Susan')
   editDialogModal.ClickScoreActionsButton()
   memoryTableComponent.VerifyEntityInMemory('name', 'Susan', 'David')
   scorerModal.VerifyContainsDisabledAction("What's your name?")
   scorerModal.VerifyContainsEnabledAction('Hello Susan')
-  scorerModal.ClickAction('Hello Susan')
+  train.SelectAction('Hello Susan', 'Hello $name')
 
-  editDialogModal.ClickSaveButton()
+  train.Save()
 }
 

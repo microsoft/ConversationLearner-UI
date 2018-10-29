@@ -26,71 +26,74 @@ window.expectedTrainGridRowCount = 9999
 
 export function CreateNewTrainDialog()
 {
-  cy.train_CreateNewTrainDialog().then(() => {helpers.ConLog(`CreateNewTrainDialog`, `expectedTrainGridRowCount: ${window.expectedTrainGridRowCount}`)})
+ConLogTrainingSummary('CreateNewTrainDialog')
+  cy.Train_CreateNewTrainDialog()
   trainDialogsGrid.CreateNewTrainDialog()
 }
 
 export function TypeYourMessage(message)
 {
   editDialogModal.TypeYourMessage(message)
-  cy.train_TypeYourMessage(message)
+  cy.Train_TypeYourMessage(message)
 }
 
 export function SelectAction(expectedResponse, lastResponse)
 {
   scorerModal.ClickAction(expectedResponse)
-  cy.train_SelectAction(expectedResponse, lastResponse)
+  cy.Train_SelectAction(expectedResponse, lastResponse)
 }
 
 export function Save()
 {
   editDialogModal.ClickSaveButton()
-  cy.train_Save()
+  cy.Train_Save()
   trainDialogsGrid.VerifyPageTitle()
+  
+  // Bug 1558: Spinner Needed After Save Train Dialog and Other Save Actions
+  //           Once this bug is fixed, we can eliminate this next line of code.
+  // Cypress Flaw: We need to do this here instead of inside of Train_VerifyTrainingSummaryIsInGrid()
+  //               since Cypress won't retry that function. ALSO we need to prevent that function 
+  //               from executing until we know the grid is populated and this will do that.
   trainDialogsGrid.GridIsReady(elements => { expect(elements).to.have.length(window.expectedTrainGridRowCount)})
-  cy.wrap(700, {timeout: 15000}).train_VerifyTrainingSummaryIsInGrid()
+
+  cy.Train_VerifyTrainingSummaryIsInGrid()
+  ConLogTrainingSummary("Save")
 }
 
 export function OneTimeInitialization()
 {
-console.log('##3##')  
-  Cypress.Commands.add("train_CreateNewTrainDialog", () =>
+  Cypress.Commands.add("Train_CreateNewTrainDialog", () =>
   {
     var turns = trainDialogsGrid.GetTurns()
     window.expectedTrainGridRowCount = (turns ? turns.length : 0) + 1
-    helpers.ConLog(`train_CreateNewTrainDialog`, `expectedTrainGridRowCount: ${window.expectedTrainGridRowCount}`)
     window.trainingSummary = newTrainingSummary
+ConLogTrainingSummary('Train_CreateNewTrainDialog')    
   })
 
-  Cypress.Commands.add("train_TypeYourMessage", (message) =>
+  Cypress.Commands.add("Train_TypeYourMessage", (message) =>
   {
-    if (!window.trainingSummary.FirstInput) 
-    {
-      ConLogTrainingSummary(`train_TypeYourMessage1: ${message}`)
-      window.trainingSummary.FirstInput = message
-    }
+    if (!window.trainingSummary.FirstInput) window.trainingSummary.FirstInput = message
     window.trainingSummary.LastInput = message
-    ConLogTrainingSummary(`train_TypeYourMessage2: ${message}`)
     window.trainingSummary.Turns++
-    ConLogTrainingSummary(`train_TypeYourMessage3: ${message}`)
   })
 
-  Cypress.Commands.add("train_SelectAction", (expectedResponse, lastResponse) =>
+  // lastResponse is OPTIONAL, it is needed when the Action contains a $entityName
+  // that was replaced with the expected value in expectedResponse.
+  Cypress.Commands.add("Train_SelectAction", (expectedResponse, lastResponse) =>
   {
-    ConLogTrainingSummary(`train_SelectAction: ${expectedResponse} ${lastResponse}`)
     if (lastResponse) window.trainingSummary.LastResponse = lastResponse
-    else window.trainingSummary.LastResponse = expectedResponse // NOTE: This is ONLY correct if the response contains no entities that have been replaced.
+    else window.trainingSummary.LastResponse = expectedResponse
   })
 
-  Cypress.Commands.add("train_Save", () => {ConLogTrainingSummary(`train_Save`)
-    window.trainingSummary.CreatedDate = window.trainingSummary.LastModifiedDate = Today()})
+  Cypress.Commands.add("Train_Save", () => { window.trainingSummary.CreatedDate = window.trainingSummary.LastModifiedDate = Today() })
 
-  Cypress.Commands.add("train_VerifyTrainingSummaryIsInGrid", () =>
+  Cypress.Commands.add("Train_VerifyTrainingSummaryIsInGrid", () =>
   {
-    ConLogTrainingSummary(`train_VerifyTrainingSummaryIsInGrid`)
     var turns = trainDialogsGrid.GetTurns()
-    
-    // CanNOT do this here because cypress does not do its retry on this method.
+
+ConLogTrainingSummary("Train_VerifyTrainingSummaryIsInGrid")
+
+    // Cypress Flaw: Can NOT do this here because cypress does not do its retry on this method.
     // expect(window.expectedTrainGridRowCount).to.equal(turns.length)
     
     var firstInputs = trainDialogsGrid.GetFirstInputs()
@@ -113,23 +116,8 @@ console.log('##3##')
   })
 }
 
-export function RemoveThisFunction()
-{
-  window.trainingSummary = 
-  {
-    FirstInput: 'My name is David.',
-    LastInput: 'xyz123',
-    LastResponse: 'Hello $name',
-    Turns: 10,
-    LastModifiedDate: '10/26/2018',
-    CreatedDate: '10/26/2018',
-  }
-  window.expectedTrainGridRowCount = 2
-  trainDialogsGrid.GridIsReady(window.expectedTrainGridRowCount)
-  cy.wrap(700, {timeout: 15000}).train_VerifyTrainingSummaryIsInGrid() 
-}
-
 function ConLogTrainingSummary(message)
 {
-  helpers.ConLog(`######==> ${message}`, `FirstInput: ${window.trainingSummary.FirstInput} -- LastInput: ${window.trainingSummary.LastInput} -- LastResponse: ${window.trainingSummary.LastResponse} -- Turns: ${window.trainingSummary.Turns} -- LastModifiedDate: ${window.trainingSummary.LastModifiedDate} -- CreatedDate: ${window.trainingSummary.CreatedDate}`)
+  //helpers.ConLog(`######==> ${message}`, `FirstInput: ${window.trainingSummary.FirstInput} -- LastInput: ${window.trainingSummary.LastInput} -- LastResponse: ${window.trainingSummary.LastResponse} -- Turns: ${window.trainingSummary.Turns} -- LastModifiedDate: ${window.trainingSummary.LastModifiedDate} -- CreatedDate: ${window.trainingSummary.CreatedDate}`)
+  helpers.ConLog(`######==> ${message}`, `FirstInput: ${newTrainingSummary.FirstInput} -- LastInput: ${newTrainingSummary.LastInput} -- LastResponse: ${newTrainingSummary.LastResponse} -- Turns: ${newTrainingSummary.Turns} -- LastModifiedDate: ${newTrainingSummary.LastModifiedDate} -- CreatedDate: ${newTrainingSummary.CreatedDate}`)
 }
