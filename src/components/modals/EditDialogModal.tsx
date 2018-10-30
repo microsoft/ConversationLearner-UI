@@ -612,7 +612,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                             id={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT}
                             defaultMessage={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT}
                         />
-                        <HelpIcon tipType={TipType.ACTION_ARGUMENTS} />
+                        <HelpIcon tipType={TipType.INVALID_BOT} />
                     </div>
                 </div>
             )
