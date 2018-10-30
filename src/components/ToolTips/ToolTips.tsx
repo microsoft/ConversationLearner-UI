@@ -43,6 +43,7 @@ export enum TipType {
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
 
+    INVALID_BOT = 'INVALID_BOT',
     LOGGING_TOGGLE = 'loggingToggle',
     LUIS_AUTHORING_KEY = 'luisAuthoringKey',
     LUIS_OVERVIEW = 'luisOverview',
@@ -367,6 +368,20 @@ export function getTip(tipType: string) {
                     </ul>
                 </div>
             )
+        case TipType.INVALID_BOT:
+        return (
+            <div>
+                <h2>Error: Running Bot not compatible with this Model</h2>
+                <p>The Model contains API Actions that are not supported by the running Bot</p>
+                <p>Ways to fix:</p>
+                <ol>
+                    <li>Start the correct Bot and click "Retry" on the Model's Home page</li>
+                    <li>Add missing APIs to the running Bot</li>
+                    <li>Edit and update the API Actions if the API's name has changed</li>
+                    <li>Delete the missing API Actions from the Model</li>
+                </ol>
+            </div>
+        )
         case TipType.LOGGING_TOGGLE:
             return (<FormattedMessage id={FM.TOOLTIP_LOGGING_TOGGLE} defaultMessage="Logging Enable/Disable" />);
         case TipType.LUIS_OVERVIEW:
