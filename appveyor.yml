@@ -3,7 +3,7 @@ skip_branch_with_pr: true
 
 cache:
   - '%AppData%\npm-cache -> appveyor.yml'
-  - '%AppData%\..\Local\Cypress\Cache -> package-lock.json'
+  - '%AppData%\..\Local\Cypress\Cache'
   
 install:
   - npm install

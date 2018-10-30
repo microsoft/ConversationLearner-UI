@@ -3,16 +3,20 @@
  * Licensed under the MIT License.
 */
 
+const helpers = require('../../support/Helpers')
 const homePage = require('../../support/components/HomePage')
-const testList = require('../../support/TestList')
+const modelPage = require('../../support/components/ModelPage')
+const train = require('../../support/Train')
+const trainDialogsGrid = require('../../support/components/TrainDialogsGrid')
 
 /// Description: A temporary workspace for experimental code
 describe('zTemp test', () =>
 {
   it('zTemp test', () => 
   {
-    // homePage.Visit()
-    // cy.pause()
-    testList.AddToCypressTestList()
+    homePage.Visit()
+    // homePage.NavigateToModelPage("Model1-mni-Oct26-090220-500")
+    // modelPage.NavigateToTrainDialogs()
+    cy.pause()
   })
 })
