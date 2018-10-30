@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
+import { ReplayError } from '@conversationlearner/models';
 
 export function notNullOrUndefined<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -32,9 +33,9 @@ export function entityDisplayName(entity: CLM.EntityBase) {
     }
 }
 
-export function getReplayError(activity: Activity | null) {
-    if (!activity) {
-        return false
+export function getReplayError(activity: Activity | null): ReplayError | null | undefined {
+    if (!activity || !activity.channelData || !activity.channelData.clData) {
+        return null
     }
     let clData: CLM.CLChannelData = activity.channelData.clData
     return clData.replayError
@@ -72,11 +73,10 @@ export function packageReferences(app: CLM.AppBase): CLM.PackageReference[] {
     ]
 }
 
-// SDK add dummy values when memory items are missing.  This filters them out
+// SDK add dummy empty filled Entity when memory items are missing.  This filters them out
 export function filterDummyEntities(memories: CLM.Memory[]): CLM.Memory[] {
     return memories.filter(m => {
-        let userText = m.entityValues[0].userText
-        return (!userText || !userText.startsWith(CLM.DUMMY_ENTITY_PREFIX))
+        return (m.entityValues.length > 0)
     })
 }
 
