@@ -10,7 +10,7 @@ export function SearchBox()                       { cy.Get('label[for="traindial
 export function EntityDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-entity"]')}
 export function ActionDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-action"]')}
 
-// Cypress Flaw: Wanted to do this the first way, but it does not work due to the variable
+// Workaround:   Wanted to do this the first way, but it does not work due to the variable
 //               being passed in at the time cy.Get command is queued and not at the time
 //               that the command is run.
 //export function GridIsReady(expectedCount)        { cy.Get('[data-testid="train-dialogs-turns"]').should('have.length', expectedCount)}
