@@ -4,7 +4,7 @@
  */
 
 export function Visit()                         { cy.visit('http://localhost:5050') }
-export function NavigateToModelPage(name)       { cy.Get('button.root-65').contains(`${name}`).Click() }
+export function NavigateToModelPage(name)       { cy.Get('button.root-65').ExactMatch(`${name}`).Click() }
 export function ClickNewModelButton()           { cy.Get('[data-testid="model-list-create-new-button"]').Click() }
 export function ClickImportModelButton()        { cy.Get('[data-testid="model-list-import-model-button"]').Click() }
 export function TypeModelName(name)             { cy.Get('[data-testid="model-creator-input-name"]').type(name) }
