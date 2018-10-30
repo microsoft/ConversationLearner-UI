@@ -7,6 +7,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as OF from 'office-ui-fabric-react';
+import * as Utils from '../../util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import actions from '../../actions'
@@ -28,10 +29,11 @@ import { TipType } from '../ToolTips/ToolTips';
 import { renderReplayError } from './ReplayErrorList'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
+import { ReplayErrorLevel } from '@conversationlearner/models';
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
-    isCantReplayOpen: boolean
+    cantReplayMessage: string | null
     isUserInputModalOpen: boolean
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
@@ -43,7 +45,7 @@ interface ComponentState {
 
 const initialState: ComponentState = {
     isConfirmAbandonOpen: false,
-    isCantReplayOpen: false,
+    cantReplayMessage: null,
     isUserInputModalOpen: false,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
@@ -88,7 +90,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             }
             else {
                 this.setState({
-                    isCantReplayOpen: true
+                    cantReplayMessage: FM.EDITDIALOGMODAL_CANTREPLAY_TITLE
                 })
             }
         }
@@ -103,7 +105,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         else {
             this.setState({
-                isCantReplayOpen: true
+                cantReplayMessage: FM.EDITDIALOGMODAL_CANTREPLAY_TITLE
             })
         }
     }
@@ -111,7 +113,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     @autobind 
     onClickCloseCantReplay() { 
         this.setState({
-            isCantReplayOpen: false
+            cantReplayMessage: null
         })
     }
 
@@ -149,9 +151,16 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickBranch() {
-        this.setState({
-            isUserBranchModalOpen: true
-        })
+        if (this.canReplay(this.state.selectedActivity!)) {
+            this.setState({
+                isUserBranchModalOpen: true
+            }) 
+        }
+        else {
+            this.setState({
+                cantReplayMessage: FM.EDITDIALOGMODAL_CANTBRANCH_TITLE
+            })
+        }
     }
 
     @autobind
@@ -223,8 +232,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         // Loop until I hit the current activity
         let activityIndex = 0
         do {
-            if (this.props.history[activityIndex].channelData.replayError != null) {
-                return !this.props.history[activityIndex].channelData.replayError.isBlocking
+            const clData: CLM.CLChannelData = this.props.history[activityIndex].channelData.clData
+            if (clData && clData.replayError) {
+                return clData.replayError.errorLevel !== ReplayErrorLevel.BLOCKING
             }
             activityIndex = activityIndex + 1
         }
@@ -238,7 +248,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return false
         }
 
-        return (this.props.history.filter(h => h.channelData.replayError != null).length > 0)
+        return (this.props.history.filter(h => {
+            const clData: CLM.CLChannelData = h.channelData.clData
+            return (clData && clData.replayError)
+        }).length > 0)
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
@@ -252,16 +265,17 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return null
         }
         
+        const clData: CLM.CLChannelData = activity.channelData.clData
         const canBranch = 
             activity && 
             // Can only branch on user turns
-            activity.channelData.senderType === CLM.SenderType.User &&
+            clData.senderType === CLM.SenderType.User &&
             // Can only branch on un-edited dialogs
             (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.TRAIN_ORIGINAL)
 
-        const roundIndex = activity.channelData.roundIndex
-        const senderType = activity.channelData.senderType
-        const curRound = this.props.trainDialog.rounds[roundIndex]
+        const roundIndex = clData.roundIndex
+        const senderType = clData.senderType
+        const curRound = this.props.trainDialog.rounds[roundIndex!]
 
         // Round could have been deleted
         if (!curRound) {
@@ -282,8 +296,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 !canBranch || 
                 !this.props.onBranchDialog ||
                 this.state.pendingExtractionChanges ||
-                this.props.editState !== EditState.CAN_EDIT ||
-                (this.props.trainDialog && this.props.trainDialog.validity !== undefined && this.props.trainDialog.validity !== CLM.Validity.VALID)
+                this.props.editState !== EditState.CAN_EDIT
         
         const isLastActivity = activity === this.props.history[this.props.history.length - 1]
         const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
@@ -299,7 +312,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 />
                 {canDeleteRound &&
                     <OF.IconButton
-                        className={`cl-wc-deleteturn ${activity.channelData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
+                        className={`cl-wc-deleteturn ${clData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
                         iconProps={{ iconName: 'Delete' }}
                         onClick={() => {
                             if (this.state.selectedActivity && this.state.currentTrainDialog) {
@@ -387,6 +400,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             case EditDialogType.NEW:
                 this.props.onDeleteDialog()
                 break;
+            case EditDialogType.BRANCH:
+                this.props.onCloseModal(false) // false -> no need to reload original
+                break;
             case EditDialogType.LOG_EDITED:
                 this.props.onCloseModal(false) // false -> no need to reload original
                 break;
@@ -409,6 +425,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 return intl.formatMessage({
                     id: FM.BUTTON_ABANDON,
                     defaultMessage: 'Abandon'
+                })
+            case EditDialogType.BRANCH:
+                return intl.formatMessage({
+                    id: FM.BUTTON_ABANDON_BRANCH,
+                    defaultMessage: 'Abandon Branch'
                 })
             case EditDialogType.LOG_EDITED:
                 return intl.formatMessage({
@@ -447,6 +468,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     onClickSave() {
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.BRANCH:
                 this.props.onCreateDialog(this.props.trainDialog, this.hasReplayError())
                 break;
             case EditDialogType.LOG_EDITED:
@@ -471,6 +493,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 return intl.formatMessage({
                     id: FM.BUTTON_SAVE,
                     defaultMessage: 'Save'
+                })  
+            case EditDialogType.BRANCH:
+                return intl.formatMessage({
+                    id: FM.BUTTON_SAVE_BRANCH,
+                    defaultMessage: 'Save Branch'
                 })  
             case EditDialogType.LOG_EDITED:
                 return intl.formatMessage({
@@ -500,6 +527,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     renderConfirmText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.BRANCH:
                 return intl.formatMessage({
                     id: FM.EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE,
                     defaultMessage: `Are you sure you want to abandon this Training Dialog?`
@@ -554,7 +582,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                             className="wc-shellinput"
                             onKeyPress={() =>            
                                 this.setState({
-                                isCantReplayOpen: true
+                                    cantReplayMessage: FM.EDITDIALOGMODAL_CANTREPLAY_TITLE
                                 })
                             }
                             placeholder={"Type your message..."}
@@ -564,7 +592,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         className="cl-button-blockwebchat"
                         onClick={() =>            
                             this.setState({
-                            isCantReplayOpen: true
+                                cantReplayMessage: FM.EDITDIALOGMODAL_CANTREPLAY_TITLE
                             })
                         }
                     />
@@ -575,6 +603,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     renderWarning() {
+        const replayError = Utils.getReplayError(this.state.selectedActivity)
         if (this.props.editState === EditState.INVALID_BOT) {
             return (
                 <div className="cl-editdialog-warning">
@@ -583,7 +612,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                             id={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT}
                             defaultMessage={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT}
                         />
-                        <HelpIcon tipType={TipType.ACTION_ARGUMENTS} />
+                        <HelpIcon tipType={TipType.INVALID_BOT} />
                     </div>
                 </div>
             )
@@ -600,10 +629,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 </div>
             )
         }
-        else if (this.state.selectedActivity && this.state.selectedActivity.channelData.replayError) {
+        else if (replayError) {
+            
             return (
                 <div className="cl-editdialog-error">
-                    {renderReplayError(this.state.selectedActivity.channelData.replayError)}
+                    {renderReplayError(replayError)}
                 </div>
             )
         }
@@ -728,16 +758,18 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onConfirm={this.onClickAbandonApprove}
                     title={this.renderConfirmText(intl)}
                 />
-                <ConfirmCancelModal
-                    open={this.state.isCantReplayOpen}
-                    onCancel={this.onClickCloseCantReplay}
-                    onConfirm={null}
-                    title={
-                        intl.formatMessage({
-                        id: FM.EDITDIALOGMODAL_CANTREPLAY_TITLE,
-                        defaultMessage: `This TD has errors in previous rounds that must be fixed first`
-                    })}
-                />
+                {this.state.cantReplayMessage &&
+                    <ConfirmCancelModal
+                        open={true}
+                        onCancel={this.onClickCloseCantReplay}
+                        onConfirm={null}
+                        title={
+                            intl.formatMessage({
+                            id: this.state.cantReplayMessage || "",
+                            defaultMessage: `This TD has errors in previous rounds that must be fixed first`
+                        })}
+                    />
+                }
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
                     titleFM={FM.USERINPUT_ADD_TITLE}

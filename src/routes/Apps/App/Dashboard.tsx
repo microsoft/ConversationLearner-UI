@@ -114,7 +114,7 @@ class Dashboard extends React.Component<Props, ComponentState> {
                         <div className={`cl-font--emphasis ${OF.FontClassNames.medium}`}>Please check that the correct version of your Bot is running.</div>
                         {this.props.validationErrors.map((message: any, i) => {
                                 return message.length === 0
-                                    ? <br key={i}></br>
+                                    ? <br key={i}/>
                                     : <div key={i} className={OF.FontClassNames.medium}>{message}</div>
                             })
                         }

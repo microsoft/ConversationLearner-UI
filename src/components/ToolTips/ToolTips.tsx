@@ -43,6 +43,7 @@ export enum TipType {
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
 
+    INVALID_BOT = 'INVALID_BOT',
     LOGGING_TOGGLE = 'loggingToggle',
     LUIS_AUTHORING_KEY = 'luisAuthoringKey',
     LUIS_OVERVIEW = 'luisOverview',
@@ -73,7 +74,7 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
                     onRenderColumnHeaderTooltip: (tooltipHostProps: OF.ITooltipHostProps) => {
 
                         let id = tooltipHostProps.id ? tooltipHostProps.id.split('-')[1] : 'unknown-tip-id'
-                        let tip = GetTip(id);
+                        let tip = getTip(id);
                         if (tip) {
                             let ttHP = {
                                 ...tooltipHostProps,
@@ -100,7 +101,7 @@ export function onRenderPivotItem(link: OF.IPivotItemProps, defaultRenderer: (li
     const typType = link.ariaLabel ? link.ariaLabel : 'unknown-tip-type'
     return (
         <OF.TooltipHost
-            tooltipProps={{ onRenderContent: () => { return GetTip(typType) } }}
+            tooltipProps={{ onRenderContent: () => { return getTip(typType) } }}
             delay={OF.TooltipDelay.medium}
             directionalHint={OF.DirectionalHint.bottomCenter}
         >
@@ -109,10 +110,10 @@ export function onRenderPivotItem(link: OF.IPivotItemProps, defaultRenderer: (li
     )
 }
 
-export function Wrap(content: JSX.Element, tooltip: string, directionalHint: OF.DirectionalHint = OF.DirectionalHint.topCenter): JSX.Element {
+export function wrap(content: JSX.Element, tooltip: string, directionalHint: OF.DirectionalHint = OF.DirectionalHint.topCenter): JSX.Element {
     return (
         <OF.TooltipHost
-            tooltipProps={{ onRenderContent: () => { return GetTip(tooltip) } }}
+            tooltipProps={{ onRenderContent: () => { return getTip(tooltip) } }}
             delay={OF.TooltipDelay.medium}
             directionalHint={directionalHint}
         >
@@ -161,7 +162,7 @@ memoryManager.ForgetAllEntities(saveEntityNames: string[]): void
 memoryManager.CopyEntity(entityNameFrom: string, entityNameTo: string): void
 `;
 
-export function GetTip(tipType: string) {
+export function getTip(tipType: string) {
     switch (tipType) {
         case TipType.ACTION_API1:
             return renderAPIPage1()
@@ -367,6 +368,20 @@ export function GetTip(tipType: string) {
                     </ul>
                 </div>
             )
+        case TipType.INVALID_BOT:
+        return (
+            <div>
+                <h2>Error: Running Bot not compatible with this Model</h2>
+                <p>The Model contains API Actions that are not supported by the running Bot</p>
+                <p>Ways to fix:</p>
+                <ol>
+                    <li>Start the correct Bot and click "Retry" on the Model's Home page</li>
+                    <li>Add missing APIs to the running Bot</li>
+                    <li>Edit and update the API Actions if the API's name has changed</li>
+                    <li>Delete the missing API Actions from the Model</li>
+                </ol>
+            </div>
+        )
         case TipType.LOGGING_TOGGLE:
             return (<FormattedMessage id={FM.TOOLTIP_LOGGING_TOGGLE} defaultMessage="Logging Enable/Disable" />);
         case TipType.LUIS_OVERVIEW:
@@ -570,7 +585,7 @@ function render(title: FM, body: FM[], example: string | null = null, tableItems
     );
 }
 
-export function Prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.Element {
+export function prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.Element {
     if (!memoryValue.builtinType && !memoryValue.resolution) {
         return content;
     }
@@ -592,7 +607,7 @@ export function Prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.El
     )
 }
 
-export function EntityObject(object: Object, content: JSX.Element): JSX.Element {
+export function entityObject(object: Object, content: JSX.Element): JSX.Element {
     return (
         <span>
             <OF.TooltipHost

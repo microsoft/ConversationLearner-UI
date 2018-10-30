@@ -1,5 +1,6 @@
 import { createPartiallyEmittedExpression } from "typescript";
 const modelPage = require('./components/ModelPage')
+const train = require('../support/Train')
 
 // ***********************************************
 // This example commands.js shows you how to
@@ -53,7 +54,7 @@ Cypress.Commands.add('UploadFile', (fileName, selector) =>
 Cypress.Commands.add('ExactMatch', { prevSubject: 'element'}, (elements, expectedText) => 
 {   
   for(var i = 0; i < elements.length; i++) if(elements[i].innerText == expectedText) return elements[i]
-  return cy.contains(`Exact Match '${expectedText}' NOT Found`)
+  throw `Exact Match '${expectedText}' NOT Found`
 })
 
 Cypress.Commands.add("WaitForTrainingStatusCompleted", () => 
@@ -62,3 +63,5 @@ Cypress.Commands.add("WaitForTrainingStatusCompleted", () =>
   // the document object which is why we need to wrap it.
   cy.wrap(cy.document, {timeout: 120000}).should(() => {return modelPage.WaitForTrainingStatusCompleted()})
 })
+
+

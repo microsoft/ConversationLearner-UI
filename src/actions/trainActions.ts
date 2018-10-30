@@ -6,7 +6,7 @@ import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
-import { TrainDialog, AppBase, TeachWithHistory, UIScoreResponse, ExtractResponse, UserInput } from '@conversationlearner/models'
+import { TrainDialog, AppBase, TeachWithHistory, UIScoreResponse, ExtractResponse, UserInput, TextVariation } from '@conversationlearner/models'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions';
 import { AxiosError } from 'axios';
 import { setErrorDisplay } from './displayActions';
@@ -225,6 +225,43 @@ const trainDialogReplayFulfilled = (trainDialog: TrainDialog): ActionObject => {
     return {
         type: AT.FETCH_TRAINDIALOGREPLAY_FULFILLED,
         trainDialog
+    }
+}
+
+// --------------------------
+// fetchTextVariationConflict
+// --------------------------
+export const fetchTextVariationConflictThunkAsync = (appId: string, trainDialogId: string, textVariation: TextVariation) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC)
+        dispatch(fetchTextVariationConflictAsync(appId, trainDialogId, textVariation))
+
+        try {
+            let conflict = await clClient.fetchTextVariationConflict(appId, trainDialogId, textVariation)
+            dispatch(fetchTextVariationConflictFulfilled(conflict))
+            return conflict
+        }
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TRAINDIALOGREPLAY_ASYNC))
+            throw error
+        }
+    }
+}
+
+const fetchTextVariationConflictAsync = (appId: string, trainDialogId: string, textVariation: TextVariation): ActionObject => {
+    return {
+        type: AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC,
+        appId,
+        trainDialogId,
+        textVariation
+    }
+}
+
+const fetchTextVariationConflictFulfilled = (extractResponse: ExtractResponse | null): ActionObject => {
+    return {
+        type: AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED,
+        extractResponse
     }
 }
 

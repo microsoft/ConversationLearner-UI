@@ -32,15 +32,27 @@ export function entityDisplayName(entity: CLM.EntityBase) {
     }
 }
 
+export function getReplayError(activity: Activity | null) {
+    if (!activity) {
+        return false
+    }
+    let clData: CLM.CLChannelData = activity.channelData.clData
+    return clData.replayError
+}
+
 export function matchedActivityIndex(selectedActivity: Activity, activities: Activity[]): number | null {
     if (!selectedActivity || activities.length === 0) {
         return null
     }
     else {
-        let index = activities.findIndex(a => 
-            a.channelData.senderType === selectedActivity.channelData.senderType &&
-            a.channelData.roundIndex === selectedActivity.channelData.roundIndex &&
-            a.channelData.scoreIndex === selectedActivity.channelData.scoreIndex
+        let clDataSelected: CLM.CLChannelData = selectedActivity.channelData.clData
+        let index = activities.findIndex(a => {
+                let clData: CLM.CLChannelData = a.channelData.clData
+                return (
+                    clData.senderType === clDataSelected.senderType &&
+                    clData.roundIndex === clDataSelected.roundIndex &&
+                    clData.scoreIndex === clDataSelected.scoreIndex)
+            }
         )
         if (index < 0) {
             console.log('Failed to find selected activity')
@@ -88,7 +100,7 @@ export function getDefaultEntityMap(entities: CLM.EntityBase[]): Map<string, str
     return entities.reduce((m, e) => m.set(e.entityId, `$${e.entityName}`), new Map<string, string>())
 }
 
-export function setStatePromise(that: any, newState: any) {
+export function setStateAsync(that: any, newState: any) {
     return new Promise((resolve) => {
         that.setState(newState, () => {
             resolve();

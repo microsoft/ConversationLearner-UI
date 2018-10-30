@@ -385,6 +385,16 @@ export default class ClClient {
             .then(response => response.data)
     }
 
+    //AT.FETCH_TEXTVARIATIONCONFLICT_ASYNC
+    // If there is a conflicting text variation, returns corresponding extractresponse, otherwise null
+    fetchTextVariationConflict(appId: string, trainDialogId: string, textVariation: CLM.TextVariation): Promise<CLM.ExtractResponse | null> {
+        return this.send<CLM.ExtractResponse>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/extractor/textvariation`,
+            data: textVariation
+        }).then(response => response.data)
+    }
+
     tutorials(userId: string): Promise<CLM.AppBase[]> {
         return this.send<CLM.UIAppList>({
             url: `${this.baseUrl}/apps?userId=${userId}`

@@ -70,7 +70,7 @@ class Index extends React.Component<Props, ComponentState> {
             throw new Error(`You attempted to load an app, but editPackageId is not defined. This is likely a problem with the code. Please open an issue.`)
         }
 
-        this.loadApp(app, editPackageId)
+        void this.loadApp(app, editPackageId)
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -174,7 +174,9 @@ class Index extends React.Component<Props, ComponentState> {
                         <div
                             data-testid="app-index-model-name" 
                             className={FontClassNames.xxLarge}
-                        >{app.appName}</div>
+                        >
+                        {app.appName}
+                        </div>
                     </div>
                     <div className={`cl-app-tag-status ${FontClassNames.mediumPlus}`}>
                         Tag: {tag}
@@ -207,7 +209,7 @@ class Index extends React.Component<Props, ComponentState> {
                                         }</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-entities" to={{ pathname: `${match.url}/entities`, state: { app } }}>
-                                <Icon iconName="List" /><span>Entities</span><span className="count">{this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).filter(e => !e.doNotMemorize).length}</span>
+                                <Icon iconName="List" /><span>Entities</span><span className="count">{this.props.entities.filter(e => typeof e.positiveId === undefined || e.positiveId === null).filter(e => !e.doNotMemorize).length}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-actions" to={{ pathname: `${match.url}/actions`, state: { app } }}>
                                 <Icon iconName="List" /><span>Actions</span><span className="count">{this.props.actions.length}</span>
@@ -245,19 +247,24 @@ class Index extends React.Component<Props, ComponentState> {
                 <Switch>
                     <Route 
                         path={`${match.url}/settings`} 
-                        render={props => <Settings {...props} app={app} editingPackageId={editPackageId} onCreateApp={this.onCreateApp} />} />
+                        render={props => <Settings {...props} app={app} editingPackageId={editPackageId} onCreateApp={this.onCreateApp} />} 
+                    />
                     <Route 
                         path={`${match.url}/entities`} 
-                        render={props => <Entities {...props} app={app} editingPackageId={editPackageId} />} />
+                        render={props => <Entities {...props} app={app} editingPackageId={editPackageId} />} 
+                    />
                     <Route 
                         path={`${match.url}/actions`} 
-                        render={props => <Actions {...props} app={app} editingPackageId={editPackageId}/>} />
+                        render={props => <Actions {...props} app={app} editingPackageId={editPackageId}/>} 
+                    />
                     <Route 
                         path={`${match.url}/trainDialogs`} 
-                        render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} />} />
+                        render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} />} 
+                    />
                     <Route 
                         path={`${match.url}/logDialogs`} 
-                        render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} />} />
+                        render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} />} 
+                    />
                     <Route
                         exact={true}
                         path={match.url}

@@ -16,7 +16,7 @@ import MemoryTable from './MemoryTable';
 import { FM } from '../../react-intl-messages'
 import { filterDummyEntities } from '../../util'
 import { TeachSessionState } from '../../types/StateTypes'
-import { Icon, FontClassNames, autobind } from 'office-ui-fabric-react'
+import * as OF from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import './TeachSessionAdmin.css'
 
@@ -49,11 +49,39 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         turnLookupOffset: 0
     }
 
-    @autobind
+    async hasConflicts(textVariations: CLM.TextVariation[]): Promise<boolean> {
+
+         // Check for conflics on text variation that have changed
+         const renderData = this.getRenderData()
+         const originalTextVariations = renderData.textVariations
+         let changedTextVariations: CLM.TextVariation[] = []
+         textVariations.map(tv => {
+             const found = originalTextVariations.find(otv => CLM.ModelUtils.areEqualTextVariations(tv, otv))
+             if (!found) {
+                 changedTextVariations.push(tv)
+             }
+         })
+  
+         // Check the changes ones, return if conflict found
+         for (let changedTextVariation of changedTextVariations) {
+             let conflict = await this.props.fetchTextVariationConflictThunkAsync(this.props.app.appId, this.props.teachSession.teach!.trainDialogId, changedTextVariation)
+             if (conflict) {
+                 return true
+             }
+         }
+         return false
+    }
+
+    @OF.autobind
     async onEntityExtractorSubmit(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]): Promise<void> {
         
         // If I'm editing an existing round
         if (this.props.selectedActivityIndex !== null) {
+
+            if (await this.hasConflicts(textVariations)) {
+                return
+            }
+            // Check for conflicts
             this.props.onEditExtraction(extractResponse, textVariations)
             return
         }
@@ -72,22 +100,26 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         const appId = this.props.app.appId
         const teachId = this.props.teachSession.teach.teachId
-        const uiScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
+        const uiScoreResponse: CLM.UIScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
         
-        let turnLookup = [...this.state.turnLookup]
-        // If first turn, set offset based on existing activities
-        let turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.activityIndex - 1 : this.state.turnLookupOffset
-                
-        turnLookup.push({textVariations, memories: [...this.props.teachSession.memories]})
-        turnLookup.push({uiScoreResponse})
-        this.setState({
-            isScoresRefreshVisible: true,
-            turnLookup,
-            turnLookupOffset
-        })
+        if (!uiScoreResponse.extractConflict) {
+            let turnLookup = [...this.state.turnLookup]
+            // If first turn, set offset based on existing activities
+            let turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.activityIndex - 1 : this.state.turnLookupOffset
+                    
+            turnLookup.push({textVariations, memories: [...this.props.teachSession.memories]})
+            turnLookup.push({uiScoreResponse})
+            this.setState({
+                isScoresRefreshVisible: true,
+                turnLookup,
+                turnLookupOffset
+            })
+
+            this.props.clearExtractResponses()  
+        }
     }
 
-    @autobind
+    @OF.autobind
     async onActionScorerSubmit(trainScorerStep: CLM.TrainScorerStep): Promise<void> {
 
         // If I'm editing an existing round
@@ -106,14 +138,14 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         }
 
         // Send channel data to add to activity so can process when clicked on later
-        const channelData = { 
+        const clData: CLM.CLChannelData = { 
             activityIndex: this.props.activityIndex,
             validWaitAction: !scoredAction.isTerminal || undefined  // Draws carrot under card if a wait action
         }
 
         const uiTrainScorerStep: CLM.UITrainScorerStep = {
             trainScorerStep,
-            channelData,
+            clData,
             entities: this.props.entities
         } 
 
@@ -163,7 +195,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         })
     }
 
-    // Calculate round index from selectedActivityIndedx
+    // Calculate round index from selectedActivityIndex
     roundIndex(activityIndex: number): number {
         let roundIndex = -1
         let activityLeft = activityIndex
@@ -189,13 +221,13 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 let turnData = this.state.turnLookup[lookupIndex]
     
                 const prevTurn = this.state.turnLookup[lookupIndex - 1]
-                const prevMemories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories : []
+                const prevMemories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories! : []
                 if (turnData.uiScoreResponse) {
                     return {
                             dialogMode: CLM.DialogMode.Scorer,
                             scoreInput: turnData.uiScoreResponse.scoreInput,
                             scoreResponse: turnData.uiScoreResponse.scoreResponse,
-                            memories: filterDummyEntities(turnData.uiScoreResponse.memories),
+                            memories: filterDummyEntities(turnData.uiScoreResponse.memories!),
                             prevMemories: filterDummyEntities(prevMemories),
                             extractResponses: this.props.teachSession.extractResponses,
                             textVariations: [],
@@ -249,9 +281,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const editTypeClass = isLogDialog ? 'log' : 'train'
         
         return (
-            <div className={`cl-dialog-admin ${FontClassNames.small}`}>
-                <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${FontClassNames.large}`}>
-                    <Icon 
+            <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
+                <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
+                    <OF.Icon 
                         iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
                     />
                     {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
@@ -332,8 +364,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     autoTeach={this.props.teachSession.autoTeach}
                                     dialogMode={renderData.dialogMode}
                                     extractResponses={renderData.extractResponses}
+                                    extractConflict={this.props.teachSession.extractConflict}
                                     originalTextVariations={renderData.textVariations}
-                                    onSumbitExtractions={this.onEntityExtractorSubmit}
+                                    onSubmitExtractions={this.onEntityExtractorSubmit}
                                 />}
                         </div>
                     </div>
@@ -363,7 +396,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                                 <button
                                                     type="button"
                                                     data-testid="teach-session-admin-refresh-score-button"
-                                                    className={`cl-training-status-inline__button ${FontClassNames.large}`}
+                                                    className={`cl-training-status-inline__button ${OF.FontClassNames.large}`}
                                                     onClick={this.onClickRefreshScores}
                                                 >
                                                     <FormattedMessage
@@ -415,10 +448,12 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
+        fetchTextVariationConflictThunkAsync: actions.train.fetchTextVariationConflictThunkAsync,
         getScoresThunkAsync: actions.teach.getScoresThunkAsync,
         runScorerThunkAsync: actions.teach.runScorerThunkAsync,
-        postScorerFeedbackThunkAsync: actions.teach.postScorerFeedbackThunkAsync
-    }, dispatch);
+        postScorerFeedbackThunkAsync: actions.teach.postScorerFeedbackThunkAsync,
+        clearExtractResponses : actions.teach.clearExtractResponses
+    }, dispatch)
 }
 const mapStateToProps = (state: State) => {
     if (!state.user.user) {

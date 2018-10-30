@@ -18,10 +18,7 @@ import AppIndex from './App/Index'
 import AppsList from './AppsList'
 import { CL_IMPORT_ID } from '../../types/const'
 
-interface ComponentState {
-}
-
-class AppsIndex extends React.Component<Props, ComponentState> {
+class AppsIndex extends React.Component<Props, {}> {
     updateAppsAndBot() {
         if (this.props.user.id !== null && this.props.user.id.length > 0) {
             this.props.fetchApplicationsThunkAsync(this.props.user.id)
@@ -31,7 +28,7 @@ class AppsIndex extends React.Component<Props, ComponentState> {
         this.updateAppsAndBot();
     }
 
-    componentDidUpdate(prevProps: Props, _prevState: ComponentState) {
+    componentDidUpdate(prevProps: Props, _prevState: {}) {
         // TODO: See if this code can be removed. It seems like componentWillMount is called every time the user navigates to /home route
         if (typeof (this.props.user.id) === 'string' && this.props.user.id !== prevProps.user.id) {
             this.updateAppsAndBot();

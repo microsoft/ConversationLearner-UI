@@ -18,7 +18,6 @@ import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
 import { EditHandlerArgs } from './TrainDialogs'
 import { TeachSessionState } from '../../../types/StateTypes'
-import { getDefaultEntityMap } from '../../../util';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import ReplayErrorList from '../../../components/modals/ReplayErrorList';
 import * as moment from 'moment'
@@ -78,9 +77,9 @@ function getLastResponse(logDialog: CLM.LogDialog, component: LogDialogs): strin
         let scorerSteps = logDialog.rounds[logDialog.rounds.length - 1].scorerSteps;
         if (scorerSteps.length > 0) {
             let actionId = scorerSteps[scorerSteps.length - 1].predictedAction;
-            let action = component.props.actions.find(a => a.actionId == actionId);
+            let action = component.props.actions.find(a => a.actionId === actionId);
             if (action) {
-                return CLM.ActionBase.GetPayload(action, getDefaultEntityMap(component.props.entities))
+                return CLM.ActionBase.GetPayload(action, Util.getDefaultEntityMap(component.props.entities))
             }
         }
     }
@@ -399,7 +398,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         if (this.state.currentLogDialog) {
             await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
         }
-        this.onCloseEditDialogModal();
+        await this.onCloseEditDialogModal();
     }
 
     // User has edited an Activity in a TeachSession
@@ -441,8 +440,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
 
         try {
-            const roundIndex = selectedActivity.channelData.roundIndex
-            let scoreIndex = selectedActivity.channelData.scoreIndex
+            const clData: CLM.CLChannelData = selectedActivity.channelData.clData
+            const roundIndex = clData.roundIndex!
+            let scoreIndex = clData.scoreIndex!
             const definitions = {
                 entities: this.props.entities,
                 actions: this.props.actions,
@@ -467,12 +467,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Get a score for this step
             let uiScoreResponse = await ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, history) as any) as Promise<CLM.UIScoreResponse>)
 
+            if (!uiScoreResponse.scoreResponse) {
+                throw new Error("Empty Score REsponse")
+            }
+
             // Find top scoring Action
             let insertedAction = this.getBestAction(uiScoreResponse.scoreResponse)
 
             // None were qualified so pick the first (will show in UI as invalid)
             if (!insertedAction && uiScoreResponse.scoreResponse.unscoredActions[0]) {
-                let scoredAction = {...uiScoreResponse.scoreResponse.unscoredActions[0], score: 1.0}
+                let scoredAction = {...uiScoreResponse.scoreResponse.unscoredActions[0], score: 1}
                 delete scoredAction.reason
                 insertedAction = scoredAction
             }
@@ -519,8 +523,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             throw new Error("missing args")
         }
         try {
-            const roundIndex = selectedActivity.channelData.roundIndex
-            const scoreIndex = selectedActivity.channelData.scoreIndex
+            const clData: CLM.CLChannelData = selectedActivity.channelData.clData
+            const roundIndex = clData.roundIndex!
+            const scoreIndex = clData.scoreIndex!
             const definitions = {
                 entities: this.props.entities,
                 actions: this.props.actions,
@@ -534,7 +539,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
         }
         catch (error) {
             console.warn(`Error when attempting to change an Action: `, error)
@@ -548,7 +553,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             throw new Error("missing args")
         }
         try {
-            const roundIndex = selectedActivity.channelData.roundIndex
+            const clData: CLM.CLChannelData = selectedActivity.channelData.clData
+            const roundIndex = clData.roundIndex!
             const definitions = {
                 entities: this.props.entities,
                 actions: this.props.actions,
@@ -562,7 +568,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Replay logic functions on train dialog
             newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
 
-            this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
+            await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
         }
         catch (error) {
                 console.warn(`Error when attempting to change extraction: `, error)
@@ -572,9 +578,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     @autobind
     async onDeleteTurn(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
 
-        const senderType = selectedActivity.channelData.senderType
-        const roundIndex = selectedActivity.channelData.roundIndex
-        const scoreIndex = selectedActivity.channelData.scoreIndex
+        const clData: CLM.CLChannelData = selectedActivity.channelData.clData
+        const senderType = clData.senderType
+        const roundIndex = clData.roundIndex!
+        const scoreIndex = clData.scoreIndex!
 
         let newTrainDialog: CLM.TrainDialog = {...trainDialog}
         newTrainDialog.definitions = {
@@ -597,21 +604,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
             // Delete round 
             newTrainDialog.rounds.splice(roundIndex, 1)
-
-            // Replay logic functions on train dialog
-            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
-
-            await this.onUpdateHistory(newTrainDialog, null, SelectionType.NONE)
         }
-        else if (senderType === CLM.SenderType.Bot) {
+        else { //CLM.SenderType.Bot
             // If Action deleted remove it
             curRound.scorerSteps.splice(scoreIndex, 1)
-
-            // Replay logic functions on train dialog
-            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
-
-            await this.onUpdateHistory(newTrainDialog, null, SelectionType.NONE)
         }
+
+        // Replay logic functions on train dialog
+        newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+        await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.CURRENT)
     }
 
     @autobind
@@ -621,9 +622,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             throw new Error("inputText is null")
         }
         try {
-            const roundIndex = selectedActivity.channelData.roundIndex
-            const scoreIndex = selectedActivity.channelData.scoreIndex
-            const senderType = selectedActivity.channelData.senderType
+            const clData: CLM.CLChannelData = selectedActivity.channelData.clData
+            const roundIndex = clData.roundIndex!
+            const scoreIndex = clData.scoreIndex!
+            const senderType = clData.senderType
 
             const definitions = {
                 entities: this.props.entities,
@@ -733,7 +735,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType) {
+    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity, selectionType: SelectionType) {
 
         try {
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
@@ -741,6 +743,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             if (activityIndex !== null && selectionType === SelectionType.NEXT) {
                 // Select next activity, useful for when inserting a step
                 activityIndex = activityIndex + 1
+            }
+            // If was a delete action, activity won't exist any more, so select by index
+            else if (activityIndex === null && selectionType === SelectionType.CURRENT) {
+    
+                const clData: CLM.CLChannelData = selectedActivity.channelData.clData
+                if (clData && clData.activityIndex) {
+                    activityIndex = clData.activityIndex
+                }
             }
             else if (selectionType === SelectionType.NONE) {
                 activityIndex = null
@@ -814,12 +824,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
-        // Remove actionless dummy step (used for rendering) if it exits
-        let lastRound = newTrainDialog.rounds[newTrainDialog.rounds.length - 1] 
-        if (lastRound.scorerSteps.length > 0 && lastRound.scorerSteps[0].labelAction === undefined) {
-            lastRound.scorerSteps = []
+        // Remove actionless dummy step (used for rendering) if they exist
+        for (let round of newTrainDialog.rounds) {
+            if (round.scorerSteps.length > 0 && round.scorerSteps[0].labelAction === undefined) {
+                round.scorerSteps = []
+            }
         }
-        
+
         newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
         newTrainDialog.definitions = null
         try { 
