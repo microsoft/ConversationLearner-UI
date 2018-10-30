@@ -11,6 +11,8 @@ import * as ToolTip from './ToolTips/ToolTips';
 import * as OF from 'office-ui-fabric-react';
 import { TipType } from './ToolTips/ToolTips';
 import { setTipType } from '../actions/displayActions'
+import { FormattedMessage } from 'react-intl'
+import { FM } from '../react-intl-messages'
 
 class HelpPanel extends React.Component<Props, {}> {
     onDismiss(): void {
@@ -28,8 +30,27 @@ class HelpPanel extends React.Component<Props, {}> {
                 type={OF.PanelType.medium}
                 customWidth="400px"
                 closeButtonAriaLabel="Close"
+                hasCloseButton={true}
             >
                 <span>{ToolTip.getTip(this.props.tipType)}</span>
+
+                <div className="cl-modal_footer cl-modal_footer--border">
+                    <div className="cl-modal-buttons">
+                        <div className="cl-modal-buttons_secondary">
+                        </div>
+                        <div className="cl-modal-buttons_primary">
+                            <OF.Button
+                                data-testid="helppanel-close-button"
+                                className="cl-button-close"
+                                onClick={() => { this.onDismiss() }}>
+                                <FormattedMessage
+                                    id={FM.BUTTON_CLOSE}
+                                    defaultMessage='Close'
+                                />
+                            </OF.Button>
+                        </div>
+                    </div>
+                </div>
             </OF.Panel>
         )
     }
