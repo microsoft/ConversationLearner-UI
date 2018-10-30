@@ -16,7 +16,7 @@ import actions from '../../../actions'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
-import { EditHandlerArgs } from './TrainDialogs'
+import { EditHandlerArgs, cleanTrainDialog } from './TrainDialogs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import ReplayErrorList from '../../../components/modals/ReplayErrorList';
@@ -824,12 +824,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
-        // Remove actionless dummy step (used for rendering) if they exist
-        for (let round of newTrainDialog.rounds) {
-            if (round.scorerSteps.length > 0 && round.scorerSteps[0].labelAction === undefined) {
-                round.scorerSteps = []
-            }
-        }
+        // Remove any data added for rendering  LARS add to log dialogs and elsewhere
+        cleanTrainDialog(newTrainDialog)
 
         newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
         newTrainDialog.definitions = null
@@ -850,7 +846,20 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onCloseTeachSession() {
+    onCloseTeachSession(save: boolean) {
+        if (this.props.teachSession && this.props.teachSession.teach) {
+            if (save) {
+                // If source was a trainDialog, delete the original
+                let sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH 
+                    ? this.state.currentTrainDialog.trainDialogId : null;
+                let sourceLogDialogId = this.state.currentLogDialog ? this.state.currentLogDialog.logDialogId : null;
+                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, sourceLogDialogId)
+            }
+            else {
+                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
+            }
+        }
+
         this.setState({
             isTeachDialogModalOpen: false,
             history: [],

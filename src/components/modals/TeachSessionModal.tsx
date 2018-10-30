@@ -85,10 +85,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
  
     @autobind
     onDismissError(errorType: AT): void {
-        if (this.props.teachSession.teach) {
-            this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
-        }
-        this.props.onClose();
+        this.props.onClose(false);
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -168,29 +165,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickSave() {
-        // If source was a trainDialog, delete the original
-        let sourceTrainDialogId = this.props.sourceTrainDialog && this.props.editType !== EditDialogType.BRANCH 
-            ? this.props.sourceTrainDialog.trainDialogId : null;
-        let sourceLogDialogId = this.props.sourceLogDialog ? this.props.sourceLogDialog.logDialogId : null;
-
-        if (this.props.teachSession.teach) {
-            this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, sourceLogDialogId)
-        }
-        this.props.onClose()
+        this.props.onClose(true)
     }
 
     @autobind
-    onClickConfirmDelete() {
-        this.setState(
-            {
-                isConfirmDeleteOpen: false
-            },
-            () => {
-                if (this.props.teachSession.teach) {
-                    this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
-                }
-                this.props.onClose()
-            })
+    async onClickConfirmDelete() {
+        await Utils.setStateAsync(this, {
+            isConfirmDeleteOpen: false
+        })
+        this.props.onClose(false)
     }
 
     @autobind
@@ -803,7 +786,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
@@ -825,7 +807,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     isOpen: boolean
-    onClose: Function
+    onClose: (save: boolean) => void
     onEditTeach: (historyIndex: number, args: EditHandlerArgs|null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any) => void
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
