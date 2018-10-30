@@ -6,11 +6,11 @@
 const scorerModal = require('./components/ScorerModal')
 const trainDialogsGrid = require('./components/TrainDialogsGrid')
 const editDialogModal = require('./components/EditDialogModal')
-const helpers = require('./Helpers.js')
+const helpers = require('./Helpers')
 
 function Today() { return Cypress.moment().format("MM/DD/YYYY") }
 
-// Cypress Flaw: to get true global data it must be attached to the window object.
+// Workaround: to get true global data it must be attached to the window object.
 window.trainingSummary = undefined
 window.expectedTrainGridRowCount = 9999
 
@@ -38,11 +38,9 @@ export function Save()
   cy.Train_Save()
   trainDialogsGrid.VerifyPageTitle()
   
-  // Bug 1558: Spinner Needed After Save Train Dialog and Other Save Actions
-  //           Once this bug is fixed, we can eliminate this next line of code.
-  // Cypress Flaw: We need to do this here instead of inside of Train_VerifyTrainingSummaryIsInGrid()
-  //               since Cypress won't retry that function. ALSO we need to prevent that function 
-  //               from executing until we know the grid is populated and this will do that.
+  // Workaround: We need to do this here instead of inside of Train_VerifyTrainingSummaryIsInGrid()
+  //             since Cypress won't retry that function. ALSO we need to prevent that function 
+  //             from executing until we know the grid is populated and this will do that.
   trainDialogsGrid.GridIsReady(elements => { expect(elements).to.have.length(window.expectedTrainGridRowCount)})
 
   cy.Train_VerifyTrainingSummaryIsInGrid()
@@ -86,7 +84,7 @@ export function OneTimeInitialization()
   {
     var turns = trainDialogsGrid.GetTurns()
 
-    // Cypress Flaw: Can NOT do this here because cypress does not do its retry on this method.
+    // Workaround: Can NOT do this here because Cypress does not do its retry on this method.
     // expect(window.expectedTrainGridRowCount).to.equal(turns.length)
     
     var firstInputs = trainDialogsGrid.GetFirstInputs()

@@ -64,6 +64,4 @@ Cypress.Commands.add("WaitForTrainingStatusCompleted", () =>
   cy.wrap(cy.document, {timeout: 120000}).should(() => {return modelPage.WaitForTrainingStatusCompleted()})
 })
 
-//Cypress.Commands.add("VerifyTrainingSummaryIsInGrid", train.VerifyTrainingSummaryIsInGrid)
-
 
