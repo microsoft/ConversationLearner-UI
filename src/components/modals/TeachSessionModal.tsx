@@ -216,12 +216,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 return
             }
         }
-        const clData: CLM.CLChannelData = activity.channelData.clData
-        // Otherwise newly create activities with have index in channel data
-        this.setState({
-            selectedActivityIndex: clData.activityIndex!,
-            selectedHistoryActivity: null
-        })        
+        if (activity.channelData) {
+            const clData: CLM.CLChannelData = activity.channelData.clData
+            // Otherwise newly create activities with have index in channel data
+            this.setState({
+                selectedActivityIndex: clData.activityIndex!,
+                selectedHistoryActivity: null
+            })  
+        }      
     }
 
     onWebChatPostActivity(activity: Activity) {
