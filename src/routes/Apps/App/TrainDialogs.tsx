@@ -45,6 +45,21 @@ const returnStringWhenError = (s: string) => {
     }
 }
 
+export function cleanTrainDialog(trainDialog: CLM.TrainDialog) {
+    // Remove actionless dummy step (used for rendering) if they exist
+    for (let round of trainDialog.rounds) {
+        if (round.scorerSteps.length > 0 && round.scorerSteps[0].labelAction === undefined) {
+            round.scorerSteps = []
+        }
+    }
+    // Remove empty filled entities (used for rendering) if they exist
+    for (let round of trainDialog.rounds) {
+        for (let scorerStep of round.scorerSteps) {
+            scorerStep.input.filledEntities = scorerStep.input.filledEntities.filter(fe => fe.values.length > 0)
+        }
+    }
+}
+
 const returnErrorStringWhenError = returnStringWhenError("ERR")
 
 function textClassName(trainDialog: CLM.TrainDialog): string {
@@ -390,7 +405,19 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
-    onCloseTeachSession() {
+    onCloseTeachSession(save: boolean) {
+
+        if (this.props.teachSession && this.props.teachSession.teach) {
+            if (save) {
+                // If source was a trainDialog, delete the original
+                let sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH 
+                    ? this.state.currentTrainDialog.trainDialogId : null;
+                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, null)
+            }
+            else {
+                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
+            }
+        }
         this.setState({
             isTeachDialogModalOpen: false,
             history: [],
@@ -856,12 +883,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
         try { 
-            // Remove actionless dummy step (used for rendering) if they exist
-            for (let round of newTrainDialog.rounds) {
-                if (round.scorerSteps.length > 0 && round.scorerSteps[0].labelAction === undefined) {
-                    round.scorerSteps = []
-                }
-            }
+            // Remove any data added for rendering  LARS add to log dialogs and elsewhere
+            cleanTrainDialog(newTrainDialog)
 
             newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
             newTrainDialog.definitions = null
@@ -1167,7 +1190,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         app={this.props.app}
                         teachSession={teachSession}
                         editingPackageId={this.props.editingPackageId}
-                        onClose={() => this.onCloseTeachSession()}
+                        onClose={this.onCloseTeachSession}
                         onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
                         onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.selectionType!)}
                         onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput!, editHandlerArgs.selectionType!)} 
