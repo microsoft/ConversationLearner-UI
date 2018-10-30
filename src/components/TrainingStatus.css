@@ -20,6 +20,10 @@
     cursor: pointer;
     color: var(--color-alert);
 }
+.cl-training-status__icon-row .cl-icon {
+    margin-left:0.3em;
+}
+
 .cl-training-status__icon-label {
     color: var(--color-neutralPrimary);
 }
