@@ -128,4 +128,5 @@
     "not ie <= 11",
     "not op_mini all"
   ]
+    "path-parse": "^1.0.6",
 }
