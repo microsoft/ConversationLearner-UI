@@ -65,7 +65,11 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
   
          // Check the changes ones, return if conflict found
          for (let changedTextVariation of changedTextVariations) {
-             let conflict = await this.props.fetchTextVariationConflictThunkAsync(this.props.app.appId, this.props.teachSession.teach!.trainDialogId, changedTextVariation)
+             let conflict = await this.props.fetchTextVariationConflictThunkAsync(
+                 this.props.app.appId, 
+                 this.props.teachSession.teach!.trainDialogId, 
+                 changedTextVariation,
+                 this.props.originalTrainDialogId)
              if (conflict) {
                  return true
              }
@@ -369,6 +373,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     extractType={CLM.DialogType.TEACH}
                                     editType={this.props.editType}
                                     teachId={this.props.teachSession.teach.teachId}
+                                    originalTrainDialogId={this.props.originalTrainDialogId}
                                     dialogId={this.props.teachSession.teach.trainDialogId}
                                     roundIndex={renderData.roundIndex}
                                     autoTeach={this.props.teachSession.autoTeach}
@@ -483,6 +488,8 @@ export interface ReceivedProps {
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string
+    // Train Dialog that this edit originally came from
+    originalTrainDialogId: string | null,
     editType: EditDialogType,
     initialEntities: CLM.FilledEntityMap | null,
     // Index to attach to channel data

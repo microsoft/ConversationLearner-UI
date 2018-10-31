@@ -98,7 +98,11 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
     
         // Check the changes ones, return if conflict found
         for (let changedTextVariation of changedTextVariations) {
-            let conflict = await this.props.fetchTextVariationConflictThunkAsync(this.props.app.appId, this.props.trainDialog.trainDialogId, changedTextVariation)
+            let conflict = await this.props.fetchTextVariationConflictThunkAsync(
+                this.props.app.appId, 
+                this.props.trainDialog.trainDialogId, 
+                changedTextVariation, 
+                this.props.originalTrainDialogId)
             if (conflict) {
                 return true
             }
@@ -395,6 +399,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     data-testid="dialog-admin-entity-extractor"
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
+                                    originalTrainDialogId={this.props.originalTrainDialogId}
                                     canEdit={this.props.editState === EditState.CAN_EDIT} 
                                     extractType={isLogDialog
                                         ? CLM.DialogType.LOGDIALOG
@@ -484,6 +489,8 @@ export interface ReceivedProps {
     trainDialog: CLM.TrainDialog,
     // If editing a log dialog, this was the source
     editingLogDialog: CLM.LogDialog | null
+    // Train Dialog that this edit originally came from
+    originalTrainDialogId: string | null,
     selectedActivity: Activity | null,
     editState: EditState,
     editType: EditDialogType,
