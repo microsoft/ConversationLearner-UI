@@ -405,6 +405,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
+    @OF.autobind
     onCloseTeachSession(save: boolean) {
 
         if (this.props.teachSession && this.props.teachSession.teach) {
