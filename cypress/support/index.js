@@ -5,7 +5,7 @@
 
 import './MonitorDocumentChanges.js'
 import './commands.js'
-import './train.js'
+import './Train.js'
 import './components/ActionsGrid.js'
 import './components/ActionModal.js'
 import './components/EntitiesGrid.js'
@@ -15,7 +15,7 @@ import './components/LogDialogsGrid.js'
 import './components/LogDialogModal.js'
 import './components/ModelPage.js'
 import './components/ScorerModal.js'
-import './components/EditdialogModal.js'
+import './components/EditDialogModal.js'
 import './components/TrainDialogsGrid.js'
 import './Helpers.js'
 
