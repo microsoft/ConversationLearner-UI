@@ -44,7 +44,7 @@ jobs:
           background: true
 
       # Run UI e2e tests
-      - run: npm run cypress -- run --browser chrome --record --key $CYPRESS_RECORD_KEY
+      - run: npm run cypress -- run --browser chrome --spec "cypress/integration/Tests/CreateModels/(All).js" --record --key $CYPRESS_RECORD_KEY
 
       - store_artifacts:
           path: results
