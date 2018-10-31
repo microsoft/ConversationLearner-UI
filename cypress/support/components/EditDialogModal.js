@@ -14,6 +14,8 @@ export function AlternativeInputText()                { cy.Get('[data-testid="en
 export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 
+// div.wc-message-wrapper.list.clickable
+
 export function VerifyDetectedEntity(entityName, entityValue)
 {
   cy.Get('[data-testid="custom-entity-name-button"]').contains(entityName)
