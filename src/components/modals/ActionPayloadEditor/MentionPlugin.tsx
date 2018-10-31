@@ -4,7 +4,7 @@
  */
 import * as React from 'react'
 import * as immutable from 'immutable'
-import { IPickerProps, NodeTypes } from './models'
+import { IPickerProps, NodeTypes } from './APEModels'
 import { getNodesByPath, findNodeByPath } from './utilities'
 import MentionNode from './MentionNode'
 import './MentionPlugin.css'

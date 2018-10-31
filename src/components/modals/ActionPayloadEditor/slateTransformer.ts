@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { NodeTypes, IOption } from './models'
+import { NodeTypes, IOption } from './APEModels'
 
 function updateOptionNames(value: any, options: IOption[]) {
     // Clone to ensure non-destructive operation

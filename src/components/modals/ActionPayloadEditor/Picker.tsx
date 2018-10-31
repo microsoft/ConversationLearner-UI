@@ -4,7 +4,7 @@
  */
 import * as React from 'react'
 import './Picker.css'
-import { IOption } from './models'
+import { IOption } from './APEModels'
 import { MatchedOption } from '../../ExtractorResponseEditor/models'
 import FuseMatch from '../../ExtractorResponseEditor/FuseMatch'
 

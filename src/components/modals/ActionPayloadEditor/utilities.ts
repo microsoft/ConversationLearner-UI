@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { IOption, NodeTypes } from "./models"
+import { IOption, NodeTypes } from "./APEModels"
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.

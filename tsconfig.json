@@ -8,6 +8,7 @@
         "es2017",
         "dom"
     ],
+    "keyofStringsOnly": true,
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",

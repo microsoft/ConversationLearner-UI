@@ -178,7 +178,7 @@ export interface ReceivedProps {
 const stateProps = returntypeof(mapStateToProps);
 type Props = typeof stateProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList))
+export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ActionDetailsList) as any)
 
 function getActionPayloadRenderer(action: ActionBase, component: ActionDetailsList, isValidationError: boolean) {
     if (action.actionType === ActionTypes.TEXT) {
