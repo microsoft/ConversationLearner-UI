@@ -48,7 +48,7 @@ export function WhatsYourName()
 {
   models.CreateNewModel('Model1')
   entities.CreateNewEntity({name: 'name'})
-  actions.CreateNewAction({response: "What's your name?", expectedEntity: 'name'})
+  //actions.CreateNewAction({response: "What's your name?", expectedEntities: 'name'})
   
   // NOTE: the {enter} in this call is necessary to triger the entity detection.
   actions.CreateNewAction({response: 'Hello $name{enter}'})

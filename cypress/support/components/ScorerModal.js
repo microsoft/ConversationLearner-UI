@@ -15,6 +15,8 @@ export function ClickAction(expectedResponse)
     .Click()
 
   var expectedUtterance = expectedResponse.replace(/'/g, "’")
+  cy.Get('[data-testid="web-chat-utterances"]').children('div.format-markdown > p').should('have.text', expectedUtterance)
+
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     cy.wrap(elements[elements.length - 1]).within(e => {
       cy.get('div.format-markdown > p').should('have.text', expectedUtterance)

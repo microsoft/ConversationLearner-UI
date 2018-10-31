@@ -22,9 +22,11 @@ export function TypeResponse(textToType)
   })
 }
 
+// Pass in an undefined 'entityNames' to just clear the field
 function TypeMultipleEntities(selector, entityNames)
 {
-  if (!Array.isArray(entityNames)) entityNames = [entityNames]
+  if (!entityNames) entityNames = new Array()
+  else if (!Array.isArray(entityNames)) entityNames = [entityNames]
 
   cy.Get('.cl-modal_body').within(() => 
   {
@@ -33,6 +35,7 @@ function TypeMultipleEntities(selector, entityNames)
       cy.Get('.ms-BasePicker-input')
         .then((element) =>
         {
+          cy.wrap(element).clear()
           for(var i = 0; i < entityNames.length; i++) { cy.wrap(element).type(`$${entityNames[i]}`).wait(1000).type('{enter}') }
         })
     })
