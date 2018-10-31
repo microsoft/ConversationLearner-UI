@@ -347,7 +347,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             extractType,
             extractId,
             this.props.roundIndex,
-            userInput
+            userInput,
+            this.props.originalTrainDialogId
         )
 
         this.setState({
@@ -566,6 +567,8 @@ export interface ReceivedProps {
     teachId: string | null
     // ID of related trainDialog
     dialogId: string | null
+    // Train Dialog that this originally came from
+    originalTrainDialogId: string | null,
     roundIndex: number | null
     autoTeach: boolean
     dialogMode: CLM.DialogMode

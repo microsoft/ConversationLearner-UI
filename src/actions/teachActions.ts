@@ -177,7 +177,7 @@ const deleteMemoryFulfilled = (): ActionObject => {
 // --------------------------
 // RunExtractor
 // --------------------------
-export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput) => {
+export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput, filteredDialog: string | null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.RUN_EXTRACTOR_ASYNC)
         dispatch(runExtractorAsync(appId, extractType, sessionId, turnIndex, userInput))
@@ -187,7 +187,7 @@ export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogTyp
 
             switch (extractType) {
                 case CLM.DialogType.TEACH:
-                    uiExtractResponse = await clClient.teachSessionAddExtractStep(appId, sessionId, userInput)
+                    uiExtractResponse = await clClient.teachSessionAddExtractStep(appId, sessionId, userInput, filteredDialog)
                   break;
                 case CLM.DialogType.TRAINDIALOG:
                     if (turnIndex === null) {

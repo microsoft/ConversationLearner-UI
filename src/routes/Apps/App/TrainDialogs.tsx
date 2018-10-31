@@ -1191,6 +1191,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         app={this.props.app}
                         teachSession={teachSession}
                         editingPackageId={this.props.editingPackageId}
+                        originalTrainDialogId={this.state.originalTrainDialogId}
                         onClose={this.onCloseTeachSession}
                         onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
                         onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.selectionType!)}
@@ -1213,6 +1214,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     editState={editState}
                     open={this.state.isEditDialogModalOpen}
                     trainDialog={this.state.currentTrainDialog!}
+                    originalTrainDialogId={this.state.originalTrainDialogId}
                     editingLogDialog={null}
                     history={this.state.history}
                     initialSelectedActivityIndex={this.state.selectedActivityIndex}
