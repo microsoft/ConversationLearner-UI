@@ -16,6 +16,7 @@ import MemoryTable from './MemoryTable';
 import { FM } from '../../react-intl-messages'
 import { filterDummyEntities } from '../../util'
 import { TeachSessionState } from '../../types/StateTypes'
+import TrainingStatusContainer from '../TrainingStatusContainer'
 import * as OF from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import './TeachSessionAdmin.css'
@@ -282,11 +283,20 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         
         return (
             <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
-                <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
-                    <OF.Icon 
-                        iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
-                    />
-                    {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                <div className="cl-ux-flex">
+                    <div style={{width:'70%'}}>
+                        <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
+                        <OF.Icon 
+                            iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
+                        />
+                        {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                        </div>
+                    </div>
+                    <div style={{width:'30%'}}>
+                        <TrainingStatusContainer
+                            app={this.props.app}
+                        />
+                    </div>
                 </div>
                 {(renderData.dialogMode === CLM.DialogMode.Extractor || renderData.dialogMode === CLM.DialogMode.Wait) && 
                     (
