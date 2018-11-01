@@ -11,7 +11,7 @@ const modelPage = require('../support/components/ModelPage')
 // it also automatically populates the Disqualtifying Entities field with the expected entities,
 // so the caller only needs to specify the ones the UI does not auto populate.
 // However, there are cases where the caller may want to explicitly specify these autopopulated values anyway,
-// so this code does allow for that.
+// and this code does allow for that.
 export function CreateNewAction({response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' })
 {
   modelPage.NavigateToActions()
@@ -27,18 +27,11 @@ export function CreateNewAction({response, expectedEntities, requiredEntities, d
   var requiredEntitiesFromResponse = response.match(/(?<=\$)[^ ]+?(?={enter})/g)
   response = response.replace(/{enter}/g, '')
   
-  // Get the row that we are going to validate and assign a Cypress Alias to it
+  // Get the row that we are going to validate and assign a Cypress Alias to it.
+  // If we skip this step, the validations that follow will fail.
   actionsGrid.GetRowToBeValidated(response)
 
-  // if(!requiredEntities && !requiredEntitiesFromResponse) actionsGrid.ValidateRequiredEntitiesIsEmpty()
-  // else 
   actionsGrid.ValidateRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
-  
-  // if(!expectedEntities && !disqualifyingEntities) actionsGrid.ValidateDisqualifyingEntitiesIsEmpty()
-  // else 
   actionsGrid.ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)
-
-  // if(!expectedEntities) actionsGrid.ValidateExpectedEntitiesIsEmpty()
-  // else 
   actionsGrid.ValidateExpectedEntities(expectedEntities)
 }

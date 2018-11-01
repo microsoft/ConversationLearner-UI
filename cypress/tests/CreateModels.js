@@ -32,6 +32,8 @@ export function DisqualifyingEntities()
   actions.CreateNewAction({response: 'Hey $name{enter}', disqualifyingEntities: ['sweets', 'want']})
   actions.CreateNewAction({response: 'Hey $name{enter}, what do you really want?', expectedEntities: 'want', disqualifyingEntities: ['sweets', 'want']})
   actions.CreateNewAction({response: "Sorry $name{enter}, I can't help you get $want{enter}"})
+
+  // Manually EXPORT this to fixtures folder and name it 'Model-disq.cl'
 }
 
 export function WaitVsNoWaitActions()
@@ -42,6 +44,8 @@ export function WaitVsNoWaitActions()
   actions.CreateNewAction({response: 'Which animal would you like?'})
   actions.CreateNewAction({response: 'Cows say moo!', uncheckWaitForResponse: true})
   actions.CreateNewAction({response: 'Ducks say quack!', uncheckWaitForResponse: true})
+
+  // Manually EXPORT this to fixtures folder and name it 'Model-0wait.cl'
 }
 
 export function WhatsYourName()
@@ -52,4 +56,6 @@ export function WhatsYourName()
   
   // NOTE: the {enter} in this call is necessary to triger the entity detection.
   actions.CreateNewAction({response: 'Hello $name{enter}'})
+
+  // Manually EXPORT this to fixtures folder and name it 'Model1.cl'
 }
