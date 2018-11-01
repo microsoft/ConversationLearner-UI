@@ -3,8 +3,6 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
-import { Activity } from 'botframework-directlinejs'
-import { ReplayError } from '@conversationlearner/models';
 
 export function notNullOrUndefined<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -33,36 +31,6 @@ export function entityDisplayName(entity: CLM.EntityBase) {
     }
 }
 
-export function getReplayError(activity: Activity | null): ReplayError | null | undefined {
-    if (!activity || !activity.channelData || !activity.channelData.clData) {
-        return null
-    }
-    let clData: CLM.CLChannelData = activity.channelData.clData
-    return clData.replayError
-}
-
-export function matchedActivityIndex(selectedActivity: Activity, activities: Activity[]): number | null {
-    if (!selectedActivity || activities.length === 0) {
-        return null
-    }
-    else {
-        let clDataSelected: CLM.CLChannelData = selectedActivity.channelData.clData
-        let index = activities.findIndex(a => {
-                let clData: CLM.CLChannelData = a.channelData.clData
-                return (
-                    clData.senderType === clDataSelected.senderType &&
-                    clData.roundIndex === clDataSelected.roundIndex &&
-                    clData.scoreIndex === clDataSelected.scoreIndex)
-            }
-        )
-        if (index < 0) {
-            console.log('Failed to find selected activity')
-            return null
-        }
-        return index
-    }
-}
-
 export function packageReferences(app: CLM.AppBase): CLM.PackageReference[] {
     return [
         ...app.packageVersions,
@@ -71,13 +39,6 @@ export function packageReferences(app: CLM.AppBase): CLM.PackageReference[] {
             packageVersion: 'Master'
         }
     ]
-}
-
-// SDK add dummy empty filled Entity when memory items are missing.  This filters them out
-export function filterDummyEntities(memories: CLM.Memory[]): CLM.Memory[] {
-    return memories.filter(m => {
-        return (m.entityValues.length > 0)
-    })
 }
 
 export function createEntityMapFromMemories(entities: CLM.EntityBase[], memories: CLM.Memory[]): Map<string, string> {

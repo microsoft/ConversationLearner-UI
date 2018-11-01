@@ -10,6 +10,7 @@ import * as OF from 'office-ui-fabric-react'
 import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../util'
+import * as DialogUtils from '../../../dialogUtils'
 import { SelectionType } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'
@@ -815,7 +816,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         try {
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            let activityIndex = selectedActivity ? Util.matchedActivityIndex(selectedActivity, teachWithHistory.history) : null
+            let activityIndex = selectedActivity ? DialogUtils.matchedActivityIndex(selectedActivity, teachWithHistory.history) : null
             if (activityIndex !== null && selectionType === SelectionType.NEXT) {
                 // Select next activity, useful for when inserting a step
                 activityIndex = activityIndex + 1
@@ -884,7 +885,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
 
         try { 
-            // Remove any data added for rendering  LARS add to log dialogs and elsewhere
+            // Remove any data added for rendering 
             cleanTrainDialog(newTrainDialog)
 
             newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
@@ -1204,7 +1205,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         editType={this.state.editType}
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
-                        sourceLogDialog={null}
                     />
                 }
                 <EditDialogModal
@@ -1215,7 +1215,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isEditDialogModalOpen}
                     trainDialog={this.state.currentTrainDialog!}
                     originalTrainDialogId={this.state.originalTrainDialogId}
-                    editingLogDialog={null}
+                    editingLogDialogId={null}
                     history={this.state.history}
                     initialSelectedActivityIndex={this.state.selectedActivityIndex}
                     editType={this.state.editType}

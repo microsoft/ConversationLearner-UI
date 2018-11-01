@@ -7,7 +7,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as OF from 'office-ui-fabric-react';
-import * as Utils from '../../util'
+import * as DialogUtils from '../../dialogUtils'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import actions from '../../actions'
@@ -603,7 +603,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     renderWarning() {
-        const replayError = Utils.getReplayError(this.state.selectedActivity)
+        const replayError = DialogUtils.getReplayError(this.state.selectedActivity)
         if (this.props.editState === EditState.INVALID_BOT) {
             return (
                 <div className="cl-editdialog-warning">
@@ -697,7 +697,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     data-testid="chatmodal-editdialogadmin"
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
-                                    editingLogDialog={this.props.editingLogDialog}
+                                    editingLogDialogId={this.props.editingLogDialogId}
                                     originalTrainDialogId={this.props.originalTrainDialogId}
                                     editType={this.props.editType}
                                     editState={this.props.editState}
@@ -812,7 +812,7 @@ export interface ReceivedProps {
     // Train Dialog that this edit originally came from
     originalTrainDialogId: string | null
     // If editing a log dialog, this was the source
-    editingLogDialog: CLM.LogDialog | null
+    editingLogDialogId: string | null
     history: Activity[]
     // Is it a new dialog, a TrainDialog or LogDialog 
     editType: EditDialogType
