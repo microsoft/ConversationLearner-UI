@@ -83,7 +83,8 @@
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^7.1.0",
     "tslint-microsoft-contrib": "^5.2.1",
-    "typescript": "3.0.3"
+    "typescript": "3.0.3",
+    "path-parse": "^1.0.6"
   },
   "scripts": {
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
