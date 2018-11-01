@@ -16,19 +16,9 @@ import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
 import * as CLM from '@conversationlearner/models' 
 import { FM } from '../../react-intl-messages'
-import { filterDummyEntities } from '../../util'
+import * as DialogUtils from '../../dialogUtils'
 import { EditDialogType, EditState } from '.'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
-
-interface RenderData {
-    dialogMode: CLM.DialogMode
-    selectedAction: CLM.ActionBase | undefined
-    scorerStep: CLM.TrainScorerStep | undefined
-    scoreResponse: CLM.ScoreResponse | undefined
-    round: CLM.TrainRound | undefined
-    memories: CLM.Memory[]
-    prevMemories: CLM.Memory[]
-}
 
 class EditDialogAdmin extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
@@ -85,9 +75,9 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
 
     async hasConflicts(textVariations: CLM.TextVariation[]): Promise<boolean> {
 
-        // Check for conflics on text variation that have changed
+        // Generate list of textVariations that have changed
         const renderData = this.getRenderData()
-        const originalTextVariations = renderData.round!.extractorStep.textVariations
+        const originalTextVariations = renderData.textVariations
         let changedTextVariations: CLM.TextVariation[] = []
         textVariations.map(tv => {
             const found = originalTextVariations.find(otv => CLM.ModelUtils.areEqualTextVariations(tv, otv))
@@ -96,12 +86,24 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             }
         })
     
-        // Check the changes ones, return if conflict found
+        // Check the changed ones for conflicts
+
+        // First check for internal conflics
+        for (let changedTextVariation of changedTextVariations) {
+            let extractConflict = DialogUtils.internalConflict(changedTextVariation, this.props.trainDialog, renderData.roundIndex)
+            if (extractConflict) {
+                this.props.setTextVariationConflict(extractConflict)
+                return true
+            }
+        }
+
+        // Next against other TrainDialogs
         for (let changedTextVariation of changedTextVariations) {
             let conflict = await this.props.fetchTextVariationConflictThunkAsync(
                 this.props.app.appId, 
                 this.props.trainDialog.trainDialogId, 
                 changedTextVariation, 
+                // Exclude the originalTrain dialog from check
                 this.props.originalTrainDialogId)
             if (conflict) {
                 return true
@@ -184,8 +186,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         })
     }
 
-    getRenderData(): RenderData {
-        let selectedAction: CLM.ActionBase | undefined
+    getRenderData(): DialogUtils.DialogRenderData {
         let scorerStep: CLM.TrainScorerStep | undefined
         let scoreResponse: CLM.ScoreResponse | undefined
         let round: CLM.TrainRound | undefined
@@ -200,7 +201,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                     throw new Error(`Cannot get score step at index: ${this.state.scoreIndex} from array of length: ${round.scorerSteps.length}`)
                 }
 
-                selectedAction = this.props.actions.find(action => action.actionId === scorerStep!.labelAction);
+                let selectedAction = this.props.actions.find(action => action.actionId === scorerStep!.labelAction);
 
                 if (!selectedAction) {
                     // Action may have been deleted.  If so create dummy action to render
@@ -264,12 +265,12 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
 
         return {
             dialogMode: (this.state.senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
-            selectedAction: selectedAction,
-            scorerStep: scorerStep,
+            scoreInput: scorerStep ? scorerStep.input : undefined,
             scoreResponse: scoreResponse,
-            round: round,
-            memories: filterDummyEntities(memories),
-            prevMemories: filterDummyEntities(prevMemories)
+            roundIndex: this.state.roundIndex,
+            textVariations: round ? round.extractorStep.textVariations : [],
+            memories: DialogUtils.filterDummyEntities(memories),
+            prevMemories: DialogUtils.filterDummyEntities(prevMemories)
         }
     }
     
@@ -394,7 +395,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                             />
                         </div>
                         <div>
-                            {renderData.round ?
+                            {renderData.roundIndex ?
                                 <EntityExtractor
                                     data-testid="dialog-admin-entity-extractor"
                                     app={this.props.app}
@@ -406,15 +407,15 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                         : CLM.DialogType.TRAINDIALOG}
                                     editType={this.props.editType}
                                     teachId={null}
-                                    dialogId={this.props.editingLogDialog
-                                        ? this.props.editingLogDialog.logDialogId
+                                    dialogId={this.props.editingLogDialogId
+                                        ? this.props.editingLogDialogId
                                         : this.props.trainDialog.trainDialogId}
                                     roundIndex={this.state.roundIndex}
                                     autoTeach={false}
                                     dialogMode={renderData.dialogMode}
                                     extractResponses={this.props.teachSession ? this.props.teachSession.extractResponses : []}
                                     extractConflict={this.props.teachSession ? this.props.teachSession.extractConflict : null} 
-                                    originalTextVariations={renderData.round.extractorStep.textVariations}
+                                    originalTextVariations={renderData.textVariations}
                                     onSubmitExtractions={this.onEntityExtractorSubmit}
                                     onPendingStatusChanged={this.props.onPendingStatusChanged}
                                 />
@@ -428,9 +429,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                {renderData.selectedAction
-                && renderData.scoreResponse
-                && renderData.scorerStep
+                {renderData.scoreResponse && renderData.scoreInput
                 && this.state.senderType === CLM.SenderType.Bot
                 && <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
@@ -451,7 +450,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 autoTeach={false}
                                 dialogMode={renderData.dialogMode}
                                 scoreResponse={renderData.scoreResponse}
-                                scoreInput={renderData.scorerStep.input}
+                                scoreInput={renderData.scoreInput}
                                 memories={renderData.memories}
                                 onActionSelected={this.props.onChangeAction}
                             />
@@ -465,7 +464,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         clearExtractResponses: actions.teach.clearExtractResponses,
-        fetchTextVariationConflictThunkAsync: actions.train.fetchTextVariationConflictThunkAsync
+        fetchTextVariationConflictThunkAsync: actions.train.fetchTextVariationConflictThunkAsync,
+        setTextVariationConflict: actions.train.setTextVariationConflict
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -488,7 +488,7 @@ export interface ReceivedProps {
     editingPackageId: string,
     trainDialog: CLM.TrainDialog,
     // If editing a log dialog, this was the source
-    editingLogDialog: CLM.LogDialog | null
+    editingLogDialogId: string | null
     // Train Dialog that this edit originally came from
     originalTrainDialogId: string | null,
     selectedActivity: Activity | null,

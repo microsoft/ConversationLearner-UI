@@ -13,9 +13,10 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as BotChat from '@conversationlearner/webchat'
 import * as OF from 'office-ui-fabric-react';
 import * as Utils from '../../util'
+import * as DialogUtils from '../../dialogUtils'
 import { State, TeachSessionState } from '../../types';
 import Webchat, { renderActivity } from '../Webchat'
-import TeachSessionAdmin, { RenderData } from './TeachSessionAdmin'
+import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
 import { renderReplayError } from './ReplayErrorList'
 import * as CLM from '@conversationlearner/models'
@@ -256,9 +257,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     @OF.autobind
     getPrevMemories(): CLM.Memory[] {
 
-        let sourceDialog = this.props.sourceTrainDialog || this.props.sourceLogDialog
-
-        if (!this.state.selectedHistoryActivity || !sourceDialog) {
+        if (!this.state.selectedHistoryActivity || !this.props.sourceTrainDialog) {
             throw new Error("historyRender missing data")
         }
 
@@ -272,7 +271,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let memories: CLM.Memory[] = [];
         let prevIndex = roundIndex - 1;
         if (prevIndex >= 0) {
-            let round = sourceDialog.rounds[prevIndex];
+            let round = this.props.sourceTrainDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
                 let scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
                 memories = scorerStep.input.filledEntities.map<CLM.Memory>(fe => {
@@ -292,7 +291,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     // TODO: this is redundant with EditDialogAdmin
     @OF.autobind
-    historyRender(): RenderData {
+    historyRender(): DialogUtils.DialogRenderData {
         let selectedAction: CLM.ActionBase | undefined
         let scorerStep: CLM.TrainScorerStep | CLM.LogScorerStep | undefined
         let scoreResponse: CLM.ScoreResponse | undefined
@@ -300,8 +299,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let memories: CLM.Memory[] = [];
         let prevMemories: CLM.Memory[] = [];
 
-        let sourceDialog = this.props.sourceTrainDialog || this.props.sourceLogDialog
-        if (!this.state.selectedHistoryActivity || !sourceDialog) {
+        if (!this.state.selectedHistoryActivity || !this.props.sourceTrainDialog) {
             throw new Error("historyRender missing data")
         }
 
@@ -310,17 +308,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let scoreIndex = clData.scoreIndex
         let senderType = clData.senderType
 
-        if (roundIndex !== null && roundIndex < sourceDialog.rounds.length) {
-            round = sourceDialog.rounds[roundIndex];
+        if (roundIndex !== null && roundIndex < this.props.sourceTrainDialog.rounds.length) {
+            round = this.props.sourceTrainDialog.rounds[roundIndex];
             if (round.scorerSteps.length > 0 && typeof scoreIndex === "number") {
                 scorerStep = round.scorerSteps[scoreIndex];
                 if (!scorerStep) {
                     throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
                 }
 
-                let actionId = this.props.sourceTrainDialog 
-                    ? (scorerStep as CLM.TrainScorerStep)!.labelAction 
-                    : (scorerStep as CLM.LogScorerStep)!.predictedAction
+                let actionId = scorerStep!.labelAction 
                 selectedAction = this.props.actions.find(action => action.actionId === actionId);
 
                 if (!selectedAction) {
@@ -382,19 +378,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 }
             }
 
-            let textVariations = this.props.sourceTrainDialog 
-                ? (round as CLM.TrainRound).extractorStep.textVariations
-                : CLM.ModelUtils.ToTextVariations([(round as CLM.LogRound).extractorStep])
-
             return {
                 dialogMode: (senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
                 scoreInput: scorerStep ? scorerStep.input : undefined,
                 scoreResponse: scoreResponse,
                 roundIndex,
-                memories: Utils.filterDummyEntities(memories),
-                prevMemories: Utils.filterDummyEntities(prevMemories),
+                memories: DialogUtils.filterDummyEntities(memories),
+                prevMemories: DialogUtils.filterDummyEntities(prevMemories),
                 extractResponses: [],
-                textVariations: textVariations
+                textVariations: round.extractorStep.textVariations
             }       
         }
         throw new Error("Fail to render")
@@ -639,7 +631,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     renderWarning() {
 
-        let replayError = Utils.getReplayError(this.state.selectedHistoryActivity)
+        let replayError = DialogUtils.getReplayError(this.state.selectedHistoryActivity)
         if (replayError) {
             return (
                 <div className="cl-editdialog-error">
@@ -706,6 +698,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         teachSession={this.props.teachSession}
                                         editingPackageId={this.props.editingPackageId}
                                         originalTrainDialogId={this.props.originalTrainDialogId}
+                                        sourceTrainDialog={this.props.sourceTrainDialog}
                                         editType={this.props.editType}
                                         initialEntities={this.state.initialEntities}
                                         activityIndex={this.state.nextActivityIndex}
@@ -825,13 +818,12 @@ export interface ReceivedProps {
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string
-    // Train Dialog that this edit originally came from
-    originalTrainDialogId: string | null,
     // Is it new, from a TrainDialog or LogDialog
     editType: EditDialogType,
     // When editing and existing log or train dialog
     sourceTrainDialog: CLM.TrainDialog | null
-    sourceLogDialog: CLM.LogDialog | null
+    // Train Dialog that this edit originally came from (not same as sourceTrainDialog)
+    originalTrainDialogId: string | null,
     // When editing, the intial history before teach starts
     initialHistory: Activity[]
     lastAction: CLM.ActionBase | null
