@@ -19,6 +19,8 @@ import { FM } from '../../react-intl-messages'
 import { filterDummyEntities } from '../../util'
 import { EditDialogType, EditState } from '.'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import TrainingStatusContainer from '../TrainingStatusContainer'
+import './EditDialogAdmin.css'
 
 interface RenderData {
     dialogMode: CLM.DialogMode
@@ -336,11 +338,20 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         let renderData = this.getRenderData();
         return (
             <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
-                <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
-                    <OF.Icon 
-                        iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
-                    />
-                    {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                <div className="cl-ux-flex">
+                    <div style={{width:"80%"}}>
+                        <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
+                            <OF.Icon 
+                                iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
+                            />
+                            {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                        </div>
+                    </div>
+                    <div style={{width:"20%"}}>
+                        <TrainingStatusContainer
+                                app={this.props.app}
+                        />
+                    </div>
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === CLM.SenderType.User
                     ? (

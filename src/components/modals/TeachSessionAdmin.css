@@ -14,3 +14,6 @@
 .cl-training-status-inline__button:hover {
     text-decoration: underline;
 }
+.cl-dialog-admin .cl-ux-flex {
+    margin-bottom:-25px;
+}
