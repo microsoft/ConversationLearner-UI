@@ -265,6 +265,13 @@ const fetchTextVariationConflictFulfilled = (extractResponse: ExtractResponse | 
     }
 }
 
+export const setTextVariationConflict = (extractResponse: ExtractResponse): ActionObject => {
+    return {
+        type: AT.SET_TEXTVARIATION_CONFLICT,
+        extractResponse
+    }
+}
+
 // --------------------------
 // DeleteTrainDialog
 // --------------------------

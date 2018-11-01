@@ -272,6 +272,9 @@ export type FetchAction = {
     type: AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED,
     extractResponse: ExtractResponse | null
 } | {
+    type: AT.SET_TEXTVARIATION_CONFLICT,
+    extractResponse: ExtractResponse
+} | {
     type: AT.FETCH_TUTORIALS_ASYNC,
     userId: string
 } | {

@@ -87,6 +87,8 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             else {
                 return {...state, extractConflict: null}
             }
+        case AT.SET_TEXTVARIATION_CONFLICT:
+            return {...state, extractConflict: action.extractResponse}
         case AT.RUN_SCORER_FULFILLED:
             if (action.uiScoreResponse.extractConflict) {
                 return { ...state, extractConflict: action.uiScoreResponse.extractConflict}
