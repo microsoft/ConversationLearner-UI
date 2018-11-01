@@ -7,9 +7,11 @@ const actionModal = require('../support/components/ActionModal')
 const actionsGrid = require('../support/components/ActionsGrid')
 const modelPage = require('../support/components/ModelPage')
 
-TODO: Need to finish comenting this code and verifying it works with all current users of it
-// NOTE: Setting an Expected Entity causes the same entity to be placed in the Disqualified Entity field by default
-//       Currently this is not an issue but you will see it try to re-add the same Disqualified Entity durring a test run.
+// The UI automatically populates the Required Entities field with entities found in the response text and
+// it also automatically populates the Disqualtifying Entities field with the expected entities,
+// so the caller only needs to specify the ones the UI does not auto populate.
+// However, there are cases where the caller may want to explicitly specify these autopopulated values anyway,
+// so this code does allow for that.
 export function CreateNewAction({response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' })
 {
   modelPage.NavigateToActions()
@@ -28,22 +30,15 @@ export function CreateNewAction({response, expectedEntities, requiredEntities, d
   // Get the row that we are going to validate and assign a Cypress Alias to it
   actionsGrid.GetRowToBeValidated(response)
 
-  // This complication deals with the fact that
-  if(!requiredEntities && !requiredEntitiesFromResponse) actionsGrid.ValidateRequiredEntitiesIsEmpty()
-  else
-  {
-    if(!requiredEntities) requiredEntities = requiredEntitiesFromResponse
-    else
-    {
-      if(!Array.isArray(requiredEntities)) requiredEntities = [requiredEntities]
-      if(requiredEntitiesFromResponse) requiredEntities.concat(requiredEntitiesFromResponse)
-    }
-    actionsGrid.ValidateRequiredEntities(requiredEntities)
-  }
+  // if(!requiredEntities && !requiredEntitiesFromResponse) actionsGrid.ValidateRequiredEntitiesIsEmpty()
+  // else 
+  actionsGrid.ValidateRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
   
-  if(expectedEntities || disqualifyingEntities) actionsGrid.ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)
-  else actionsGrid.ValidateDisqualifyingEntitiesIsEmpty()
+  // if(!expectedEntities && !disqualifyingEntities) actionsGrid.ValidateDisqualifyingEntitiesIsEmpty()
+  // else 
+  actionsGrid.ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)
 
-  if(expectedEntities) actionsGrid.ValidateExpectedEntities(expectedEntities)
-  else actionsGrid.ValidateExpectedEntitiesIsEmpty()
+  // if(!expectedEntities) actionsGrid.ValidateExpectedEntitiesIsEmpty()
+  // else 
+  actionsGrid.ValidateExpectedEntities(expectedEntities)
 }

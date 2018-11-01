@@ -14,29 +14,47 @@ export function GetRowToBeValidated(response)
     .as('responseDetailsRow')
 }
 
-export function ValidateRequiredEntitiesIsEmpty()       { ValidateEntitiesIsEmpty('[data-testid="action-details-empty-required-entities"]') }
-export function ValidateDisqualifyingEntitiesIsEmpty()  { ValidateEntitiesIsEmpty('[data-testid="action-details-empty-disqualifying-entities"]') }
-export function ValidateExpectedEntitiesIsEmpty()       { ValidateEntitiesIsEmpty('[data-testid="action-details-empty-expected-entities"]') }
-export function ValidateRequiredEntities(entities)      { ValidateEntities('[data-testid="action-details-required-entity"]', entities)}
-export function ValidateExpectedEntities(entities)      { ValidateEntities('[data-testid="action-details-expected-entity"]', entities)}
+// export function ValidateRequiredEntitiesIsEmpty()       { ValidateEntitiesIsEmpty('[data-testid="action-details-empty-required-entities"]') }
+// export function ValidateDisqualifyingEntitiesIsEmpty()  { ValidateEntitiesIsEmpty('[data-testid="action-details-empty-disqualifying-entities"]') }
+// export function ValidateExpectedEntitiesIsEmpty()       { ValidateEntitiesIsEmpty('[data-testid="action-details-empty-expected-entities"]') }
 
-// This is a special case since the UI automatically adds Expected Entities to the Disqualifying Entities list
-export function ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)
-{ 
-  if(!Array.isArray(expectedEntities)) expectedEntities = [expectedEntities]
-  if(!Array.isArray(disqualifyingEntities)) disqualifyingEntities = [disqualifyingEntities]
-  var entities = expectedEntities.concat(disqualifyingEntities)
-  ValidateEntities('[data-testid="action-details-disqualifying-entity"]', entities)
-}
+export function ValidateExpectedEntities(entities)      { ValidateEntities('[data-testid="action-details-expected-entity"]', '[data-testid="action-details-empty-expected-entities"]', entities)}
+
+// The UI automatically populates the Required Entities field with entities found in the response text,
+// so the additionalRequiredEntities parameter allows the caller to specify entities not found in the response text.
+export function ValidateRequiredEntities(requiredEntitiesFromResponse, additionalRequiredEntities)  { ValidateEntities('[data-testid="action-details-required-entity"]', '[data-testid="action-details-empty-required-entities"]', requiredEntitiesFromResponse, additionalRequiredEntities)}
+
+// The UI automatically populates the Disqualtifying Entities field with the expected entities,
+// so the disqualifyingEntities parameter allows the caller to specify entities not found in expectedEntities.
+export function ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)              { ValidateEntities('[data-testid="action-details-disqualifying-entity"]', '[data-testid="action-details-empty-disqualifying-entities"]', expectedEntities, disqualifyingEntities) }
 
 function ValidateEntitiesIsEmpty(selector)              { cy.Get('@responseDetailsRow').find(selector) }
 
-function ValidateEntities(selector, entities) 
+const helpers = require('../../support/Helpers')
+function ValidateEntities(selector, emptySelector, entities1, entities2)
 { 
-  if(!Array.isArray(entities)) entities = [entities]
-  cy.Get('@responseDetailsRow').find(selector).as('entitiesList')
-  entities.forEach(entity => { cy.Get('@entitiesList').contains(entity) })
-  cy.Get('@entitiesList').should('have.length', entities.length)
+  if (!entities1 && !entities2) ValidateEntitiesIsEmpty(emptySelector)
+  else
+  {
+    var entities = new Array()
+    if (entities1)
+    {
+      if(!Array.isArray(entities1)) entities1 = [entities1]
+      entities = entities1
+    }
+    if (entities2)
+    {
+      if(!Array.isArray(entities2)) entities2 = [entities2]
+      entities = [...entities, ...entities2]
+    }
+
+    helpers.ConLog(`ValidateEntities`, `selector: "${selector}" -- entities: [${entities}]`)
+    cy.Get('@responseDetailsRow').find(selector).as('entitiesList')
+    entities.forEach(entity => { 
+      helpers.ConLog(`ValidateEntities`, `entity: "${entity}" -- typeof entity: [${typeof entity}]`)
+      cy.Get('@entitiesList').contains(entity).then(() => {helpers.ConLog(`ValidateEntities`, `selector: "${selector} -- PASSED"`)}) })
+    cy.Get('@entitiesList').should('have.length', entities.length)
+  }
 }
 
 

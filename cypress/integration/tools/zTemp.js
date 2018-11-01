@@ -15,12 +15,38 @@ describe('zTemp test', () =>
 {
   it('zTemp test', () => 
   {
-    homePage.Visit()
-    homePage.NavigateToModelPage("BigTrain")
-    modelPage.NavigateToTrainDialogs()
-    cy.pause()
+    ArrayTester(['one', 'two', 'three'], ['4444', '55555', '666666'])
+    ArrayTester('one', 'two')
 
-    editDialogsModal.SelectChatTurn('Hello Paul', 4)
+    ArrayTester(undefined, ['4444', '55555', '666666'])
+    ArrayTester(['one', 'two', 'three'])
+    ArrayTester()
+    // homePage.Visit()
+    // homePage.NavigateToModelPage("BigTrain")
+    // modelPage.NavigateToTrainDialogs()
+    // cy.pause()
+
+    // editDialogsModal.SelectChatTurn('Hello Paul', 4)
     //cy.Get('div.wc-message-wrapper.list.clickable').contains('Paul is not here').Click()
   })
 })
+
+function ArrayTester(entities1, entities2)
+{ 
+  if (!entities1 && !entities2) helpers.ConLog(`ValidateEntities`, 'IS EMPTY')
+  else
+  {
+    var entities = new Array()
+    if (entities1)
+    {
+      if(!Array.isArray(entities1)) entities1 = [entities1]
+      entities = entities1
+    }
+    if (entities2)
+    {
+      if(!Array.isArray(entities2)) entities2 = [entities2]
+      entities = [...entities, ...entities2]
+    }
+    entities.forEach(entity => { helpers.ConLog(`ValidateEntities`, `entity: "${entity}" -- typeof entity: [${typeof entity}]`)})
+  }
+}
