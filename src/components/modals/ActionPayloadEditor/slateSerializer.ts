@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { NodeTypes } from "./models";
+import { NodeTypes } from "./APEModels";
 
 // Based on: https://github.com/ianstormtaylor/slate/blob/master/packages/slate-plain-serializer/src/index.js
 

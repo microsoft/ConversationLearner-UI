@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { NodeTypes } from './models'
+import { NodeTypes } from './APEModels'
 import Plain from 'slate-plain-serializer'
 import EntityIdSerializer from './slateSerializer'
 

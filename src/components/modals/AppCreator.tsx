@@ -174,6 +174,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
         const reader = new FileReader()
         reader.onload = (e: Event) => {
             try {
+                if (typeof reader.result !== 'string') {
+                    throw new Error("String Expected")
+                }
                 const source = JSON.parse(reader.result) as AppDefinition
                 const appInput = this.getAppInput();
                 this.props.onSubmit(appInput, source)

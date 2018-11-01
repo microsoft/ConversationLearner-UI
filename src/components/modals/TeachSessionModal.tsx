@@ -242,7 +242,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 selectedHistoryActivity: null
             })
 
-            this.props.runExtractorThunkAsync(this.props.app.appId, CLM.DialogType.TEACH, this.props.teachSession.teach.teachId, null, userInput);
+            this.props.runExtractorThunkAsync(
+                this.props.app.appId, 
+                CLM.DialogType.TEACH, 
+                this.props.teachSession.teach.teachId, 
+                null, 
+                userInput,
+                this.props.originalTrainDialogId)
         }
     }
 
@@ -699,6 +705,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         app={this.props.app}
                                         teachSession={this.props.teachSession}
                                         editingPackageId={this.props.editingPackageId}
+                                        originalTrainDialogId={this.props.originalTrainDialogId}
                                         editType={this.props.editType}
                                         initialEntities={this.state.initialEntities}
                                         activityIndex={this.state.nextActivityIndex}
@@ -818,6 +825,8 @@ export interface ReceivedProps {
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string
+    // Train Dialog that this edit originally came from
+    originalTrainDialogId: string | null,
     // Is it new, from a TrainDialog or LogDialog
     editType: EditDialogType,
     // When editing and existing log or train dialog

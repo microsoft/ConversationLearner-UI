@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { NodeTypes } from './models'
+import { NodeTypes } from './APEModels'
 import OptionalNode from './OptionalNode'
 
 export interface IOptions {

@@ -698,6 +698,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
                                     editingLogDialog={this.props.editingLogDialog}
+                                    originalTrainDialogId={this.props.originalTrainDialogId}
                                     editType={this.props.editType}
                                     editState={this.props.editState}
                                     trainDialog={this.props.trainDialog}
@@ -808,6 +809,8 @@ export interface ReceivedProps {
     open: boolean
     // Current train dialog being edited
     trainDialog: CLM.TrainDialog
+    // Train Dialog that this edit originally came from
+    originalTrainDialogId: string | null
     // If editing a log dialog, this was the source
     editingLogDialog: CLM.LogDialog | null
     history: Activity[]

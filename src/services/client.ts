@@ -387,10 +387,15 @@ export default class ClClient {
 
     //AT.FETCH_TEXTVARIATIONCONFLICT_ASYNC
     // If there is a conflicting text variation, returns corresponding extractresponse, otherwise null
-    fetchTextVariationConflict(appId: string, trainDialogId: string, textVariation: CLM.TextVariation): Promise<CLM.ExtractResponse | null> {
+    // filteredDialog = dialog to ignore when checking for conflicting labels
+    fetchTextVariationConflict(appId: string, trainDialogId: string, textVariation: CLM.TextVariation, filteredDialog: string | null): Promise<CLM.ExtractResponse | null> {
+        let url = `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/extractor/textvariation`
+        if (filteredDialog) {
+            url = `${url}?filteredDialog=${filteredDialog}`
+        }
         return this.send<CLM.ExtractResponse>({
             method: 'post',
-            url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/extractor/textvariation`,
+            url,
             data: textVariation
         }).then(response => response.data)
     }
@@ -502,10 +507,15 @@ export default class ClClient {
             .then(response => { })
     }
 
-    teachSessionAddExtractStep(appId: string, sessionId: string, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
+    // filteredDialog = dialog to ignore when checking for conflicting labels
+    teachSessionAddExtractStep(appId: string, sessionId: string, userInput: CLM.UserInput, filteredDialog: string | null): Promise<CLM.UIExtractResponse> {
+        let url = `${this.baseUrl}/app/${appId}/teach/${sessionId}/extractor`
+        if (filteredDialog) {
+            url = `${url}?filteredDialog=${filteredDialog}`
+        }
         return this.send({
             method: 'put',
-            url: `${this.baseUrl}/app/${appId}/teach/${sessionId}/extractor`,
+            url,
             data: userInput
         })
             .then(response => response.data)

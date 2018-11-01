@@ -347,7 +347,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             extractType,
             extractId,
             this.props.roundIndex,
-            userInput
+            userInput,
+            this.props.originalTrainDialogId
         )
 
         this.setState({
@@ -566,6 +567,8 @@ export interface ReceivedProps {
     teachId: string | null
     // ID of related trainDialog
     dialogId: string | null
+    // Train Dialog that this originally came from
+    originalTrainDialogId: string | null,
     roundIndex: number | null
     autoTeach: boolean
     dialogMode: CLM.DialogMode
@@ -581,4 +584,4 @@ const stateProps = returntypeof(mapStateToProps)
 const dispatchProps = returntypeof(mapDispatchToProps)
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EntityExtractor))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EntityExtractor) as any)

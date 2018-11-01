@@ -1041,6 +1041,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         app={this.props.app}
                         teachSession={teachSession}
                         editingPackageId={this.props.editingPackageId}
+                        originalTrainDialogId={null}
                         onClose={this.onCloseTeachSession}
                         onSetInitialEntities={null} 
                         onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
@@ -1064,6 +1065,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isEditDialogModalOpen}
                     trainDialog={this.state.currentTrainDialog!}
                     editingLogDialog={this.state.currentLogDialog}
+                    originalTrainDialogId={null}
                     history={this.state.history}
                     initialSelectedActivityIndex={this.state.selectedHistoryIndex}
                     editType={this.state.editType}

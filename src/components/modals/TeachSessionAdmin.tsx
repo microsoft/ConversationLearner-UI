@@ -16,6 +16,7 @@ import MemoryTable from './MemoryTable';
 import { FM } from '../../react-intl-messages'
 import { filterDummyEntities } from '../../util'
 import { TeachSessionState } from '../../types/StateTypes'
+import TrainingStatusContainer from '../TrainingStatusContainer'
 import * as OF from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import './TeachSessionAdmin.css'
@@ -64,7 +65,11 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
   
          // Check the changes ones, return if conflict found
          for (let changedTextVariation of changedTextVariations) {
-             let conflict = await this.props.fetchTextVariationConflictThunkAsync(this.props.app.appId, this.props.teachSession.teach!.trainDialogId, changedTextVariation)
+             let conflict = await this.props.fetchTextVariationConflictThunkAsync(
+                 this.props.app.appId, 
+                 this.props.teachSession.teach!.trainDialogId, 
+                 changedTextVariation,
+                 this.props.originalTrainDialogId)
              if (conflict) {
                  return true
              }
@@ -282,11 +287,20 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         
         return (
             <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
-                <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
-                    <OF.Icon 
-                        iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
-                    />
-                    {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                <div className="cl-ux-flex">
+                    <div style={{width:'70%'}}>
+                        <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
+                        <OF.Icon 
+                            iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
+                        />
+                        {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                        </div>
+                    </div>
+                    <div style={{width:'30%'}}>
+                        <TrainingStatusContainer
+                            app={this.props.app}
+                        />
+                    </div>
                 </div>
                 {(renderData.dialogMode === CLM.DialogMode.Extractor || renderData.dialogMode === CLM.DialogMode.Wait) && 
                     (
@@ -359,6 +373,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     extractType={CLM.DialogType.TEACH}
                                     editType={this.props.editType}
                                     teachId={this.props.teachSession.teach.teachId}
+                                    originalTrainDialogId={this.props.originalTrainDialogId}
                                     dialogId={this.props.teachSession.teach.trainDialogId}
                                     roundIndex={renderData.roundIndex}
                                     autoTeach={this.props.teachSession.autoTeach}
@@ -473,6 +488,8 @@ export interface ReceivedProps {
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string
+    // Train Dialog that this edit originally came from
+    originalTrainDialogId: string | null,
     editType: EditDialogType,
     initialEntities: CLM.FilledEntityMap | null,
     // Index to attach to channel data
