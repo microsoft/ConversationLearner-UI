@@ -52,7 +52,7 @@
     list-style: none;
     padding: 0;
     padding-bottom: 0.25em;
-    border-bottom: 1px solid lightgrey;
+    border-top: 2px solid lightgrey;
 }
 
 .custom-toolbar__result {
