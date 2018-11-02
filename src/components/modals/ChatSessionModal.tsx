@@ -7,6 +7,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { EditDialogType } from '.'
+import ConfirmCancelModal from './ConfirmCancelModal'
 import { FontClassNames, Icon, PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
@@ -17,7 +18,18 @@ import { FM } from '../../react-intl-messages'
 import * as BotChat from '@conversationlearner/webchat'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
-class SessionWindow extends React.Component<Props, {}> {
+interface ComponentState {
+    isSessionEndModalOpen: boolean
+}
+class SessionWindow extends React.Component<Props, ComponentState> {
+    
+    constructor(props: Props) {
+        super(props)
+        this.state = {
+            isSessionEndModalOpen: false
+        }
+    }
+
     onClickDone() {
         if (this.props.chatSession.current !== null) {
             this.props.deleteChatSessionThunkAsync(this.props.user.id, this.props.chatSession.current, this.props.app, this.props.editingPackageId)
@@ -30,6 +42,7 @@ class SessionWindow extends React.Component<Props, {}> {
     onClickExpire() {
         if (this.props.chatSession.current !== null) {
             this.props.editChatSessionExpireThunkAsync(this.props.app.appId, this.props.chatSession.current.sessionId)
+            this.setState({isSessionEndModalOpen: true})
         }
     }
 
@@ -97,6 +110,14 @@ class SessionWindow extends React.Component<Props, {}> {
                         </div>
                     </div>
                 </div>
+                <ConfirmCancelModal
+                    open={this.state.isSessionEndModalOpen}
+                    onOk={() =>  this.setState({isSessionEndModalOpen: false})}
+                    title={intl.formatMessage({
+                        id: FM.CHATSESSIONMODAL_TIMEOUT_TITLE,
+                        defaultMessage: 'EndSession callback has been called and a new Session started'
+                    })}
+                />
             </Modal>
         );
     }
