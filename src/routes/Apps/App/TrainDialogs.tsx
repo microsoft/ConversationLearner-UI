@@ -889,6 +889,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             cleanTrainDialog(newTrainDialog)
 
             newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
+            newTrainDialog.trainDialogId = this.state.originalTrainDialogId || newTrainDialog.trainDialogId
             newTrainDialog.definitions = null
 
             await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TeachWithHistory>);

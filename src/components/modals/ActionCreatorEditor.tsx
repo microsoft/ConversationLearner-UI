@@ -1151,7 +1151,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
                                 style={{ marginTop: '1em', display: 'inline-block' }}
-                                disabled={disabled || this.state.selectedActionTypeOptionKey === ActionTypes.END_SESSION}
+                                disabled={this.state.selectedActionTypeOptionKey === ActionTypes.END_SESSION}
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>

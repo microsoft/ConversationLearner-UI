@@ -19,6 +19,8 @@ import { FM } from '../../react-intl-messages'
 import * as DialogUtils from '../../dialogUtils'
 import { EditDialogType, EditState } from '.'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import TrainingStatusContainer from '../TrainingStatusContainer'
+import './EditDialogAdmin.css'
 
 class EditDialogAdmin extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
@@ -97,11 +99,12 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
+        let dialogId = this.props.editingLogDialogId || this.props.trainDialog.trainDialogId 
         // Next against other TrainDialogs
         for (let changedTextVariation of changedTextVariations) {
             let conflict = await this.props.fetchTextVariationConflictThunkAsync(
                 this.props.app.appId, 
-                this.props.trainDialog.trainDialogId, 
+                dialogId,
                 changedTextVariation, 
                 // Exclude the originalTrain dialog from check
                 this.props.originalTrainDialogId)
@@ -337,11 +340,20 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         let renderData = this.getRenderData();
         return (
             <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
-                <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
-                    <OF.Icon 
-                        iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
-                    />
-                    {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                <div className="cl-ux-flex">
+                    <div style={{width:"80%"}}>
+                        <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
+                            <OF.Icon 
+                                iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
+                            />
+                            {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                        </div>
+                    </div>
+                    <div style={{width:"20%"}}>
+                        <TrainingStatusContainer
+                                app={this.props.app}
+                        />
+                    </div>
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === CLM.SenderType.User
                     ? (
@@ -395,7 +407,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                             />
                         </div>
                         <div>
-                            {renderData.roundIndex ?
+                            {renderData.roundIndex !== null ?
                                 <EntityExtractor
                                     data-testid="dialog-admin-entity-extractor"
                                     app={this.props.app}
