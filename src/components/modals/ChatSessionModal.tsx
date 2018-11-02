@@ -115,7 +115,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                     onOk={() =>  this.setState({isSessionEndModalOpen: false})}
                     title={intl.formatMessage({
                         id: FM.CHATSESSIONMODAL_TIMEOUT_TITLE,
-                        defaultMessage: 'EndSession callback has been called and a new Session started'
+                        defaultMessage: 'On the next turn the EndSession callback will be called and a new Session startedd'
                     })}
                 />
             </Modal>

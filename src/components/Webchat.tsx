@@ -124,9 +124,11 @@ class Webchat extends React.Component<Props, {}> {
 
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.history !== nextProps.history) {
-            this.chatProps = null;
-            if (this.behaviorSubject) {
-                this.behaviorSubject.unsubscribe()
+            if (this.props.history.length > 0 || nextProps.history.length > 0) {
+                this.chatProps = null;
+                if (this.behaviorSubject) {
+                    this.behaviorSubject.unsubscribe()
+                }
             }
         } 
     }

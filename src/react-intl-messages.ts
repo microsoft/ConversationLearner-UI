@@ -804,7 +804,7 @@ export default {
         [FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT]: 'Done Testing',
         [FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION]: 'Session Timeout',
         [FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT]: 'Session Timeout',
-        [FM.CHATSESSIONMODAL_TIMEOUT_TITLE]: 'EndSession callback has been called and a new Session started',
+        [FM.CHATSESSIONMODAL_TIMEOUT_TITLE]: 'On the next turn the EndSession callback will be called and a new Session started',
         
         // ConfirmCancelModal
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
