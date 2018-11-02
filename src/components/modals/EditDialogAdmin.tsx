@@ -99,11 +99,12 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
+        let dialogId = this.props.editingLogDialogId || this.props.trainDialog.trainDialogId 
         // Next against other TrainDialogs
         for (let changedTextVariation of changedTextVariations) {
             let conflict = await this.props.fetchTextVariationConflictThunkAsync(
                 this.props.app.appId, 
-                this.props.trainDialog.trainDialogId, 
+                dialogId,
                 changedTextVariation, 
                 // Exclude the originalTrain dialog from check
                 this.props.originalTrainDialogId)
@@ -406,7 +407,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                             />
                         </div>
                         <div>
-                            {renderData.roundIndex ?
+                            {renderData.roundIndex !== null ?
                                 <EntityExtractor
                                     data-testid="dialog-admin-entity-extractor"
                                     app={this.props.app}
