@@ -120,6 +120,8 @@ export function WhatsYourName1()
   train.SelectAction('Hello David', 'Hello $name')
 
   train.Save()
+
+  // Manually EXPORT this to fixtures folder and name it 'Model1-wyn.cl'
 }
 
 export function WhatsYourName2()
@@ -151,5 +153,7 @@ export function WhatsYourName2()
   train.SelectAction('Hello Susan', 'Hello $name')
 
   train.Save()
+
+  // Manually EXPORT this to fixtures folder and name it 'Model1-mni.cl'
 }
 

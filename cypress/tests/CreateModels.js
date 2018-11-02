@@ -17,6 +17,8 @@ export function AllEntityTypes()
   entities.CreateNewEntity({name: 'negatableEntity', negatable: true})
   
   entities.entityTypes.forEach(entityType => { entities.CreateNewEntity({name: `my-${entityType}`, type: entityType}) })
+
+  // Manually EXPORT this to fixtures folder and name it 'Model-aet.cl'
 }
 
 export function DisqualifyingEntities()
