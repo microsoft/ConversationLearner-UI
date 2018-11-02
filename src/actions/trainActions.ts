@@ -243,7 +243,7 @@ export const fetchTextVariationConflictThunkAsync = (appId: string, trainDialogI
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TRAINDIALOGREPLAY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC))
             throw error
         }
     }
