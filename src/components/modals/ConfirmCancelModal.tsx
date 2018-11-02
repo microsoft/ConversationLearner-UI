@@ -27,7 +27,7 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
     return (
         <Dialog
             hidden={!props.open}
-            onDismiss={() => onDismiss}
+            onDismiss={() => onDismiss()}
             dialogContentProps={{
                 type: DialogType.normal,
                 title: props.title
