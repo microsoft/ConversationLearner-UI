@@ -40,19 +40,6 @@ export default class EntityPicker extends React.Component<MenuProps> {
                 {this.props.isOverlappingOtherEntities
                     ? <div className="custom-toolbar__warning">Cannot add overlapping entities.<br />Remove the entity or change the selection.</div>
                     : <React.Fragment>
-                        {this.props.matchedOptions.length !== 0
-                            && <ul className="custom-toolbar__results">
-                                {this.props.matchedOptions.map((matchedOption, i) =>
-                                    <li
-                                        key={matchedOption.original.id}
-                                        onClick={() => this.props.onClickOption(matchedOption.original)}
-                                        className={`custom-toolbar__result ${this.props.highlightIndex === i ? 'custom-toolbar__result--highlight' : ''}`}
-                                    >
-                                        <FuseMatch matches={matchedOption.matchedStrings} />
-                                    </li>
-                                )}
-
-                            </ul>}
                         <button
                             type="button"
                             tabIndex={-1}
@@ -73,6 +60,19 @@ export default class EntityPicker extends React.Component<MenuProps> {
                                 onChange={event => this.props.onChangeSearchText(event.target.value)}
                             />
                         </div>
+                        {this.props.matchedOptions.length !== 0
+                            && <ul className="custom-toolbar__results">
+                                {this.props.matchedOptions.map((matchedOption, i) =>
+                                    <li
+                                        key={matchedOption.original.id}
+                                        onClick={() => this.props.onClickOption(matchedOption.original)}
+                                        className={`custom-toolbar__result ${this.props.highlightIndex === i ? 'custom-toolbar__result--highlight' : ''}`}
+                                    >
+                                        <FuseMatch matches={matchedOption.matchedStrings} />
+                                    </li>
+                                )}
+
+                            </ul>}
                     </React.Fragment>
                 }
             </div>
