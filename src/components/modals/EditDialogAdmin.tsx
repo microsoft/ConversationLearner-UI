@@ -395,7 +395,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                             />
                         </div>
                         <div>
-                            {renderData.roundIndex ?
+                            {renderData.roundIndex !== null ?
                                 <EntityExtractor
                                     data-testid="dialog-admin-entity-extractor"
                                     app={this.props.app}
