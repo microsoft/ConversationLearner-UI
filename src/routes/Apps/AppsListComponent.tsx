@@ -106,7 +106,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             minWidth: 100,
             maxWidth: 100,
             isResizable: false,
-            getSortValue: app => moment(app.createdDateTime).seconds(),
+            getSortValue: app => moment(app.createdDateTime).format(`YYYYMMDDHHmmSS`),
             render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-created-date-time">{moment(app.createdDateTime).format('L')}</span>
         },
         {
