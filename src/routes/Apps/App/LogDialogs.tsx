@@ -507,7 +507,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             }
 
             // If inserted at end of conversation, allow to scroll to bottom
-            if (roundIndex === trainDialog.rounds.length - 1 && scoreIndex === curRound.scorerSteps.length - 1) {
+            if (roundIndex === trainDialog.rounds.length - 1 && 
+                (scoreIndex === undefined || scoreIndex === curRound.scorerSteps.length - 1)) {
                 this.props.clearWebchatScrollPosition()
             }
 
