@@ -25,7 +25,6 @@ import './ActionCreatorEditor.css'
 import HelpIcon from '../HelpIcon'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import { autobind } from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 
@@ -403,7 +402,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     onChangeWaitCheckbox() {
         this.setState(prevState => ({
             isTerminal: !prevState.isTerminal
@@ -575,7 +574,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return model
     }
 
-    @autobind
+    @OF.autobind
     async onClickSaveCreate() {
         let newOrEditedAction = this.convertStateToModel();
 
@@ -606,12 +605,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     onClickCancel() {
         this.props.handleClose()
     }
 
-    @autobind
+    @OF.autobind
     onClickDelete() {
         if (!this.props.action) {
             return
@@ -634,14 +633,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         )
     }
 
-    @autobind
+    @OF.autobind
     onCancelDelete() {
         this.setState({
             isConfirmDeleteModalOpen: false
         })
     }
 
-    @autobind
+    @OF.autobind
     onCancelEdit() {
         this.setState({
             isConfirmEditModalOpen: false,
@@ -649,7 +648,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onConfirmEdit() {
         if (!this.state.newOrEditedAction) {
             console.warn(`You clicked to confirm edit, but there is no action to save`)
@@ -663,7 +662,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onConfirmDelete() {
         if (!this.props.action) {
             console.warn(`You clicked to confirm deletion, but there is no action to delete`)
@@ -676,14 +675,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onClickCreateEntity() {
         this.setState({
             isEntityEditorModalOpen: true
         })
     }
 
-    @autobind
+    @OF.autobind
     onCloseEntityEditor() {
         this.setState({
             isEntityEditorModalOpen: false
@@ -848,7 +847,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             || (this.state.isEditing && !this.state.hasPendingChanges)
     }
 
-    @autobind
+    @OF.autobind
     onClickTrainDialogs() {
         const { history } = this.props
         history.push(`/home/${this.props.app.appId}/trainDialogs`, { app: this.props.app, actionFilter: this.props.action })

@@ -139,6 +139,7 @@ export enum FM {
     CHATSESSIONMODAL_PRIMARYBUTTON_TEXT = 'ChatSessionModal.primaryButton.text',
     CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION = 'ChatSessionModal.expireButton.ariaDescription',
     CHATSESSIONMODAL_EXPIREBUTTON_TEXT = 'ChatSessionModal.expireButton.text',
+    CHATSESSIONMODAL_TIMEOUT_TITLE = 'ChatSessionModal.timeout.title',
 
     // ConfirmCancelModal
     CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT = 'ConfirmCancelModal.primaryButton.text',
@@ -803,7 +804,8 @@ export default {
         [FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT]: 'Done Testing',
         [FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION]: 'Session Timeout',
         [FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT]: 'Session Timeout',
-
+        [FM.CHATSESSIONMODAL_TIMEOUT_TITLE]: 'On the next turn the EndSession callback will be called and a new Session started',
+        
         // ConfirmCancelModal
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
