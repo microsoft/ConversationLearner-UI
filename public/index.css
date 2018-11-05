@@ -770,7 +770,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 .cl-dialog-admin-title {
   font-weight: bold;
-  padding: 0.5rem 0;
   border-bottom: 1px solid rgba(0,0,0,0.25);
 }
 
@@ -821,10 +820,24 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .cl-entity--mismatch {
   background: #ffe0e0;
 }
-.cl-ux-flex {
+
+.cl-ux-flexpanel {
+}
+
+.cl-ux-flexpanel--primary {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-wrap: nowrap;
   flex-wrap: nowrap;
+  height:3em;
+}
+
+.cl-ux-flexpanel--left {
+  text-align:left;
+}
+
+.cl-ux-flexpanel--right {
+  float:right;
+  text-align:right;
 }
