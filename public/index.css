@@ -595,6 +595,11 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   padding: 1rem;
 }
 
+.cl-rightjustify {
+  position: absolute !important;
+  right: 0px;
+}
+
 /** Office UI Fabric Theme Overrides */
 .ms-List-cell {
   min-height: 0px !important;
