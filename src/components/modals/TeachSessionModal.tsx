@@ -620,6 +620,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             return (
                 <div className="wc-console">
                     <OF.PrimaryButton
+                        className="cl-rightjustify"
                         onClick={this.onInsertAction}
                         ariaDescription={'Score Actions'}
                         text={'Score Actions'} // TODO internationalize
