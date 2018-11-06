@@ -26,7 +26,7 @@ export function getReplayError(activity: Activity | null): CLM.ReplayError | nul
 
 // Returns conflicting extract response if textVariation conflicts with any existing ones
 export function internalConflict(textVariation: CLM.TextVariation, trainDialog: CLM.TrainDialog, roundIndex: number | null): CLM.ExtractResponse | null {
-    for (let i = 0; i < trainDialog.rounds.length; i= i + 1) {
+    for (let i = 0; i < trainDialog.rounds.length; i = i + 1) {
         if (roundIndex === null || i !== roundIndex) {
             for (let tv of trainDialog.rounds[i].extractorStep.textVariations) {
                 // If text is same, labels must match

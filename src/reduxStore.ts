@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import { createStore, applyMiddleware, Store } from 'redux'
-import thunkMiddleware from 'redux-thunk'
+import thunk from 'redux-thunk'
 import { State, defaultBotPort, previousBotPort } from './types'
 import rootReducer from './reducers/root'
 import { throttle } from 'lodash'
@@ -28,7 +28,7 @@ export const createReduxStore = (): Store<State> => {
     const store = createStore(rootReducer,
         persistedState as State,
         applyMiddleware(
-            thunkMiddleware
+            thunk
         )
     )
 

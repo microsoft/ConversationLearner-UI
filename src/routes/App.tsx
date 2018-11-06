@@ -116,8 +116,8 @@ class App extends React.Component<Props, ComponentState> {
                   defaultMessage="My Models"
                 />
               </NavLink>
-              <a href="https://labs.cognitive.microsoft.com/en-us/project-conversation-learner" target="_blank">Documentation</a>
-              <a href="https://cognitive.uservoice.com/forums/912199-project-conversation-learner" target="_blank">Feedback</a>
+              <a href="https://labs.cognitive.microsoft.com/en-us/project-conversation-learner" target="_blank" rel="noopener noreferrer">Documentation</a>
+              <a href="https://cognitive.uservoice.com/forums/912199-project-conversation-learner" target="_blank" rel="noopener noreferrer">Feedback</a>
             </nav>
             <NavLink className="cl-header_user" to="/settings"><OF.Icon className="cl-header-office-icon" iconName="Settings" /> Settings</NavLink>
           </header>

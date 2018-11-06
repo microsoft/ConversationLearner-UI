@@ -290,7 +290,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         return (
             <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
                 <div className="cl-ux-flex">
-                    <div style={{width:'70%'}}>
+                    <div style={{width: '70%'}}>
                         <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
                         <OF.Icon 
                             iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
@@ -298,7 +298,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
                         </div>
                     </div>
-                    <div style={{width:'30%'}}>
+                    <div style={{width: '30%'}}>
                         <TrainingStatusContainer
                             app={this.props.app}
                         />

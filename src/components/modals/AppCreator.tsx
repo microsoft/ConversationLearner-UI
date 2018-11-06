@@ -270,7 +270,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             options={this.state.localeOptions}
                             onChanged={this.localeChanged}
                             disabled={true}
-                        /* Disabled until trainer can support more than english */
+                        // Disabled until trainer can support more than english
                         />
                     }
                     {this.props.creatorType === AppCreatorType.IMPORT &&

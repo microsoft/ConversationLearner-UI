@@ -73,7 +73,7 @@ const ExtractConflictModal: React.SFC<Props> = (props: Props) => {
                         defaultMessage: 'Close'
                     })}
                 />
-                 <OF.PrimaryButton
+                <OF.PrimaryButton
                     onClick={() => props.onAccept()}
                     text={intl.formatMessage({
                         id: FM.BUTTON_ACCEPT,

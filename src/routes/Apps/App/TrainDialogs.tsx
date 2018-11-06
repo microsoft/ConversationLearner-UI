@@ -18,7 +18,6 @@ import { Icon } from 'office-ui-fabric-react/lib/Icon'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import { TeachSessionState } from '../../../types/StateTypes'
 import * as moment from 'moment'
 
@@ -114,7 +113,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 let firstInput = getFirstInput(trainDialog);
                 if (firstInput) {
                     return (<span className={textClassName(trainDialog)} data-testid="train-dialogs-first-input">
-                        {trainDialog.validity === CLM.Validity.INVALID && <Icon className="cl-icon" iconName="IncidentTriangle" />}
+                        {trainDialog.validity === CLM.Validity.INVALID && <Icon className="cl-icon cl-icon-red" iconName="IncidentTriangle" />}
+                        {trainDialog.validity === CLM.Validity.UNKNOWN && <Icon className="cl-icon cl-icon-yellow" iconName="IncidentTriangle" />}
                         {firstInput}
                     </span>)
                 }
@@ -335,7 +335,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         return trainDialogs;
     }
 
-    @autobind
+    @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         let { columns } = this.state;
         let isSortedDescending = !clickedColumn.isSortedDescending;
@@ -366,21 +366,21 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     onSelectEntityFilter(item: OF.IDropdownOption) {
         this.setState({
             entityFilter: item
         })
     }
 
-    @autobind
+    @OF.autobind
     onSelectActionFilter(item: OF.IDropdownOption) {
         this.setState({
             actionFilter: item
         })
     }
 
-    @autobind
+    @OF.autobind
     async onSetInitialEntities(initialFilledEntities: CLM.FilledEntity[]) {
 
         if (this.props.teachSession.teach) {
@@ -468,7 +468,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, selectionType: SelectionType) {
 
         try {
@@ -553,7 +553,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep|undefined) {
  
         if (!trainScorerStep) {
@@ -583,7 +583,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     async onChangeExtraction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, extractResponse: CLM.ExtractResponse|undefined, textVariations: CLM.TextVariation[]|undefined) {
  
         if (!extractResponse || !textVariations) {
@@ -612,7 +612,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     async onDeleteTurn(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
 
         const clData: CLM.CLChannelData = selectedActivity.channelData.clData
@@ -653,7 +653,34 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         
     }
 
-    @autobind
+    @OF.autobind
+    async onReplayTrainDialog(trainDialog: CLM.TrainDialog) {
+ 
+        try {
+            const definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+
+            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog)) as CLM.TrainDialog
+            newTrainDialog.definitions = definitions
+            // I've replayed so unknown status goes away (but not invalid)
+            if (trainDialog.validity === CLM.Validity.UNKNOWN) {
+                newTrainDialog.validity = CLM.Validity.VALID
+            } 
+
+            // Replay logic functions on train dialog
+            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
+            await this.onUpdateHistory(newTrainDialog, null, SelectionType.NONE, this.state.editType)
+        }
+        catch (error) {
+            console.warn(`Error when attempting to Replay a train dialog: `, error)
+        }
+    }
+
+    @OF.autobind
     async onBranchTrainDialog(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string) {
 
         try {
@@ -704,7 +731,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string, selectionType: SelectionType) {
 
         if (!inputText) {
@@ -812,26 +839,32 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         void this.onCloseEditDialogModal();
     }
 
-    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity, selectionType: SelectionType, editDialogType: EditDialogType) {
+    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType, editDialogType: EditDialogType) {
         const originalId = this.state.originalTrainDialogId || (this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null);
 
         try {
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            let activityIndex = selectedActivity ? DialogUtils.matchedActivityIndex(selectedActivity, teachWithHistory.history) : null
-            if (activityIndex !== null && selectionType === SelectionType.NEXT) {
-                // Select next activity, useful for when inserting a step
-                activityIndex = activityIndex + 1
-            }
-            // If was a delete action, activity won't exist any more, so select by index
-            else if (activityIndex === null && selectionType === SelectionType.CURRENT) {
-                
-                const clData: CLM.CLChannelData = selectedActivity.channelData.clData
-                if (clData && clData.activityIndex) {
-                    activityIndex = clData.activityIndex
+
+            let activityIndex: number | null = null
+
+            // If activity was selected, calculate activity to select after update
+            if (selectedActivity !== null) {
+                activityIndex = DialogUtils.matchedActivityIndex(selectedActivity, teachWithHistory.history)
+                if (activityIndex !== null && selectionType === SelectionType.NEXT) {
+                    // Select next activity, useful for when inserting a step
+                    activityIndex = activityIndex + 1
                 }
-            }
-            else if (selectionType === SelectionType.NONE) {
-                activityIndex = null
+                // If was a delete action, activity won't exist any more, so select by index
+                else if (activityIndex === null && selectionType === SelectionType.CURRENT) {
+                    
+                    const clData: CLM.CLChannelData = selectedActivity.channelData.clData
+                    if (clData && clData.activityIndex) {
+                        activityIndex = clData.activityIndex
+                    }
+                }
+                else if (selectionType === SelectionType.NONE) {
+                    activityIndex = null
+                }
             }
             
             const editType = (editDialogType !== EditDialogType.NEW && editDialogType !== EditDialogType.BRANCH) ?
@@ -866,7 +899,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             const editType = (this.state.editType !== EditDialogType.NEW && this.state.editType !== EditDialogType.BRANCH) ?
                 EditDialogType.TRAIN_EDITED : this.state.editType
 
-
             // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
             this.setState({
                 history: teachWithHistory.history,
@@ -883,13 +915,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     // Replace the current trainDialog with a new one
-    async onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
+    async onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) {
 
         try { 
             // Remove any data added for rendering 
             cleanTrainDialog(newTrainDialog)
 
-            newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
+            newTrainDialog.validity = validity
             newTrainDialog.trainDialogId = this.state.originalTrainDialogId || newTrainDialog.trainDialogId
             newTrainDialog.definitions = null
 
@@ -903,9 +935,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     // Create a new trainDialog 
-    async onCreateTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
+    async onCreateTrainDialog(newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) {
 
-        newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
+        newTrainDialog.validity = validity
 
         // Remove dummy scorer rounds used for rendering
         newTrainDialog.rounds.forEach(r => r.scorerSteps = r.scorerSteps.filter(ss => {
@@ -1230,8 +1262,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onBranchDialog={(trainDialog, activity, userInput) => this.onBranchTrainDialog(trainDialog, activity, userInput)}
                     onDeleteDialog={() => this.onDeleteTrainDialog()}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
-                    onSaveDialog={(editedTrainDialog, isInvalid) => this.onReplaceTrainDialog(editedTrainDialog, isInvalid)}
-                    onCreateDialog={(newTrainDialog, isInvalid) => this.onCreateTrainDialog(newTrainDialog, isInvalid)}
+                    onSaveDialog={(editedTrainDialog, validity) => this.onReplaceTrainDialog(editedTrainDialog, validity)}
+                    onReplay={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
+                    onCreateDialog={(newTrainDialog, validity) => this.onCreateTrainDialog(newTrainDialog, validity)}
                 />
             </div>
         );

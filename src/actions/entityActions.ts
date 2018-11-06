@@ -64,19 +64,24 @@ export const editEntityThunkAsync = (appId: string, entity: EntityBase, prevEnti
         dispatch(editEntityAsync(appId, entity))
 
         try {
-            const posEntity = await clClient.entitiesUpdate(appId, entity)
-            dispatch(editEntityFulfilled(posEntity))
+            const changedEntityResponse = await clClient.entitiesUpdate(appId, entity)
+            dispatch(editEntityFulfilled(entity))
 
             // If we're setting negatable flag
             if (entity.isNegatible && !prevEntity.isNegatible) {
                 // Need to fetch negative entity in order to load it into memory
-                const negEntity = await clClient.entitiesGetById(appId, posEntity.negativeId!)
+                const negEntity = await clClient.entitiesGetById(appId, changedEntityResponse.negativeEntityId)
                 dispatch(createEntityFulfilled(negEntity))
             }
             // If we're UNsetting negatable flag
             else if (!entity.isNegatible && prevEntity.isNegatible) {
                 // Need to remove negative entity from memory
                 dispatch(deleteEntityFulfilled(prevEntity.negativeId!))
+            }
+
+            // If any train dialogs were modified fetch train dialogs 
+            if (changedEntityResponse.trainDialogIds && changedEntityResponse.trainDialogIds.length > 0) {
+                dispatch(fetchAllTrainDialogsThunkAsync(appId));
             }
 
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
@@ -122,12 +127,10 @@ export const deleteEntityThunkAsync = (appId: string, entity: EntityBase) => {
             
             // If deleted entity is prebuilt entity, we fetch all entities to make sure 
             // that entities in the memory are all up to date
-            if(entity.entityType !== EntityType.LOCAL && entity.entityType !== EntityType.LUIS)
-            {
+            if (entity.entityType !== EntityType.LOCAL && entity.entityType !== EntityType.LUIS) {
                 dispatch(fetchAllEntitiesThunkAsync(appId));
             }
             
-
             // If any actions were modified, reload them
             if (deleteEditResponse.actionIds && deleteEditResponse.actionIds.length > 0) {
                 dispatch(fetchAllActionsThunkAsync(appId))

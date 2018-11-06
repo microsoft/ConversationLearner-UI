@@ -8,7 +8,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react'
-import { autobind } from 'office-ui-fabric-react'
 import { PackageReference } from '@conversationlearner/models'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
@@ -55,12 +54,12 @@ class PackageCreator extends React.Component<Props, ComponentState> {
         })
     }
     
-    @autobind
+    @OF.autobind
     onClickCancel() {
         this.props.onCancel()
     }
 
-    @autobind
+    @OF.autobind
     onClickCreate() {
         this.props.onSubmit(this.state.tagNameVal, this.state.isLiveVal)
     }
@@ -93,7 +92,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
         return ''
     }
 
-    @autobind
+    @OF.autobind
     onToggleSetLive() {
         this.setState({
             isLiveVal: !this.state.isLiveVal

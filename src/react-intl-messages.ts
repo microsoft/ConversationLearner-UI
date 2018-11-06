@@ -128,6 +128,7 @@ export enum FM {
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
     BUTTON_OK = 'Button.OK',
+    BUTTON_REPLAY = 'Button.REPLAY',
     BUTTON_SAVE = 'Button.SAVE',
     BUTTON_SAVE_AS_TRAIN_DIALOG = 'Button.SAVE_AS_TD',
     BUTTON_SAVE_EDIT = 'Button.SAVE_EDIT',
@@ -266,6 +267,7 @@ export enum FM {
  
     // ReplayErrorList
     REPLAYERROR_EXISTS = 'ReplayError.exists',
+    REPLAYERROR_WARNING = 'ReplayError.warning',
     REPLAYERROR_LOGDIALOG_VALIDATION_TITLE = 'ReplayError.logdialogvalidation.title',
     REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE = 'ReplayError.logdialogvalidation.message',
     REPLAYERROR_CONVERT_TITLE = 'ReplayError.logdialogvalidation.convert.title',
@@ -277,6 +279,7 @@ export enum FM {
     REPLAYERROR_DESC_INPUT_AFTER_NONWAIT = 'ReplayError.Desc.inputAfterNonWait',
     REPLAYERROR_DESC_ENTITY_UNDEFINED = 'ReplayError.Desc.entityUndefined',
     REPLAYERROR_DESC_ENTITY_EMPTY = 'ReplayError.Desc.entityEmpty',
+    REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE = 'ReplayError.Desc.unexpectedMultivalue',
     REPLAYERROR_DESC_TWO_USER_INPUTS = 'ReplayError.Desc.twoUserInputs',
     REPLAYERROR_DESC_ACTION_UNAVAILABLE = 'ReplayError.Desc.actionUnavailable',
     REPLAYERROR_DESC_CHANGED_ENTITIES = 'ReplayError.Desc.changedEntities',
@@ -408,9 +411,11 @@ export enum FM {
     TOOLTIP_MEMORYMANAGER = 'ToolTip.ACTION_MEMORYMANAGER',
     TOOLTIP_MEMORYMANAGER_TITLE = 'ToolTip.ACTION_MEMORYMANAGER_TITLE',
     TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE = 'ToolTip.PACKAGECREATOR_LIVE_TOGGLE',
+    TOOLTIP_REPLAY = 'ToolTop.REPLAY',
     TOOLTIP_TAG_EDITING = 'ToolTip.TAG_EDITING',
     TOOLTIP_TAG_LIVE = 'ToolTip.TAG_LIVE',
     TOOLTIP_TRAINDIALOG_INVALID = 'ToolTip.TRAINDIALOG_INVALID',
+    TOOLTIP_TRAINDIALOG_WARNING = 'ToolTip.TRAINDIALOG_WARNING',
 
     // EditDialogAdmin
     EDITDIALOGADMIN_DIALOGMODE_USER = 'EditDialogAdmin.dialogMode.user',
@@ -438,6 +443,7 @@ export enum FM {
     EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE = 'EditDialogModal.confirmAbandonEdit.title',
     EDITDIALOGMODAL_WARNING_INVALID_BOT = 'EditDialogModal.warningInvalidBot.title',
     EDITDIALOGMODAL_WARNING_INVALID_PACKAGE = 'EditDialogModal.warningInvalidPackage.title',
+    EDITDIALOGMODAL_WARNING_NEED_REPLAY = 'EditDialogModal.warningNeedReplay.title',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -591,6 +597,7 @@ export default {
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
         [FM.BUTTON_OK]: 'OK',
+        [FM.BUTTON_REPLAY]: 'Replay',
         [FM.BUTTON_SAVE]: 'Save',
         [FM.BUTTON_SAVE_AS_TRAIN_DIALOG]: 'Save As Train Dialog',
         [FM.BUTTON_SAVE_BRANCH]: 'Save Branch',
@@ -635,6 +642,7 @@ export default {
 
         // ReplayErrorList
         [FM.REPLAYERROR_EXISTS]: 'This Train Dialog has errors that must be fixed before it can be used to train your model',
+        [FM.REPLAYERROR_WARNING]: 'This Train Dialog has some potential errors',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incomptibilities were found:',
         [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
@@ -646,9 +654,10 @@ export default {
         [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'User Input following a non-Wait Action',
         [FM.REPLAYERROR_DESC_ENTITY_UNDEFINED]: 'Entity does not exist',
         [FM.REPLAYERROR_DESC_ENTITY_EMPTY]: 'Action missing a value for',
+        [FM.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE]: 'Non-multivalue Entity labeled with more than one value',
         [FM.REPLAYERROR_DESC_TWO_USER_INPUTS]: 'Two consecutive User Inputs',
         [FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE]: 'Action is unavailable',
-        [FM.REPLAYERROR_DESC_CHANGED_ENTITIES]: 'Entites inconsistent after user input',
+        [FM.REPLAYERROR_DESC_CHANGED_ENTITIES]: 'Entities inconsistent after user input',
         
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',
@@ -721,7 +730,7 @@ export default {
         [FM.TOOLTIP_ACTION_SCORE]: 'Score:',
         [FM.TOOLTIP_ACTION_SCORE_PERCENT]: 'Conversation Learner confidence in performing an Action',
         [FM.TOOLTIP_ACTION_SCORE_TRAINING]: `Action can't be scored yet as Conversation Learner is still training`,
-        [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Entities are missing or Blocked Entites are present',
+        [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Entities are missing or Blocked Entities are present',
 
         [FM.TOOLTIP_ACTION_SUGGESTED]: `Hint to Conversation Learner that the user's reply to this Action will likely be a value for this Entity`,
         [FM.TOOLTIP_ACTION_SUGGESTED_TITLE]: 'Expected Response',
@@ -754,9 +763,11 @@ export default {
         [FM.TOOLTIP_MEMORYMANAGER]: `The memory manager provides the following functions for manipulating the Bot's memory:`,
         [FM.TOOLTIP_MEMORYMANAGER_TITLE]: 'Memory Manager',
         [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
+        [FM.TOOLTIP_REPLAY]: `Replay each step in the Dialog, calling the EntityDetectionCallback and any API callbacks.  This will update the Dialog to reflect any changes made to the Bot's APIs`,
         [FM.TOOLTIP_TAG_EDITING]: 'The version (tag) of the model to edit in UI',
         [FM.TOOLTIP_TAG_LIVE]: 'The version (tag) of the model used when published to external channels (e.g. Skype)',
         [FM.TOOLTIP_TRAINDIALOG_INVALID]: 'This model contains Train Dialogs that have been invalided.  They must be edited and fixed to be included in training',
+        [FM.TOOLTIP_TRAINDIALOG_WARNING]: 'This model contains Train Dialogs that may have errors.',
 
         // Train Dialogs
         [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',
@@ -791,7 +802,6 @@ export default {
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
 
-       
         [FM.BUTTON_INFO]: 'Info',
 
         // DemoImporter
@@ -931,6 +941,7 @@ export default {
         [FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE]: 'Are you sure you want to abandon your edits?',
         [FM.EDITDIALOGMODAL_WARNING_INVALID_BOT]: 'Running Bot not compatible with this Model',
         [FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE]: 'Editing only permitted on the Master tag',
+        [FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY]: 'Entity or Action changes require replay of the TrainDialog',
              
         // UserInput Modal
         [FM.USERINPUT_ADD_TITLE]: 'Add User Input',
