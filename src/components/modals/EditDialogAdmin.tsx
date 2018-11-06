@@ -355,19 +355,21 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         let renderData = this.getRenderData();
         return (
             <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
-                <div className="cl-ux-flex">
-                    <div style={{width: "80%"}}>
-                        <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
-                            <OF.Icon 
-                                iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
-                            />
-                            {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                <div className="cl-ux-flexpanel">
+                    <div className="cl-ux-flexpanel--primary">
+                        <div className="cl-ux-flexpanel--left" style={{width:"80%"}}>
+                            <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
+                                <OF.Icon 
+                                    iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
+                                />
+                                {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                            </div>
                         </div>
-                    </div>
-                    <div style={{width: "20%"}}>
-                        <TrainingStatusContainer
-                                app={this.props.app}
-                        />
+                        <div className="cl-ux-flexpanel--right" style={{width:"20%"}}>
+                            <TrainingStatusContainer
+                                    app={this.props.app}
+                            />
+                        </div>
                     </div>
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === CLM.SenderType.User

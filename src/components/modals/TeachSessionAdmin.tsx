@@ -289,19 +289,21 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         
         return (
             <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
-                <div className="cl-ux-flex">
-                    <div style={{width: '70%'}}>
-                        <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
-                        <OF.Icon 
-                            iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
-                        />
-                        {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                <div className="cl-ux-flexpanel">
+                    <div className="cl-ux-flexpanel--primary">
+                        <div className="cl-ux-flexpanel--left" style={{width: '70%'}}>
+                            <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
+                            <OF.Icon 
+                                iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
+                            />
+                            {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                            </div>
                         </div>
-                    </div>
-                    <div style={{width: '30%'}}>
-                        <TrainingStatusContainer
-                            app={this.props.app}
-                        />
+                        <div className="cl-ux-flexpanel--right" style={{width: '30%'}}>
+                            <TrainingStatusContainer
+                                app={this.props.app}
+                            />
+                        </div>
                     </div>
                 </div>
                 {(renderData.dialogMode === CLM.DialogMode.Extractor || renderData.dialogMode === CLM.DialogMode.Wait) && 
