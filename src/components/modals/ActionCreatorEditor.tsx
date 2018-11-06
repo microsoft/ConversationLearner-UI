@@ -1042,7 +1042,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === ActionTypes.TEXT
                             && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
                                 <div>
-                                    <OF.Label className="ms-Label--tight">Response... <HelpIcon 
+                                    <OF.Label className="ms-Label--tight">Bot's response... <HelpIcon 
                                         tipType={ToolTip.TipType.ACTION_RESPONSE_TEXT} /></OF.Label>
                                     <ActionPayloadEditor.Editor
                                         options={optionsAvailableForPayload}
@@ -1088,7 +1088,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                          this.state.selectedActionTypeOptionKey !== ActionTypes.END_SESSION &&
                             (<div className="cl-action-creator--expected-entities">
                                 <TC.TagPicker
-                                    label="Expected Entity in Response..."
+                                    label="Expected Entity in User reply..."
                                     onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
                                     onRenderItem={this.onRenderExpectedTag}
                                     getTextFromItem={item => item.name}
