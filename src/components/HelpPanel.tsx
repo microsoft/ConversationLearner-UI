@@ -34,23 +34,20 @@ class HelpPanel extends React.Component<Props, {}> {
             >
                 <span>{ToolTip.getTip(this.props.tipType)}</span>
 
-                <div className="cl-modal_footer cl-modal_footer--border">
-                    <div className="cl-modal-buttons">
-                        <div className="cl-modal-buttons_secondary">
-                        </div>
-                        <div className="cl-modal-buttons_primary">
-                            <OF.Button
-                                data-testid="helppanel-close-button"
-                                className="cl-button-close"
-                                onClick={() => { this.onDismiss() }}>
-                                <FormattedMessage
-                                    id={FM.BUTTON_CLOSE}
-                                    defaultMessage='Close'
-                                />
-                            </OF.Button>
-                        </div>
+                <div className="cl-ux-gutter" style={{width:'89%'}}>
+                    <div className="cl-ux-flexpanel--right">
+                        <OF.DefaultButton
+                            data-testid="helppanel-close-button"
+                            className="cl-button-close"
+                            onClick={() => { this.onDismiss() }}>
+                            <FormattedMessage
+                                id={FM.BUTTON_CLOSE}
+                                defaultMessage='Close'
+                            />
+                        </OF.DefaultButton>
                     </div>
                 </div>
+
             </OF.Panel>
         )
     }
