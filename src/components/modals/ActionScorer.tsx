@@ -45,8 +45,12 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             render: (action, component, index) => {
 
                 const selected = (component.props.dialogType !== DialogType.TEACH && index === 0)
-                const buttonText = selected ? 'Selected' : 'Select'
-                if (!component.props.canEdit) {
+                const buttonText = intl.formatMessage({
+                    id:selected ? FM.BUTTON_SELECTED : FM.BUTTON_SELECT,
+                    defaultMessage:selected ? Util.getDefaultText(FM.BUTTON_SAVE_EDIT) : Util.getDefaultText(FM.BUTTON_SAVE_EDIT)
+                    });
+
+                    if (!component.props.canEdit) {
                     return (
                         <PrimaryButton
                             data-testid="action-scorer-button-no-click"

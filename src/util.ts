@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
+import * as STRINGTABLE from './react-intl-messages'
 
 export function notNullOrUndefined<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -70,3 +71,7 @@ export function setStateAsync(that: any, newState: any) {
 }
 
 export const delay = <T>(ms: number, value?: T): Promise<T> => new Promise<T>(resolve => setTimeout(() => resolve(value), ms))
+
+export function getDefaultText(id: any): string {
+    return STRINGTABLE.default["en-US"].hasOwnProperty(id) ? STRINGTABLE.default["en-US"][id] : ""
+}

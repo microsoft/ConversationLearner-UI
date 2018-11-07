@@ -60,7 +60,7 @@ export enum FM {
     ACTIONSCORER_COLUMNS_ENTITIES = 'ActionScorer.columns.entities',
     ACTIONSCORER_COLUMNS_ISTERMINAL = 'ActionScorer.columns.isTerminal',
     ACTIONSCORER_COLUMNS_TYPE = 'ActionScorer.columns.type',
-
+    
     // App
     APP_HEADER_MODELS = 'App.header.home',
     APP_HEADER_ABOUT = 'App.header.about',
@@ -133,6 +133,8 @@ export enum FM {
     BUTTON_SAVE_EDIT = 'Button.SAVE_EDIT',
     BUTTON_SAVE_BRANCH = 'Button.SAVE_BRANCH',
     BUTTON_SUBMIT = 'Button.SUMBIT',
+    BUTTON_SELECT =  'Button.SELECT',
+    BUTTON_SELECTED =  'Button.SELECTED',
 
     // ChatSessionModal
     CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'ChatSessionModal.primaryButton.ariaDescription',
@@ -463,6 +465,7 @@ export enum FM {
     VALIDATE_UNABLE_TO_EDIT = 'Validate.unableToEdit',
     VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToBranch',
     VALIDATE_ENTITY_REASON = 'Validate.entityReason',
+
 }
 
 // Message ids follow convention of '<componentname>.<area>[.<subarea>]*`
@@ -596,6 +599,8 @@ export default {
         [FM.BUTTON_SAVE_BRANCH]: 'Save Branch',
         [FM.BUTTON_SAVE_EDIT]: 'Save Edit',
         [FM.BUTTON_SUBMIT]: 'Submit',
+        [FM.BUTTON_SELECT]: 'Select',
+        [FM.BUTTON_SELECTED]: 'Selected',
 
         // Error Messages
         [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
