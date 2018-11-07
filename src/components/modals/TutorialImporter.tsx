@@ -10,7 +10,6 @@ import { AppBase } from '@conversationlearner/models'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import ReactPlayer from 'react-player'
 import * as ReactMarkdown from 'react-markdown'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (app: AppBase, component: TutorialImporter) => React.ReactNode
@@ -101,14 +100,14 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
        this.props.handleClose();
     }
 
-    @autobind
+    @OF.autobind
     onClickInfo(tutorial: AppBase) {
         this.setState({
             moreInfoApp: tutorial
         })
     }
 
-    @autobind
+    @OF.autobind
     onCloseInfo() {
         this.setState({
             moreInfoApp: null

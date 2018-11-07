@@ -34,7 +34,6 @@ export enum EditState {
     INVALID_PACKAGE = 'INVALID_PACKAGE'
 }
 
-
 export {
     ActionCreatorEditor,
     AppCreator,

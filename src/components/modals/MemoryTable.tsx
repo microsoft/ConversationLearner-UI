@@ -62,7 +62,7 @@ const columns: IRenderableColumn[] = [
 
                     let valuesAsObject = component.valuesAsObject(value.displayText)
                     if (valuesAsObject && value.displayText) {
-                        renderedValue = <span>{value.prefix}<span className={`${changeClass} cl-font--action`} data-testid="entity-memory-value">{value.displayText.slice(0,20)}...</span></span>
+                        renderedValue = <span>{value.prefix}<span className={`${changeClass} cl-font--action`} data-testid="entity-memory-value">{value.displayText.slice(0, 20)}...</span></span>
                         renderedValue = entityObject(valuesAsObject, renderedValue)
                     }
                     else {
@@ -141,7 +141,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         this.renderItemColumn = this.renderItemColumn.bind(this)
     }
     onColumnClick(event: any, column: IRenderableColumn) {
-        let { columns } = this.state;
+        let {columns} = this.state;
         let isSortedDescending = column.isSortedDescending;
 
         // If we've sorted this column, flip it.

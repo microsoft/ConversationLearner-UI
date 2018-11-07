@@ -38,10 +38,10 @@ export function renderActivity(
     if (clData) {
         if (clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
-                wrapperClassName += ' wc-message-warning-from-' + who;
+                wrapperClassName += ` wc-message-warning-from-${who}`;
             } 
             else { // ERROR or BLOCKING
-                wrapperClassName += ' wc-message-error-from-' + who;
+                wrapperClassName += ` wc-message-error-from-${who}`;
             }
         }
         if (activityProps.selected) {
@@ -54,7 +54,7 @@ export function renderActivity(
 
     return (
         <div 
-            data-activity-id={ activityProps.activity.id } 
+            data-activity-id={activityProps.activity.id} 
             className={wrapperClassName} 
             onClick={activityProps.onClickActivity}
             role="button"

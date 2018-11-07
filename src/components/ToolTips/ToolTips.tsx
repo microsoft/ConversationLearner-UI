@@ -31,6 +31,8 @@ export enum TipType {
     ACTION_TYPE = 'actionType',
     ACTION_WAIT = 'isTerminal',
 
+    EDITDIALOGMODAL_WARNING_NEED_REPLAY = "EDITDIALOGMODAL_WARNING_NEED_REPLAY",
+
     ENTITY_ACTION_REQUIRED = 'entityActionRequired',
     ENTITY_ACTION_DISQUALIFIED = 'entityActionDisqualified',
     ENTITY_EXTRACTOR_HELP = 'entityExtractorHelp',
@@ -59,6 +61,7 @@ export enum TipType {
     REPLAYERROR_DESC_ACTION_UNAVAILABLE = "REPLAYERROR_DESC_ACTION_UNAVAILABLE",
     REPLAYERROR_DESC_ENTITY_UNDEFINED = "REPLAYERROR_DESC_ENTITY_UNDEFINED",
     REPLAYERROR_DESC_ENTITY_EMPTY = "REPLAYERROR_DESC_ENTITY_EMPTY",
+    REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE = "REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE",
     REPLAYERROR_DESC_ACTION_UNDEFINED = "REPLAYERROR_DESC_ACTION_UNDEFINED",
 
     TAG_EDITING = 'tagEditing',
@@ -280,6 +283,30 @@ export function getTip(tipType: string) {
               )
         case TipType.ACTION_WAIT:
             return render(FM.TOOLTIP_ACTION_WAIT_TITLE, [FM.TOOLTIP_ACTION_WAIT]);
+        
+        case TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY:
+            return (
+                <div>
+                    <h2>Replay May be needed</h2>
+                    <p>One or more edits to Action or Entity properties, may have invalidated turns in this conversation</p>
+                    <p>For example, an Entity that is now multi-value may have only stored one value</p>
+                    <p>This can be resolved by Replaying the dialog, including all API callbacks</p>
+
+                    <h4>Before replay:</h4>
+                    <img 
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTipReplay1.png"
+                        width="70%"
+                        alt="Replay Before" 
+                    />
+                    
+                    <h4>After replay:</h4>
+                    <img 
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTipReplay2.png" 
+                        width="70%" 
+                        alt="Replay After"
+                    />
+                </div>
+            )
         case TipType.ENTITY_NAME:
             return (<FormattedMessage id={FM.TOOLTIP_ENTITY_NAME} defaultMessage="Wait" />);
         case TipType.ENTITY_ACTION_DISQUALIFIED:
@@ -293,7 +320,7 @@ export function getTip(tipType: string) {
         case TipType.ENTITY_MULTIVALUE:
             return (
                 <div>
-                    When checked additional occurences of the Entity add to list of previous values. For non multi-value entites new values replace previous values.<br /><br />
+                    When checked additional occurences of the Entity add to list of previous values. For non multi-value entities new values replace previous values.<br /><br />
                     <b>Example: Multiple toppings on a pizza</b>
                     <dl className="cl-tooltip-example">
                         <dt>Entity:</dt><dd>toppings</dd>
@@ -352,7 +379,7 @@ export function getTip(tipType: string) {
                         <li>Pick entity from menu</li>
                     </ol>
 
-                    <img src="/entity-extractor-label.gif" width="560px" height="368px" />
+                    <img src="/entity-extractor-label.gif" width="560px" height="368px" alt="Entity Extractor Label" />
 
                     <h2>Remove Label</h2>
                     <ol>
@@ -360,7 +387,7 @@ export function getTip(tipType: string) {
                         <li>Click on red 'X'</li>
                     </ol>
 
-                    <img src="/entity-extractor-remove-label.gif" width="518px" height="184px" />
+                    <img src="/entity-extractor-remove-label.gif" width="518px" height="184px" alt="Entity Extractor Remove Label" />
 
                     <h2>Notes:</h2>
                     <ul>
@@ -403,14 +430,14 @@ export function getTip(tipType: string) {
                 <div>
                     <h2>Find your LUIS Authoring Key:</h2>
                     <ol>
-                        <li>Go to <a href="https://www.luis.ai" target="_blank">https://www.luis.ai</a></li>
+                        <li>Go to <a href="https://www.luis.ai" target="_blank" rel="noopener noreferrer">https://www.luis.ai</a></li>
                         <li>Sign in if you are not already</li>
                         <li>Click on your name in the top-right corner to open the dropdown menu</li>
                         <li>Select 'settings' from the menu</li>
                         <li>Copy the "Authoring Key" and use it as the LUIS_AUTHORING_KEY value for your model</li>
                     </ol>
 
-                    <img src="https://blisstorage.blob.core.windows.net/uiimages/authoringkey.gif" />
+                    <img src="https://blisstorage.blob.core.windows.net/uiimages/authoringkey.gif" alt="Authoring Key" />
 
                     <div><br /><div>
                         <h2>LUIS Keys:</h2>
@@ -439,14 +466,14 @@ export function getTip(tipType: string) {
                     <ol>
                         <li>Click on the "Go to LUIS" button in the Conversation Learner UI.  This will take you to the LUIS application associated with your model.</li>
                         <li>In your LUIS' apps "Publish Tab", click on "Add Key"
-                            <img src="https://blisstorage.blob.core.windows.net/uiimages/addkey.PNG" width="50%" />
+                            <img src="https://blisstorage.blob.core.windows.net/uiimages/addkey.PNG" width="50%" alt="Add Key" />
                         </li>
-                        <li>If you don't yet have an Azure Suscription key you'll need to <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/azureibizasubscription" target="_blank">Create One</a></li>
+                        <li>If you don't yet have an Azure Suscription key you'll need to <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/azureibizasubscription" target="_blank" rel="noopener noreferrer">Create One</a></li>
                         <li>Then select the subscription and add the key to your LUIS model</li>
-                        <img src="https://blisstorage.blob.core.windows.net/uiimages/assignkey.PNG" width="50%" />
+                        <img src="https://blisstorage.blob.core.windows.net/uiimages/assignkey.PNG" width="50%" alt="Assign Key" />
                         <li>Click the Key String to copy the key value and use it as the LUIS_SUBSCRIPTION_KEY value for your model
                             <br />
-                            <img src="https://blisstorage.blob.core.windows.net/uiimages/getkey.PNG" width="75%" />
+                            <img src="https://blisstorage.blob.core.windows.net/uiimages/getkey.PNG" width="75%" alt="Get Key" />
                         </li>
                     </ol>
                 </div>
@@ -533,6 +560,18 @@ export function getTip(tipType: string) {
                         <li>Tag the missing Entity in a preceding User Input</li>
                         <li>If a Programmatic Entity, set it in code callbacks</li>
                         <li>Edit Action to not require the missing Entity</li>
+                    </ol>
+                </div>
+            )
+
+        case TipType.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE:
+            return (
+                <div>
+                    <h2>Warning: A non-Multi-Value Entity is labeled with multiple values</h2>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Remove one of the labeled Entities</li>
+                        <li>Change the Entity back to a multi-value Entity</li>
                     </ol>
                 </div>
             )

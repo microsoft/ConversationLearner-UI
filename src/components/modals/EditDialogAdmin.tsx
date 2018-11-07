@@ -198,70 +198,85 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
 
         if (this.state.roundIndex !== null && this.state.roundIndex < this.props.trainDialog.rounds.length) {
             round = this.props.trainDialog.rounds[this.state.roundIndex];
-            if (round.scorerSteps.length > 0 && typeof this.state.scoreIndex === "number") {
-                scorerStep = round.scorerSteps[this.state.scoreIndex];
-                if (!scorerStep) {
-                    throw new Error(`Cannot get score step at index: ${this.state.scoreIndex} from array of length: ${round.scorerSteps.length}`)
-                }
+            if (round.scorerSteps.length > 0) { 
+                // If a score round 
+                if (typeof this.state.scoreIndex === "number") {
+                    scorerStep = round.scorerSteps[this.state.scoreIndex];
+                    if (!scorerStep) {
+                        throw new Error(`Cannot get score step at index: ${this.state.scoreIndex} from array of length: ${round.scorerSteps.length}`)
+                    }
 
-                let selectedAction = this.props.actions.find(action => action.actionId === scorerStep!.labelAction);
+                    let selectedAction = this.props.actions.find(action => action.actionId === scorerStep!.labelAction);
 
-                if (!selectedAction) {
-                    // Action may have been deleted.  If so create dummy action to render
-                    selectedAction = {
-                        actionId: scorerStep.labelAction || 'MISSING ACTION',
-                        createdDateTime: new Date().toJSON(),
-                        payload: 'MISSING ACTION',
-                        isTerminal: false,
-                        actionType: CLM.ActionTypes.TEXT,
-                        requiredEntitiesFromPayload: [],
-                        requiredEntities: [],
-                        negativeEntities: [],
-                        suggestedEntity: null,
-                        version: 0,
-                        packageCreationId: 0,
-                        packageDeletionId: 0
+                    if (!selectedAction) {
+                        // Action may have been deleted.  If so create dummy action to render
+                        selectedAction = {
+                            actionId: scorerStep.labelAction || 'MISSING ACTION',
+                            createdDateTime: new Date().toJSON(),
+                            payload: 'MISSING ACTION',
+                            isTerminal: false,
+                            actionType: CLM.ActionTypes.TEXT,
+                            requiredEntitiesFromPayload: [],
+                            requiredEntities: [],
+                            negativeEntities: [],
+                            suggestedEntity: null,
+                            version: 0,
+                            packageCreationId: 0,
+                            packageDeletionId: 0
+                        }
+                    }
+                    
+                    memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
+                        let entity = this.props.entities.find(e => e.entityId === fe.entityId);
+                        let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
+                        return {
+                            entityName: entityName,
+                            entityValues: fe.values
+                        }
+                    });
+                    
+                    // Get prevmemories
+                    prevMemories = this.getPrevMemories();
+
+                    let scoredAction: CLM.ScoredAction = {
+                            actionId: selectedAction.actionId,
+                            payload: selectedAction.payload,
+                            isTerminal: selectedAction.isTerminal,
+                            score: 1,
+                            actionType: selectedAction.actionType
+                        }
+
+                    // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
+                    let unscoredActions = this.props.actions
+                        .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
+                        .map<CLM.UnscoredAction>(action => 
+                            ({
+                                actionId: action.actionId,
+                                payload: action.payload,
+                                isTerminal: action.isTerminal,
+                                reason: CLM.ScoreReason.NotCalculated,
+                                actionType: action.actionType
+                            }));
+
+                    scoreResponse = {
+                        metrics: {
+                            wallTime: 0
+                        },
+                        scoredActions: [scoredAction],
+                        unscoredActions: unscoredActions
                     }
                 }
-                
-                memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
-                    let entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                    let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
-                    return {
-                        entityName: entityName,
-                        entityValues: fe.values
-                    }
-                });
-                
-                // Get prevmemories
-                prevMemories = this.getPrevMemories();
-
-                let scoredAction: CLM.ScoredAction = {
-                        actionId: selectedAction.actionId,
-                        payload: selectedAction.payload,
-                        isTerminal: selectedAction.isTerminal,
-                        score: 1.0,
-                        actionType: selectedAction.actionType
-                    }
-
-                // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
-                let unscoredActions = this.props.actions
-                    .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
-                    .map<CLM.UnscoredAction>(action => 
-                        ({
-                            actionId: action.actionId,
-                            payload: action.payload,
-                            isTerminal: action.isTerminal,
-                            reason: CLM.ScoreReason.NotCalculated,
-                            actionType: action.actionType
-                        }));
-
-                scoreResponse = {
-                    metrics: {
-                        wallTime: 0
-                    },
-                    scoredActions: [scoredAction],
-                    unscoredActions: unscoredActions
+                // If user round, get filled entities from first scorer step
+                else {
+                    scorerStep = round.scorerSteps[0];
+                    memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
+                        let entity = this.props.entities.find(e => e.entityId === fe.entityId);
+                        let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
+                        return {
+                            entityName: entityName,
+                            entityValues: fe.values
+                        }
+                    });
                 }
             }
         }

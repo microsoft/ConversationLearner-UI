@@ -57,13 +57,15 @@
     --color-yellowLight: #fff100;
 
     /* Custom colors */
-    --color-yellow-darker: #EEAC04;
     --color-yellow-darkest: #9E7203;
-    --color-yellow-lighter: #FFE7A4;
-    --color-botchat-grey: #dbdee1;
-    --color-wc-user-train: #5c005c;
-    --color-wc-user-log: #107c10;
+    --cl-color-botchat-grey: #dbdee1;
+    --cl-color-user-train: #5c005c;
+    --cl-color-user-log: #107c10;
     --color-wc-bot: #eceff1;
+    --cl-color-error: var(--color-error);
+    --cl-color-warning: var(--color-orangeLight);
+
+    /* Vars */
     --gutter-width: 100px;
     --nav-link-padding: 1em 2em;
 }
@@ -162,7 +164,7 @@
 }
 
 .cl-editdialog-error {
-    background-color: var(--color-error);
+    background-color: var(--cl-color-error);
     color: white;
     border-radius: 15px;
     padding: 10px;
@@ -170,10 +172,11 @@
 }
 
 .cl-editdialog-warning {
-    background-color: var(--color-errorBackground);
-    color: black;
+    background-color: var(--cl-color-warning);
+    color: white;
     border-radius: 15px;
     padding: 10px;
+    display: inline-block;
 }
 
 .cl-commandbar {
@@ -182,7 +185,7 @@
 }
 
 .label-error {
-    color: var(--color-red);
+    color: var(--cl-color-error);
 }
 
 

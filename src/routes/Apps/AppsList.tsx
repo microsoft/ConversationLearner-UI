@@ -13,7 +13,7 @@ import { AppBase, AppDefinition } from '@conversationlearner/models'
 import { CL_IMPORT_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react'
-import AppsListComopnent from './AppsListComponent'
+import AppsListComponent from './AppsListComponent'
 
 interface ComponentState {
     readonly isAppCreateModalOpen: boolean
@@ -116,7 +116,7 @@ class AppsList extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        return <AppsListComopnent
+        return <AppsListComponent
             intl={this.props.intl}
 
             user={this.props.user}

@@ -620,6 +620,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             return (
                 <div className="wc-console">
                     <OF.PrimaryButton
+                        className="cl-rightjustify"
                         onClick={this.onInsertAction}
                         ariaDescription={'Score Actions'}
                         text={'Score Actions'} // TODO internationalize
@@ -633,11 +634,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         let replayError = DialogUtils.getReplayError(this.state.selectedHistoryActivity)
         if (replayError) {
-            return (
-                <div className="cl-editdialog-error">
-                    {renderReplayError(replayError)}
-                </div>
-            )
+            return renderReplayError(replayError)
         }
         else if (this.hasReplayError()) {
             // Replay error, but not activity selected

@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import actions from '../../../actions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import * as OF from 'office-ui-fabric-react';
+import * as Utils from '../../../util'
 import { AppBase, ActionBase } from '@conversationlearner/models'
 import { ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
@@ -72,27 +73,27 @@ class Actions extends React.Component<Props, ComponentState> {
     }
 
     onClickDeleteActionEditor(action: ActionBase) {
-        this.setState({
+        Utils.setStateAsync(this, {
             isActionEditorOpen: false,
             actionSelected: null
-        }, () => {
-            this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId)
-            setTimeout(() => this.newActionButton.focus(), 1000)
         })
+        
+        this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId)
+        setTimeout(() => this.newActionButton.focus(), 1000)
     }
 
     onClickSubmitActionEditor(action: ActionBase) {
         const wasEditing = this.state.actionSelected
-        this.setState({
+        Utils.setStateAsync(this, {
             isActionEditorOpen: false,
             actionSelected: null
-        }, () => {
-            const apiFunc = wasEditing
-                ? () => this.props.editActionThunkAsync(this.props.app.appId, action)
-                : () => this.props.createActionThunkAsync(this.props.app.appId, action)
-            apiFunc()
-            setTimeout(() => this.newActionButton.focus(), 500)
         })
+        
+        const apiFunc = wasEditing
+            ? () => this.props.editActionThunkAsync(this.props.app.appId, action)
+            : () => this.props.createActionThunkAsync(this.props.app.appId, action)
+        apiFunc()
+        setTimeout(() => this.newActionButton.focus(), 500)
     }
 
     getFilteredActions(): ActionBase[] {

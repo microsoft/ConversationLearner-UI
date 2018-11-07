@@ -50,7 +50,7 @@ class Settings extends React.Component<Props> {
                         onChange={this.onChangeSdkPort}
                     />
                     <div className="cl-input-warning">
-                        <OF.Icon className="cl-icon" iconName="IncidentTriangle" />
+                        <OF.Icon className="cl-icon cl-icon-red" iconName="IncidentTriangle" />
                         <FormattedMessage
                             id={FM.PROFILE_SETTINGS_BOT_PORT_WARNING}
                             defaultMessage="Only change this value if you know what you are doing. This value must match the PORT that your SDK is listening on."

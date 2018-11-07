@@ -19,7 +19,7 @@
 }
 
 .editor-button-invalid {
-    color: var(--color-red);
+    color: var(--cl-color-error);
 }
 
 .entity-extractor .cl-buttons-row {
