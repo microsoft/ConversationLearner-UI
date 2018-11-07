@@ -20,7 +20,7 @@ import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import * as TC from '../../../components/tipComponents'
 import * as ToolTip from '../../../components/ToolTips/ToolTips'
-import * as util from '../../../util'
+import * as util from '../../../Utils/util'
 import HelpIcon from '../../../components/HelpIcon'
 
 const messages = defineMessages({

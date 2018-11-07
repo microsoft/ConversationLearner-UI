@@ -415,6 +415,7 @@ export enum FM {
     TOOLTIP_TAG_EDITING = 'ToolTip.TAG_EDITING',
     TOOLTIP_TAG_LIVE = 'ToolTip.TAG_LIVE',
     TOOLTIP_TRAINDIALOG_INVALID = 'ToolTip.TRAINDIALOG_INVALID',
+    TOOLTIP_TRAINDIALOG_UNKNOWN = 'ToolTip.TOOLTIP_TRAINDIALOG_UNKNOWN',
     TOOLTIP_TRAINDIALOG_WARNING = 'ToolTip.TRAINDIALOG_WARNING',
 
     // EditDialogAdmin
@@ -443,6 +444,7 @@ export enum FM {
     EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE = 'EditDialogModal.confirmAbandonEdit.title',
     EDITDIALOGMODAL_WARNING_INVALID_BOT = 'EditDialogModal.warningInvalidBot.title',
     EDITDIALOGMODAL_WARNING_INVALID_PACKAGE = 'EditDialogModal.warningInvalidPackage.title',
+    EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY = 'EditDialogModal.unknownNeedReplay.title',
     EDITDIALOGMODAL_WARNING_NEED_REPLAY = 'EditDialogModal.warningNeedReplay.title',
 
     // Train Dialogs
@@ -767,6 +769,7 @@ export default {
         [FM.TOOLTIP_TAG_EDITING]: 'The version (tag) of the model to edit in UI',
         [FM.TOOLTIP_TAG_LIVE]: 'The version (tag) of the model used when published to external channels (e.g. Skype)',
         [FM.TOOLTIP_TRAINDIALOG_INVALID]: 'This model contains Train Dialogs that have been invalided.  They must be edited and fixed to be included in training',
+        [FM.TOOLTIP_TRAINDIALOG_UNKNOWN]: 'This model contains Train Dialogs that may have errors. They must be replayed and any errors fixed to be included in training',
         [FM.TOOLTIP_TRAINDIALOG_WARNING]: 'This model contains Train Dialogs that may have errors.',
 
         // Train Dialogs
@@ -941,8 +944,9 @@ export default {
         [FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE]: 'Are you sure you want to abandon your edits?',
         [FM.EDITDIALOGMODAL_WARNING_INVALID_BOT]: 'Running Bot not compatible with this Model',
         [FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE]: 'Editing only permitted on the Master tag',
+        [FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY]: 'Entity or Action changes require replay of the TrainDialog',
         [FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY]: 'Entity or Action changes require replay of the TrainDialog',
-             
+        
         // UserInput Modal
         [FM.USERINPUT_ADD_TITLE]: 'Add User Input',
         [FM.USERINPUT_BRANCH_TITLE]: 'Add Different User Input',

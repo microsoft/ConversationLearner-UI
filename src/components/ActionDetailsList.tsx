@@ -12,7 +12,7 @@ import * as OF from 'office-ui-fabric-react'
 import { onRenderDetailsHeader } from './ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import * as Util from '../util'
+import * as Util from '../Utils/util'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadRenderers from './actionPayloadRenderers'
 import './ActionDetailsList.css'
@@ -262,7 +262,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     {payloadRenderer}
                     {isValidationError &&
                         <div className={OF.FontClassNames.mediumPlus}>
-                            <OF.Icon className="cl-icon cl-icon-red" iconName="IncidentTriangle" />
+                            <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
                         </div>}
                 </div>
             }

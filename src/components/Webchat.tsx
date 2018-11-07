@@ -35,22 +35,27 @@ export function renderActivity(
     let contentClassName = 'wc-message-content'
     const clData: CLM.CLChannelData | null = activityProps.activity.channelData ? activityProps.activity.channelData.clData : null
 
+    let messageColor = `wc-message-color-${activityProps.fromMe ? (isLogDialog ? 'log' : 'train') : 'bot'}`
+    let messageFillColor = `wc-message-fillcolor-${activityProps.fromMe ? (isLogDialog ? 'log' : 'train') : 'bot'}`
+
     if (clData) {
         if (clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
-                wrapperClassName += ` wc-message-warning-from-${who}`;
+                wrapperClassName += ` wc-border-warning-from-${who}`;
             } 
             else { // ERROR or BLOCKING
-                wrapperClassName += ` wc-message-error-from-${who}`;
+                wrapperClassName += ` wc-border-error-from-${who}`;
+            }
+            if (clData.replayError.type === CLM.ReplayErrorType.Exception) {
+                messageColor = `wc-message-color-exception`
+                messageFillColor = `wc-message-fillcolor-exception`
+            
             }
         }
         if (activityProps.selected) {
             wrapperClassName += ` wc-message-selected`
         }
     }
-
-    const messageColor = `wc-message-color-${activityProps.fromMe ? (isLogDialog ? 'log' : 'train') : 'bot'}`
-    const messageFillColor = `wc-message-fillcolor-${activityProps.fromMe ? (isLogDialog ? 'log' : 'train') : 'bot'}`
 
     return (
         <div 

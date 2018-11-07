@@ -4,7 +4,7 @@
  */
 import * as React from 'react'
 import { TextAction, EntityBase, Memory } from '@conversationlearner/models'
-import * as Util from '../../util'
+import * as Util from '../../Utils/util'
 import TextPayloadRenderer from './TextPayloadRenderer'
 
 interface Props {

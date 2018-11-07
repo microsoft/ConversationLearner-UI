@@ -9,8 +9,8 @@ import { connect } from 'react-redux';
 import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
-import * as Util from '../../../util'
-import * as DialogUtils from '../../../dialogUtils'
+import * as Util from '../../../Utils/util'
+import * as DialogUtils from '../../../Utils/dialogUtils'
 import { SelectionType } from '../../../types/const'
 import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'

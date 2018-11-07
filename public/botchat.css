@@ -375,11 +375,11 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   margin-right: 6px; }
 
   
-.wc-message-error-from-me {
-    border-right: 8px solid var(--cl-color-error);
+.wc-border-error-from-me {
+  border-right: 8px solid var(--cl-color-error);
 }
 
-.wc-message-warning-from-me {
+.wc-border-warning-from-me {
   border-right: 8px solid var(--cl-color-warning);
 }
 
@@ -388,7 +388,6 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 
 .wc-message-from-me .wc-message-content {
    color: #ffffff; }
-
 
 .wc-message-color-bot {
   background-color: var(--color-wc-bot); 
@@ -402,6 +401,14 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   background-color: var(--cl-color-user-log); 
 }
 
+.wc-message-color-exception {
+  background-color: var(--cl-color-warning); 
+}
+
+.wc-message-from-exception .wc-message-content {
+  background-color: var(--cl-color-warning);
+  color: #000000; }
+
 .wc-message-fillcolor-bot {
   fill: var(--color-wc-bot); 
 }
@@ -412,6 +419,10 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 
 .wc-message-fillcolor-log {
   fill: var(--cl-color-user-log) !important; 
+}
+
+.wc-message-fillcolor-exception {
+  fill: var(--cl-color-warning) !important; 
 }
 
 .wc-message-from-me svg.wc-message-callout path.point-left {
@@ -425,16 +436,16 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   float: left;
   margin-left: 8px; }
 
-.wc-message-error-from-bot {
+.wc-border-error-from-bot {
   border-left: 8px solid var(--cl-color-error);
 }
 
-.wc-message-warning-from-bot {
+.wc-border-warning-from-bot {
   border-left: 8px solid var(--cl-color-warning);
 }
 
 .wc-message-from-bot .wc-message-content {
-  background-color: #eceff1;
+
   color: #000000; }
 
 .wc-message-from-bot svg.wc-message-callout path {

@@ -15,7 +15,7 @@ import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import * as Util from '../../util'
+import * as Util from '../../Utils/util'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 

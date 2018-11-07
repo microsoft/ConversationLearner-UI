@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { AT } from './types/ActionTypes'
+import { AT } from '../types/ActionTypes'
 
 export class ErrorInjector {
     private static disabledActions: string[] = [];

@@ -12,7 +12,7 @@ import { AppBase, PackageReference } from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { createAppTagThunkAsync } from '../../actions/appActions'
 import PackageCreator from './PackageCreator';
-import * as util from '../../util'
+import * as util from '../../Utils/util'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (packageReference: PackageReference, component: PackageTable) => React.ReactNode
