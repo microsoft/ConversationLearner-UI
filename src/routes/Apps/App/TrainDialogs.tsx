@@ -115,6 +115,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     return (<span className={textClassName(trainDialog)} data-testid="train-dialogs-first-input">
                         {trainDialog.validity === CLM.Validity.INVALID && <Icon className="cl-icon cl-icon-red" iconName="IncidentTriangle" />}
                         {trainDialog.validity === CLM.Validity.UNKNOWN && <Icon className="cl-icon cl-icon-yellow" iconName="IncidentTriangle" />}
+                        {trainDialog.validity === CLM.Validity.WARNING && <Icon className="cl-icon cl-icon-yellow" iconName="IncidentTriangle" />}
                         {firstInput}
                     </span>)
                 }
