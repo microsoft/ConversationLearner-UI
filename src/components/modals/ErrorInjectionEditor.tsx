@@ -4,7 +4,7 @@
  */
 import * as React from 'react'
 import { Dialog, DialogType, Checkbox } from 'office-ui-fabric-react'
-import { ErrorInjector } from '../../ErrorInjector'
+import { ErrorInjector } from '../../Utils/ErrorInjector'
 import { AT } from '../../types/ActionTypes'
 
 interface Props {

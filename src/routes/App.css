@@ -63,7 +63,8 @@
     --cl-color-user-log: #107c10;
     --color-wc-bot: #eceff1;
     --cl-color-error: var(--color-error);
-    --cl-color-warning: var(--color-orangeLight);
+    --cl-color-caution: var(--color-orangeLighter);
+    --cl-color-warning: var(--color-yellow);
 
     /* Vars */
     --gutter-width: 100px;
@@ -173,6 +174,14 @@
 
 .cl-editdialog-warning {
     background-color: var(--cl-color-warning);
+    color: white;
+    border-radius: 15px;
+    padding: 10px;
+    display: inline-block;
+}
+
+.cl-editdialog-caution {
+    background-color: var(--cl-color-caution);
     color: white;
     border-radius: 15px;
     padding: 10px;

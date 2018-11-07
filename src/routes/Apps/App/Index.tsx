@@ -9,9 +9,10 @@ import {
     Switch
 } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import * as ValidityUtils from '../../../Utils/validityUtils'
 import * as CLM from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
@@ -234,13 +235,13 @@ class Index extends React.Component<Props, ComponentState> {
                                         {trainDialogValidity !== CLM.Validity.VALID && 
                                             <TooltipHost 
                                                 content={intl.formatMessage({
-                                                    id: trainDialogValidity === CLM.Validity.INVALID ? FM.TOOLTIP_TRAINDIALOG_INVALID : FM.TOOLTIP_TRAINDIALOG_WARNING,
+                                                    id: ValidityUtils.validityToolTip(trainDialogValidity),
                                                     defaultMessage: 'Contains Invalid Train Dialogs'
                                                 })} 
                                                 calloutProps={{ gapSpace: 0 }}
                                             >
                                                 <OF.Icon 
-                                                    className={`cl-icon ${trainDialogValidity === CLM.Validity.INVALID ? 'cl-icon-red' : 'cl-icon-yellow'}`} 
+                                                    className={`cl-icon ${ValidityUtils.validityColorClassName(trainDialogValidity)}`} 
                                                     iconName="IncidentTriangle" 
                                                 />
                                             </TooltipHost>

@@ -10,7 +10,7 @@ import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
 import { AxiosError } from 'axios';
 import { Poller, IPollConfig } from '../services/poller';
-import { delay } from '../util';
+import { delay } from '../Utils/util';
 import { setUpdatedAppDefinition } from './sourceActions';
 
 export const createApplicationThunkAsync = (userId: string, application: AppBase, source: AppDefinition | null = null) => {

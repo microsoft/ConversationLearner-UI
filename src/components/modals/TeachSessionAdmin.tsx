@@ -14,7 +14,7 @@ import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
 import MemoryTable from './MemoryTable';
 import { FM } from '../../react-intl-messages'
-import * as DialogUtils from '../../dialogUtils'
+import * as DialogUtils from '../../Utils/dialogUtils'
 import { TeachSessionState } from '../../types/StateTypes'
 import TrainingStatusContainer from '../TrainingStatusContainer'
 import * as OF from 'office-ui-fabric-react'

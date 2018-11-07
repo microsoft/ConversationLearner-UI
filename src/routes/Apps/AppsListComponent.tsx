@@ -8,7 +8,7 @@ import * as OF from 'office-ui-fabric-react';
 import { AppBase, AppDefinition } from '@conversationlearner/models'
 import { InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import * as util from '../../util'
+import * as util from '../../Utils/util'
 import { User, AppCreatorType } from '../../types';
 import * as moment from 'moment'
 
