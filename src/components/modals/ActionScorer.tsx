@@ -23,6 +23,8 @@ import { FM } from '../../react-intl-messages'
 import * as Util from '../../util'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadRenderers from '../actionPayloadRenderers'
+import ConfirmCancelModal from './ConfirmCancelModal'
+import './ActionScorer.css'
 
 const ACTION_BUTTON = 'action_button'
 const MISSING_ACTION = 'missing_action'
@@ -66,9 +68,20 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                     return (
                         <PrimaryButton
                             data-testid="action-scorer-button-no-click"
-                            disabled={true}
+                            styles={{
+                                rootDisabled: {
+                                  backgroundColor: "green",
+                                  color: "white"
+                                },
+                                root: {
+                                  backgroundColor: "green",
+                                  color: "white"
+                                }
+                              }}
+                            // disabled={true}
                             ariaDescription={buttonText}
                             text={buttonText}
+                            onClick={component.showPopup}
                         />
                     )
                 }
@@ -263,6 +276,7 @@ interface ComponentState {
     newAction: ActionBase | null
     cardViewerAction: ActionBase | null
     cardViewerShowOriginal: boolean
+    isAlreadySelectedOpen: boolean
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
@@ -279,7 +293,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             haveEdited: false,
             newAction: null,
             cardViewerAction: null,
-            cardViewerShowOriginal: false
+            cardViewerShowOriginal: false,
+            isAlreadySelectedOpen: false
         };
         this.handleActionSelection = this.handleActionSelection.bind(this);
         this.handleDefaultSelection = this.handleDefaultSelection.bind(this);
@@ -287,6 +302,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.onColumnClick = this.onColumnClick.bind(this);
         this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
+        this.showPopup = this.showPopup.bind(this);
+        this.onClosePopup = this.onClosePopup.bind(this);
     }
     componentWillReceiveProps(newProps: Props) {
         if (this.props.scoreResponse !== newProps.scoreResponse) {
@@ -718,6 +735,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             return null;
         }
 
+        const { intl } = this.props
         const scores: ScoredBase[] = this.getScoredItems()
         let template: Template | undefined = undefined
         let renderedActionArguments: RenderedActionArgument[] = []
@@ -762,8 +780,25 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     actionArguments={renderedActionArguments}
                     hideUndefined={true}
                 />
+                <ConfirmCancelModal
+                    data-testid="popup-already-selected"
+                    open={this.state.isAlreadySelectedOpen}
+                    onOk={this.onClosePopup}
+                    title={intl.formatMessage({
+                        id:FM.LOGDIALOGS_ALREADYSELECTED,
+                        defaultMessage:Util.getDefaultText(FM.LOGDIALOGS_ALREADYSELECTED)
+                        })}
+                />
             </div>
         )
+    }
+
+    showPopup() {
+        this.setState({isAlreadySelectedOpen:true})
+    }
+
+    onClosePopup() {
+        this.setState({isAlreadySelectedOpen:false})
     }
 }
 
