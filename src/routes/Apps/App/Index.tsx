@@ -145,6 +145,10 @@ class Index extends React.Component<Props, ComponentState> {
             if (trainDialog.validity === CLM.Validity.INVALID) {
                 return CLM.Validity.INVALID
             }
+            // WARNING & UNKNOWN are equivalent from a display perspective
+            else if (trainDialog.validity === CLM.Validity.WARNING) {
+                validity = CLM.Validity.WARNING
+            }
             else if (trainDialog.validity === CLM.Validity.UNKNOWN) {
                 validity = CLM.Validity.UNKNOWN
             }
