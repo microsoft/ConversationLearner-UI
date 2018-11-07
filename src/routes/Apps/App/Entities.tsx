@@ -14,7 +14,6 @@ import { onRenderDetailsHeader } from '../../../components/ToolTips/ToolTips'
 import { AppBase, EntityBase, EntityType } from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import * as moment from 'moment'
 
 interface IRenderableColumn extends OF.IColumn {
@@ -138,7 +137,7 @@ class Entities extends React.Component<Props, ComponentState> {
         this.newEntityButton.focus()
     }
 
-    @autobind
+    @OF.autobind
     handleDelete(entity: EntityBase) {
         this.props.deleteEntityThunkAsync(this.props.app.appId, entity)
         this.setState({
@@ -146,7 +145,7 @@ class Entities extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     handleOpenCreateModal() {
         this.setState({
             createEditModalOpen: true,
@@ -154,7 +153,7 @@ class Entities extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     handleCloseCreateModal() {
         this.setState({
             createEditModalOpen: false,
@@ -174,7 +173,7 @@ class Entities extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         let { columns } = this.state;
         let isSortedDescending = !clickedColumn.isSortedDescending;
@@ -190,7 +189,7 @@ class Entities extends React.Component<Props, ComponentState> {
         });
     }
 
-    @autobind
+    @OF.autobind
     getFilteredAndSortedEntities(): EntityBase[] {
         //runs when user changes the text or sort
         let lcString = this.state.searchValue.toLowerCase();
@@ -219,7 +218,7 @@ class Entities extends React.Component<Props, ComponentState> {
         return filteredEntities;
     }
 
-    @autobind
+    @OF.autobind
     onChange(newValue: string) {
         // runs when user changes the text 
         let lcString = newValue.toLowerCase();

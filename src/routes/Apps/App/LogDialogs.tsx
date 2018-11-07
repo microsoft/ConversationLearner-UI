@@ -10,6 +10,7 @@ import * as OF from 'office-ui-fabric-react';
 import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../util'
+import * as DialogUtils from '../../../dialogUtils'
 import { SelectionType } from '../../../types/const'
 import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'
@@ -18,7 +19,6 @@ import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs';
 import { EditHandlerArgs, cleanTrainDialog } from './TrainDialogs'
 import { TeachSessionState } from '../../../types/StateTypes'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import ReplayErrorList from '../../../components/modals/ReplayErrorList';
 import * as moment from 'moment'
 
@@ -220,7 +220,8 @@ interface ComponentState {
     selectedHistoryIndex: number | null
 
     isValidationWarningOpen: boolean // goes away
-    currentLogDialog: CLM.LogDialog | null
+    // The ID of the selected log dialog
+    currentLogDialogId: string | null
     // The trainDialog created out of the selected LogDialog
     currentTrainDialog: CLM.TrainDialog | null
     // Is Dialog being edited a new one, a TrainDialog or a LogDialog
@@ -253,7 +254,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isTeachDialogModalOpen: false,
             selectedHistoryIndex: null,
             isValidationWarningOpen: false,
-            currentLogDialog: null,
+            currentLogDialogId: null,
             currentTrainDialog: null,
             editType: EditDialogType.LOG_ORIGINAL,
             searchValue: '',
@@ -291,7 +292,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         return logDialogs;
     }
 
-    @autobind
+    @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         let { columns } = this.state;
         let isSortedDescending = !clickedColumn.isSortedDescending;
@@ -321,18 +322,17 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         // If log dialogs have been updated, update selected logDialog too
         if (this.props.logDialogs !== newProps.logDialogs) {
-            const logDialog = this.state.currentLogDialog
-            if (logDialog) {
-                let newLogDialog = newProps.logDialogs.find(t => t.logDialogId === logDialog.logDialogId)
+            if (this.state.currentLogDialogId) {
+                let newLogDialog = newProps.logDialogs.find(t => t.logDialogId === this.state.currentLogDialogId)
                 this.setState({
-                    currentLogDialog: newLogDialog || null,
+                    currentLogDialogId: newLogDialog ? newLogDialog.logDialogId : null,  
                     currentTrainDialog: newLogDialog ? CLM.ModelUtils.ToTrainDialog(newLogDialog) : null
                 })
             }
         }
     }
 
-    @autobind
+    @OF.autobind
     onClickNewChatSession() {
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
         ((this.props.createChatSessionThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.app.metadata.isLoggingOn !== false) as any) as Promise<CLM.Session>)
@@ -348,7 +348,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
-    @autobind
+    @OF.autobind
     onCloseChatSessionWindow() {
         this.setState({
             chatSession: null,
@@ -364,39 +364,40 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickLogDialogItem(logDialog: CLM.LogDialog) {
+    async onClickLogDialogItem(logDialog: CLM.LogDialog) {
         // Reset WebChat scroll position
         this.props.clearWebchatScrollPosition()
 
         // Convert to trainDialog until schema update change, and pass in app definition too
         let trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities);
 
-        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            .then(teachWithHistory => {
-                this.setState({
-                    history: teachWithHistory.history,
-                    lastAction: teachWithHistory.lastAction,
-                    currentLogDialog: logDialog,
-                    currentTrainDialog: logDialog ? CLM.ModelUtils.ToTrainDialog(logDialog) : null,
-                    isEditDialogModalOpen: true,
-                    editType: EditDialogType.LOG_ORIGINAL,
-                    validationErrors: teachWithHistory.replayErrors,
-                    isValidationWarningOpen: teachWithHistory.replayErrors.length > 0,
-                })
+        try {
+            let teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            
+            this.setState({
+                history: teachWithHistory.history,
+                lastAction: teachWithHistory.lastAction,
+                currentLogDialogId: logDialog.logDialogId,  
+                currentTrainDialog: CLM.ModelUtils.ToTrainDialog(logDialog),
+                isEditDialogModalOpen: true,
+                editType: EditDialogType.LOG_ORIGINAL,
+                validationErrors: teachWithHistory.replayErrors,
+                isValidationWarningOpen: teachWithHistory.replayErrors.length > 0,
             })
-            .catch(error => {
+        }
+        catch (error) {
                 console.warn(`Error when attempting to create history: `, error)
-            })
+        }
     }
 
     async onClickSync() {
         await this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId);
     }
 
-    @autobind
+    @OF.autobind
     async onDeleteLogDialog() {
-        if (this.state.currentLogDialog) {
-            await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
+        if (this.state.currentLogDialogId) {
+            await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
         }
         await this.onCloseEditDialogModal();
     }
@@ -436,7 +437,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
 
         try {
@@ -505,7 +506,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             }
 
             // If inserted at end of conversation, allow to scroll to bottom
-            if (roundIndex === trainDialog.rounds.length - 1 && scoreIndex === curRound.scorerSteps.length - 1) {
+            if (roundIndex === trainDialog.rounds.length - 1 && 
+                (scoreIndex === undefined || scoreIndex === curRound.scorerSteps.length - 1)) {
                 this.props.clearWebchatScrollPosition()
             }
 
@@ -516,7 +518,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
  
-    @autobind
+    @OF.autobind
     async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep|undefined) {
  
         if (!trainScorerStep) {
@@ -546,7 +548,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     async onChangeExtraction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, extractResponse: CLM.ExtractResponse|undefined, textVariations: CLM.TextVariation[]|undefined) {
  
         if (!extractResponse || !textVariations) {
@@ -575,7 +577,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     async onDeleteTurn(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
 
         const clData: CLM.CLChannelData = selectedActivity.channelData.clData
@@ -615,7 +617,34 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.CURRENT)
     }
 
-    @autobind
+    @OF.autobind
+    async onReplayTrainDialog(trainDialog: CLM.TrainDialog) {
+ 
+        try {
+            const definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+
+            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog)) as CLM.TrainDialog
+            newTrainDialog.definitions = definitions
+            // I've replayed so unknown status goes away (but not invalid)
+            if (trainDialog.validity === CLM.Validity.UNKNOWN) {
+                newTrainDialog.validity = CLM.Validity.VALID
+            } 
+
+            // Replay logic functions on train dialog
+            newTrainDialog = await ((this.props.trainDialogReplayThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>)
+
+            await this.onUpdateHistory(newTrainDialog, null, SelectionType.NONE)
+        }
+        catch (error) {
+            console.warn(`Error when attempting to Replay a train dialog: `, error)
+        }
+    }
+
+    @OF.autobind
     async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string | undefined) {
 
         if (!inputText) {
@@ -735,27 +764,33 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity, selectionType: SelectionType) {
+    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType) {
 
         try {
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            let activityIndex = selectedActivity ? Util.matchedActivityIndex(selectedActivity, this.state.history) : null
-            if (activityIndex !== null && selectionType === SelectionType.NEXT) {
-                // Select next activity, useful for when inserting a step
-                activityIndex = activityIndex + 1
-            }
-            // If was a delete action, activity won't exist any more, so select by index
-            else if (activityIndex === null && selectionType === SelectionType.CURRENT) {
-    
-                const clData: CLM.CLChannelData = selectedActivity.channelData.clData
-                if (clData && clData.activityIndex) {
-                    activityIndex = clData.activityIndex
+            
+            let activityIndex: number | null = null
+
+            // If activity was selected, calculate activity to select after update
+            if (selectedActivity !== null) {
+                activityIndex = selectedActivity ? DialogUtils.matchedActivityIndex(selectedActivity, this.state.history) : null
+                if (activityIndex !== null && selectionType === SelectionType.NEXT) {
+                    // Select next activity, useful for when inserting a step
+                    activityIndex = activityIndex + 1
+                }
+                // If was a delete action, activity won't exist any more, so select by index
+                else if (activityIndex === null && selectionType === SelectionType.CURRENT) {
+        
+                    const clData: CLM.CLChannelData = selectedActivity.channelData.clData
+                    if (clData && clData.activityIndex) {
+                        activityIndex = clData.activityIndex
+                    }
+                }
+                else if (selectionType === SelectionType.NONE) {
+                    activityIndex = null
                 }
             }
-            else if (selectionType === SelectionType.NONE) {
-                activityIndex = null
-            }
-            
+                
             this.setState({
                 history: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
@@ -815,24 +850,24 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isEditDialogModalOpen: false,
             selectedHistoryIndex: null,
             currentTrainDialog: null,
-            currentLogDialog: null,
+            currentLogDialogId: null,
             history: [],
             lastAction: null,
             dialogKey: this.state.dialogKey + 1
         })
     }
 
-    async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog, isInvalid: boolean) {
+    async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) {
 
-        // Remove any data added for rendering  LARS add to log dialogs and elsewhere
+        // Remove any data added for rendering
         cleanTrainDialog(newTrainDialog)
 
-        newTrainDialog.validity = isInvalid ? CLM.Validity.INVALID : CLM.Validity.VALID
+        newTrainDialog.validity = validity
         newTrainDialog.definitions = null
         try { 
             await this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog)
-            if (this.state.currentLogDialog) {
-                await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialog.logDialogId, this.props.editingPackageId)
+            if (this.state.currentLogDialogId) {
+                await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
             }
             else {
                 throw new Error("Could not find LogDialag associated with conversion to TrainDialog")
@@ -845,15 +880,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.onCloseEditDialogModal()
     }
 
-    @autobind
+    @OF.autobind
     onCloseTeachSession(save: boolean) {
         if (this.props.teachSession && this.props.teachSession.teach) {
             if (save) {
                 // If source was a trainDialog, delete the original
                 let sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH 
-                    ? this.state.currentTrainDialog.trainDialogId : null;
-                let sourceLogDialogId = this.state.currentLogDialog ? this.state.currentLogDialog.logDialogId : null;
-                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, sourceLogDialogId)
+                    ? this.state.currentTrainDialog.trainDialogId : null
+                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, this.state.currentLogDialogId)
             }
             else {
                 this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
@@ -864,13 +898,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isTeachDialogModalOpen: false,
             history: [],
             lastAction: null,
-            currentLogDialog: null,
+            currentLogDialogId: null,
             currentTrainDialog: null,
             dialogKey: this.state.dialogKey + 1
         })
     }
 
-    @autobind
+    @OF.autobind
     onCloseValidationWarning() {
         this.setState({
             isValidationWarningOpen: false
@@ -1053,8 +1087,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         editType={this.state.editType} 
                         initialHistory={this.state.history}
                         lastAction={this.state.lastAction}
-                        sourceTrainDialog={this.state.currentTrainDialog}
-                        sourceLogDialog={this.state.currentLogDialog}
+                        sourceTrainDialog={this.state.currentTrainDialog}  
                     />
                 }
                 <EditDialogModal
@@ -1064,7 +1097,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     editState={editState}
                     open={this.state.isEditDialogModalOpen}
                     trainDialog={this.state.currentTrainDialog!}
-                    editingLogDialog={this.state.currentLogDialog}
+                    editingLogDialogId={this.state.currentLogDialogId}  
                     originalTrainDialogId={null}
                     history={this.state.history}
                     initialSelectedActivityIndex={this.state.selectedHistoryIndex}
@@ -1078,7 +1111,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
                     onDeleteDialog={this.onDeleteLogDialog}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
-                    onSaveDialog={(editedTrainDialog, isInvalid) => this.onSaveTrainDialog(editedTrainDialog, isInvalid)}
+                    onSaveDialog={(editedTrainDialog, validity) => this.onSaveTrainDialog(editedTrainDialog, validity)}
+                    onReplay={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={() =>  { }}
                 />
             </div>

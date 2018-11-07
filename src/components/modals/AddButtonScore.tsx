@@ -20,16 +20,16 @@ class AddButtonScore extends React.Component<Props, {}> {
                 className={`cl-addbutton-add cl-addbutton-addscore`}
                 onClick={this.props.onClick}
             >
-                    <TooltipHost
-                        directionalHint={DirectionalHint.topCenter}
-                        tooltipProps={{
-                            onRenderContent: () =>
-                                <FormattedMessage
-                                    id={FM.TOOLTIP_ADD_BOT_RESONSE_BUTTON}
-                                    defaultMessage="Add a new bot response"
-                                />
-                        }}
-                    >
+                <TooltipHost
+                    directionalHint={DirectionalHint.topCenter}
+                    tooltipProps={{
+                        onRenderContent: () =>
+                            <FormattedMessage
+                                id={FM.TOOLTIP_ADD_BOT_RESONSE_BUTTON}
+                                defaultMessage="Add a new bot response"
+                            />
+                    }}
+                >
                     <svg 
                         className="cl-addbutton-svg cl-addbutton-svg-score"
                     >

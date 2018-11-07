@@ -19,73 +19,100 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
     switch (replayError.type) {
         case CLM.ReplayErrorType.ActionUndefined:
             return (
-                <div className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.REPLAYERROR_DESC_ACTION_UNDEFINED}
-                        defaultMessage={FM.REPLAYERROR_DESC_ACTION_UNDEFINED}
-                    />
-                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_UNDEFINED} customStyle="cl-icon--transparent" />
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_ACTION_UNDEFINED}
+                            defaultMessage={FM.REPLAYERROR_DESC_ACTION_UNDEFINED}
+                        />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_UNDEFINED} customStyle="cl-icon--transparent" />
+                    </div>
                 </div>
             )
         case CLM.ReplayErrorType.EntityEmpty:
             return (
-                <div className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.REPLAYERROR_DESC_ENTITY_EMPTY}
-                        defaultMessage={FM.REPLAYERROR_DESC_ENTITY_EMPTY}
-                    />
-                    {` "${(replayError as CLM.ReplayErrorEntityEmpty).values.join(", ")}"`}
-                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_EMPTY} customStyle="cl-icon--transparent" />
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_ENTITY_EMPTY}
+                            defaultMessage={FM.REPLAYERROR_DESC_ENTITY_EMPTY}
+                        />
+                        {` "${(replayError as CLM.ReplayErrorEntityEmpty).values.join(", ")}"`}
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_EMPTY} customStyle="cl-icon--transparent" />
+                    </div>
                 </div>
             )
         case CLM.ReplayErrorType.EntityUndefined:
             return (
-                <div className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.REPLAYERROR_DESC_ENTITY_UNDEFINED}
-                        defaultMessage={FM.REPLAYERROR_DESC_ENTITY_UNDEFINED}
-                    />
-                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_UNDEFINED} customStyle="cl-icon--transparent" />
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_ENTITY_UNDEFINED}
+                            defaultMessage={FM.REPLAYERROR_DESC_ENTITY_UNDEFINED}
+                        />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_UNDEFINED} customStyle="cl-icon--transparent" />
+                    </div>
+                </div>
+            )
+        case CLM.ReplayErrorType.EntityUnexpectedMultivalue:
+            return (
+                <div className="cl-editdialog-warning">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE}
+                            defaultMessage={FM.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE}
+                        />
+                        {`: "${(replayError as CLM.EntityUnexpectedMultivalue).entityName}"`}
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE} customStyle="cl-icon--transparent" />
+                    </div>
                 </div>
             )
         case CLM. ReplayErrorType.ActionUnavailable:
             return (
-                <div className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE}
-                        defaultMessage={FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE}
-                    />
-                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_UNAVAILABLE} customStyle="cl-icon--transparent" />
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE}
+                            defaultMessage={FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE}
+                        />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_UNAVAILABLE} customStyle="cl-icon--transparent" />
+                    </div>
                 </div>
             )
         case CLM.ReplayErrorType.ActionAfterWait:
             return (
-                <div className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT}
-                        defaultMessage={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT}
-                    />
-                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_AFTER_WAIT} customStyle="cl-icon--transparent" />
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT}
+                            defaultMessage={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT}
+                        />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_AFTER_WAIT} customStyle="cl-icon--transparent" />
+                    </div>
                 </div>
             )
         case CLM.ReplayErrorType.TwoUserInputs:
             return (
-                <div className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.REPLAYERROR_DESC_TWO_USER_INPUTS}
-                        defaultMessage={FM.REPLAYERROR_DESC_TWO_USER_INPUTS}
-                    />
-                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_TWO_USER_INPUTS} customStyle="cl-icon--transparent" />
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_TWO_USER_INPUTS}
+                            defaultMessage={FM.REPLAYERROR_DESC_TWO_USER_INPUTS}
+                        />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_TWO_USER_INPUTS} customStyle="cl-icon--transparent" />
+                    </div>
                 </div>
             )
         case CLM.ReplayErrorType.InputAfterNonWait:
             return (
-                <div className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT}
-                        defaultMessage={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT}
-                    />
-                    <HelpIcon tipType={TipType.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT} customStyle="cl-icon--transparent" />
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT}
+                            defaultMessage={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT}
+                        />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT} customStyle="cl-icon--transparent" />
+                    </div>
                 </div>
             )
         /* Currently not used, but may when check for API changes
@@ -207,4 +234,3 @@ const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ReplayErrorList))
-

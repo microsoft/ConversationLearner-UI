@@ -376,11 +376,11 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 
   
 .wc-message-error-from-me {
-    border-right: 8px solid #ce2e2e;
+    border-right: 8px solid var(--cl-color-error);
 }
 
 .wc-message-warning-from-me {
-  border-right: 8px solid #DFDF1B;
+  border-right: 8px solid var(--cl-color-warning);
 }
 
 .wc-message-from-me.wc-message-from {
@@ -395,11 +395,11 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 }
 
 .wc-message-color-train {
-  background-color: var(--color-wc-user-train); 
+  background-color: var(--cl-color-user-train); 
 }
 
 .wc-message-color-log {
-  background-color: var(--color-wc-user-log); 
+  background-color: var(--cl-color-user-log); 
 }
 
 .wc-message-fillcolor-bot {
@@ -407,11 +407,11 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 }
 
 .wc-message-fillcolor-train {
-  fill: var(--color-wc-user-train) !important; 
+  fill: var(--cl-color-user-train) !important; 
 }
 
 .wc-message-fillcolor-log {
-  fill: var(--color-wc-user-log) !important; 
+  fill: var(--cl-color-user-log) !important; 
 }
 
 .wc-message-from-me svg.wc-message-callout path.point-left {
@@ -426,11 +426,11 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   margin-left: 8px; }
 
 .wc-message-error-from-bot {
-  border-left: 8px solid #ce2e2e;
+  border-left: 8px solid var(--cl-color-error);
 }
 
 .wc-message-warning-from-bot {
-  border-left: 8px solid #DFDF1B;
+  border-left: 8px solid var(--cl-color-warning);
 }
 
 .wc-message-from-bot .wc-message-content {
@@ -514,7 +514,7 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
     visibility: hidden; }
   .wc-console .wc-textbox {
     bottom: 0;
-    left: 48px;
+    left: 20px;
     right: 49px; }
     .wc-console .wc-textbox input {
       background-color: transparent; }

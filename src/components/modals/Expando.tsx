@@ -18,8 +18,8 @@ class Expando extends React.Component<Props, {}> {
         return (
             <div className={`cl-expando ${this.props.className}`} onClick={this.props.onToggle}>
                 <ActionButton
-                    iconProps={ this.props.isOpen ? { iconName: 'ChevronUpSmall' } : { iconName: 'ChevronDownSmall' }}
-                    checked={ true }
+                    iconProps={this.props.isOpen ? { iconName: 'ChevronUpSmall' } : { iconName: 'ChevronDownSmall' }}
+                    checked={true}
                 >
                     {this.props.text}
                 </ActionButton>

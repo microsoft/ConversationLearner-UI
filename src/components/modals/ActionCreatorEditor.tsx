@@ -25,7 +25,6 @@ import './ActionCreatorEditor.css'
 import HelpIcon from '../HelpIcon'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import { autobind } from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 
@@ -403,7 +402,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     onChangeWaitCheckbox() {
         this.setState(prevState => ({
             isTerminal: !prevState.isTerminal
@@ -575,7 +574,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return model
     }
 
-    @autobind
+    @OF.autobind
     async onClickSaveCreate() {
         let newOrEditedAction = this.convertStateToModel();
 
@@ -606,12 +605,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     onClickCancel() {
         this.props.handleClose()
     }
 
-    @autobind
+    @OF.autobind
     onClickDelete() {
         if (!this.props.action) {
             return
@@ -634,14 +633,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         )
     }
 
-    @autobind
+    @OF.autobind
     onCancelDelete() {
         this.setState({
             isConfirmDeleteModalOpen: false
         })
     }
 
-    @autobind
+    @OF.autobind
     onCancelEdit() {
         this.setState({
             isConfirmEditModalOpen: false,
@@ -649,7 +648,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onConfirmEdit() {
         if (!this.state.newOrEditedAction) {
             console.warn(`You clicked to confirm edit, but there is no action to save`)
@@ -663,7 +662,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onConfirmDelete() {
         if (!this.props.action) {
             console.warn(`You clicked to confirm deletion, but there is no action to delete`)
@@ -676,14 +675,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onClickCreateEntity() {
         this.setState({
             isEntityEditorModalOpen: true
         })
     }
 
-    @autobind
+    @OF.autobind
     onCloseEntityEditor() {
         this.setState({
             isEntityEditorModalOpen: false
@@ -848,7 +847,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             || (this.state.isEditing && !this.state.hasPendingChanges)
     }
 
-    @autobind
+    @OF.autobind
     onClickTrainDialogs() {
         const { history } = this.props
         history.push(`/home/${this.props.app.appId}/trainDialogs`, { app: this.props.app, actionFilter: this.props.action })
@@ -1043,7 +1042,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === ActionTypes.TEXT
                             && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
                                 <div>
-                                    <OF.Label className="ms-Label--tight">Response... <HelpIcon 
+                                    <OF.Label className="ms-Label--tight">Bot's response... <HelpIcon 
                                         tipType={ToolTip.TipType.ACTION_RESPONSE_TEXT} /></OF.Label>
                                     <ActionPayloadEditor.Editor
                                         options={optionsAvailableForPayload}
@@ -1089,7 +1088,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                          this.state.selectedActionTypeOptionKey !== ActionTypes.END_SESSION &&
                             (<div className="cl-action-creator--expected-entities">
                                 <TC.TagPicker
-                                    label="Expected Entity in Response..."
+                                    label="Expected Entity in User reply..."
                                     onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
                                     onRenderItem={this.onRenderExpectedTag}
                                     getTextFromItem={item => item.name}
@@ -1151,7 +1150,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
                                 style={{ marginTop: '1em', display: 'inline-block' }}
-                                disabled={disabled || this.state.selectedActionTypeOptionKey === ActionTypes.END_SESSION}
+                                disabled={this.state.selectedActionTypeOptionKey === ActionTypes.END_SESSION}
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>

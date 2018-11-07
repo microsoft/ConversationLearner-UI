@@ -214,7 +214,7 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    entitiesUpdate(appId: string, entity: CLM.EntityBase): Promise<CLM.EntityBase> {
+    entitiesUpdate(appId: string, entity: CLM.EntityBase): Promise<CLM.ChangeEntityResponse> {
         const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
         return this.send<CLM.ChangeEntityResponse>({
             method: 'put',
@@ -225,7 +225,7 @@ export default class ClClient {
                 const changeEntityResponse = response.data
                 entity.entityId = changeEntityResponse.entityId
                 entity.negativeId = changeEntityResponse.negativeEntityId
-                return entity
+                return changeEntityResponse
             })
     }
 

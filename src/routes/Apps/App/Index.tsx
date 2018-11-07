@@ -12,18 +12,17 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { AppBase, AppDefinition, ActionBase, ActionTypes, ApiAction, CardAction, BotInfo, Validity } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { State } from '../../../types';
-import { IconButton, Icon } from 'office-ui-fabric-react'
+import * as OF from 'office-ui-fabric-react'
 import Entities from './Entities'
 import TrainDialogs from './TrainDialogs'
 import Actions from './Actions'
 import Dashboard from './Dashboard'
 import Settings from './Settings'
 import LogDialogs from './LogDialogs'
-import { FontClassNames } from 'office-ui-fabric-react'
 import { TooltipHost } from 'office-ui-fabric-react/lib/Tooltip';
 import TrainingStatus from '../../../components/TrainingStatusContainer'
 import actions from '../../../actions'
@@ -33,17 +32,17 @@ import './Index.css'
 // this would eliminate the use of page title strings as navigation keys and instead use the url
 
 interface ComponentState {
-    validationErrors: string[]
+    botValidationErrors: string[]
     packageId: string | null
 }
 
 class Index extends React.Component<Props, ComponentState> {
     state: ComponentState = {
-        validationErrors: [],
+        botValidationErrors: [],
         packageId: null
     }
 
-    async loadApp(app: AppBase, packageId: string): Promise<void> {
+    async loadApp(app: CLM.AppBase, packageId: string): Promise<void> {
         this.setState({ packageId })
 
         await this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
@@ -56,7 +55,7 @@ class Index extends React.Component<Props, ComponentState> {
 
     componentWillMount() {
         const { match, location, history } = this.props
-        const app: AppBase | null = location.state && location.state.app
+        const app: CLM.AppBase | null = location.state && location.state.app
         if (!app) {
             // TODO: Is there a way to recover getting appId from URL instead of router state
             const appId = match.params.appId
@@ -74,7 +73,7 @@ class Index extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(newProps: Props) {
-        const app: AppBase | null = newProps.location.state && newProps.location.state.app
+        const app: CLM.AppBase | null = newProps.location.state && newProps.location.state.app
         if (!app) {
             throw new Error(`App/Index#componentWillReceiveProps: app could not be found in location state. This is likely a problem with the code. Please open an issue.`)
         }
@@ -89,22 +88,23 @@ class Index extends React.Component<Props, ComponentState> {
         }
 
         if ((newProps.actions !== this.props.actions || newProps.botInfo !== this.props.botInfo) && newProps.botInfo) {
-            let validationErrors = this.actionValidationErrors(newProps.botInfo, newProps.actions);
-            this.setState({ validationErrors: validationErrors });
+            let botValidationErrors = this.botValidationErrors(newProps.botInfo, newProps.actions);
+            this.setState({ botValidationErrors });
         }
     }
 
-    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
-        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
+    onCreateApp = async (appToCreate: CLM.AppBase, source: CLM.AppDefinition | null = null) => {
+        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<CLM.AppBase>)
         const { history } = this.props
         history.push(`/home/${app.appId}`, { app })
     }
 
-    actionValidationErrors(botInfo: BotInfo, actions: ActionBase[]): string[] {
+    // Returns any incompatibilities between the running Bot and the selected Model
+    botValidationErrors(botInfo: CLM.BotInfo, actionList: CLM.ActionBase[]): string[] {
         // Check for missing APIs
-        const actionsMissingCallbacks = actions
-            .filter(a => a.actionType === ActionTypes.API_LOCAL)
-            .map(a => new ApiAction(a))
+        const actionsMissingCallbacks = actionList
+            .filter(a => a.actionType === CLM.ActionTypes.API_LOCAL)
+            .map(a => new CLM.ApiAction(a))
             .filter(a => !botInfo.callbacks || !botInfo.callbacks.some(cb => cb.name === a.name))
 
         // Make unique list of missing APIs
@@ -120,9 +120,9 @@ class Index extends React.Component<Props, ComponentState> {
             .map(t => t.validationError!)
 
         // Check for missing templates
-        const actionsMissingTemplates = actions
-            .filter(a => a.actionType === ActionTypes.CARD)
-            .map(a => new CardAction(a))
+        const actionsMissingTemplates = actionList
+            .filter(a => a.actionType === CLM.ActionTypes.CARD)
+            .map(a => new CLM.CardAction(a))
             .filter(a => !botInfo.templates || !botInfo.templates.some(cb => cb.name === a.templateName))
 
         // Make unique list of missing templates
@@ -139,9 +139,19 @@ class Index extends React.Component<Props, ComponentState> {
         ]
     }
 
-    hasInvalidTrainDialogs(): boolean {
-        return this.props.trainDialogs.filter(td => td.validity !== undefined && td.validity !== Validity.VALID).length > 0;
+    getTrainDialogValidity(): CLM.Validity {
+        let validity = CLM.Validity.VALID
+        for (let trainDialog of this.props.trainDialogs) {
+            if (trainDialog.validity === CLM.Validity.INVALID) {
+                return CLM.Validity.INVALID
+            }
+            else if (trainDialog.validity === CLM.Validity.UNKNOWN) {
+                validity = CLM.Validity.UNKNOWN
+            }
+        }
+        return validity
     }
+
     render() {
         const { match, location, intl } = this.props
 
@@ -149,7 +159,7 @@ class Index extends React.Component<Props, ComponentState> {
             return null
         }
 
-        const app: AppBase = location.state.app
+        const app: CLM.AppBase = location.state.app
         // TODO: There is an assumption that by the time render is called, componentWillMount has called loadApp and set the packageId
         const editPackageId = this.state.packageId!
 
@@ -164,8 +174,8 @@ class Index extends React.Component<Props, ComponentState> {
             tag = packageReference.packageVersion
         }
 
-        const invalidTrainDialogs = this.hasInvalidTrainDialogs();
-        const invalidBot = this.state.validationErrors && this.state.validationErrors.length > 0;
+        const trainDialogValidity = this.getTrainDialogValidity();
+        const invalidBot = this.state.botValidationErrors && this.state.botValidationErrors.length > 0;
        
         return (
             <div className="cl-app-page">
@@ -173,12 +183,12 @@ class Index extends React.Component<Props, ComponentState> {
                     <div className="cl-app-title">
                         <div
                             data-testid="app-index-model-name" 
-                            className={FontClassNames.xxLarge}
+                            className={OF.FontClassNames.xxLarge}
                         >
                         {app.appName}
                         </div>
                     </div>
-                    <div className={`cl-app-tag-status ${FontClassNames.mediumPlus}`}>
+                    <div className={`cl-app-tag-status ${OF.FontClassNames.mediumPlus}`}>
                         Tag: {tag}
                         {editPackageId === app.livePackageId && 
                             <span className="cl-font--warning">LIVE</span>
@@ -187,10 +197,10 @@ class Index extends React.Component<Props, ComponentState> {
                     <TrainingStatus
                         app={app}
                     />
-                    <div className={`cl-nav ${FontClassNames.mediumPlus}`}>
+                    <div className={`cl-nav ${OF.FontClassNames.mediumPlus}`}>
                         <div className="cl-nav_section">
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-home" exact to={{ pathname: `${match.url}`, state: { app } }}>
-                                <Icon iconName="Home" />
+                                <OF.Icon iconName="Home" />
                                     <span className={invalidBot ? 'cl-font--highlight' : ''}>Home
                                         {invalidBot &&
                                             <TooltipHost 
@@ -200,7 +210,7 @@ class Index extends React.Component<Props, ComponentState> {
                                                 })} 
                                                 calloutProps={{ gapSpace: 0 }}
                                             >
-                                                <IconButton
+                                                <OF.IconButton
                                                     className="ms-Button--transparent cl-icon--short"
                                                     iconProps={{ iconName: 'IncidentTriangle' }}
                                                     title="Error Alert"
@@ -209,37 +219,40 @@ class Index extends React.Component<Props, ComponentState> {
                                         }</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-entities" to={{ pathname: `${match.url}/entities`, state: { app } }}>
-                                <Icon iconName="List" /><span>Entities</span><span className="count">{this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).filter(e => !e.doNotMemorize).length}</span>
+                                <OF.Icon iconName="List" /><span>Entities</span><span className="count">{this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).filter(e => !e.doNotMemorize).length}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-actions" to={{ pathname: `${match.url}/actions`, state: { app } }}>
-                                <Icon iconName="List" /><span>Actions</span><span className="count">{this.props.actions.length}</span>
+                                <OF.Icon iconName="List" /><span>Actions</span><span className="count">{this.props.actions.length}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-train-dialogs" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
-                                <Icon iconName="List" />
-                                    <span className={invalidTrainDialogs ? 'cl-font--highlight' : ''}>Train Dialogs
-                                        {invalidTrainDialogs && 
+                                <OF.Icon iconName="List" />
+                                    <span className={trainDialogValidity !== CLM.Validity.VALID ? 'cl-font--highlight' : ''}>Train Dialogs
+                                        {trainDialogValidity !== CLM.Validity.VALID && 
                                             <TooltipHost 
                                                 content={intl.formatMessage({
-                                                    id: FM.TOOLTIP_TRAINDIALOG_INVALID,
+                                                    id: trainDialogValidity === CLM.Validity.INVALID ? FM.TOOLTIP_TRAINDIALOG_INVALID : FM.TOOLTIP_TRAINDIALOG_WARNING,
                                                     defaultMessage: 'Contains Invalid Train Dialogs'
                                                 })} 
                                                 calloutProps={{ gapSpace: 0 }}
                                             >
-                                                <Icon className="cl-icon" iconName="IncidentTriangle" />
+                                                <OF.Icon 
+                                                    className={`cl-icon ${trainDialogValidity === CLM.Validity.INVALID ? 'cl-icon-red' : 'cl-icon-yellow'}`} 
+                                                    iconName="IncidentTriangle" 
+                                                />
                                             </TooltipHost>
                                         }</span>
                                     <span className="count">{this.props.trainDialogs.length}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-log-dialogs" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
-                                <Icon iconName="List" /><span>Log Dialogs</span>
+                                <OF.Icon iconName="List" /><span>Log Dialogs</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-settings" to={{ pathname: `${match.url}/settings`, state: { app } }}>
-                                <Icon iconName="Settings" /><span>Settings</span>
+                                <OF.Icon iconName="Settings" /><span>Settings</span>
                             </NavLink>
                         </div>
                         <div className="cl-nav_section">
                             <NavLink className="cl-nav-link" exact={true} to="/home">
-                                <Icon iconName="Back" /><span>My Models</span>
+                                <OF.Icon iconName="Back" /><span>My Models</span>
                             </NavLink>
                         </div>
                     </div>
@@ -268,7 +281,7 @@ class Index extends React.Component<Props, ComponentState> {
                     <Route
                         exact={true}
                         path={match.url}
-                        render={props => <Dashboard {...props} app={app} validationErrors={this.state.validationErrors} />}
+                        render={props => <Dashboard {...props} app={app} validationErrors={this.state.botValidationErrors} />}
                     />
                 </Switch>
             </div>

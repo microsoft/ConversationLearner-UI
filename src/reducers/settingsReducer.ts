@@ -10,7 +10,7 @@ const initialState: SettingsState = {
     botPort: defaultBotPort
 }
 
-const reducer: Reducer<SettingsState> = (state = initialState, action: ActionObject): SettingsState => {
+const settingsReducer: Reducer<SettingsState> = (state = initialState, action: ActionObject): SettingsState => {
     switch (action.type) {
         case AT.SETTINGS_RESET:
             return { ...initialState }
@@ -24,4 +24,4 @@ const reducer: Reducer<SettingsState> = (state = initialState, action: ActionObj
     }
 }
 
-export default reducer
+export default settingsReducer

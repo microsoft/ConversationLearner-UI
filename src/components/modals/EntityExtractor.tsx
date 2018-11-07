@@ -38,7 +38,7 @@ interface ComponentState {
     savedRoundIndex: number
     textVariationValue: string
     newTextVariations: CLM.TextVariation[]
-};
+}
 
 // TODO: Need to re-define TextVariation / ExtractResponse class defs so we don't need
 // to do all the messy conversion back and forth
@@ -98,8 +98,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             this.props.clearExtractResponses();  
         }
     }
-
-    
+  
     @OF.autobind
     onEntityConflictModalAbandon() {
         this.setState({
@@ -150,7 +149,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             warningOpen: true
         })
     }
-    /** Returns true is predicted entities match */
+    // Returns true if predicted entities match
     isValid(primaryResponse: CLM.ExtractResponse, extractResponse: CLM.ExtractResponse): boolean {
         let missing = primaryResponse.predictedEntities.filter(item =>
             !extractResponse.predictedEntities.find(er => item.entityId === er.entityId));
@@ -285,10 +284,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 // Should never happen, but protect just in case
                 return
             }
-            let newVariation = CLM.ModelUtils.ToTextVariation(extractResponse);
+            let newVariation = CLM.ModelUtils.ToTextVariation(extractResponse)
             let newVariations = [...this.state.newTextVariations]
             newVariations[index] = newVariation
-            await setStateAsync(this,{
+            await setStateAsync(this, {
                 newTextVariations: newVariations,
                 isPendingSubmit: true
             })
@@ -299,7 +298,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     }
     onClickSaveCheckYes() {
         // Submit saved extractions and clear saved responses
-        this.submitExtractions(this.state.savedExtractResponses, this.state.savedRoundIndex);
+        this.submitExtractions(this.state.savedExtractResponses, this.state.savedRoundIndex)
         this.setState({
             savedExtractResponses: [],
             savedRoundIndex: 0

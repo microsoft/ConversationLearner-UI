@@ -15,7 +15,6 @@ import { FM } from '../react-intl-messages'
 import * as Util from '../util'
 import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadRenderers from './actionPayloadRenderers'
-import { Icon } from 'office-ui-fabric-react'
 import './ActionDetailsList.css'
 import * as moment from 'moment'
 
@@ -116,7 +115,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     render() {
         let sortedActions = this.sortActions();
 
-        let template: Template | undefined = undefined
+        let template: Template | undefined
         let renderedActionArguments: RenderedActionArgument[] = []
         if (this.state.cardViewerAction) {
             const cardAction = new CardAction(this.state.cardViewerAction)
@@ -263,7 +262,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     {payloadRenderer}
                     {isValidationError &&
                         <div className={OF.FontClassNames.mediumPlus}>
-                            <Icon className="cl-icon" iconName="IncidentTriangle" />
+                            <OF.Icon className="cl-icon cl-icon-red" iconName="IncidentTriangle" />
                         </div>}
                 </div>
             }

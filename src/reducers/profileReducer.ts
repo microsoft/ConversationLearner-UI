@@ -10,7 +10,7 @@ const initialState: ProfileState = {
     current: null
 }
 
-const reducer: Reducer<ProfileState> = (state = initialState, action: ActionObject): ProfileState => {
+const profileReducer: Reducer<ProfileState> = (state = initialState, action: ActionObject): ProfileState => {
     switch (action.type) {
         case AT.FETCH_PROFILE_FULFILLED:
             return { current: action.profile }
@@ -19,4 +19,4 @@ const reducer: Reducer<ProfileState> = (state = initialState, action: ActionObje
     }
 }
 
-export default reducer
+export default profileReducer

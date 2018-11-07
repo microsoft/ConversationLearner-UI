@@ -5,7 +5,7 @@
 import * as React from 'react'
 import './MentionNode.css'
 
-/* Simulate entity component props which have children */
+// Simulate entity component props which have children 
 interface EntityComponentProps {
     node: any
     attributes: any

@@ -108,4 +108,3 @@ export const clearErrorDisplay = (): ActionObject => {
         type: AT.CLEAR_ERROR_DISPLAY
     }
 }
-

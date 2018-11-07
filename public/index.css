@@ -100,6 +100,10 @@ html {
   color: #ffffff !important;
 }
 
+.cl-icon--transparentdark {
+  background-color:transparent !important;
+}
+
 .cl-icon--short {
   height: 15px !important;
 }
@@ -140,10 +144,18 @@ html {
   vertical-align: middle;
   color: var(--color-red) !important;
 }
+
 .cl-icon[data-icon-name="IncidentTriangle"] {
   padding-left: 5px;
   padding-right: 5px;
-  color: var(--color-red) !important;
+}
+
+.cl-icon-yellow {
+  color: var(--cl-color-warning) !important;
+}
+
+.cl-icon-red {
+  color: var(--cl-color-error) !important;
 }
 
 .ms-Button-icon[data-icon-name="Info"] {
@@ -305,11 +317,11 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 
 .cl-wc-message--train {
-  background-color: var(--color-wc-user-train);
+  background-color: var(--cl-color-user-train);
 }
 
 .cl-wc-message--log {
-  background-color: var(--color-wc-user-log);
+  background-color: var(--cl-color-user-log);
 }
 
 .cl-wc-message--bot {
@@ -576,7 +588,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   position: relative;
 }
 .cl-chatmodal_controls {
-  border-left: 1px solid var(--color-botchat-grey);
+  border-left: 1px solid var(--cl-color-botchat-grey);
   display: grid;
   grid-template-rows: 1fr min-content;
   /* This could causing clipping of the entity picker menu. Tried to mitigate by making menu stay within boundary of parent but it's not as ideal */
@@ -593,6 +605,11 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 .cl-sessionmodal-title {
   padding: 1rem;
+}
+
+.cl-rightjustify {
+  position: absolute !important;
+  right: 0px;
 }
 
 /** Office UI Fabric Theme Overrides */
@@ -770,7 +787,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 .cl-dialog-admin-title {
   font-weight: bold;
-  padding: 0.5rem 0;
   border-bottom: 1px solid rgba(0,0,0,0.25);
 }
 
@@ -821,10 +837,30 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .cl-entity--mismatch {
   background: #ffe0e0;
 }
-.cl-ux-flex {
+
+.cl-ux-flexpanel {
+}
+
+.cl-ux-flexpanel--primary {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-wrap: nowrap;
   flex-wrap: nowrap;
+  height:3em;
 }
+
+.cl-ux-flexpanel--left {
+  text-align:left;
+}
+
+.cl-ux-flexpanel--right {
+  float:right;
+  text-align:right;
+}
+
+.cl-ux-gutter {
+  position:fixed;
+  bottom:1em;
+}
+

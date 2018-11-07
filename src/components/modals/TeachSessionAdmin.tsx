@@ -14,23 +14,12 @@ import ActionScorer from './ActionScorer';
 import EntityExtractor from './EntityExtractor';
 import MemoryTable from './MemoryTable';
 import { FM } from '../../react-intl-messages'
-import { filterDummyEntities } from '../../util'
+import * as DialogUtils from '../../dialogUtils'
 import { TeachSessionState } from '../../types/StateTypes'
 import TrainingStatusContainer from '../TrainingStatusContainer'
 import * as OF from 'office-ui-fabric-react'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import './TeachSessionAdmin.css'
-
-export interface RenderData {
-    dialogMode: CLM.DialogMode
-    scoreInput?: CLM.ScoreInput 
-    scoreResponse?: CLM.ScoreResponse 
-    roundIndex: number | null
-    memories: CLM.Memory[]
-    prevMemories: CLM.Memory[]
-    extractResponses: CLM.ExtractResponse[]
-    textVariations: CLM.TextVariation[]
-}
 
 interface RoundLookup {
     textVariations?: CLM.TextVariation[] | null
@@ -52,7 +41,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
     async hasConflicts(textVariations: CLM.TextVariation[]): Promise<boolean> {
 
-         // Check for conflics on text variation that have changed
+        // Generate list of textVariations that have changed
          const renderData = this.getRenderData()
          const originalTextVariations = renderData.textVariations
          let changedTextVariations: CLM.TextVariation[] = []
@@ -63,7 +52,20 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
              }
          })
   
-         // Check the changes ones, return if conflict found
+        // Check the changed ones for conflicts
+
+        // First check for internal conflics
+        if (this.props.sourceTrainDialog) {
+            for (let changedTextVariation of changedTextVariations) {
+                let extractConflict = DialogUtils.internalConflict(changedTextVariation, this.props.sourceTrainDialog, renderData.roundIndex)
+                if (extractConflict) {
+                    this.props.setTextVariationConflict(extractConflict)
+                    return true
+                }
+            }
+        }
+
+         // Next against other TrainDialogs
          for (let changedTextVariation of changedTextVariations) {
              let conflict = await this.props.fetchTextVariationConflictThunkAsync(
                  this.props.app.appId, 
@@ -213,7 +215,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         return roundIndex
     }
 
-    getRenderData(): RenderData {
+    getRenderData(): DialogUtils.DialogRenderData {
 
         // If user click on and activity
         if (this.props.selectedActivityIndex != null) {
@@ -232,8 +234,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                             dialogMode: CLM.DialogMode.Scorer,
                             scoreInput: turnData.uiScoreResponse.scoreInput,
                             scoreResponse: turnData.uiScoreResponse.scoreResponse,
-                            memories: filterDummyEntities(turnData.uiScoreResponse.memories!),
-                            prevMemories: filterDummyEntities(prevMemories),
+                            memories: DialogUtils.filterDummyEntities(turnData.uiScoreResponse.memories!),
+                            prevMemories: DialogUtils.filterDummyEntities(prevMemories),
                             extractResponses: this.props.teachSession.extractResponses,
                             textVariations: [],
                             roundIndex: this.roundIndex(lookupIndex)
@@ -244,8 +246,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         dialogMode: CLM.DialogMode.Extractor,
                         extractResponses: this.props.teachSession.extractResponses,
                         textVariations: turnData.textVariations,  
-                        memories: turnData.memories ? filterDummyEntities(turnData.memories) : [],
-                        prevMemories: filterDummyEntities(prevMemories),
+                        memories: turnData.memories ? DialogUtils.filterDummyEntities(turnData.memories) : [],
+                        prevMemories: DialogUtils.filterDummyEntities(prevMemories),
                         roundIndex: this.roundIndex(lookupIndex)
                     }
                 }
@@ -265,8 +267,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 dialogMode: this.props.teachSession.dialogMode,
                 scoreInput: this.props.teachSession.scoreInput!,
                 scoreResponse: this.props.teachSession.scoreResponse!,
-                memories: filterDummyEntities(memories),
-                prevMemories: filterDummyEntities(this.props.teachSession.prevMemories),
+                memories: DialogUtils.filterDummyEntities(memories),
+                prevMemories: DialogUtils.filterDummyEntities(this.props.teachSession.prevMemories),
                 extractResponses: this.props.teachSession.extractResponses,
                 textVariations: [],
                 roundIndex: null
@@ -287,19 +289,21 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         
         return (
             <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
-                <div className="cl-ux-flex">
-                    <div style={{width:'70%'}}>
-                        <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
-                        <OF.Icon 
-                            iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
-                        />
-                        {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                <div className="cl-ux-flexpanel">
+                    <div className="cl-ux-flexpanel--primary">
+                        <div className="cl-ux-flexpanel--left" style={{width: '70%'}}>
+                            <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
+                            <OF.Icon 
+                                iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
+                            />
+                            {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                            </div>
                         </div>
-                    </div>
-                    <div style={{width:'30%'}}>
-                        <TrainingStatusContainer
-                            app={this.props.app}
-                        />
+                        <div className="cl-ux-flexpanel--right" style={{width: '30%'}}>
+                            <TrainingStatusContainer
+                                app={this.props.app}
+                            />
+                        </div>
                     </div>
                 </div>
                 {(renderData.dialogMode === CLM.DialogMode.Extractor || renderData.dialogMode === CLM.DialogMode.Wait) && 
@@ -378,7 +382,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                     roundIndex={renderData.roundIndex}
                                     autoTeach={this.props.teachSession.autoTeach}
                                     dialogMode={renderData.dialogMode}
-                                    extractResponses={renderData.extractResponses}
+                                    extractResponses={renderData.extractResponses || []}
                                     extractConflict={this.props.teachSession.extractConflict}
                                     originalTextVariations={renderData.textVariations}
                                     onSubmitExtractions={this.onEntityExtractorSubmit}
@@ -466,6 +470,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchTextVariationConflictThunkAsync: actions.train.fetchTextVariationConflictThunkAsync,
         getScoresThunkAsync: actions.teach.getScoresThunkAsync,
         runScorerThunkAsync: actions.teach.runScorerThunkAsync,
+        setTextVariationConflict: actions.train.setTextVariationConflict,
         postScorerFeedbackThunkAsync: actions.teach.postScorerFeedbackThunkAsync,
         clearExtractResponses : actions.teach.clearExtractResponses
     }, dispatch)
@@ -488,7 +493,9 @@ export interface ReceivedProps {
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string
-    // Train Dialog that this edit originally came from
+    // When editing and existing log or train dialog
+    sourceTrainDialog: CLM.TrainDialog | null
+    // Train Dialog that this edit originally came from (not same as sourceTrainDialog)
     originalTrainDialogId: string | null,
     editType: EditDialogType,
     initialEntities: CLM.FilledEntityMap | null,
@@ -496,7 +503,7 @@ export interface ReceivedProps {
     activityIndex: number
     // If user clicked on an Activity
     selectedActivityIndex: number | null
-    historyRenderData: (() => RenderData) | null
+    historyRenderData: (() => DialogUtils.DialogRenderData) | null
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

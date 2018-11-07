@@ -243,7 +243,7 @@ export const fetchTextVariationConflictThunkAsync = (appId: string, trainDialogI
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TRAINDIALOGREPLAY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC))
             throw error
         }
     }
@@ -261,6 +261,13 @@ const fetchTextVariationConflictAsync = (appId: string, trainDialogId: string, t
 const fetchTextVariationConflictFulfilled = (extractResponse: ExtractResponse | null): ActionObject => {
     return {
         type: AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED,
+        extractResponse
+    }
+}
+
+export const setTextVariationConflict = (extractResponse: ExtractResponse): ActionObject => {
+    return {
+        type: AT.SET_TEXTVARIATION_CONFLICT,
         extractResponse
     }
 }

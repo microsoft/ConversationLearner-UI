@@ -8,7 +8,7 @@ import { Reducer } from 'redux'
 
 const initialState: SourceState = {}
 
-const reducer: Reducer<SourceState> = (state = initialState, action: ActionObject): SourceState => {
+const sourceReducer: Reducer<SourceState> = (state = initialState, action: ActionObject): SourceState => {
     switch (action.type) {
         case AT.SOURCE_SET_UPDATED_APP_DEFINITION:
             return {
@@ -28,4 +28,4 @@ const reducer: Reducer<SourceState> = (state = initialState, action: ActionObjec
     }
 }
 
-export default reducer
+export default sourceReducer
