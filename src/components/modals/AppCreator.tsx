@@ -122,8 +122,10 @@ class AppCreator extends React.Component<Props, ComponentState> {
     }
 
     onClickCreate = () => {
-        const appInput = this.getAppInput()
-        this.props.onSubmit(appInput)
+        if (!this.onGetNameErrorMessage(this.state.appNameVal).length) {
+            const appInput = this.getAppInput()
+            this.props.onSubmit(appInput)
+        }
     }
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
