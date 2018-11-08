@@ -12,12 +12,12 @@ import * as TC from '../../tipComponents'
 import { State, PreBuiltEntities } from '../../../types'
 import { CLDropdownOption } from '../CLDropDownOption'
 import * as ToolTip from '../../ToolTips/ToolTips'
-import { AppBase, EntityBase, EntityType, ActionBase } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
 import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import Component from './Component'
+import Component from './EntityCreatorComponent'
 
 const messages = defineMessages({
     fieldErrorRequired: {
@@ -67,7 +67,7 @@ interface ComponentState {
     isConfirmDeleteModalOpen: boolean,
     isDeleteErrorModalOpen: boolean,
     showValidationWarning: boolean,
-    newOrEditedEntity: EntityBase | null
+    newOrEditedEntity: CLM.EntityBase | null
 }
 
 class Container extends React.Component<Props, ComponentState> {
@@ -149,7 +149,7 @@ class Container extends React.Component<Props, ComponentState> {
                         id: FM.ENTITYCREATOREDITOR_TITLE_CREATE,
                         defaultMessage: 'Create an Entity'
                     }),
-                    entityTypeVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== EntityType.LUIS ? nextProps.entityTypeFilter : this.NEW_ENTITY
+                    entityTypeVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS ? nextProps.entityTypeFilter : this.NEW_ENTITY
                 });
             } else {
                 this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
@@ -157,15 +157,15 @@ class Container extends React.Component<Props, ComponentState> {
                 let isProgrammatic = false
                 let isPrebuilt = false
                 
-                if (entityType !== EntityType.LUIS 
-                    && entityType !== EntityType.LOCAL 
+                if (entityType !== CLM.EntityType.LUIS 
+                    && entityType !== CLM.EntityType.LOCAL 
                     && nextProps.entity.entityName === Container.GetPrebuiltEntityName(entityType)) {
                     isPrebuilt = true
                 }
 
-                if (entityType === EntityType.LUIS) {
+                if (entityType === CLM.EntityType.LUIS) {
                     entityType = this.NEW_ENTITY;
-                } else if (entityType === EntityType.LOCAL) {
+                } else if (entityType === CLM.EntityType.LOCAL) {
                     entityType = this.PROGRAMMATIC_ENTITY
                     isProgrammatic = true
                 }
@@ -197,7 +197,7 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         const isNameChanged = this.state.entityNameVal !== entity.entityName
-        const isProgrammaticChanged = this.state.isProgrammaticVal !== (entity.entityType === EntityType.LOCAL)
+        const isProgrammaticChanged = this.state.isProgrammaticVal !== (entity.entityType === CLM.EntityType.LOCAL)
         const isMultiValueChanged = this.state.isMultivalueVal !== entity.isMultivalue
         const isNegatableChanged = this.state.isNegatableVal !== entity.isNegatible
         const hasPendingChanges = isNameChanged || isProgrammaticChanged || isMultiValueChanged || isNegatableChanged
@@ -209,7 +209,7 @@ class Container extends React.Component<Props, ComponentState> {
         }
     }
 
-    convertStateToEntity(state: ComponentState): EntityBase {
+    convertStateToEntity(state: ComponentState): CLM.EntityBase {
         let entityName = this.state.entityNameVal
         let entityType = this.state.entityTypeVal
         if (this.state.isPrebuilt) {
@@ -217,9 +217,9 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         if (this.state.isProgrammaticVal || this.state.entityTypeVal === this.PROGRAMMATIC_ENTITY) {
-            entityType = EntityType.LOCAL
+            entityType = CLM.EntityType.LOCAL
         } else if (this.state.entityTypeVal === this.NEW_ENTITY) {
-            entityType = EntityType.LUIS
+            entityType = CLM.EntityType.LUIS
         }
         
         const newOrEditedEntity = {
@@ -236,7 +236,7 @@ class Container extends React.Component<Props, ComponentState> {
             packageCreationId: null,
             packageDeletionId: null,
             doNotMemorize: this.state.isPrebuilt ? !this.state.isAlwaysTag : null
-        } as EntityBase
+        } as CLM.EntityBase
 
         // Set entity id if we're editing existing id.
         if (this.state.isEditing && this.props.entity) {
@@ -264,20 +264,20 @@ class Container extends React.Component<Props, ComponentState> {
             return
         }
         
+        const isMultiValueChanged = this.props.entity ? newOrEditedEntity.isMultivalue !== this.props.entity.isMultivalue : false
+        const isNegatableChanged =  this.props.entity ? newOrEditedEntity.isNegatible !== this.props.entity.isNegatible : false
         const invalidTrainingDialogIds = await (this.props.fetchEntityEditValidationThunkAsync(appId, this.props.editingPackageId, newOrEditedEntity) as any as Promise<string[]>)
-        if (invalidTrainingDialogIds) {
-            if (invalidTrainingDialogIds.length > 0) {
-                this.setState(
-                {
-                    isConfirmEditModalOpen: true,
-                    showValidationWarning: true,
-                    newOrEditedEntity: newOrEditedEntity
-                })
-            } else {
-                // We know props.entity is valid because we're not editing
-                this.props.editEntityThunkAsync(appId, newOrEditedEntity, this.props.entity!)
-                this.props.handleClose()
-            }
+        if (isMultiValueChanged || isNegatableChanged || (invalidTrainingDialogIds && invalidTrainingDialogIds.length > 0)) {
+            this.setState(
+            {
+                isConfirmEditModalOpen: true,
+                showValidationWarning: true,
+                newOrEditedEntity: newOrEditedEntity
+            })
+        } else {
+            // We know props.entity is valid because we're not editing
+            this.props.editEntityThunkAsync(appId, newOrEditedEntity, this.props.entity!)
+            this.props.handleClose()
         }
     }
 
@@ -342,8 +342,8 @@ class Container extends React.Component<Props, ComponentState> {
         if (!this.state.isEditing) {
             let foundEntity = this.props.entities.find(e => e.entityName === this.state.entityNameVal);
             if (foundEntity) {
-                if(foundEntity.entityType !== EntityType.LOCAL 
-                    && foundEntity.entityType !== EntityType.LUIS 
+                if(foundEntity.entityType !== CLM.EntityType.LOCAL 
+                    && foundEntity.entityType !== CLM.EntityType.LUIS 
                     && foundEntity.entityName === Container.GetPrebuiltEntityName(foundEntity.entityType)
                     && typeof foundEntity.doNotMemorize !== 'undefined' 
                     && foundEntity.doNotMemorize) {             
@@ -362,14 +362,14 @@ class Container extends React.Component<Props, ComponentState> {
         }
     }
 
-    getDisqualifiedActions(): ActionBase[] {
+    getDisqualifiedActions(): CLM.ActionBase[] {
         const { actions, entity } = this.props
         return !entity
             ? []
             : actions.filter(a => a.negativeEntities.some(id => id === entity.entityId))
     }
 
-    getRequiredActions(): ActionBase[] {
+    getRequiredActions(): CLM.ActionBase[] {
         const { actions, entity } = this.props
         return !entity
             ? []
@@ -470,18 +470,19 @@ class Container extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onConfirmEdit() {
-        const entity = this.state.newOrEditedEntity
-        if (!entity) {
+        if (!this.state.newOrEditedEntity) {
             console.warn(`You confirmed the edit, but the newOrEditedEntity state was not available. This should not be possible. Contact Support`)
             return
         }
 
-        this.props.editEntityThunkAsync(this.props.app.appId, entity, this.props.entity!)
-
+        const entity = {...this.state.newOrEditedEntity}
         this.setState({
             isConfirmEditModalOpen: false,
             newOrEditedEntity: null
         })
+
+        this.props.editEntityThunkAsync(this.props.app.appId, entity, this.props.entity!)
+        this.props.handleClose()
     }
 
     @OF.autobind
@@ -626,7 +627,10 @@ class Container extends React.Component<Props, ComponentState> {
                 || this.state.entityTypeVal === this.NEW_ENTITY 
                 || this.state.isEditing 
                 // disable always extract check box if built-in entity with doNotMemorize == false exist
-                || typeof this.props.entities.find(e => e.entityType !== EntityType.LOCAL && e.entityType !== EntityType.LUIS && !e.doNotMemorize && e.entityName === Container.GetPrebuiltEntityName(this.state.entityTypeVal)) !== 'undefined'}
+                || typeof this.props.entities.find(e => 
+                    e.entityType !== CLM.EntityType.LOCAL 
+                    && e.entityType !== CLM.EntityType.LUIS 
+                    && !e.doNotMemorize && e.entityName === Container.GetPrebuiltEntityName(this.state.entityTypeVal)) !== 'undefined'}
             onAlwaysTagChange={this.onChangeAlwaysTag}
         />
     }
@@ -649,13 +653,13 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
-    app: AppBase,
+    app: CLM.AppBase,
     editingPackageId: string,
     open: boolean,
-    entity: EntityBase | null,
-    entityTypeFilter: EntityType | null
+    entity: CLM.EntityBase | null,
+    entityTypeFilter: CLM.EntityType | null
     handleClose: () => void,
-    handleDelete: (entity: EntityBase) => void
+    handleDelete: (entity: CLM.EntityBase) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

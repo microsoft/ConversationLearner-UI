@@ -856,7 +856,7 @@ export default {
         [FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this Entity?',
         [FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Entity is used by one or more Actions or Training Dialogs.  If you proceed it will also be removed from these Actions and Training Dialogs.',
         [FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure you want to edit this Entity?',
-        [FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
+        [FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit may invalidate one or more Training Dialogs.  If you proceed they may be removed from training until fixed.',
         [FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE]: 'Unable to delete this Entity',
         [FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING]: 'It is either referenced within the payload or used as suggested entity by one or more Actions',
 
