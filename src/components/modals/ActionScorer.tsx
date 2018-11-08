@@ -24,7 +24,6 @@ import * as Util from '../../util'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 import ConfirmCancelModal from './ConfirmCancelModal'
-import './ActionScorer.css'
 
 const ACTION_BUTTON = 'action_button'
 const MISSING_ACTION = 'missing_action'
@@ -68,17 +67,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                     return (
                         <PrimaryButton
                             data-testid="action-scorer-button-no-click"
-                            styles={{
-                                rootDisabled: {
-                                  backgroundColor: "green",
-                                  color: "white"
-                                },
-                                root: {
-                                  backgroundColor: "green",
-                                  color: "white"
-                                }
-                              }}
-                            // disabled={true}
+                            disabled={!isAvailable}
                             ariaDescription={buttonText}
                             text={buttonText}
                             onClick={component.showPopup}
