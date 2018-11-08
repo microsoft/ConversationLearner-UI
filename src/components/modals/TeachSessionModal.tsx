@@ -410,6 +410,12 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    onCloseBotAPIError(): void { 
+        // Delete the most recent turn with the error
+        this.props.onEditTeach(this.state.nextActivityIndex - 1, null, this.props.onDeleteTurn) 
+    }
+
+    @autobind
     onSubmitAddUserInput(userInput: string) {
         this.setState({
             isUserInputModalOpen: false
@@ -659,6 +665,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         // Put mask of webchat if waiting for extraction labelling
         let chatDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor ? <div className="cl-overlay"/> : null;
+        let saveDisable = !this.state.hasTerminalAction 
+                        || this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
+                        || this.props.teachSession.botAPIError !== null
         return (
             <div>
                 <Modal
@@ -741,7 +750,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             <div className="cl-modal-buttons_primary">
                                 <OF.PrimaryButton
                                     data-testid="teach-session-footer-button-save"
-                                    disabled={!this.state.hasTerminalAction || this.props.teachSession.dialogMode === CLM.DialogMode.Extractor}
+                                    disabled={saveDisable}
                                     onClick={this.onClickSave}
                                     ariaDescription={this.renderSaveText(intl)}
                                     text={this.renderSaveText(intl)}
@@ -765,6 +774,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         onConfirm={this.onClickConfirmDelete}
                         title={this.renderConfirmText(intl)}
                     />
+                    {this.props.teachSession.botAPIError !== null &&
+                        <ConfirmCancelModal
+                            open={true}
+                            onOk={this.onCloseBotAPIError}
+                            title={this.props.teachSession.botAPIError.APIError}
+                        />
+                    }
                     <UserInputModal
                         titleFM={FM.USERINPUT_ADD_TITLE}
                         open={this.state.isUserInputModalOpen}
