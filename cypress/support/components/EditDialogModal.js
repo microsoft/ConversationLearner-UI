@@ -14,6 +14,22 @@ export function AlternativeInputText()                { cy.Get('[data-testid="en
 export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 
+// Selects from ALL chat messages, from both Bot and User
+// This will make visible & enable more UI elements to interact with
+export function SelectChatTurn(message, index = 0)
+{
+  cy.Get('[data-testid="web-chat-utterances"]').within(elements => {
+    cy.get('div.format-markdown > p').ExactMatches(message).then(elements => {
+    if (elements.length <= index) throw `Could not find '${message}' #${index} in chat utterances`
+    cy.wrap(elements[index]).Click()
+  })})
+}
+
+// Use these to get either Bot or User chat messages
+// div.wc-message.wc-message-from-me.wc-message-color-train
+// div.wc-message.wc-message-from-bot.wc-message-color-bot
+
+
 export function VerifyDetectedEntity(entityName, entityValue)
 {
   cy.Get('[data-testid="custom-entity-name-button"]').contains(entityName)

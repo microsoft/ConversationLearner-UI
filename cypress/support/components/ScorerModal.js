@@ -3,6 +3,8 @@
  * Licensed under the MIT License.
  */
 
+const helpers = require('../../support/Helpers')
+
 // data-testid="teach-session-admin-train-status" (Running, Completed, Failed)
 export function ClickRefreshScoreButton()       { cy.Get('[data-testid="teach-session-admin-refresh-score-button"]').Click() }
 export function SelectAnAction()                { cy.Get('[data-testid="action-scorer-button-clickable"]').should("be.visible").Click() }
@@ -15,7 +17,9 @@ export function ClickAction(expectedResponse)
     .Click()
 
   var expectedUtterance = expectedResponse.replace(/'/g, "’")
+
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
+    helpers.Dump(`ScorerModel.ClickAction()`, elements[elements.length - 1])
     cy.wrap(elements[elements.length - 1]).within(e => {
       cy.get('div.format-markdown > p').should('have.text', expectedUtterance)
     })})
