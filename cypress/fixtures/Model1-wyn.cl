@@ -1,7 +1,7 @@
 ﻿{
   "trainDialogs": [
     {
-      "trainDialogId": "9cdff738-c0b8-49e0-ab6c-59bf13cabf75",
+      "trainDialogId": "4d02e9b3-f63f-42e4-af3e-d5c1d4479a45",
       "rounds": [
         {
           "extractorStep": {
@@ -19,10 +19,10 @@
                 "context": {},
                 "maskedActions": []
               },
-              "labelAction": "f37e3c30-29e2-4575-bd3c-77c5943b2f29",
+              "labelAction": "3959904b-7905-49e1-8e6a-7fd24d710b30",
               "metrics": {
                 "predictMetrics": {
-                  "blisTime": 0.012908458709716797,
+                  "blisTime": 0.005886077880859375,
                   "contextDialogBlisTime": 0
                 }
               }
@@ -36,7 +36,7 @@
                 "text": "David",
                 "labelEntities": [
                   {
-                    "entityId": "449ece95-7e73-46ec-b8be-73bbc3296f13",
+                    "entityId": "251fa360-def4-4a89-aa79-eb487e432f29",
                     "startCharIndex": 0,
                     "endCharIndex": 4,
                     "entityText": "David"
@@ -50,7 +50,7 @@
               "input": {
                 "filledEntities": [
                   {
-                    "entityId": "449ece95-7e73-46ec-b8be-73bbc3296f13",
+                    "entityId": "251fa360-def4-4a89-aa79-eb487e432f29",
                     "values": [
                       {
                         "userText": "David",
@@ -64,10 +64,10 @@
                 "context": {},
                 "maskedActions": []
               },
-              "labelAction": "40620c42-87a7-44c5-a81d-8b822302f069",
+              "labelAction": "2d846a6e-113e-4302-9877-d0e0a581672b",
               "metrics": {
                 "predictMetrics": {
-                  "blisTime": 0.007918119430541992,
+                  "blisTime": 0.013062715530395507,
                   "contextDialogBlisTime": 0
                 }
               }
@@ -76,48 +76,48 @@
         }
       ],
       "initialFilledEntities": [],
-      "createdDateTime": "2018-11-07T18:45:44.0036755+00:00",
-      "lastModifiedDateTime": "2018-11-07T18:46:02+00:00"
+      "createdDateTime": "2018-11-07T23:54:57.1680165+00:00",
+      "lastModifiedDateTime": "2018-11-07T23:55:15+00:00"
     }
   ],
   "actions": [
     {
-      "actionId": "f37e3c30-29e2-4575-bd3c-77c5943b2f29",
-      "createdDateTime": "2018-10-31T20:49:08.3405635+00:00",
+      "actionId": "3959904b-7905-49e1-8e6a-7fd24d710b30",
+      "createdDateTime": "2018-11-07T20:08:07.2572688+00:00",
       "actionType": "TEXT",
       "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"What's your name?\",\"marks\":[]}]}]}]}}}",
       "isTerminal": true,
       "requiredEntitiesFromPayload": [],
       "requiredEntities": [],
       "negativeEntities": [
-        "449ece95-7e73-46ec-b8be-73bbc3296f13"
+        "251fa360-def4-4a89-aa79-eb487e432f29"
       ],
-      "suggestedEntity": "449ece95-7e73-46ec-b8be-73bbc3296f13"
+      "suggestedEntity": "251fa360-def4-4a89-aa79-eb487e432f29"
     },
     {
-      "actionId": "40620c42-87a7-44c5-a81d-8b822302f069",
-      "createdDateTime": "2018-10-31T20:49:14.2989915+00:00",
+      "actionId": "2d846a6e-113e-4302-9877-d0e0a581672b",
+      "createdDateTime": "2018-11-07T20:08:14.675811+00:00",
       "actionType": "TEXT",
-      "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"Hello \",\"marks\":[]}]},{\"kind\":\"inline\",\"type\":\"mention-inline-node\",\"isVoid\":false,\"data\":{\"completed\":true,\"option\":{\"id\":\"449ece95-7e73-46ec-b8be-73bbc3296f13\",\"name\":\"name\"}},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"$name\",\"marks\":[]}]}]},{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"\",\"marks\":[]}]}]}]}}}",
+      "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"Hello \",\"marks\":[]}]},{\"kind\":\"inline\",\"type\":\"mention-inline-node\",\"isVoid\":false,\"data\":{\"completed\":true,\"option\":{\"id\":\"251fa360-def4-4a89-aa79-eb487e432f29\",\"name\":\"name\"}},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"$name\",\"marks\":[]}]}]},{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"\",\"marks\":[]}]}]}]}}}",
       "isTerminal": true,
       "requiredEntitiesFromPayload": [
-        "449ece95-7e73-46ec-b8be-73bbc3296f13"
+        "251fa360-def4-4a89-aa79-eb487e432f29"
       ],
       "requiredEntities": [
-        "449ece95-7e73-46ec-b8be-73bbc3296f13"
+        "251fa360-def4-4a89-aa79-eb487e432f29"
       ],
       "negativeEntities": []
     }
   ],
   "entities": [
     {
-      "entityId": "449ece95-7e73-46ec-b8be-73bbc3296f13",
-      "createdDateTime": "2018-10-31T20:49:02.5881179+00:00",
+      "entityId": "251fa360-def4-4a89-aa79-eb487e432f29",
+      "createdDateTime": "2018-11-07T20:07:57.8521773+00:00",
       "entityName": "name",
       "entityType": "LUIS",
       "isMultivalue": false,
       "isNegatible": false
     }
   ],
-  "packageId": "7f96c89a-a517-417f-81fa-dd0e01c410f4"
+  "packageId": "b16e2c72-2745-4461-855e-c994f56085df"
 }
