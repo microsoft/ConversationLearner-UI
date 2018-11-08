@@ -7,13 +7,13 @@ import './TeachSessionModal.css';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { ErrorHandler } from '../../ErrorHandler'
+import { ErrorHandler } from '../../Utils/ErrorHandler'
 import { AT } from '../../types/ActionTypes'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as BotChat from '@conversationlearner/webchat'
 import * as OF from 'office-ui-fabric-react';
-import * as Utils from '../../util'
-import * as DialogUtils from '../../dialogUtils'
+import * as Utils from '../../Utils/util'
+import * as DialogUtils from '../../Utils/dialogUtils'
 import { State, TeachSessionState } from '../../types';
 import Webchat, { renderActivity } from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'

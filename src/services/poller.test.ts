@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as poller from './poller'
-import { delay } from '../util'
+import { delay } from '../Utils/util'
 
 describe('Poller', () => {
     test('poll should invoke onExpired callback when polling exceeds max duration', async () => {

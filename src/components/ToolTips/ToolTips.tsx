@@ -31,6 +31,7 @@ export enum TipType {
     ACTION_TYPE = 'actionType',
     ACTION_WAIT = 'isTerminal',
 
+    EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY = "EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY",
     EDITDIALOGMODAL_WARNING_NEED_REPLAY = "EDITDIALOGMODAL_WARNING_NEED_REPLAY",
 
     ENTITY_ACTION_REQUIRED = 'entityActionRequired',
@@ -305,6 +306,15 @@ export function getTip(tipType: string) {
                         width="70%" 
                         alt="Replay After"
                     />
+                </div>
+            )
+
+        case TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY:
+            return (
+                <div>
+                    <h2>Replay is needed</h2>
+                    <p>One or more edits to Action or Entity properties, may have invalidated turns in this conversation</p>
+                    <p>It must be replayed to see if any errors were introduced before it can be used in trianing</p>
                 </div>
             )
         case TipType.ENTITY_NAME:

@@ -9,12 +9,12 @@ import { connect } from 'react-redux'
 import * as OF from 'office-ui-fabric-react'
 import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
-import * as Util from '../../../util'
-import * as DialogUtils from '../../../dialogUtils'
+import * as Util from '../../../Utils/util'
+import * as ValidityUtils from '../../../Utils/validityUtils'
+import * as DialogUtils from '../../../Utils/dialogUtils'
 import { SelectionType } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'
-import { Icon } from 'office-ui-fabric-react/lib/Icon'
 import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
@@ -113,8 +113,12 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 let firstInput = getFirstInput(trainDialog);
                 if (firstInput) {
                     return (<span className={textClassName(trainDialog)} data-testid="train-dialogs-first-input">
-                        {trainDialog.validity === CLM.Validity.INVALID && <Icon className="cl-icon cl-icon-red" iconName="IncidentTriangle" />}
-                        {trainDialog.validity === CLM.Validity.UNKNOWN && <Icon className="cl-icon cl-icon-yellow" iconName="IncidentTriangle" />}
+                        {trainDialog.validity && trainDialog.validity !== CLM.Validity.VALID && 
+                            <OF.Icon 
+                                className={`cl-icon ${ValidityUtils.validityColorClassName(trainDialog.validity)}`}
+                                iconName="IncidentTriangle" 
+                            />
+                        }
                         {firstInput}
                     </span>)
                 }
@@ -665,8 +669,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
             let newTrainDialog = JSON.parse(JSON.stringify(trainDialog)) as CLM.TrainDialog
             newTrainDialog.definitions = definitions
-            // I've replayed so unknown status goes away (but not invalid)
-            if (trainDialog.validity === CLM.Validity.UNKNOWN) {
+            // I've replayed so warning status goes away (but not invalid)
+            if (trainDialog.validity === CLM.Validity.WARNING || trainDialog.validity === CLM.Validity.UNKNOWN) {
                 newTrainDialog.validity = CLM.Validity.VALID
             } 
 

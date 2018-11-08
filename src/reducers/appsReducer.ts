@@ -5,7 +5,7 @@
 import { AppsState, ActionObject } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
-import { replace } from '../util'
+import { replace } from '../Utils/util'
 import { TrainingStatusCode } from '@conversationlearner/models'
 import { App } from '../types/models'
 

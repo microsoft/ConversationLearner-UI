@@ -39,6 +39,7 @@ export function packageReferences(app: CLM.AppBase): CLM.PackageReference[] {
             packageVersion: 'Master'
         }
     ]
+
 }
 
 export function createEntityMapFromMemories(entities: CLM.EntityBase[], memories: CLM.Memory[]): Map<string, string> {

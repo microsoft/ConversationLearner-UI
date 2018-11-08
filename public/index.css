@@ -150,11 +150,15 @@ html {
   padding-right: 5px;
 }
 
-.cl-icon-yellow {
+.cl-color-warning {
   color: var(--cl-color-warning) !important;
 }
 
-.cl-icon-red {
+.cl-color-caution {
+  color: var(--cl-color-caution) !important;
+}
+
+.cl-color-error {
   color: var(--cl-color-error) !important;
 }
 

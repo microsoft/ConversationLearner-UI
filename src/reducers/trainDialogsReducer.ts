@@ -5,7 +5,7 @@
 import { ActionObject, TrainDialogState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
-import { replace } from '../util'
+import { replace } from '../Utils/util'
 
 const initialState: TrainDialogState = [];
 

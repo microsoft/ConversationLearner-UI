@@ -7,7 +7,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as OF from 'office-ui-fabric-react';
-import * as DialogUtils from '../../dialogUtils'
+import * as DialogUtils from '../../Utils/dialogUtils'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import actions from '../../actions'
@@ -468,6 +468,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     trainDialogValidity(): CLM.Validity | undefined {
+        // Look for individual replay errors
         let replayErrorLevel = this.replayErrorLevel()
         if (replayErrorLevel) {
             if (replayErrorLevel === CLM.ReplayErrorLevel.BLOCKING || replayErrorLevel === CLM.ReplayErrorLevel.ERROR) {
@@ -477,6 +478,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 return CLM.Validity.WARNING
             }
         }
+        // Didn't find any errors on individual rounds so state is now valid
+        if (this.props.trainDialog.validity === CLM.Validity.INVALID) {
+            return CLM.Validity.VALID
+        }
+        // Unless previous validity state was WARNING or UNKNOWN and then I don't know
         return this.props.trainDialog.validity
     }
 
@@ -686,20 +692,37 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             }
 
         }
-        if (this.props.trainDialog && this.props.trainDialog.validity === CLM.Validity.UNKNOWN) {
-            return (
-                <div>
-                    <div className="cl-editdialog-warning">
-                        <div className={OF.FontClassNames.mediumPlus}>
-                            <FormattedMessage
-                                id={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY}
-                                defaultMessage={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY}
-                            />
-                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY} customStyle="cl-icon--transparentdark" />
+        if (this.props.trainDialog) {
+            if (this.props.trainDialog.validity === CLM.Validity.UNKNOWN) {
+                return (
+                    <div>
+                        <div className="cl-editdialog-caution">
+                            <div className={OF.FontClassNames.mediumPlus}>
+                                <FormattedMessage
+                                    id={FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY}
+                                    defaultMessage={FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY}
+                                />
+                                <HelpIcon tipType={TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} customStyle="cl-icon--transparent" />
+                            </div>
                         </div>
                     </div>
-                </div>
-            )
+                )
+            }
+            else if (this.props.trainDialog.validity === CLM.Validity.WARNING) {
+                return (
+                    <div>
+                        <div className="cl-editdialog-warning">
+                            <div className={OF.FontClassNames.mediumPlus}>
+                                <FormattedMessage
+                                    id={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY}
+                                    defaultMessage={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY}
+                                />
+                                <HelpIcon tipType={TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY} customStyle="cl-icon--transparent" />
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
         }
         return null
     }

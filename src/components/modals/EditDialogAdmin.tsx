@@ -16,7 +16,7 @@ import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
 import * as CLM from '@conversationlearner/models' 
 import { FM } from '../../react-intl-messages'
-import * as DialogUtils from '../../dialogUtils'
+import * as DialogUtils from '../../Utils/dialogUtils'
 import { EditDialogType, EditState } from '.'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import TrainingStatusContainer from '../TrainingStatusContainer'

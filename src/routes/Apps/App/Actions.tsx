@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import actions from '../../../actions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import * as OF from 'office-ui-fabric-react';
-import * as Utils from '../../../util'
+import * as Utils from '../../../Utils/util'
 import { AppBase, ActionBase } from '@conversationlearner/models'
 import { ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'

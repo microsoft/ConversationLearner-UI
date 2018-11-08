@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as util from '../util'
+import * as util from '../Utils/util'
 
 export interface Deferred {
     resolve: Function
