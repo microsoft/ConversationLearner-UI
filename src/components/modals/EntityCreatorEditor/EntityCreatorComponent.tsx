@@ -191,7 +191,7 @@ const Component: React.SFC<Props> = (props) => {
                                     pivotItemProps: OF.IPivotItemProps,
                                     defaultRender: (link: OF.IPivotItemProps) => JSX.Element) =>
                                         ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}
-                                >
+                            >
                                 <ActionDetailsList
                                     actions={props.disqualifiedActions}
                                     onSelectAction={() => {}}

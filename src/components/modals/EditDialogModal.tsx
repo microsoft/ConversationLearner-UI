@@ -634,6 +634,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     renderWarning() {
+        if (!this.props.trainDialog) {
+            return null
+        }
+
         const replayError = DialogUtils.getReplayError(this.state.selectedActivity)
         if (this.props.editState === EditState.INVALID_BOT) {
             return (
@@ -663,20 +667,25 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         if (replayError) {        
             return renderReplayError(replayError)
         }
+
+        // No Activity selected, but Replay error on an Activity
         let replayErrorLevel = this.replayErrorLevel()
         if (this.replayErrorLevel()) {
-            // Replay error, but not activity selected
             if (replayErrorLevel === CLM.ReplayErrorLevel.WARNING) {
-                return (
-                    <div className="cl-editdialog-warning">
-                        <div className={OF.FontClassNames.mediumPlus}>
-                            <FormattedMessage
-                                id={FM.REPLAYERROR_WARNING}
-                                defaultMessage={FM.REPLAYERROR_WARNING}
-                            />
+                // Only show activity based warning if no trainDialog level warning
+                if (this.props.trainDialog.validity !== CLM.Validity.UNKNOWN 
+                    && this.props.trainDialog.validity !== CLM.Validity.WARNING) {
+                    return (
+                        <div className="cl-editdialog-warning">
+                            <div className={OF.FontClassNames.mediumPlus}>
+                                <FormattedMessage
+                                    id={FM.REPLAYERROR_WARNING}
+                                    defaultMessage={FM.REPLAYERROR_WARNING}
+                                />
+                            </div>
                         </div>
-                    </div>
-                )
+                    )
+                }
             }
             else {
                 return (
@@ -692,37 +701,36 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             }
 
         }
-        if (this.props.trainDialog) {
-            if (this.props.trainDialog.validity === CLM.Validity.UNKNOWN) {
-                return (
-                    <div>
-                        <div className="cl-editdialog-caution">
-                            <div className={OF.FontClassNames.mediumPlus}>
-                                <FormattedMessage
-                                    id={FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY}
-                                    defaultMessage={FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY}
-                                />
-                                <HelpIcon tipType={TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} customStyle="cl-icon--transparent" />
-                            </div>
+
+        if (this.props.trainDialog.validity === CLM.Validity.UNKNOWN) {
+            return (
+                <div>
+                    <div className="cl-editdialog-caution">
+                        <div className={OF.FontClassNames.mediumPlus}>
+                            <FormattedMessage
+                                id={FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY}
+                                defaultMessage={FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY}
+                            />
+                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} customStyle="cl-icon--transparent" />
                         </div>
                     </div>
-                )
-            }
-            else if (this.props.trainDialog.validity === CLM.Validity.WARNING) {
-                return (
-                    <div>
-                        <div className="cl-editdialog-warning">
-                            <div className={OF.FontClassNames.mediumPlus}>
-                                <FormattedMessage
-                                    id={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY}
-                                    defaultMessage={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY}
-                                />
-                                <HelpIcon tipType={TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY} customStyle="cl-icon--transparent" />
-                            </div>
+                </div>
+            )
+        }
+        else if (this.props.trainDialog.validity === CLM.Validity.WARNING) {
+            return (
+                <div>
+                    <div className="cl-editdialog-warning">
+                        <div className={OF.FontClassNames.mediumPlus}>
+                            <FormattedMessage
+                                id={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY}
+                                defaultMessage={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY}
+                            />
+                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY} customStyle="cl-icon--transparent" />
                         </div>
                     </div>
-                )
-            }
+                </div>
+            )
         }
         return null
     }
