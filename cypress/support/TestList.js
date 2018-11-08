@@ -42,7 +42,7 @@ var testGroups =
   ]
 
 // This function adds test cases to Cypress' test queue. It uses the file path of the calling 
-// function to determin the group name and the test function name. "(All)" is used as a special 
+// function to determine the group name and the test function name. "(All)" is used as a special 
 // name that will cause this method to include all tests for that group to be added to Cypress'
 // test queue. The folder name "Tests", with the file name "(All)" is reserved to be used to 
 // include all groups all test groups to be added to Cypress' test queue.

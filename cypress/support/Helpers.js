@@ -14,3 +14,13 @@ export function Dump(funcName, object)
   for(var property in object) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${object[property]}`
   ConLog(funcName, propertyList)
 }
+
+export function RemoveDuplicates(inputArray)
+{
+  var uniqueOutputArray = []
+  for(var i = 0; i < inputArray.length; i++)
+    if(uniqueOutputArray.indexOf(inputArray[i]) == -1) 
+      uniqueOutputArray.push(inputArray[i])
+  
+  return uniqueOutputArray
+}

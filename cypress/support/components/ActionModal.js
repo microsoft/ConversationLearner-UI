@@ -22,9 +22,11 @@ export function TypeResponse(textToType)
   })
 }
 
+// Pass in an undefined 'entityNames' to just clear the field
 function TypeMultipleEntities(selector, entityNames)
 {
-  if (!Array.isArray(entityNames)) entityNames = [entityNames]
+  if (!entityNames) entityNames = new Array()
+  else if (!Array.isArray(entityNames)) entityNames = [entityNames]
 
   cy.Get('.cl-modal_body').within(() => 
   {

@@ -1,4 +1,6 @@
 import { createPartiallyEmittedExpression } from "typescript";
+import './Helpers'
+const helpers = require('./Helpers.js')
 const modelPage = require('./components/ModelPage')
 const train = require('../support/Train')
 
@@ -28,8 +30,6 @@ const train = require('../support/Train')
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-import './Helpers'
-const helpers = require('./Helpers.js')
 Cypress.Commands.add("ConLog", (funcName, message) => {helpers.ConLog(funcName, message)})
 
 // fileName must exist with cypress\fixtures folder
@@ -55,6 +55,13 @@ Cypress.Commands.add('ExactMatch', { prevSubject: 'element'}, (elements, expecte
 {   
   for(var i = 0; i < elements.length; i++) if(elements[i].innerText == expectedText) return elements[i]
   throw `Exact Match '${expectedText}' NOT Found`
+})
+
+Cypress.Commands.add('ExactMatches', { prevSubject: 'element'}, (elements, expectedText) => 
+{ 
+  var returnElements = new Array()  
+  for(var i = 0; i < elements.length; i++) if(elements[i].innerText == expectedText) returnElements.push(elements[i])
+  return returnElements
 })
 
 Cypress.Commands.add("WaitForTrainingStatusCompleted", () => 
