@@ -7,41 +7,31 @@ const actionModal = require('../support/components/ActionModal')
 const actionsGrid = require('../support/components/ActionsGrid')
 const modelPage = require('../support/components/ModelPage')
 
-// NOTE: Setting an Expected Entity causes the same entity to be placed in the Disqualified Entity field by default
-//       Currently this is not an issue but you will see it try to re-add the same Disqualified Entity durring a test run.
+// The UI automatically populates the Required Entities field with entities found in the response text and
+// it also automatically populates the Disqualtifying Entities field with the expected entities,
+// so the caller only needs to specify the ones the UI does not auto populate.
+// However, there are cases where the caller may want to explicitly specify these autopopulated values anyway,
+// and this code does allow for that.
 export function CreateNewAction({response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' })
 {
   modelPage.NavigateToActions()
   actionModal.ClickNewAction()
   // TODO: this is the default but we need to get this working... actionsModal.selectTypeText()
   actionModal.TypeResponse(response)
-  if (expectedEntities) actionModal.TypeExpectedEntity(expectedEntities)
-  if (requiredEntities) actionModal.TypeRequiredEntities(requiredEntities)
-  if (disqualifyingEntities) actionModal.TypeDisqualifyingEntities(disqualifyingEntities)
+  actionModal.TypeExpectedEntity(expectedEntities)
+  actionModal.TypeRequiredEntities(requiredEntities)
+  actionModal.TypeDisqualifyingEntities(disqualifyingEntities)
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
   actionModal.ClickCreateButton()
 
   var requiredEntitiesFromResponse = response.match(/(?<=\$)[^ ]+?(?={enter})/g)
   response = response.replace(/{enter}/g, '')
   
-  // Set the pre-requisit for all validations for the row.
-  actionsGrid.SetResponseDetailsRowAlias(response)
+  // Get the row that we are going to validate and assign a Cypress Alias to it.
+  // If we skip this step, the validations that follow will fail.
+  actionsGrid.GetRowToBeValidated(response)
 
-  if(!requiredEntities && !requiredEntitiesFromResponse) actionsGrid.ValidateRequiredEntitiesIsEmpty()
-  else
-  {
-    if(!requiredEntities) requiredEntities = requiredEntitiesFromResponse
-    else
-    {
-      if(!Array.isArray(requiredEntities)) requiredEntities = [requiredEntities]
-      if(requiredEntitiesFromResponse) requiredEntities.concat(requiredEntitiesFromResponse)
-    }
-    actionsGrid.ValidateRequiredEntities(requiredEntities)
-  }
-  
-  if(disqualifyingEntities) actionsGrid.ValidateDisqualifyingEntities(disqualifyingEntities)
-  else actionsGrid.ValidateDisqualifyingEntitiesIsEmpty()
-
-  if(expectedEntities) actionsGrid.ValidateExpectedEntities(expectedEntities)
-  else actionsGrid.ValidateExpectedEntitiesIsEmpty()
+  actionsGrid.ValidateRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
+  actionsGrid.ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)
+  actionsGrid.ValidateExpectedEntities(expectedEntities)
 }
