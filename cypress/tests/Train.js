@@ -140,9 +140,7 @@ export function WhatsYourName2()
   scorerModal.VerifyContainsEnabledAction('Hello David')
   train.SelectAction('Hello David', 'Hello $name')
 
-  // Wait for the training to complete.
-  // At the time this was added, there is no UI elements to let us know it is complete.
-  cy.wait(20000)
+  cy.WaitForTrainingStatusCompleted()
 
   train.TypeYourMessage('My name is Susan.')
   editDialogModal.VerifyDetectedEntity('name', 'Susan')
