@@ -283,6 +283,7 @@ export enum FM {
     REPLAYERROR_DESC_TWO_USER_INPUTS = 'ReplayError.Desc.twoUserInputs',
     REPLAYERROR_DESC_ACTION_UNAVAILABLE = 'ReplayError.Desc.actionUnavailable',
     REPLAYERROR_DESC_CHANGED_ENTITIES = 'ReplayError.Desc.changedEntities',
+    REPLAYERROR_DESC_EXCEPTION = 'ReplayError.Desc.exception',
 
     // Settings
     SETTINGS_TITLE = 'Settings.title',
@@ -660,6 +661,7 @@ export default {
         [FM.REPLAYERROR_DESC_TWO_USER_INPUTS]: 'Two consecutive User Inputs',
         [FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE]: 'Action is unavailable',
         [FM.REPLAYERROR_DESC_CHANGED_ENTITIES]: 'Entities inconsistent after user input',
+        [FM.REPLAYERROR_DESC_EXCEPTION]: `Encountered an error in Bot's API callback`,
         
         // Settings
         [FM.SETTINGS_TITLE]: 'Settings',
@@ -936,8 +938,8 @@ export default {
         [FM.EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION]: 'Branch',
         [FM.EDITDIALOGMODAL_BRANCH_TEXT]: 'Branch',
         [FM.EDITDIALOGMODAL_BRANCH_TIP] : 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
-        [FM.EDITDIALOGMODAL_CANTBRANCH_TITLE]: 'This Train Dialog has errors in previous rounds that must be resolved before it can be branched',
-        [FM.EDITDIALOGMODAL_CANTREPLAY_TITLE]: 'This Train Dialog has errors in previous rounds that must be resolved before a new round can be inserted',
+        [FM.EDITDIALOGMODAL_CANTBRANCH_TITLE]: 'This Train Dialog has errors that must be resolved before it can be branched',
+        [FM.EDITDIALOGMODAL_CANTREPLAY_TITLE]: 'This Train Dialog has errors that must be resolved before a new round can be inserted',
         [FM.EDITDIALOGMODAL_CONFIRMDELETELOG_TITLE]: 'Are you sure you want to delete this Log Dialog?',
         [FM.EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE]: 'Are you sure you want to delete this Training Dialog?',
         [FM.EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE]: 'Are you sure you want to abandon this Training Dialog?',

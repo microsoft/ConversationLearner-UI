@@ -17,6 +17,7 @@ const initialState: TeachSessionState = {
     uiScoreInput: undefined,
     extractResponses: [],
     extractConflict: null,
+    botAPIError: null,
     scoreResponse: undefined,
     autoTeach: false
 };
@@ -93,6 +94,9 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             if (action.uiScoreResponse.extractConflict) {
                 return { ...state, extractConflict: action.uiScoreResponse.extractConflict}
             }
+            else if (action.uiScoreResponse.botAPIError) {
+                return { ...state, botAPIError: action.uiScoreResponse.botAPIError}
+            }
             else {
                 return { ...state, 
                     dialogMode: DialogMode.Scorer,
@@ -100,7 +104,8 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
                     prevMemories: state.memories, 
                     scoreInput: action.uiScoreResponse.scoreInput, 
                     scoreResponse: action.uiScoreResponse.scoreResponse,
-                    extractConflict: null 
+                    extractConflict: null,
+                    botAPIError: null
                 }
             }
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
