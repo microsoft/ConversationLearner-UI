@@ -1215,7 +1215,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         <OF.DetailsList
                             data-testid="detail-list"
                             key={this.state.dialogKey}
-                            isHeaderVisible = {computedTrainDialogs.length != 0}
                             className={OF.FontClassNames.mediumPlus}
                             items={computedTrainDialogs}
                             columns={this.state.columns}
