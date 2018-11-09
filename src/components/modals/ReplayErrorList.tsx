@@ -115,6 +115,17 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                     </div>
                 </div>
             )
+        case CLM.ReplayErrorType.Exception:
+            return (
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessage
+                            id={FM.REPLAYERROR_DESC_EXCEPTION}
+                            defaultMessage={FM.REPLAYERROR_DESC_EXCEPTION}
+                        />
+                    </div>
+                </div>
+            )
         /* Currently not used, but may when check for API changes
         case CLM.ReplayErrorType.EntityDiscrepancy:
             let entityDiscrepancy = replayError as CLM.ReplayErrorEntityDiscrepancy;

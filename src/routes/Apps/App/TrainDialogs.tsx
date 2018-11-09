@@ -373,14 +373,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     onSelectEntityFilter(item: OF.IDropdownOption) {
         this.setState({
-            entityFilter: item
+            entityFilter: (-1 != item.key) ? item : null
         })
     }
 
     @OF.autobind
     onSelectActionFilter(item: OF.IDropdownOption) {
         this.setState({
-            actionFilter: item
+            actionFilter: (-1 != item.key) ? item : null
         })
     }
 
@@ -1195,7 +1195,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                     // Only show positive versions of negatable entities
                                     .filter(e => e.positiveId == null)
                                     .map(e => this.toEntityFilter(e))
-                                    .concat({ key: -1, text: '---', data: null })
+                                    .concat({ key: -1, text: '-- any --', data: null })
                                 }
                             />
 
@@ -1208,7 +1208,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 placeHolder="Filter by Action"
                                 options={this.props.actions
                                     .map(a => this.toActionFilter(a, this.props.entities))
-                                    .concat({ key: -1, text: '---' })
+                                    .concat({ key: -1, text: '-- any --' })
                                 }
                             />
                         </div>

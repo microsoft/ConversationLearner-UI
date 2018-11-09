@@ -231,8 +231,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         let activityIndex = 0
         do {
             const clData: CLM.CLChannelData = this.props.history[activityIndex].channelData.clData
-            if (clData && clData.replayError) {
-                return clData.replayError.errorLevel !== CLM.ReplayErrorLevel.BLOCKING
+            if (clData && clData.replayError && clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
+                return false
             }
             activityIndex = activityIndex + 1
         }
@@ -240,6 +240,22 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return true
     }
 
+    // Returns true if blocking error exists
+    hasBlockingError(): boolean {
+        if (this.props.history.length === 0) {
+            return false
+        }
+        for (let activity of this.props.history) {
+            const clData: CLM.CLChannelData = activity.channelData.clData
+            if (clData && 
+                clData.replayError &&
+                clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
+                return true
+            }
+        }
+        return false
+    }
+ 
     // Does history have any replay errors
     replayErrorLevel(): CLM.ReplayErrorLevel | null {
         if (!this.props.history || this.props.history.length === 0) {
@@ -362,10 +378,14 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     
     shouldDisableUserInput(): boolean {
 
-        if (!this.props.trainDialog || this.props.trainDialog.rounds.length === 0) {
+        if (!this.props.trainDialog) {
             return true
         }
 
+        if (this.props.trainDialog.rounds.length === 0) {
+            return false
+        }
+        
         // Disable last round has no scorer step
         const lastRound = this.props.trainDialog.rounds[this.props.trainDialog.rounds.length - 1]
         if (lastRound.scorerSteps.length === 0) {
@@ -740,7 +760,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         // Put mask of webchat if waiting for extraction labelling
         const chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay"/> : null;
-        const canReplay = this.canReplay(this.props.history[this.props.history.length - 1])
+        const hasBlockingError = this.hasBlockingError() 
         const disableUserInput = this.shouldDisableUserInput()
         
         const containerClassName = `cl-modal cl-modal--large cl-modal--${this.props.editType === EditDialogType.LOG_EDITED ? "teach" : "log"}`
@@ -762,11 +782,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 onPostActivity={activity => this.onPostNewActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 onScrollChange={position => this.onScrollChange(position)} 
-                                hideInput={disableUserInput || !canReplay}
+                                hideInput={disableUserInput || hasBlockingError}
                                 focusInput={false}
                                 disableDL={true} // Prevents ProcessActivity from being called
                                 renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
-                                renderInput={() => this.renderWebchatInput(!disableUserInput && !canReplay)}
+                                renderInput={() => this.renderWebchatInput(disableUserInput || hasBlockingError)}
                                 highlightClassName={'wc-message-selected'}
                                 selectedActivityIndex={this.props.initialSelectedActivityIndex}
                             />
@@ -845,7 +865,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
                             <OF.PrimaryButton
                                 data-testid="footer-button-done"
-                                disabled={this.state.pendingExtractionChanges}
+                                disabled={this.state.pendingExtractionChanges || hasBlockingError}
                                 onClick={this.onClickSave}
                                 ariaDescription={this.renderSaveText(intl)}
                                 text={this.renderSaveText(intl)}
