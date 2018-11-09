@@ -87,7 +87,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-action-creator-fieldset">
                     <OF.TextField
-                        data-testid="app-create-input-name"
+                        data-testid="user-input-modal-new-message-input"
                         onGetErrorMessage={value => this.onGetInputErrorMessage(value)}
                         onChanged={text => this.userInputChanged(text)}
                         placeholder={intl.formatMessage({

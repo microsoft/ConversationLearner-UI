@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-export function TypeYourMessage(trainmessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainmessage}{enter}`) }  // data-testid NOT possible
+export function TypeYourMessage(trainMessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainMessage}{enter}`) }  // data-testid NOT possible
 export function ClickSetInitialStateButton()          { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
 export function ClickScoreActionsButton()             { cy.Get('[data-testid="entity-extractor-score-actions-button"]').Click() }
 export function ClickSaveButton()                     { cy.Get('[data-testid="teach-session-footer-button-save"]').Click() }
@@ -15,9 +15,11 @@ export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="en
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 
 // Selects from ALL chat messages, from both Bot and User
-// This will make visible & enable more UI elements to interact with
+// Once clicked, more UI elements will become visible & enabled
 export function SelectChatTurn(message, index = 0)
 {
+  message = message.replace(/'/g, "’")
+
   cy.Get('[data-testid="web-chat-utterances"]').within(elements => {
     cy.get('div.format-markdown > p').ExactMatches(message).then(elements => {
     if (elements.length <= index) throw `Could not find '${message}' #${index} in chat utterances`
@@ -25,6 +27,21 @@ export function SelectChatTurn(message, index = 0)
   })})
 }
 
+export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
+{
+  originalMessage = originalMessage.replace(/'/g, "’")
+
+  SelectChatTurn(originalMessage, originalIndex)
+
+  // Validate that the branch button is within the same control group as the originalMessage that was just selected.
+  cy.Get('[data-testid="edit-dialog-modal-branch-button"]').as('branchButton')
+    .parents('div.wc-message-selected').Contains('p', originalMessage)
+
+  cy.Get('@branchButton').Click()
+  
+  cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
+
+}
 // Use these to get either Bot or User chat messages
 // div.wc-message.wc-message-from-me.wc-message-color-train
 // div.wc-message.wc-message-from-bot.wc-message-color-bot

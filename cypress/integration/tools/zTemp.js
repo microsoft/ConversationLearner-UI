@@ -20,7 +20,8 @@ describe('zTemp test', () =>
     // modelPage.NavigateToTrainDialogs()
     cy.pause()
 
-    // editDialogsModal.SelectChatTurn('Hello Paul', 4)
-    //cy.Get('div.wc-message-wrapper.list.clickable').contains('Paul is not here').Click()
+    editDialogsModal.SelectChatTurn('Hello Paul', 3)
+    cy.pause()
+    editDialogsModal.BranchChatTurn('Paul is not here', 'Larry wants to join the fun')
   })
 })

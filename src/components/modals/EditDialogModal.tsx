@@ -345,6 +345,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         }}
                     >
                         <OF.IconButton
+                            data-testid="edit-dialog-modal-branch-button"
                             className={`cl-wc-branchturn`}
                             iconProps={{ iconName: 'BranchMerge' }}
                             onClick={this.onClickBranch}
