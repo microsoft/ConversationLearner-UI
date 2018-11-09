@@ -42,6 +42,30 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
   cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
 
 }
+
+export function SelectEachChatTurn(index = 0)
+{
+  if (index == 0) cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')
+  cy.Get('@allChatTurns').then(elements => 
+  {
+    if (index < elements.length)
+    {
+      cy.wrap(elements[index]).Click().then(() =>
+      {
+        SelectEachChatTurn(index + 1)
+      })
+    }
+  })
+}
+
+export function ValidateChatTurnControls(element)
+{
+  if (Cypress.$(element).$('div.wc-message-from-bot') != undefined) 
+  {} //do something
+  else if (Cypress.$(element).$('div.wc-message-from-me') != undefined)
+  {} //do something  
+}
+
 // Use these to get either Bot or User chat messages
 // div.wc-message.wc-message-from-me.wc-message-color-train
 // div.wc-message.wc-message-from-bot.wc-message-color-bot
