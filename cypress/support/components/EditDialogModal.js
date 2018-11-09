@@ -3,6 +3,8 @@
  * Licensed under the MIT License.
  */
 
+ const helpers = require('../../support/Helpers')
+
 export function TypeYourMessage(trainMessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainMessage}{enter}`) }  // data-testid NOT possible
 export function ClickSetInitialStateButton()          { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
 export function ClickScoreActionsButton()             { cy.Get('[data-testid="entity-extractor-score-actions-button"]').Click() }
@@ -50,8 +52,9 @@ export function SelectEachChatTurn(index = 0)
   {
     if (index < elements.length)
     {
-      cy.wrap(elements[index]).Click().then(() =>
+      cy.wrap(elements[index]).Click().then(element =>
       {
+        ValidateChatTurnControls(element)
         SelectEachChatTurn(index + 1)
       })
     }
@@ -60,10 +63,13 @@ export function SelectEachChatTurn(index = 0)
 
 export function ValidateChatTurnControls(element)
 {
-  if (Cypress.$(element).$('div.wc-message-from-bot') != undefined) 
-  {} //do something
-  else if (Cypress.$(element).$('div.wc-message-from-me') != undefined)
-  {} //do something  
+  helpers.Dump(`ValidateChatTurnControls()`, element)
+  // helpers.Dump(`ValidateChatTurnControls(user)`, Cypress.$(element).find('div.wc-message-from-me'))
+  // helpers.Dump(`ValidateChatTurnControls(bot)`, Cypress.$(element).find('div.wc-message-from-bot'))
+  // if (Cypress.$(element).find('div.wc-message-from-bot') != undefined) 
+  // { helpers.ConLog(`ValidateChatTurnControls()`, 'Bot message')}
+  // else if (Cypress.$(element).$('div.wc-message-from-me') != undefined)
+  // { helpers.ConLog(`ValidateChatTurnControls()`, 'User message')}
 }
 
 // Use these to get either Bot or User chat messages
