@@ -93,7 +93,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             minWidth: 100,
             maxWidth: 100,
             isResizable: false,
-            getSortValue: app => moment(app.lastModifiedDateTime).valueOf(),
+            getSortValue: app => moment(app.lastModifiedDateTime).format(`YYYYMMDDHHmmSS`),
             render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-last-modified-time">{moment(app.lastModifiedDateTime).format('L')}</span>
         },
         {
@@ -184,8 +184,8 @@ export class Component extends React.Component<Props, ComponentState> {
         if (!defaultSortColumn) {
             throw new Error(`Could not find column by name: ${defaultSortColumnName}`)
         }
-        defaultSortColumn.isSorted = true
 
+        columns.map(col => { col.isSorted = false; col.isSortedDescending = false })
         this.state = {
             columns,
             sortColumn: defaultSortColumn
@@ -213,22 +213,13 @@ export class Component extends React.Component<Props, ComponentState> {
 
     onClickColumnHeader = (event: any, column: ISortableRenderableColumn) => {
         let { columns } = this.state;
-        let isSortedDescending = column.isSortedDescending;
-
-        // If we've sorted this column, flip it.
-        if (column.isSorted) {
-            isSortedDescending = !isSortedDescending;
-        }
-
-        // Reset the items and columns to match the state.
         this.setState({
             columns: columns.map(col => {
-                col.isSorted = (col.key === column.key);
-
-                if (col.isSorted) {
-                    col.isSortedDescending = isSortedDescending;
+                col.isSorted = false;
+                if (col.key === column.key) {
+                    col.isSorted = true;
+                    col.isSortedDescending = !col.isSortedDescending;
                 }
-
                 return col;
             }),
             sortColumn: column

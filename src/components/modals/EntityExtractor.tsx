@@ -454,7 +454,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 {editingRound &&
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
-                            disabled={!this.state.isPendingSubmit || !allExtractResponsesValid || this.state.pendingVariationChange}
+                            disabled={!this.state.isPendingSubmit 
+                                || !allExtractResponsesValid 
+                                || this.state.pendingVariationChange}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Submit Changes'}
                             text={'Submit Changes'}

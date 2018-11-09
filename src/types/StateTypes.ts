@@ -37,6 +37,7 @@ export type TeachSessionState = {
     uiScoreInput: CLM.UIScoreInput | undefined,
     extractResponses: CLM.ExtractResponse[],
     extractConflict: CLM.ExtractResponse | null,
+    botAPIError: CLM.BotAPIError | null,
     scoreResponse: CLM.ScoreResponse | undefined,
     autoTeach: boolean
 }
