@@ -65,8 +65,8 @@ var MonitorDocumentChanges = (function()
             cy.wrap(700, {timeout: 60000}).should('lte', 'MillisecondsSinceLastChange').then(() => {
             helpers.ConLog(`cy.DoesNotContain()`, `DOM Is Stable`)
             var elements = Cypress.$(selector)
-            if (elements.length == 0) helpers.ConLog(`cy.DoesNotContain()`, `NOT FOUND Selector: ${selector}`)
-            else throw `Selector ${selector} was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`
+            if (elements.length > 0) throw `Selector ${selector} was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`
+            // helpers.ConLog(`cy.DoesNotContain()`, `PASSED - Selector: ${selector} was NOT Found as Expected`)
         })})
 
         Cypress.Commands.add('Click', { prevSubject: true, element: true}, (subject) => 

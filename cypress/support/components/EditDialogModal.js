@@ -55,14 +55,14 @@ export function SelectEachChatTurn(index = 0)
     {
       cy.wrap(elements[index]).Click().then(() =>
       {
-        ValidateChatTurnControls(elements[index])
+        ValidateChatTurnControls(elements[index], index)
         SelectEachChatTurn(index + 1)
       })
     }
   })
 }
 
-export function ValidateChatTurnControls(element)
+export function ValidateChatTurnControls(element, index)
 {
   helpers.Dump(`ValidateChatTurnControls()`, element)
 
@@ -75,23 +75,15 @@ export function ValidateChatTurnControls(element)
     throw 'Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)'
   }
 
+  if (index > 0) cy.Contains('[data-testid="edit-dialog-modal-delete-turn-button"]', 'Delete Turn')
+  else cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
+  
+  cy.Contains('[data-testid="chat-edit-add-score-button"]', '+')
+
   if (userMessage) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`ValidateChatTurnControls()`, 'Branch Found')
   else cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
 
-  // if (Cypress.$(element).find('i[data-icon-name="Delete"]') != undefined) 
-  // { helpers.ConLog(`ValidateChatTurnControls()`, 'FOUND Delete Icon')}
-  
-  // if (Cypress.$(element).find('div[data-testid="chat-edit-add-score-button"]') != undefined) 
-  // { helpers.ConLog(`ValidateChatTurnControls()`, 'FOUND Add Score Button')}
-
-  // var branchButtonElement = Cypress.$(element).find('button[data-testid="edit-dialog-modal-branch-button"]')
-  // { helpers.Dump(`ValidateChatTurnControls()`, branchButtonElement)}
-
-  // if (Cypress.$(element).find('button[data-testid="edit-dialog-modal-branch-button"]') != undefined) 
-  // { helpers.ConLog(`ValidateChatTurnControls()`, 'FOUND Branch Button')}
-
-  // if (Cypress.$(element).find('div[data-testid="chat-edit-add-input-button"]') != undefined) 
-  // { helpers.ConLog(`ValidateChatTurnControls()`, 'FOUND Add Input Button')}
+  cy.Contains('[data-testid="chat-edit-add-input-button"]', '+')
 }
 
 // Use these to get either Bot or User chat messages
