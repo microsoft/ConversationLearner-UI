@@ -51,7 +51,6 @@ var MonitorDocumentChanges = (function()
             cy.get(selector, options)
         })})
 
-        // Special case version that allows a 1 minute time out.
         Cypress.Commands.add('Contains', (selector, content, options) => 
         {   
             helpers.ConLog(`cy.Contains()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector -- Content: \n${selector} -- ${content}`)
@@ -122,7 +121,8 @@ var MonitorDocumentChanges = (function()
         {
             helpers.ConLog(thisFuncName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
             //cy.writeFile(currentHtml, `c:\\temp\\dom.${helpers.NowAsString()}.txt`)
-            if (dumpHtml || expectingSpinner) helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
+            //if (dumpHtml || expectingSpinner) 
+                helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
 
             lastChangeTime = currentTime
             lastHtml = currentHtml

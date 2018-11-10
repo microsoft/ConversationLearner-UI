@@ -37,7 +37,7 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
 
   // Validate that the branch button is within the same control group as the originalMessage that was just selected.
   cy.Get('[data-testid="edit-dialog-modal-branch-button"]').as('branchButton')
-    .parents('div.wc-message-selected').Contains('p', originalMessage)
+    .parents('div.wc-message-selected').contains('p', originalMessage)
 
   cy.Get('@branchButton').Click()
   
@@ -47,14 +47,15 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
 
 export function SelectEachChatTurn(index = 0)
 {
+  helpers.ConLog(`SelectEachChatTurn(${index})`, '')
   if (index == 0) cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')
   cy.Get('@allChatTurns').then(elements => 
   {
     if (index < elements.length)
     {
-      cy.wrap(elements[index]).Click().then(element =>
+      cy.wrap(elements[index]).Click().then(() =>
       {
-        ValidateChatTurnControls(element)
+        ValidateChatTurnControls(elements[index])
         SelectEachChatTurn(index + 1)
       })
     }
@@ -64,12 +65,33 @@ export function SelectEachChatTurn(index = 0)
 export function ValidateChatTurnControls(element)
 {
   helpers.Dump(`ValidateChatTurnControls()`, element)
-  // helpers.Dump(`ValidateChatTurnControls(user)`, Cypress.$(element).find('div.wc-message-from-me'))
-  // helpers.Dump(`ValidateChatTurnControls(bot)`, Cypress.$(element).find('div.wc-message-from-bot'))
-  // if (Cypress.$(element).find('div.wc-message-from-bot') != undefined) 
-  // { helpers.ConLog(`ValidateChatTurnControls()`, 'Bot message')}
-  // else if (Cypress.$(element).$('div.wc-message-from-me') != undefined)
-  // { helpers.ConLog(`ValidateChatTurnControls()`, 'User message')}
+
+  var userMessage
+  if (element.classList.contains('wc-message-from-me')) userMessage = true
+  else if (element.classList.contains('wc-message-from-bot')) userMessage = false
+  else
+  {
+    helpers.Dump(`ValidateChatTurnControls()`, element)
+    throw 'Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)'
+  }
+
+  // var currentHtml = Cypress.$('html')[0].outerHTML
+  // if (currentHtml.includes('data-testid="edit-dialog-modal-branch-button"')) helpers.ConLog(`ValidateChatTurnControls()`, 'FOUND Branch Button')
+  if (userMessage) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`ValidateChatTurnControls()`, 'Branch Found')
+  // if (Cypress.$(element).find('i[data-icon-name="Delete"]') != undefined) 
+  // { helpers.ConLog(`ValidateChatTurnControls()`, 'FOUND Delete Icon')}
+  
+  // if (Cypress.$(element).find('div[data-testid="chat-edit-add-score-button"]') != undefined) 
+  // { helpers.ConLog(`ValidateChatTurnControls()`, 'FOUND Add Score Button')}
+
+  // var branchButtonElement = Cypress.$(element).find('button[data-testid="edit-dialog-modal-branch-button"]')
+  // { helpers.Dump(`ValidateChatTurnControls()`, branchButtonElement)}
+
+  // if (Cypress.$(element).find('button[data-testid="edit-dialog-modal-branch-button"]') != undefined) 
+  // { helpers.ConLog(`ValidateChatTurnControls()`, 'FOUND Branch Button')}
+
+  // if (Cypress.$(element).find('div[data-testid="chat-edit-add-input-button"]') != undefined) 
+  // { helpers.ConLog(`ValidateChatTurnControls()`, 'FOUND Add Input Button')}
 }
 
 // Use these to get either Bot or User chat messages
