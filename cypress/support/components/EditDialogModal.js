@@ -75,9 +75,9 @@ export function ValidateChatTurnControls(element)
     throw 'Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)'
   }
 
-  // var currentHtml = Cypress.$('html')[0].outerHTML
-  // if (currentHtml.includes('data-testid="edit-dialog-modal-branch-button"')) helpers.ConLog(`ValidateChatTurnControls()`, 'FOUND Branch Button')
   if (userMessage) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`ValidateChatTurnControls()`, 'Branch Found')
+  else cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
+
   // if (Cypress.$(element).find('i[data-icon-name="Delete"]') != undefined) 
   // { helpers.ConLog(`ValidateChatTurnControls()`, 'FOUND Delete Icon')}
   

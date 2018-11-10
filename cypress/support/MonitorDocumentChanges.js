@@ -59,6 +59,16 @@ var MonitorDocumentChanges = (function()
             cy.contains(selector, content, options)
         })})
 
+        Cypress.Commands.add('DoesNotContain', (selector) => 
+        {   
+            helpers.ConLog(`cy.DoesNotContain()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector: \n${selector}`)
+            cy.wrap(700, {timeout: 60000}).should('lte', 'MillisecondsSinceLastChange').then(() => {
+            helpers.ConLog(`cy.DoesNotContain()`, `DOM Is Stable`)
+            var elements = Cypress.$(selector)
+            if (elements.length == 0) helpers.ConLog(`cy.DoesNotContain()`, `NOT FOUND Selector: ${selector}`)
+            else throw `Selector ${selector} was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`
+        })})
+
         Cypress.Commands.add('Click', { prevSubject: true, element: true}, (subject) => 
         {
             helpers.ConLog(`cy.Click()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
