@@ -46,6 +46,7 @@ export function Save()
   cy.Train_VerifyTrainingSummaryIsInGrid()
 }
 
+
 export function OneTimeInitialization()
 {
   Cypress.Commands.add("Train_CreateNewTrainDialog", () =>
@@ -105,7 +106,27 @@ export function OneTimeInitialization()
     }
     throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${window.trainingSummary.FirstInput} -- LastInput: ${window.trainingSummary.LastInput} -- LastResponse: ${window.trainingSummary.LastResponse} -- Turns: ${window.trainingSummary.Turns} -- LastModifiedDate: ${window.trainingSummary.LastModifiedDate} -- CreatedDate: ${window.trainingSummary.CreatedDate}`
   })
+
+  Cypress.Commands.add("Train_EditTraining", (firstInput, lastInput, lastResponse) =>
+  {
+    var firstInputs = trainDialogsGrid.GetFirstInputs()
+    var lastInputs = trainDialogsGrid.GetLastInputs()
+    var lastResponses = trainDialogsGrid.GetLastResponses()
+
+    for (var i = 0; i < firstInputs.length; i++)
+    {
+      if (firstInputs[i] == firstInput &&
+          lastInputs[i] == lastInput &&
+          lastResponses[i] == lastResponse)
+        {
+          trainDialogsGrid.ClickTraining(i)
+          return
+        }
+    }
+    throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${window.trainingSummary.FirstInput} -- LastInput: ${window.trainingSummary.LastInput} -- LastResponse: ${window.trainingSummary.LastResponse}`
+  })
 }
+
 
 function ConLogTrainingSummary(message)
 {

@@ -9,6 +9,7 @@ export function CreateNewTrainDialog()            { cy.Get('[data-testid="button
 export function SearchBox()                       { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
 export function EntityDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-entity"]')}
 export function ActionDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-action"]')}
+export function ClickTraining(row)                { cy.Get('[data-testid="train-dialogs-first-input"]').then(elements => { cy.wrap(elements[row]).Click() })}
 
 // Workaround:   Wanted to do this the first way, but it does not work due to the variable
 //               being passed in at the time cy.Get command is queued and not at the time

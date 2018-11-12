@@ -8,15 +8,25 @@
 export function TypeYourMessage(trainMessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainMessage}{enter}`) }  // data-testid NOT possible
 export function ClickSetInitialStateButton()          { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
 export function ClickScoreActionsButton()             { cy.Get('[data-testid="entity-extractor-score-actions-button"]').Click() }
-export function ClickSaveButton()                     { cy.Get('[data-testid="teach-session-footer-button-save"]').Click() }
-export function clickAbandonButton()                  { cy.Get('[data-testid="teach-session-footer-button-abandon"]').Click() }
+export function ClickSaveButton()                     { cy.Get('[data-testid="teach-session-modal-save-button"]').Click() }
+export function ClickAbandonButton()                  { cy.Get('[data-testid="teach-session-modal-abandon-button"]').Click() }
+export function ClickSaveCloseButton()                { cy.Get('[data-testid="edit-dialog-modal-close-save-button"]').Click() }
 export function VerifyEntityMemoryIsEmpty()           { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function EntitySearch()                        { cy.Get('[data-testid="entity-picker-entity-search"]') }
 export function AlternativeInputText()                { cy.Get('[data-testid="entity-extractor-alternative-input-text"]') }
 export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 
-// Selects from ALL chat messages, from both Bot and User
+// data-testid="edit-dialog-modal-replay-button"
+// data-testid="edit-dialog-modal-delete"
+
+export function VerifyDetectedEntity(entityName, entityValue)
+{
+  cy.Get('[data-testid="custom-entity-name-button"]').contains(entityName)
+  cy.Get('[data-testid="token-node-entity-value"]').contains(entityValue)
+}
+
+// Selects FROM ALL chat messages, from both Bot and User
 // Once clicked, more UI elements will become visible & enabled
 export function SelectChatTurn(message, index = 0)
 {
@@ -42,10 +52,12 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
   cy.Get('@branchButton').Click()
   
   cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
-
+  // TODO: Verify that data-testid="edit-dialog-modal-score-actions-button" exists
+  //       Verify that number of turns are reduced by the ones that were cut off.
+  //       Verify that "Replay", "Save Branch" & "Abandon Branch" buttons appear and are enabled.
 }
 
-export function SelectEachChatTurn(index = 0)
+export function SelectAndValidateEachChatTurn(index = 0)
 {
   helpers.ConLog(`SelectEachChatTurn(${index})`, '')
   if (index == 0) cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')
@@ -56,7 +68,7 @@ export function SelectEachChatTurn(index = 0)
       cy.wrap(elements[index]).Click().then(() =>
       {
         ValidateChatTurnControls(elements[index], index)
-        SelectEachChatTurn(index + 1)
+        SelectAndValidateEachChatTurn(index + 1)
       })
     }
   })
@@ -84,17 +96,6 @@ export function ValidateChatTurnControls(element, index)
   else cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
 
   cy.Contains('[data-testid="chat-edit-add-input-button"]', '+')
-}
-
-// Use these to get either Bot or User chat messages
-// div.wc-message.wc-message-from-me.wc-message-color-train
-// div.wc-message.wc-message-from-bot.wc-message-color-bot
-
-
-export function VerifyDetectedEntity(entityName, entityValue)
-{
-  cy.Get('[data-testid="custom-entity-name-button"]').contains(entityName)
-  cy.Get('[data-testid="token-node-entity-value"]').contains(entityValue)
 }
 
 

@@ -749,14 +749,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
                             <div className="cl-modal-buttons_primary">
                                 <OF.PrimaryButton
-                                    data-testid="teach-session-footer-button-save"
+                                    data-testid="teach-session-modal-save-button"
                                     disabled={saveDisable}
                                     onClick={this.onClickSave}
                                     ariaDescription={this.renderSaveText(intl)}
                                     text={this.renderSaveText(intl)}
                                 />
                                 <OF.DefaultButton
-                                    data-testid="teach-session-footer-button-abandon"
+                                    data-testid="teach-session-modal-abandon-button"
                                     disabled={false}
                                     className="cl-button-delete"
                                     onClick={this.onClickAbandonTeach}

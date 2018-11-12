@@ -8,7 +8,7 @@ const homePage = require('../../support/components/HomePage')
 const modelPage = require('../../support/components/ModelPage')
 const train = require('../../support/Train')
 const trainDialogsGrid = require('../../support/components/TrainDialogsGrid')
-const editDialogsModal = require('../../support/components/EditDialogModal')
+const editDialogModal = require('../../support/components/EditDialogModal')
 
 /// Description: A temporary workspace for experimental code
 describe('zTemp test', () =>
@@ -20,9 +20,9 @@ describe('zTemp test', () =>
     // modelPage.NavigateToTrainDialogs()
     cy.pause()
 
-    // editDialogsModal.SelectChatTurn('Hello Paul', 3)
+    // editDialogModal.SelectChatTurn('Hello Paul', 3)
     // cy.pause()
-    // editDialogsModal.BranchChatTurn('Paul is not here', 'Larry wants to join the fun')
-    editDialogsModal.SelectEachChatTurn()
+    // editDialogModal.BranchChatTurn('Paul is not here', 'Larry wants to join the fun')
+    editDialogModal.SelectAndValidateEachChatTurn()
   })
 })
