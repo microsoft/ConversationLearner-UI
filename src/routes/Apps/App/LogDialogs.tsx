@@ -460,6 +460,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             if (history.rounds[roundIndex].scorerSteps.length > 0 && history.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
                 history.rounds[roundIndex].scorerSteps = []
             }
+            else if (!scoreIndex) {
+                history.rounds[roundIndex].scorerSteps = []  
+            }
             // Or remove following scorer steps 
             else {
                 history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
