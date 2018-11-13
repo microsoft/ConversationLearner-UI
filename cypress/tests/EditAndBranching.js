@@ -11,12 +11,20 @@ const train = require('../support/Train')
 const trainDialogsGrid = require('../support/components/TrainDialogsGrid')
 const editDialogModal = require('../support/components/EditDialogModal')
 
-export function VerifyChatEditControls()
+export function VerifyEditTrainingControlsAndLabels()
 {
   var modelName = models.ImportModel('Model-EnB', 'Model1-mni.cl')
   modelPage.NavigateToTrainDialogs()
 
   cy.Train_EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
+  editDialogModal.VerifyCloseButtonLabel()
+  editDialogModal.VerifyDeleteButtonLabel()
+
   editDialogModal.SelectAndValidateEachChatTurn()
-  editDialogModal.ClickSaveCloseButton()
+  
+  editDialogModal.BranchChatTurn('My name is Susan.', 'I am Groot')
+  editDialogModal.VerifySaveBranchButtonLabel()
+  editDialogModal.VerifyAbandonBranchButtonLabel()
+
+  editDialogModal.AbandonBranchChanges()
 }

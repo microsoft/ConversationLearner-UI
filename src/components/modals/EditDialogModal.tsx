@@ -873,7 +873,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 text={this.renderSaveText(intl)}
                             />
                             <OF.DefaultButton
-                                data-testid="edit-dialog-modal-delete"
+                                data-testid="edit-dialog-modal-delete-button"
                                 className="cl-button-delete"
                                 disabled={this.props.editState !== EditState.CAN_EDIT}
                                 onClick={this.onClickAbandon}

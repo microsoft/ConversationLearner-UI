@@ -28,7 +28,7 @@ var testGroups =
     {
       name: 'EditAndBranching', tests:
         [
-          { name: "Verify Chat Edit Controls", func: editAndBranching.VerifyChatEditControls },
+          { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
         ]
     },
     {

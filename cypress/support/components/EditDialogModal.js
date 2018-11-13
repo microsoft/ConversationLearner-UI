@@ -3,22 +3,36 @@
  * Licensed under the MIT License.
  */
 
- const helpers = require('../../support/Helpers')
+const homePage = require('../../support/components/HomePage')
+const helpers = require('../../support/Helpers')
 
 export function TypeYourMessage(trainMessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainMessage}{enter}`) }  // data-testid NOT possible
 export function ClickSetInitialStateButton()          { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
 export function ClickScoreActionsButton()             { cy.Get('[data-testid="entity-extractor-score-actions-button"]').Click() }
-export function ClickSaveButton()                     { cy.Get('[data-testid="teach-session-modal-save-button"]').Click() }
-export function ClickAbandonButton()                  { cy.Get('[data-testid="teach-session-modal-abandon-button"]').Click() }
-export function ClickSaveCloseButton()                { cy.Get('[data-testid="edit-dialog-modal-close-save-button"]').Click() }
 export function VerifyEntityMemoryIsEmpty()           { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function EntitySearch()                        { cy.Get('[data-testid="entity-picker-entity-search"]') }
 export function AlternativeInputText()                { cy.Get('[data-testid="entity-extractor-alternative-input-text"]') }
 export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 
+// NOTE: These two are for the NEW TRAIN DIALOG mode, for EDIT EXISTING TRAINING see next group of functions.
+export function ClickSaveButton()                     { cy.Get('[data-testid="teach-session-modal-save-button"]').Click() }
+export function ClickAbandonButton()                  { cy.Get('[data-testid="teach-session-modal-abandon-button"]').Click() }
+
+export function ClickSaveCloseButton()                { cy.Get('[data-testid="edit-dialog-modal-close-save-button"]').Click() }
+export function VerifyCloseButtonLabel()              { cy.Get('[data-testid="edit-dialog-modal-close-save-button"]').contains('Close') }
+export function VerifySaveBranchButtonLabel()         { cy.Get('[data-testid="edit-dialog-modal-close-save-button"]').contains('Save Branch') }
+
+export function ClickAbandonDeleteButton()            { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').Click() }
+export function VerifyDeleteButtonLabel()             { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').contains('Delete') }
+export function VerifyAbandonBranchButtonLabel()      { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').contains('Abandon Branch') }
+
+export function AbandonBranchChanges()
+{
+  ClickAbandonDeleteButton()
+  homePage.ClickConfirmButton()
+}
 // data-testid="edit-dialog-modal-replay-button"
-// data-testid="edit-dialog-modal-delete"
 
 export function VerifyDetectedEntity(entityName, entityValue)
 {
@@ -97,7 +111,6 @@ export function ValidateChatTurnControls(element, index)
 
   cy.Contains('[data-testid="chat-edit-add-input-button"]', '+')
 }
-
 
 export function HighlightWord(word) {
   cy.get('span[class="cl-token-node"]')
