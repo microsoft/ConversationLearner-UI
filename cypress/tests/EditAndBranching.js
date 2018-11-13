@@ -20,7 +20,8 @@ export function VerifyEditTrainingControlsAndLabels()
   editDialogModal.VerifyCloseButtonLabel()
   editDialogModal.VerifyDeleteButtonLabel()
 
-  editDialogModal.SelectAndValidateEachChatTurn()
+  editDialogModal.VerifyThereAreNoSpecialChatControls('My name is David.', 'Hello Susan')
+  editDialogModal.SelectAndVerifyEachChatTurn()
   
   editDialogModal.BranchChatTurn('My name is Susan.', 'I am Groot')
   editDialogModal.VerifySaveBranchButtonLabel()

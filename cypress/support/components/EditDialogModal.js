@@ -59,7 +59,7 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
 
   SelectChatTurn(originalMessage, originalIndex)
 
-  // Validate that the branch button is within the same control group as the originalMessage that was just selected.
+  // Verify that the branch button is within the same control group as the originalMessage that was just selected.
   cy.Get('[data-testid="edit-dialog-modal-branch-button"]').as('branchButton')
     .parents('div.wc-message-selected').contains('p', originalMessage)
 
@@ -71,7 +71,7 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
   //       Verify that "Replay", "Save Branch" & "Abandon Branch" buttons appear and are enabled.
 }
 
-export function SelectAndValidateEachChatTurn(index = 0)
+export function SelectAndVerifyEachChatTurn(index = 0)
 {
   helpers.ConLog(`SelectEachChatTurn(${index})`, '')
   if (index == 0) cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')
@@ -81,23 +81,21 @@ export function SelectAndValidateEachChatTurn(index = 0)
     {
       cy.wrap(elements[index]).Click().then(() =>
       {
-        ValidateChatTurnControls(elements[index], index)
-        SelectAndValidateEachChatTurn(index + 1)
+        VerifyChatTurnControls(elements[index], index)
+        SelectAndVerifyEachChatTurn(index + 1)
       })
     }
   })
 }
 
-export function ValidateChatTurnControls(element, index)
+export function VerifyChatTurnControls(element, index)
 {
-  helpers.Dump(`ValidateChatTurnControls()`, element)
-
   var userMessage
   if (element.classList.contains('wc-message-from-me')) userMessage = true
   else if (element.classList.contains('wc-message-from-bot')) userMessage = false
   else
   {
-    helpers.Dump(`ValidateChatTurnControls()`, element)
+    helpers.Dump(`VerifyChatTurnControls()`, element)
     throw 'Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)'
   }
 
@@ -106,10 +104,21 @@ export function ValidateChatTurnControls(element, index)
   
   cy.Contains('[data-testid="chat-edit-add-score-button"]', '+')
 
-  if (userMessage) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`ValidateChatTurnControls()`, 'Branch Found')
+  if (userMessage) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`VerifyChatTurnControls()`, 'Branch Found')
   else cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
 
   cy.Contains('[data-testid="chat-edit-add-input-button"]', '+')
+}
+
+// Inputs needed: Any user message and any bot message expected in chat.
+export function VerifyThereAreNoSpecialChatControls(userMessage, botMessage)
+{
+  cy.Get('.wc-message-from-me').contains(userMessage)
+  cy.Get('.wc-message-from-bot').contains(botMessage)
+  cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
+  cy.DoesNotContain('[data-testid="chat-edit-add-score-button"]', '+')
+  cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
+  cy.DoesNotContain('[data-testid="chat-edit-add-input-button"]', '+')
 }
 
 export function HighlightWord(word) {

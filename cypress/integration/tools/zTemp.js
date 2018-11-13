@@ -23,6 +23,6 @@ describe('zTemp test', () =>
     // editDialogModal.SelectChatTurn('Hello Paul', 3)
     // cy.pause()
     // editDialogModal.BranchChatTurn('Paul is not here', 'Larry wants to join the fun')
-    editDialogModal.SelectAndValidateEachChatTurn()
+    editDialogModal.VerifyThereAreNoSpecialChatControls('My name is David.', 'Hello Susan')
   })
 })
