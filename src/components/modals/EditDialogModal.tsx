@@ -619,7 +619,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return (
                 <div className="wc-console">
                     <OF.PrimaryButton
-                        data-testid="edit-dialog-modal-score-actions-button"
+                        data-testid="score-actions-button"
                         className="cl-rightjustify"
                         onClick={() => this.onClickAddScore(this.props.history[this.props.history.length - 1], SelectionType.NONE)}
                         ariaDescription={'Score Actions'}
