@@ -13,11 +13,12 @@ export function EntityDropDownFilter()            { cy.Get('[data-testid="dropdo
 export function ActionDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-action"]')}
 export function ClickTraining(row)                { cy.Get('[data-testid="train-dialogs-first-input"]').then(elements => { cy.wrap(elements[row]).Click() })}
 
-// Workaround:   Wanted to do this the first way, but it does not work due to the variable
-//               being passed in at the time cy.Get command is queued and not at the time
-//               that the command is run.
-//export function GridIsReady(expectedCount)        { cy.Get('[data-testid="train-dialogs-turns"]').should('have.length', expectedCount)}
-export function GridIsReady(countValidationFunc)  { cy.Get('[data-testid="train-dialogs-turns"]').should(countValidationFunc) }
+export function WaitForGridReadyThen(funcToRunAfterGridIsReady)  
+{ 
+  cy.Get('[data-testid="train-dialogs-turns"]')
+    .should(elements => { expect(elements).to.have.length(window.expectedTrainGridRowCount)})
+    .then(() => { funcToRunAfterGridIsReady() }) 
+}
 
 // These functions circumvent the Cypress retry logic by using jQuery
 export function GetFirstInputs()                  { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-first-input"]')}

@@ -37,13 +37,32 @@ export function Save()
   editDialogModal.ClickSaveButton()
   cy.Train_Save()
   trainDialogsGrid.VerifyPageTitle()
-  
-  // Workaround: We need to do this here instead of inside of Train_VerifyTrainingSummaryIsInGrid()
-  //             since Cypress won't retry that function. ALSO we need to prevent that function 
-  //             from executing until we know the grid is populated and this will do that.
-  trainDialogsGrid.GridIsReady(elements => { expect(elements).to.have.length(window.expectedTrainGridRowCount)})
+  VerifyTrainingSummaryIsInGrid()
+}
 
-  cy.Train_VerifyTrainingSummaryIsInGrid()
+export function VerifyTrainingSummaryIsInGrid()
+{
+  trainDialogsGrid.WaitForGridReadyThen(() =>
+  {
+    var turns = trainDialogsGrid.GetTurns()
+    var firstInputs = trainDialogsGrid.GetFirstInputs()
+    var lastInputs = trainDialogsGrid.GetLastInputs()
+    var lastResponses = trainDialogsGrid.GetLastResponses()
+    var lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
+    var createdDates = trainDialogsGrid.GetCreatedDates()
+
+    for (var i = 0; i < window.expectedTrainGridRowCount; i++)
+    {
+      if (lastModifiedDates[i] == window.trainingSummary.LastModifiedDate && 
+          turns[i] == window.trainingSummary.Turns &&
+          createdDates[i] == window.trainingSummary.CreatedDate &&
+          firstInputs[i] == window.trainingSummary.FirstInput &&
+          lastInputs[i] == window.trainingSummary.LastInput &&
+          lastResponses[i] == window.trainingSummary.LastResponse)
+        return
+    }
+    throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${window.trainingSummary.FirstInput} -- LastInput: ${window.trainingSummary.LastInput} -- LastResponse: ${window.trainingSummary.LastResponse} -- Turns: ${window.trainingSummary.Turns} -- LastModifiedDate: ${window.trainingSummary.LastModifiedDate} -- CreatedDate: ${window.trainingSummary.CreatedDate}`
+  })
 }
 
 
@@ -80,33 +99,7 @@ export function OneTimeInitialization()
   })
 
   Cypress.Commands.add("Train_Save", () => { window.trainingSummary.CreatedDate = window.trainingSummary.LastModifiedDate = Today() })
-
-  Cypress.Commands.add("Train_VerifyTrainingSummaryIsInGrid", () =>
-  {
-    var turns = trainDialogsGrid.GetTurns()
-
-    // Workaround: Can NOT do this here because Cypress does not do its retry on this method.
-    // expect(window.expectedTrainGridRowCount).to.equal(turns.length)
-    
-    var firstInputs = trainDialogsGrid.GetFirstInputs()
-    var lastInputs = trainDialogsGrid.GetLastInputs()
-    var lastResponses = trainDialogsGrid.GetLastResponses()
-    var lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
-    var createdDates = trainDialogsGrid.GetCreatedDates()
-
-    for (var i = 0; i < window.expectedTrainGridRowCount; i++)
-    {
-      if (lastModifiedDates[i] == window.trainingSummary.LastModifiedDate && 
-          turns[i] == window.trainingSummary.Turns &&
-          createdDates[i] == window.trainingSummary.CreatedDate &&
-          firstInputs[i] == window.trainingSummary.FirstInput &&
-          lastInputs[i] == window.trainingSummary.LastInput &&
-          lastResponses[i] == window.trainingSummary.LastResponse)
-        return
-    }
-    throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${window.trainingSummary.FirstInput} -- LastInput: ${window.trainingSummary.LastInput} -- LastResponse: ${window.trainingSummary.LastResponse} -- Turns: ${window.trainingSummary.Turns} -- LastModifiedDate: ${window.trainingSummary.LastModifiedDate} -- CreatedDate: ${window.trainingSummary.CreatedDate}`
-  })
-
+  
   Cypress.Commands.add("Train_EditTraining", (firstInput, lastInput, lastResponse) =>
   {
     var firstInputs = trainDialogsGrid.GetFirstInputs()
