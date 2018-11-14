@@ -36,11 +36,11 @@ export const createActionThunkAsync = (appId: string, action: ActionBase) => {
             const newAction = await clClient.actionsCreate(appId, action);
             dispatch(createActionFulfilled(newAction));
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
-            return true;
+            return newAction;
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_ACTION_ASYNC))
-            return false;
+            return null;
         }
     }
 }

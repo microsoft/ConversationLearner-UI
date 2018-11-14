@@ -29,7 +29,6 @@ import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
 import { SelectionType } from '../../types/const'
 import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { EditDialogType } from '.';
 import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs';
 
@@ -84,7 +83,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
  
-    @autobind
+    @OF.autobind
     onDismissError(errorType: AT): void {
         this.props.onClose(false);
     }
@@ -139,14 +138,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }   
     }
 
-    @autobind
+    @OF.autobind
     onInitStateClicked() {
         this.setState({
             isInitStateOpen: true
         })
     }
 
-    @autobind
+    @OF.autobind
     async onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
         if (filledEntityMap && this.props.onSetInitialEntities) {
             await this.props.onSetInitialEntities(filledEntityMap.FilledEntities())              
@@ -157,19 +156,19 @@ class TeachModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onClickAbandonTeach() {
         this.setState({
             isConfirmDeleteOpen: true
         })
     }
 
-    @autobind
+    @OF.autobind
     onClickSave() {
         this.props.onClose(true)
     }
 
-    @autobind
+    @OF.autobind
     async onClickConfirmDelete() {
         await Utils.setStateAsync(this, {
             isConfirmDeleteOpen: false
@@ -177,7 +176,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.props.onClose(false)
     }
 
-    @autobind
+    @OF.autobind
     onClickCancelDelete() {
         this.setState({
             isConfirmDeleteOpen: false
@@ -392,7 +391,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         throw new Error("Fail to render")
     }
 
-    @autobind
+    @OF.autobind
     onClickAddUserInput() {
         const isLastActivity = this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1)
         const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
@@ -402,20 +401,26 @@ class TeachModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onCancelAddUserInput() {
         this.setState({
             isUserInputModalOpen: false
         })
     }
 
-    @autobind
+    @OF.autobind
+    onClickUndoInput(): void {
+        // Replay dialog to get rid of input
+        this.props.onEditTeach(0, null, this.props.onReplayDialog) 
+    }
+
+    @OF.autobind
     onCloseBotAPIError(): void { 
         // Delete the most recent turn with the error
         this.props.onEditTeach(this.state.nextActivityIndex - 1, null, this.props.onDeleteTurn) 
     }
 
-    @autobind
+    @OF.autobind
     onSubmitAddUserInput(userInput: string) {
         this.setState({
             isUserInputModalOpen: false
@@ -425,7 +430,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     onInsertAction() {
         if (this.state.selectedActivityIndex != null) { 
             const isLastActivity = this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1)
@@ -434,21 +439,21 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     onDeleteTurn() {
         if (this.state.selectedActivityIndex != null) { 
             this.props.onEditTeach(this.state.selectedActivityIndex, null, this.props.onDeleteTurn) 
         }
     }
 
-    @autobind
+    @OF.autobind
     onEditExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
         if (this.state.selectedActivityIndex != null) { 
             this.props.onEditTeach(this.state.selectedActivityIndex, {extractResponse, textVariations}, this.props.onChangeExtraction) 
         }
     }
 
-    @autobind
+    @OF.autobind
     onEditScore(trainScorerStep: CLM.TrainScorerStep) {
         if (this.state.selectedActivityIndex != null) { 
             this.props.onEditTeach(this.state.selectedActivityIndex, {trainScorerStep}, this.props.onChangeAction) 
@@ -459,7 +464,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
        return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType)
     }
 
-    @autobind
+    @OF.autobind
     renderSelectedActivity(activity: Activity): (JSX.Element | null) {
 
         if (this.state.selectedActivityIndex === null) {
@@ -620,7 +625,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             && this.state.selectedActivityIndex !== null)
     }
 
-    @autobind
+    @OF.autobind
     renderWebchatInput(): JSX.Element | null {
         if (this.shouldShowScoreButton() && this.state.selectedActivityIndex != null) {
             return (
@@ -748,6 +753,21 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             </div>
 
                             <div className="cl-modal-buttons_primary">
+                                {this.props.teachSession.dialogMode === CLM.DialogMode.Extractor && this.state.nextActivityIndex > 1 &&
+                                    <OF.PrimaryButton
+                                        data-testid="teach-session-footer-button-save"
+                                        disabled={false}
+                                        onClick={this.onClickUndoInput}
+                                        ariaDescription={intl.formatMessage({
+                                            id: FM.BUTTON_UNDO,
+                                            defaultMessage: 'Undo'
+                                        })}
+                                        text={intl.formatMessage({
+                                            id: FM.BUTTON_UNDO,
+                                            defaultMessage: 'Undo'
+                                        })}
+                                    />
+                                }
                                 <OF.PrimaryButton
                                     data-testid="teach-session-footer-button-save"
                                     disabled={saveDisable}
@@ -827,6 +847,7 @@ export interface ReceivedProps {
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
+    onReplayDialog: (trainDialog: CLM.TrainDialog) => any
     onSetInitialEntities: ((initialFilledEntities: CLM.FilledEntity[]) => void) | null
     app: CLM.AppBase
     teachSession: TeachSessionState

@@ -847,7 +847,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 <OF.PrimaryButton
                                     data-testid="footer-button-done"
                                     disabled={this.state.pendingExtractionChanges || this.props.editState !== EditState.CAN_EDIT}
-                                    onClick={() => this.props.onReplay(this.props.trainDialog)}
+                                    onClick={() => this.props.onReplayDialog(this.props.trainDialog)}
                                     ariaDescription={    
                                         intl.formatMessage({
                                             id: FM.BUTTON_REPLAY,
@@ -955,7 +955,7 @@ export interface ReceivedProps {
     onBranchDialog: ((trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => void) | null,
     onContinueDialog: (newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) => void
     onSaveDialog: (newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) => void
-    onReplay: (newTrainDialog: CLM.TrainDialog) => void
+    onReplayDialog: (newTrainDialog: CLM.TrainDialog) => void
     // Add a new train dialog to the Model (when EditDialogType === NEW)
     onCreateDialog: (newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) => void
     onDeleteDialog: () => void

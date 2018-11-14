@@ -460,6 +460,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             if (history.rounds[roundIndex].scorerSteps.length > 0 && history.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
                 history.rounds[roundIndex].scorerSteps = []
             }
+            else if (!scoreIndex) {
+                history.rounds[roundIndex].scorerSteps = []  
+            }
             // Or remove following scorer steps 
             else {
                 history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
@@ -1084,6 +1087,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                         onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)} 
                         onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)} 
+                        onReplayDialog={(trainDialog) => this.onReplayTrainDialog(trainDialog)}
                         editType={this.state.editType} 
                         initialHistory={this.state.history}
                         lastAction={this.state.lastAction}
@@ -1112,7 +1116,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onDeleteDialog={this.onDeleteLogDialog}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onSaveDialog={(editedTrainDialog, validity) => this.onSaveTrainDialog(editedTrainDialog, validity)}
-                    onReplay={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
+                    onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={() =>  { }}
                 />
             </div>

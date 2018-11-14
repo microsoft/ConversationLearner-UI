@@ -8,10 +8,8 @@ import actions from '../../../actions'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as OF from 'office-ui-fabric-react'
-import * as TC from '../../tipComponents'
 import { State, PreBuiltEntities } from '../../../types'
 import { CLDropdownOption } from '../CLDropDownOption'
-import * as ToolTip from '../../ToolTips/ToolTips'
 import * as CLM from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
 import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
@@ -87,7 +85,7 @@ class Container extends React.Component<Props, ComponentState> {
     get NEW_ENTITY(): string {
         return this.props.intl.formatMessage({
             id: FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW,
-            defaultMessage: 'custom'
+            defaultMessage: 'custom trained'
         });
     }
 
@@ -116,6 +114,12 @@ class Container extends React.Component<Props, ComponentState> {
                 key: 'divider',
                 text: '-',
                 itemType: OF.DropdownMenuItemType.Divider,
+                style: 'clDropdown--normal'
+            },
+            {
+                key: 'Header',
+                text: 'Pre-Trained',
+                itemType: OF.DropdownMenuItemType.Header,
                 style: 'clDropdown--normal'
             }
         ]
@@ -296,7 +300,7 @@ class Container extends React.Component<Props, ComponentState> {
         const isProgrammaticVal = obj.text === this.PROGRAMMATIC_ENTITY
         const isPrebuilt = this.state.entityNameVal === Container.GetPrebuiltEntityName(this.state.entityTypeVal) && isBuiltInType        
         const isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal
-        const isMultivalueVal = isBuiltInType ? true : this.state.isMultivalueVal
+        const isMultivalueVal = this.state.isMultivalueVal
 
         this.setState(prevState => ({
             isPrebuilt,
@@ -491,72 +495,6 @@ class Container extends React.Component<Props, ComponentState> {
         history.push(`/home/${this.props.app.appId}/trainDialogs`, { app: this.props.app, entityFilter: this.props.entity })
     }
 
-    renderEdit() {
-        const { intl } = this.props
-        const disabled = this.state.isEditing && this.isInUse()
-        const typeEditingDisabled = this.state.isEditing
-        return (
-            <div className="cl-entity-creator-form">
-                <OF.Dropdown
-                    data-testid="entity-creator-entity-type-dropdown--isThisUsed"
-                    ariaLabel={intl.formatMessage({
-                        id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
-                        defaultMessage: 'Entity Type'
-                    })}
-                    label={intl.formatMessage({
-                        id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
-                        defaultMessage: 'Entity Type'
-                    })}
-                    options={this.entityOptions}
-                    onChanged={this.onChangedType}
-                    onRenderOption={(option) => this.onRenderOption(option as CLDropdownOption)}
-                    selectedKey={this.state.entityTypeVal}
-                    disabled={typeEditingDisabled || this.props.entityTypeFilter != null}
-                />
-                <OF.TextField
-                    data-testid="entity-creator-entity-name-text--isThisUsed"
-                    onGetErrorMessage={this.onGetNameErrorMessage}
-                    onChanged={this.onChangedName}
-                    onKeyDown={this.onKeyDownName}
-                    label={intl.formatMessage({
-                        id: FM.ENTITYCREATOREDITOR_FIELDS_NAME_LABEL,
-                        defaultMessage: 'Entity Name'
-                    })}
-                    placeholder={intl.formatMessage({
-                        id: FM.ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER,
-                        defaultMessage: 'Name...'
-                    })}
-                    required={true}
-                    value={this.state.isPrebuilt ? Container.GetPrebuiltEntityName(this.state.entityTypeVal) : this.state.entityNameVal}
-                    disabled={this.state.isPrebuilt}
-                />
-                <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
-                    <TC.Checkbox
-                        data-testid="entitycreator-checkbox-multivalued"
-                        label={intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL,
-                            defaultMessage: 'Multi-valued'
-                        })}
-                        checked={this.state.isMultivalueVal}
-                        onChange={this.onChangeMultivalue}
-                        disabled={disabled}
-                        tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
-                    />
-                    <TC.Checkbox
-                        data-testid="entitycreator-checkbox-negatable"
-                        label={intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL,
-                            defaultMessage: 'Negatable'
-                        })}
-                        checked={this.state.isNegatableVal}
-                        onChange={this.onChangeReversible}
-                        disabled={disabled || this.state.isPrebuilt}
-                        tipType={ToolTip.TipType.ENTITY_NEGATABLE}
-                    />
-                </div>
-            </div>
-        )
-    }
     render() {
         const { intl } = this.props
         // const isEntityInUse = this.state.isEditing && this.isInUse()

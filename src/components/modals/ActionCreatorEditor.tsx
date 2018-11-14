@@ -387,7 +387,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const requiredEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.requiredEntityTags, initialEditState.requiredEntityTags)
         const disqualifyingEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.negativeEntityTags, initialEditState.negativeEntityTags)
 
-
         const isTerminalChanged = initialEditState!.isTerminal !== this.state.isTerminal
         const hasPendingChanges = isAnyPayloadChanged
             || expectedEntitiesChanged
@@ -524,29 +523,33 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         switch (this.state.selectedActionTypeOptionKey) {
             case ActionTypes.TEXT: {
                 const textValue = this.state.slateValuesMap[TEXT_SLOT]
-                payload = JSON.stringify({
+                const tp: TextPayload = {
                     json: textValue.toJSON()
-                } as TextPayload)
+                } 
+                payload = JSON.stringify(tp)
                 break;
             }
             case ActionTypes.CARD:
-                payload = JSON.stringify({
+                const cp: CardPayload = {
                     payload: this.state.selectedCardOptionKey!.toString(),
                     arguments: this.getActionArguments(this.state.slateValuesMap)
-                } as CardPayload)
+                }
+                payload = JSON.stringify(cp)
                 break;
             case ActionTypes.API_LOCAL:
-                payload = JSON.stringify({
+                const ap: ActionPayload = {
                     payload: this.state.selectedApiOptionKey!.toString(),
                     logicArguments: this.getActionArguments(this.state.slateValuesMap),
                     renderArguments: this.getActionArguments(this.state.secondarySlateValuesMap),
-                } as ActionPayload)
+                }
+                payload = JSON.stringify(ap)
                 break;
             case ActionTypes.END_SESSION:
                 const value = this.state.slateValuesMap[TEXT_SLOT]
-                payload = JSON.stringify({
+                const t: TextPayload = {
                     json: value.toJSON()
-                } as TextPayload)
+                }
+                payload = JSON.stringify(t)
                 break;
             default:
                 throw new Error(`When attempting to submit action, the selected action type: ${this.state.selectedActionTypeOptionKey} did not have matching type`)
@@ -810,7 +813,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         // TODO: Would be more optimized to store required entities PER payload in the map instead of single value. This reduces computation for ALL
         // payloads during editing
         const requiredEntityTagsFromPayload = [...Object.values(slateValuesMap), ...Object.values(otherValuesMap)]
-            .map(value => ActionPayloadEditor.Utilities.getEntitiesFromValue(value).map(convertOptionToTag))
+            .map(val => ActionPayloadEditor.Utilities.getEntitiesFromValue(val).map(convertOptionToTag))
             .reduce((a, b) => a.concat(b))
             .filter((t, i, xs) => i === xs.findIndex(tag => tag.key === t.key))
             .sort((a, b) => a.name.localeCompare(b.name))
@@ -945,7 +948,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                 .map(apiArgument => {
                                                     return (
                                                         <React.Fragment key={apiArgument}>
-                                                            <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                                            <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}/></OF.Label>
                                                             <ActionPayloadEditor.Editor
                                                                 options={optionsAvailableForPayload}
                                                                 value={this.state.slateValuesMap[apiArgument]}
@@ -965,7 +968,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                 .map(apiArgument => {
                                                     return (
                                                         <React.Fragment key={apiArgument}>
-                                                            <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                                            <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}/></OF.Label>
                                                             <ActionPayloadEditor.Editor
                                                                 options={optionsAvailableForPayload}
                                                                 value={this.state.secondarySlateValuesMap[apiArgument]}
@@ -1020,7 +1023,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         .map(cardTemplateVariable => {
                                             return (
                                                 <React.Fragment key={cardTemplateVariable.key}>
-                                                    <OF.Label className="cl-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}></HelpIcon></OF.Label>
+                                                    <OF.Label className="cl-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}/></OF.Label>
                                                     <ActionPayloadEditor.Editor
                                                         options={optionsAvailableForPayload}
                                                         value={this.state.slateValuesMap[cardTemplateVariable.key]}
@@ -1042,8 +1045,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === ActionTypes.TEXT
                             && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
                                 <div>
-                                    <OF.Label className="ms-Label--tight">Bot's response... <HelpIcon 
-                                        tipType={ToolTip.TipType.ACTION_RESPONSE_TEXT} /></OF.Label>
+                                    <OF.Label className="ms-Label--tight">Bot's response... 
+                                        <HelpIcon tipType={ToolTip.TipType.ACTION_RESPONSE_TEXT}/>
+                                    </OF.Label>
                                     <ActionPayloadEditor.Editor
                                         options={optionsAvailableForPayload}
                                         value={this.state.slateValuesMap[TEXT_SLOT]}

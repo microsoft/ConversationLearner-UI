@@ -72,7 +72,7 @@ interface Props extends InjectedIntlProps {
 
 const EditComponent: React.SFC<Props> = (props: Props) => {
     return <div className="cl-entity-creator-form">
-        <OF.Dropdown
+        <TC.Dropdown
             data-testid="entity-creator-entity-type-dropdown"
             ariaLabel={props.intl.formatMessage({
                 id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
@@ -91,6 +91,7 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
             }
             selectedKey={props.selectedTypeKey}
             disabled={props.isTypeDisabled}
+            tipType={ToolTip.TipType.ENTITY_TYPE}
         />
         <OF.TextField
             data-testid="entity-creator-entity-name-text"
