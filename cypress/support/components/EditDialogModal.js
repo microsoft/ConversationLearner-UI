@@ -10,7 +10,7 @@ const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc
 
 export function TypeYourMessage(trainMessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainMessage}{enter}`) }  // data-testid NOT possible
 export function ClickSetInitialStateButton()          { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
-export function ClickScoreActionsButton()             { cy.Get('[data-testid="entity-extractor-score-actions-button"]').Click() }
+export function ClickScoreActionsButton()             { cy.Get('[data-testid="score-actions-button"]').Click() }
 export function VerifyEntityMemoryIsEmpty()           { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function EntitySearch()                        { cy.Get('[data-testid="entity-picker-entity-search"]') }
 export function AlternativeInputText()                { cy.Get('[data-testid="entity-extractor-alternative-input-text"]') }
@@ -19,17 +19,23 @@ export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="to
 
 export function GetAllChatMessages()                  { return helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)}
 
-// NOTE: These two are for the NEW TRAIN DIALOG mode, for EDIT EXISTING TRAINING see next group of functions.
+// These are for the NEW TRAIN DIALOG mode
 export function ClickSaveButton()                     { cy.Get('[data-testid="teach-session-modal-save-button"]').Click() }
 export function ClickAbandonButton()                  { cy.Get('[data-testid="teach-session-modal-abandon-button"]').Click() }
 
+// These are for EDIT EXISTING TRAINING mode
 export function ClickSaveCloseButton()                { cy.Get('[data-testid="edit-dialog-modal-close-save-button"]').Click() }
 export function VerifyCloseButtonLabel()              { cy.Get('[data-testid="edit-dialog-modal-close-save-button"]').contains('Close') }
 export function VerifySaveBranchButtonLabel()         { cy.Get('[data-testid="edit-dialog-modal-close-save-button"]').contains('Save Branch') }
-
 export function ClickAbandonDeleteButton()            { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').Click() }
 export function VerifyDeleteButtonLabel()             { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').contains('Delete') }
 export function VerifyAbandonBranchButtonLabel()      { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').contains('Abandon Branch') }
+
+export function VerifyBranchButtonGroupContainsMessage(message)
+  // Verify that the branch button is within the same control group as the originalMessage that was just selected.
+  cy.Get('[data-testid="edit-dialog-modal-branch-button"]').as('branchButton')
+    .parents('div.wc-message-selected').contains('p', message)
+
 
 export function AbandonBranchChanges()
 {
@@ -54,12 +60,6 @@ export function SelectChatTurn(message, index = 0)
     if (elements.length <= index) throw `Could not find '${message}' #${index} in chat utterances`
     cy.wrap(elements[index]).Click()
   })
-
-  // cy.Get('[data-testid="web-chat-utterances"]').within(elements => {
-  //   cy.get('div.format-markdown > p').ExactMatches(message).then(elements => {
-  //   if (elements.length <= index) throw `Could not find '${message}' #${index} in chat utterances`
-  //   cy.wrap(elements[index]).Click()
-  // })})
 }
 
 export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
@@ -72,17 +72,28 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
   cy.Get('[data-testid="edit-dialog-modal-branch-button"]').as('branchButton')
     .parents('div.wc-message-selected').contains('p', originalMessage)
 
+  // Capture the list of messages currently in the chat, truncate it at the point of branching, then add the new message to it.
+  // This array will be used later to validate that the changed chat is persisted.
+  cy.WaitForStableDOM().then(() => 
+  { 
+    window.capturedAllChatMessages = editDialogModal.GetAllChatMessages()
+    for (var i = 0; i < window.capturedAllChatMessages.length; i++)
+    {
+      if (window.capturedAllChatMessages[i] == originalMessage)
+      {
+        window.capturedAllChatMessages.length = i + 1
+        window.capturedAllChatMessages[i] = newMessage
+      }
+    }
+  })
+
   cy.Get('@branchButton').Click()
   
   cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
-  // TODO: Verify that data-testid="edit-dialog-modal-score-actions-button" exists
-  //       Verify that number of turns are reduced by the ones that were cut off.
-  //       Verify that "Replay", "Save Branch" & "Abandon Branch" buttons appear and are enabled.
 }
 
 export function SelectAndVerifyEachChatTurn(index = 0)
 {
-  helpers.ConLog(`SelectEachChatTurn(${index})`, '')
   if (index == 0) cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')
   cy.Get('@allChatTurns').then(elements => 
   {

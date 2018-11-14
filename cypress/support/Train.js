@@ -87,12 +87,6 @@ export function VerifyTrainingSummaryIsInGrid()
   })
 }
 
-export function Train_SelectAction(expectedResponse, lastResponse)
-{
-  if (lastResponse) window.trainingSummary.LastResponse = lastResponse
-  else window.trainingSummary.LastResponse = expectedResponse
-}
-
 export function EditTraining(firstInput, lastInput, lastResponse)
 {
   cy.Enqueue(() => 
