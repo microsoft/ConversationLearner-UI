@@ -6,6 +6,8 @@
 const homePage = require('../../support/components/HomePage')
 const helpers = require('../../support/Helpers')
 
+const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p'
+
 export function TypeYourMessage(trainMessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainMessage}{enter}`) }  // data-testid NOT possible
 export function ClickSetInitialStateButton()          { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
 export function ClickScoreActionsButton()             { cy.Get('[data-testid="entity-extractor-score-actions-button"]').Click() }
@@ -14,6 +16,8 @@ export function EntitySearch()                        { cy.Get('[data-testid="en
 export function AlternativeInputText()                { cy.Get('[data-testid="entity-extractor-alternative-input-text"]') }
 export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
+
+export function GetAllChatMessages()                  { return helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)}
 
 // NOTE: These two are for the NEW TRAIN DIALOG mode, for EDIT EXISTING TRAINING see next group of functions.
 export function ClickSaveButton()                     { cy.Get('[data-testid="teach-session-modal-save-button"]').Click() }
@@ -46,11 +50,16 @@ export function SelectChatTurn(message, index = 0)
 {
   message = message.replace(/'/g, "’")
 
-  cy.Get('[data-testid="web-chat-utterances"]').within(elements => {
-    cy.get('div.format-markdown > p').ExactMatches(message).then(elements => {
+  cy.Get(AllChatMessagesSelector).ExactMatches(message).then(elements => {
     if (elements.length <= index) throw `Could not find '${message}' #${index} in chat utterances`
     cy.wrap(elements[index]).Click()
-  })})
+  })
+
+  // cy.Get('[data-testid="web-chat-utterances"]').within(elements => {
+  //   cy.get('div.format-markdown > p').ExactMatches(message).then(elements => {
+  //   if (elements.length <= index) throw `Could not find '${message}' #${index} in chat utterances`
+  //   cy.wrap(elements[index]).Click()
+  // })})
 }
 
 export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
@@ -110,8 +119,8 @@ export function VerifyChatTurnControls(element, index)
   cy.Contains('[data-testid="chat-edit-add-input-button"]', '+')
 }
 
-// Inputs needed: Any user message and any bot message expected in chat.
-export function VerifyThereAreNoSpecialChatControls(userMessage, botMessage)
+// Provide any user message and any bot message expected in chat.
+export function VerifyThereAreNoChatEditControls(userMessage, botMessage)
 {
   cy.Get('.wc-message-from-me').contains(userMessage)
   cy.Get('.wc-message-from-bot').contains(botMessage)
@@ -120,6 +129,9 @@ export function VerifyThereAreNoSpecialChatControls(userMessage, botMessage)
   cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
   cy.DoesNotContain('[data-testid="chat-edit-add-input-button"]', '+')
 }
+
+
+
 
 export function HighlightWord(word) {
   cy.get('span[class="cl-token-node"]')

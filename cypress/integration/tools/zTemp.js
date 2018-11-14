@@ -16,13 +16,11 @@ describe('zTemp test', () =>
   it('zTemp test', () => 
   {
     homePage.Visit()
-    // homePage.NavigateToModelPage("BigTrain")
+    homePage.NavigateToModelPage("BigTrain")
     // modelPage.NavigateToTrainDialogs()
+    cy.pause()//.then(() =>
+    cy.Train_CaptureAllChatMessages()
     cy.pause()
-
-    // editDialogModal.SelectChatTurn('Hello Paul', 3)
-    // cy.pause()
-    // editDialogModal.BranchChatTurn('Paul is not here', 'Larry wants to join the fun')
-    editDialogModal.VerifyThereAreNoSpecialChatControls('My name is David.', 'Hello Susan')
+    cy.Train_VerifyAllChatMessagesSameAsCaptured()
   })
 })

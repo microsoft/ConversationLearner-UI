@@ -69,6 +69,12 @@ var MonitorDocumentChanges = (function()
             // helpers.ConLog(`cy.DoesNotContain()`, `PASSED - Selector: ${selector} was NOT Found as Expected`)
         })})
 
+        Cypress.Commands.add('WaitForStableDOM', () => 
+        {   
+            helpers.ConLog(`cy.WaitForStableDOM()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
+            cy.wrap(700, {timeout: 60000}).should('lte', 'MillisecondsSinceLastChange')
+        })
+
         Cypress.Commands.add('Click', { prevSubject: true, element: true}, (subject) => 
         {
             helpers.ConLog(`cy.Click()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
@@ -130,8 +136,7 @@ var MonitorDocumentChanges = (function()
         if(currentHtml != lastHtml)
         {
             helpers.ConLog(thisFuncName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
-            //cy.writeFile(currentHtml, `c:\\temp\\dom.${helpers.NowAsString()}.txt`)
-            //if (dumpHtml || expectingSpinner) 
+            if (dumpHtml || expectingSpinner) 
                 helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
 
             lastChangeTime = currentTime

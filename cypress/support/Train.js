@@ -125,6 +125,35 @@ export function OneTimeInitialization()
     }
     throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${window.trainingSummary.FirstInput} -- LastInput: ${window.trainingSummary.LastInput} -- LastResponse: ${window.trainingSummary.LastResponse}`
   })
+
+  Cypress.Commands.add("Train_CaptureAllChatMessages", () => 
+  { 
+    cy.WaitForStableDOM().then(() => {window.capturedAllChatMessages = editDialogModal.GetAllChatMessages()})
+  })
+
+  Cypress.Commands.add("Train_VerifyAllChatMessagesSameAsCaptured", () => 
+  { 
+    cy.WaitForStableDOM().then(() => 
+    {
+      var errorMessage = ''
+      var allChatMessages = editDialogModal.GetAllChatMessages()  
+
+      if (allChatMessages.length != window.capturedAllChatMessages.length) 
+        errorMessage += `Original chat message count was ${window.capturedAllChatMessages.length}, current chat message count is ${allChatMessages.length}.`
+
+      var length = Math.max(allChatMessages.length, window.capturedAllChatMessages.length)
+      for (var i = 0; i < length; i++)
+      {
+        if (i >= allChatMessages.length)
+          errorMessage += `-- [${i}] - Original: '${window.capturedAllChatMessages[i]}' is extra'`
+        else if (i >= window.capturedAllChatMessages.length)
+          errorMessage += `-- [${i}] - Current: '${allChatMessages[i]}' is extra'`
+        else if (allChatMessages[i] != window.capturedAllChatMessages[i]) 
+          errorMessage += `-- [${i}] - Original: '${window.capturedAllChatMessages[i]}' does not match current: '${allChatMessages[i]}'`
+      }
+      if (errorMessage.length > 0) throw errorMessage
+    })
+  })
 }
 
 

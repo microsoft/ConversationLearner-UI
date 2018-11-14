@@ -24,3 +24,22 @@ export function RemoveDuplicates(inputArray)
   
   return uniqueOutputArray
 }
+
+export function StringArrayFromInnerHtml(selector) 
+{ 
+  var elements = Cypress.$(selector)
+  ConLog('StringArrayFromInnerHtml', elements.length)
+  var returnValues = new Array()
+  for (var i = 0; i < elements.length; i++) { returnValues.push(elements[i].innerHTML) 
+    ConLog('StringArrayFromInnerHtml', returnValues[i])
+  }
+  return returnValues
+}
+
+export function NumericArrayFromInnerHtml(selector) 
+{ 
+  var elements = Cypress.$(selector)
+  var returnValues = new Array()
+  for (var i = 0; i < elements.length; i++) { returnValues.push(Number(elements[i].innerHTML)) }
+  return returnValues
+}

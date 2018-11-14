@@ -3,6 +3,8 @@
  * Licensed under the MIT License.
  */
 
+const helpers = require('../Helpers')
+
 // Path to product code: ConversationLearner-UI\src\routes\Apps\App\TrainDialogs.tsx
 export function VerifyPageTitle()                 { cy.Get('[data-testid="train-dialogs-title"]').contains('Train Dialogs') }
 export function CreateNewTrainDialog()            { cy.Get('[data-testid="button-new-train-dialog"]').Click()}
@@ -18,25 +20,10 @@ export function ClickTraining(row)                { cy.Get('[data-testid="train-
 export function GridIsReady(countValidationFunc)  { cy.Get('[data-testid="train-dialogs-turns"]').should(countValidationFunc) }
 
 // These functions circumvent the Cypress retry logic by using jQuery
-export function GetFirstInputs()                  { return StringArrayFromInnerHtml('[data-testid="train-dialogs-first-input"]')}
-export function GetLastInputs()                   { return StringArrayFromInnerHtml('[data-testid="train-dialogs-last-input"]')}
-export function GetLastResponses()                { return StringArrayFromInnerHtml('[data-testid="train-dialogs-last-response"]')}
-export function GetTurns()                        { return NumericArrayFromInnerHtml('[data-testid="train-dialogs-turns"]') }
-export function GetLastModifiedDates()            { return StringArrayFromInnerHtml('[data-testid="train-dialogs-last-modified"]')}
-export function GetCreatedDates()                 { return StringArrayFromInnerHtml('[data-testid="train-dialogs-created"]')}
+export function GetFirstInputs()                  { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-first-input"]')}
+export function GetLastInputs()                   { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-last-input"]')}
+export function GetLastResponses()                { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-last-response"]')}
+export function GetTurns()                        { return helpers.NumericArrayFromInnerHtml('[data-testid="train-dialogs-turns"]') }
+export function GetLastModifiedDates()            { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-last-modified"]')}
+export function GetCreatedDates()                 { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-created"]')}
 
-export function StringArrayFromInnerHtml(selector) 
-{ 
-  var elements = Cypress.$(selector)
-  var returnValues = new Array()
-  for (var i = 0; i < elements.length; i++) { returnValues.push(elements[i].innerHTML) }
-  return returnValues
-}
-
-export function NumericArrayFromInnerHtml(selector) 
-{ 
-  var elements = Cypress.$(selector)
-  var returnValues = new Array()
-  for (var i = 0; i < elements.length; i++) { returnValues.push(Number(elements[i].innerHTML)) }
-  return returnValues
-}

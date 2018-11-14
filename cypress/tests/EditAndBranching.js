@@ -17,10 +17,12 @@ export function VerifyEditTrainingControlsAndLabels()
   modelPage.NavigateToTrainDialogs()
 
   cy.Train_EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
+  cy.Train_CaptureAllChatMessages()
+
   editDialogModal.VerifyCloseButtonLabel()
   editDialogModal.VerifyDeleteButtonLabel()
 
-  editDialogModal.VerifyThereAreNoSpecialChatControls('My name is David.', 'Hello Susan')
+  editDialogModal.VerifyThereAreNoChatEditControls('My name is David.', 'Hello Susan')
   editDialogModal.SelectAndVerifyEachChatTurn()
   
   editDialogModal.BranchChatTurn('My name is Susan.', 'I am Groot')
@@ -28,4 +30,7 @@ export function VerifyEditTrainingControlsAndLabels()
   editDialogModal.VerifyAbandonBranchButtonLabel()
 
   editDialogModal.AbandonBranchChanges()
+
+  cy.Train_EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
+  cy.Train_VerifyAllChatMessagesSameAsCaptured()
 }
