@@ -16,8 +16,8 @@ export function VerifyEditTrainingControlsAndLabels()
   var modelName = models.ImportModel('Model-EnB', 'Model1-mni.cl')
   modelPage.NavigateToTrainDialogs()
 
-  cy.Train_EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-  cy.Train_CaptureAllChatMessages()
+  train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
+  train.CaptureAllChatMessages()
 
   editDialogModal.VerifyCloseButtonLabel()
   editDialogModal.VerifyDeleteButtonLabel()
@@ -31,6 +31,6 @@ export function VerifyEditTrainingControlsAndLabels()
 
   editDialogModal.AbandonBranchChanges()
 
-  cy.Train_EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-  cy.Train_VerifyAllChatMessagesSameAsCaptured()
+  train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
+  train.VerifyAllChatMessagesSameAsCaptured()
 }

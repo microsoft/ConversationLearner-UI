@@ -16,26 +16,48 @@ window.expectedTrainGridRowCount = 9999
 
 export function CreateNewTrainDialog()
 {
-  cy.Train_CreateNewTrainDialog()
+  cy.Enqueue(() => 
+  {
+    var turns = trainDialogsGrid.GetTurns()
+    window.expectedTrainGridRowCount = (turns ? turns.length : 0) + 1
+    window.trainingSummary = 
+    {
+      FirstInput: undefined,
+      LastInput: undefined,
+      LastResponse: undefined,
+      Turns: 0,
+      LastModifiedDate: undefined,
+      CreatedDate: undefined,
+    }    
+  })
   trainDialogsGrid.CreateNewTrainDialog()
 }
 
 export function TypeYourMessage(message)
 {
   editDialogModal.TypeYourMessage(message)
-  cy.Train_TypeYourMessage(message)
+  cy.Enqueue(() => 
+  {
+    if (!window.trainingSummary.FirstInput) window.trainingSummary.FirstInput = message
+    window.trainingSummary.LastInput = message
+    window.trainingSummary.Turns++
+  })
 }
 
 export function SelectAction(expectedResponse, lastResponse)
 {
   scorerModal.ClickAction(expectedResponse)
-  cy.Train_SelectAction(expectedResponse, lastResponse)
+  cy.Enqueue(() => 
+  { 
+    if (lastResponse) window.trainingSummary.LastResponse = lastResponse
+    else window.trainingSummary.LastResponse = expectedResponse
+  })
 }
 
 export function Save()
 {
   editDialogModal.ClickSaveButton()
-  cy.Train_Save()
+  cy.Enqueue(() => { window.trainingSummary.CreatedDate = window.trainingSummary.LastModifiedDate = Today() })
   trainDialogsGrid.VerifyPageTitle()
   VerifyTrainingSummaryIsInGrid()
 }
@@ -65,42 +87,15 @@ export function VerifyTrainingSummaryIsInGrid()
   })
 }
 
-
-export function OneTimeInitialization()
+export function Train_SelectAction(expectedResponse, lastResponse)
 {
-  Cypress.Commands.add("Train_CreateNewTrainDialog", () =>
-  {
-    var turns = trainDialogsGrid.GetTurns()
-    window.expectedTrainGridRowCount = (turns ? turns.length : 0) + 1
-    window.trainingSummary = 
-    {
-      FirstInput: undefined,
-      LastInput: undefined,
-      LastResponse: undefined,
-      Turns: 0,
-      LastModifiedDate: undefined,
-      CreatedDate: undefined,
-    }    
-  })
+  if (lastResponse) window.trainingSummary.LastResponse = lastResponse
+  else window.trainingSummary.LastResponse = expectedResponse
+}
 
-  Cypress.Commands.add("Train_TypeYourMessage", (message) =>
-  {
-    if (!window.trainingSummary.FirstInput) window.trainingSummary.FirstInput = message
-    window.trainingSummary.LastInput = message
-    window.trainingSummary.Turns++
-  })
-
-  // lastResponse is OPTIONAL, it is needed when the Action contains a $entityName
-  // that was replaced with the expected value in expectedResponse.
-  Cypress.Commands.add("Train_SelectAction", (expectedResponse, lastResponse) =>
-  {
-    if (lastResponse) window.trainingSummary.LastResponse = lastResponse
-    else window.trainingSummary.LastResponse = expectedResponse
-  })
-
-  Cypress.Commands.add("Train_Save", () => { window.trainingSummary.CreatedDate = window.trainingSummary.LastModifiedDate = Today() })
-  
-  Cypress.Commands.add("Train_EditTraining", (firstInput, lastInput, lastResponse) =>
+export function EditTraining(firstInput, lastInput, lastResponse)
+{
+  cy.Enqueue(() => 
   {
     var firstInputs = trainDialogsGrid.GetFirstInputs()
     var lastInputs = trainDialogsGrid.GetLastInputs()
@@ -108,44 +103,42 @@ export function OneTimeInitialization()
 
     for (var i = 0; i < firstInputs.length; i++)
     {
-      if (firstInputs[i] == firstInput &&
-          lastInputs[i] == lastInput &&
-          lastResponses[i] == lastResponse)
-        {
-          trainDialogsGrid.ClickTraining(i)
-          return
-        }
+      if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse)
+      {
+        trainDialogsGrid.ClickTraining(i)
+        return
+      }
     }
     throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${window.trainingSummary.FirstInput} -- LastInput: ${window.trainingSummary.LastInput} -- LastResponse: ${window.trainingSummary.LastResponse}`
   })
+}
 
-  Cypress.Commands.add("Train_CaptureAllChatMessages", () => 
-  { 
-    cy.WaitForStableDOM().then(() => {window.capturedAllChatMessages = editDialogModal.GetAllChatMessages()})
-  })
+export function CaptureAllChatMessages() 
+{ 
+  cy.WaitForStableDOM().then(() => { window.capturedAllChatMessages = editDialogModal.GetAllChatMessages() })
+}
 
-  Cypress.Commands.add("Train_VerifyAllChatMessagesSameAsCaptured", () => 
-  { 
-    cy.WaitForStableDOM().then(() => 
+export function VerifyAllChatMessagesSameAsCaptured() 
+{ 
+  cy.WaitForStableDOM().then(() => 
+  {
+    var errorMessage = ''
+    var allChatMessages = editDialogModal.GetAllChatMessages()  
+
+    if (allChatMessages.length != window.capturedAllChatMessages.length) 
+      errorMessage += `Original chat message count was ${window.capturedAllChatMessages.length}, current chat message count is ${allChatMessages.length}.`
+
+    var length = Math.max(allChatMessages.length, window.capturedAllChatMessages.length)
+    for (var i = 0; i < length; i++)
     {
-      var errorMessage = ''
-      var allChatMessages = editDialogModal.GetAllChatMessages()  
-
-      if (allChatMessages.length != window.capturedAllChatMessages.length) 
-        errorMessage += `Original chat message count was ${window.capturedAllChatMessages.length}, current chat message count is ${allChatMessages.length}.`
-
-      var length = Math.max(allChatMessages.length, window.capturedAllChatMessages.length)
-      for (var i = 0; i < length; i++)
-      {
-        if (i >= allChatMessages.length)
-          errorMessage += `-- [${i}] - Original: '${window.capturedAllChatMessages[i]}' is extra'`
-        else if (i >= window.capturedAllChatMessages.length)
-          errorMessage += `-- [${i}] - Current: '${allChatMessages[i]}' is extra'`
-        else if (allChatMessages[i] != window.capturedAllChatMessages[i]) 
-          errorMessage += `-- [${i}] - Original: '${window.capturedAllChatMessages[i]}' does not match current: '${allChatMessages[i]}'`
-      }
-      if (errorMessage.length > 0) throw errorMessage
-    })
+      if (i >= allChatMessages.length)
+        errorMessage += `-- [${i}] - Original: '${window.capturedAllChatMessages[i]}' is extra'`
+      else if (i >= window.capturedAllChatMessages.length)
+        errorMessage += `-- [${i}] - Current: '${allChatMessages[i]}' is extra'`
+      else if (allChatMessages[i] != window.capturedAllChatMessages[i]) 
+        errorMessage += `-- [${i}] - Original: '${window.capturedAllChatMessages[i]}' does not match current: '${allChatMessages[i]}'`
+    }
+    if (errorMessage.length > 0) throw errorMessage
   })
 }
 
