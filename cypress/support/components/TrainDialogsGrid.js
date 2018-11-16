@@ -13,10 +13,10 @@ export function EntityDropDownFilter()            { cy.Get('[data-testid="dropdo
 export function ActionDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-action"]')}
 export function ClickTraining(row)                { cy.Get('[data-testid="train-dialogs-first-input"]').then(elements => { cy.wrap(elements[row]).Click() })}
 
-export function WaitForGridReadyThen(functionToRunAfterGridIsReady)  
+export function WaitForGridReadyThen(expectedRowCount, functionToRunAfterGridIsReady)  
 { 
   cy.Get('[data-testid="train-dialogs-turns"]')
-    .should(elements => { expect(elements).to.have.length(window.expectedTrainGridRowCount)})
+    .should(elements => { expect(elements).to.have.length(expectedRowCount) })
     .then(() => { functionToRunAfterGridIsReady() }) 
 }
 

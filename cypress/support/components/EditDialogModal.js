@@ -5,8 +5,9 @@
 
 const homePage = require('../../support/components/HomePage')
 const helpers = require('../../support/Helpers')
+const scorerModal = require('../../support/components/ScorerModal')
 
-const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p'
+export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p'
 
 export function TypeYourMessage(trainMessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainMessage}{enter}`) }  // data-testid NOT possible
 export function ClickSetInitialStateButton()          { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
@@ -31,11 +32,12 @@ export function ClickAbandonDeleteButton()            { cy.Get('[data-testid="ed
 export function VerifyDeleteButtonLabel()             { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').contains('Delete') }
 export function VerifyAbandonBranchButtonLabel()      { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').contains('Abandon Branch') }
 
+// Verify that the branch button is within the same control group as the message.
 export function VerifyBranchButtonGroupContainsMessage(message)
-  // Verify that the branch button is within the same control group as the originalMessage that was just selected.
+{
   cy.Get('[data-testid="edit-dialog-modal-branch-button"]').as('branchButton')
     .parents('div.wc-message-selected').contains('p', message)
-
+}
 
 export function AbandonBranchChanges()
 {
@@ -62,50 +64,27 @@ export function SelectChatTurn(message, index = 0)
   })
 }
 
-export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
+// This is meant to be called after SelectChatTurn for a user message.
+// Remember, selecting a bot's message won't result in a branch button becoming visible.
+// Side Effect: '@branchButton' alias is created.
+export function VerifyBranchButtonIsInSameControlGroupAsMessage(message)
 {
-  originalMessage = originalMessage.replace(/'/g, "’")
-
-  SelectChatTurn(originalMessage, originalIndex)
-
   // Verify that the branch button is within the same control group as the originalMessage that was just selected.
   cy.Get('[data-testid="edit-dialog-modal-branch-button"]').as('branchButton')
-    .parents('div.wc-message-selected').contains('p', originalMessage)
+    .parents('div.wc-message-selected').contains('p', message)
+}
 
-  // Capture the list of messages currently in the chat, truncate it at the point of branching, then add the new message to it.
-  // This array will be used later to validate that the changed chat is persisted.
-  cy.WaitForStableDOM().then(() => 
-  { 
-    window.capturedAllChatMessages = editDialogModal.GetAllChatMessages()
-    for (var i = 0; i < window.capturedAllChatMessages.length; i++)
-    {
-      if (window.capturedAllChatMessages[i] == originalMessage)
-      {
-        window.capturedAllChatMessages.length = i + 1
-        window.capturedAllChatMessages[i] = newMessage
-      }
-    }
-  })
-
+// This depends on the '@branchButton' alias having been created by the VerifyBranchButtonIsInSameControlGroupAsMessage() function.
+export function BranchChatTurn(message)
+{
   cy.Get('@branchButton').Click()
-  
   cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
 }
 
-export function SelectAndVerifyEachChatTurn(index = 0)
+// Creates the 'allChatTurns' alias.
+export function GetAllChatTurns()
 {
-  if (index == 0) cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')
-  cy.Get('@allChatTurns').then(elements => 
-  {
-    if (index < elements.length)
-    {
-      cy.wrap(elements[index]).Click().then(() =>
-      {
-        VerifyChatTurnControls(elements[index], index)
-        SelectAndVerifyEachChatTurn(index + 1)
-      })
-    }
-  })
+  cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')  
 }
 
 export function VerifyChatTurnControls(element, index)
@@ -133,8 +112,11 @@ export function VerifyChatTurnControls(element, index)
 // Provide any user message and any bot message expected in chat.
 export function VerifyThereAreNoChatEditControls(userMessage, botMessage)
 {
+  // These confirm we are looking at the chat history we are expecting to validate.
   cy.Get('.wc-message-from-me').contains(userMessage)
   cy.Get('.wc-message-from-bot').contains(botMessage)
+
+  // These do the actual validation this function is intended to validate.
   cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
   cy.DoesNotContain('[data-testid="chat-edit-add-score-button"]', '+')
   cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')

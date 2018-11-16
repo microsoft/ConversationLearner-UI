@@ -15,12 +15,21 @@ describe('zTemp test', () =>
 {
   it('zTemp test', () => 
   {
-    homePage.Visit()
-    homePage.NavigateToModelPage("BigTrain")
-    // modelPage.NavigateToTrainDialogs()
-    cy.pause()//.then(() =>
-    cy.Train_CaptureAllChatMessages()
-    cy.pause()
-    cy.Train_VerifyAllChatMessagesSameAsCaptured()
+    var obj = {a: 25, b: 50, c: 75};
+    var A = Object.create(obj);
+    var B = Object.create(obj);
+
+    A.a = 30;
+    B.a = 40;
+
+    alert(`${obj.a} ${A.a} ${B.a} ${A.b} ${B.c}`); // 25 30 40
+
+    // homePage.Visit()
+    // homePage.NavigateToModelPage("BigTrain")
+    // // modelPage.NavigateToTrainDialogs()
+    // cy.pause()//.then(() =>
+    // cy.Train_CaptureAllChatMessages()
+    // cy.pause()
+    // cy.Train_VerifyAllChatMessagesSameAsCaptured()
   })
 })

@@ -17,7 +17,7 @@ export function VerifyEditTrainingControlsAndLabels()
   modelPage.NavigateToTrainDialogs()
 
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-  train.CaptureAllChatMessages()
+  train.CaptureOriginalChatMessages()
 
   editDialogModal.VerifyCloseButtonLabel()
   editDialogModal.VerifyDeleteButtonLabel()
@@ -29,10 +29,11 @@ export function VerifyEditTrainingControlsAndLabels()
   editDialogModal.VerifySaveBranchButtonLabel()
   editDialogModal.VerifyAbandonBranchButtonLabel()
 
+  editDialogModal.VerifyThereAreNoChatEditControls('I am Groot', 'Hello David')
   editDialogModal.AbandonBranchChanges()
 
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-  train.VerifyAllChatMessagesSameAsCaptured()
+  train.VerifyOriginalChatMessages()
 }
 
 export function Branching()
@@ -42,23 +43,19 @@ export function Branching()
   cy.WaitForTrainingStatusCompleted()
   
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
+  train.CaptureOriginalChatMessages()
   
   editDialogModal.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
-  editDialogModal.ClickScoreActionsButton()
-  memoryTableComponent.VerifyEntityInMemory('name', 'Joseph')
+  editDialogModal.ClickScoreActionsButton('Hello $name')
+  scorerModal.VerifyLastChatMessage('Hello Joseph')
+  train.CaptureEditedChatMessages()
+  editDialogModal.ClickSaveCloseButton()
 
-  editDialogModal.VerifyCloseButtonLabel()
-  editDialogModal.VerifyDeleteButtonLabel()
-
-  editDialogModal.VerifyThereAreNoChatEditControls('My name is David.', 'Hello Susan')
-  editDialogModal.SelectAndVerifyEachChatTurn()
-  
-  editDialogModal.BranchChatTurn('My name is Susan.', 'I am Groot')
-  editDialogModal.VerifySaveBranchButtonLabel()
-  editDialogModal.VerifyAbandonBranchButtonLabel()
-
-  editDialogModal.AbandonBranchChanges()
+  VerifyTrainingSummaryIsInGrid(() => { return window.currentTrainingSummary })
 
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-  train.VerifyAllChatMessagesSameAsCaptured()
+  train.VerifyOriginalChatMessages()
+
+  train.EditTraining('My name is David.', 'My name is Joseph.', 'Hello $name')
+  train.VerifyEditedChatMessages()
 }
