@@ -154,10 +154,6 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             isSorted: true,
             isSortedDescending: true,
             getSortValue: (scoredBase, component) => {
-                // If the current action is the same as the new give it high value to put it at the top
-                if (component.state.newAction && component.state.newAction.actionId === scoredBase.actionId) {
-                    return 100
-                } 
 
                 // TODO: Fix type so we can use typed property access
                 const score = scoredBase['score']
@@ -254,7 +250,6 @@ interface ComponentState {
     columns: OF.IColumn[]
     sortColumn: IRenderableColumn
     haveEdited: boolean
-    newAction: CLM.ActionBase | null
     cardViewerAction: CLM.ActionBase | null
     cardViewerShowOriginal: boolean
 }
@@ -271,7 +266,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             columns,
             sortColumn: columns[2], // "score"
             haveEdited: false,
-            newAction: null,
             cardViewerAction: null,
             cardViewerShowOriginal: false
         };
@@ -284,20 +278,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
     componentWillReceiveProps(newProps: Props) {
         if (this.props.scoreResponse !== newProps.scoreResponse) {
-
-            // Note any newly added action
-            let newAction = null;
-            if (newProps.actions.length > this.props.actions.length) {
-                // Find the new action
-                newAction = newProps.actions.filter(na => {
-                    let fa = this.props.actions.find(a => a.actionId === na.actionId);
-                    return fa === undefined;
-                })[0];
-            }
             this.setState({
-                haveEdited: false,
-                newAction: newAction
-            });
+                haveEdited: false
+            })
         }
     }
     // TODO: Why invoke autoSelect on both Update and DidUpdate?!
@@ -343,14 +326,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             const selectedActionId = bestAction.actionId;
             this.handleActionSelection(selectedActionId);
 
-        } else if (this.state.newAction) {
-            // See if new action is available, then take it
-            let isAvailable = this.isAvailable(this.state.newAction);
-            if (isAvailable) {
-                this.handleActionSelection(this.state.newAction.actionId);
-                this.setState({ newAction: null })
-            }
-
         } else if (!this.state.actionModalOpen) {
             setTimeout(this.focusPrimaryButton, 100)
         }
@@ -370,15 +345,18 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickSubmitActionEditor(action: CLM.ActionBase) {
-        this.setState(
-            {
-                actionModalOpen: false
-            },
-            () => {
-                this.props.createActionThunkAsync(this.props.app.appId, action)
+    async onClickSubmitActionEditor(action: CLM.ActionBase) {
+        await Util.setStateAsync(this, { actionModalOpen: false })
+       
+        let newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
+
+        if (newAction) {
+            // See if new action is available, then take it
+            let isAvailable = this.isAvailable(newAction);
+            if (isAvailable) {
+                this.handleActionSelection(newAction.actionId);
             }
-        )
+        }
     }
 
     handleOpenActionModal() {

@@ -31,7 +31,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }),
             fieldName: 'entityName',
             minWidth: 100,
-            maxWidth: 200,
             isResizable: true,
             isSortedDescending: true,
             getSortValue: entity => entity.entityName.toLowerCase(),
@@ -44,31 +43,26 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 defaultMessage: 'Type'
             }),
             fieldName: 'entityType',
-            minWidth: 100,
-            maxWidth: 200,
+            minWidth: 180,
+            maxWidth: 180,
             isResizable: true,
             getSortValue: entity => {
                 let display = (entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS)
                     ? 'CUSTOM' : entity.entityType;
                 return display.toLowerCase();
             },
-            render: entity => (
+            render: entity => {
+                let display = entity.entityType
+                if (display === EntityType.LOCAL) { 
+                    display = "PROGRAMMATIC"
+                }
+                else if (display === EntityType.LUIS) {
+                    display = "CUSTOM"
+                }
+                return (
                 <span className={OF.FontClassNames.mediumPlus}>
-                    {(entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS)
-                        ? 'CUSTOM' : entity.entityType}
-                </span>)
-        },
-        {
-            key: 'isProgrammatic',
-            name: intl.formatMessage({
-                id: FM.ENTITIES_COLUMNS_IS_PROGRAMMATIC,
-                defaultMessage: 'Programmatic'
-            }),
-            fieldName: 'programmatic',
-            minWidth: 70,
-            isResizable: false,
-            getSortValue: entity => (entity.entityType === EntityType.LOCAL) ? 'a' : 'b',
-            render: entity => <OF.Icon iconName={entity.entityType === EntityType.LOCAL ? "CheckMark" : "Remove"} className="cl-icon" />
+                    {display}
+                </span>)}
         },
         {
             key: 'isBucketable',
@@ -78,6 +72,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }),
             fieldName: 'isMultivalue',
             minWidth: 70,
+            maxWidth: 70,
             isResizable: false,
             getSortValue: entity => entity.isMultivalue ? 'a' : 'b',
             render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="cl-icon" />
@@ -90,6 +85,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }),
             fieldName: 'isNegatible',
             minWidth: 70,
+            maxWidth: 70,
             isResizable: false,
             getSortValue: entity => entity.isNegatible ? 'a' : 'b',
             render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="cl-icon" />
