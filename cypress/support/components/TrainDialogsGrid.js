@@ -6,12 +6,14 @@
 const helpers = require('../Helpers')
 
 // Path to product code: ConversationLearner-UI\src\routes\Apps\App\TrainDialogs.tsx
-export function VerifyPageTitle()                 { cy.Get('[data-testid="train-dialogs-title"]').contains('Train Dialogs') }
+export function VerifyPageTitle()                 { cy.Get('[data-testid="train-dialogs-title"]').contains('Train Dialogs').should('be.visible') }
 export function CreateNewTrainDialog()            { cy.Get('[data-testid="button-new-train-dialog"]').Click()}
 export function SearchBox()                       { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
 export function EntityDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-entity"]')}
 export function ActionDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-action"]')}
-export function ClickTraining(row)                { cy.Get('[data-testid="train-dialogs-first-input"]').then(elements => { cy.wrap(elements[row]).Click() })}
+export function ClickTraining(row)                { cy.Get('[data-testid="train-dialogs-first-input"]').then(elements => { 
+    helpers.ConLog(`ClickTraining(${row})`)
+    cy.wrap(elements[row]).Click() })}
 
 export function WaitForGridReadyThen(expectedRowCount, functionToRunAfterGridIsReady)  
 { 

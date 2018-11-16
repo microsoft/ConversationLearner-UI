@@ -5,7 +5,7 @@
 
 const helpers = require('../../support/Helpers')
 
-export function VerifyPageTitle()                       { cy.Get('[data-testid="actions-title"]').contains('Actions') }
+export function VerifyPageTitle()                       { cy.Get('[data-testid="actions-title"]').contains('Actions').should('be.visible') }
 export function ValidateExpectedEntities(entities)      { ValidateEntities('[data-testid="action-details-expected-entity"]', '[data-testid="action-details-empty-expected-entities"]', entities)}
 
 // The UI automatically populates the Required Entities field with entities found in the response text,

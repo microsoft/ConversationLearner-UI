@@ -21,13 +21,13 @@ export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="to
 export function GetAllChatMessages()                  { return helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)}
 
 // These are for the NEW TRAIN DIALOG mode
-export function ClickSaveButton()                     { cy.Get('[data-testid="teach-session-modal-save-button"]').Click() }
+//export function ClickSaveButton()                     { cy.Get('[data-testid="teach-session-modal-save-button"]').Click() }
 export function ClickAbandonButton()                  { cy.Get('[data-testid="teach-session-modal-abandon-button"]').Click() }
 
 // These are for EDIT EXISTING TRAINING mode
-export function ClickSaveCloseButton()                { cy.Get('[data-testid="edit-dialog-modal-close-save-button"]').Click() }
-export function VerifyCloseButtonLabel()              { cy.Get('[data-testid="edit-dialog-modal-close-save-button"]').contains('Close') }
-export function VerifySaveBranchButtonLabel()         { cy.Get('[data-testid="edit-dialog-modal-close-save-button"]').contains('Save Branch') }
+export function ClickSaveCloseButton()                { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
+export function VerifyCloseButtonLabel()              { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Close') }
+export function VerifySaveBranchButtonLabel()         { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Save Branch') }
 export function ClickAbandonDeleteButton()            { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').Click() }
 export function VerifyDeleteButtonLabel()             { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').contains('Delete') }
 export function VerifyAbandonBranchButtonLabel()      { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').contains('Abandon Branch') }
@@ -78,7 +78,7 @@ export function VerifyBranchButtonIsInSameControlGroupAsMessage(message)
 export function BranchChatTurn(message)
 {
   cy.Get('@branchButton').Click()
-  cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
+  cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${message}{enter}`)
 }
 
 // Creates the 'allChatTurns' alias.

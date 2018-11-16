@@ -29,6 +29,7 @@ var testGroups =
       name: 'EditAndBranching', tests:
         [
           { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
+          { name: "Branching", func: editAndBranching.Branching },
         ]
     },
     {

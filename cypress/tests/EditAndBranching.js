@@ -25,7 +25,7 @@ export function VerifyEditTrainingControlsAndLabels()
   editDialogModal.VerifyThereAreNoChatEditControls('My name is David.', 'Hello Susan')
   editDialogModal.SelectAndVerifyEachChatTurn()
   
-  editDialogModal.BranchChatTurn('My name is Susan.', 'I am Groot')
+  train.BranchChatTurn('My name is Susan.', 'I am Groot')
   editDialogModal.VerifySaveBranchButtonLabel()
   editDialogModal.VerifyAbandonBranchButtonLabel()
 
@@ -45,17 +45,17 @@ export function Branching()
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
   train.CaptureOriginalChatMessages()
   
-  editDialogModal.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
+  train.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
   editDialogModal.ClickScoreActionsButton('Hello $name')
   scorerModal.VerifyLastChatMessage('Hello Joseph')
   train.CaptureEditedChatMessages()
-  editDialogModal.ClickSaveCloseButton()
-
-  VerifyTrainingSummaryIsInGrid(() => { return window.currentTrainingSummary })
-
+  train.Save()
+  
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
   train.VerifyOriginalChatMessages()
+  editDialogModal.ClickSaveCloseButton()
 
   train.EditTraining('My name is David.', 'My name is Joseph.', 'Hello $name')
   train.VerifyEditedChatMessages()
+  editDialogModal.ClickSaveCloseButton()
 }

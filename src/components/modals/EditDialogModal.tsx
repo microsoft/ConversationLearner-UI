@@ -866,7 +866,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                             </TooltipHost>
 
                             <OF.PrimaryButton
-                                data-testid="edit-dialog-modal-close-save-button"
+                                data-testid="edit-teach-dialog-close-save-button"
                                 disabled={this.state.pendingExtractionChanges || hasBlockingError}
                                 onClick={this.onClickSave}
                                 ariaDescription={this.renderSaveText(intl)}

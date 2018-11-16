@@ -45,9 +45,9 @@ var MonitorDocumentChanges = (function()
 
         Cypress.Commands.add('Get', (selector, options) => 
         {   
-            helpers.ConLog(`cy.Get()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector: \n${selector}`)
+            helpers.ConLog(`cy.Get(${selector})`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector: \n${selector}`)
             cy.wrap(700, {timeout: 60000}).should('lte', 'MillisecondsSinceLastChange').then(() => {
-            helpers.ConLog(`cy.Get()`, `DOM Is Stable`)
+            helpers.ConLog(`cy.Get(${selector})`, `DOM Is Stable`)
             cy.get(selector, options)
         })})
 

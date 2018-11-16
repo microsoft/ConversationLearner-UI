@@ -44,28 +44,34 @@ export function EditTraining(firstInput, lastInput, lastResponse)
     var lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
     var createdDates = trainDialogsGrid.GetCreatedDates()
 
-    for (var i = 0; i < firstInputs.length; i++)
+    cy.Enqueue(() => 
     {
-      if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse)
-      {
-        window.currentTrainingSummary = 
-        {
-          FirstInput: firstInputs[i],
-          LastInput: lastInputs[i],
-          LastResponse: lastResponses[i],
-          Turns: turns[i],
-          LastModifiedDate: lastModifiedDates[i],
-          CreatedDate: createdDates[i],
-          TrainGridRowCount: (turns ? turns.length : 0) + 1
-        }    
-        window.originalTrainingSummary = Object.create(window.currentTrainingSummary)
-        window.isBranched = false
+      helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `${turns.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
 
-        trainDialogsGrid.ClickTraining(i)
-        return
+      for (var i = 0; i < firstInputs.length; i++)
+      {
+        if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse)
+        {
+          window.currentTrainingSummary = 
+          {
+            FirstInput: firstInputs[i],
+            LastInput: lastInputs[i],
+            LastResponse: lastResponses[i],
+            Turns: turns[i],
+            LastModifiedDate: lastModifiedDates[i],
+            CreatedDate: createdDates[i],
+            TrainGridRowCount: (turns ? turns.length : 0)
+          }    
+          window.originalTrainingSummary = Object.create(window.currentTrainingSummary)
+          window.isBranched = false
+
+          helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `ClickTraining for ${i} - ${turns[i]}, ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
+          trainDialogsGrid.ClickTraining(i)
+          return
+        }
       }
-    }
-    throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`
+      throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`
+    })
   })
 }
 
@@ -100,46 +106,42 @@ export function ClickScoreActionsButton(lastResponse)
   })
 }
 
-
 export function Save()
 {
-  editDialogModal.ClickSaveButton()
+  editDialogModal.ClickSaveCloseButton()
+  trainDialogsGrid.VerifyPageTitle()
   cy.Enqueue(() => 
   { 
+    if (window.isBranched) VerifyTrainingSummaryIsInGrid(window.originalTrainingSummary)
+
     window.currentTrainingSummary.LastModifiedDate = Today() 
     if (window.currentTrainingSummary.CreatedDate == undefined) window.currentTrainingSummary.CreatedDate = window.currentTrainingSummary.LastModifiedDate
+    VerifyTrainingSummaryIsInGrid(window.currentTrainingSummary)
   })
-  trainDialogsGrid.VerifyPageTitle()
-  VerifyTrainingSummaryIsInGrid(() => { return window.currentTrainingSummary })
 }
 
-export function VerifyTrainingSummaryIsInGrid(getTrainingSummaryFunction)
+function VerifyTrainingSummaryIsInGrid(trainingSummary)
 {
-  cy.Enqueue(() =>
+  trainDialogsGrid.WaitForGridReadyThen(trainingSummary.TrainGridRowCount, () =>
   {
-    var trainingSummary = getTrainingSummaryFunction()
-
-    trainDialogsGrid.WaitForGridReadyThen(trainingSummary.TrainGridRowCount, () =>
+    var turns = trainDialogsGrid.GetTurns()
+    var firstInputs = trainDialogsGrid.GetFirstInputs()
+    var lastInputs = trainDialogsGrid.GetLastInputs()
+    var lastResponses = trainDialogsGrid.GetLastResponses()
+    var lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
+    var createdDates = trainDialogsGrid.GetCreatedDates()
+    
+    for (var i = 0; i < trainingSummary.TrainGridRowCount; i++)
     {
-      var turns = trainDialogsGrid.GetTurns()
-      var firstInputs = trainDialogsGrid.GetFirstInputs()
-      var lastInputs = trainDialogsGrid.GetLastInputs()
-      var lastResponses = trainDialogsGrid.GetLastResponses()
-      var lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
-      var createdDates = trainDialogsGrid.GetCreatedDates()
-      
-      for (var i = 0; i < trainingSummary.TrainGridRowCount; i++)
-      {
-        if (lastModifiedDates[i] == trainingSummary.LastModifiedDate && 
-            turns[i] == trainingSummary.Turns &&
-            createdDates[i] == trainingSummary.CreatedDate &&
-            firstInputs[i] == trainingSummary.FirstInput &&
-            lastInputs[i] == trainingSummary.LastInput &&
-            lastResponses[i] == trainingSummary.LastResponse)
-          return
-      }
-      throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`
-    })
+      if (lastModifiedDates[i] == trainingSummary.LastModifiedDate && 
+          turns[i] == trainingSummary.Turns &&
+          createdDates[i] == trainingSummary.CreatedDate &&
+          firstInputs[i] == trainingSummary.FirstInput &&
+          lastInputs[i] == trainingSummary.LastInput &&
+          lastResponses[i] == trainingSummary.LastResponse)
+        return
+    }
+    throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`
   })
 }
 
@@ -167,22 +169,23 @@ function VerifyAllChatMessages(getChatMessagesToBeVerifiedFunction)
 { 
   cy.WaitForStableDOM().then(() => 
   {
+    helpers.ConLog('VerifyAllChatMessages', 'start')
     var errorMessage = ''
     var chatMessagesToBeVerified = getChatMessagesToBeVerifiedFunction()
     var allChatMessages = editDialogModal.GetAllChatMessages()  
 
-    if (allChatMessages.length != window.chatMessagesToBeVerified.length) 
-      errorMessage += `Original chat message count was ${window.chatMessagesToBeVerified.length}, current chat message count is ${allChatMessages.length}.`
+    if (allChatMessages.length != chatMessagesToBeVerified.length) 
+      errorMessage += `Original chat message count was ${chatMessagesToBeVerified.length}, current chat message count is ${allChatMessages.length}.`
 
-    var length = Math.max(allChatMessages.length, window.chatMessagesToBeVerified.length)
+    var length = Math.max(allChatMessages.length, chatMessagesToBeVerified.length)
     for (var i = 0; i < length; i++)
     {
       if (i >= allChatMessages.length)
-        errorMessage += `-- [${i}] - Original: '${window.chatMessagesToBeVerified[i]}' is extra'`
-      else if (i >= window.chatMessagesToBeVerified.length)
+        errorMessage += `-- [${i}] - Original: '${chatMessagesToBeVerified[i]}' is extra'`
+      else if (i >= chatMessagesToBeVerified.length)
         errorMessage += `-- [${i}] - Current: '${allChatMessages[i]}' is extra'`
-      else if (allChatMessages[i] != window.chatMessagesToBeVerified[i]) 
-        errorMessage += `-- [${i}] - Original: '${window.chatMessagesToBeVerified[i]}' does not match current: '${allChatMessages[i]}'`
+      else if (allChatMessages[i] != chatMessagesToBeVerified[i]) 
+        errorMessage += `-- [${i}] - Original: '${chatMessagesToBeVerified[i]}' does not match current: '${allChatMessages[i]}'`
     }
     if (errorMessage.length > 0) throw errorMessage
   })
@@ -194,7 +197,7 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
   {
     originalMessage = originalMessage.replace(/'/g, "’")
 
-    SelectChatTurn(originalMessage, originalIndex)
+    editDialogModal.SelectChatTurn(originalMessage, originalIndex)
 
     editDialogModal.VerifyBranchButtonIsInSameControlGroupAsMessage(originalMessage)
 
@@ -216,6 +219,8 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
 
     editDialogModal.BranchChatTurn(newMessage)
     window.isBranched = true
+    window.originalTrainingSummary.TrainGridRowCount ++
+    window.currentTrainingSummary.TrainGridRowCount ++
 
     VerifyAllChatMessages(() => { return branchedChatMessages })
   })

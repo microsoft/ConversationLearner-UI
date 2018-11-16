@@ -28,10 +28,10 @@ export function RemoveDuplicates(inputArray)
 export function StringArrayFromInnerHtml(selector) 
 { 
   var elements = Cypress.$(selector)
-  ConLog('StringArrayFromInnerHtml', elements.length)
+  ConLog(`StringArrayFromInnerHtml(${selector})`, elements.length)
   var returnValues = new Array()
   for (var i = 0; i < elements.length; i++) { returnValues.push(elements[i].innerHTML) 
-    ConLog('StringArrayFromInnerHtml', returnValues[i])
+    ConLog(`StringArrayFromInnerHtml(${selector})`, returnValues[i])
   }
   return returnValues
 }

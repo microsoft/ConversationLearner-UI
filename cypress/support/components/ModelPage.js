@@ -9,7 +9,7 @@ const trainDialogsGrid = require('./TrainDialogsGrid')
 const logDialogsGrid = require('../../support/components/LogDialogsGrid')
  
 export function VerifyModelName(name)     { cy.Get('[data-testid="app-index-model-name"]').should(el => { expect(el).to.contain(name) })}
-export function VerifyPageTitle()         { cy.Get('[data-testid="dashboard-title"]').contains('Log Dialogs') }
+export function VerifyPageTitle()         { cy.Get('[data-testid="dashboard-title"]').contains('Log Dialogs').should('be.visible') }
 
 export function NavigateToHome()          { cy.Get('[data-testid="app-index-nav-link-home"]').Click();          VerifyPageTitle() }
 export function NavigateToEntities()      { cy.Get('[data-testid="app-index-nav-link-entities"]').Click();      entitiesGrid.VerifyPageTitle() }
