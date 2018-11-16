@@ -216,6 +216,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
+    componentDidMount() {
+        if (this.props.initialText) {
+            let values = Plain.deserialize(this.props.initialText)
+            this.onChangePayloadEditor(values, TEXT_SLOT)
+        }
+    }
     componentWillReceiveProps(nextProps: Props) {
         let nextState: any = {}
 
@@ -1315,6 +1321,7 @@ export interface ReceiveProps {
     editingPackageId: string
     open: boolean
     action: ActionBase | null
+    initialText?: string
     handleEdit: (action: ActionBase) => void
     handleClose: () => void
     handleDelete: (action: ActionBase) => void

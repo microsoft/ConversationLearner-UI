@@ -134,6 +134,7 @@ html {
   color: green;
   font-size: 20px;
 }
+
 .cl-icon[data-icon-name="CommentAdd"]{
   color: lightgrey;
   font-size: 18px
@@ -359,6 +360,16 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 .cl-wc-deleteturn--user {
   left: 0px;
+}
+
+.cl-wc-addaction {
+  color: green !important;
+  border: none !important;
+  position: absolute !important;
+  background-color: transparent !important;
+  top: 27px;
+  z-index: 1000;
+  right: -4px;
 }
 
 .cl-wc-branchturn {

@@ -17,6 +17,7 @@ import * as BotChat from '@conversationlearner/webchat'
 import { EditDialogAdmin, EditDialogType, EditState } from '.'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
+import ActionCreatorEditor from '../modals/ActionCreatorEditor'
 import { SelectionType } from '../../types/const'
 import AddButtonInput from './AddButtonInput'
 import AddScoreButton from './AddButtonScore'
@@ -33,6 +34,7 @@ interface ComponentState {
     isConfirmAbandonOpen: boolean
     cantReplayMessage: string | null
     isUserInputModalOpen: boolean
+    actionCreatorText: string | null
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
     selectedActivity: Activity | null
@@ -45,6 +47,7 @@ const initialState: ComponentState = {
     isConfirmAbandonOpen: false,
     cantReplayMessage: null,
     isUserInputModalOpen: false,
+    actionCreatorText: null,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
     selectedActivity: null,
@@ -301,6 +304,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.TRAIN_ORIGINAL)
 
         const roundIndex = clData.roundIndex
+        const scoreIndex = clData.scoreIndex || 0
         const senderType = clData.senderType
         const curRound = this.props.trainDialog.rounds[roundIndex!]
 
@@ -318,6 +322,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             senderType !== CLM.SenderType.User ||
             curRound.scorerSteps.length === 0 ||
             (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)
+
+        const actionStub = 
+            senderType === CLM.SenderType.Bot ?
+            curRound.scorerSteps[scoreIndex].actionStub : undefined
 
         const hideBranch =  
                 !canBranch || 
@@ -345,6 +353,16 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                             if (this.state.selectedActivity && this.state.currentTrainDialog) {
                                 this.props.onDeleteTurn(this.state.currentTrainDialog, activity)
                             }
+                        }}
+                        ariaDescription="Delete Turn"
+                    />
+                }
+                {actionStub &&
+                    <OF.IconButton
+                        className={`cl-wc-addaction`}
+                        iconProps={{ iconName: 'CircleAdditionSolid' }}
+                        onClick={() => {
+                            this.setState({actionCreatorText: actionStub})
                         }}
                         ariaDescription="Delete Turn"
                     />
@@ -899,6 +917,20 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         })}
                     />
                 }
+                {this.state.actionCreatorText &&
+                    <ActionCreatorEditor
+                        app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
+                        initialText={this.state.actionCreatorText}
+                        open={true}
+                        action={null}
+                        handleClose={() => {
+                            this.setState({actionCreatorText: null})
+                        }}//LARSthis.onClickCancelActionEditor()}
+                        // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete 
+                        handleDelete={action => { }}
+                        handleEdit={() => {}}//LARS{action => this.onClickSubmitActionEditor(action)}
+                    />}
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
                     titleFM={FM.USERINPUT_ADD_TITLE}

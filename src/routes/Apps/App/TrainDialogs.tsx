@@ -7,11 +7,12 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as OF from 'office-ui-fabric-react'
-import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../Utils/util'
 import * as ValidityUtils from '../../../Utils/validityUtils'
 import * as DialogUtils from '../../../Utils/dialogUtils'
+import * as moment from 'moment'
+import { State } from '../../../types'
 import { SelectionType } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'
@@ -19,7 +20,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'r
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
-import * as moment from 'moment'
+import ConversationImporter from 'src/components/modals/ConversationImporter';
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -223,6 +224,7 @@ interface ComponentState {
     lastAction: CLM.ActionBase | null
     isTeachDialogModalOpen: boolean
     isEditDialogModalOpen: boolean
+    isConversationImportOpen: boolean
     // Item selected in webchat window
     selectedActivityIndex: number | null
     // Current train dialogs being edited
@@ -253,6 +255,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             lastAction: null,
             isTeachDialogModalOpen: false,
             isEditDialogModalOpen: false,
+            isConversationImportOpen: false,
             selectedActivityIndex: null,
             currentTrainDialog: null,
             originalTrainDialogId: null,
@@ -958,7 +961,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         void this.onCloseEditDialogModal()
     }
 
-    onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
+    onClickTrainDialogItem(trainDialog: CLM.TrainDialog, editType?: EditDialogType) {
         this.props.clearWebchatScrollPosition()
         let trainDialogWithDefinitions: CLM.TrainDialog = {
             createdDateTime: new Date().toJSON(),
@@ -985,7 +988,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     lastAction: teachWithHistory.lastAction,
                     currentTrainDialog: trainDialog,
                     originalTrainDialogId: originalId,
-                    editType: EditDialogType.TRAIN_ORIGINAL,
+                    editType: editType || EditDialogType.TRAIN_ORIGINAL,
                     isEditDialogModalOpen: true,
                     selectedActivityIndex: null
                 })
@@ -993,6 +996,29 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             .catch(error => {
                 console.warn(`Error when attempting to create history: `, error)
             })
+    }
+
+    @OF.autobind
+    onClickImportConversation(): void {
+        this.setState({
+            isConversationImportOpen: true
+        })
+    }
+
+    @OF.autobind
+    onCancelImportConversation(): void {
+        this.setState({
+            isConversationImportOpen: false
+        })
+    }
+
+    @OF.autobind
+    onSubmitImportConversation(trainDialog: CLM.TrainDialog): void {
+        this.setState({
+            isConversationImportOpen: false,
+            originalTrainDialogId: trainDialog.trainDialogId
+        })
+        this.onClickTrainDialogItem(trainDialog, EditDialogType.LOG_ORIGINAL)
     }
 
     async onCloseEditDialogModal(reload: boolean = false) {
@@ -1167,6 +1193,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                     defaultMessage: 'New Train Dialog'
                                 })}
                             />
+                            <OF.PrimaryButton
+                                iconProps={{
+                                    iconName: "Add"
+                                }}
+                                disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                                onClick={() => this.onClickImportConversation()}
+                                ariaDescription="Import"
+                                text="Import"
+                            />
                         </div>
                     </div>
                     : <React.Fragment>
@@ -1270,6 +1305,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onReplay={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={(newTrainDialog, validity) => this.onCreateTrainDialog(newTrainDialog, validity)}
                 />
+                {this.state.isConversationImportOpen && 
+                    <ConversationImporter
+                        open={true}
+                        onCancel={this.onCancelImportConversation}
+                        onSubmit={this.onSubmitImportConversation}
+                    />
+                }
             </div>
         );
     }
