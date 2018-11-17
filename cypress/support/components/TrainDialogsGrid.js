@@ -11,9 +11,7 @@ export function CreateNewTrainDialog()            { cy.Get('[data-testid="button
 export function SearchBox()                       { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
 export function EntityDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-entity"]')}
 export function ActionDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-action"]')}
-export function ClickTraining(row)                { cy.Get('[data-testid="train-dialogs-first-input"]').then(elements => { 
-    helpers.ConLog(`ClickTraining(${row})`)
-    cy.wrap(elements[row]).Click() })}
+export function ClickTraining(row)                { cy.Get('[data-testid="train-dialogs-first-input"]').then(elements => { cy.wrap(elements[row]).Click() })}
 
 export function WaitForGridReadyThen(expectedRowCount, functionToRunAfterGridIsReady)  
 { 

@@ -13,7 +13,7 @@ export function ClickSubmitButton()             { cy.Get('[data-testid="model-cr
 export function UploadImportModelFile(name)     { cy.UploadFile(name, `[data-testid=model-creator-import-file-picker] > div > input[type="file"]`)}
 
 export function ClickDeleteModelButton(row)     { cy.Get(`[data-list-index="${row}"] > .ms-FocusZone > .ms-DetailsRow-fields`).find('i[data-icon-name="Delete"]').Click() }
-export function ClickConfirmButton(func)        { cy.Get('.ms-Dialog-main').contains('Confirm').Click() }
+export function ClickConfirmButton()            { cy.Get('.ms-Dialog-main').contains('Confirm').Click() }
 
 export function GetModelListRowCountThen(func) 
 {

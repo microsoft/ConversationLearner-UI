@@ -44,34 +44,31 @@ export function EditTraining(firstInput, lastInput, lastResponse)
     var lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
     var createdDates = trainDialogsGrid.GetCreatedDates()
 
-    cy.Enqueue(() => 
+    helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `${turns.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
+
+    for (var i = 0; i < firstInputs.length; i++)
     {
-      helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `${turns.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
-
-      for (var i = 0; i < firstInputs.length; i++)
+      if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse)
       {
-        if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse)
+        window.currentTrainingSummary = 
         {
-          window.currentTrainingSummary = 
-          {
-            FirstInput: firstInputs[i],
-            LastInput: lastInputs[i],
-            LastResponse: lastResponses[i],
-            Turns: turns[i],
-            LastModifiedDate: lastModifiedDates[i],
-            CreatedDate: createdDates[i],
-            TrainGridRowCount: (turns ? turns.length : 0)
-          }    
-          window.originalTrainingSummary = Object.create(window.currentTrainingSummary)
-          window.isBranched = false
+          FirstInput: firstInputs[i],
+          LastInput: lastInputs[i],
+          LastResponse: lastResponses[i],
+          Turns: turns[i],
+          LastModifiedDate: lastModifiedDates[i],
+          CreatedDate: createdDates[i],
+          TrainGridRowCount: (turns ? turns.length : 0)
+        }    
+        window.originalTrainingSummary = Object.create(window.currentTrainingSummary)
+        window.isBranched = false
 
-          helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `ClickTraining for ${i} - ${turns[i]}, ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
-          trainDialogsGrid.ClickTraining(i)
-          return
-        }
+        helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `ClickTraining for ${i} - ${turns[i]}, ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
+        trainDialogsGrid.ClickTraining(i)
+        return
       }
-      throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`
-    })
+    }
+    throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`
   })
 }
 
@@ -165,13 +162,12 @@ export function VerifyEditedChatMessages()
   VerifyAllChatMessages(() => { return window.editedChatMessages })
 }
 
-function VerifyAllChatMessages(getChatMessagesToBeVerifiedFunction) 
+function VerifyAllChatMessages(functionGetChatMessagesToBeVerified) 
 { 
   cy.WaitForStableDOM().then(() => 
   {
-    helpers.ConLog('VerifyAllChatMessages', 'start')
     var errorMessage = ''
-    var chatMessagesToBeVerified = getChatMessagesToBeVerifiedFunction()
+    var chatMessagesToBeVerified = functionGetChatMessagesToBeVerified()
     var allChatMessages = editDialogModal.GetAllChatMessages()  
 
     if (allChatMessages.length != chatMessagesToBeVerified.length) 

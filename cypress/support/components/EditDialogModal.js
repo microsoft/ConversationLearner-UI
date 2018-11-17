@@ -20,11 +20,6 @@ export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="to
 
 export function GetAllChatMessages()                  { return helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)}
 
-// These are for the NEW TRAIN DIALOG mode
-//export function ClickSaveButton()                     { cy.Get('[data-testid="teach-session-modal-save-button"]').Click() }
-export function ClickAbandonButton()                  { cy.Get('[data-testid="teach-session-modal-abandon-button"]').Click() }
-
-// These are for EDIT EXISTING TRAINING mode
 export function ClickSaveCloseButton()                { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
 export function VerifyCloseButtonLabel()              { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Close') }
 export function VerifySaveBranchButtonLabel()         { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Save Branch') }
@@ -65,7 +60,7 @@ export function SelectChatTurn(message, index = 0)
 }
 
 // This is meant to be called after SelectChatTurn for a user message.
-// Remember, selecting a bot's message won't result in a branch button becoming visible.
+// Do NOT use this for bot messages, since they have no branching capabilities.
 // Side Effect: '@branchButton' alias is created.
 export function VerifyBranchButtonIsInSameControlGroupAsMessage(message)
 {
@@ -81,7 +76,7 @@ export function BranchChatTurn(message)
   cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${message}{enter}`)
 }
 
-// Creates the 'allChatTurns' alias.
+// Creates the '@allChatTurns' alias.
 export function GetAllChatTurns()
 {
   cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')  
