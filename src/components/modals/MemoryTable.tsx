@@ -70,11 +70,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             renderedValue = entityObject(valuesAsObject, renderedValue)
                         }
                         else {
-                            renderedValue = <span>{value.prefix}<span className={`${changeClass} ${value.isPrebuilt ? 'cl-font--action' : ''}`} data-testid="entity-memory-value">{value.displayText}</span></span>
+                            let resolutionClass = (value.memoryValue.builtinType && Object.keys(value.memoryValue.resolution).length > 0) ? 'cl-font--action' : ''
+                            renderedValue = <span>{value.prefix}<span className={`${changeClass} ${resolutionClass}`} data-testid="entity-memory-value">{value.displayText}</span></span>
                             
-                            if (value.isPrebuilt) {
-                                renderedValue = prebuilt(value.memoryValue, renderedValue)
-                            }
+                            // Decorate with resolution if it exists
+                            renderedValue = prebuilt(value.memoryValue, renderedValue)
                         }
 
                         return <span className={`${OF.FontClassNames.mediumPlus} cl-font--preserve`} key={i}>{renderedValue}</span>
