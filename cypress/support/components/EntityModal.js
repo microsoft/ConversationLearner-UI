@@ -4,7 +4,7 @@
  */
 
 export function ClickEntityTypeDropdown()       { cy.Get('[data-testid="entity-creator-entity-type-dropdown"]').Click() }
-export function ClickEntityType(type)           { cy.Get(`[aria-label="${type}"]`).Click() }
+export function ClickEntityType(type)           { cy.Get(`button.ms-Dropdown-item`).contains(type).Click() }
 export function TypeEntityName(entityName)      { cy.Get('[data-testid="entity-creator-entity-name-text"]').type(entityName) } 
 export function ClickCreateButton()             { cy.Get('[data-testid="entity-creator-button-save"]').Click() }
 

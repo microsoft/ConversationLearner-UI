@@ -21,6 +21,5 @@ describe('zTemp test', () =>
     cy.pause()//.then(() =>
     cy.Train_CaptureAllChatMessages()
     cy.pause()
-    cy.Train_VerifyAllChatMessagesSameAsCaptured()
   })
 })
