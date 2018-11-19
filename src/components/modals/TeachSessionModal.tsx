@@ -46,8 +46,7 @@ interface ComponentState {
     // If activity selected its index
     selectedActivityIndex: number | null,
     // If activity was part of existing history, the actual item
-    selectedHistoryActivity: Activity | null,
-    promptOnAbandon: boolean
+    selectedHistoryActivity: Activity | null
 }
 
 class TeachModal extends React.Component<Props, ComponentState> {
@@ -64,8 +63,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         hasTerminalAction: false,
         nextActivityIndex: 0,
         selectedActivityIndex: null,
-        selectedHistoryActivity: null,
-        promptOnAbandon: true
+        selectedHistoryActivity: null
     }
 
     private callbacksId: string | null = null;
@@ -160,7 +158,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickAbandonTeach() {
-        if (this.state.promptOnAbandon) {
+        if (this.state.nextActivityIndex) {
             this.setState({
                 isConfirmDeleteOpen: true
             })
@@ -679,7 +677,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let saveDisable = !this.state.hasTerminalAction 
                         || this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
                         || this.props.teachSession.botAPIError !== null
-        this.state.promptOnAbandon = !saveDisable
+
         return (
             <div>
                 <Modal
