@@ -134,6 +134,7 @@ export enum FM {
     BUTTON_SAVE_EDIT = 'Button.SAVE_EDIT',
     BUTTON_SAVE_BRANCH = 'Button.SAVE_BRANCH',
     BUTTON_SUBMIT = 'Button.SUMBIT',
+    BUTTON_UNDO = 'Button.UNDO',
 
     // ChatSessionModal
     CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'ChatSessionModal.primaryButton.ariaDescription',
@@ -406,7 +407,6 @@ export enum FM {
     TOOLTIP_ENTITY_EXTRACTOR_WARNING = 'ToolTip.ENTITY_EXTRACTOR_WARNING',
     TOOLTIP_ENTITY_NAME = 'ToolTip.ENTITY_NAME',
     TOOLTIP_ENTITY_VALUE = 'ToolTip.ENTITY_VALUE',
-    TOOLTIP_ENTITY_TYPE = 'ToolTip.ENTITY_TYPE',
     TOOLTIP_EXAMPLE = 'ToolTip.EXAMPLE',
     TOOLTIP_LOGGING_TOGGLE = 'ToolTip.LOGGING_TOGGLE',
     TOOLTIP_MEMORYMANAGER = 'ToolTip.ACTION_MEMORYMANAGER',
@@ -606,6 +606,7 @@ export default {
         [FM.BUTTON_SAVE_BRANCH]: 'Save Branch',
         [FM.BUTTON_SAVE_EDIT]: 'Save Edit',
         [FM.BUTTON_SUBMIT]: 'Submit',
+        [FM.BUTTON_UNDO]: 'Undo',
 
         // Error Messages
         [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
@@ -761,7 +762,6 @@ export default {
         [FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING]: 'Text Variations must contain the same detected Entities as the original input text.',
         [FM.TOOLTIP_ENTITY_NAME]: 'Name of the Entity',
         [FM.TOOLTIP_ENTITY_VALUE]: 'What the Bot currently has in Memory for this Entity',
-        [FM.TOOLTIP_ENTITY_TYPE]: 'Type of Entity: CUSTOM, programmatic, or name existing of Pre-Built Entity',
         [FM.TOOLTIP_EXAMPLE]: 'For Example:',
         [FM.TOOLTIP_LOGGING_TOGGLE]: 'Enables or disables logging of user conversations. When logging is enabled, Bot performance can be improved by providing corrections to Logs that contain undesired Bot responses.  The corrected Log Dialogs become new Training Dialogs',
         [FM.TOOLTIP_MEMORYMANAGER]: `The memory manager provides the following functions for manipulating the Bot's memory:`,
@@ -829,8 +829,8 @@ export default {
         [FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC]: 'Entity name may only contain alphanumeric characters with no spaces.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
-        [FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW]: 'custom',
-        [FM.ENTITYCREATOREDITOR_ENTITYOPTION_PROG]: 'programmatic',
+        [FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW]: 'Custom Trained',
+        [FM.ENTITYCREATOREDITOR_ENTITYOPTION_PROG]: 'Programmatic',
         [FM.ENTITYCREATOREDITOR_TITLE_CREATE]: 'Create an Entity',
         [FM.ENTITYCREATOREDITOR_TITLE_EDIT]: 'Edit Entity',
         [FM.ENTITYCREATOREDITOR_FIELDS_NAME_LABEL]: 'Entity Name',

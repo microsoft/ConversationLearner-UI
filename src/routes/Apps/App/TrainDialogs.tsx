@@ -437,11 +437,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     // User has edited an Activity in a TeachSession
     async onEditTeach(historyIndex: number, args: EditHandlerArgs|null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any) {
 
+        // LARS do in log dialog too!+
         try {
 
             if (this.props.teachSession.teach) {
                 // Get train dialog associated with the teach session
                 let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.props.teachSession.teach.trainDialogId, false) as any) as Promise<CLM.TrainDialog>)
+                
                 trainDialog.definitions = {
                     entities: this.props.entities,
                     actions: this.props.actions,
@@ -495,6 +497,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // Remove actionless dummy step (used for rendering) if it exits
             if (history.rounds[roundIndex].scorerSteps.length > 0 && history.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
                 history.rounds[roundIndex].scorerSteps = []
+            }
+            else if (!scoreIndex) {
+                history.rounds[roundIndex].scorerSteps = []  
             }
             // Or remove following scorer steps 
             else {
@@ -1238,6 +1243,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                         onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)} 
                         onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)} 
+                        onReplayDialog={(trainDialog) => this.onReplayTrainDialog(trainDialog)}
                         onSetInitialEntities={this.onSetInitialEntities}
                         initialHistory={this.state.history}
                         editType={this.state.editType}
@@ -1267,7 +1273,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onDeleteDialog={() => this.onDeleteTrainDialog()}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onSaveDialog={(editedTrainDialog, validity) => this.onReplaceTrainDialog(editedTrainDialog, validity)}
-                    onReplay={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
+                    onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={(newTrainDialog, validity) => this.onCreateTrainDialog(newTrainDialog, validity)}
                 />
             </div>
