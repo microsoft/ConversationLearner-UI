@@ -24,6 +24,7 @@ class AddButtonInput extends React.Component<Props, {}> {
                     role="button"
                     className={`cl-addbutton-add cl-addbutton-addinput`}
                     onClick={this.props.onClick}
+                    data-testid="chat-edit-add-input-button"
                 >
                     <TooltipHost 
                         directionalHint={DirectionalHint.topCenter}

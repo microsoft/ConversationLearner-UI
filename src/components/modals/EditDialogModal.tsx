@@ -339,6 +339,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 />
                 {canDeleteRound &&
                     <OF.IconButton
+                        data-testid="edit-dialog-modal-delete-turn-button"
                         className={`cl-wc-deleteturn ${clData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
                         iconProps={{ iconName: 'Delete' }}
                         onClick={() => {
@@ -361,6 +362,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         }}
                     >
                         <OF.IconButton
+                            data-testid="edit-dialog-modal-branch-button"
                             className={`cl-wc-branchturn`}
                             iconProps={{ iconName: 'BranchMerge' }}
                             onClick={this.onClickBranch}
@@ -617,6 +619,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return (
                 <div className="wc-console">
                     <OF.PrimaryButton
+                        data-testid="score-actions-button"
                         className="cl-rightjustify"
                         onClick={() => this.onClickAddScore(this.props.history[this.props.history.length - 1], SelectionType.NONE)}
                         ariaDescription={'Score Actions'}
@@ -845,7 +848,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 }}
                             >
                                 <OF.PrimaryButton
-                                    data-testid="footer-button-done"
+                                    data-testid="edit-dialog-modal-replay-button"
                                     disabled={this.state.pendingExtractionChanges || this.props.editState !== EditState.CAN_EDIT}
                                     onClick={() => this.props.onReplayDialog(this.props.trainDialog)}
                                     ariaDescription={    
@@ -863,14 +866,14 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                             </TooltipHost>
 
                             <OF.PrimaryButton
-                                data-testid="footer-button-done"
+                                data-testid="edit-teach-dialog-close-save-button"
                                 disabled={this.state.pendingExtractionChanges || hasBlockingError}
                                 onClick={this.onClickSave}
                                 ariaDescription={this.renderSaveText(intl)}
                                 text={this.renderSaveText(intl)}
                             />
                             <OF.DefaultButton
-                                data-testid="footer-button-delete"
+                                data-testid="edit-dialog-modal-delete-button"
                                 className="cl-button-delete"
                                 disabled={this.props.editState !== EditState.CAN_EDIT}
                                 onClick={this.onClickAbandon}

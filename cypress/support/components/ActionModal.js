@@ -2,7 +2,7 @@
 * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
 */
-export function VerifyPageTitle()         { cy.Get('[data-testid="create-an-action-title"]').contains('Create an Action') }
+export function VerifyPageTitle()         { cy.Get('[data-testid="create-an-action-title"]').contains('Create an Action').should('be.visible') }
 export function ClickNewAction()          { cy.Get('[data-testid="actions-button-create"]').Click() }
 export function ClickCreateButton()       { cy.Get('[data-testid="actioncreator-button-create"]').Click() }
 export function CheckWaitForResponse()    { throw 'CheckWaitForResponse is NOT supported'} // Since this is a button and not a real check box it is difficult/ugly to manage the state. This defaults to checked.

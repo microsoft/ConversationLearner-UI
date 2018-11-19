@@ -15,11 +15,14 @@ export function ClickAction(expectedResponse)
   cy.Get('[data-testid="action-scorer-text-response"]').ExactMatch(expectedResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .Click()
+  VerifyLastChatMessage(expectedResponse)
+}
 
-  var expectedUtterance = expectedResponse.replace(/'/g, "’")
+export function VerifyLastChatMessage(expectedMessage)
+{
+  var expectedUtterance = expectedMessage.replace(/'/g, "’")
 
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
-    helpers.Dump(`ScorerModel.ClickAction()`, elements[elements.length - 1])
     cy.wrap(elements[elements.length - 1]).within(e => {
       cy.get('div.format-markdown > p').should('have.text', expectedUtterance)
     })})

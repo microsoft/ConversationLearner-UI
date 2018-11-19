@@ -6,6 +6,7 @@
 const createModels = require('../tests/CreateModels')
 const train = require('../tests/Train')
 const log = require('../tests/Log')
+const editAndBranching = require('../tests/EditAndBranching')
 const helpers = require('./Helpers')
 const path = require('path')
 const pathParse = require('path-parse')
@@ -22,6 +23,13 @@ var testGroups =
           { name: "Disqualifying Entities", func: createModels.DisqualifyingEntities },
           { name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions },
           { name: "What's Your Name", func: createModels.WhatsYourName },
+        ]
+    },
+    {
+      name: 'EditAndBranching', tests:
+        [
+          { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
+          { name: "Branching", func: editAndBranching.Branching },
         ]
     },
     {

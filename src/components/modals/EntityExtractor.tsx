@@ -473,7 +473,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 {!editingRound &&
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
-                            data-testid="entity-extractor-score-actions-button"
+                            data-testid="score-actions-button"
                             disabled={!allExtractResponsesValid || this.state.pendingVariationChange}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Score Actions'}

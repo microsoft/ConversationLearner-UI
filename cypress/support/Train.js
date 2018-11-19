@@ -11,48 +11,14 @@ const helpers = require('./Helpers')
 function Today() { return Cypress.moment().format("MM/DD/YYYY") }
 
 // Workaround: to get true global data it must be attached to the window object.
-window.trainingSummary = undefined
-window.expectedTrainGridRowCount = 9999
+window.currentTrainingSummary = undefined
 
 export function CreateNewTrainDialog()
 {
-  cy.Train_CreateNewTrainDialog()
-  trainDialogsGrid.CreateNewTrainDialog()
-}
-
-export function TypeYourMessage(message)
-{
-  editDialogModal.TypeYourMessage(message)
-  cy.Train_TypeYourMessage(message)
-}
-
-export function SelectAction(expectedResponse, lastResponse)
-{
-  scorerModal.ClickAction(expectedResponse)
-  cy.Train_SelectAction(expectedResponse, lastResponse)
-}
-
-export function Save()
-{
-  editDialogModal.ClickSaveButton()
-  cy.Train_Save()
-  trainDialogsGrid.VerifyPageTitle()
-  
-  // Workaround: We need to do this here instead of inside of Train_VerifyTrainingSummaryIsInGrid()
-  //             since Cypress won't retry that function. ALSO we need to prevent that function 
-  //             from executing until we know the grid is populated and this will do that.
-  trainDialogsGrid.GridIsReady(elements => { expect(elements).to.have.length(window.expectedTrainGridRowCount)})
-
-  cy.Train_VerifyTrainingSummaryIsInGrid()
-}
-
-export function OneTimeInitialization()
-{
-  Cypress.Commands.add("Train_CreateNewTrainDialog", () =>
+  cy.Enqueue(() => 
   {
     var turns = trainDialogsGrid.GetTurns()
-    window.expectedTrainGridRowCount = (turns ? turns.length : 0) + 1
-    window.trainingSummary = 
+    window.currentTrainingSummary = 
     {
       FirstInput: undefined,
       LastInput: undefined,
@@ -60,54 +26,214 @@ export function OneTimeInitialization()
       Turns: 0,
       LastModifiedDate: undefined,
       CreatedDate: undefined,
-    }    
+      TrainGridRowCount: (turns ? turns.length : 0) + 1
+    }
+    window.isBranched = false
   })
+  trainDialogsGrid.CreateNewTrainDialog()
+}
 
-  Cypress.Commands.add("Train_TypeYourMessage", (message) =>
-  {
-    if (!window.trainingSummary.FirstInput) window.trainingSummary.FirstInput = message
-    window.trainingSummary.LastInput = message
-    window.trainingSummary.Turns++
-  })
-
-  // lastResponse is OPTIONAL, it is needed when the Action contains a $entityName
-  // that was replaced with the expected value in expectedResponse.
-  Cypress.Commands.add("Train_SelectAction", (expectedResponse, lastResponse) =>
-  {
-    if (lastResponse) window.trainingSummary.LastResponse = lastResponse
-    else window.trainingSummary.LastResponse = expectedResponse
-  })
-
-  Cypress.Commands.add("Train_Save", () => { window.trainingSummary.CreatedDate = window.trainingSummary.LastModifiedDate = Today() })
-
-  Cypress.Commands.add("Train_VerifyTrainingSummaryIsInGrid", () =>
+export function EditTraining(firstInput, lastInput, lastResponse)
+{
+  cy.Enqueue(() => 
   {
     var turns = trainDialogsGrid.GetTurns()
-
-    // Workaround: Can NOT do this here because Cypress does not do its retry on this method.
-    // expect(window.expectedTrainGridRowCount).to.equal(turns.length)
-    
     var firstInputs = trainDialogsGrid.GetFirstInputs()
     var lastInputs = trainDialogsGrid.GetLastInputs()
     var lastResponses = trainDialogsGrid.GetLastResponses()
     var lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
     var createdDates = trainDialogsGrid.GetCreatedDates()
 
-    for (var i = 0; i < window.expectedTrainGridRowCount; i++)
+    helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `${turns.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
+
+    for (var i = 0; i < firstInputs.length; i++)
     {
-      if (lastModifiedDates[i] == window.trainingSummary.LastModifiedDate && 
-          turns[i] == window.trainingSummary.Turns &&
-          createdDates[i] == window.trainingSummary.CreatedDate &&
-          firstInputs[i] == window.trainingSummary.FirstInput &&
-          lastInputs[i] == window.trainingSummary.LastInput &&
-          lastResponses[i] == window.trainingSummary.LastResponse)
+      if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse)
+      {
+        window.currentTrainingSummary = 
+        {
+          FirstInput: firstInputs[i],
+          LastInput: lastInputs[i],
+          LastResponse: lastResponses[i],
+          Turns: turns[i],
+          LastModifiedDate: lastModifiedDates[i],
+          CreatedDate: createdDates[i],
+          TrainGridRowCount: (turns ? turns.length : 0)
+        }    
+        window.originalTrainingSummary = Object.create(window.currentTrainingSummary)
+        window.isBranched = false
+
+        helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `ClickTraining for ${i} - ${turns[i]}, ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
+        trainDialogsGrid.ClickTraining(i)
         return
+      }
     }
-    throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${window.trainingSummary.FirstInput} -- LastInput: ${window.trainingSummary.LastInput} -- LastResponse: ${window.trainingSummary.LastResponse} -- Turns: ${window.trainingSummary.Turns} -- LastModifiedDate: ${window.trainingSummary.LastModifiedDate} -- CreatedDate: ${window.trainingSummary.CreatedDate}`
+    throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`
   })
 }
 
-function ConLogTrainingSummary(message)
+export function TypeYourMessage(message)
 {
-  helpers.ConLog(`######==> ${message}`, `FirstInput: ${window.trainingSummary.FirstInput} -- LastInput: ${window.trainingSummary.LastInput} -- LastResponse: ${window.trainingSummary.LastResponse} -- Turns: ${window.trainingSummary.Turns} -- LastModifiedDate: ${window.trainingSummary.LastModifiedDate} -- CreatedDate: ${window.trainingSummary.CreatedDate}`)
+  editDialogModal.TypeYourMessage(message)
+  cy.Enqueue(() => 
+  {
+    if (!window.currentTrainingSummary.FirstInput) window.currentTrainingSummary.FirstInput = message
+    window.currentTrainingSummary.LastInput = message
+    window.currentTrainingSummary.Turns++
+  })
+}
+
+export function SelectAction(expectedResponse, lastResponse)
+{
+  scorerModal.ClickAction(expectedResponse)
+  cy.Enqueue(() => 
+  { 
+    if (lastResponse) window.currentTrainingSummary.LastResponse = lastResponse
+    else window.currentTrainingSummary.LastResponse = expectedResponse
+  })
+}
+
+// This method is used to score AND AUTO-SELECT the action after branching.
+export function ClickScoreActionsButton(lastResponse)
+{
+  editDialogModal.ClickScoreActionsButton()
+  cy.Enqueue(() => 
+  { 
+    window.currentTrainingSummary.LastResponse = lastResponse
+  })
+}
+
+export function Save()
+{
+  editDialogModal.ClickSaveCloseButton()
+  trainDialogsGrid.VerifyPageTitle()
+  cy.Enqueue(() => 
+  { 
+    if (window.isBranched) VerifyTrainingSummaryIsInGrid(window.originalTrainingSummary)
+
+    window.currentTrainingSummary.LastModifiedDate = Today() 
+    if (window.currentTrainingSummary.CreatedDate == undefined) window.currentTrainingSummary.CreatedDate = window.currentTrainingSummary.LastModifiedDate
+    VerifyTrainingSummaryIsInGrid(window.currentTrainingSummary)
+  })
+}
+
+function VerifyTrainingSummaryIsInGrid(trainingSummary)
+{
+  trainDialogsGrid.WaitForGridReadyThen(trainingSummary.TrainGridRowCount, () =>
+  {
+    var turns = trainDialogsGrid.GetTurns()
+    var firstInputs = trainDialogsGrid.GetFirstInputs()
+    var lastInputs = trainDialogsGrid.GetLastInputs()
+    var lastResponses = trainDialogsGrid.GetLastResponses()
+    var lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
+    var createdDates = trainDialogsGrid.GetCreatedDates()
+    
+    for (var i = 0; i < trainingSummary.TrainGridRowCount; i++)
+    {
+      if (lastModifiedDates[i] == trainingSummary.LastModifiedDate && 
+          turns[i] == trainingSummary.Turns &&
+          createdDates[i] == trainingSummary.CreatedDate &&
+          firstInputs[i] == trainingSummary.FirstInput &&
+          lastInputs[i] == trainingSummary.LastInput &&
+          lastResponses[i] == trainingSummary.LastResponse)
+        return
+    }
+    throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`
+  })
+}
+
+export function CaptureOriginalChatMessages() 
+{ 
+  cy.WaitForStableDOM().then(() => { window.originalChatMessages = editDialogModal.GetAllChatMessages() })
+}
+
+export function VerifyOriginalChatMessages() 
+{ 
+  VerifyAllChatMessages(() => { return window.originalChatMessages })
+}
+
+export function CaptureEditedChatMessages() 
+{ 
+  cy.WaitForStableDOM().then(() => { window.editedChatMessages = editDialogModal.GetAllChatMessages() })
+}
+
+export function VerifyEditedChatMessages() 
+{ 
+  VerifyAllChatMessages(() => { return window.editedChatMessages })
+}
+
+function VerifyAllChatMessages(functionGetChatMessagesToBeVerified) 
+{ 
+  cy.WaitForStableDOM().then(() => 
+  {
+    var errorMessage = ''
+    var chatMessagesToBeVerified = functionGetChatMessagesToBeVerified()
+    var allChatMessages = editDialogModal.GetAllChatMessages()  
+
+    if (allChatMessages.length != chatMessagesToBeVerified.length) 
+      errorMessage += `Original chat message count was ${chatMessagesToBeVerified.length}, current chat message count is ${allChatMessages.length}.`
+
+    var length = Math.max(allChatMessages.length, chatMessagesToBeVerified.length)
+    for (var i = 0; i < length; i++)
+    {
+      if (i >= allChatMessages.length)
+        errorMessage += `-- [${i}] - Original: '${chatMessagesToBeVerified[i]}' is extra'`
+      else if (i >= chatMessagesToBeVerified.length)
+        errorMessage += `-- [${i}] - Current: '${allChatMessages[i]}' is extra'`
+      else if (allChatMessages[i] != chatMessagesToBeVerified[i]) 
+        errorMessage += `-- [${i}] - Original: '${chatMessagesToBeVerified[i]}' does not match current: '${allChatMessages[i]}'`
+    }
+    if (errorMessage.length > 0) throw errorMessage
+  })
+}
+
+export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
+{
+  cy.Enqueue(() =>
+  {
+    originalMessage = originalMessage.replace(/'/g, "’")
+
+    editDialogModal.SelectChatTurn(originalMessage, originalIndex)
+
+    editDialogModal.VerifyBranchButtonIsInSameControlGroupAsMessage(originalMessage)
+
+    // Capture the list of messages currently in the chat, truncate it at the point of branching, then add the new message to it.
+    // This array will be used later to validate that the changed chat is persisted.
+    var branchedChatMessages
+    cy.WaitForStableDOM().then(() => 
+    { 
+      branchedChatMessages = editDialogModal.GetAllChatMessages()
+      for (var i = 0; i < branchedChatMessages.length; i++)
+      {
+        if (branchedChatMessages[i] == originalMessage)
+        {
+          branchedChatMessages.length = i + 1
+          branchedChatMessages[i] = newMessage
+        }
+      }
+    })
+
+    editDialogModal.BranchChatTurn(newMessage)
+    window.isBranched = true
+    window.originalTrainingSummary.TrainGridRowCount ++
+    window.currentTrainingSummary.TrainGridRowCount ++
+
+    VerifyAllChatMessages(() => { return branchedChatMessages })
+  })
+}
+
+export function SelectAndVerifyEachChatTurn(index = 0)
+{
+  if (index == 0) editDialogModal.GetAllChatTurns()
+  cy.Get('@allChatTurns').then(elements => 
+  {
+    if (index < elements.length)
+    {
+      cy.wrap(elements[index]).Click().then(() =>
+      {
+        editDialogModal.VerifyChatTurnControls(elements[index], index)
+        SelectAndVerifyEachChatTurn(index + 1)
+      })
+    }
+  })
 }
