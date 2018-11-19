@@ -45,6 +45,7 @@ export enum TipType {
     ENTITY_ALWAYS_EXTRACT = 'alwaysExtract',
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
+    ENTITY_RESOLVER = 'entityResolver',
 
     INVALID_BOT = 'INVALID_BOT',
     LOGGING_TOGGLE = 'loggingToggle',
@@ -406,6 +407,12 @@ export function getTip(tipType: string) {
                 <p>Programmatic Entities are not extracted from user input but rather set in code in the EntityDetectionCallback or other API callbacks</p>
             </div>
         )
+        case TipType.ENTITY_RESOLVER:
+            return (
+                <div>
+                    <b>TBD</b>
+                </div>
+            )
         case TipType.MEMORY_MANAGER:
             return (
                 <div>

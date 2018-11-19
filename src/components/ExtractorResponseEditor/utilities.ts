@@ -523,7 +523,8 @@ export const convertPredictedEntityToGenericEntity = (pe: PredictedEntity, entit
             option: {
                 id: pe.entityId,
                 name: entityName,
-                type: pe.builtinType
+                type: pe.builtinType, 
+                resolverType: null
             },
             text: pe.entityText,
             displayName,
@@ -569,7 +570,8 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
             ({
                 id: e.entityId,
                 name: util.entityDisplayName(e),
-                type: e.entityType
+                type: e.entityType,
+                resolverType: e.resolverType                
             })
         )
 
