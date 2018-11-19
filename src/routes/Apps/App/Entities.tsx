@@ -53,16 +53,44 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             },
             render: entity => {
                 let display = entity.entityType
-                if (display === EntityType.LOCAL) { 
+                if (display === EntityType.LOCAL) {
                     display = "PROGRAMMATIC"
                 }
                 else if (display === EntityType.LUIS) {
                     display = "CUSTOM"
                 }
                 return (
-                <span className={OF.FontClassNames.mediumPlus}>
-                    {display}
-                </span>)}
+                    <span className={OF.FontClassNames.mediumPlus}>
+                        {display}
+                    </span>)
+            }
+        },
+        {
+            key: 'resolverType',
+            name: intl.formatMessage({
+                id: FM.ENTITIES_COLUMNS_RESOLVER,
+                defaultMessage: 'Resolver Type'
+            }),
+            fieldName: 'resolverType',
+            minWidth: 180,
+            maxWidth: 180,
+            isResizable: true,
+            getSortValue: entity => {
+                let display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType;
+                return display.toLowerCase();
+            },
+            render: entity => {
+                let display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType
+                if (display.toLowerCase() === "none") {
+                    return (
+                        <OF.Icon iconName="Remove" className="cl-icon" />
+                    )
+                }
+                return (
+                    <span className={OF.FontClassNames.mediumPlus}>
+                        {display}
+                    </span>)
+            }
         },
         {
             key: 'isBucketable',

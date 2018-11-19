@@ -42,9 +42,9 @@ export enum TipType {
     ENTITY_NAME = 'entityName',
     ENTITY_NEGATABLE = 'isNegatable',
     ENTITY_PROGAMMATIC = 'isProgrammatic',
-    ENTITY_ALWAYS_EXTRACT = 'alwaysExtract',
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
+    ENTITY_RESOLVER = 'entityResolver',
 
     INVALID_BOT = 'INVALID_BOT',
     LOGGING_TOGGLE = 'loggingToggle',
@@ -352,14 +352,6 @@ export function getTip(tipType: string) {
                     </dl>
                 </div>
             )
-        case TipType.ENTITY_ALWAYS_EXTRACT:
-            return (
-                <div>
-                    When checked a default pre-built entity extractor of the selected entity type will be added to the model. This pre-built entity extractor is a 
-                    pre-trained extractor. Once added to the model it will try to extract entities from each user utterance. The extracted entity values from 
-                    user utterance are always remembered in memory. <br /><br />
-                </div>
-            )
         case TipType.ENTITY_PROGAMMATIC:
             return (
                 <div>
@@ -406,6 +398,12 @@ export function getTip(tipType: string) {
                 <p>Programmatic Entities are not extracted from user input but rather set in code in the EntityDetectionCallback or other API callbacks</p>
             </div>
         )
+        case TipType.ENTITY_RESOLVER:
+            return (
+                <div>
+                    <b>TBD</b>
+                </div>
+            )
         case TipType.MEMORY_MANAGER:
             return (
                 <div>

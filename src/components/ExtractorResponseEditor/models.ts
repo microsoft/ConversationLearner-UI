@@ -33,6 +33,7 @@ export interface IOption {
     id: string
     name: string
     type: string
+    resolverType: string | null
 }
 
 export interface IGenericEntity<T> {

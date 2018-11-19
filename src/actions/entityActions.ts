@@ -28,9 +28,9 @@ export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
                 dispatch(createEntityFulfilled(negEntity));
             }
 
-            // If created entity is prebuilt entity, we fetch all entities to make sure 
-            // that definition of reserved prebuilt entity is in the memory
-            if (posEntity.entityType !== EntityType.LOCAL && posEntity.entityType !== EntityType.LUIS)
+            // If created entity has resolver, we fetch all entities to make sure 
+            // that definition of prebuilt entity is in the memory
+            if (typeof entity.resolverType !== 'undefined' && entity.resolverType !== null)
             {
                 dispatch(fetchAllEntitiesThunkAsync(appId));
             }
@@ -77,6 +77,13 @@ export const editEntityThunkAsync = (appId: string, entity: EntityBase, prevEnti
             else if (!entity.isNegatible && prevEntity.isNegatible) {
                 // Need to remove negative entity from memory
                 dispatch(deleteEntityFulfilled(prevEntity.negativeId!))
+            }
+
+            // If updated entity has a different resolver, we fetch all entities to make sure 
+            // that definition of prebuilt entity is in the memory
+            if (entity.resolverType !== prevEntity.resolverType)
+            {
+                dispatch(fetchAllEntitiesThunkAsync(appId));
             }
 
             // If any train dialogs were modified fetch train dialogs 
