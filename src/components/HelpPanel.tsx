@@ -34,10 +34,11 @@ class HelpPanel extends React.Component<Props, {}> {
                 <span>{ToolTip.getTip(this.props.tipType)}</span>
 
                 <div className="cl-ux-gutter" style={{width: '89%'}}>
-                    <div className="cl-ux-flexpanel--right">
+                    <div>
                         <OF.DefaultButton
                             data-testid="helppanel-close-button"
                             className="cl-button-close"
+                            style={{width:"100%"}}
                             onClick={() => { this.onDismiss() }}
                         >
                             <FormattedMessage
