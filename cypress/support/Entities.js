@@ -7,11 +7,11 @@ const modelPage = require('../support/components/ModelPage')
 const entitiesGrid = require('./components/EntitiesGrid')
 const entityModal = require('../support/components/EntityModal')
 
-export function CreateNewEntity({name, multiValued, negatable, type = "custom"})
+export function CreateNewEntity({name, multiValued, negatable, type = "Custom Trained"})
 {
   modelPage.NavigateToEntities()
   entitiesGrid.ClickButtonNewEntity()
-  if (type != 'custom') SelectEntityType(type)
+  if (type != 'Custom Trained') SelectEntityType(type)
   if (name) entityModal.TypeEntityName(name)
   if (multiValued) entityModal.ClickMultiValueCheckbox()
   if (negatable) entityModal.ClickNegatableCheckbox()
@@ -27,7 +27,7 @@ export function SelectEntityType(type)
 
 export const entityTypes = 
 [
-  "programmatic",
+  "Programmatic",
   "datetimeV2",
   "number",
   "ordinal",
