@@ -295,6 +295,7 @@ export function getTip(tipType: string) {
 
                     <h4>Before replay:</h4>
                     <img 
+                        className="cl-boxshadow"
                         src="https://blisstorage.blob.core.windows.net/uiimages/ToolTipReplay1.png"
                         width="70%"
                         alt="Replay Before" 
@@ -302,6 +303,7 @@ export function getTip(tipType: string) {
                     
                     <h4>After replay:</h4>
                     <img 
+                        className="cl-boxshadow"
                         src="https://blisstorage.blob.core.windows.net/uiimages/ToolTipReplay2.png" 
                         width="70%" 
                         alt="Replay After"
@@ -364,44 +366,52 @@ export function getTip(tipType: string) {
                 </div>
             )
         case TipType.ENTITY_TYPE:
-        return (
-            <div>
-                <p><b>There are three types of Entities:</b></p>
-                <h3>Custom Trained</h3>
-                <p>Custom Entities are entites that are learned through the tagging of examples</p>
-                <img 
-                    src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_1.png" 
-                    width="40%" 
-                    alt="Entity Type Custom"
-                />
-                <h3>Pre-Trained</h3>
-                <p>Pre-Trained Entities are entities such as "datetime" or "temperature" that have been pre-trained.  Pre-Trained entities can have two different behaviors:</p>
-                
-                <ol>
-                    <li>
-                        <h4>Auto Assign</h4>
-                        <p>Only one value will be tagged for each pre-built and automatically assigned to your entity</p>
-                        
-                    </li>
-                    <li>
-                        <h4>Manual Assign</h4>
-                        <p>You can extract multiple pre-builts of the same type and assign them to different entitites</p>
-                        <img 
-                            src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_3.PNG" 
-                            width="40%" 
-                            alt="Entity Type Manual Assign"
-                        />
-                    </li>
-                </ol>
+            return (
+                <div>
+                    <p><b>There are three types of Entities:</b></p>
+                    <h3>Pre-Trained</h3>
+                    <p>Pre-Trained Entities are entities such as "datetime" or "temperature" that have been pre-trained.  Pre-Trained are labelled automatically and cannot changed</p>
+                    <img 
+                        className="cl-boxshadow"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_PRE_TRAINED.png" 
+                        width="40%" 
+                        alt="Entity Type Custom"
+                    />
+                    <h3>Custom Trained</h3>
+                    <p>Custom Entities are entites that are learned through the labelling of examples</p>
+                    <img 
+                        className="cl-boxshadow"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_CUSTOM.png" 
+                        width="40%" 
+                        alt="Entity Type Custom"
+                    />
+                    <div>See also: <HelpLink label="Resolver Type" tipType={TipType.ENTITY_RESOLVER} /></div>
 
-                <h3>Programmatic</h3>
-                <p>Programmatic Entities are not extracted from user input but rather set in code in the EntityDetectionCallback or other API callbacks</p>
-            </div>
-        )
+                    <h3>Programmatic</h3>
+                    <p>Programmatic Entities are not extracted from user input but rather set in code in the EntityDetectionCallback or other API callbacks</p>
+                </div>
+            )
         case TipType.ENTITY_RESOLVER:
             return (
                 <div>
-                    <b>TBD</b>
+                    <h3>Resolver Type</h3>
+                    <p>Pre-Trained Enitites can be associated with a Pre-Trained entity by assigning a "Resolver Type"</p>
+                    <p>This allows associating of Pre-Trained entities with Custom Entities</p>
+                    
+                    <img 
+                        className="cl-boxshadow"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_RESOLVER.png" 
+                        width="40%" 
+                        alt="Entity Type Custom"
+                    />
+
+                    <p>The Resolver will provide the Custom Entity a resolution (when available)</p>
+                    <img 
+                        className="cl-boxshadow"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_MEMORY.png" 
+                        width="40%" 
+                        alt="Entity Type Custom"
+                    />
                 </div>
             )
         case TipType.MEMORY_MANAGER:
@@ -478,7 +488,12 @@ export function getTip(tipType: string) {
                         <li>Copy the "Authoring Key" and use it as the LUIS_AUTHORING_KEY value for your model</li>
                     </ol>
 
-                    <img src="https://blisstorage.blob.core.windows.net/uiimages/authoringkey.gif" alt="Authoring Key" />
+
+                    <img 
+                        className="cl-boxshadow"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/authoringkey.gif" 
+                        alt="Authoring Key" 
+                    />
 
                     <div><br /><div>
                         <h2>LUIS Keys:</h2>
