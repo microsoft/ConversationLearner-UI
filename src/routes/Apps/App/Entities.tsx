@@ -66,12 +66,12 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }
         },
         {
-            key: 'resolverType',
+            key: 'entityResolver',
             name: intl.formatMessage({
                 id: FM.ENTITIES_COLUMNS_RESOLVER,
                 defaultMessage: 'Resolver Type'
             }),
-            fieldName: 'resolverType',
+            fieldName: 'entityResolver',
             minWidth: 180,
             maxWidth: 180,
             isResizable: true,
