@@ -99,41 +99,14 @@ export function AddToCypressTestList() {
   if (!group) throw `Cannot find Test Group: ${testGroupName}`
 }
 
-// *.*                - All Groups, All Tests
-// *.testName         - All tests with all groups matching 'testName'
-// groupName.*        - All tests from 'groupName'
-// groupName.testName - 'testName' from 'groupName'
-function* TestIterator(testList)
-{
-  var currentGroup = {name: ''}
-  for (var i = 0; i < testList.length; i++)    
-  {
-    var x = testList[i].split('.')
-    if (x.length != 2) throw `Invalid item in testList[${i}]: "$testList[i]" - 'group DOT testName' format is expected`
-    var groupName = x[0]
-    var testName = x[1]
-
-    if (currentGroup.name != groupName)
-    {
-      currentGroup = GetTestGroup(groupName)
-      if (currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`
-    }
-    
-    var test = GetTest(currentGroup, testName)
-    if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`
-
-    yield {group: currentGroup.name, name: test.name, func: test.func}
-  }
-}
-
 export function AddToCypressTestList2(testList) 
 {
   var funcName = `AddToCypressTestList2()`
   helpers.ConLog(funcName, 'Start')
   
-  var testIterator = TestIterator(testList)
+  var testIterator = new TestIterator(testList)
   
-  var test = testIterator.next().value
+  var test = testIterator.next
   while (test != undefined)
   {
     helpers.ConLog(funcName, `Adding Group: ${test.group}`)
@@ -144,9 +117,45 @@ export function AddToCypressTestList2(testList)
       {
         helpers.ConLog(funcName, `Adding Test Case: ${test.name}`)
         it(test.name, test.func)
-        test = testIterator.next().value    
+        test = testIterator.next
       }
     })
+  }
+}
+
+class TestIterator
+{
+  constructor(testList)
+  {
+    this.testList = testList
+    this.index = 0
+    this.currentGroup = {name: ''}
+  }
+
+  // *.*                - All Groups, All Tests
+  // *.testName         - All tests with all groups matching 'testName'
+  // groupName.*        - All tests from 'groupName'
+  // groupName.testName - 'testName' from 'groupName'
+  get next()
+  {
+    if (this.index >= this.testList.length) return undefined
+
+    var x = this.testList[this.index].split('.')
+    if (x.length != 2) throw `Invalid item in testList[${this.index}]: "${this.testList[this.index]}" - 'group DOT testName' format is expected`
+    var groupName = x[0]
+    var testName = x[1]
+
+    if (this.currentGroup.name != groupName)
+    {
+      this.currentGroup = GetTestGroup(groupName)
+      if (this.currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`
+    }
+    
+    var test = GetTest(this.currentGroup, testName)
+    if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`
+
+    this.index++
+    return {group: this.currentGroup.name, name: test.name, func: test.func}
   }
 }
 
@@ -156,21 +165,20 @@ function GetTestGroup(name)
   {
     if (testGroups[i].name == name) 
     {
-      return testGroups[i].tests
+      return testGroups[i]
     }
   }
   return undefined
 }
 
-function GetTest(testGroup, testName)
+function GetTest(testGroup, testNameToFind)
 {
-  var toFind = `function ${testName}(`
-  for (var i = 0; i < testGroup.length; i++)
+  var toFind = `function ${testNameToFind}(`
+  for (var i = 0; i < testGroup.tests.length; i++)
   {
-    console.log(`func: ${testGroup[i].func}`)
-    if (`${testGroup[i].func}`.startsWith(toFind)) 
+    if (`${testGroup.tests[i].func}`.startsWith(toFind)) 
     {
-      return testGroup[i]
+      return testGroup.tests[i]
     }
   }
   return undefined

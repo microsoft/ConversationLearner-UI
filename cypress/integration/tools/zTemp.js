@@ -11,22 +11,24 @@ const trainDialogsGrid = require('../../support/components/TrainDialogsGrid')
 const editDialogModal = require('../../support/components/EditDialogModal')
 const testList = require('../../support/TestList')
 
-// testList.AddToCypressTestList2(['EditAndBranching.Branching', 'Train.WhatsYourName1', 'Train.DisqualifyingEntities']) 
-// cy.pause()
+var env = Cypress.env()
+helpers.Dump('Environment', env)
+//testList.AddToCypressTestList2(['EditAndBranching.Branching', 'Train.WhatsYourName1', 'Train.DisqualifyingEntities']) 
+//cy.pause()
 
 /// Description: A temporary workspace for experimental code
-describe('zTemp test', () =>
-{
-  it('zTemp test', () => 
-  {
-    // homePage.Visit()
-    // homePage.NavigateToModelPage("BigTrain")
-    // // modelPage.NavigateToTrainDialogs()
-    // cy.pause()//.then(() =>
-    // cy.Train_CaptureAllChatMessages()
-    // cy.pause()
+// describe('zTemp test', () =>
+// {
+//   it('zTemp test', () => 
+//   {
+//     // homePage.Visit()
+//     // homePage.NavigateToModelPage("BigTrain")
+//     // // modelPage.NavigateToTrainDialogs()
+//     // cy.pause()//.then(() =>
+//     // cy.Train_CaptureAllChatMessages()
+//     // cy.pause()
     
-  })
-})
+//   })
+// })
 
 
