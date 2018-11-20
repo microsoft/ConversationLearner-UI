@@ -578,25 +578,23 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
 
     const text = extractResponse.text
     const internalPredictedEntities = extractResponse.predictedEntities
-        .map<models.InternalPredictedEntity>(predictedEntity => {
+        .map(predictedEntity => {
             const entity = entities.find(e => e.entityId === predictedEntity.entityId)
-            if (!entity) {
-                throw new Error(`Could not find entity by id: ${predictedEntity.entityId} in list of entities`)
-            }
-
             return {
                 entity,
                 predictedEntity
             }
         })
+        // Entity could be null if user deleted an entity in use
+        .filter(ipe => ipe.entity !== null)
 
     const customEntities = internalPredictedEntities
         .filter(({ entity }) => entity && entity.entityType !== EntityType.LOCAL && entity.entityName !== getPrebuiltEntityName(entity.entityType))
-        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.doNotMemorize ? true : false, entity.entityName, util.entityDisplayName(entity)))
+        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity!.doNotMemorize ? true : false, entity!.entityName, util.entityDisplayName(entity!)))
 
     const preBuiltEntities = internalPredictedEntities
         .filter(({ entity }) => entity && entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL && entity.entityName === getPrebuiltEntityName(entity.entityType))
-        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.doNotMemorize ? true : false, entity.entityName, getPreBuiltEntityDisplayName(entity, predictedEntity)))
+        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity!.doNotMemorize ? true : false, entity!.entityName, getPreBuiltEntityDisplayName(entity!, predictedEntity)))
 
     return {
         options,
