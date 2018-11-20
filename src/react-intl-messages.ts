@@ -135,6 +135,8 @@ export enum FM {
     BUTTON_SAVE_BRANCH = 'Button.SAVE_BRANCH',
     BUTTON_SUBMIT = 'Button.SUMBIT',
     BUTTON_UNDO = 'Button.UNDO',
+    BUTTON_SELECT = 'Button.SELECT',
+    BUTTON_SELECTED = 'Button.SELECTED',
 
     // ChatSessionModal
     CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'ChatSessionModal.primaryButton.ariaDescription',
@@ -243,6 +245,7 @@ export enum FM {
     LOGDIALOGS_LOGDISABLED = 'LogDialogs.logdisabled',
     LOGDIALOGS_CREATED_DATE_TIME = 'LogDialogs.createdDateTime',
     LOGDIALOGS_LAST_MODIFIED_DATE_TIME = 'LogDialogs.lastModifiedDateTime',
+    LOGDIALOGS_ALREADYSELECTED = 'LogDialogs.alreadySelected',
 
     // LogDialogAdmin
     LOGDIALOGADMIN_CONFIRMTITLE = 'LogDialogAdmin.confirmTitle',
@@ -608,6 +611,8 @@ export default {
         [FM.BUTTON_SAVE_EDIT]: 'Save Edit',
         [FM.BUTTON_SUBMIT]: 'Submit',
         [FM.BUTTON_UNDO]: 'Undo',
+        [FM.BUTTON_SELECT]: 'Select',
+        [FM.BUTTON_SELECTED]: 'Selected',
 
         // Error Messages
         [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
@@ -642,6 +647,7 @@ export default {
         [FM.LOGDIALOGS_LOGDISABLED]: 'Logging is disabled',
         [FM.LOGDIALOGS_CREATED_DATE_TIME]: 'Created',
         [FM.LOGDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
+        [FM.LOGDIALOGS_ALREADYSELECTED]: 'Action already selected',
 
         // LogDialogAdmin
         [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the bot and convert it into a new Train Dialog',
@@ -808,7 +814,6 @@ export default {
 
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
-
         [FM.BUTTON_INFO]: 'Info',
 
         // DemoImporter
