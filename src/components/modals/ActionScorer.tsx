@@ -10,7 +10,6 @@ import { State } from '../../types'
 import * as CLM from '@conversationlearner/models'
 import { createActionThunkAsync } from '../../actions/actionActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
-import { PrimaryButton } from 'office-ui-fabric-react';
 import * as OF from 'office-ui-fabric-react';
 import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips/ToolTips'
@@ -43,12 +42,12 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
 
                 const selected = (component.props.dialogType !== CLM.DialogType.TEACH && index === 0)
                 const buttonText = intl.formatMessage({
-                    id:selected ? FM.BUTTON_SELECTED : FM.BUTTON_SELECT,
-                    defaultMessage:selected ? Util.getDefaultText(FM.BUTTON_SAVE_EDIT) : Util.getDefaultText(FM.BUTTON_SAVE_EDIT)
-                    });
+                    id: selected ? FM.BUTTON_SELECTED : FM.BUTTON_SELECT,
+                    defaultMessage: selected ? Util.getDefaultText(FM.BUTTON_SAVE_EDIT) : Util.getDefaultText(FM.BUTTON_SAVE_EDIT)
+                });
                 if (!component.props.canEdit) {
                     return (
-                        <PrimaryButton
+                        <OF.PrimaryButton
                             data-testid="action-scorer-button-no-click"
                             disabled={true}
                             ariaDescription={buttonText}
@@ -60,7 +59,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                 const isAvailable = component.isUnscoredActionAvailable(action as CLM.UnscoredAction)
                 if (!isAvailable || selected) {
                     return (
-                        <PrimaryButton
+                        <OF.PrimaryButton
                             data-testid="action-scorer-button-no-click"
                             disabled={!isAvailable}
                             ariaDescription={buttonText}
@@ -74,7 +73,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                         ? (ref: any) => { component.primaryScoreButton = ref }
                         : undefined
                     return (
-                        <PrimaryButton
+                        <OF.PrimaryButton
                             data-testid="action-scorer-button-clickable"
                             onClick={() => component.handleActionSelection(action.actionId)}
                             ariaDescription={buttonText}
@@ -99,7 +98,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             getSortValue: () => '',
             render: (action: CLM.ActionBase, component) => {
                 const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
-                    
+
                 if (action.actionType === CLM.ActionTypes.TEXT) {
                     const textAction = new CLM.TextAction(action)
                     return (
@@ -150,9 +149,9 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         {
             key: 'actionScore',
             name: hideScore ? '' : intl.formatMessage({
-                                        id: FM.ACTIONSCORER_COLUMNS_SCORE,
-                                        defaultMessage: 'Score'
-                                    }),
+                id: FM.ACTIONSCORER_COLUMNS_SCORE,
+                defaultMessage: 'Score'
+            }),
             fieldName: 'score',
             minWidth: hideScore ? 1 : 80,
             maxWidth: hideScore ? 1 : 80,
@@ -230,9 +229,9 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             maxWidth: 50,
             isResizable: true,
             getSortValue: action => action.isTerminal ? 1 : -1,
-            render: action => <OF.Icon 
-                iconName={(action.isTerminal ? "CheckMark" : "Remove")} 
-                className={`cl-icon${action.isTerminal ? " checkIcon" : " notFoundIcon"}`} 
+            render: action => <OF.Icon
+                iconName={(action.isTerminal ? "CheckMark" : "Remove")}
+                className={`cl-icon${action.isTerminal ? " checkIcon" : " notFoundIcon"}`}
             />
         },
         {
@@ -284,7 +283,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.onColumnClick = this.onColumnClick.bind(this);
         this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
         this.showAlreadySelectedPopUp = this.showAlreadySelectedPopUp.bind(this);
-        this.onClosePopup = this.onClosePopup.bind(this);
+        this.onCloseAlreadySelectedPopUp = this.onCloseAlreadySelectedPopUp.bind(this);
     }
     componentWillReceiveProps(newProps: Props) {
         if (this.props.scoreResponse !== newProps.scoreResponse) {
@@ -357,7 +356,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     async onClickSubmitActionEditor(action: CLM.ActionBase) {
         await Util.setStateAsync(this, { actionModalOpen: false })
-       
+
         let newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
 
         if (newAction) {
@@ -598,7 +597,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             if (column.key === 'select') {
                 let buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && index === 0) ? "Selected" : "Select";
                 return (
-                    <PrimaryButton
+                    <OF.PrimaryButton
                         disabled={true}
                         ariaDescription={buttonText}
                         text={buttonText}
@@ -677,7 +676,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 else if (typeof firstValue === 'number' && typeof secondValue === 'number') {
                     isFirstGreaterThanSecond = firstValue - secondValue
                 }
-                
+
                 return sortColumn.isSortedDescending
                     ? isFirstGreaterThanSecond * -1
                     : isFirstGreaterThanSecond
@@ -748,22 +747,22 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 <ConfirmCancelModal
                     data-testid="popup-already-selected"
                     open={this.state.isAlreadySelectedOpen}
-                    onOk={this.onClosePopup}
+                    onOk={this.onCloseAlreadySelectedPopUp}
                     title={intl.formatMessage({
-                        id:FM.LOGDIALOGS_ALREADYSELECTED,
-                        defaultMessage:Util.getDefaultText(FM.LOGDIALOGS_ALREADYSELECTED)
-                        })}
+                        id: FM.LOGDIALOGS_ALREADYSELECTED,
+                        defaultMessage: Util.getDefaultText(FM.LOGDIALOGS_ALREADYSELECTED)
+                    })}
                 />
             </div>
         )
     }
 
     showAlreadySelectedPopUp() {
-        this.setState({isAlreadySelectedOpen:true})
+        this.setState({ isAlreadySelectedOpen: true })
     }
 
-    onClosePopup() {
-        this.setState({isAlreadySelectedOpen:false})
+    onCloseAlreadySelectedPopUp() {
+        this.setState({ isAlreadySelectedOpen: false })
     }
 }
 
