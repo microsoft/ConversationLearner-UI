@@ -55,11 +55,11 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             savedExtractResponses: [],
             savedRoundIndex: 0,
             textVariationValue: '',
-            newTextVariations: [], 
+            newTextVariations: [],
             entityTypeFilter: CLM.EntityType.LUIS
         }
     }
-    
+
     componentDidMount() {
         this.setState({ newTextVariations: this.props.originalTextVariations })
         setTimeout(this.focusPrimaryButton, 100)
@@ -95,10 +95,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             }
 
             this.setState(nextState)
-            this.props.clearExtractResponses();  
+            this.props.clearExtractResponses();
         }
     }
-  
+
     @OF.autobind
     onEntityConflictModalAbandon() {
         this.setState({
@@ -207,13 +207,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         if (this.props.onPendingStatusChanged) {
             this.props.onPendingStatusChanged(false)
         }
-        
+
         this.submitExtractions(this.allResponses(), this.props.roundIndex)
     }
 
     submitExtractions(allResponses: CLM.ExtractResponse[], roundIndex: number | null): void {
         const primaryExtractResponse = allResponses[0]
-        
+
         if (!this.allValid(allResponses)) {
             this.handleOpenWarning()
             return
@@ -322,10 +322,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         if (this.props.extractType !== CLM.DialogType.TEACH && this.props.roundIndex === null) {
             throw new Error(`You attempted to submit text variation but roundIndex was null. This is likely a problem with the code. Please open an issue.`)
         }
-        
+
         let extractType = this.props.extractType
         // Can't extract on running teach session on existing round
-        if (this.props.roundIndex !== null) { 
+        if (this.props.roundIndex !== null) {
             if (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.LOG_EDITED) {
                 extractType = CLM.DialogType.LOGDIALOG
             }
@@ -369,8 +369,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
 
         // Don't show edit components when in auto TEACH or on score step
-        const canEdit = (!this.props.autoTeach && this.props.dialogMode === CLM.DialogMode.Extractor && this.props.canEdit) 
-        
+        const canEdit = (!this.props.autoTeach && this.props.dialogMode === CLM.DialogMode.Extractor && this.props.canEdit)
+
         // I'm editing an existing round if I'm not in Teach or have selected a round
         const editingRound = canEdit && (this.props.extractType !== CLM.DialogType.TEACH || this.props.roundIndex !== null)
 
@@ -450,12 +450,12 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             text={'Add'}
                             componentRef={(ref: any) => { this.doneExtractingButton = ref }}
                         />
-                </div>}
+                    </div>}
                 {editingRound &&
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
-                            disabled={!this.state.isPendingSubmit 
-                                || !allExtractResponsesValid 
+                            disabled={!this.state.isPendingSubmit
+                                || !allExtractResponsesValid
                                 || this.state.pendingVariationChange}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Submit Changes'}
@@ -473,7 +473,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 {!editingRound &&
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
-                            data-testid="entity-extractor-score-actions-button"
+                            data-testid="score-actions-button"
                             disabled={!allExtractResponsesValid || this.state.pendingVariationChange}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Score Actions'}
@@ -490,7 +490,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         open={this.state.entityModalOpen}
                         entity={null}
                         handleClose={this.entityEditorHandleClose}
-                        handleDelete={() => {}}
+                        handleDelete={() => { }}
                         entityTypeFilter={this.state.entityTypeFilter as any}
                     />
                     <OF.Dialog
@@ -540,10 +540,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        updateExtractResponse : actions.teach.updateExtractResponse,
-        removeExtractResponse : actions.teach.removeExtractResponse,
-        runExtractorThunkAsync : actions.teach.runExtractorThunkAsync,
-        clearExtractResponses : actions.teach.clearExtractResponses,
+        updateExtractResponse: actions.teach.updateExtractResponse,
+        removeExtractResponse: actions.teach.removeExtractResponse,
+        runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
+        clearExtractResponses: actions.teach.clearExtractResponses,
         clearExtractConflict: actions.teach.clearExtractConflict
     }, dispatch);
 }

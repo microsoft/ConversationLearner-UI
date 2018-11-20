@@ -45,13 +45,12 @@ var MonitorDocumentChanges = (function()
 
         Cypress.Commands.add('Get', (selector, options) => 
         {   
-            helpers.ConLog(`cy.Get()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector: \n${selector}`)
+            helpers.ConLog(`cy.Get(${selector})`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector: \n${selector}`)
             cy.wrap(700, {timeout: 60000}).should('lte', 'MillisecondsSinceLastChange').then(() => {
-            helpers.ConLog(`cy.Get()`, `DOM Is Stable`)
+            helpers.ConLog(`cy.Get(${selector})`, `DOM Is Stable`)
             cy.get(selector, options)
         })})
 
-        // Special case version that allows a 1 minute time out.
         Cypress.Commands.add('Contains', (selector, content, options) => 
         {   
             helpers.ConLog(`cy.Contains()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector -- Content: \n${selector} -- ${content}`)
@@ -59,6 +58,22 @@ var MonitorDocumentChanges = (function()
             helpers.ConLog(`cy.Contains()`, `DOM Is Stable`)
             cy.contains(selector, content, options)
         })})
+
+        Cypress.Commands.add('DoesNotContain', (selector) => 
+        {   
+            helpers.ConLog(`cy.DoesNotContain()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector: \n${selector}`)
+            cy.wrap(700, {timeout: 60000}).should('lte', 'MillisecondsSinceLastChange').then(() => {
+            helpers.ConLog(`cy.DoesNotContain()`, `DOM Is Stable`)
+            var elements = Cypress.$(selector)
+            if (elements.length > 0) throw `Selector ${selector} was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`
+            // helpers.ConLog(`cy.DoesNotContain()`, `PASSED - Selector: ${selector} was NOT Found as Expected`)
+        })})
+
+        Cypress.Commands.add('WaitForStableDOM', () => 
+        {   
+            helpers.ConLog(`cy.WaitForStableDOM()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
+            cy.wrap(700, {timeout: 60000}).should('lte', 'MillisecondsSinceLastChange')
+        })
 
         Cypress.Commands.add('Click', { prevSubject: true, element: true}, (subject) => 
         {
@@ -121,8 +136,8 @@ var MonitorDocumentChanges = (function()
         if(currentHtml != lastHtml)
         {
             helpers.ConLog(thisFuncName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
-            //cy.writeFile(currentHtml, `c:\\temp\\dom.${helpers.NowAsString()}.txt`)
-            if (dumpHtml || expectingSpinner) helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
+            if (dumpHtml || expectingSpinner) 
+                helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
 
             lastChangeTime = currentTime
             lastHtml = currentHtml

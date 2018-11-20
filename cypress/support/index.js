@@ -18,5 +18,3 @@ import './components/ScorerModal.js'
 import './components/EditDialogModal.js'
 import './components/TrainDialogsGrid.js'
 import './Helpers.js'
-
-require('../support/Train').OneTimeInitialization()

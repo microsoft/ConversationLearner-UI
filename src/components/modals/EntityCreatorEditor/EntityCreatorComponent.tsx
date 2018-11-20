@@ -20,7 +20,7 @@ interface Props extends InjectedIntlProps {
     title: string
 
     entityOptions: OF.IDropdownOption[]
-    
+
     selectedTypeKey: string
     isTypeDisabled: boolean
     onChangedType: (option: OF.IDropdownOption) => void
@@ -32,7 +32,7 @@ interface Props extends InjectedIntlProps {
     onKeyDownName: React.KeyboardEventHandler<HTMLInputElement>
 
     isProgrammatic: boolean
-    
+
     isMultiValue: boolean
     isMultiValueDisabled: boolean
     onChangeMultiValue: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
@@ -65,9 +65,10 @@ interface Props extends InjectedIntlProps {
 
     showValidationWarning: boolean
 
-    isAlwaysTagged: boolean
-    onAlwaysTagChange: () => void
-    isAlwaysTagDisabled: boolean
+    selectedResolverKey: string
+    resolverOptions: OF.IDropdownOption[]
+    needResolverType: boolean
+    onResolverChanged: (option: OF.IDropdownOption) => void
 }
 
 const EditComponent: React.SFC<Props> = (props: Props) => {
@@ -110,6 +111,28 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
             value={props.name}
             disabled={props.isNameDisabled}
         />
+        {props.needResolverType &&
+            <TC.Dropdown
+                data-testid="entity-creator-resolver-type-dropdown"
+                ariaLabel={props.intl.formatMessage({
+                    id: FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_LABEL,
+                    defaultMessage: 'Resolver Type'
+                })}
+                label={props.intl.formatMessage({
+                    id: FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_LABEL,
+                    defaultMessage: 'Resolver Type'
+                })}
+                options={props.resolverOptions}
+                onChanged={props.onResolverChanged}
+                onRenderOption={(option: CLDropdownOption) =>
+                    <div className="dropdownExample-option">
+                        <span className={option.style}>{option.text}</span>
+                    </div>
+                }
+                selectedKey={props.selectedResolverKey}
+                tipType={ToolTip.TipType.ENTITY_RESOLVER}
+            />
+        }
         <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
             <TC.Checkbox
                 data-testid="entity-creator-multi-valued-checkbox"
@@ -133,19 +156,6 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
                 disabled={props.isNegatableDisabled}
                 tipType={ToolTip.TipType.ENTITY_NEGATABLE}
             />
-            {!props.isAlwaysTagDisabled &&
-            <TC.Checkbox	
-                data-testid="entitycreator-checkbox-alwaystag"	
-                label={props.intl.formatMessage({	
-                    id: FM.ENTITYCREATOREDITOR_FIELDS_ALWAYSTAG_LABEL,	
-                    defaultMessage: 'Always Extract'	
-                })}	
-                
-                checked={props.isAlwaysTagged}	
-                onChange={props.onAlwaysTagChange}
-                disabled={props.isAlwaysTagDisabled}	
-                tipType={ToolTip.TipType.ENTITY_ALWAYS_EXTRACT}	
-            />}
         </div>
     </div>
 }
@@ -182,7 +192,7 @@ const Component: React.SFC<Props> = (props) => {
                             >
                                 <ActionDetailsList
                                     actions={props.requiredActions}
-                                    onSelectAction={() => {}}
+                                    onSelectAction={() => { }}
                                 />
                             </OF.PivotItem>
                             <OF.PivotItem
@@ -191,11 +201,11 @@ const Component: React.SFC<Props> = (props) => {
                                 onRenderItemLink={(
                                     pivotItemProps: OF.IPivotItemProps,
                                     defaultRender: (link: OF.IPivotItemProps) => JSX.Element) =>
-                                        ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}
+                                    ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}
                             >
                                 <ActionDetailsList
                                     actions={props.disqualifiedActions}
-                                    onSelectAction={() => {}}
+                                    onSelectAction={() => { }}
                                 />
                             </OF.PivotItem>
                         </OF.Pivot>
@@ -278,9 +288,9 @@ const Component: React.SFC<Props> = (props) => {
             onCancel={props.onCancelDelete}
             onConfirm={props.onConfirmDelete}
             title={props.intl.formatMessage({
-                    id: FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_TITLE,
-                    defaultMessage: 'Are you sure you want to delete this Entity?'
-                })}
+                id: FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_TITLE,
+                defaultMessage: 'Are you sure you want to delete this Entity?'
+            })}
             message={() => props.showValidationWarning &&
                 <div className={`${OF.FontClassNames.medium} cl-text--warning`}>
                     <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
@@ -288,16 +298,16 @@ const Component: React.SFC<Props> = (props) => {
                         id={FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING}
                         defaultMessage='This Entity is used by one or more Actions or Training Dialogs.  If you proceed it will also be removed from these Actions and Training Dialogs.'
                     />
-            </div>}
+                </div>}
         />
         <ConfirmCancelModal
             open={props.isConfirmEditModalOpen}
-            onCancel={props.onCancelEdit} 
+            onCancel={props.onCancelEdit}
             onConfirm={props.onConfirmEdit}
             title={props.intl.formatMessage({
-                    id: FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE,
-                    defaultMessage: 'Are you sure you want to edit this Entity?'
-                })}
+                id: FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE,
+                defaultMessage: 'Are you sure you want to edit this Entity?'
+            })}
             message={() => <div className={`${OF.FontClassNames.medium} cl-text--warning`}>
                 <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
                 <FormattedMessage
