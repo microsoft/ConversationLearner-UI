@@ -97,6 +97,7 @@ function getLastResponse(trainDialog: CLM.TrainDialog, component: TrainDialogs):
 }
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
+    let equalizeColumnWidth = window.innerWidth / 6
     return [
         {
             key: 'firstInput',
@@ -106,7 +107,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }),
             fieldName: 'firstInput',
             minWidth: 100,
-            maxWidth: 500,
+            maxWidth: equalizeColumnWidth,
             isResizable: true,
             isSortedDescending: true,
             render: trainDialog => {
@@ -137,7 +138,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }),
             fieldName: 'lastInput',
             minWidth: 100,
-            maxWidth: 500,
+            maxWidth: equalizeColumnWidth,
             isResizable: true,
             render: trainDialog => {
                 let lastInput = getLastInput(trainDialog)
@@ -159,7 +160,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }),
             fieldName: 'lastResponse',
             minWidth: 100,
-            maxWidth: 500,
+            maxWidth: equalizeColumnWidth,
             isResizable: true,
             render: (trainDialog, component) => {
                 let lastResponse = getLastResponse(trainDialog, component);
@@ -1222,6 +1223,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             key={this.state.dialogKey}
                             className={OF.FontClassNames.mediumPlus}
                             items={computedTrainDialogs}
+                            layoutMode={OF.DetailsListLayoutMode.justified}
                             columns={this.state.columns}
                             checkboxVisibility={OF.CheckboxVisibility.hidden}
                             onColumnHeaderClick={this.onClickColumnHeader}
