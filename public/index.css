@@ -862,9 +862,3 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   float:right;
   text-align:right;
 }
-
-.cl-ux-gutter {
-  position:fixed;
-  bottom:1em;
-}
-
