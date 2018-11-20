@@ -395,7 +395,7 @@ export function getTip(tipType: string) {
             return (
                 <div>
                     <h3>Resolver Type</h3>
-                    <p>Pre-Trained Enitites can be associated with a Pre-Trained entity by assigning a "Resolver Type"</p>
+                    <p>Custom Enitites can be associated with a Pre-Trained Entity by assigning a "Resolver Type"</p>
                     <p>This allows associating of Pre-Trained entities with Custom Entities</p>
                     
                     <img 
