@@ -666,7 +666,7 @@ function render(title: FM, body: FM[], example: string | null = null, tableItems
 }
 
 export function prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.Element {
-    if (!memoryValue.builtinType && !memoryValue.resolution) {
+    if (!memoryValue.builtinType || Object.keys(memoryValue.resolution).length === 0) {
         return content;
     }
     return (
