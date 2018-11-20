@@ -6,7 +6,7 @@ import { Value } from 'slate'
 import * as models from './models'
 import * as util from '../../Utils/util'
 import { EntityBase, PredictedEntity, ExtractResponse, EntityType } from '@conversationlearner/models'
-import {getPrebuiltEntityName} from '../modals/EntityCreatorEditor/EntityCreatorContainer'
+import { getPrebuiltEntityName } from '../modals/EntityCreatorEditor/EntityCreatorContainer'
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.
@@ -512,7 +512,7 @@ export const getPreBuiltEntityDisplayName = (entity: EntityBase, pe: PredictedEn
     return names[names.length - 1]
 }
 
-export const convertPredictedEntityToGenericEntity = (pe: PredictedEntity, entityName: string, displayName: string): models.IGenericEntity<models.IGenericEntityData<PredictedEntity>> =>
+export const convertPredictedEntityToGenericEntity = (pe: PredictedEntity, showSelect: boolean, entityName: string, displayName: string): models.IGenericEntity<models.IGenericEntityData<PredictedEntity>> =>
     ({
         startIndex: pe.startCharIndex,
         // The predicted entities returned by the service treat indices as characters instead of before or after the character so add 1 to endIndex for slicing using JavaScript
@@ -528,7 +528,8 @@ export const convertPredictedEntityToGenericEntity = (pe: PredictedEntity, entit
             },
             text: pe.entityText,
             displayName,
-            original: pe
+            original: pe,
+            showSelect
         }
     })
 
@@ -591,11 +592,11 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
 
     const customEntities = internalPredictedEntities
         .filter(({ entity }) => entity && entity.entityType !== EntityType.LOCAL && entity.entityName !== getPrebuiltEntityName(entity.entityType))
-        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.entityName, util.entityDisplayName(entity)))
+        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.doNotMemorize ? true : false, entity.entityName, util.entityDisplayName(entity)))
 
     const preBuiltEntities = internalPredictedEntities
         .filter(({ entity }) => entity && entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL && entity.entityName === getPrebuiltEntityName(entity.entityType))
-        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.entityName, getPreBuiltEntityDisplayName(entity, predictedEntity)))
+        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity.doNotMemorize ? true : false, entity.entityName, getPreBuiltEntityDisplayName(entity, predictedEntity)))
 
     return {
         options,

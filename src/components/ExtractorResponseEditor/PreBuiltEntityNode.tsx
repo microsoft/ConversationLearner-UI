@@ -22,6 +22,7 @@ export const PreBuiltEntityNode = (props: Props) => {
     return (
         <PreBuiltEntity
             name={nodeData.displayName}
+            showSelect={nodeData.showSelect}
             {...props.attributes}
         >
             {...props.children}
