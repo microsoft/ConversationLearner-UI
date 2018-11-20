@@ -30,27 +30,29 @@ class HelpPanel extends React.Component<Props, {}> {
                 customWidth="400px"
                 closeButtonAriaLabel="Close"
                 hasCloseButton={true}
+                isFooterAtBottom={true}
+                onRenderFooterContent={this._onRenderFooterContent}
             >
                 <span>{ToolTip.getTip(this.props.tipType)}</span>
 
-                <div className="cl-ux-gutter" style={{width: '89%'}}>
-                    <div>
-                        <OF.DefaultButton
-                            data-testid="helppanel-close-button"
-                            className="cl-button-close"
-                            style={{width:"100%"}}
-                            onClick={() => { this.onDismiss() }}
-                        >
-                            <FormattedMessage
-                                id={FM.BUTTON_CLOSE}
-                                defaultMessage='Close'
-                            />
-                        </OF.DefaultButton>
-                    </div>
-                </div>
-
             </OF.Panel>
         )
+    }
+
+    _onRenderFooterContent = () => {
+        return (
+            <OF.DefaultButton
+                data-testid="helppanel-close-button"
+                className="cl-button-close cl-ux-flexpanel--right"
+                onClick={() => { this.onDismiss() }}
+                style={{marginBottom:"1.5em"}}
+            >
+                <FormattedMessage
+                    id={FM.BUTTON_CLOSE}
+                    defaultMessage='Close'
+                />
+            </OF.DefaultButton>
+        )        
     }
 }
 

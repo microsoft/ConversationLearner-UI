@@ -52,6 +52,10 @@ html {
   grid-auto-columns: min-content;
 }
 
+.cl-boxshadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
 .cl-textfield--inline {
   display: inline-block;
 }
@@ -862,9 +866,3 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   float:right;
   text-align:right;
 }
-
-.cl-ux-gutter {
-  position:fixed;
-  bottom:1em;
-}
-
