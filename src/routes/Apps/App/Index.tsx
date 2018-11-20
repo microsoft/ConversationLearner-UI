@@ -34,24 +34,29 @@ import './Index.css'
 
 interface ComponentState {
     botValidationErrors: string[]
-    packageId: string | null
+    packageId: string | null,
+    modelLoaded: boolean
 }
 
 class Index extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         botValidationErrors: [],
-        packageId: null
+        packageId: null,
+        modelLoaded: false
     }
 
     async loadApp(app: CLM.AppBase, packageId: string): Promise<void> {
         this.setState({ packageId })
 
-        await this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
-
-        this.props.setCurrentAppThunkAsync(this.props.user.id, app)
+        let thunk1 = await this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
+        let thunk2 = this.props.setCurrentAppThunkAsync(this.props.user.id, app)
         // Note: We load log dialogs in a separate call as eventually we want to page
-        this.props.fetchAllLogDialogsThunkAsync(app, packageId)
-        this.props.fetchAppSourceThunkAsync(app.appId, packageId)
+        let thunk3 = this.props.fetchAllLogDialogsThunkAsync(app, packageId)
+        let thunk4 = this.props.fetchAppSourceThunkAsync(app.appId, packageId)
+
+        Promise.all([thunk1,thunk2,thunk3,thunk4]).then(() => {
+            this.setState({ modelLoaded:true })
+        })
     }
 
     componentWillMount() {
@@ -224,10 +229,10 @@ class Index extends React.Component<Props, ComponentState> {
                                         }</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-entities" to={{ pathname: `${match.url}/entities`, state: { app } }}>
-                                <OF.Icon iconName="List" /><span>Entities</span><span className="count">{this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).filter(e => !e.doNotMemorize).length}</span>
+                                <OF.Icon iconName="List" /><span>Entities</span><span className="count">{this.state.modelLoaded ? this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).filter(e => !e.doNotMemorize).length : '0'}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-actions" to={{ pathname: `${match.url}/actions`, state: { app } }}>
-                                <OF.Icon iconName="List" /><span>Actions</span><span className="count">{this.props.actions.length}</span>
+                                <OF.Icon iconName="List" /><span>Actions</span><span className="count">{this.state.modelLoaded ? this.props.actions.length : '0'}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-train-dialogs" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
                                 <OF.Icon iconName="List" />
@@ -246,7 +251,7 @@ class Index extends React.Component<Props, ComponentState> {
                                                 />
                                             </TooltipHost>
                                         }</span>
-                                    <span className="count">{this.props.trainDialogs.length}</span>
+                                    <span className="count">{this.state.modelLoaded ? this.props.trainDialogs.length : '0'}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-log-dialogs" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
                                 <OF.Icon iconName="List" /><span>Log Dialogs</span>
