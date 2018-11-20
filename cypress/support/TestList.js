@@ -14,7 +14,7 @@ const pathParse = require('path-parse')
 // NOTE: The function name specified by 'func' below must match the root of the
 //       file name that calls AddToCypressTestList(). Also the direct parent
 //       folder of the caller must match the test group name
-var testGroups =
+export const testGroups =
   [
     {
       name: 'CreateModels', tests:
@@ -97,6 +97,83 @@ export function AddToCypressTestList() {
     }
   }
   if (!group) throw `Cannot find Test Group: ${testGroupName}`
+}
+
+// *.*                - All Groups, All Tests
+// *.testName         - All tests with all groups matching 'testName'
+// groupName.*        - All tests from 'groupName'
+// groupName.testName - 'testName' from 'groupName'
+function* TestIterator(testList)
+{
+  var currentGroup = {name: ''}
+  for (var i = 0; i < testList.length; i++)    
+  {
+    var x = testList[i].split('.')
+    if (x.length != 2) throw `Invalid item in testList[${i}]: "$testList[i]" - 'group DOT testName' format is expected`
+    var groupName = x[0]
+    var testName = x[1]
+
+    if (currentGroup.name != groupName)
+    {
+      currentGroup = GetTestGroup(groupName)
+      if (currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`
+    }
+    
+    var test = GetTest(currentGroup, testName)
+    if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`
+
+    yield {group: currentGroup.name, name: test.name, func: test.func}
+  }
+}
+
+export function AddToCypressTestList2(testList) 
+{
+  var funcName = `AddToCypressTestList2()`
+  helpers.ConLog(funcName, 'Start')
+  
+  var testIterator = TestIterator(testList)
+  
+  var test = testIterator.next().value
+  while (test != undefined)
+  {
+    helpers.ConLog(funcName, `Adding Group: ${test.group}`)
+    describe(test.group, () =>
+    {
+      var currentGroupName = test.group
+      while (test != undefined && test.group == currentGroupName)
+      {
+        helpers.ConLog(funcName, `Adding Test Case: ${test.name}`)
+        it(test.name, test.func)
+        test = testIterator.next().value    
+      }
+    })
+  }
+}
+
+function GetTestGroup(name)
+{
+  for (var i = 0; i < testGroups.length; i++)
+  {
+    if (testGroups[i].name == name) 
+    {
+      return testGroups[i].tests
+    }
+  }
+  return undefined
+}
+
+function GetTest(testGroup, testName)
+{
+  var toFind = `function ${testName}(`
+  for (var i = 0; i < testGroup.length; i++)
+  {
+    console.log(`func: ${testGroup[i].func}`)
+    if (`${testGroup[i].func}`.startsWith(toFind)) 
+    {
+      return testGroup[i]
+    }
+  }
+  return undefined
 }
 
 function GetCallerFileName() {
