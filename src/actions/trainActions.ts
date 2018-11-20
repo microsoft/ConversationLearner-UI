@@ -51,6 +51,7 @@ const createTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject =>
 export const editTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_ASYNC)
+        trainDialog.lastModifiedDateTime = `${new Date().toISOString().slice(0, 19)}+00:00`
         dispatch(editTrainDialogAsync(appId, trainDialog))
 
         try {

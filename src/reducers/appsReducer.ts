@@ -19,7 +19,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
         case AT.USER_LOGOUT:
             return { ...initialState };
         case AT.FETCH_APPLICATIONS_FULFILLED:
-            return { ...state, all: action.uiAppList.appList.apps, activeApps: action.uiAppList.activeApps } 
+            return { ...state, all: action.uiAppList.appList.apps, activeApps: action.uiAppList.activeApps }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC: {
             const app = state.all.find(a => a.appId === action.appId)
             // User may have deleted the app
@@ -59,6 +59,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
                 trainingStatus: action.trainingStatus.trainingStatus,
                 // Since we're updating training status simulate update to datetime field
                 datetime: new Date(),
+                lastModifiedDateTime: `${new Date().toISOString().slice(0, 19)}+00:00`,
                 // Used discriminated union to access failure message
                 trainingFailureMessage: (action.trainingStatus.trainingStatus === TrainingStatusCode.Failed)
                     ? action.trainingStatus.trainingFailureMessage
@@ -78,7 +79,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:
             return { ...state, all: replace(state.all, action.app, app => app.appId) }
         case AT.EDIT_APP_EDITING_TAG_FULFILLED:
-            return { ...state, activeApps: action.activeApps}
+            return { ...state, activeApps: action.activeApps }
         default:
             return state;
     }
