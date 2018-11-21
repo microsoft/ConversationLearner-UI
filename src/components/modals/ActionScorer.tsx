@@ -39,7 +39,8 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             getSortValue: action => action.actionId,
             render: (action, component, index) => {
 
-                const selected = (component.props.dialogType !== CLM.DialogType.TEACH && index === 0)
+                const selected = (index === 0 &&
+                    (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected))
                 const buttonText = selected ? 'Selected' : 'Select'
                 if (!component.props.canEdit) {
                     return (
@@ -742,6 +743,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 export interface ReceivedProps {
     app: CLM.AppBase
     editingPackageId: string,
+    historyItemSelected: boolean,
     dialogType: CLM.DialogType,  // LARS = make this not train dialog specific
     autoTeach: boolean,
     dialogMode: CLM.DialogMode,
