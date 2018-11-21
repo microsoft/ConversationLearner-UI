@@ -13,7 +13,8 @@ import * as ToolTip from '../../ToolTips/ToolTips'
 import { ActionBase } from '@conversationlearner/models'
 import './styles.css'
 import { FM } from '../../../react-intl-messages'
-import { InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../../FormattedMessageId'
+import { InjectedIntlProps } from 'react-intl'
 
 interface Props extends InjectedIntlProps {
     open: boolean
@@ -294,10 +295,7 @@ const Component: React.SFC<Props> = (props) => {
             message={() => props.showValidationWarning &&
                 <div className={`${OF.FontClassNames.medium} cl-text--warning`}>
                     <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
-                    <FormattedMessage
-                        id={FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING}
-                        defaultMessage='This Entity is used by one or more Actions or Training Dialogs.  If you proceed it will also be removed from these Actions and Training Dialogs.'
-                    />
+                    <FormattedMessageId id={FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING} />
                 </div>}
         />
         <ConfirmCancelModal
@@ -310,10 +308,7 @@ const Component: React.SFC<Props> = (props) => {
             })}
             message={() => <div className={`${OF.FontClassNames.medium} cl-text--warning`}>
                 <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
-                <FormattedMessage
-                    id={FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING}
-                    defaultMessage='This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.'
-                />
+                <FormattedMessageId id={FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING} />
             </div>}
         />
         <ConfirmCancelModal
@@ -326,10 +321,7 @@ const Component: React.SFC<Props> = (props) => {
             })}
             message={() => <div className={`${OF.FontClassNames.medium} cl-text--error`}>
                 <OF.Icon iconName="Error" className="cl-icon" /> Error:&nbsp;
-                <FormattedMessage
-                    id={FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING}
-                    defaultMessage='It is either referenced within the payload or used as suggested entity by one or more Actions.'
-                />
+                <FormattedMessageId id={FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING} />
             </div>}
         />
     </Modal>

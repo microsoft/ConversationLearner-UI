@@ -11,12 +11,13 @@ import { connect } from 'react-redux';
 import { State, AppCreatorType } from '../../../types';
 import * as OF from 'office-ui-fabric-react';
 import { Expando, AppCreator } from '../../../components/modals'
+import FormattedMessageId from '../../../components/FormattedMessageId'
 import { saveAs } from 'file-saver'
 import { AppBase, AppDefinition, TrainingStatusCode } from '@conversationlearner/models'
 import './Settings.css'
 import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
-import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
+import { injectIntl, InjectedIntlProps, defineMessages } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import * as TC from '../../../components/tipComponents'
 import * as ToolTip from '../../../components/ToolTips/ToolTips'
@@ -344,16 +345,10 @@ class Settings extends React.Component<Props, ComponentState> {
         return (
             <div className="cl-page">
                 <span data-testid="settings-title" className={OF.FontClassNames.xxLarge}>
-                    <FormattedMessage
-                        id={FM.SETTINGS_TITLE}
-                        defaultMessage="Settings"
-                    />
+                    <FormattedMessageId id={FM.SETTINGS_TITLE} />
                 </span>
                 <span className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.SETTINGS_SUBTITLE}
-                        defaultMessage="Control your model version tags and other model configuration"
-                    />
+                    <FormattedMessageId id={FM.SETTINGS_SUBTITLE} />
                 </span>
                 <div className="cl-settings-fields">
                     <OF.TextField
@@ -445,10 +440,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
                     <div>
                         <OF.Label className={OF.FontClassNames.mediumPlus} htmlFor="settings-dropdown-locale">
-                            <FormattedMessage
-                                id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
-                                defaultMessage="Locale"
-                            />
+                            <FormattedMessageId id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL} />
                         </OF.Label>
                         <OF.Dropdown
                             id="settings-dropdown-locale"

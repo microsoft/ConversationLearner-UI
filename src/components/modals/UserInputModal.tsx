@@ -10,7 +10,8 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../FormattedMessageId'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
     userInputVal: string
@@ -78,11 +79,8 @@ class UserInputModal extends React.Component<Props, ComponentState> {
             >
                 <div className='cl-modal_header'>
                     <span className={OF.FontClassNames.xxLarge}>
-                        {                    
-                        <FormattedMessage
-                            id={this.props.titleFM}
-                            defaultMessage="Add User Input"
-                        />}
+                        {
+                            <FormattedMessageId id={this.props.titleFM} />}
                     </span>
                 </div>
                 <div className="cl-action-creator-fieldset">
@@ -102,20 +100,20 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary" />
                         <div className="cl-modal-buttons_primary">
-                            
-                                <OF.PrimaryButton
-                                    disabled={invalidName}
-                                    data-testid="app-create-button-submit"
-                                    onClick={this.onClickSubmit}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Create'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.APPCREATOR_CREATEBUTTON_TEXT,
-                                        defaultMessage: 'Create'
-                                    })}
-                                />
+
+                            <OF.PrimaryButton
+                                disabled={invalidName}
+                                data-testid="app-create-button-submit"
+                                onClick={this.onClickSubmit}
+                                ariaDescription={intl.formatMessage({
+                                    id: FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION,
+                                    defaultMessage: 'Create'
+                                })}
+                                text={intl.formatMessage({
+                                    id: FM.APPCREATOR_CREATEBUTTON_TEXT,
+                                    defaultMessage: 'Create'
+                                })}
+                            />
                             <OF.DefaultButton
                                 onClick={this.onClickCancel}
                                 ariaDescription={intl.formatMessage({
