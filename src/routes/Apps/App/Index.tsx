@@ -34,24 +34,29 @@ import './Index.css'
 
 interface ComponentState {
     botValidationErrors: string[]
-    packageId: string | null
+    packageId: string | null,
+    modelLoaded: boolean
 }
 
 class Index extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         botValidationErrors: [],
-        packageId: null
+        packageId: null,
+        modelLoaded: false
     }
 
     async loadApp(app: CLM.AppBase, packageId: string): Promise<void> {
         this.setState({ packageId })
 
-        await this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
-
-        this.props.setCurrentAppThunkAsync(this.props.user.id, app)
+        let thunk1 = await this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
+        let thunk2 = this.props.setCurrentAppThunkAsync(this.props.user.id, app)
         // Note: We load log dialogs in a separate call as eventually we want to page
-        this.props.fetchAllLogDialogsThunkAsync(app, packageId)
-        this.props.fetchAppSourceThunkAsync(app.appId, packageId)
+        let thunk3 = this.props.fetchAllLogDialogsThunkAsync(app, packageId)
+        let thunk4 = this.props.fetchAppSourceThunkAsync(app.appId, packageId)
+
+        Promise.all([thunk1, thunk2, thunk3, thunk4]).then(() => {
+            this.setState({ modelLoaded: true })
+        })
     }
 
     componentWillMount() {
@@ -181,21 +186,21 @@ class Index extends React.Component<Props, ComponentState> {
 
         const trainDialogValidity = this.getTrainDialogValidity();
         const invalidBot = this.state.botValidationErrors && this.state.botValidationErrors.length > 0;
-       
+
         return (
             <div className="cl-app-page">
                 <div>
                     <div className="cl-app-title">
                         <div
-                            data-testid="app-index-model-name" 
+                            data-testid="app-index-model-name"
                             className={OF.FontClassNames.xxLarge}
                         >
-                        {app.appName}
+                            {app.appName}
                         </div>
                     </div>
                     <div className={`cl-app-tag-status ${OF.FontClassNames.mediumPlus}`}>
                         Tag: {tag}
-                        {editPackageId === app.livePackageId && 
+                        {editPackageId === app.livePackageId &&
                             <span className="cl-font--warning">LIVE</span>
                         }
                     </div>
@@ -206,47 +211,47 @@ class Index extends React.Component<Props, ComponentState> {
                         <div className="cl-nav_section">
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-home" exact to={{ pathname: `${match.url}`, state: { app } }}>
                                 <OF.Icon iconName="Home" />
-                                    <span className={invalidBot ? 'cl-font--highlight' : ''}>Home
+                                <span className={invalidBot ? 'cl-font--highlight' : ''}>Home
                                         {invalidBot &&
-                                            <TooltipHost 
-                                                content={intl.formatMessage({
-                                                    id: FM.TOOLTIP_BOTINFO_INVALID,
-                                                    defaultMessage: 'Bot not compatible'
-                                                })} 
-                                                calloutProps={{ gapSpace: 0 }}
-                                            >
-                                                <OF.IconButton
-                                                    className="ms-Button--transparent cl-icon--short"
-                                                    iconProps={{ iconName: 'IncidentTriangle' }}
-                                                    title="Error Alert"
-                                                />
-                                            </TooltipHost>
-                                        }</span>
+                                        <TooltipHost
+                                            content={intl.formatMessage({
+                                                id: FM.TOOLTIP_BOTINFO_INVALID,
+                                                defaultMessage: 'Bot not compatible'
+                                            })}
+                                            calloutProps={{ gapSpace: 0 }}
+                                        >
+                                            <OF.IconButton
+                                                className="ms-Button--transparent cl-icon--short"
+                                                iconProps={{ iconName: 'IncidentTriangle' }}
+                                                title="Error Alert"
+                                            />
+                                        </TooltipHost>
+                                    }</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-entities" to={{ pathname: `${match.url}/entities`, state: { app } }}>
-                                <OF.Icon iconName="List" /><span>Entities</span><span className="count">{this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).filter(e => !e.doNotMemorize).length}</span>
+                                <OF.Icon iconName="List" /><span>Entities</span><span className="count">{this.state.modelLoaded ? this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).filter(e => !e.doNotMemorize).length : ''}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-actions" to={{ pathname: `${match.url}/actions`, state: { app } }}>
-                                <OF.Icon iconName="List" /><span>Actions</span><span className="count">{this.props.actions.length}</span>
+                                <OF.Icon iconName="List" /><span>Actions</span><span className="count">{this.state.modelLoaded ? this.props.actions.length : ''}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-train-dialogs" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
                                 <OF.Icon iconName="List" />
-                                    <span className={trainDialogValidity !== CLM.Validity.VALID ? 'cl-font--highlight' : ''}>Train Dialogs
-                                        {trainDialogValidity !== CLM.Validity.VALID && 
-                                            <TooltipHost 
-                                                content={intl.formatMessage({
-                                                    id: ValidityUtils.validityToolTip(trainDialogValidity),
-                                                    defaultMessage: 'Contains Invalid Train Dialogs'
-                                                })} 
-                                                calloutProps={{ gapSpace: 0 }}
-                                            >
-                                                <OF.Icon 
-                                                    className={`cl-icon ${ValidityUtils.validityColorClassName(trainDialogValidity)}`} 
-                                                    iconName="IncidentTriangle" 
-                                                />
-                                            </TooltipHost>
-                                        }</span>
-                                    <span className="count">{this.props.trainDialogs.length}</span>
+                                <span className={trainDialogValidity !== CLM.Validity.VALID ? 'cl-font--highlight' : ''}>Train Dialogs
+                                        {trainDialogValidity !== CLM.Validity.VALID &&
+                                        <TooltipHost
+                                            content={intl.formatMessage({
+                                                id: ValidityUtils.validityToolTip(trainDialogValidity),
+                                                defaultMessage: 'Contains Invalid Train Dialogs'
+                                            })}
+                                            calloutProps={{ gapSpace: 0 }}
+                                        >
+                                            <OF.Icon
+                                                className={`cl-icon ${ValidityUtils.validityColorClassName(trainDialogValidity)}`}
+                                                iconName="IncidentTriangle"
+                                            />
+                                        </TooltipHost>
+                                    }</span>
+                                <span className="count">{this.state.modelLoaded ? this.props.trainDialogs.length : ''}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-log-dialogs" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
                                 <OF.Icon iconName="List" /><span>Log Dialogs</span>
@@ -263,25 +268,25 @@ class Index extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <Switch>
-                    <Route 
-                        path={`${match.url}/settings`} 
-                        render={props => <Settings {...props} app={app} editingPackageId={editPackageId} onCreateApp={this.onCreateApp} />} 
+                    <Route
+                        path={`${match.url}/settings`}
+                        render={props => <Settings {...props} app={app} editingPackageId={editPackageId} onCreateApp={this.onCreateApp} />}
                     />
-                    <Route 
-                        path={`${match.url}/entities`} 
-                        render={props => <Entities {...props} app={app} editingPackageId={editPackageId} />} 
+                    <Route
+                        path={`${match.url}/entities`}
+                        render={props => <Entities {...props} app={app} editingPackageId={editPackageId} />}
                     />
-                    <Route 
-                        path={`${match.url}/actions`} 
-                        render={props => <Actions {...props} app={app} editingPackageId={editPackageId}/>} 
+                    <Route
+                        path={`${match.url}/actions`}
+                        render={props => <Actions {...props} app={app} editingPackageId={editPackageId} />}
                     />
-                    <Route 
-                        path={`${match.url}/trainDialogs`} 
-                        render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} />} 
+                    <Route
+                        path={`${match.url}/trainDialogs`}
+                        render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} />}
                     />
-                    <Route 
-                        path={`${match.url}/logDialogs`} 
-                        render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} />} 
+                    <Route
+                        path={`${match.url}/logDialogs`}
+                        render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} />}
                     />
                     <Route
                         exact={true}

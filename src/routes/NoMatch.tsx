@@ -4,24 +4,18 @@
  */
 import * as React from 'react'
 import { FontClassNames } from 'office-ui-fabric-react'
-import { FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../components/FormattedMessageId'
 import { NavLink } from 'react-router-dom'
 import { FM } from '../react-intl-messages'
 
 const component = () => (
     <div>
         <div className={FontClassNames.superLarge}>
-            <FormattedMessage
-                id={FM.NOMATCH_TITLE}
-                defaultMessage="404 Not Found"
-            />
+            <FormattedMessageId id={FM.NOMATCH_TITLE} />
         </div>
         <div>
             <NavLink to="/">
-                <FormattedMessage
-                    id={FM.NOMATCH_HOME}
-                    defaultMessage="My Models"
-                />
+                <FormattedMessageId id={FM.NOMATCH_HOME} />
             </NavLink>
         </div>
     </div>

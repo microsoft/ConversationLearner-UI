@@ -18,7 +18,7 @@ import HelpPanel from '../components/HelpPanel'
 import * as OF from 'office-ui-fabric-react'
 import { SpinnerWindow, ErrorPanel } from '../components/modals'
 import './App.css'
-import { FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../components/FormattedMessageId'
 import { FM } from '../react-intl-messages'
 import { fetchBotInfoThunkAsync } from '../actions/botActions'
 import { clearBanner } from '../actions/displayActions'
@@ -111,10 +111,7 @@ class App extends React.Component<Props, ComponentState> {
                 Project Conversation Learner
               </span>
               <NavLink to="/home">
-                <FormattedMessage
-                  id={FM.APP_HEADER_MODELS}
-                  defaultMessage="My Models"
-                />
+                <FormattedMessageId id={FM.APP_HEADER_MODELS} />
               </NavLink>
               <a href="https://labs.cognitive.microsoft.com/en-us/project-conversation-learner" target="_blank" rel="noopener noreferrer">Documentation</a>
               <a href="https://cognitive.uservoice.com/forums/912199-project-conversation-learner" target="_blank" rel="noopener noreferrer">Feedback</a>
@@ -144,33 +141,33 @@ class App extends React.Component<Props, ComponentState> {
               </OF.MessageBar>
             }
             <Switch>
-                <Route exact path="/" render={() => <Redirect to="/home" />} />
-                <Route 
-                  path="/home" 
-                  render={props => 
-                      <React.Fragment>
-                        {this.state.loadingState === LoadingState.LOADING && 
-                          <p>Loading...</p>
-                        }
-                        {this.state.loadingState === LoadingState.FAILED && 
-                          <div>
-                            <p>Loading Failed.</p>
-                            <div>
-                              <OF.PrimaryButton onClick={this.loadBotInfo}>Retry</OF.PrimaryButton>
-                            </div>
-                          </div>
-                        }
-                        {this.state.loadingState === LoadingState.SUCCEEDED && this.props.botInfo !== null && 
-                          <AppsIndex 
-                            {...props} 
-                          />
-                        }
-                      </React.Fragment>
-                    } 
-                />
-                <Route path="/settings" component={Settings} />
-                <Route component={NoMatch} />
-              </Switch>
+              <Route exact path="/" render={() => <Redirect to="/home" />} />
+              <Route
+                path="/home"
+                render={props =>
+                  <React.Fragment>
+                    {this.state.loadingState === LoadingState.LOADING &&
+                      <p>Loading...</p>
+                    }
+                    {this.state.loadingState === LoadingState.FAILED &&
+                      <div>
+                        <p>Loading Failed.</p>
+                        <div>
+                          <OF.PrimaryButton onClick={this.loadBotInfo}>Retry</OF.PrimaryButton>
+                        </div>
+                      </div>
+                    }
+                    {this.state.loadingState === LoadingState.SUCCEEDED && this.props.botInfo !== null &&
+                      <AppsIndex
+                        {...props}
+                      />
+                    }
+                  </React.Fragment>
+                }
+              />
+              <Route path="/settings" component={Settings} />
+              <Route component={NoMatch} />
+            </Switch>
           </div>
           <div className="cl-app_modals">
             <ErrorPanel />

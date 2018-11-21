@@ -14,11 +14,12 @@ import ActionScorer from './ActionScorer';
 import MemoryTable from './MemoryTable';
 import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react';
-import * as CLM from '@conversationlearner/models' 
+import * as CLM from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import { EditDialogType, EditState } from '.'
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../FormattedMessageId'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 import TrainingStatusContainer from '../TrainingStatusContainer'
 import './EditDialogAdmin.css'
 
@@ -30,7 +31,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             roundIndex: null,
             scoreIndex: null
         }
-     }
+    }
 
     componentWillReceiveProps(newProps: Props) {
 
@@ -87,7 +88,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 changedTextVariations.push(tv)
             }
         })
-    
+
         // Check the changed ones for conflicts
 
         // First check for internal conflics
@@ -99,13 +100,13 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        let dialogId = this.props.editingLogDialogId || this.props.trainDialog.trainDialogId 
+        let dialogId = this.props.editingLogDialogId || this.props.trainDialog.trainDialogId
         // Next against other TrainDialogs
         for (let changedTextVariation of changedTextVariations) {
             let conflict = await this.props.fetchTextVariationConflictThunkAsync(
-                this.props.app.appId, 
+                this.props.app.appId,
                 dialogId,
-                changedTextVariation, 
+                changedTextVariation,
                 // Exclude the originalTrain dialog from check
                 this.props.originalTrainDialogId)
             if (conflict) {
@@ -114,15 +115,15 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         }
         return false
     }
-    
+
     @OF.autobind
     async onEntityExtractorSubmit(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]): Promise<void> {
-        
+
         if (await this.hasConflicts(textVariations)) {
             return
         }
-        
-        this.props.clearExtractResponses() 
+
+        this.props.clearExtractResponses()
 
         // If no conflicts, submit the extractions
         this.props.onSubmitExtraction(extractResponse, textVariations)
@@ -198,7 +199,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
 
         if (this.state.roundIndex !== null && this.state.roundIndex < this.props.trainDialog.rounds.length) {
             round = this.props.trainDialog.rounds[this.state.roundIndex];
-            if (round.scorerSteps.length > 0) { 
+            if (round.scorerSteps.length > 0) {
                 // If a score round 
                 if (typeof this.state.scoreIndex === "number") {
                     scorerStep = round.scorerSteps[this.state.scoreIndex];
@@ -225,7 +226,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                             packageDeletionId: 0
                         }
                     }
-                    
+
                     memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
                         let entity = this.props.entities.find(e => e.entityId === fe.entityId);
                         let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
@@ -234,22 +235,22 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                             entityValues: fe.values
                         }
                     });
-                    
+
                     // Get prevmemories
                     prevMemories = this.getPrevMemories();
 
                     let scoredAction: CLM.ScoredAction = {
-                            actionId: selectedAction.actionId,
-                            payload: selectedAction.payload,
-                            isTerminal: selectedAction.isTerminal,
-                            score: 1,
-                            actionType: selectedAction.actionType
-                        }
+                        actionId: selectedAction.actionId,
+                        payload: selectedAction.payload,
+                        isTerminal: selectedAction.isTerminal,
+                        score: 1,
+                        actionType: selectedAction.actionType
+                    }
 
                     // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
                     let unscoredActions = this.props.actions
                         .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
-                        .map<CLM.UnscoredAction>(action => 
+                        .map<CLM.UnscoredAction>(action =>
                             ({
                                 actionId: action.actionId,
                                 payload: action.payload,
@@ -291,54 +292,40 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             prevMemories: DialogUtils.filterDummyEntities(prevMemories)
         }
     }
-    
+
     renderHelpText(isLogDialog: boolean) {
         if (isLogDialog) {
             return (
                 <div className="cl-dialog-admin__content">
-                        <div className="cl-dialog-admin-title">
-                            <FormattedMessage
-                                data-testid="dialog-admin-title-traindialog"
-                                id={FM.EDITDIALOGADMIN_HELPTEXT_TITLE_LOG}
-                                defaultMessage="Log Dialog"
-                            />
-                        </div>
-                        <div>
-                            <FormattedMessage
-                                id={FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_LOG}
-                                defaultMessage="Click on User or Bot turns to the left to view steps in the Log Dialog."
-                            />
-                        </div>
-                        <div>
-                            <FormattedMessage
-                                id={FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_LOG}
-                                defaultMessage="You can then make changes to the Log Dialog."
-                            />
-                        </div>
+                    <div className="cl-dialog-admin-title">
+                        <FormattedMessageId
+                            data-testid="dialog-admin-title-traindialog"
+                            id={FM.EDITDIALOGADMIN_HELPTEXT_TITLE_LOG}
+                        />
                     </div>
-                )
+                    <div>
+                        <FormattedMessageId id={FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_LOG} />
+                    </div>
+                    <div>
+                        <FormattedMessageId id={FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_LOG} />
+                    </div>
+                </div>
+            )
         }
         else {
             return (
                 <div className="cl-dialog-admin__content">
                     <div className="cl-dialog-admin-title">
-                        <FormattedMessage
+                        <FormattedMessageId
                             data-testid="dialog-admin-title-traindialog"
                             id={FM.EDITDIALOGADMIN_HELPTEXT_TITLE_TRAIN}
-                            defaultMessage="Train Dialog"
                         />
                     </div>
                     <div>
-                        <FormattedMessage
-                            id={FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_TRAIN}
-                            defaultMessage="Click on User or Bot turn to the left to view steps in the Train Dialog."
-                        />
+                        <FormattedMessageId id={FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_TRAIN} />
                     </div>
                     <div>
-                        <FormattedMessage
-                            id={FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_TRAIN}
-                            defaultMessage="You can then make changes to the Train Dialog."
-                        />
+                        <FormattedMessageId id={FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_TRAIN} />
                     </div>
                 </div>
             )
@@ -357,17 +344,17 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
                 <div className="cl-ux-flexpanel">
                     <div className="cl-ux-flexpanel--primary">
-                        <div className="cl-ux-flexpanel--left" style={{width:"80%"}}>
+                        <div className="cl-ux-flexpanel--left" style={{ width: "80%" }}>
                             <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
-                                <OF.Icon 
+                                <OF.Icon
                                     iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
                                 />
                                 {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
                             </div>
                         </div>
-                        <div className="cl-ux-flexpanel--right" style={{width:"20%"}}>
+                        <div className="cl-ux-flexpanel--right" style={{ width: "20%" }}>
                             <TrainingStatusContainer
-                                    app={this.props.app}
+                                app={this.props.app}
                             />
                         </div>
                     </div>
@@ -375,23 +362,21 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 {this.props.selectedActivity && (this.state.senderType === CLM.SenderType.User
                     ? (
                         <div className="cl-dialog-admin__content">
-                            <div 
+                            <div
                                 className={`cl-wc-message cl-wc-message--user cl-wc-message--${isLogDialog ? 'log' : 'train'}`}
                             >
-                                <FormattedMessage
+                                <FormattedMessageId
                                     data-testid="modal-user-input"
                                     id={FM.EDITDIALOGADMIN_DIALOGMODE_USER}
-                                    defaultMessage="User Input"
                                 />
                             </div>
                         </div>
                     ) : (
                         <div className="cl-dialog-admin__content">
                             <div className="cl-wc-message cl-wc-message--bot">
-                                <FormattedMessage
+                                <FormattedMessageId
                                     data-testid="modal-bot-response"
                                     id={FM.EDITDIALOGADMIN_DIALOGMODE_TEXT}
-                                    defaultMessage="Bot Response"
                                 />
                             </div>
                         </div>
@@ -400,10 +385,9 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 {this.props.selectedActivity ?
                     (<div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
-                            <FormattedMessage
+                            <FormattedMessageId
                                 data-testid="modal-memory-title"
                                 id={FM.EDITDIALOGADMIN_MEMORY_TITLE}
-                                defaultMessage="Memory"
                             />
                         </div>
                         <MemoryTable
@@ -417,10 +401,9 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 {this.state.senderType === CLM.SenderType.User &&
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
-                            <FormattedMessage
+                            <FormattedMessageId
                                 data-testid="dialog-admin-entity-detection"
                                 id={FM.EDITDIALOGADMIN_ENTITYDETECTION_TITLE}
-                                defaultMessage="Entity Detection"
                             />
                         </div>
                         <div>
@@ -430,7 +413,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
                                     originalTrainDialogId={this.props.originalTrainDialogId}
-                                    canEdit={this.props.editState === EditState.CAN_EDIT} 
+                                    canEdit={this.props.editState === EditState.CAN_EDIT}
                                     extractType={isLogDialog
                                         ? CLM.DialogType.LOGDIALOG
                                         : CLM.DialogType.TRAINDIALOG}
@@ -443,29 +426,25 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     autoTeach={false}
                                     dialogMode={renderData.dialogMode}
                                     extractResponses={this.props.teachSession ? this.props.teachSession.extractResponses : []}
-                                    extractConflict={this.props.teachSession ? this.props.teachSession.extractConflict : null} 
+                                    extractConflict={this.props.teachSession ? this.props.teachSession.extractConflict : null}
                                     originalTextVariations={renderData.textVariations}
                                     onSubmitExtractions={this.onEntityExtractorSubmit}
                                     onPendingStatusChanged={this.props.onPendingStatusChanged}
                                 />
                                 : <span>
-                                    <FormattedMessage
-                                        id={FM.EDITDIALOGADMIN_ENTITYDETECTION_HELPTEXT}
-                                        defaultMessage="Click on text from the dialog to the left."
-                                    />
+                                    <FormattedMessageId id={FM.EDITDIALOGADMIN_ENTITYDETECTION_HELPTEXT} />
                                 </span>
                             }
                         </div>
                     </div>
                 }
                 {renderData.scoreResponse && renderData.scoreInput
-                && this.state.senderType === CLM.SenderType.Bot
-                && <div className="cl-dialog-admin__content">
+                    && this.state.senderType === CLM.SenderType.Bot
+                    && <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
-                            <FormattedMessage
+                            <FormattedMessageId
                                 data-testid="dialog-admin-action"
                                 id={FM.EDITDIALOGADMIN_ACTION_TITLE}
-                                defaultMessage="Action"
                             />
                         </div>
                         <div>
@@ -473,6 +452,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 data-testid="dialog-admin-scorer"
                                 app={this.props.app}
                                 editingPackageId={this.props.editingPackageId}
+                                historyItemSelected={true}
                                 canEdit={this.props.editState === EditState.CAN_EDIT}
                                 hideScore={false}  // LARS
                                 dialogType={CLM.DialogType.TRAINDIALOG}
@@ -513,7 +493,7 @@ interface ComponentState {
 }
 
 export interface ReceivedProps {
-    app: CLM. AppBase,
+    app: CLM.AppBase,
     editingPackageId: string,
     trainDialog: CLM.TrainDialog,
     // If editing a log dialog, this was the source
@@ -524,7 +504,7 @@ export interface ReceivedProps {
     editState: EditState,
     editType: EditDialogType,
     onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
-    onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void                            
+    onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void
     onPendingStatusChanged: (changed: boolean) => void
 }
 

@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
+import * as IntlMessages from '../react-intl-messages'
 
 export function notNullOrUndefined<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -39,7 +40,6 @@ export function packageReferences(app: CLM.AppBase): CLM.PackageReference[] {
             packageVersion: 'Master'
         }
     ]
-
 }
 
 export function createEntityMapFromMemories(entities: CLM.EntityBase[], memories: CLM.Memory[]): Map<string, string> {
@@ -71,3 +71,14 @@ export function setStateAsync(that: any, newState: any) {
 }
 
 export const delay = <T>(ms: number, value?: T): Promise<T> => new Promise<T>(resolve => setTimeout(() => resolve(value), ms))
+
+export function getDefaultText(id: IntlMessages.FM): string {
+    return IntlMessages.default["en-US"].hasOwnProperty(id) ? IntlMessages.default["en-US"][id] : ""
+}
+
+export function formatMessageId(intl: ReactIntl.InjectedIntl, id: IntlMessages.FM) {
+    return intl.formatMessage({
+        id: id,
+        defaultMessage: getDefaultText(id)
+    })
+}

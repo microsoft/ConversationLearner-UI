@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import * as ToolTip from './ToolTips/ToolTips';
 import * as OF from 'office-ui-fabric-react';
 import { setTipType } from '../actions/displayActions'
-import { FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../components/FormattedMessageId'
 import { FM } from '../react-intl-messages'
 
 class HelpPanel extends React.Component<Props, {}> {
@@ -45,14 +45,11 @@ class HelpPanel extends React.Component<Props, {}> {
                 data-testid="helppanel-close-button"
                 className="cl-button-close cl-ux-flexpanel--right"
                 onClick={() => { this.onDismiss() }}
-                style={{marginBottom:"1.5em"}}
+                style={{ marginBottom: "1.5em" }}
             >
-                <FormattedMessage
-                    id={FM.BUTTON_CLOSE}
-                    defaultMessage='Close'
-                />
+                <FormattedMessageId id={FM.BUTTON_CLOSE} />
             </OF.DefaultButton>
-        )        
+        )
     }
 }
 

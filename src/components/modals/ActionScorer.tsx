@@ -18,6 +18,7 @@ import { FM } from '../../react-intl-messages'
 import * as Util from '../../Utils/util'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadRenderers from '../actionPayloadRenderers'
+import ConfirmCancelModal from './ConfirmCancelModal'
 
 const ACTION_BUTTON = 'action_button'
 const MISSING_ACTION = 'missing_action'
@@ -39,8 +40,12 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             getSortValue: action => action.actionId,
             render: (action, component, index) => {
 
-                const selected = (component.props.dialogType !== CLM.DialogType.TEACH && index === 0)
-                const buttonText = selected ? 'Selected' : 'Select'
+                const selected = (index === 0 &&
+                    (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected))
+                const buttonText = intl.formatMessage({
+                    id: selected ? FM.BUTTON_SELECTED : FM.BUTTON_SELECT,
+                    defaultMessage: selected ? Util.getDefaultText(FM.BUTTON_SAVE_EDIT) : Util.getDefaultText(FM.BUTTON_SAVE_EDIT)
+                });
                 if (!component.props.canEdit) {
                     return (
                         <OF.PrimaryButton
@@ -57,9 +62,10 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                     return (
                         <OF.PrimaryButton
                             data-testid="action-scorer-button-no-click"
-                            disabled={true}
+                            disabled={!isAvailable}
                             ariaDescription={buttonText}
                             text={buttonText}
+                            onClick={component.showAlreadySelectedPopUp}
                         />
                     )
                 }
@@ -93,7 +99,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             getSortValue: () => '',
             render: (action: CLM.ActionBase, component) => {
                 const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
-                    
+
                 if (action.actionType === CLM.ActionTypes.TEXT) {
                     const textAction = new CLM.TextAction(action)
                     return (
@@ -144,9 +150,9 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         {
             key: 'actionScore',
             name: hideScore ? '' : intl.formatMessage({
-                                        id: FM.ACTIONSCORER_COLUMNS_SCORE,
-                                        defaultMessage: 'Score'
-                                    }),
+                id: FM.ACTIONSCORER_COLUMNS_SCORE,
+                defaultMessage: 'Score'
+            }),
             fieldName: 'score',
             minWidth: hideScore ? 1 : 80,
             maxWidth: hideScore ? 1 : 80,
@@ -224,9 +230,9 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             maxWidth: 50,
             isResizable: true,
             getSortValue: action => action.isTerminal ? 1 : -1,
-            render: action => <OF.Icon 
-                iconName={(action.isTerminal ? "CheckMark" : "Remove")} 
-                className={`cl-icon${action.isTerminal ? " checkIcon" : " notFoundIcon"}`} 
+            render: action => <OF.Icon
+                iconName={(action.isTerminal ? "CheckMark" : "Remove")}
+                className={`cl-icon${action.isTerminal ? " checkIcon" : " notFoundIcon"}`}
             />
         },
         {
@@ -252,6 +258,7 @@ interface ComponentState {
     haveEdited: boolean
     cardViewerAction: CLM.ActionBase | null
     cardViewerShowOriginal: boolean
+    isAlreadySelectedOpen: boolean
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
@@ -267,7 +274,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             sortColumn: columns[2], // "score"
             haveEdited: false,
             cardViewerAction: null,
-            cardViewerShowOriginal: false
+            cardViewerShowOriginal: false,
+            isAlreadySelectedOpen: false
         };
         this.handleActionSelection = this.handleActionSelection.bind(this);
         this.handleDefaultSelection = this.handleDefaultSelection.bind(this);
@@ -275,6 +283,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.renderItemColumn = this.renderItemColumn.bind(this);
         this.onColumnClick = this.onColumnClick.bind(this);
         this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
+        this.showAlreadySelectedPopUp = this.showAlreadySelectedPopUp.bind(this);
+        this.onCloseAlreadySelectedPopUp = this.onCloseAlreadySelectedPopUp.bind(this);
     }
     componentWillReceiveProps(newProps: Props) {
         if (this.props.scoreResponse !== newProps.scoreResponse) {
@@ -347,7 +357,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     async onClickSubmitActionEditor(action: CLM.ActionBase) {
         await Util.setStateAsync(this, { actionModalOpen: false })
-       
+
         let newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
 
         if (newAction) {
@@ -667,7 +677,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 else if (typeof firstValue === 'number' && typeof secondValue === 'number') {
                     isFirstGreaterThanSecond = firstValue - secondValue
                 }
-                
+
                 return sortColumn.isSortedDescending
                     ? isFirstGreaterThanSecond * -1
                     : isFirstGreaterThanSecond
@@ -690,6 +700,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             return null;
         }
 
+        const { intl } = this.props
         const scores: CLM.ScoredBase[] = this.getScoredItems()
         let template: CLM.Template | undefined
         let renderedActionArguments: CLM.RenderedActionArgument[] = []
@@ -734,14 +745,32 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     actionArguments={renderedActionArguments}
                     hideUndefined={true}
                 />
+                <ConfirmCancelModal
+                    data-testid="popup-already-selected"
+                    open={this.state.isAlreadySelectedOpen}
+                    onOk={this.onCloseAlreadySelectedPopUp}
+                    title={intl.formatMessage({
+                        id: FM.LOGDIALOGS_ALREADYSELECTED,
+                        defaultMessage: Util.getDefaultText(FM.LOGDIALOGS_ALREADYSELECTED)
+                    })}
+                />
             </div>
         )
+    }
+
+    showAlreadySelectedPopUp() {
+        this.setState({ isAlreadySelectedOpen: true })
+    }
+
+    onCloseAlreadySelectedPopUp() {
+        this.setState({ isAlreadySelectedOpen: false })
     }
 }
 
 export interface ReceivedProps {
     app: CLM.AppBase
     editingPackageId: string,
+    historyItemSelected: boolean,
     dialogType: CLM.DialogType,  // LARS = make this not train dialog specific
     autoTeach: boolean,
     dialogMode: CLM.DialogMode,

@@ -18,7 +18,8 @@ import { State, TeachSessionState } from '../../types';
 import Webchat, { renderActivity } from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
-import { renderReplayError } from './ReplayErrorList'
+import FormattedMessageId from '../FormattedMessageId'
+import { renderReplayError } from '../../Utils/RenderReplayError'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
 import AddButtonInput from './AddButtonInput'
@@ -28,7 +29,7 @@ import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
 import { SelectionType } from '../../types/const'
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.';
 import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs';
 
@@ -71,8 +72,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
     componentDidMount() {
         this.callbacksId = ErrorHandler.registerCallbacks(
             [
-                {actionType: AT.POST_SCORE_FEEDBACK_ASYNC, callback: this.onDismissError},
-                {actionType: AT.RUN_SCORER_ASYNC, callback: this.onDismissError},
+                { actionType: AT.POST_SCORE_FEEDBACK_ASYNC, callback: this.onDismissError },
+                { actionType: AT.RUN_SCORER_ASYNC, callback: this.onDismissError },
             ]
         );
     };
@@ -82,7 +83,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             ErrorHandler.deleteCallbacks(this.callbacksId)
         }
     }
- 
+
     @OF.autobind
     onDismissError(errorType: AT): void {
         this.props.onClose(false);
@@ -123,7 +124,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 : false
         }
 
-        if (webchatKey !== this.state.webchatKey || 
+        if (webchatKey !== this.state.webchatKey ||
             hasTerminalAction !== this.state.hasTerminalAction ||
             isInitAvailable !== this.state.isInitAvailable) {
             this.setState({
@@ -135,7 +136,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 selectedActivityIndex,
                 selectedHistoryActivity
             })
-        }   
+        }
     }
 
     @OF.autobind
@@ -148,7 +149,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
         if (filledEntityMap && this.props.onSetInitialEntities) {
-            await this.props.onSetInitialEntities(filledEntityMap.FilledEntities())              
+            await this.props.onSetInitialEntities(filledEntityMap.FilledEntities())
         }
         this.setState({
             isInitStateOpen: false,
@@ -158,9 +159,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickAbandonTeach() {
-        this.setState({
-            isConfirmDeleteOpen: true
-        })
+        if (this.state.nextActivityIndex) {
+            this.setState({
+                isConfirmDeleteOpen: true
+            })
+        } else {
+            this.onClickConfirmDelete()
+        }
     }
 
     @OF.autobind
@@ -195,7 +200,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
             if (selectedActivityIndex > -1) {
                 this.setState({
                     selectedActivityIndex,
-                    selectedHistoryActivity: activity})
+                    selectedHistoryActivity: activity
+                })
                 return
             }
         }
@@ -205,8 +211,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
             this.setState({
                 selectedActivityIndex: clData.activityIndex!,
                 selectedHistoryActivity: null
-            })  
-        }      
+            })
+        }
     }
 
     onWebChatPostActivity(activity: Activity) {
@@ -217,7 +223,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             // Check if button submit info
             if (!activity.text && activity.value && activity.value['submit']) {
                 userInput = { text: activity.value['submit'] }
-            } 
+            }
             // Otherwise use text
             else {
                 userInput = { text: activity.text! }
@@ -228,14 +234,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
             }
 
             // Add channel data to activity so can process when clicked on later
-            const clData: CLM.CLChannelData = { 
+            const clData: CLM.CLChannelData = {
                 activityIndex: this.state.nextActivityIndex,
             }
             activity.channelData.clData = clData
-              
-            this.setState({ 
-                 // No initialization allowed after first input
-                isInitAvailable: false, 
+
+            this.setState({
+                // No initialization allowed after first input
+                isInitAvailable: false,
                 initialEntities: null,
                 nextActivityIndex: this.state.nextActivityIndex + 1,
                 selectedActivityIndex: null,
@@ -243,10 +249,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
             })
 
             this.props.runExtractorThunkAsync(
-                this.props.app.appId, 
-                CLM.DialogType.TEACH, 
-                this.props.teachSession.teach.teachId, 
-                null, 
+                this.props.app.appId,
+                CLM.DialogType.TEACH,
+                this.props.teachSession.teach.teachId,
+                null,
                 userInput,
                 this.props.originalTrainDialogId)
         }
@@ -298,7 +304,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let memories: CLM.Memory[] = [];
         let prevMemories: CLM.Memory[] = [];
 
-        if (!this.state.selectedHistoryActivity || !this.props.sourceTrainDialog) {
+        if (this.state.selectedHistoryActivity === null || !this.props.sourceTrainDialog) {
             throw new Error("historyRender missing data")
         }
 
@@ -315,7 +321,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
                 }
 
-                let actionId = scorerStep!.labelAction 
+                let actionId = scorerStep!.labelAction
                 selectedAction = this.props.actions.find(action => action.actionId === actionId);
 
                 if (!selectedAction) {
@@ -335,7 +341,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         packageDeletionId: 0
                     }
                 }
-               
+
                 memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
                     let entity = this.props.entities.find(e => e.entityId === fe.entityId);
                     let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
@@ -344,22 +350,22 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         entityValues: fe.values
                     }
                 });
-                
+
                 // Get prevmemories
                 prevMemories = this.getPrevMemories();
 
                 let scoredAction: CLM.ScoredAction = {
-                        actionId: selectedAction.actionId,
-                        payload: selectedAction.payload,
-                        isTerminal: selectedAction.isTerminal,
-                        score: 1,
-                        actionType: selectedAction.actionType
-                    }
+                    actionId: selectedAction.actionId,
+                    payload: selectedAction.payload,
+                    isTerminal: selectedAction.isTerminal,
+                    score: 1,
+                    actionType: selectedAction.actionType
+                }
 
                 // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
                 let unscoredActions = this.props.actions
                     .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
-                    .map<CLM.UnscoredAction>(action => 
+                    .map<CLM.UnscoredAction>(action =>
                         ({
                             actionId: action.actionId,
                             payload: action.payload,
@@ -386,7 +392,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 prevMemories: DialogUtils.filterDummyEntities(prevMemories),
                 extractResponses: [],
                 textVariations: round.extractorStep.textVariations
-            }       
+            }
         }
         throw new Error("Fail to render")
     }
@@ -411,13 +417,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
     @OF.autobind
     onClickUndoInput(): void {
         // Replay dialog to get rid of input
-        this.props.onEditTeach(0, null, this.props.onReplayDialog) 
+        this.props.onEditTeach(0, null, this.props.onReplayDialog)
     }
 
     @OF.autobind
-    onCloseBotAPIError(): void { 
+    onCloseBotAPIError(): void {
         // Delete the most recent turn with the error
-        this.props.onEditTeach(this.state.nextActivityIndex - 1, null, this.props.onDeleteTurn) 
+        this.props.onEditTeach(this.state.nextActivityIndex - 1, null, this.props.onDeleteTurn)
     }
 
     @OF.autobind
@@ -425,43 +431,43 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.setState({
             isUserInputModalOpen: false
         })
-        if (this.state.selectedActivityIndex != null) { 
-            this.props.onEditTeach(this.state.selectedActivityIndex, {userInput, selectionType: this.state.addUserInputSelectionType}, this.props.onInsertInput) 
+        if (this.state.selectedActivityIndex != null) {
+            this.props.onEditTeach(this.state.selectedActivityIndex, { userInput, selectionType: this.state.addUserInputSelectionType }, this.props.onInsertInput)
         }
     }
 
     @OF.autobind
     onInsertAction() {
-        if (this.state.selectedActivityIndex != null) { 
+        if (this.state.selectedActivityIndex != null) {
             const isLastActivity = this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1)
             const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
-            this.props.onEditTeach(this.state.selectedActivityIndex, {selectionType}, this.props.onInsertAction) 
+            this.props.onEditTeach(this.state.selectedActivityIndex, { selectionType }, this.props.onInsertAction)
         }
     }
 
     @OF.autobind
     onDeleteTurn() {
-        if (this.state.selectedActivityIndex != null) { 
-            this.props.onEditTeach(this.state.selectedActivityIndex, null, this.props.onDeleteTurn) 
+        if (this.state.selectedActivityIndex != null) {
+            this.props.onEditTeach(this.state.selectedActivityIndex, null, this.props.onDeleteTurn)
         }
     }
 
     @OF.autobind
     onEditExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
-        if (this.state.selectedActivityIndex != null) { 
-            this.props.onEditTeach(this.state.selectedActivityIndex, {extractResponse, textVariations}, this.props.onChangeExtraction) 
+        if (this.state.selectedActivityIndex != null) {
+            this.props.onEditTeach(this.state.selectedActivityIndex, { extractResponse, textVariations }, this.props.onChangeExtraction)
         }
     }
 
     @OF.autobind
     onEditScore(trainScorerStep: CLM.TrainScorerStep) {
-        if (this.state.selectedActivityIndex != null) { 
-            this.props.onEditTeach(this.state.selectedActivityIndex, {trainScorerStep}, this.props.onChangeAction) 
+        if (this.state.selectedActivityIndex != null) {
+            this.props.onEditTeach(this.state.selectedActivityIndex, { trainScorerStep }, this.props.onChangeAction)
         }
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
-       return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType)
+        return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType)
     }
 
     @OF.autobind
@@ -470,7 +476,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         if (this.state.selectedActivityIndex === null) {
             return null
         }
-        
+
         const isUser = activity.from.name === 'ConversationLearnerDeveloper'
 
         // Can't delete first user input
@@ -478,11 +484,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         return (
             <div className="cl-wc-buttonbar">
-                <AddButtonInput 
+                <AddButtonInput
                     onClick={this.onClickAddUserInput}
                     editType={this.props.editType}
                 />
-                <AddButtonScore 
+                <AddButtonScore
                     onClick={this.onInsertAction}
                 />
                 {canDeleteRound &&
@@ -493,7 +499,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         ariaDescription="Delete Turn"
                     />
                 }
-                </div>
+            </div>
         )
     }
 
@@ -503,7 +509,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 return intl.formatMessage({
                     id: FM.BUTTON_ABANDON,
                     defaultMessage: 'Abandon'
-                }) 
+                })
             case EditDialogType.BRANCH:
                 return intl.formatMessage({
                     id: FM.BUTTON_ABANDON_BRANCH,
@@ -518,7 +524,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 return intl.formatMessage({
                     id: FM.BUTTON_ABANDON,
                     defaultMessage: 'Abandon'
-                }) 
+                })
             case EditDialogType.TRAIN_EDITED:
                 return intl.formatMessage({
                     id: FM.BUTTON_ABANDON_EDIT,
@@ -578,7 +584,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 return intl.formatMessage({
                     id: FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE,
                     defaultMessage: 'Are you sure you want to abandon this dialog?'
-                }) 
+                })
             case EditDialogType.LOG_EDITED:
                 return intl.formatMessage({
                     id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
@@ -614,9 +620,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
             return false
         }
 
-        return (this.props.initialHistory.filter(h => { 
+        return (this.props.initialHistory.filter(h => {
             const clData: CLM.CLChannelData = h.channelData.clData
-            return (clData && clData.replayError) 
+            return (clData && clData.replayError)
         }).length > 0)
     }
 
@@ -652,10 +658,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             return (
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_EXISTS}
-                            defaultMessage={FM.REPLAYERROR_EXISTS}
-                        />
+                        <FormattedMessageId id={FM.REPLAYERROR_EXISTS} />
                     </div>
                 </div>
             )
@@ -669,10 +672,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
         const { intl } = this.props
 
         // Put mask of webchat if waiting for extraction labelling
-        let chatDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor ? <div className="cl-overlay"/> : null;
-        let saveDisable = !this.state.hasTerminalAction 
-                        || this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
-                        || this.props.teachSession.botAPIError !== null
+        let chatDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor ? <div className="cl-overlay" /> : null;
+        let saveDisable = !this.state.hasTerminalAction
+            || this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
+            || this.props.teachSession.botAPIError !== null
         return (
             <div>
                 <Modal
@@ -690,8 +693,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     app={this.props.app}
                                     history={this.props.initialHistory}
                                     onPostActivity={activity => this.onWebChatPostActivity(activity)}
-                                    onSelectActivity={activity => this.onWebChatSelectActivity(activity)} 
-                                    onScrollChange={position => this.onScrollChange(position)}                      
+                                    onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
+                                    onScrollChange={position => this.onScrollChange(position)}
                                     hideInput={this.props.teachSession.dialogMode !== CLM.DialogMode.Wait}
                                     focusInput={this.props.teachSession.dialogMode === CLM.DialogMode.Wait}
                                     highlightClassName={'wc-message-selected'}
@@ -716,13 +719,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         selectedActivityIndex={this.state.selectedActivityIndex}
                                         historyRenderData={this.state.selectedHistoryActivity ? this.historyRender : null}
                                         onScoredAction={(scoredAction) => {
-                                                this.setState({
-                                                    hasTerminalAction: scoredAction.isTerminal,
-                                                    nextActivityIndex: this.state.nextActivityIndex + 1
-                                                })
-                                            }
+                                            this.setState({
+                                                hasTerminalAction: scoredAction.isTerminal,
+                                                nextActivityIndex: this.state.nextActivityIndex + 1
+                                            })
                                         }
-                                        onEditExtraction={this.onEditExtraction} 
+                                        }
+                                        onEditExtraction={this.onEditExtraction}
                                         onEditAction={this.onEditScore}
                                     />
                                 </div>
@@ -732,19 +735,19 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     <div className="cl-modal_footer cl-modal_footer--border">
                         <div className="cl-modal-buttons">
                             <div className="cl-modal-buttons_secondary">
-                                {this.state.isInitAvailable && 
+                                {this.state.isInitAvailable &&
                                     <OF.DefaultButton
-                                            data-testid="teach-session-set-initial-state"
-                                            disabled={false}
-                                            onClick={this.onInitStateClicked}
-                                            ariaDescription={intl.formatMessage({
-                                                id: FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION,
-                                                defaultMessage: "Set Initial State"
-                                            })}
-                                            text={intl.formatMessage({
-                                                id: FM.TEACHSESSIONMODAL_INITSTATE_TEXT,
-                                                defaultMessage: "Set Initial State"
-                                            })}
+                                        data-testid="teach-session-set-initial-state"
+                                        disabled={false}
+                                        onClick={this.onInitStateClicked}
+                                        ariaDescription={intl.formatMessage({
+                                            id: FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION,
+                                            defaultMessage: "Set Initial State"
+                                        })}
+                                        text={intl.formatMessage({
+                                            id: FM.TEACHSESSIONMODAL_INITSTATE_TEXT,
+                                            defaultMessage: "Set Initial State"
+                                        })}
                                     />
                                 }
                                 <div className="cl-modal-buttons_secondary">
@@ -783,7 +786,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     ariaDescription={this.renderAbandonText(intl)}
                                     text={this.renderAbandonText(intl)}
                                 />
-                                
+
                             </div>
                         </div>
                     </div>
@@ -804,7 +807,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     <UserInputModal
                         titleFM={FM.USERINPUT_ADD_TITLE}
                         open={this.state.isUserInputModalOpen}
-                        onCancel={() => {this.onCancelAddUserInput()}}
+                        onCancel={() => { this.onCancelAddUserInput() }}
                         onSubmit={this.onSubmitAddUserInput}
                     />
                 </Modal>
@@ -841,7 +844,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean
     onClose: (save: boolean) => void
-    onEditTeach: (historyIndex: number, args: EditHandlerArgs|null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any) => void
+    onEditTeach: (historyIndex: number, args: EditHandlerArgs | null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any) => void
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any

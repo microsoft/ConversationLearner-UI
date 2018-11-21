@@ -4,7 +4,7 @@
  */
 import * as React from 'react';
 import * as OF from 'office-ui-fabric-react';
-import { FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../FormattedMessageId'
 import { FM } from '../../react-intl-messages'
 import { MemoryValue } from '@conversationlearner/models'
 import HelpLink from '../HelpLink'
@@ -179,9 +179,9 @@ export function getTip(tipType: string) {
                 <div>
                     {render(FM.TOOLTIP_ACTION_RENDER_TITLE, [FM.TOOLTIP_ACTION_RENDER])}
                     <div><br />cl.AddRenderCallback("<i>[Render name]</i>", async (memoryManager, argArray) => <i>[Render body]</i>)</div>
-                    <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_EXAMPLE} /></div>
+                    <div className="cl-tooltop-example"><FormattedMessageId id={FM.TOOLTIP_EXAMPLE} /></div>
                     <pre>{renderCodeSample}</pre>
-                    <div className="cl-tooltop-example"><FormattedMessage id={FM.TOOLTIP_ACTION_ARGUMENTS_TITLE} /></div>
+                    <div className="cl-tooltop-example"><FormattedMessageId id={FM.TOOLTIP_ACTION_ARGUMENTS_TITLE} /></div>
                     <div>$number1 $number2<br /></div>
                     <div><br />More about the <HelpLink label="Memory Manager" tipType={TipType.MEMORY_MANAGER} /></div>
                 </div>
@@ -195,16 +195,16 @@ export function getTip(tipType: string) {
         case TipType.ACTION_ENTITIES:
             return (
                 <div>
-                    <FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES} defaultMessage="Response" />
+                    <FormattedMessageId id={FM.TOOLTIP_ACTION_ENTITIES} />
                     <dl className="cl-tooltip-example">
                         <dt><span className="cl-entity cl-entity--match">Required</span></dt>
-                        <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_REQ} /></dd>
+                        <dd><FormattedMessageId id={FM.TOOLTIP_ACTION_ENTITIES_REQ} /></dd>
                         <dt><span className="cl-entity cl-entity--match"><del>Disqualifying</del></span></dt>
-                        <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_DISQUAL_NOT} /></dd>
+                        <dd><FormattedMessageId id={FM.TOOLTIP_ACTION_ENTITIES_DISQUAL_NOT} /></dd>
                         <dt><span className="cl-entity cl-entity--mismatch">Required</span></dt>
-                        <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT} /></dd>
+                        <dd><FormattedMessageId id={FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT} /></dd>
                         <dt><span className="cl-entity cl-entity--mismatch"><del>Disqualifying</del></span></dt>
-                        <dd><FormattedMessage id={FM.TOOLTIP_ACTION_ENTITIES_DISQUAL} /></dd>
+                        <dd><FormattedMessageId id={FM.TOOLTIP_ACTION_ENTITIES_DISQUAL} /></dd>
                     </dl>
                 </div>
             )
@@ -233,7 +233,7 @@ export function getTip(tipType: string) {
                     { key: 'Required:', value: FM.TOOLTIP_ACTION_REQUIRED_ROW4 }
                 ]);
         case TipType.ACTION_RESPONSE:
-            return (<FormattedMessage id={FM.TOOLTIP_ACTION_RESPONSE} defaultMessage="Response" />)
+            return (<FormattedMessageId id={FM.TOOLTIP_ACTION_RESPONSE} />)
         case TipType.ACTION_RESPONSE_TEXT:
             return render(
                 FM.TOOLTIP_ACTION_RESPONSE_TEXT_TITLE,
@@ -249,11 +249,11 @@ export function getTip(tipType: string) {
         case TipType.ACTION_SCORE:
             return (
                 <div>
-                    <FormattedMessage id={FM.TOOLTIP_ACTION_SCORE} defaultMessage="Response" />
+                    <FormattedMessageId id={FM.TOOLTIP_ACTION_SCORE} />
                     <dl className="cl-tooltip-example">
-                        <dt>%:</dt><dd><FormattedMessage id={FM.TOOLTIP_ACTION_SCORE_PERCENT} /></dd>
-                        <dt>Training:</dt><dd><FormattedMessage id={FM.TOOLTIP_ACTION_SCORE_TRAINING} /></dd>
-                        <dt>Disqualified:</dt><dd><FormattedMessage id={FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED} /></dd>
+                        <dt>%:</dt><dd><FormattedMessageId id={FM.TOOLTIP_ACTION_SCORE_PERCENT} /></dd>
+                        <dt>Training:</dt><dd><FormattedMessageId id={FM.TOOLTIP_ACTION_SCORE_TRAINING} /></dd>
+                        <dt>Disqualified:</dt><dd><FormattedMessageId id={FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED} /></dd>
                     </dl>
                 </div>
             )
@@ -279,12 +279,12 @@ export function getTip(tipType: string) {
                             { key: 'CARD:', value: FM.TOOLTIP_ACTION_TYPE_CARD },
                             { key: 'END_SESSION:', value: FM.TOOLTIP_ACTION_TYPE_ENDSESSION }
                         ])}
-                <div><HelpLink label="API Overview" tipType={TipType.ACTION_API1} /></div>
+                    <div><HelpLink label="API Overview" tipType={TipType.ACTION_API1} /></div>
                 </div>
-              )
+            )
         case TipType.ACTION_WAIT:
             return render(FM.TOOLTIP_ACTION_WAIT_TITLE, [FM.TOOLTIP_ACTION_WAIT]);
-        
+
         case TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY:
             return (
                 <div>
@@ -294,18 +294,18 @@ export function getTip(tipType: string) {
                     <p>This can be resolved by Replaying the dialog, including all API callbacks</p>
 
                     <h4>Before replay:</h4>
-                    <img 
-                        className="cl-boxshadow"
+                    <img
+                        className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/ToolTipReplay1.png"
                         width="70%"
-                        alt="Replay Before" 
+                        alt="Replay Before"
                     />
-                    
+
                     <h4>After replay:</h4>
-                    <img 
-                        className="cl-boxshadow"
-                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTipReplay2.png" 
-                        width="70%" 
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTipReplay2.png"
+                        width="70%"
                         alt="Replay After"
                     />
                 </div>
@@ -320,38 +320,69 @@ export function getTip(tipType: string) {
                 </div>
             )
         case TipType.ENTITY_NAME:
-            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_NAME} defaultMessage="Wait" />);
+            return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_NAME} />);
         case TipType.ENTITY_ACTION_DISQUALIFIED:
-            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_ACTION_DISQUALIFIED} defaultMessage="Disqualified Actions" />)
+            return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_ACTION_DISQUALIFIED} />)
         case TipType.ENTITY_ACTION_REQUIRED:
-            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_ACTION_REQUIRED} defaultMessage="Required For Actions" />)
+            return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_ACTION_REQUIRED} />)
         case TipType.ENTITY_EXTRACTOR_WARNING:
-            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} defaultMessage="Text Variations must contain the same detected Entities as the original input text." />)
+            return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} />)
         case TipType.ENTITY_VALUE:
-            return (<FormattedMessage id={FM.TOOLTIP_ENTITY_VALUE} defaultMessage="Wait" />);
+            return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_VALUE} />);
         case TipType.ENTITY_MULTIVALUE:
             return (
                 <div>
-                    When checked additional occurences of the Entity add to list of previous values. For non multi-value entities new values replace previous values.<br /><br />
-                    <b>Example: Multiple toppings on a pizza</b>
-                    <dl className="cl-tooltip-example">
-                        <dt>Entity:</dt><dd>toppings</dd>
-                        <dt>Phrase:</dt><dd>I would like <i>cheese</i> and <i>pepperoni</i>.</dd>
-                        <dt>Memory:</dt><dd>cheese, pepperoni</dd>
-                    </dl>
+                    <h2>Multivalue</h2>
+                    <p>Determines what happens when mulitple instances of an Entity are labeled</p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_MULTIVALUE_1.png"
+                        width="40%"
+                        alt="Entity Type Custom"
+                    />
+                    <h3>Multivalue</h3>
+                    <p>Additional occurences of the Entity add to list of previous values.</p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_MULTIVALUE_2.png"
+                        width="40%"
+                        alt="Entity Type Custom"
+                    />
+                    <h3>Not Multivalue</h3>
+                    <p>Additional occurences replace previous values.</p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_MULTIVALUE_3.png"
+                        width="40%"
+                        alt="Entity Type Custom"
+                    />
                 </div>
             )
         case TipType.ENTITY_NEGATABLE:
             return (
                 <div>
                     When checked this creates a corresponding 'negatable' entity that can be used to remove or delete previous memory values.<br /><br />
-                    <b>Example: Changing existing pizza order</b>
-                    <dl className="cl-tooltip-example">
-                        <dt>Entity:</dt><dd>toppings</dd>
-                        <dt>Memory:</dt><dd>cheese, pepperoni</dd>
-                        <dt>Phrase:</dt><dd>Actually, please add <i>sausage</i> instead of <i>pepperoni</i>.</dd>
-                        <dt>Memory:</dt><dd>cheese, <del>pepperoni</del> sausage</dd>
-                    </dl>
+
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_NEGATABLE_1.png"
+                        width="40%"
+                        alt="Entity Type Custom"
+                    />
+                    <br />
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_NEGATABLE_2.png"
+                        width="40%"
+                        alt="Entity Type Custom"
+                    />
+                    <br />
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_NEGATABLE_3.png"
+                        width="60%"
+                        alt="Entity Type Custom"
+                    />
                 </div>
             )
         case TipType.ENTITY_PROGAMMATIC:
@@ -371,18 +402,18 @@ export function getTip(tipType: string) {
                     <p><b>There are three types of Entities:</b></p>
                     <h3>Pre-Trained</h3>
                     <p>Pre-Trained Entities are entities such as "datetime" or "temperature" that have been pre-trained.  Pre-Trained are labelled automatically and cannot changed</p>
-                    <img 
-                        className="cl-boxshadow"
-                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_PRE_TRAINED.png" 
-                        width="40%" 
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_PRE_TRAINED.png"
+                        width="40%"
                         alt="Entity Type Custom"
                     />
                     <h3>Custom Trained</h3>
                     <p>Custom Entities are entites that are learned through the labelling of examples</p>
-                    <img 
-                        className="cl-boxshadow"
-                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_CUSTOM.png" 
-                        width="40%" 
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_CUSTOM.png"
+                        width="40%"
                         alt="Entity Type Custom"
                     />
                     <div>See also: <HelpLink label="Resolver Type" tipType={TipType.ENTITY_RESOLVER} /></div>
@@ -395,21 +426,21 @@ export function getTip(tipType: string) {
             return (
                 <div>
                     <h3>Resolver Type</h3>
-                    <p>Pre-Trained Enitites can be associated with a Pre-Trained entity by assigning a "Resolver Type"</p>
+                    <p>Custom Enitites can be associated with a Pre-Trained Entity by assigning a "Resolver Type"</p>
                     <p>This allows associating of Pre-Trained entities with Custom Entities</p>
-                    
-                    <img 
-                        className="cl-boxshadow"
-                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_RESOLVER.png" 
-                        width="40%" 
+
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_RESOLVER.png"
+                        width="40%"
                         alt="Entity Type Custom"
                     />
 
                     <p>The Resolver will provide the Custom Entity a resolution (when available)</p>
-                    <img 
-                        className="cl-boxshadow"
-                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_MEMORY.png" 
-                        width="40%" 
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_MEMORY.png"
+                        width="40%"
                         alt="Entity Type Custom"
                     />
                 </div>
@@ -447,21 +478,21 @@ export function getTip(tipType: string) {
                 </div>
             )
         case TipType.INVALID_BOT:
-        return (
-            <div>
-                <h2>Error: Running Bot not compatible with this Model</h2>
-                <p>The Model contains API Actions that are not supported by the running Bot</p>
-                <p>Ways to fix:</p>
-                <ol>
-                    <li>Start the correct Bot and click "Retry" on the Model's Home page</li>
-                    <li>Add missing APIs to the running Bot</li>
-                    <li>Edit and update the API Actions if the API's name has changed</li>
-                    <li>Delete the missing API Actions from the Model</li>
-                </ol>
-            </div>
-        )
+            return (
+                <div>
+                    <h2>Error: Running Bot not compatible with this Model</h2>
+                    <p>The Model contains API Actions that are not supported by the running Bot</p>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Start the correct Bot and click "Retry" on the Model's Home page</li>
+                        <li>Add missing APIs to the running Bot</li>
+                        <li>Edit and update the API Actions if the API's name has changed</li>
+                        <li>Delete the missing API Actions from the Model</li>
+                    </ol>
+                </div>
+            )
         case TipType.LOGGING_TOGGLE:
-            return (<FormattedMessage id={FM.TOOLTIP_LOGGING_TOGGLE} defaultMessage="Logging Enable/Disable" />);
+            return (<FormattedMessageId id={FM.TOOLTIP_LOGGING_TOGGLE} />);
         case TipType.LUIS_OVERVIEW:
             return (
                 <div>
@@ -489,10 +520,10 @@ export function getTip(tipType: string) {
                     </ol>
 
 
-                    <img 
-                        className="cl-boxshadow"
-                        src="https://blisstorage.blob.core.windows.net/uiimages/authoringkey.gif" 
-                        alt="Authoring Key" 
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/authoringkey.gif"
+                        alt="Authoring Key"
                     />
 
                     <div><br /><div>
@@ -535,7 +566,7 @@ export function getTip(tipType: string) {
                 </div>
             )
         case TipType.PACKAGECREATOR_LIVE_TOGGLE:
-            return (<FormattedMessage id={FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE} defaultMessage="Make new Tag the live version" />);
+            return (<FormattedMessageId id={FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE} />);
 
         case TipType.REPLAYERROR_DESC_ACTION_AFTER_WAIT:
             return (
@@ -646,10 +677,10 @@ export function getTip(tipType: string) {
             )
 
         case TipType.TAG_EDITING:
-            return (<FormattedMessage id={FM.TOOLTIP_TAG_EDITING} defaultMessage="Tag editing in the UI" />);
+            return (<FormattedMessageId id={FM.TOOLTIP_TAG_EDITING} />);
 
         case TipType.TAG_LIVE:
-            return (<FormattedMessage id={FM.TOOLTIP_TAG_LIVE} defaultMessage="Tag Version that is Live" />);
+            return (<FormattedMessageId id={FM.TOOLTIP_TAG_LIVE} />);
 
         default:
             return (<div>{tipType}</div>);
@@ -661,18 +692,18 @@ interface ITableItem {
     value: FM | null
 }
 
-function render(title: FM, body: FM[], example: string | null = null, tableItems: ITableItem[] = []): JSX.Element {
+function render(title: FM, body: FM[], example: FM | null = null, tableItems: ITableItem[] = []): JSX.Element {
     return (
         <div>
-            <div className="cl-tooltop-headerText"><FormattedMessage id={title} /></div>
-            {body.map((b, i) => <div key={i}><FormattedMessage id={b} /><br /></div>)}
+            <div className="cl-tooltop-headerText"><FormattedMessageId id={title} /></div>
+            {body.map((b, i) => <div key={i}><FormattedMessageId id={b} /><br /></div>)}
             {example &&
-                <div className="cl-tooltop-example"><FormattedMessage id={example} /></div>}
+                <div className="cl-tooltop-example"><FormattedMessageId id={example} /></div>}
             {tableItems.length > 0 ?
                 (
                     <dl className="cl-tooltip-example">
                         {tableItems.map((tableItem, i) =>
-                            <React.Fragment key={i}><dt>{tableItem.key}</dt><dd>{tableItem.value && <FormattedMessage id={tableItem.value} />}</dd></React.Fragment>)}
+                            <React.Fragment key={i}><dt>{tableItem.key}</dt><dd>{tableItem.value && <FormattedMessageId id={tableItem.value} />}</dd></React.Fragment>)}
                     </dl>
                 ) : null
             }
