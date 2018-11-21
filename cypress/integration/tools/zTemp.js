@@ -14,7 +14,7 @@ const editDialogModal = require('../../support/components/EditDialogModal')
 const addToCypressTestList = require('../../support/TestList')
 const testList = require('/temp/TestsToRun')
 console.log(testList.testList)
-addToCypressTestList.AddToCypressTestList2(testList.testList) 
+addToCypressTestList.AddToCypressTestList(testList.testList) 
 
 
 /// Description: A temporary workspace for experimental code

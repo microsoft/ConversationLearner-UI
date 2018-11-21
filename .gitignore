@@ -13,7 +13,6 @@ package
 /cypress/videos
 /cypress/screenshots
 /results
-/cypress/fixtures/TestsToRun.txt
 
 # production
 /build

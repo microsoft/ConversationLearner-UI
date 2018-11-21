@@ -56,64 +56,14 @@ export const testGroups =
     }
   ]
 
-// This function adds test cases to Cypress' test queue. It uses the file path of the calling 
-// function to determine the group name and the test function name. "(All)" is used as a special 
-// name that will cause this method to include all tests for that group to be added to Cypress'
-// test queue. The folder name "Tests", with the file name "(All)" is reserved to be used to 
-// include all groups all test groups to be added to Cypress' test queue.
-//
-// The parenthesis in "(All)" is intended to keep the "All Tests" option at the top of Cypress'
-// test case list since it is produced in alphabetical order.
-export function AddToCypressTestList() {
-  var funcName = `AddToCypressTestList()`
-  //                                                                              test group name--\      /--Test function name
-  // callerFileName looks like: http://localhost:5050/__cypress/tests?p=cypress\integration\Tests\Train\WhatsYourName1.js-044
-  var callerFileName = GetCallerFileName()
-  callerFileName = path.normalize(callerFileName.substring(callerFileName.lastIndexOf("p=") + 2, callerFileName.lastIndexOf("-"))).replace(/\\/g, path.sep)
-  helpers.ConLog(funcName, `callerFileName: ${callerFileName}`)
-
-  const parsed = pathParse.posix(callerFileName)
-  const testName = parsed.name
-  const testGroupName = parsed.dir.substr(parsed.dir.lastIndexOf(path.sep) + 1)
-
-  var allTests = (testName == '(All)')
-  var allGroups = (allTests && testGroupName == 'Tests')
-  var toFind = `function ${testName}(`
-  helpers.ConLog(funcName, `testGroup: ${testGroupName} - testName: ${testName} - allTests: ${allTests} - allGroups ${allGroups} - toFind: ${toFind}`)
-
-  var group
-  for (var i = 0; i < testGroups.length; i++) {
-    if (allGroups || testGroups[i].name == testGroupName) {
-      group = testGroups[i]
-
-      var test
-      describe(group.name, () => {
-        helpers.ConLog(funcName, `Added Group: ${group.name}`)
-        for (var i = 0; i < group.tests.length; i++) {
-          if (allTests || `${group.tests[i].func}`.startsWith(toFind)) {
-            test = group.tests[i]
-            it(test.name, test.func)
-            helpers.ConLog(funcName, `Added Test Case: ${test.name}`)
-            if (!allTests) break
-          }
-        }
-        if (!test) throw `Cannot find Test: ${testName} in Test Group: ${testGroupName}`
-      })
-
-      if (!allGroups) break
-    }
-  }
-  if (!group) throw `Cannot find Test Group: ${testGroupName}`
-}
-
-export function AddToCypressTestList2(testList) 
+export function AddToCypressTestList(testList) 
 {
   var funcName = `AddToCypressTestList2()`
   helpers.ConLog(funcName, 'Start')
   
-  var testIterator = new TestIterator(testList)
+  var testListIterator = new TestListIterator(testList)
   
-  var test = testIterator.next
+  var test = testListIterator.next
   while (test != undefined)
   {
     helpers.ConLog(funcName, `Adding Group: ${test.group}`)
@@ -124,13 +74,13 @@ export function AddToCypressTestList2(testList)
       {
         helpers.ConLog(funcName, `Adding Test Case: ${test.name}`)
         it(test.name, test.func)
-        test = testIterator.next
+        test = testListIterator.next
       }
     })
   }
 }
 
-class TestIterator
+class TestListIterator
 {
   constructor(testList)
   {
@@ -139,10 +89,11 @@ class TestIterator
     this.currentGroup = {name: ''}
   }
 
+  // groupName.testName - 'testName' from 'groupName'
+  // TODO: Add support for these wild card versions
   // *.*                - All Groups, All Tests
   // *.testName         - All tests with all groups matching 'testName'
   // groupName.*        - All tests from 'groupName'
-  // groupName.testName - 'testName' from 'groupName'
   get next()
   {
     if (this.index >= this.testList.length) return undefined
@@ -191,28 +142,4 @@ function GetTest(testGroup, testNameToFind)
   return undefined
 }
 
-function GetCallerFileName() {
-  var funcName = `GetCallerFileName()`
-  var originalFunc = Error.prepareStackTrace;
-  var callerFileName;
-
-  try {
-    var err = new Error();
-
-    Error.prepareStackTrace = function (err, stack) { return stack; };
-
-    var currentFileName = err.stack.shift().getFileName();
-    helpers.ConLog(funcName, `currentFileName: ${currentFileName}`)
-
-    while (err.stack.length) {
-      callerFileName = err.stack.shift().getFileName();
-      helpers.ConLog(funcName, `callerFileName: ${callerFileName}`)
-      if (currentFileName !== callerFileName) break;
-    }
-  } catch (e) { }
-
-  Error.prepareStackTrace = originalFunc;
-
-  return callerFileName;
-}
 
