@@ -3,16 +3,11 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as OF from 'office-ui-fabric-react'
-import { State } from '../../types'
-import { FM } from '../../react-intl-messages'
-import HelpIcon from '../HelpIcon'
-import { TipType } from '../ToolTips/ToolTips';
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { FM } from '../react-intl-messages'
+import HelpIcon from '../components/HelpIcon'
+import { TipType } from '../components/ToolTips/ToolTips';
+import { FormattedMessage } from 'react-intl'
 import * as CLM from '@conversationlearner/models'
 
 export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
@@ -67,7 +62,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                     </div>
                 </div>
             )
-        case CLM. ReplayErrorType.ActionUnavailable:
+        case CLM.ReplayErrorType.ActionUnavailable:
             return (
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
@@ -168,80 +163,3 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
             throw new Error(`Unhandled ReplayErrorType case: ${replayError.type}`);
     }
 }
-
-class ReplayErrorList extends React.Component<Props, {}> {
-    render() {
-        const { intl, formattedTitleId, formattedMessageId } = this.props
-        return (
-            <Modal
-                isOpen={this.props.open}
-                onDismiss={this.props.onClose}
-                isBlocking={true}
-                containerClassName="cl-modal cl-modal--small"
-            >
-                <div className="cl-modal_header">
-                    <span className={OF.FontClassNames.xxLarge}>
-                        {formattedTitleId && <FormattedMessage
-                            id={this.props.formattedTitleId}
-                            defaultMessage="Default Error Title"
-                        />}
-                    </span>
-                </div>
-                <div className="cl-modal_subheader cl-underline">
-                    <span className={OF.FontClassNames.mediumPlus}>
-                        {formattedMessageId && <FormattedMessage
-                            id={this.props.formattedMessageId}
-                            defaultMessage="Default Error Message"
-                        />}
-                    </span>
-                </div>
-                <OF.List
-                    className={OF.FontClassNames.medium}
-                    items={this.props.textItems}
-                    onRenderCell={renderReplayError}
-                />
-                <div className="cl-modal_footer">
-                    <div className="cl-modal-buttons">
-                        <div className="cl-modal-buttons_primary">
-                            <OF.PrimaryButton
-                                onClick={this.props.onClose}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.BUTTON_OK,
-                                    defaultMessage: 'OK'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.BUTTON_OK,
-                                    defaultMessage: 'OK'
-                                })}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </Modal>
-        )
-    }
-}
-
-const mapDispatchToProps = (dispatch: any) => {
-    return bindActionCreators({
-    }, dispatch);
-}
-const mapStateToProps = (state: State) => {
-    return {
-    }
-}
-
-export interface ReceivedProps {
-    open: boolean
-    formattedTitleId: string
-    formattedMessageId: string
-    textItems: CLM.ReplayError[]
-    onClose: () => void
-}
-
-// Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
-
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ReplayErrorList))
