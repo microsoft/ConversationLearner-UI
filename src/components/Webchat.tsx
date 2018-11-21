@@ -52,9 +52,10 @@ export function renderActivity(
             
             }
         }
-        if (activityProps.selected) {
-            wrapperClassName += ` wc-message-selected`
-        }
+    }
+    
+    if (activityProps.selected) {
+        wrapperClassName += ` wc-message-selected`
     }
 
     return (
