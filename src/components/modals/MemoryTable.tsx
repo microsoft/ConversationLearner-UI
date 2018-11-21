@@ -12,6 +12,7 @@ import { onRenderDetailsHeader, prebuilt, entityObject } from '../ToolTips/ToolT
 import { EntityBase, EntityType, Memory } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import FormattedMessageId from '../FormattedMessageId'
+import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 
 interface IRenderableColumn extends OF.IColumn {
@@ -34,10 +35,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
             key: 'entityName',
-            name: intl.formatMessage({
-                id: FM.ENTITIES_COLUMNS_NAME,
-                defaultMessage: 'Entity Name'
-            }),
+            name: formatMessageId(intl, FM.ENTITIES_COLUMNS_NAME),
             fieldName: 'entityName',
             minWidth: 100,
             maxWidth: 200,
@@ -59,7 +57,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             render: (entity, component) => {
                 const entityValues = component.getEntityValues(entity)
-                
+
                 return (<React.Fragment>
                     {entityValues.map((value, i) => {
                         const changeClass = memoryChangeClassMap[value.changeStatus] || ''
@@ -73,7 +71,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         else {
                             let resolutionClass = (value.memoryValue.builtinType && Object.keys(value.memoryValue.resolution).length > 0) ? 'cl-font--action' : ''
                             renderedValue = <span>{value.prefix}<span className={`${changeClass} ${resolutionClass}`} data-testid="entity-memory-value">{value.displayText}</span></span>
-                            
+
                             // Decorate with resolution if it exists
                             renderedValue = prebuilt(value.memoryValue, renderedValue)
                         }
@@ -86,10 +84,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'entityType',
-            name: intl.formatMessage({
-                id: FM.ENTITIES_COLUMNS_TYPE,
-                defaultMessage: 'Type'
-            }),
+            name: formatMessageId(intl, FM.ENTITIES_COLUMNS_TYPE),
             fieldName: 'entityType',
             minWidth: 100,
             maxWidth: 200,
@@ -108,10 +103,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'entityResolver',
-            name: intl.formatMessage({
-                id: FM.ENTITIES_COLUMNS_RESOLVER,
-                defaultMessage: 'Resolver Type'
-            }),
+            name: formatMessageId(intl, FM.ENTITIES_COLUMNS_RESOLVER),
             fieldName: 'entityResolver',
             minWidth: 180,
             maxWidth: 180,
@@ -135,28 +127,22 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'isBucketable',
-            name: intl.formatMessage({
-                id: FM.ENTITIES_COLUMNS_IS_BUCKETABLE,
-                defaultMessage: 'Multi-Value'
-            }),
+            name: formatMessageId(intl, FM.ENTITIES_COLUMNS_IS_BUCKETABLE),
             fieldName: 'isBucketable',
             minWidth: 80,
             maxWidth: 100,
             isResizable: true,
-            render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="cl-icon" data-testid="entity-memory-multi-value"/>,
+            render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="cl-icon" data-testid="entity-memory-multi-value" />,
             getSortValue: entity => entity.isMultivalue ? 'a' : 'b'
         },
         {
             key: 'isNegatable',
-            name: intl.formatMessage({
-                id: FM.ENTITIES_COLUMNS_IS_NEGATABLE,
-                defaultMessage: 'Negatable'
-            }),
+            name: formatMessageId(intl, FM.ENTITIES_COLUMNS_IS_NEGATABLE),
             fieldName: 'isNegatable',
             minWidth: 80,
             maxWidth: 100,
             isResizable: true,
-            render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="cl-icon" data-testid="entity-memory-negatable"/>,
+            render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="cl-icon" data-testid="entity-memory-negatable" />,
             getSortValue: entity => entity.isNegatible ? 'a' : 'b'
         }
     ]
@@ -179,7 +165,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         this.renderItemColumn = this.renderItemColumn.bind(this)
     }
     onColumnClick(event: any, column: IRenderableColumn) {
-        let {columns} = this.state;
+        let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
         // If we've sorted this column, flip it.
@@ -282,7 +268,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
             return {
                 prefix,
                 changeStatus,
-                memoryValue, 
+                memoryValue,
                 isPrebuilt,
                 // TODO: Why is it called displayText if it's not always used for display...
                 displayText: isPrebuilt ? memoryValue.displayText : memoryValue.userText
@@ -294,7 +280,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         const entity = this.props.entities.find(e => e.entityName === entityName)
         if (!entity) {
             console.warn(`Attempted to render entity: ${entityName} for column: ${column.name} but the entity could not be found.`)
-            return (column.key === `entityName`) ? 
+            return (column.key === `entityName`) ?
                 <span className="cl-font--warning">MISSING ENTITY</span> : '';
         }
 
