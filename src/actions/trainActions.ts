@@ -56,7 +56,7 @@ export const editTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialo
 
         try {
             await clClient.trainDialogEdit(appId, trainDialog)
-            dispatch(editTrainDialogFulfilled(trainDialog))
+            dispatch(editTrainDialogFulfilled(appId, trainDialog))
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return trainDialog
         }
@@ -76,10 +76,11 @@ const editTrainDialogAsync = (appId: string, trainDialog: TrainDialog): ActionOb
     }
 }
 
-const editTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject => {
+const editTrainDialogFulfilled = (appId: string, trainDialog: TrainDialog): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
         type: AT.EDIT_TRAINDIALOG_FULFILLED,
+        appId,
         trainDialog: trainDialog
     }
 }
