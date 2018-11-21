@@ -18,6 +18,7 @@ import { State, TeachSessionState } from '../../types';
 import Webchat, { renderActivity } from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
+import FormattedMessageId from '../FormattedMessageId'
 import { renderReplayError } from '../../Utils/RenderReplayError'
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
@@ -28,7 +29,7 @@ import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
 import { SelectionType } from '../../types/const'
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.';
 import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs';
 
@@ -657,10 +658,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             return (
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_EXISTS}
-                            defaultMessage={FM.REPLAYERROR_EXISTS}
-                        />
+                        <FormattedMessageId id={FM.REPLAYERROR_EXISTS} />
                     </div>
                 </div>
             )
