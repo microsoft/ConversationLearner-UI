@@ -23,5 +23,3 @@ describe('zTemp test', () =>
     cy.pause()
   })
 })
-
-
