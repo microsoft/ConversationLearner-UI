@@ -473,6 +473,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 data-testid="dialog-admin-scorer"
                                 app={this.props.app}
                                 editingPackageId={this.props.editingPackageId}
+                                historyItemSelected={true} 
                                 canEdit={this.props.editState === EditState.CAN_EDIT}
                                 hideScore={false}  // LARS
                                 dialogType={CLM.DialogType.TRAINDIALOG}
