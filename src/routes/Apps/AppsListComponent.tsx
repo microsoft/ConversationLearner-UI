@@ -6,7 +6,8 @@ import * as React from 'react'
 import { AppCreator as AppCreatorModal, TutorialImporterModal, ConfirmCancelModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react';
 import { AppBase, AppDefinition } from '@conversationlearner/models'
-import { InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../../components/FormattedMessageId'
+import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import * as util from '../../Utils/util'
 import { User, AppCreatorType } from '../../types';
@@ -81,7 +82,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
-            render: (app) => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="cl-icon" data-testid="model-list-is-logging-on"/>
+            render: (app) => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="cl-icon" data-testid="model-list-is-logging-on" />
         },
         {
             key: 'lastModifiedDateTime',
@@ -199,7 +200,7 @@ export class Component extends React.Component<Props, ComponentState> {
             sortedApps = apps.concat([]).sort((a, b) => {
                 const firstValue = ifStringReturnLowerCase(sortColumn.getSortValue(a))
                 const secondValue = ifStringReturnLowerCase(sortColumn.getSortValue(b))
-    
+
                 if (sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
                 } else {
@@ -207,7 +208,7 @@ export class Component extends React.Component<Props, ComponentState> {
                 }
             });
         }
-    
+
         return sortedApps;
     }
 
@@ -226,16 +227,13 @@ export class Component extends React.Component<Props, ComponentState> {
         });
     }
 
-    render () {
+    render() {
         const props = this.props
         const apps = this.getSortedApplications(this.state.sortColumn, props.apps);
 
         return <div className="cl-page">
             <span className={OF.FontClassNames.mediumPlus}>
-                <FormattedMessage
-                    id={FM.APPSLIST_SUBTITLE}
-                    defaultMessage="Create and Manage your Conversation Learner applications..."
-                />
+                <FormattedMessageId id={FM.APPSLIST_SUBTITLE} />
             </span>
             <div className="cl-buttons-row">
                 <OF.PrimaryButton
@@ -275,7 +273,7 @@ export class Component extends React.Component<Props, ComponentState> {
                             defaultMessage: 'Import Tutorials'
                         })}
                     />
-                }  
+                }
             </div>
             <OF.DetailsList
                 className={OF.FontClassNames.mediumPlus}
@@ -299,8 +297,8 @@ export class Component extends React.Component<Props, ComponentState> {
                     id: FM.APPSLIST_CONFIRMCANCELMODALTITLE,
                     defaultMessage: 'Are you sure you want to delete this model? {appName}'
                 }, {
-                    appName: props.appToDelete ? props.appToDelete.appName : ''
-                })}
+                        appName: props.appToDelete ? props.appToDelete.appName : ''
+                    })}
             />
             <TutorialImporterModal
                 open={props.isImportTutorialsOpen}

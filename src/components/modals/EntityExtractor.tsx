@@ -16,7 +16,8 @@ import EntityCreatorEditor from './EntityCreatorEditor'
 import actions from '../../actions'
 import * as ToolTips from '../ToolTips/ToolTips'
 import HelpIcon from '../HelpIcon'
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../FormattedMessageId'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.'
 import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
@@ -387,10 +388,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         return (
             <div className="entity-extractor">
                 <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus}`}>
-                    <FormattedMessage
-                        id={FM.TOOLTIP_ENTITY_EXTRACTOR_HELP}
-                        defaultMessage="Select text to label it as an entity."
-                    />
+                    <FormattedMessageId id={FM.TOOLTIP_ENTITY_EXTRACTOR_HELP} />
                     <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_HELP} />
                 </OF.Label>
                 {extractResponsesForDisplay.map(({ isValid, extractResponse }, key) => {
@@ -420,7 +418,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                 ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
                         </div>}
                         {!isValid && <div className="ms-TextField-errorMessage css-84 errorMessage_20d9206e">
-                            <FormattedMessage id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} defaultMessage="Text Variations must contain the same detected Entities as the primary input text." />
+                            <FormattedMessageId id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} />
                         </div>}
                     </div>
                 })}

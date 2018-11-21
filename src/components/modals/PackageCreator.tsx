@@ -11,7 +11,8 @@ import * as OF from 'office-ui-fabric-react'
 import { PackageReference } from '@conversationlearner/models'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
-import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../FormattedMessageId'
+import { injectIntl, InjectedIntlProps, defineMessages } from 'react-intl'
 import * as TC from '../tipComponents'
 import * as ToolTips from '../ToolTips/ToolTips'
 
@@ -111,10 +112,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                 <div className="cl-page">
                     <div className="cl-modal_header">
                         <span className={OF.FontClassNames.xxLarge}>
-                            <FormattedMessage
-                                id={FM.PACKAGECREATOR_TITLE}
-                                defaultMessage="Create a new Tag"
-                            />
+                            <FormattedMessageId id={FM.PACKAGECREATOR_TITLE} />
                         </span>
                     </div>
                     <div>

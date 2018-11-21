@@ -7,7 +7,7 @@ import * as OF from 'office-ui-fabric-react'
 import { FM } from '../react-intl-messages'
 import HelpIcon from '../components/HelpIcon'
 import { TipType } from '../components/ToolTips/ToolTips';
-import { FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../components/FormattedMessageId'
 import * as CLM from '@conversationlearner/models'
 
 export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
@@ -16,10 +16,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
             return (
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_DESC_ACTION_UNDEFINED}
-                            defaultMessage={FM.REPLAYERROR_DESC_ACTION_UNDEFINED}
-                        />
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_ACTION_UNDEFINED} />
                         <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_UNDEFINED} customStyle="cl-icon--transparent" />
                     </div>
                 </div>
@@ -28,10 +25,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
             return (
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_DESC_ENTITY_EMPTY}
-                            defaultMessage={FM.REPLAYERROR_DESC_ENTITY_EMPTY}
-                        />
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_ENTITY_EMPTY} />
                         {` "${(replayError as CLM.ReplayErrorEntityEmpty).values.join(", ")}"`}
                         <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_EMPTY} customStyle="cl-icon--transparent" />
                     </div>
@@ -41,10 +35,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
             return (
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_DESC_ENTITY_UNDEFINED}
-                            defaultMessage={FM.REPLAYERROR_DESC_ENTITY_UNDEFINED}
-                        />
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_ENTITY_UNDEFINED} />
                         <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_UNDEFINED} customStyle="cl-icon--transparent" />
                     </div>
                 </div>
@@ -53,10 +44,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
             return (
                 <div className="cl-editdialog-warning">
                     <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE}
-                            defaultMessage={FM.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE}
-                        />
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE} />
                         {`: "${(replayError as CLM.EntityUnexpectedMultivalue).entityName}"`}
                         <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE} customStyle="cl-icon--transparent" />
                     </div>
@@ -66,10 +54,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
             return (
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE}
-                            defaultMessage={FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE}
-                        />
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE} />
                         <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_UNAVAILABLE} customStyle="cl-icon--transparent" />
                     </div>
                 </div>
@@ -78,10 +63,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
             return (
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT}
-                            defaultMessage={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT}
-                        />
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT} />
                         <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_AFTER_WAIT} customStyle="cl-icon--transparent" />
                     </div>
                 </div>
@@ -90,10 +72,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
             return (
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_DESC_TWO_USER_INPUTS}
-                            defaultMessage={FM.REPLAYERROR_DESC_TWO_USER_INPUTS}
-                        />
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_TWO_USER_INPUTS} />
                         <HelpIcon tipType={TipType.REPLAYERROR_DESC_TWO_USER_INPUTS} customStyle="cl-icon--transparent" />
                     </div>
                 </div>
@@ -102,10 +81,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
             return (
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT}
-                            defaultMessage={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT}
-                        />
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT} />
                         <HelpIcon tipType={TipType.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT} customStyle="cl-icon--transparent" />
                     </div>
                 </div>
@@ -114,10 +90,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
             return (
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.REPLAYERROR_DESC_EXCEPTION}
-                            defaultMessage={FM.REPLAYERROR_DESC_EXCEPTION}
-                        />
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_EXCEPTION} />
                     </div>
                 </div>
             )

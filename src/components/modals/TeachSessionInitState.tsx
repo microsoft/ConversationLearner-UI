@@ -7,7 +7,8 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types';
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../FormattedMessageId'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import * as OF from 'office-ui-fabric-react';
@@ -99,10 +100,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
             >
                 <div className="cl-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>
-                        <FormattedMessage
-                            id={FM.TEACHSESSIONINIT_TITLE}
-                            defaultMessage="Set Initial Entity Values"
-                        />
+                        <FormattedMessageId id={FM.TEACHSESSIONINIT_TITLE} />
                         </span>
                     </div>
                 <div>
