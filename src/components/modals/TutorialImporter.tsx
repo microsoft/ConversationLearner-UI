@@ -7,7 +7,8 @@ import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { AppBase } from '@conversationlearner/models'
-import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../FormattedMessageId'
+import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import ReactPlayer from 'react-player'
 import * as ReactMarkdown from 'react-markdown'
 
@@ -140,10 +141,7 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
                         {this.state.moreInfoApp === null ?
                             <div className="cl-modal_header">
                                 <span className={OF.FontClassNames.xxLarge}>
-                                <FormattedMessage
-                                    id={FM.TUTORIALIMPORTER_TITLE}
-                                    defaultMessage="Tutiorials"
-                                />
+                                <FormattedMessageId id={FM.TUTORIALIMPORTER_TITLE} />
                                 </span>
                             </div> :
                             <div/> 

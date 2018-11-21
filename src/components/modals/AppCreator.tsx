@@ -14,7 +14,8 @@ import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
 import { FilePicker } from 'react-file-picker'
 import { setErrorDisplay } from '../../actions/displayActions'
-import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../FormattedMessageId'
+import { injectIntl, InjectedIntlProps, defineMessages } from 'react-intl'
 import { AppInput } from '../../types/models';
 import { AppDefinition } from '@conversationlearner/models';
 
@@ -195,22 +196,13 @@ class AppCreator extends React.Component<Props, ComponentState> {
         switch (this.props.creatorType) {
             case AppCreatorType.NEW:
                 return (
-                    <FormattedMessage
-                        id={FM.APPCREATOR_TITLE}
-                        defaultMessage="Create a Conversation Learner Model"
-                    />)
+                    <FormattedMessageId id={FM.APPCREATOR_TITLE} />)
             case AppCreatorType.IMPORT:
                 return (
-                    <FormattedMessage
-                        id={FM.APPCREATOR_IMPORT_TITLE}
-                        defaultMessage="Import a Conversation Learner Model"
-                    />)
+                    <FormattedMessageId id={FM.APPCREATOR_IMPORT_TITLE} />)
             case AppCreatorType.COPY:
                 return (
-                    <FormattedMessage
-                        id={FM.APPCREATOR_COPY_TITLE}
-                        defaultMessage="Copy a Conversation Learner Model"
-                    />)
+                    <FormattedMessageId id={FM.APPCREATOR_COPY_TITLE} />)
             default:
                 throw new Error(`Could not get title for unknown app creator type: ${this.props.creatorType}`)
         }

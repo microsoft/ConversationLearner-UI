@@ -10,11 +10,12 @@ import actions from '../../../actions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
 import * as OF from 'office-ui-fabric-react';
 import * as Utils from '../../../Utils/util'
+import FormattedMessageId from '../../../components/FormattedMessageId'
 import { AppBase, ActionBase } from '@conversationlearner/models'
 import { ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
     actionSelected: ActionBase | null
@@ -77,7 +78,7 @@ class Actions extends React.Component<Props, ComponentState> {
             isActionEditorOpen: false,
             actionSelected: null
         })
-        
+
         this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId)
         setTimeout(() => this.newActionButton.focus(), 1000)
     }
@@ -88,7 +89,7 @@ class Actions extends React.Component<Props, ComponentState> {
             isActionEditorOpen: false,
             actionSelected: null
         })
-        
+
         const apiFunc = wasEditing
             ? () => this.props.editActionThunkAsync(this.props.app.appId, action)
             : () => this.props.createActionThunkAsync(this.props.app.appId, action)
@@ -123,17 +124,11 @@ class Actions extends React.Component<Props, ComponentState> {
         return (
             <div className="cl-page">
                 <span data-testid="actions-title" className={OF.FontClassNames.xxLarge}>
-                    <FormattedMessage
-                        id={FM.ACTIONS_TITLE}
-                        defaultMessage="Actions"
-                    />
+                    <FormattedMessageId id={FM.ACTIONS_TITLE} />
                 </span>
                 {this.props.editingPackageId === this.props.app.devPackageId
                     ? <span className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.ACTIONS_SUBTITLE}
-                            defaultMessage="Actions are executed by the bot in response to user input"
-                        />
+                        <FormattedMessageId id={FM.ACTIONS_SUBTITLE} />
                     </span>
                     : <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }

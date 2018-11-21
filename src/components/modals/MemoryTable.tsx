@@ -11,7 +11,8 @@ import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader, prebuilt, entityObject } from '../ToolTips/ToolTips'
 import { EntityBase, EntityType, Memory } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
-import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../FormattedMessageId'
+import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: EntityBase, component: MemoryTable) => React.ReactNode
@@ -345,10 +346,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
             <div>
                 {memoryNames.length === 0
                     ? <div className={`${OF.FontClassNames.large} teachEmptyMemory`} data-testid="memory-table-empty">
-                        <FormattedMessage
-                            id={FM.MEMORYTABLE_EMPTY}
-                            defaultMessage='Empty'
-                        />
+                        <FormattedMessageId id={FM.MEMORYTABLE_EMPTY} />
                     </div>
                     : <OF.DetailsList
                         className={OF.FontClassNames.mediumPlus}
