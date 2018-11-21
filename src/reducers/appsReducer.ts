@@ -85,7 +85,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
 
             const app = state.all.find(a => a.appId === action.appId)
 
-            // App my been deleted
+            // App may have been deleted
             if (!app) {
                 return state;
             }
