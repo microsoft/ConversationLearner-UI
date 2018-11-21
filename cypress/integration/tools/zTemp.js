@@ -10,26 +10,18 @@ const train = require('../../support/Train')
 const trainDialogsGrid = require('../../support/components/TrainDialogsGrid')
 const editDialogModal = require('../../support/components/EditDialogModal')
 
-
-const addToCypressTestList = require('../../support/TestList')
-const testList = require('/temp/TestsToRun')
-console.log(testList.testList)
-addToCypressTestList.AddToCypressTestList(testList.testList) 
-
-
-/// Description: A temporary workspace for experimental code
-// describe('zTemp test', () =>
-// {
-//   it('zTemp test', () => 
-//   {
-//     // homePage.Visit()
-//     // homePage.NavigateToModelPage("BigTrain")
-//     // // modelPage.NavigateToTrainDialogs()
-//     // cy.pause()//.then(() =>
-//     // cy.Train_CaptureAllChatMessages()
-//     // cy.pause()
-    
-//   })
-// })
+// Description: A temporary workspace for experimental code
+describe('zTemp test', () =>
+{
+  it('zTemp test', () => 
+  {
+    homePage.Visit()
+    homePage.NavigateToModelPage("BigTrain")
+    // modelPage.NavigateToTrainDialogs()
+    cy.pause()//.then(() =>
+    cy.Train_CaptureAllChatMessages()
+    cy.pause()
+  })
+})
 
 

@@ -15,50 +15,50 @@ const pathParse = require('path-parse')
 // NOTE: The function name specified by 'func' below must match the root of the
 //       file name that calls AddToCypressTestList(). Also the direct parent
 //       folder of the caller must match the test group name
-export const testGroups =
-  [
-    {
-      name: 'CreateModels', tests:
-        [
-          { name: "All Entity Types", func: createModels.AllEntityTypes },
-          { name: "Disqualifying Entities", func: createModels.DisqualifyingEntities },
-          { name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions },
-          { name: "What's Your Name", func: createModels.WhatsYourName },
-        ]
-    },
-    {
-      name: 'EditAndBranching', tests:
-        [
-          { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
-          { name: "Branching", func: editAndBranching.Branching },
-        ]
-    },
-    {
-      name: 'Log', tests:
-        [
-          { name: "What's Your Name", func: log.WhatsYourName },
-        ]
-    },
-    {
-      name: 'Train', tests:
-        [
-          { name: "Disqualifying Entities", func: train.DisqualifyingEntities },
-          { name: "Wait vs No Wait Action", func: train.WaitVsNoWaitActions },
-          { name: "What's Your Name 1", func: train.WhatsYourName1 },
-          { name: "What's Your Name 2", func: train.WhatsYourName2 },
-        ]
-    },
-    {
-      name: 'Tools', tests:
-        [
-          { name: "Delete All Models", func: tools.DeleteAllModels},
-        ]
-    }
-  ]
+const testGroups =
+[
+  {
+    name: 'CreateModels', tests:
+      [
+        { name: "All Entity Types", func: createModels.AllEntityTypes },
+        { name: "Disqualifying Entities", func: createModels.DisqualifyingEntities },
+        { name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions },
+        { name: "What's Your Name", func: createModels.WhatsYourName },
+      ]
+  },
+  {
+    name: 'EditAndBranching', tests:
+      [
+        { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
+        { name: "Branching", func: editAndBranching.Branching },
+      ]
+  },
+  {
+    name: 'Log', tests:
+      [
+        { name: "What's Your Name", func: log.WhatsYourName },
+      ]
+  },
+  {
+    name: 'Train', tests:
+      [
+        { name: "Disqualifying Entities", func: train.DisqualifyingEntities },
+        { name: "Wait vs No Wait Action", func: train.WaitVsNoWaitActions },
+        { name: "What's Your Name 1", func: train.WhatsYourName1 },
+        { name: "What's Your Name 2", func: train.WhatsYourName2 },
+      ]
+  },
+  {
+    name: 'Tools', tests:
+      [
+        { name: "Delete All Models", func: tools.DeleteAllModels},
+      ]
+  }
+]
 
 export function AddToCypressTestList(testList) 
 {
-  var funcName = `AddToCypressTestList2()`
+  var funcName = `AddToCypressTestList()`
   helpers.ConLog(funcName, 'Start')
   
   var testListIterator = new TestListIterator(testList)

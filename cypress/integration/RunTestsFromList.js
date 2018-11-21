@@ -4,7 +4,7 @@
 */
 
 const helpers = require('../support/Helpers')
-const addToCypressTestList = require('../support/TestList')
+const testListManager = require('../support/TestListManager')
 
 // ************ MODIFY THIS LIST *****************************************
 // This is the list of tests that will be executed when "RunTestsFromList"
@@ -34,4 +34,4 @@ var masterListOfAllTestCases =
 ]
 
 // This will queue up all test cases found in the testList array.
-addToCypressTestList.AddToCypressTestList(testList) 
+testListManager.AddToCypressTestList(testList) 
