@@ -16,6 +16,7 @@ import * as Utils from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import { State, TeachSessionState } from '../../types';
 import Webchat, { renderActivity } from '../Webchat'
+import { formatMessageId } from '../../Utils/util'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
 import FormattedMessageId from '../FormattedMessageId'
@@ -506,35 +507,17 @@ class TeachModal extends React.Component<Props, ComponentState> {
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
-                return intl.formatMessage({
-                    id: FM.BUTTON_ABANDON,
-                    defaultMessage: 'Abandon'
-                })
+                return formatMessageId(intl, FM.BUTTON_ABANDON)
             case EditDialogType.BRANCH:
-                return intl.formatMessage({
-                    id: FM.BUTTON_ABANDON_BRANCH,
-                    defaultMessage: 'Abandon Branch'
-                })
+                return formatMessageId(intl, FM.BUTTON_ABANDON_BRANCH)
             case EditDialogType.LOG_EDITED:
-                return intl.formatMessage({
-                    id: FM.BUTTON_ABANDON_EDIT,
-                    defaultMessage: 'Abandon Edit'
-                })
+                return formatMessageId(intl, FM.BUTTON_ABANDON_EDIT)
             case EditDialogType.LOG_ORIGINAL:
-                return intl.formatMessage({
-                    id: FM.BUTTON_ABANDON,
-                    defaultMessage: 'Abandon'
-                })
+                return formatMessageId(intl, FM.BUTTON_ABANDON)
             case EditDialogType.TRAIN_EDITED:
-                return intl.formatMessage({
-                    id: FM.BUTTON_ABANDON_EDIT,
-                    defaultMessage: 'Abandon Edit'
-                })
+                return formatMessageId(intl, FM.BUTTON_ABANDON_EDIT)
             case EditDialogType.TRAIN_ORIGINAL:
-                return intl.formatMessage({
-                    id: FM.BUTTON_ABANDON,
-                    defaultMessage: 'Abandon'
-                })
+                return formatMessageId(intl, FM.BUTTON_ABANDON)
             default:
                 return ""
         }
@@ -543,35 +526,17 @@ class TeachModal extends React.Component<Props, ComponentState> {
     renderSaveText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
-                return intl.formatMessage({
-                    id: FM.BUTTON_SAVE,
-                    defaultMessage: 'Save'
-                })
+                return formatMessageId(intl, FM.BUTTON_SAVE)
             case EditDialogType.BRANCH:
-                return intl.formatMessage({
-                    id: FM.BUTTON_SAVE_BRANCH,
-                    defaultMessage: 'Save Branch'
-                })
+                return formatMessageId(intl, FM.BUTTON_SAVE_BRANCH)
             case EditDialogType.LOG_EDITED:
-                return intl.formatMessage({
-                    id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
-                    defaultMessage: 'Save as Train Dialog'
-                })
+                return formatMessageId(intl, FM.BUTTON_SAVE_AS_TRAIN_DIALOG)
             case EditDialogType.LOG_ORIGINAL:
-                return intl.formatMessage({
-                    id: FM.BUTTON_SAVE_AS_TRAIN_DIALOG,
-                    defaultMessage: 'Save as Train Dialog'
-                })
+                return formatMessageId(intl, FM.BUTTON_SAVE_AS_TRAIN_DIALOG)
             case EditDialogType.TRAIN_EDITED:
-                return intl.formatMessage({
-                    id: FM.BUTTON_SAVE_EDIT,
-                    defaultMessage: 'Save Edit'
-                })
+                return formatMessageId(intl, FM.BUTTON_SAVE_EDIT)
             case EditDialogType.TRAIN_ORIGINAL:
-                return intl.formatMessage({
-                    id: FM.BUTTON_SAVE,
-                    defaultMessage: 'Save'
-                })
+                return formatMessageId(intl, FM.BUTTON_SAVE)
             default:
                 return ""
         }
@@ -581,30 +546,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
         switch (this.props.editType) {
             case EditDialogType.NEW:
             case EditDialogType.BRANCH:
-                return intl.formatMessage({
-                    id: FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE,
-                    defaultMessage: 'Are you sure you want to abandon this dialog?'
-                })
+                return formatMessageId(intl, FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE)
             case EditDialogType.LOG_EDITED:
-                return intl.formatMessage({
-                    id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
-                    defaultMessage: 'Are you sure you want to abandon your edits?'
-                })
+                return formatMessageId(intl, FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE)
             case EditDialogType.LOG_ORIGINAL:
-                return intl.formatMessage({
-                    id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
-                    defaultMessage: 'Are you sure you want to abandon your edits?'
-                })
+                return formatMessageId(intl, FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE)
             case EditDialogType.TRAIN_EDITED:
-                return intl.formatMessage({
-                    id: FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE,
-                    defaultMessage: 'Are you sure you want to abandon your edits?'
-                })
+                return formatMessageId(intl, FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE)
             case EditDialogType.TRAIN_ORIGINAL:
-                return intl.formatMessage({
-                    id: FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE,
-                    defaultMessage: 'Are you sure you want to abandon this dialog?'
-                })
+                return formatMessageId(intl, FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE)
             default:
                 return ""
         }
@@ -740,14 +690,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         data-testid="teach-session-set-initial-state"
                                         disabled={false}
                                         onClick={this.onInitStateClicked}
-                                        ariaDescription={intl.formatMessage({
-                                            id: FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION,
-                                            defaultMessage: "Set Initial State"
-                                        })}
-                                        text={intl.formatMessage({
-                                            id: FM.TEACHSESSIONMODAL_INITSTATE_TEXT,
-                                            defaultMessage: "Set Initial State"
-                                        })}
+                                        ariaDescription={formatMessageId(intl, FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION)}
+                                        text={formatMessageId(intl, FM.TEACHSESSIONMODAL_INITSTATE_TEXT)}
                                     />
                                 }
                                 <div className="cl-modal-buttons_secondary">
@@ -761,14 +705,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         data-testid="teach-session-footer-button-save"
                                         disabled={false}
                                         onClick={this.onClickUndoInput}
-                                        ariaDescription={intl.formatMessage({
-                                            id: FM.BUTTON_UNDO,
-                                            defaultMessage: 'Undo'
-                                        })}
-                                        text={intl.formatMessage({
-                                            id: FM.BUTTON_UNDO,
-                                            defaultMessage: 'Undo'
-                                        })}
+                                        ariaDescription={formatMessageId(intl, FM.BUTTON_UNDO)}
+                                        text={formatMessageId(intl, FM.BUTTON_UNDO)}
                                     />
                                 }
                                 <OF.PrimaryButton

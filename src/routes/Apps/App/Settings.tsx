@@ -354,35 +354,20 @@ class Settings extends React.Component<Props, ComponentState> {
                     <OF.TextField
                         className={OF.FontClassNames.mediumPlus}
                         onChanged={(text) => this.onChangedName(text)}
-                        label={intl.formatMessage({
-                            id: FM.SETTINGS_FIELDS_NAMELABEL,
-                            defaultMessage: 'Name'
-                        })}
+                        label={util.formatMessageId(intl, FM.SETTINGS_FIELDS_NAMELABEL)}
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         value={this.state.appNameVal}
                     />
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             onClick={this.onClickExport}
-                            ariaDescription={intl.formatMessage({
-                                id: FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION,
-                                defaultMessage: 'Export Model to a file'
-                            })}
-                            text={intl.formatMessage({
-                                id: FM.SETTINGS_EXPORTBUTTONTEXT,
-                                defaultMessage: 'Export'
-                            })}
+                            ariaDescription={util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION)}
+                            text={util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONTEXT,)}
                         />
                         <OF.PrimaryButton
                             onClick={this.onClickCopy}
-                            ariaDescription={intl.formatMessage({
-                                id: FM.SETTINGS_COPYBUTTONARIALDESCRIPTION,
-                                defaultMessage: 'Copy Model'
-                            })}
-                            text={intl.formatMessage({
-                                id: FM.SETTINGS_COPYBUTTONTEXT,
-                                defaultMessage: 'Copy'
-                            })}
+                            ariaDescription={util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONARIALDESCRIPTION)}
+                            text={util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONTEXT)}
                         />
                     </div>
                     <OF.TextField
@@ -452,10 +437,7 @@ class Settings extends React.Component<Props, ComponentState> {
                     </div>
                     <div className="cl-entity-creator-checkbox">
                         <TC.Checkbox
-                            label={intl.formatMessage({
-                                id: FM.SETTINGS_LOGGINGON_LABEL,
-                                defaultMessage: 'Log Conversations'
-                            })}
+                            label={util.formatMessageId(intl, FM.SETTINGS_LOGGINGON_LABEL)}
                             checked={this.state.isLoggingOnVal}
                             onChange={this.onToggleLoggingOn}
                             tipType={ToolTip.TipType.LOGGING_TOGGLE}
@@ -468,10 +450,7 @@ class Settings extends React.Component<Props, ComponentState> {
                                 <OF.TextField
                                     className={OF.FontClassNames.mediumPlus}
                                     onChanged={(text) => this.onChangedMarkdown(text)}
-                                    label={intl.formatMessage({
-                                        id: FM.SETTINGS_FIELDS_MARKDOWNLABEL,
-                                        defaultMessage: 'Markdown'
-                                    })}
+                                    label={util.formatMessageId(intl, FM.SETTINGS_FIELDS_MARKDOWNLABEL)}
                                     value={this.state.markdownVal}
                                     multiline={true}
                                     rows={5}
@@ -479,10 +458,7 @@ class Settings extends React.Component<Props, ComponentState> {
                                 <OF.TextField
                                     className={OF.FontClassNames.mediumPlus}
                                     onChanged={(text) => this.onChangedVideo(text)}
-                                    label={intl.formatMessage({
-                                        id: FM.SETTINGS_FIELDS_VIDEOLABEL,
-                                        defaultMessage: 'Video'
-                                    })}
+                                    label={util.formatMessageId(intl, FM.SETTINGS_FIELDS_VIDEOLABEL)}
                                     value={this.state.videoVal}
                                 />
                             </div>

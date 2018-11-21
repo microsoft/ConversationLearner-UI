@@ -15,6 +15,7 @@ import * as DialogUtils from '../../../Utils/dialogUtils'
 import { SelectionType } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'
+import { formatMessageId } from '../../../Utils/util'
 import { injectIntl, InjectedIntl, InjectedIntlProps, } from 'react-intl'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import { FM } from '../../../react-intl-messages'
@@ -102,10 +103,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
             key: 'firstInput',
-            name: intl.formatMessage({
-                id: FM.TRAINDIALOGS_FIRSTINPUT,
-                defaultMessage: 'First Input'
-            }),
+            name: formatMessageId(intl, FM.TRAINDIALOGS_FIRSTINPUT),
             fieldName: 'firstInput',
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
@@ -133,10 +131,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'lastInput',
-            name: intl.formatMessage({
-                id: FM.TRAINDIALOGS_LASTINPUT,
-                defaultMessage: 'Last Input'
-            }),
+            name: formatMessageId(intl, FM.TRAINDIALOGS_LASTINPUT),
             fieldName: 'lastInput',
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
@@ -155,10 +150,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'lastResponse',
-            name: intl.formatMessage({
-                id: FM.TRAINDIALOGS_LASTRESPONSE,
-                defaultMessage: 'Last Response'
-            }),
+            name: formatMessageId(intl, FM.TRAINDIALOGS_LASTRESPONSE),
             fieldName: 'lastResponse',
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
@@ -177,10 +169,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'turns',
-            name: intl.formatMessage({
-                id: FM.TRAINDIALOGS_TURNS,
-                defaultMessage: 'Turns'
-            }),
+            name: formatMessageId(intl, FM.TRAINDIALOGS_TURNS),
             fieldName: 'dialog',
             minWidth: 50,
             maxWidth: 50,
@@ -193,10 +182,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'lastModifiedDateTime',
-            name: intl.formatMessage({
-                id: FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME,
-                defaultMessage: 'Last Modified'
-            }),
+            name: formatMessageId(intl, FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME),
             fieldName: 'lastModifiedDateTime',
             minWidth: 100,
             isResizable: false,
@@ -205,10 +191,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'created',
-            name: intl.formatMessage({
-                id: FM.TRAINDIALOGS_CREATED_DATE_TIME,
-                defaultMessage: 'Created'
-            }),
+            name: formatMessageId(intl, FM.TRAINDIALOGS_CREATED_DATE_TIME),
             fieldName: 'created',
             minWidth: 100,
             isResizable: false,
@@ -1137,14 +1120,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         data-testid="button-new-train-dialog"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                         onClick={() => this.onClickNewTeachSession()}
-                        ariaDescription={intl.formatMessage({
-                            id: FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION,
-                            defaultMessage: 'Create a New Train Dialog'
-                        })}
-                        text={intl.formatMessage({
-                            id: FM.TRAINDIALOGS_CREATEBUTTONTITLE,
-                            defaultMessage: 'New Train Dialog'
-                        })}
+                        ariaDescription={formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
+                        text={formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
                         componentRef={component => this.newTeachSessionButton = component!}
                     />
                 </div>
@@ -1159,14 +1136,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 }}
                                 disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                                 onClick={() => this.onClickNewTeachSession()}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION,
-                                    defaultMessage: 'Create a New Train Dialog'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.TRAINDIALOGS_CREATEBUTTONTITLE,
-                                    defaultMessage: 'New Train Dialog'
-                                })}
+                                ariaDescription={formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
+                                text={formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
                             />
                         </div>
                     </div>
