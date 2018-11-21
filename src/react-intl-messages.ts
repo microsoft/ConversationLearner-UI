@@ -655,7 +655,7 @@ export default {
 
         // ReplayErrorList
         [FM.REPLAYERROR_EXISTS]: 'This Train Dialog has errors that must be fixed before it can be used to train your model',
-        [FM.REPLAYERROR_EXISTS_LOG]: 'This Log Dialog has errors that must be fixed before it can be converted to Train Dialog',
+        [FM.REPLAYERROR_EXISTS_LOG]: 'This Log Dialog has errors that must be fixed before it can be converted to a Train Dialog',
         [FM.REPLAYERROR_WARNING]: 'This Train Dialog has some potential errors',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incomptibilities were found:',

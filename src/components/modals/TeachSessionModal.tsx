@@ -158,9 +158,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickAbandonTeach() {
-        this.setState({
-            isConfirmDeleteOpen: true
-        })
+        if (this.state.nextActivityIndex) {
+            this.setState({
+                isConfirmDeleteOpen: true
+            })
+        } else {
+            this.onClickConfirmDelete()
+        }
     }
 
     @OF.autobind
