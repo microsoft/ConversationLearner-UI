@@ -158,9 +158,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickAbandonTeach() {
-        this.setState({
-            isConfirmDeleteOpen: true
-        })
+        if (this.state.nextActivityIndex) {
+            this.setState({
+                isConfirmDeleteOpen: true
+            })
+        } else {
+            this.onClickConfirmDelete()
+        }
     }
 
     @OF.autobind
@@ -673,6 +677,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let saveDisable = !this.state.hasTerminalAction 
                         || this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
                         || this.props.teachSession.botAPIError !== null
+
         return (
             <div>
                 <Modal
