@@ -4,7 +4,7 @@
  */
 import {
     AppBase, Banner,
-    BotInfo, 
+    BotInfo,
     AppDefinition,
     EntityBase,
     ActionBase, TeachWithHistory,
@@ -49,6 +49,7 @@ export type UpdateAction = {
     trainDialog: TrainDialog
 } | {
     type: AT.EDIT_TRAINDIALOG_FULFILLED,
+    appId: string,
     trainDialog: TrainDialog
 } | {
     type: AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC,
@@ -105,7 +106,7 @@ export type DisplayAction = {
 } | {
     type: AT.CLEAR_BANNER
     clearedBanner: Banner,
-}| {
+} | {
     type: AT.CLEAR_ERROR_DISPLAY
 } | {
     type: AT.UPDATE_OPERATION_FULFILLED
@@ -223,7 +224,7 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC,
     appId: string,
-    packageId: string, 
+    packageId: string,
     actionId: string
 } | {
     type: AT.FETCH_ACTION_DELETE_VALIDATION_FULFILLED
@@ -288,7 +289,7 @@ export type CreateAction = {
     app: AppBase,
 } | {
     type: AT.COPY_APPLICATION_ASYNC,
-    srcUserId: string, 
+    srcUserId: string,
     destUserId: string,
     appId: string
 } | {
@@ -318,7 +319,7 @@ export type CreateAction = {
 } | {
     type: AT.CREATE_TRAIN_DIALOG_ASYNC,
     appId: string,
-    trainDialog: TrainDialog  
+    trainDialog: TrainDialog
 } | {
     type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
     trainDialog: TrainDialog,
@@ -339,7 +340,7 @@ export type CreateAction = {
     type: AT.CREATE_TEACH_SESSION_ASYNC
 } | {
     type: AT.CREATE_TEACH_SESSION_REJECTED
-}| {
+} | {
     type: AT.CREATE_TEACH_SESSION_FULFILLED,
     teachSession: Teach
 } | {
@@ -383,9 +384,9 @@ export type DeleteAction = {
 } | {
     type: AT.DELETE_TRAIN_DIALOG_REJECTED
 } | DeleteLogDialogAsyncAction
-| DeleteLogDialogFulfilledAction
-| DeleteLogDialogRejectedAction
-| {
+    | DeleteLogDialogFulfilledAction
+    | DeleteLogDialogRejectedAction
+    | {
     type: AT.DELETE_CHAT_SESSION_ASYNC,
     key: string,
     session: Session,
@@ -407,7 +408,7 @@ export type DeleteAction = {
     trainDialogId: string,
     key: string,
     appId: string,
-}| {
+} | {
     type: AT.DELETE_MEMORY_ASYNC,
     key: string,
     appId: string
@@ -452,7 +453,7 @@ export type TeachAction = {
     type: AT.CLEAR_EXTRACT_RESPONSES
 } | {
     type: AT.CLEAR_EXTRACT_CONFLICT
-}| {
+} | {
     type: AT.GET_SCORES_ASYNC,
     key: string,
     appId: string,
