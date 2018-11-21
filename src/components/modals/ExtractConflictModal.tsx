@@ -8,6 +8,7 @@ import { FM } from '../../react-intl-messages'
 import * as CLM from '@conversationlearner/models'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import * as Util from '../../Utils/util'
 
 interface ReceivedProps {
     onClose: Function
@@ -30,19 +31,21 @@ const ExtractConflictModal: React.SFC<Props> = (props: Props) => {
                 type: OF.DialogType.normal,
                 title: intl.formatMessage({
                     id: FM.EXTRACTCONFLICTMODAL_TITLE,
-                    defaultMessage: 'Entity labelling conflicts with an existing labelling'
+                    defaultMessage: Util.getDefaultText(FM.EXTRACTCONFLICTMODAL_TITLE)
                 })
             }}
-            getStyles={() => { return {
-                main: [{
-                  selectors: {
-                    ['@media (min-width: 480px)']: {
-                      maxWidth: '900px',
-                      minWidth: '800px'
-                    }
-                  }
-                }]
-              }}
+            getStyles={() => {
+                return {
+                    main: [{
+                        selectors: {
+                            ['@media (min-width: 480px)']: {
+                                maxWidth: '900px',
+                                minWidth: '800px'
+                            }
+                        }
+                    }]
+                }
+            }
             }
             modalProps={{
                 isBlocking: false
@@ -58,26 +61,26 @@ const ExtractConflictModal: React.SFC<Props> = (props: Props) => {
                         {...editorProps}
 
                         onChangeCustomEntities={onChangeCustomEntities}
-                        onClickNewEntity={() => {}} 
+                        onClickNewEntity={() => { }}
                     />
                 }
                 entities={props.entities}
                 extractorResponse={props.extractResponse}
-                onChange={() => {}} 
+                onChange={() => { }}
             />
             <OF.DialogFooter>
                 <OF.DefaultButton
                     onClick={() => props.onClose()}
                     text={intl.formatMessage({
                         id: FM.BUTTON_CLOSE,
-                        defaultMessage: 'Close'
+                        defaultMessage: Util.getDefaultText(FM.BUTTON_CLOSE)
                     })}
                 />
                 <OF.PrimaryButton
                     onClick={() => props.onAccept()}
                     text={intl.formatMessage({
                         id: FM.BUTTON_ACCEPT,
-                        defaultMessage: 'Accept'
+                        defaultMessage: Util.getDefaultText(FM.BUTTON_ACCEPT)
                     })}
                 />
             </OF.DialogFooter>

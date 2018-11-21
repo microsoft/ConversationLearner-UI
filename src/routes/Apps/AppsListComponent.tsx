@@ -81,7 +81,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
-            render: (app) => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="cl-icon" data-testid="model-list-is-logging-on"/>
+            render: (app) => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="cl-icon" data-testid="model-list-is-logging-on" />
         },
         {
             key: 'lastModifiedDateTime',
@@ -199,7 +199,7 @@ export class Component extends React.Component<Props, ComponentState> {
             sortedApps = apps.concat([]).sort((a, b) => {
                 const firstValue = ifStringReturnLowerCase(sortColumn.getSortValue(a))
                 const secondValue = ifStringReturnLowerCase(sortColumn.getSortValue(b))
-    
+
                 if (sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
                 } else {
@@ -207,7 +207,7 @@ export class Component extends React.Component<Props, ComponentState> {
                 }
             });
         }
-    
+
         return sortedApps;
     }
 
@@ -226,7 +226,7 @@ export class Component extends React.Component<Props, ComponentState> {
         });
     }
 
-    render () {
+    render() {
         const props = this.props
         const apps = this.getSortedApplications(this.state.sortColumn, props.apps);
 
@@ -275,7 +275,7 @@ export class Component extends React.Component<Props, ComponentState> {
                             defaultMessage: 'Import Tutorials'
                         })}
                     />
-                }  
+                }
             </div>
             <OF.DetailsList
                 className={OF.FontClassNames.mediumPlus}
@@ -297,10 +297,10 @@ export class Component extends React.Component<Props, ComponentState> {
                 onConfirm={props.onConfirmDeleteApp}
                 title={props.intl.formatMessage({
                     id: FM.APPSLIST_CONFIRMCANCELMODALTITLE,
-                    defaultMessage: 'Are you sure you want to delete this model? {appName}'
+                    defaultMessage: util.getDefaultText(FM.APPSLIST_CONFIRMCANCELMODALTITLE)
                 }, {
-                    appName: props.appToDelete ? props.appToDelete.appName : ''
-                })}
+                        appName: props.appToDelete ? props.appToDelete.appName : ''
+                    })}
             />
             <TutorialImporterModal
                 open={props.isImportTutorialsOpen}
