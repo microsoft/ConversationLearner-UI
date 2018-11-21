@@ -5,6 +5,7 @@
 import * as React from 'react'
 import { PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
+import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ReceivedProps {
@@ -45,10 +46,7 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
                                 props.onConfirm()
                             }
                         }}
-                        text={intl.formatMessage({
-                            id: FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT,
-                            defaultMessage: 'Confirm'
-                        })}
+                        text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT)}
                     />
                 }
                 {props.onCancel &&
@@ -58,10 +56,7 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
                                 props.onCancel()
                             }
                         }}
-                        text={intl.formatMessage({
-                            id: FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT,
-                            defaultMessage: 'Cancel'
-                        })}
+                        text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT)}
                     />
                 }
                 {props.onOk &&
@@ -71,10 +66,7 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
                                 props.onOk()
                             }
                         }}
-                        text={intl.formatMessage({
-                            id: FM.BUTTON_OK,
-                            defaultMessage: 'Cancel'
-                        })}
+                        text={formatMessageId(intl, FM.BUTTON_OK)}
                     />
                 }
             </DialogFooter>

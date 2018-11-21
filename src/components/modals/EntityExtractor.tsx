@@ -7,7 +7,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { setStateAsync } from '../../Utils/util'
+import { setStateAsync, formatMessageId } from '../../Utils/util'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
@@ -428,10 +428,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             data-testid="entity-extractor-alternative-input-text"
                             value={this.state.textVariationValue}
                             onChanged={this.onChangeTextVariation}
-                            placeholder={this.props.intl.formatMessage({
-                                id: FM.TEXTVARIATION_PLACEHOLDER,
-                                defaultMessage: "Add alternative input..."
-                            })}
+                            placeholder={formatMessageId(this.props.intl, FM.TEXTVARIATION_PLACEHOLDER)}
                             onKeyPress={(event) => {
                                 if (event.key === 'Enter') {
                                     this.onSubmitTextVariation()
@@ -472,7 +469,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             data-testid="score-actions-button"
-                            disabled={!allExtractResponsesValid || this.state.pendingVariationChange}
+                            disabled={!allExtractResponsesValid || this.state.pendingVariationChange || !canEdit}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Score Actions'}
                             text={'Score Actions'}

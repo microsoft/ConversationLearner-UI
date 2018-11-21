@@ -7,6 +7,7 @@ import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { AppBase } from '@conversationlearner/models'
+import { formatMessageId } from '../../Utils/util'
 import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import ReactPlayer from 'react-player'
@@ -31,14 +32,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     <OF.PrimaryButton
                         disabled={disabled}
                         onClick={() => component.handleTutorialSelection(tutorial)}
-                        ariaDescription={intl.formatMessage({
-                            id: FM.BUTTON_IMPORT,
-                            defaultMessage: 'Import'
-                        })}
-                        text={intl.formatMessage({
-                            id: FM.BUTTON_IMPORT,
-                            defaultMessage: 'Import'
-                        })}
+                        ariaDescription={formatMessageId(intl, FM.BUTTON_IMPORT)}
+                        text={formatMessageId(intl, FM.BUTTON_IMPORT)}
                     />
                 )
             }
@@ -51,17 +46,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 80,
             isResizable: true,
             render: (tutorial, component) => {
-               return (
+                return (
                     <OF.DefaultButton
                         onClick={() => component.onClickInfo(tutorial)}
-                        ariaDescription={intl.formatMessage({
-                            id: FM.BUTTON_INFO,
-                            defaultMessage: 'Info'
-                        })}
-                        text={intl.formatMessage({
-                            id: FM.BUTTON_INFO,
-                            defaultMessage: 'Info'
-                    })}
+                        ariaDescription={formatMessageId(intl, FM.BUTTON_INFO)}
+                        text={formatMessageId(intl, FM.BUTTON_INFO)}
                     />
                 )
             }
@@ -97,8 +86,8 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
     }
 
     handleTutorialSelection(tutorial: AppBase) {
-       this.props.onTutorialSelected(tutorial);
-       this.props.handleClose();
+        this.props.onTutorialSelected(tutorial);
+        this.props.handleClose();
     }
 
     @OF.autobind
@@ -132,77 +121,65 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         const tutorials = this.sortTutorials()
         return (
-                <Modal
-                    isOpen={this.props.open}
-                    isBlocking={false}
-                    containerClassName="cl-modal cl-modal--medium"
-                    key={(this.state.moreInfoApp === null) ? 'list' : 'info'}  // Keeps scroll position isolated
-                >
-                        {this.state.moreInfoApp === null ?
-                            <div className="cl-modal_header">
-                                <span className={OF.FontClassNames.xxLarge}>
-                                <FormattedMessageId id={FM.TUTORIALIMPORTER_TITLE} />
-                                </span>
-                            </div> :
-                            <div/> 
-                        }
-                        <div className="cl-modal_body">
-                            {this.state.moreInfoApp === null ?
-                                <OF.DetailsList
-                                    className={OF.FontClassNames.mediumPlus}
-                                    items={tutorials}
-                                    columns={this.state.columns}
-                                    onRenderItemColumn={(app, i, column: IRenderableColumn) => column.render(app, this)}
-                                    checkboxVisibility={OF.CheckboxVisibility.hidden}
+            <Modal
+                isOpen={this.props.open}
+                isBlocking={false}
+                containerClassName="cl-modal cl-modal--medium"
+                key={(this.state.moreInfoApp === null) ? 'list' : 'info'}  // Keeps scroll position isolated
+            >
+                {this.state.moreInfoApp === null ?
+                    <div className="cl-modal_header">
+                        <span className={OF.FontClassNames.xxLarge}>
+                            <FormattedMessageId id={FM.TUTORIALIMPORTER_TITLE} />
+                        </span>
+                    </div> :
+                    <div />
+                }
+                <div className="cl-modal_body">
+                    {this.state.moreInfoApp === null ?
+                        <OF.DetailsList
+                            className={OF.FontClassNames.mediumPlus}
+                            items={tutorials}
+                            columns={this.state.columns}
+                            onRenderItemColumn={(app, i, column: IRenderableColumn) => column.render(app, this)}
+                            checkboxVisibility={OF.CheckboxVisibility.hidden}
+                        />
+                        :
+                        <div>
+                            {this.state.moreInfoApp && this.state.moreInfoApp.metadata && this.state.moreInfoApp.metadata.markdown &&
+                                <ReactMarkdown source={this.state.moreInfoApp.metadata.markdown} />
+                            }
+                            {this.state.moreInfoApp && this.state.moreInfoApp.metadata && this.state.moreInfoApp.metadata.video &&
+                                <ReactPlayer
+                                    url={this.state.moreInfoApp.metadata.video}
+                                    controls={true}
                                 />
-                            :
-                                <div>
-                                    {this.state.moreInfoApp && this.state.moreInfoApp.metadata && this.state.moreInfoApp.metadata.markdown &&
-                                        <ReactMarkdown source={this.state.moreInfoApp.metadata.markdown} />
-                                    }
-                                    {this.state.moreInfoApp && this.state.moreInfoApp.metadata && this.state.moreInfoApp.metadata.video &&
-                                        <ReactPlayer 
-                                            url={this.state.moreInfoApp.metadata.video}
-                                            controls={true}
-                                        />
-                                    }
-                                </div>
                             }
                         </div>
+                    }
+                </div>
 
-                        <div className="cl-modal_footer cl-modal-buttons">
-                            <div className="cl-modal-buttons_secondary" />
-                            <div className="cl-modal-buttons_primary">
-                            {this.state.moreInfoApp === null ?
-                                <OF.PrimaryButton
-                                    onClick={this.props.handleClose}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.BUTTON_CANCEL,
-                                        defaultMessage: 'Cancel'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.BUTTON_CANCEL,
-                                        defaultMessage: 'Cancel'
-                                    })}
-                                />
+                <div className="cl-modal_footer cl-modal-buttons">
+                    <div className="cl-modal-buttons_secondary" />
+                    <div className="cl-modal-buttons_primary">
+                        {this.state.moreInfoApp === null ?
+                            <OF.PrimaryButton
+                                onClick={this.props.handleClose}
+                                ariaDescription={formatMessageId(intl, FM.BUTTON_CANCEL)}
+                                text={formatMessageId(intl, FM.BUTTON_CANCEL)}
+                            />
                             :
-                                <OF.PrimaryButton
-                                    onClick={() => this.setState({moreInfoApp: null})}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.BUTTON_OK,
-                                        defaultMessage: 'Ok'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.BUTTON_OK,
-                                        defaultMessage: 'Ok'
-                                    })}
-                                />
-                            }
-                            </div>
-                        </div> 
-                </Modal>
-            );
-        
+                            <OF.PrimaryButton
+                                onClick={() => this.setState({ moreInfoApp: null })}
+                                ariaDescription={formatMessageId(intl, FM.BUTTON_OK)}
+                                text={formatMessageId(intl, FM.BUTTON_OK)}
+                            />
+                        }
+                    </div>
+                </div>
+            </Modal>
+        );
+
     }
 }
 
