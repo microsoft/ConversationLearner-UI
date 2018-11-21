@@ -80,12 +80,16 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
         case AT.EDIT_APP_EDITING_TAG_FULFILLED:
             return { ...state, activeApps: action.activeApps }
 
+        // TODO: We're expecting more handlers here, as we're simply updating lastModifiedDateTime...
         case AT.EDIT_TRAINDIALOG_FULFILLED:
+
             const app = state.all.find(a => a.appId === action.appId)
-            // User may have delete the app
+
+            // App my been deleted
             if (!app) {
                 return state;
             }
+
             const newApp: App = {
                 ...(app as App),
                 lastModifiedDateTime: `${new Date().toISOString().slice(0, 19)}+00:00`,
