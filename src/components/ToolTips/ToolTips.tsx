@@ -295,7 +295,7 @@ export function getTip(tipType: string) {
 
                     <h4>Before replay:</h4>
                     <img 
-                        className="cl-boxshadow"
+                        className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/ToolTipReplay1.png"
                         width="70%"
                         alt="Replay Before" 
@@ -303,7 +303,7 @@ export function getTip(tipType: string) {
                     
                     <h4>After replay:</h4>
                     <img 
-                        className="cl-boxshadow"
+                        className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/ToolTipReplay2.png" 
                         width="70%" 
                         alt="Replay After"
@@ -332,26 +332,57 @@ export function getTip(tipType: string) {
         case TipType.ENTITY_MULTIVALUE:
             return (
                 <div>
-                    When checked additional occurences of the Entity add to list of previous values. For non multi-value entities new values replace previous values.<br /><br />
-                    <b>Example: Multiple toppings on a pizza</b>
-                    <dl className="cl-tooltip-example">
-                        <dt>Entity:</dt><dd>toppings</dd>
-                        <dt>Phrase:</dt><dd>I would like <i>cheese</i> and <i>pepperoni</i>.</dd>
-                        <dt>Memory:</dt><dd>cheese, pepperoni</dd>
-                    </dl>
+                    <h2>Multivalue</h2>
+                    <p>Determines what happens when mulitple instances of an Entity are labeled</p>
+                    <img 
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_MULTIVALUE_1.png" 
+                        width="40%" 
+                        alt="Entity Type Custom"
+                    />
+                    <h3>Multivalue</h3>
+                    <p>Additional occurences of the Entity add to list of previous values.</p>
+                    <img 
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_MULTIVALUE_2.png" 
+                        width="40%" 
+                        alt="Entity Type Custom"
+                    />
+                    <h3>Not Multivalue</h3>
+                    <p>Additional occurences replace previous values.</p>
+                    <img 
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_MULTIVALUE_3.png" 
+                        width="40%" 
+                        alt="Entity Type Custom"
+                    />
                 </div>
             )
         case TipType.ENTITY_NEGATABLE:
             return (
                 <div>
                     When checked this creates a corresponding 'negatable' entity that can be used to remove or delete previous memory values.<br /><br />
-                    <b>Example: Changing existing pizza order</b>
-                    <dl className="cl-tooltip-example">
-                        <dt>Entity:</dt><dd>toppings</dd>
-                        <dt>Memory:</dt><dd>cheese, pepperoni</dd>
-                        <dt>Phrase:</dt><dd>Actually, please add <i>sausage</i> instead of <i>pepperoni</i>.</dd>
-                        <dt>Memory:</dt><dd>cheese, <del>pepperoni</del> sausage</dd>
-                    </dl>
+
+                    <img 
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_NEGATABLE_1.png" 
+                        width="40%" 
+                        alt="Entity Type Custom"
+                    />
+                    <br/>
+                    <img 
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_NEGATABLE_2.png" 
+                        width="40%" 
+                        alt="Entity Type Custom"
+                    />
+                    <br/>
+                    <img 
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_NEGATABLE_3.png" 
+                        width="60%" 
+                        alt="Entity Type Custom"
+                    />
                 </div>
             )
         case TipType.ENTITY_PROGAMMATIC:
@@ -372,7 +403,7 @@ export function getTip(tipType: string) {
                     <h3>Pre-Trained</h3>
                     <p>Pre-Trained Entities are entities such as "datetime" or "temperature" that have been pre-trained.  Pre-Trained are labelled automatically and cannot changed</p>
                     <img 
-                        className="cl-boxshadow"
+                        className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_PRE_TRAINED.png" 
                         width="40%" 
                         alt="Entity Type Custom"
@@ -380,7 +411,7 @@ export function getTip(tipType: string) {
                     <h3>Custom Trained</h3>
                     <p>Custom Entities are entites that are learned through the labelling of examples</p>
                     <img 
-                        className="cl-boxshadow"
+                        className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_CUSTOM.png" 
                         width="40%" 
                         alt="Entity Type Custom"
@@ -395,11 +426,11 @@ export function getTip(tipType: string) {
             return (
                 <div>
                     <h3>Resolver Type</h3>
-                    <p>Pre-Trained Enitites can be associated with a Pre-Trained entity by assigning a "Resolver Type"</p>
+                    <p>Custom Enitites can be associated with a Pre-Trained Entity by assigning a "Resolver Type"</p>
                     <p>This allows associating of Pre-Trained entities with Custom Entities</p>
                     
                     <img 
-                        className="cl-boxshadow"
+                        className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_RESOLVER.png" 
                         width="40%" 
                         alt="Entity Type Custom"
@@ -407,7 +438,7 @@ export function getTip(tipType: string) {
 
                     <p>The Resolver will provide the Custom Entity a resolution (when available)</p>
                     <img 
-                        className="cl-boxshadow"
+                        className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_MEMORY.png" 
                         width="40%" 
                         alt="Entity Type Custom"
@@ -490,7 +521,7 @@ export function getTip(tipType: string) {
 
 
                     <img 
-                        className="cl-boxshadow"
+                        className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/authoringkey.gif" 
                         alt="Authoring Key" 
                     />

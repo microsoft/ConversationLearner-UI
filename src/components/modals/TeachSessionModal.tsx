@@ -302,7 +302,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let memories: CLM.Memory[] = [];
         let prevMemories: CLM.Memory[] = [];
 
-        if (!this.state.selectedHistoryActivity || !this.props.sourceTrainDialog) {
+        if (this.state.selectedHistoryActivity === null || !this.props.sourceTrainDialog) {
             throw new Error("historyRender missing data")
         }
 
