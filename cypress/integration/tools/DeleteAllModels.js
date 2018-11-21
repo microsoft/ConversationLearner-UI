@@ -6,6 +6,8 @@
 const homePage = require('../../support/components/HomePage')
 const helpers = require('../../support/Helpers.js')
 
+// TODO: THIS FILE IS TO BE REMOVED ONCE THE BUGS ARE WORKED OUT OF THE NEWER VERSION
+
 /// Description: Tests that models can be deleted from the home page AND useful as a clean up tool
 /// Verifications: Can delete a model, Can delete All models
 describe('Delete All Models', function () 
