@@ -7,6 +7,7 @@ const createModels = require('../tests/CreateModels')
 const train = require('../tests/Train')
 const log = require('../tests/Log')
 const editAndBranching = require('../tests/EditAndBranching')
+const tools = require('../tests/Tools')
 const helpers = require('./Helpers')
 const path = require('path')
 const pathParse = require('path-parse')
@@ -47,6 +48,12 @@ export const testGroups =
           { name: "What's Your Name 2", func: train.WhatsYourName2 },
         ]
     },
+    {
+      name: 'Tools', tests:
+        [
+          { name: "Delete All Models", func: tools.DeleteAllModels},
+        ]
+    }
   ]
 
 // This function adds test cases to Cypress' test queue. It uses the file path of the calling 

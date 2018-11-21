@@ -9,12 +9,13 @@ const modelPage = require('../../support/components/ModelPage')
 const train = require('../../support/Train')
 const trainDialogsGrid = require('../../support/components/TrainDialogsGrid')
 const editDialogModal = require('../../support/components/EditDialogModal')
-const testList = require('../../support/TestList')
 
-var env = Cypress.env()
-helpers.Dump('Environment', env)
-//testList.AddToCypressTestList2(['EditAndBranching.Branching', 'Train.WhatsYourName1', 'Train.DisqualifyingEntities']) 
-//cy.pause()
+
+const addToCypressTestList = require('../../support/TestList')
+const testList = require('/temp/TestsToRun')
+console.log(testList.testList)
+addToCypressTestList.AddToCypressTestList2(testList.testList) 
+
 
 /// Description: A temporary workspace for experimental code
 // describe('zTemp test', () =>
