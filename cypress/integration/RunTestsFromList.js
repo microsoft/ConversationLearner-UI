@@ -11,9 +11,7 @@ const testListManager = require('../support/TestListManager')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "Train.WhatsYourName1",
-  "Train.WhatsYourName2",
-  "Log.WhatsYourName",
+  "Tools.DeleteAllModels",
 ]
 
 // Do NOT alter this list except to add in new test cases as they are created.

@@ -10,16 +10,10 @@ export function DeleteAllModels()
 {
     homePage.Visit()
 
-    // This is a necessary convolution so that Cypress will have one "Cypress Command" still running
-    // when this function exits. If not for this, only one row will get deleted then test execution 
-    // will stop.
-    Cypress.Commands.add("DeleteAllRows", () => { DeleteAllRows().then(() => { helpers.ConLog(`Delete All Applications Test`, `DONE - All Applications have been Deleted`) }) })
-    cy.DeleteAllRows()
-
     // We must "Enqueue" this function call so that Cypress will have one "Cypress Command" 
     // still running when the DeleteAllRows function exits. If not for this, only one row will
     // get deleted then test execution will stop.
-    //cy.Enqueue(DeleteAllRows).then(() => { helpers.ConLog(`Delete All Models`, `DONE - All Applications have been Deleted`) })
+    cy.Enqueue(DeleteAllRows).then(() => { helpers.ConLog(`Delete All Models`, `DONE - All Applications have been Deleted`) })
 }
 
 function DeleteAllRows()
@@ -27,7 +21,7 @@ function DeleteAllRows()
     function _DeleteTopRow(resolve)
     {
         var thisFuncName = `_DeleteTopRow`
-        homePage.GetModelListRowCountThen((rowCount) =>
+        homePage.GetModelListRowCount().then((rowCount) =>
         {
             helpers.ConLog(thisFuncName, `Number of Rows Remaining: ${rowCount}`)
             if (rowCount == 0)
@@ -38,7 +32,7 @@ function DeleteAllRows()
             }
 
             homePage.ClickDeleteModelButton(0)
-            homePage.ClickConfirmButton(() =>
+            homePage.ClickConfirmButton().then(() =>
             {
                 if(rowCount > 1)
                 {
@@ -54,5 +48,5 @@ function DeleteAllRows()
         })
     }
     
-    return new Cypress.Promise((resolve) => { _DeleteTopRow(resolve) })
+    return new Promise((resolve) => { _DeleteTopRow(resolve) })
 }
