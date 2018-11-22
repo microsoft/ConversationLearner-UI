@@ -13,7 +13,8 @@ import { State } from '../../../types';
 import { onRenderDetailsHeader } from '../../../components/ToolTips/ToolTips'
 import { AppBase, EntityBase, EntityType } from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
-import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../../../components/FormattedMessageId'
+import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import * as moment from 'moment'
 
 interface IRenderableColumn extends OF.IColumn {
@@ -257,17 +258,11 @@ class Entities extends React.Component<Props, ComponentState> {
         return (
             <div className="cl-page">
                 <span data-testid="entities-title" className={OF.FontClassNames.xxLarge}>
-                    <FormattedMessage
-                        id={FM.ENTITIES_TITLE}
-                        defaultMessage="Entities"
-                    />
+                    <FormattedMessageId id={FM.ENTITIES_TITLE} />
                 </span>
                 {this.props.editingPackageId === this.props.app.devPackageId ?
                     <span className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.ENTITIES_SUBTITLE}
-                            defaultMessage="Entities hold values from the user or are set by code, and are stored in the bot's memory to track state"
-                        />
+                        <FormattedMessageId id={FM.ENTITIES_SUBTITLE} />
                     </span>
                     :
                     <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
