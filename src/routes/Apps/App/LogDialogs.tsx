@@ -105,10 +105,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'firstInput',
-            name: intl.formatMessage({
-                id: FM.LOGDIALOGS_FIRSTINPUT,
-                defaultMessage: 'First Input'
-            }),
+            name: Util.formatMessageId(intl, FM.LOGDIALOGS_FIRSTINPUT),
             fieldName: 'firstInput',
             minWidth: 100,
             maxWidth: 300,
@@ -128,10 +125,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'lastInput',
-            name: intl.formatMessage({
-                id: FM.LOGDIALOGS_LASTINPUT,
-                defaultMessage: 'Last Input'
-            }),
+            name: Util.formatMessageId(intl, FM.LOGDIALOGS_LASTINPUT),
             fieldName: 'lastInput',
             minWidth: 100,
             maxWidth: 300,
@@ -150,10 +144,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'lastResponse',
-            name: intl.formatMessage({
-                id: FM.LOGDIALOGS_LASTRESPONSE,
-                defaultMessage: 'Last Response'
-            }),
+            name: Util.formatMessageId(intl, FM.LOGDIALOGS_LASTRESPONSE),
             fieldName: 'lastResponse',
             minWidth: 100,
             maxWidth: 300,
@@ -172,10 +163,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'turns',
-            name: intl.formatMessage({
-                id: FM.LOGDIALOGS_TURNS,
-                defaultMessage: 'Turns'
-            }),
+            name: Util.formatMessageId(intl, FM.LOGDIALOGS_TURNS),
             fieldName: 'dialog',
             minWidth: 50,
             isResizable: false,
@@ -184,10 +172,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'lastModifiedDateTime',
-            name: intl.formatMessage({
-                id: FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME,
-                defaultMessage: 'Last Modified'
-            }),
+            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME),
             fieldName: 'lastModifiedDateTime',
             minWidth: 100,
             isResizable: false,
@@ -196,10 +181,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'created',
-            name: intl.formatMessage({
-                id: FM.TRAINDIALOGS_CREATED_DATE_TIME,
-                defaultMessage: 'Created'
-            }),
+            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATED_DATE_TIME),
             fieldName: 'created',
             minWidth: 100,
             isResizable: false,
@@ -973,14 +955,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         data-testid="log-dialogs-new-button"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                         onClick={this.onClickNewChatSession}
-                        ariaDescription={this.props.intl.formatMessage({
-                            id: FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION,
-                            defaultMessage: 'Create a New Log Dialog'
-                        })}
-                        text={this.props.intl.formatMessage({
-                            id: FM.LOGDIALOGS_CREATEBUTTONTITLE,
-                            defaultMessage: 'New Log Dialog'
-                        })}
+                        ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
+                        text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
                         componentRef={component => this.newChatSessionButton = component!}
                     />
                     <OF.DefaultButton
@@ -1001,14 +977,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                                 }}
                                 disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                                 onClick={this.onClickNewChatSession}
-                                ariaDescription={this.props.intl.formatMessage({
-                                    id: FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION,
-                                    defaultMessage: 'Create a New Log Dialog'
-                                })}
-                                text={this.props.intl.formatMessage({
-                                    id: FM.LOGDIALOGS_CREATEBUTTONTITLE,
-                                    defaultMessage: 'New Log Dialog'
-                                })}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
+                                text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
                             />
                         </div>
                     </div>

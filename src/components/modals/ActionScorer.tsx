@@ -42,10 +42,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
 
                 const selected = (index === 0 &&
                     (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected))
-                const buttonText = intl.formatMessage({
-                    id: selected ? FM.BUTTON_SELECTED : FM.BUTTON_SELECT,
-                    defaultMessage: selected ? Util.getDefaultText(FM.BUTTON_SAVE_EDIT) : Util.getDefaultText(FM.BUTTON_SAVE_EDIT)
-                });
+                const buttonText = Util.formatMessageId(intl, selected ? FM.BUTTON_SELECTED : FM.BUTTON_SELECT)
                 if (!component.props.canEdit) {
                     return (
                         <OF.PrimaryButton
@@ -87,10 +84,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         },
         {
             key: 'actionResponse',
-            name: intl.formatMessage({
-                id: FM.ACTIONSCORER_COLUMNS_RESPONSE,
-                defaultMessage: 'Response'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_RESPONSE),
             fieldName: 'actionResponse',
             minWidth: 100,
             maxWidth: 500,
@@ -149,10 +143,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         },
         {
             key: 'actionScore',
-            name: hideScore ? '' : intl.formatMessage({
-                id: FM.ACTIONSCORER_COLUMNS_SCORE,
-                defaultMessage: 'Score'
-            }),
+            name: hideScore ? '' : Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_SCORE),
             fieldName: 'score',
             minWidth: hideScore ? 1 : 80,
             maxWidth: hideScore ? 1 : 80,
@@ -208,10 +199,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         },
         {
             key: 'actionEntities',
-            name: intl.formatMessage({
-                id: FM.ACTIONSCORER_COLUMNS_ENTITIES,
-                defaultMessage: 'Entities'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_ENTITIES),
             fieldName: 'entities',
             minWidth: 100,
             maxWidth: 300,
@@ -221,10 +209,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         },
         {
             key: 'isTerminal',
-            name: intl.formatMessage({
-                id: FM.ACTIONSCORER_COLUMNS_ISTERMINAL,
-                defaultMessage: 'Wait'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_ISTERMINAL),
             fieldName: 'isTerminal',
             minWidth: 50,
             maxWidth: 50,
@@ -237,10 +222,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         },
         {
             key: 'actionType',
-            name: intl.formatMessage({
-                id: FM.ACTIONSCORER_COLUMNS_TYPE,
-                defaultMessage: 'Type'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_TYPE),
             fieldName: 'actionType',
             minWidth: 80,
             maxWidth: 80,
@@ -749,10 +731,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     data-testid="popup-already-selected"
                     open={this.state.isAlreadySelectedOpen}
                     onOk={this.onCloseAlreadySelectedPopUp}
-                    title={intl.formatMessage({
-                        id: FM.LOGDIALOGS_ALREADYSELECTED,
-                        defaultMessage: Util.getDefaultText(FM.LOGDIALOGS_ALREADYSELECTED)
-                    })}
+                    title={Util.formatMessageId(intl, FM.LOGDIALOGS_ALREADYSELECTED)}
                 />
             </div>
         )
