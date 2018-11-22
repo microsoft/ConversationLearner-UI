@@ -10,7 +10,7 @@ const train = require('../../support/Train')
 const trainDialogsGrid = require('../../support/components/TrainDialogsGrid')
 const editDialogModal = require('../../support/components/EditDialogModal')
 
-/// Description: A temporary workspace for experimental code
+// Description: A temporary workspace for experimental code
 describe('zTemp test', () =>
 {
   it('zTemp test', () => 
