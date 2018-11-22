@@ -11,9 +11,34 @@ const helpers = require('./Helpers')
 const path = require('path')
 const pathParse = require('path-parse')
 
-// NOTE: The function name specified by 'func' below must match the root of the
-//       file name that calls AddToCypressTestList(). Also the direct parent
-//       folder of the caller must match the test group name
+// ************ MODIFY THIS LIST *****************************************
+// This is the list of tests that will be executed when "RunTestsFromList"
+// is selected from the Cypress Test GUI.
+export const testList =
+[
+  "Train.WhatsYourName1",
+]
+
+// Do NOT alter this list except to add in new test cases as they are created.
+export const masterListOfAllTestCases = 
+[
+  "CreateModels.AllEntityTypes",
+  "CreateModels.DisqualifyingEntities",
+  "CreateModels.WaitVsNoWaitActions",
+  "CreateModels.WhatsYourName",
+  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
+  "EditAndBranching.Branching",
+  "Log.WhatsYourName",
+  "Train.DisqualifyingEntities",
+  "Train.WaitVsNoWaitActions",
+  "Train.WhatsYourName1",
+  "Train.WhatsYourName2",
+]
+
+// The lists above are in a format that is convenient for a developer to copy
+// and paste in order to create a list of tests.
+//
+// This next list has all the details needed for creating the test for Cypress.
 const testGroups =
 [
   {
