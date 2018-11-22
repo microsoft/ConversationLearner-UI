@@ -16,7 +16,10 @@ const pathParse = require('path-parse')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
+  "Train.DisqualifyingEntities",
+  "Train.WaitVsNoWaitActions",
   "Train.WhatsYourName1",
+  "Train.WhatsYourName2",
 ]
 
 // Do NOT alter this list except to add in new test cases as they are created.
