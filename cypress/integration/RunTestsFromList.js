@@ -11,7 +11,7 @@ const testListManager = require('../support/TestListManager')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "Tools.DeleteAllModels",
+  "CreateModels.AllEntityTypes",
 ]
 
 // Do NOT alter this list except to add in new test cases as they are created.
@@ -28,7 +28,8 @@ var masterListOfAllTestCases =
   "Train.WaitVsNoWaitActions",
   "Train.WhatsYourName1",
   "Train.WhatsYourName2",
-  "Tools.DeleteAllModels",
+
+  "Tools.DeleteAllModels",  // CAUTION: This test will delete ALL of your MODELS!
 ]
 
 // This will queue up all test cases found in the testList array.
