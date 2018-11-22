@@ -15,7 +15,7 @@ export const testList =
 ]
 
 // Do NOT alter this list except to add in new test cases as they are created.
-var masterListOfAllTestCases = 
+export const masterListOfAllTestCases = 
 [
   "CreateModels.AllEntityTypes",
   "CreateModels.DisqualifyingEntities",
@@ -28,8 +28,6 @@ var masterListOfAllTestCases =
   "Train.WaitVsNoWaitActions",
   "Train.WhatsYourName1",
   "Train.WhatsYourName2",
-
-  "Tools.DeleteAllModels",  // CAUTION: This test will delete ALL of your MODELS!
 ]
 
 // This will queue up all test cases found in the testList array.

@@ -7,7 +7,6 @@ const createModels = require('../tests/CreateModels')
 const train = require('../tests/Train')
 const log = require('../tests/Log')
 const editAndBranching = require('../tests/EditAndBranching')
-const tools = require('../tests/Tools')
 const helpers = require('./Helpers')
 const path = require('path')
 const pathParse = require('path-parse')
@@ -48,18 +47,14 @@ const testGroups =
         { name: "What's Your Name 2", func: train.WhatsYourName2 },
       ]
   },
-  {
-    name: 'Tools', tests:
-      [
-        { name: "Delete All Models", func: tools.DeleteAllModels},
-      ]
-  }
 ]
 
 export function AddToCypressTestList(testList) 
 {
   var funcName = `AddToCypressTestList()`
-  helpers.ConLog(funcName, 'Start')
+  helpers.ConLog(funcName, `List of Tests: ${testList}`)
+  
+  if (!Array.isArray(testList)) testList = [testList]
   
   var testListIterator = new TestListIterator(testList)
   

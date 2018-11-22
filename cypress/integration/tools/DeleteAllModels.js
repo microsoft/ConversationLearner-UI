@@ -3,8 +3,10 @@
  * Licensed under the MIT License.
 */
 
-const homePage = require('../support/components/HomePage')
-const helpers = require('../support/Helpers')
+const homePage = require('../../support/components/HomePage')
+const helpers = require('../../support/Helpers')
+
+describe('Tools', () => { it('Delete All Models', DeleteAllModels) })
 
 export function DeleteAllModels()
 {
