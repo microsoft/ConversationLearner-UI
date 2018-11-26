@@ -2,7 +2,8 @@
 skip_branch_with_pr: true
 
 init:
-- cmd: set NODE_OPTIONS=--max-old-space-size=4096
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  - cmd: set NODE_OPTIONS=--max-old-space-size=4096
 
 cache:
   - '%AppData%\npm-cache -> appveyor.yml'
