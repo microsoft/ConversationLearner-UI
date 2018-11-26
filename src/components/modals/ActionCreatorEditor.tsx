@@ -9,6 +9,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
+import { formatMessageId } from '../../Utils/util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as CLM from '@conversationlearner/models'
 import ConfirmCancelModal from './ConfirmCancelModal'
@@ -1169,14 +1170,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton
                                 onClick={this.onClickTrainDialogs}
                                 iconProps={{ iconName: 'QueryList' }}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Train Dialogs'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT,
-                                    defaultMessage: 'Train Dialogs'
-                                })}
+                                ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION)}
+                                text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT)}
                             />
                         }
                         <OF.DefaultButton
@@ -1192,49 +1187,25 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             disabled={this.saveDisabled()}
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
-                                intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Save'
-                                }) :
-                                intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Create'
-                                })}
+                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION) :
+                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION)}
                             text={this.state.isEditing ?
-                                intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT,
-                                    defaultMessage: 'Save'
-                                }) :
-                                intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT,
-                                    defaultMessage: 'Create'
-                                })}
+                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT) :
+                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT)}
                         />
 
                         <OF.DefaultButton
                             onClick={this.onClickCancel}
-                            ariaDescription={intl.formatMessage({
-                                id: FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION,
-                                defaultMessage: 'Cancel'
-                            })}
-                            text={intl.formatMessage({
-                                id: FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT,
-                                defaultMessage: 'Cancel'
-                            })}
+                            ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
+                            text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
                         />
 
                         {this.state.isEditing &&
                             <OF.DefaultButton
                                 className="cl-button-delete"
                                 onClick={this.onClickDelete}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Delete'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT,
-                                    defaultMessage: 'Delete'
-                                })}
+                                ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
+                                text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
                             />}
                     </div>
                 </div>
@@ -1242,10 +1213,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     open={this.state.isConfirmDeleteModalOpen}
                     onCancel={this.onCancelDelete}
                     onConfirm={this.onConfirmDelete}
-                    title={intl.formatMessage({
-                        id: FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE,
-                        defaultMessage: 'Are you sure you want to delete this action?'
-                    })}
+                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
                     message={() => this.state.showValidationWarning &&
                         <div className="cl-text--warning">
                             <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
@@ -1256,10 +1224,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     open={this.state.isConfirmEditModalOpen}
                     onCancel={this.onCancelEdit}
                     onConfirm={this.onConfirmEdit}
-                    title={intl.formatMessage({
-                        id: FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE,
-                        defaultMessage: 'Are you sure you want to edit this action?'
-                    })}
+                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE)}
                     message={() => this.state.showValidationWarning &&
                         <div className="cl-text--warning">
                             <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
