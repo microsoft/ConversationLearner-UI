@@ -6,6 +6,7 @@
 const homePage = require('./components/HomePage')
 const modelPage = require('./components/ModelPage')
 
+// The prefix can be up to 14 characters, the time takes up 16 characters, 30 is the maximum.
 export function CreateNewModel(modelNamePrefix)
 {
   // Maximum Name Length is 30 Characters

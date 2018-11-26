@@ -10,7 +10,7 @@ const logDialogModal = require('../support/components/LogDialogModal')
 
 export function WhatsYourName()
 {
-  var modelName = models.ImportModel('Model1-chat', 'Model1-mni.cl')
+  var modelName = models.ImportModel('z-logMyName', 'z-nameTrained.cl')
 
   modelPage.NavigateToLogDialogs()
   cy.WaitForTrainingStatusCompleted()
