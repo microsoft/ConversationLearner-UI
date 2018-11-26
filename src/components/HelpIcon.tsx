@@ -13,12 +13,17 @@ import { IconButton } from 'office-ui-fabric-react';
 
 class HelpIcon extends React.Component<Props, {}> {
     render() {
-        let className = `cl-icon cl-icon--short ${this.props.customStyle || null}`
+        let className = `cl-icon cl-icon--short ${this.props.customStyle || ''}`
         return (
             <IconButton
                 className={className}
                 iconProps={{ iconName: this.props.iconName || 'Info' }}
                 onClick={() => { this.props.setTipType(this.props.tipType) }}
+                styles={{
+                    rootHovered: [{ backgroundColor: "#ffffff" }],
+                    rootPressed: [{ backgroundColor: "#ffffff" }],
+                    iconHovered: [{ color: "#ff0000" }],
+                }}
                 title="More Information"
             />
         )
