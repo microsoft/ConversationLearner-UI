@@ -222,10 +222,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
             key: 'actionResponse',
-            name: intl.formatMessage({
-                id: FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE,
-                defaultMessage: 'Response'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE),
             fieldName: 'actionResponse',
             minWidth: 200,
             maxWidth: 400,
@@ -269,10 +266,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'actionType',
-            name: intl.formatMessage({
-                id: FM.ACTIONDETAILSLIST_COLUMNS_TYPE,
-                defaultMessage: 'Action Type'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_TYPE),
             fieldName: 'metadata',
             minWidth: 100,
             maxWidth: 100,
@@ -285,10 +279,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'requiredEntities',
-            name: intl.formatMessage({
-                id: FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES,
-                defaultMessage: 'Required Entities'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_REQUIREDENTITIES),
             fieldName: 'requiredEntities',
             minWidth: 100,
             maxWidth: 200,
@@ -312,10 +303,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'negativeEntities',
-            name: intl.formatMessage({
-                id: FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES,
-                defaultMessage: 'Disqualifying Entities'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES),
             fieldName: 'negativeEntities',
             minWidth: 100,
             maxWidth: 200,
@@ -325,7 +313,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             // This lookup should be done ahead of time instead of on every render
             getSortValue: action => '',
             render: (action, component) => action.negativeEntities.length === 0
-                ? <OF.Icon iconName="Remove" className="cl-icon" data-testid="action-details-empty-disqualifying-entities"/>
+                ? <OF.Icon iconName="Remove" className="cl-icon" data-testid="action-details-empty-disqualifying-entities" />
                 : action.negativeEntities.map(entityId => {
                     const entity = component.props.entities.find(e => e.entityId === entityId)
                     return (
@@ -339,10 +327,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'suggestedEntity',
-            name: intl.formatMessage({
-                id: FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY,
-                defaultMessage: 'Expected Entity'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY),
             fieldName: 'suggestedEntity',
             minWidth: 100,
             maxWidth: 100,
@@ -350,7 +335,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             getSortValue: action => '',
             render: (action, component) => {
                 if (!action.suggestedEntity) {
-                    return <OF.Icon iconName="Remove" className="cl-icon" data-testid="action-details-empty-expected-entities"/>
+                    return <OF.Icon iconName="Remove" className="cl-icon" data-testid="action-details-empty-expected-entities" />
                 }
 
                 const entityId = action.suggestedEntity
@@ -366,10 +351,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'isTerminal',
-            name: intl.formatMessage({
-                id: FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL,
-                defaultMessage: 'Wait'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL),
             fieldName: 'isTerminal',
             minWidth: 50,
             isResizable: false,
@@ -378,10 +360,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'createdDateTime',
-            name: intl.formatMessage({
-                id: FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME,
-                defaultMessage: 'Created'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME),
             fieldName: 'createdDateTime',
             minWidth: 100,
             isResizable: false,
