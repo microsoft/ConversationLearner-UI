@@ -15,8 +15,8 @@ export function AllEntityTypes()
 
   entities.CreateNewEntity({name: 'multiValuedEntity', multiValued: true})
   entities.CreateNewEntity({name: 'negatableEntity', negatable: true})
-  
-  entities.entityTypes.forEach(entityType => { entities.CreateNewEntity({name: `my-${entityType}`, type: entityType}) })
+  entities.CreateNewEntity({name: `my-Programmatic`, type: "Programmatic"})
+  entities.pretrainedEntityTypes.forEach(entityType => { entities.CreateNewEntity({type: entityType}) })
 
   // Manually EXPORT this to fixtures folder and name it 'Model-aet.cl'
 }
