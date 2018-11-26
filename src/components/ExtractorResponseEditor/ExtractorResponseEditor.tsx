@@ -358,7 +358,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             isOverlappingOtherEntities={this.state.isSelectionOverlappingOtherEntities}
                             isVisible={this.state.isMenuVisible}
                             options={this.props.options.filter(option => option.type === EntityType.LUIS).sort((a, b) => {
-                                let nameCompare = (x : IOption, y: IOption) =>  x.name > y.name ? 1 : (x.name < y.name ? -1 : 0)
+                                let nameCompare = (x: IOption, y: IOption) => x.name > y.name ? 1 : (x.name < y.name ? -1 : 0)
                                 if (a.resolverType === this.state.builtInTypeFilter) {
                                     if (b.resolverType === this.state.builtInTypeFilter) {
                                         return nameCompare(a, b)
@@ -370,7 +370,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                                     return nameCompare(a, b)
                                 }
                             })}
-                            maxDisplayedOptions={4}
+                            maxDisplayedOptions={500}
                             menuRef={this.menuRef}
                             position={this.state.menuPosition}
                             value={this.state.value}
