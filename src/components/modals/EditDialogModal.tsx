@@ -517,6 +517,20 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    isCloseOrSaveBlocked(hasBlockingError: boolean): boolean {
+        switch (this.props.editType) {
+            case EditDialogType.NEW:
+            case EditDialogType.BRANCH:
+            case EditDialogType.LOG_EDITED:
+            case EditDialogType.TRAIN_EDITED:
+                return true
+            case EditDialogType.LOG_ORIGINAL:
+            case EditDialogType.TRAIN_ORIGINAL:
+                return false
+            default:
+                return false
+        }
+    }
     renderCloseOrSaveText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
@@ -779,7 +793,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
                             <OF.PrimaryButton
                                 data-testid="edit-teach-dialog-close-save-button"
-                                disabled={this.state.pendingExtractionChanges || (hasBlockingError && this.props.editType !== EditDialogType.LOG_ORIGINAL)}
+                                disabled={this.state.pendingExtractionChanges || this.isCloseOrSaveBlocked(hasBlockingError)}
                                 onClick={this.onClickSave}
                                 ariaDescription={this.renderCloseOrSaveText(intl)}
                                 text={this.renderCloseOrSaveText(intl)}
