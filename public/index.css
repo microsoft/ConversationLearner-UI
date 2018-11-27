@@ -867,3 +867,9 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   float:right;
   text-align:right;
 }
+
+.cl-ux-opaque {
+
+  background-color:#ffffff;
+
+}
