@@ -519,11 +519,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     isCloseOrSaveBlocked(hasBlockingError: boolean): boolean {
         switch (this.props.editType) {
+            // Save buttons
             case EditDialogType.NEW:
             case EditDialogType.BRANCH:
             case EditDialogType.LOG_EDITED:
             case EditDialogType.TRAIN_EDITED:
                 return true
+            // Close buttons
             case EditDialogType.LOG_ORIGINAL:
             case EditDialogType.TRAIN_ORIGINAL:
                 return false
@@ -531,6 +533,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 return false
         }
     }
+
     renderCloseOrSaveText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:

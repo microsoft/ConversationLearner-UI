@@ -15,7 +15,6 @@ import * as DialogUtils from '../../../Utils/dialogUtils'
 import { SelectionType } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'
-import { formatMessageId } from '../../../Utils/util'
 import { injectIntl, InjectedIntl, InjectedIntlProps, } from 'react-intl'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import { FM } from '../../../react-intl-messages'
@@ -103,7 +102,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
             key: 'firstInput',
-            name: formatMessageId(intl, FM.TRAINDIALOGS_FIRSTINPUT),
+            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_FIRSTINPUT),
             fieldName: 'firstInput',
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
@@ -131,7 +130,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'lastInput',
-            name: formatMessageId(intl, FM.TRAINDIALOGS_LASTINPUT),
+            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_LASTINPUT),
             fieldName: 'lastInput',
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
@@ -150,7 +149,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'lastResponse',
-            name: formatMessageId(intl, FM.TRAINDIALOGS_LASTRESPONSE),
+            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_LASTRESPONSE),
             fieldName: 'lastResponse',
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
@@ -169,7 +168,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'turns',
-            name: formatMessageId(intl, FM.TRAINDIALOGS_TURNS),
+            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_TURNS),
             fieldName: 'dialog',
             minWidth: 50,
             maxWidth: 50,
@@ -182,7 +181,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'lastModifiedDateTime',
-            name: formatMessageId(intl, FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME),
+            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME),
             fieldName: 'lastModifiedDateTime',
             minWidth: 100,
             isResizable: false,
@@ -191,7 +190,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         },
         {
             key: 'created',
-            name: formatMessageId(intl, FM.TRAINDIALOGS_CREATED_DATE_TIME),
+            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATED_DATE_TIME),
             fieldName: 'created',
             minWidth: 100,
             isResizable: false,
@@ -340,11 +339,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         });
     }
 
-    toActionFilter(action: CLM.ActionBase, entities: CLM.EntityBase[]): OF.IDropdownOption {
-        return {
-            key: action.actionId,
-            text: CLM.ActionBase.GetPayload(action, Util.getDefaultEntityMap(entities))
+    toActionFilter(action: CLM.ActionBase, entities: CLM.EntityBase[]): OF.IDropdownOption | null {
+        try {
+            return {
+                key: action.actionId,
+                text: CLM.ActionBase.GetPayload(action, Util.getDefaultEntityMap(entities))
+            }
         }
+        catch {
+            // Action could have an invalid payload
+            return null
+        }
+
     }
 
     toEntityFilter(entity: CLM.EntityBase): OF.IDropdownOption {
@@ -1132,8 +1138,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         data-testid="button-new-train-dialog"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                         onClick={() => this.onClickNewTeachSession()}
-                        ariaDescription={formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                        text={formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
+                        ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
+                        text={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
                         componentRef={component => this.newTeachSessionButton = component!}
                     />
                 </div>
@@ -1148,8 +1154,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 }}
                                 disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                                 onClick={() => this.onClickNewTeachSession()}
-                                ariaDescription={formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                                text={formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
+                                ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
+                                text={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
                             />
                         </div>
                     </div>
@@ -1192,6 +1198,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 placeHolder="Filter by Action"
                                 options={this.props.actions
                                     .map(a => this.toActionFilter(a, this.props.entities))
+                                    .filter(s => s !== null)
                                     .concat({ key: -1, text: '-- any --' })
                                 }
                             />
