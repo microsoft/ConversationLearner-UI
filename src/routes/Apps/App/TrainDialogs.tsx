@@ -1160,7 +1160,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 data-testid="dropdown-filter-by-entity"
                                 ariaLabel="Entity:"
                                 label="Entity:"
-                                selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : undefined)}
+                                selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : -1)}
                                 onChanged={this.onSelectEntityFilter}
                                 placeHolder="Filter by Entity"
                                 options={this.props.entities
@@ -1175,7 +1175,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 data-testid="dropdown-filter-by-action"
                                 ariaLabel="Action:"
                                 label="Action:"
-                                selectedKey={(this.state.actionFilter ? this.state.actionFilter.key : undefined)}
+                                selectedKey={(this.state.actionFilter ? this.state.actionFilter.key : -1)}
                                 onChanged={this.onSelectActionFilter}
                                 placeHolder="Filter by Action"
                                 options={this.props.actions
