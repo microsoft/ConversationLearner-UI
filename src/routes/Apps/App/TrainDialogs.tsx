@@ -827,6 +827,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             throw new Error(`You attempted to delete a train dialog, but currentTrainDialog is not defined. Please open an issue.`)
         }
 
+        this.setState({
+            isEditDialogModalOpen: false,
+        })
+        
         const deleteDialogId = this.state.currentTrainDialog.trainDialogId
         this.props.deleteTrainDialogThunkAsync(this.props.user.id, this.props.app, deleteDialogId)
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
@@ -911,6 +915,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     // Replace the current trainDialog with a new one
     async onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) {
 
+        this.setState({
+            isEditDialogModalOpen: false,
+        })
+
         try {
             // Remove any data added for rendering 
             cleanTrainDialog(newTrainDialog)
@@ -930,6 +938,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     // Create a new trainDialog 
     async onCreateTrainDialog(newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) {
+
+        this.setState({
+            isEditDialogModalOpen: false,
+        })
 
         newTrainDialog.validity = validity
 
