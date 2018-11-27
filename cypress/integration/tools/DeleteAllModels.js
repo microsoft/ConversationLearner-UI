@@ -29,7 +29,7 @@ function DeleteAllTestRows()
 
     homePage.DeleteNextTestGeneratedModel(nextPotentialRowToDelete).then(nextRow =>
     {
-      if (nextRow == -1) 
+      if (!nextRow) 
       {
         helpers.ConLog(thisFuncName, `DONE - there are no more test generated models to delete`)
         resolve()

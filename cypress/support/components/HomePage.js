@@ -3,6 +3,8 @@
  * Licensed under the MIT License.
  */
 
+const helpers = require('../Helpers')
+
 export function Visit()                         { cy.visit('http://localhost:5050') }
 export function NavigateToModelPage(name)       { cy.Get('button.root-65').ExactMatch(`${name}`).Click() }
 export function ClickNewModelButton()           { cy.Get('[data-testid="model-list-create-new-button"]').Click() }
@@ -29,17 +31,18 @@ export function DeleteNextTestGeneratedModel(nextPotentialRowToDelete)
     {
       if(elements[i].innerText.startsWith('z-')) 
       {
-        cy.wrap(element[i]).parents('.ms-List-cell[role="presentation"]').then(element =>
+        helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `Find parent of model[${i}] '${elements[i].innerText}'`)
+        cy.wrap(elements[i]).parents('[role="presentation"].ms-List-cell').then(element =>
         {
           nextPotentialRowToDelete = +element.attr('data-list-index')
-          helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `Delete row ${nextPotentialRowToDelete} with model '${element.innerText}'`)
+          helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `Delete row with model[${i}] '${element.innerText}'`)
           cy.wrap(element).find('i[data-icon-name="Delete"]').Click()
           ClickConfirmButton()
           return nextPotentialRowToDelete
         })
       }
     }
-    return -1
+    return undefined
   })
 }
 
