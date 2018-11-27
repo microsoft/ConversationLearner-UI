@@ -16,10 +16,10 @@ describe('zTemp test', () =>
   it('zTemp test', () => 
   {
     homePage.Visit()
-    homePage.NavigateToModelPage("BigTrain")
-    // modelPage.NavigateToTrainDialogs()
-    cy.pause()//.then(() =>
-    cy.Train_CaptureAllChatMessages()
-    cy.pause()
+    // homePage.NavigateToModelPage("BigTrain")
+    // // modelPage.NavigateToTrainDialogs()
+    // cy.pause()//.then(() =>
+    // cy.Train_CaptureAllChatMessages()
+    // cy.pause()
   })
 })
