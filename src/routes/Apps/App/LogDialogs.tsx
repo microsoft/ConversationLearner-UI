@@ -374,6 +374,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onDeleteLogDialog() {
+        this.setState({
+            isEditDialogModalOpen: false,
+        })
+        
         if (this.state.currentLogDialogId) {
             await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
         }
@@ -822,13 +826,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     async onCloseEditDialogModal(reload: boolean = false) {
 
+        this.setState({
+            isEditDialogModalOpen: false,
+        })
+
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session w/o saving
             await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null)
         }
 
         this.setState({
-            isEditDialogModalOpen: false,
             selectedHistoryIndex: null,
             currentTrainDialog: null,
             currentLogDialogId: null,
@@ -839,6 +846,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) {
+
+        this.setState({
+            isEditDialogModalOpen: false,
+        })
 
         // Remove any data added for rendering
         cleanTrainDialog(newTrainDialog)

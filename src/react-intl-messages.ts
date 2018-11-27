@@ -42,6 +42,8 @@ export enum FM {
     ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING = 'ActionCreatorEditor.confirmDeleteWarning',
     ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE = 'ActionCreatorEditor.confirmEditTitle',
     ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING = 'ActionCreatorEditor.confirmEditWarning',
+    ACTIONCREATOREDITOR_WARNING_ENTITY = 'ActionCreatorEditor.warningEntity',
+    ACTIONCREATOREDITOR_WARNING_PAYLOAD = 'ActionCreatorEditor.warningPayload',
 
     // ActionDetails
     ACTIONDETAILSLIST_COLUMNS_RESPONSE = 'ActionDetailsList.columns.response',
@@ -513,6 +515,9 @@ export default {
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure you want to edit this action?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
+        [FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD]: 'Bot Response is Required',
+        [FM.ACTIONCREATOREDITOR_WARNING_ENTITY]: 'Removed reference to undefined Entity',
+
 
         // ActionScorer
         [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
