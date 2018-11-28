@@ -873,3 +873,10 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   background-color:#ffffff;
 
 }
+
+.cl-ux-shadowed {
+  
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid #aaaaaa !important;
+
+}
