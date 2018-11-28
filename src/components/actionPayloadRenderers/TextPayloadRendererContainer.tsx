@@ -19,7 +19,15 @@ export default class Component extends React.Component<Props, {}> {
     render() {
         const { entities, memories, textAction } = this.props
         const defaultEntityMap = Util.getDefaultEntityMap(entities)
-        const renderStringUsingEntityNames = textAction.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
+        
+        let renderStringUsingEntityNames: string
+        try {
+            renderStringUsingEntityNames = textAction.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
+        }
+        catch (error) {
+            // Show raw payload as fallback
+            renderStringUsingEntityNames = JSON.parse(textAction.payload).text
+        }
         const renderStringUsingCurrentMemory = memories === null
             ? null
             : textAction.renderValue(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
