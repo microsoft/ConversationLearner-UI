@@ -28,26 +28,24 @@ export function DeleteNextTestGeneratedModel(nextPotentialRowToDelete)
   return new Promise((resolve) =>
   {
     helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `Start`)
-    return cy.Get('[data-testid="model-list-model-name"]').then(elements =>
+    cy.Get('[data-testid="model-list-model-name"]').then(elements =>
     {
-      return cy.RunAndReturn(()=>
+      var row 
+      helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `${row} should be UNDEFINED!`)
+      for(var i = nextPotentialRowToDelete; i < elements.length; i++) 
       {
-        var row
-        for(var i = nextPotentialRowToDelete; i < elements.length; i++) 
+        if(elements[i].innerText.startsWith('Model-')) //'z-')) 
         {
-          if(elements[i].innerText.startsWith('z-')) 
-          {
-            row = i; 
-            break;
-          }
+          row = i; 
+          break;
         }
-        if (!row) return -1
-        
-        helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `Find parent of model[${row}] '${elements[row].innerText}'`)
-        cy.wrap(elements[row]).parents('[role="presentation"].ms-List-cell').find('i[data-icon-name="Delete"]').Click()
-        ClickConfirmButton()//.then(() => {return row})
-        return row
-      })
+      }
+      if (!row) return resolve(undefined)
+      
+      helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `Find parent of model[${row}] '${elements[row].innerText}'`)
+      cy.wrap(elements[row]).parents('[role="presentation"].ms-List-cell').find('i[data-icon-name="Delete"]').Click()
+      ClickConfirmButton()//.then(() => {return row})
+      resolve(row)
     })
   })
 }
