@@ -46,9 +46,11 @@ export function Branching()
   train.CaptureOriginalChatMessages()
   
   train.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
+  cy.wait(5000)
   editDialogModal.ClickScoreActionsButton('Hello $name')
   scorerModal.VerifyLastChatMessage('Hello Joseph')
   train.CaptureEditedChatMessages()
+  cy.wait(30000)
   train.Save()
   
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
