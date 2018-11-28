@@ -1078,8 +1078,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 </div>
                                 {payloadError &&
                                     (<div>
-                                        <p className="ms-TextField-errorMessage css-83 errorMessage_20d9206e">
-                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">{payloadError}</span>
+                                        <p className="cl-input-warning">
+                                            <span aria-live="assertive" data-automation-id="error-message">{payloadError}</span>
                                         </p>
                                     </div>)}
                             </div>
@@ -1100,8 +1100,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 </div>
                                 {payloadError &&
                                     (<div>
-                                        <p className="ms-TextField-errorMessage css-83 errorMessage_20d9206e">
-                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">{payloadError}</span>
+                                        <p className="cl-input-warning">
+                                            <span aria-live="assertive" data-automation-id="error-message">{payloadError}</span>
                                         </p>
                                     </div>)}
                             </div>
