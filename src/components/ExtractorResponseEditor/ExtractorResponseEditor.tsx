@@ -5,6 +5,7 @@
 import * as React from 'react'
 import { Editor } from 'slate-react'
 import Plain from 'slate-plain-serializer'
+import * as OF from 'office-ui-fabric-react'
 import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType, IGenericEntityData } from './models'
 import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValueUsingTokenData, getSelectedText } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
@@ -338,6 +339,12 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         onChange(change)
     }
 
+    @OF.autobind
+    onClickNewEntity(entityTypeFilter: string) {
+        this.setState({isMenuVisible: false})
+        this.props.onClickNewEntity(entityTypeFilter)
+    }
+
     render() {
         return (
             <div className="entity-labeler">
@@ -375,7 +382,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             position={this.state.menuPosition}
                             value={this.state.value}
 
-                            onClickNewEntity={this.props.onClickNewEntity}
+                            onClickNewEntity={this.onClickNewEntity}
                             onSelectOption={o => this.onSelectOption(o, this.state.value, this.onChange)}
                             entityTypeFilter={this.state.builtInTypeFilter !== null ? this.state.builtInTypeFilter as any : EntityType.LUIS}
                         />

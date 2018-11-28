@@ -39,7 +39,16 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     validationError(action: ActionBase): boolean {
         switch (action.actionType) {
             case ActionTypes.TEXT: {
-                return false
+                // Make sure it renders
+                try {
+                    const entityMap = Util.getDefaultEntityMap(this.props.entities)
+                    const textAction = new TextAction(action)
+                    textAction.renderValue(entityMap, { preserveOptionalNodeWrappingCharacters: true })
+                    return false
+                }
+                catch (error) {
+                    return true
+                }
             }
             case ActionTypes.API_LOCAL: {
                 const apiAction = new ApiAction(action)
@@ -232,36 +241,43 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             getSortValue: (action, component) => {
                 const entityMap = Util.getDefaultEntityMap(component.props.entities)
 
-                switch (action.actionType) {
-                    case ActionTypes.TEXT: {
-                        const textAction = new TextAction(action)
-                        return textAction.renderValue(entityMap, { preserveOptionalNodeWrappingCharacters: true })
+                try {
+                    switch (action.actionType) {
+                        case ActionTypes.TEXT: {
+                            const textAction = new TextAction(action)
+                            return textAction.renderValue(entityMap, { preserveOptionalNodeWrappingCharacters: true })
+                        }
+                        case ActionTypes.API_LOCAL: {
+                            const apiAction = new ApiAction(action)
+                            return apiAction.name
+                        }
+                        case ActionTypes.CARD: {
+                            const cardAction = new CardAction(action)
+                            return cardAction.templateName
+                        }
+                        default: {
+                            console.warn(`Could not get sort value for unknown action type: ${action.actionType}`)
+                            return ''
+                        }
                     }
-                    case ActionTypes.API_LOCAL: {
-                        const apiAction = new ApiAction(action)
-                        return apiAction.name
-                    }
-                    case ActionTypes.CARD: {
-                        const cardAction = new CardAction(action)
-                        return cardAction.templateName
-                    }
-                    default: {
-                        console.warn(`Could not get sort value for unknown action type: ${action.actionType}`)
-                        return ''
-                    }
+                }
+                catch (error) {
+                    // Action has errors
+                    return ''
                 }
             },
             render: (action, component) => {
                 const isValidationError = component.validationError(action)
                 const payloadRenderer = getActionPayloadRenderer(action, component, isValidationError)
-
-                return <div className="cl-action-error">
-                    {payloadRenderer}
-                    {isValidationError &&
-                        <div className={OF.FontClassNames.mediumPlus}>
-                            <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
-                        </div>}
-                </div>
+                return (
+                    <div className="cl-action-error">
+                        {payloadRenderer}
+                        {isValidationError &&
+                            <div className={OF.FontClassNames.mediumPlus}>
+                                <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
+                            </div>}
+                    </div>
+                )
             }
         },
         {
