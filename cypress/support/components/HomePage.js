@@ -34,7 +34,7 @@ export function DeleteNextTestGeneratedModel(nextPotentialRowToDelete)
       helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `${row} should be UNDEFINED!`)
       for(var i = nextPotentialRowToDelete; i < elements.length; i++) 
       {
-        if(elements[i].innerText.startsWith('Model-')) //'z-')) 
+        if(elements[i].innerText.startsWith('Model1-')) //'z-')) 
         {
           row = i; 
           break;
