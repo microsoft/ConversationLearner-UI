@@ -570,7 +570,7 @@ export function getTip(tipType: string) {
                     <h2>Find / Set your LUIS Subscription key:</h2>
                     <ol>
                         <li>Click on the "Go to LUIS" button in the Conversation Learner UI.  This will take you to the LUIS application associated with your model.</li>
-                        <li>In your LUIS' apps "Publish Tab", click on "Add Key"
+                        <li>In your LUIS' apps "Keys and Endpoint settings", click on "Assign resource"
                             <img src="https://blisstorage.blob.core.windows.net/uiimages/addkey.PNG" width="50%" alt="Add Key" />
                         </li>
                         <li>If you don't yet have an Azure Suscription key you'll need to <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/azureibizasubscription" target="_blank" rel="noopener noreferrer">Create One</a></li>

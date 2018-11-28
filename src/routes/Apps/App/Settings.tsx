@@ -384,7 +384,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             />
                         </OF.Label>
                         <div>
-                            <a href={`https://www.luis.ai/applications/${this.props.app.luisAppId}/versions/0.1/publish`} target="_blank">
+                            <a href={`https://www.luis.ai/applications/${this.props.app.luisAppId}/versions/0.1/manage/endpoints`} target="_blank">
                                 <OF.DefaultButton
                                     iconProps={{ iconName: "OpenInNewWindow" }}
                                     ariaDescription="Go to LUIS"
