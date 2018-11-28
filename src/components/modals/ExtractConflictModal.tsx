@@ -9,7 +9,6 @@ import * as CLM from '@conversationlearner/models'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import * as Util from '../../Utils/util'
 
 interface ReceivedProps {
     onClose: Function
