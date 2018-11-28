@@ -50,7 +50,7 @@ export function Branching()
   editDialogModal.ClickScoreActionsButton('Hello $name')
   scorerModal.VerifyLastChatMessage('Hello Joseph')
   train.CaptureEditedChatMessages()
-  cy.wait(5000)
+  cy.wait(30000)
   train.Save()
   
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
