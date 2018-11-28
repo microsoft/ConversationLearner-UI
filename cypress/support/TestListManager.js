@@ -15,7 +15,18 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
+  "CreateModels.AllEntityTypes",
+  "CreateModels.DisqualifyingEntities",
+  "CreateModels.WaitVsNoWaitActions",
+  "CreateModels.WhatsYourName",
+  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
+  "Log.WhatsYourName",
+  "Train.DisqualifyingEntities",
+  "Train.WaitVsNoWaitActions",
+  "Train.WhatsYourName",
+  "Train.MyNameIs",
+  "CleanUp.DeleteAllTestGeneratedModels"
 ]
 
 // Do NOT alter this list except to add in new test cases as they are created.
