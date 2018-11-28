@@ -524,13 +524,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             case EditDialogType.BRANCH:
             case EditDialogType.LOG_EDITED:
             case EditDialogType.TRAIN_EDITED:
-                return true
+                return hasBlockingError
             // Close buttons
             case EditDialogType.LOG_ORIGINAL:
             case EditDialogType.TRAIN_ORIGINAL:
-                return false
+                return hasBlockingError
             default:
-                return false
+                return hasBlockingError
         }
     }
 
