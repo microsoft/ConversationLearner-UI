@@ -592,7 +592,7 @@ export default {
         [FM.APPSLIST_IMPORTAPP_BUTTONTEXT]: 'Import Model',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION]: 'Import Tutorials Models',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT]: 'Import Tutorials',
-        [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this model? {appName}',
+        [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete the {appName} model?',
         [FM.APPSLIST_COLUMN_NAME]: 'Name',
         [FM.APPSLIST_COLUMNS_LOCALE]: 'Locale',
         [FM.APPSLIST_COLUMNS_LINKEDBOTS]: 'Linked Bots',
@@ -785,7 +785,7 @@ export default {
         [FM.TOOLTIP_MEMORYMANAGER_TITLE]: 'Memory Manager',
         [FM.TOOLTIP_MEMORYCONVERTER]: `Conversation Learner provides the following converters, but developers are free to write additional ones:`,
         [FM.TOOLTIP_MEMORYCONVERTER_TITLE]: 'Memory Converters',
-      [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
+        [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
         [FM.TOOLTIP_REPLAY]: `Replay each step in the Dialog, calling the EntityDetectionCallback and any API callbacks.  This will update the Dialog to reflect any changes made to the Bot's APIs`,
         [FM.TOOLTIP_TAG_EDITING]: 'The version (tag) of the model to edit in UI',
         [FM.TOOLTIP_TAG_LIVE]: 'The version (tag) of the model used when published to external channels (e.g. Skype)',
@@ -888,7 +888,7 @@ export default {
         [FM.ERROR_PRIMARYBUTTON_TEXT]: 'Ok',
 
         // ExtractConflictModal
-        [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Entity labelling conflicts with an existing labelling',
+        [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Entity is labelled differently in another user utterance',
 
         // LogDialogModal
         [FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
@@ -921,7 +921,7 @@ export default {
         [FM.TEACHSESSIONADMIN_DIALOGMODE_USER]: 'User Input',
         [FM.TEACHSESSIONADMIN_DIALOGMODE_BOT]: 'Bot Response',
         [FM.TEACHSESSIONADMIN_DIALOGMODE_END_SESSION]: 'Session Has Ended',
-        [FM.TEACHSESSIONADMIN_MEMORY_TITLE]: 'Entity Memory',
+        [FM.TEACHSESSIONADMIN_MEMORY_TITLE]: 'Memory',
         [FM.TEACHSESSIONADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
         [FM.TEACHSESSIONADMIN_ACTION_TITLE]: 'Action',
         [FM.TEACHSESSIONADMIN_TRAINSTATUS_COMPLETED]: 'Train Status: Completed',

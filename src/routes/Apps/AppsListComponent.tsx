@@ -260,7 +260,7 @@ export class Component extends React.Component<Props, ComponentState> {
                 onConfirm={props.onConfirmDeleteApp}
                 title={props.intl.formatMessage({
                     id: FM.APPSLIST_CONFIRMCANCELMODALTITLE,
-                    defaultMessage: 'Are you sure you want to delete this model? {appName}'
+                    defaultMessage: util.getDefaultText(FM.APPSLIST_CONFIRMCANCELMODALTITLE)
                 }, {
                         appName: props.appToDelete ? props.appToDelete.appName : ''
                     })}
