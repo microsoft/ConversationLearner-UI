@@ -20,9 +20,9 @@ class HelpIcon extends React.Component<Props, {}> {
                 iconProps={{ iconName: this.props.iconName || 'Info' }}
                 onClick={() => { this.props.setTipType(this.props.tipType) }}
                 styles={{
-                    rootHovered: [{ backgroundColor: "#ffffff" }],
-                    rootPressed: [{ backgroundColor: "#ffffff" }],
-                    iconHovered: [{ color: "#ff0000" }],
+                    rootHovered: [{ backgroundColor: "transparent !important" }],
+                    rootPressed: [{ backgroundColor: "transparent !important" }],
+                    iconHovered: [{ color: "#000000 !important" }],
                 }}
                 title="More Information"
             />
