@@ -94,7 +94,7 @@ const tryCreateSlateValue = (actionType: string, slotName: string, content: obje
     SlotName: ${slotName}
     content:\n`, content, options)
         console.error(error)
-        return Plain.deserialize('Error occurred while attempting to display action. Please re-enter the value and re-save the action.')
+        return Plain.deserialize("Action references an Entity that doesn't exist. Please re-enter the value and re-save the action.")
     }
 }
 
@@ -140,7 +140,8 @@ interface ComponentState {
     isConfirmEditModalOpen: boolean
     showValidationWarning: boolean
     isPayloadFocused: boolean
-    isPayloadValid: boolean
+    isPayloadMissing: boolean
+    entityWarning: boolean
     newOrEditedAction: CLM.ActionBase | null
     selectedActionTypeOptionKey: string | number
     availableExpectedEntityTags: OF.ITag[]
@@ -170,7 +171,8 @@ const initialState: ComponentState = {
     isConfirmEditModalOpen: false,
     showValidationWarning: false,
     isPayloadFocused: false,
-    isPayloadValid: false,
+    isPayloadMissing: true,
+    entityWarning: false,
     newOrEditedAction: null,
     selectedActionTypeOptionKey: actionTypeOptions[0].key,
     availableExpectedEntityTags: [],
@@ -272,14 +274,23 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const payloadOptions = this.props.entities.map(convertEntityToOption)
                 const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
-                let selectedApiOptionKey: string | null = null;
-                let selectedCardOptionKey: string | null = null;
+                let selectedApiOptionKey: string | null = null
+                let selectedCardOptionKey: string | null = null
+                let entityWarning = false
 
                 const slateValuesMap = {}
                 const secondarySlateValuesMap = {}
                 if (action.actionType === CLM.ActionTypes.TEXT) {
                     const textAction = new CLM.TextAction(action)
-                    slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(CLM.ActionTypes.TEXT, TEXT_SLOT, textAction.value, payloadOptions)
+                    try {
+                        slateValuesMap[TEXT_SLOT] = createSlateValue(textAction.value, payloadOptions)
+                    }
+                    catch {
+                         // Default to raw value
+                        let contentString: string = JSON.parse(textAction.payload).text
+                        slateValuesMap[TEXT_SLOT] = Plain.deserialize(contentString)
+                        entityWarning = true
+                    }
                 } else if (action.actionType === CLM.ActionTypes.END_SESSION) {
                     const sessionAction = new CLM.SessionAction(action)
                     slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(CLM.ActionTypes.TEXT, TEXT_SLOT, sessionAction.value, payloadOptions)
@@ -326,7 +337,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                 nextState = {
                     ...nextState,
-                    isPayloadValid: action.actionType === CLM.ActionTypes.API_LOCAL || action.payload.length !== 0,
+                    isPayloadMissing: action.actionType === CLM.ActionTypes.TEXT && action.payload.length === 0,
+                    entityWarning,
                     selectedActionTypeOptionKey: action.actionType,
                     selectedApiOptionKey,
                     selectedCardOptionKey,
@@ -697,12 +709,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
-        const isPayloadValid = actionTypeOption.key !== CLM.ActionTypes.TEXT && actionTypeOption.key !== CLM.ActionTypes.END_SESSION
-            ? true
-            : textPayload && (textPayload.document.text.length !== 0)
+        let isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload.document.text.length === 0)
 
         this.setState({
-            isPayloadValid,
+            isPayloadMissing,
             selectedActionTypeOptionKey: actionTypeOption.key,
             slateValuesMap: {
                 [TEXT_SLOT]: Plain.deserialize('')
@@ -823,13 +833,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         // If we added entity to a payload which was already in the list of required entities remove it to avoid duplicates.
         const requiredEntityTags = this.state.requiredEntityTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
-        const isPayloadValid = (this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.TEXT
-            && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.END_SESSION)
-            ? true
-            : value.document.text.length !== 0
+
+        let isPayloadMissing = (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.TEXT && value.document.text.length === 0)
 
         const nextState: Partial<ComponentState> = {
-            isPayloadValid,
+            entityWarning: false,
+            isPayloadMissing,
             requiredEntityTagsFromPayload,
             requiredEntityTags
         }
@@ -847,7 +856,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     saveDisabled(): boolean {
         const areInputsInvalid = (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
             ? this.state.selectedApiOptionKey === null
-            : !this.state.isPayloadValid)
+            : this.state.isPayloadMissing)
 
         return areInputsInvalid
             || (this.state.isEditing && !this.state.hasPendingChanges)
@@ -868,6 +877,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     render() {
+        const { intl } = this.props
+
+        const payloadError = this.state.entityWarning 
+            ? formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_ENTITY) 
+            : this.state.isPayloadMissing 
+            ? formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD) : null 
+
         // Disable payload if we're editing existing action and no API or CARD data available
         const isPayloadDisabled =
             (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
@@ -885,7 +901,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .filter(e => !e.doNotMemorize)
             .map(convertEntityToOption)
 
-        const { intl } = this.props
+
 
         const disabled = this.state.isEditing && this.isUsedByTrainingDialogs()
 
@@ -1046,7 +1062,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         }
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.TEXT
-                            && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
+                            && (<div className={(payloadError ? 'editor--error' : '')}>
                                 <div>
                                     <OF.Label className="ms-Label--tight">Bot's response...
                                         <HelpIcon tipType={ToolTip.TipType.ACTION_RESPONSE_TEXT} />
@@ -1060,17 +1076,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         disabled={isPayloadDisabled}
                                     />
                                 </div>
-                                {!this.state.isPayloadValid &&
+                                {payloadError &&
                                     (<div>
                                         <p className="ms-TextField-errorMessage css-83 errorMessage_20d9206e">
-                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
+                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">{payloadError}</span>
                                         </p>
                                     </div>)}
                             </div>
                             )}
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.END_SESSION
-                            && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
+                            && (<div className={(payloadError ? 'editor--error' : '')}>
                                 <div>
                                     <OF.Label className="ms-Label--tight">Data... <HelpIcon tipType={ToolTip.TipType.ACTION_END_SESSION} /></OF.Label>
                                     <ActionPayloadEditor.Editor
@@ -1082,10 +1098,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         disabled={isPayloadDisabled}
                                     />
                                 </div>
-                                {!this.state.isPayloadValid &&
+                                {payloadError &&
                                     (<div>
                                         <p className="ms-TextField-errorMessage css-83 errorMessage_20d9206e">
-                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
+                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">{payloadError}</span>
                                         </p>
                                     </div>)}
                             </div>

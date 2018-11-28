@@ -5,6 +5,7 @@
 import * as React from 'react'
 import { Editor } from 'slate-react'
 import Plain from 'slate-plain-serializer'
+import * as OF from 'office-ui-fabric-react'
 import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType, IGenericEntityData } from './models'
 import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValueUsingTokenData, getSelectedText } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
@@ -338,6 +339,12 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         onChange(change)
     }
 
+    @OF.autobind
+    onClickNewEntity(entityTypeFilter: string) {
+        this.setState({isMenuVisible: false})
+        this.props.onClickNewEntity(entityTypeFilter)
+    }
+
     render() {
         return (
             <div className="entity-labeler">
@@ -358,7 +365,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             isOverlappingOtherEntities={this.state.isSelectionOverlappingOtherEntities}
                             isVisible={this.state.isMenuVisible}
                             options={this.props.options.filter(option => option.type === EntityType.LUIS).sort((a, b) => {
-                                let nameCompare = (x : IOption, y: IOption) =>  x.name > y.name ? 1 : (x.name < y.name ? -1 : 0)
+                                let nameCompare = (x: IOption, y: IOption) => x.name > y.name ? 1 : (x.name < y.name ? -1 : 0)
                                 if (a.resolverType === this.state.builtInTypeFilter) {
                                     if (b.resolverType === this.state.builtInTypeFilter) {
                                         return nameCompare(a, b)
@@ -370,12 +377,12 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                                     return nameCompare(a, b)
                                 }
                             })}
-                            maxDisplayedOptions={4}
+                            maxDisplayedOptions={500}
                             menuRef={this.menuRef}
                             position={this.state.menuPosition}
                             value={this.state.value}
 
-                            onClickNewEntity={this.props.onClickNewEntity}
+                            onClickNewEntity={this.onClickNewEntity}
                             onSelectOption={o => this.onSelectOption(o, this.state.value, this.onChange)}
                             entityTypeFilter={this.state.builtInTypeFilter !== null ? this.state.builtInTypeFilter as any : EntityType.LUIS}
                         />

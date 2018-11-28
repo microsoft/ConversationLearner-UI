@@ -38,7 +38,7 @@ const logicOnly =
         name: "ClearEntities",
         logic: async (memoryManager: ClientMemoryManager) => {
             // Clear "number" entity
-            memoryManager.ForgetEntity("number");
+            memoryManager.Delete("number");
         }
     })`;
 
@@ -49,9 +49,9 @@ const apiCorrect =
             var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
     
             // CORRECT
-            // RememberEntity called before APICallback has returned
+            // Set called before APICallback has returned
             let response = await requestpromise(options)
-            memoryManager.RememberEntity("RandomMessage", response.body);
+            memoryManager.Set("RandomMessage", response.body);
         },
         render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
             return logicResult.body
@@ -65,9 +65,9 @@ const apiWrong =
             var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
     
             // !!WRONG!!
-            // RememberEntity call will happen after the APICallback has returned
+            // Set call will happen after the APICallback has returned
             request(options, (error:any, response:any, body:any) => {
-                memoryManager.RememberEntity("RandomMessage", response.body);   // BAD
+                memoryManager.Set("RandomMessage", response.body);   // BAD
             })
         },
         render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
@@ -81,10 +81,10 @@ const apiWrong =
         logic: async (memoryManager : ClientMemoryManager) => {
             var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
             let response = await requestpromise(options)
-            memoryManager.RememberEntity("RandomMessage", response.body);
+            memoryManager.Set("RandomMessage", response.body);
         },
         render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
-            let value = memoryManager.EntityValue("RandomMessage")
+            let value = memoryManager.Get("RandomMessage", ClientMemoryManager.AS_STRING)
             return value || ""
         }
     })`;
@@ -95,7 +95,7 @@ const apiWrong =
         logic: async (memoryManager : ClientMemoryManager) => {
             var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
             let response = await requestpromise(options)
-            memoryManager.RememberEntity("RandomMessage", response.body);
+            memoryManager.Set("RandomMessage", response.body);
         },
         render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
             return logicResult.body
@@ -124,6 +124,7 @@ export function renderAPIPage1(): JSX.Element {
             <pre>{logicOnly}</pre>
             <div><br /><HelpLink label="Data Passing: 'logic' -> 'render'" tipType={TipType.ACTION_API2} /></div>
             <div><HelpLink label="Making external API calls" tipType={TipType.ACTION_API3} /></div>
+            <div><HelpLink label="Memory Manager" tipType={TipType.MEMORY_MANAGER} /></div>
         </div>
     )
 }

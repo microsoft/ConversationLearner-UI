@@ -3,226 +3,130 @@
   "actions": [],
   "entities": [
     {
-      "doNotMemorize": true,
-      "entityId": "1564e924-1ba8-4380-aed3-685a7a3e46b9",
-      "createdDateTime": "2018-11-07T20:05:52.0408472+00:00",
-      "entityName": "builtin-phonenumber",
-      "entityType": "phonenumber",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "doNotMemorize": true,
-      "entityId": "c0f8e671-b736-48fd-ae19-9a35bb379c08",
-      "createdDateTime": "2018-11-07T20:05:43.5346434+00:00",
-      "entityName": "builtin-email",
-      "entityType": "email",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "doNotMemorize": true,
-      "entityId": "c96dcb85-74e8-482a-84fb-5115dc363d7a",
-      "createdDateTime": "2018-11-07T20:05:34.8052212+00:00",
-      "entityName": "builtin-url",
-      "entityType": "url",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "doNotMemorize": true,
-      "entityId": "4c5ea204-43b8-47f2-b6f1-187b7f3ea824",
-      "createdDateTime": "2018-11-07T20:05:26.1510403+00:00",
-      "entityName": "builtin-age",
-      "entityType": "age",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "doNotMemorize": true,
-      "entityId": "2a85b471-54c3-4ce3-b27e-552df360b293",
-      "createdDateTime": "2018-11-07T20:05:18.152069+00:00",
-      "entityName": "builtin-money",
-      "entityType": "money",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "doNotMemorize": true,
-      "entityId": "ddb80454-5e59-4117-a34f-3b7d6d5663b4",
-      "createdDateTime": "2018-11-07T20:05:09.7024629+00:00",
-      "entityName": "builtin-dimension",
-      "entityType": "dimension",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "doNotMemorize": true,
-      "entityId": "45546589-db72-4cb6-8674-d094d41eb5ae",
-      "createdDateTime": "2018-11-07T20:05:01.4030578+00:00",
-      "entityName": "builtin-temperature",
-      "entityType": "temperature",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "doNotMemorize": true,
-      "entityId": "6d9e467d-7a45-42e1-ad43-430305288968",
-      "createdDateTime": "2018-11-07T20:04:53.4732986+00:00",
-      "entityName": "builtin-percentage",
-      "entityType": "percentage",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "doNotMemorize": true,
-      "entityId": "1fb4bcca-cbc8-473f-82b0-bd2bcace32ed",
-      "createdDateTime": "2018-11-07T20:04:42.1778612+00:00",
-      "entityName": "builtin-ordinal",
-      "entityType": "ordinal",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "doNotMemorize": true,
-      "entityId": "201570d6-1e7e-480b-b39c-bf9dab556384",
-      "createdDateTime": "2018-11-07T20:04:28.9066754+00:00",
-      "entityName": "builtin-number",
-      "entityType": "number",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "doNotMemorize": true,
-      "entityId": "b646b9b4-f3f2-4962-abdc-d5c409c3e6c2",
-      "createdDateTime": "2018-11-07T20:04:21.2047578+00:00",
+      "entityId": "5efab405-7f1c-4d22-a062-ede20b6ba97f",
+      "createdDateTime": "2018-11-22T00:43:56.694387+00:00",
       "entityName": "builtin-datetimev2",
       "entityType": "datetimeV2",
-      "isMultivalue": true,
+      "isMultivalue": false,
       "isNegatible": false
     },
     {
-      "entityId": "27e09995-9afe-48ca-afa7-1b1e72028408",
-      "createdDateTime": "2018-11-07T20:03:59.8053664+00:00",
+      "entityId": "e22b9539-509a-446a-aa51-facba7bd7b52",
+      "createdDateTime": "2018-11-22T00:44:03.7569918+00:00",
+      "entityName": "builtin-number",
+      "entityType": "number",
+      "isMultivalue": false,
+      "isNegatible": false
+    },
+    {
+      "entityId": "6d908bfe-2bbc-43ad-915b-abcabcb954ee",
+      "createdDateTime": "2018-11-22T00:44:11.1282373+00:00",
+      "entityName": "builtin-ordinal",
+      "entityType": "ordinal",
+      "isMultivalue": false,
+      "isNegatible": false
+    },
+    {
+      "entityId": "78e80ca3-3b18-4a6f-9921-8cc9ef760875",
+      "createdDateTime": "2018-11-22T00:44:19.2858764+00:00",
+      "entityName": "builtin-percentage",
+      "entityType": "percentage",
+      "isMultivalue": false,
+      "isNegatible": false
+    },
+    {
+      "entityId": "0da30fc8-4f89-49fe-b9fb-437c95e1fdd2",
+      "createdDateTime": "2018-11-22T00:44:26.3098501+00:00",
+      "entityName": "builtin-temperature",
+      "entityType": "temperature",
+      "isMultivalue": false,
+      "isNegatible": false
+    },
+    {
+      "entityId": "c343967c-eded-4357-a4a4-2870a9853c00",
+      "createdDateTime": "2018-11-22T00:44:34.2710334+00:00",
+      "entityName": "builtin-dimension",
+      "entityType": "dimension",
+      "isMultivalue": false,
+      "isNegatible": false
+    },
+    {
+      "entityId": "fc757f24-7785-48c9-b188-83731866c69c",
+      "createdDateTime": "2018-11-22T00:44:42.2967577+00:00",
+      "entityName": "builtin-money",
+      "entityType": "money",
+      "isMultivalue": false,
+      "isNegatible": false
+    },
+    {
+      "entityId": "03637826-cab0-4272-947f-f0b95aba1644",
+      "createdDateTime": "2018-11-22T00:44:49.8045079+00:00",
+      "entityName": "builtin-age",
+      "entityType": "age",
+      "isMultivalue": false,
+      "isNegatible": false
+    },
+    {
+      "entityId": "9316113a-f2a1-4583-94ba-87ccd190af35",
+      "createdDateTime": "2018-11-22T00:44:57.3921254+00:00",
+      "entityName": "builtin-url",
+      "entityType": "url",
+      "isMultivalue": false,
+      "isNegatible": false
+    },
+    {
+      "entityId": "a3443719-0623-48af-87c5-7770e9a99659",
+      "createdDateTime": "2018-11-22T00:45:05.3769486+00:00",
+      "entityName": "builtin-email",
+      "entityType": "email",
+      "isMultivalue": false,
+      "isNegatible": false
+    },
+    {
+      "entityId": "40a1ee02-c473-48c5-872d-28fedb572e96",
+      "createdDateTime": "2018-11-22T00:45:14.8127747+00:00",
+      "entityName": "builtin-phonenumber",
+      "entityType": "phonenumber",
+      "isMultivalue": false,
+      "isNegatible": false
+    },
+    {
+      "entityId": "784c0a89-846f-4b8f-88a3-5e4515d009f6",
+      "createdDateTime": "2018-11-22T00:45:23.5129831+00:00",
       "entityName": "multiValuedEntity",
       "entityType": "LUIS",
       "isMultivalue": true,
-      "isNegatible": false
+      "isNegatible": false,
+      "resolverType": "none"
     },
     {
-      "entityId": "4bbc3f05-38b0-48fc-8f5d-47dc48eb6d89",
-      "negativeId": "4ab8c048-1996-4c55-bfe8-a047f8180685",
-      "createdDateTime": "2018-11-07T20:04:05.913848+00:00",
+      "entityId": "19124129-76ef-492a-b15c-9086c432a0e6",
+      "negativeId": "37978886-dd08-4434-8042-b426e906d924",
+      "createdDateTime": "2018-11-22T00:45:32.5733283+00:00",
       "entityName": "negatableEntity",
       "entityType": "LUIS",
       "isMultivalue": false,
-      "isNegatible": true
+      "isNegatible": true,
+      "resolverType": "none"
     },
     {
-      "entityId": "4ab8c048-1996-4c55-bfe8-a047f8180685",
-      "positiveId": "4bbc3f05-38b0-48fc-8f5d-47dc48eb6d89",
-      "createdDateTime": "2018-11-07T20:04:05.913848+00:00",
+      "entityId": "37978886-dd08-4434-8042-b426e906d924",
+      "positiveId": "19124129-76ef-492a-b15c-9086c432a0e6",
+      "createdDateTime": "2018-11-22T00:45:32.5733283+00:00",
       "entityName": "~negatableEntity",
       "entityType": "LUIS",
       "isMultivalue": false,
-      "isNegatible": true
+      "isNegatible": true,
+      "resolverType": "none"
     },
     {
-      "entityId": "6d764030-e8f1-4a1d-b60d-ad5aa7884bc2",
-      "createdDateTime": "2018-11-07T20:04:13.7665334+00:00",
-      "entityName": "my-programmatic",
+      "entityId": "8d76b927-1f0f-45cc-9c7b-e6112978d3b9",
+      "createdDateTime": "2018-11-22T00:45:43.6745276+00:00",
+      "entityName": "my-Programmatic",
       "entityType": "LOCAL",
       "isMultivalue": false,
       "isNegatible": false
-    },
-    {
-      "entityId": "ed62b8e4-1a4e-4d80-9472-b75312c8aaaf",
-      "createdDateTime": "2018-11-07T20:04:21.1890894+00:00",
-      "entityName": "my-datetimeV2",
-      "entityType": "datetimeV2",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "entityId": "b51f3574-ec4e-421e-8666-986dcd75bdbd",
-      "createdDateTime": "2018-11-07T20:04:28.890751+00:00",
-      "entityName": "my-number",
-      "entityType": "number",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "entityId": "a28fefc0-2ed7-4b9c-9e65-8f0e109988fc",
-      "createdDateTime": "2018-11-07T20:04:41.0792292+00:00",
-      "entityName": "my-ordinal",
-      "entityType": "ordinal",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "entityId": "442a541f-acf3-416a-8867-002249bac632",
-      "createdDateTime": "2018-11-07T20:04:53.4420398+00:00",
-      "entityName": "my-percentage",
-      "entityType": "percentage",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "entityId": "7e9dd306-9b77-4642-be1b-7c539b3c400e",
-      "createdDateTime": "2018-11-07T20:05:01.3378561+00:00",
-      "entityName": "my-temperature",
-      "entityType": "temperature",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "entityId": "bf928200-d3ad-4f89-89d0-1274a2b0d3fb",
-      "createdDateTime": "2018-11-07T20:05:09.6868361+00:00",
-      "entityName": "my-dimension",
-      "entityType": "dimension",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "entityId": "4710a39a-f73d-4e38-9116-19f53544f49a",
-      "createdDateTime": "2018-11-07T20:05:18.1279518+00:00",
-      "entityName": "my-money",
-      "entityType": "money",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "entityId": "fcaeb2c3-7fdf-42c5-a8d2-67bb025b436a",
-      "createdDateTime": "2018-11-07T20:05:26.1354168+00:00",
-      "entityName": "my-age",
-      "entityType": "age",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "entityId": "54a23ff9-c6b9-4fe3-bd6f-75501a47f83d",
-      "createdDateTime": "2018-11-07T20:05:34.7739999+00:00",
-      "entityName": "my-url",
-      "entityType": "url",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "entityId": "4726f1ba-75a1-4e52-9e02-b492879a587c",
-      "createdDateTime": "2018-11-07T20:05:43.5034045+00:00",
-      "entityName": "my-email",
-      "entityType": "email",
-      "isMultivalue": true,
-      "isNegatible": false
-    },
-    {
-      "entityId": "1b152a6c-a136-4372-bae3-44923b85b284",
-      "createdDateTime": "2018-11-07T20:05:52.0095634+00:00",
-      "entityName": "my-phonenumber",
-      "entityType": "phonenumber",
-      "isMultivalue": true,
-      "isNegatible": false
     }
   ],
-  "packageId": "a5c192f8-46d8-499b-863c-859d108281c2"
+  "packageId": "ba025a49-1be0-43ea-823c-de51bd828f12"
 }
