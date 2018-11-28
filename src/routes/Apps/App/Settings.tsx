@@ -303,7 +303,7 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     onChangedLiveTag = (liveOption: OF.IDropdownOption) => {
-        this.props.editAppLiveTagThunkAsync(this.props.app.appId, liveOption.key as string)
+        this.props.editAppLiveTagThunkAsync(this.props.app, liveOption.key as string)
         this.setState({
             selectedLiveTagOptionKey: liveOption.key,
         })
