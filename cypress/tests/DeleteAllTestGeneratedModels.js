@@ -3,28 +3,26 @@
  * Licensed under the MIT License.
 */
 
-const homePage = require('../../support/components/HomePage')
-const helpers = require('../../support/Helpers')
+const homePage = require('../support/components/HomePage')
+const helpers = require('../support/Helpers')
 
-describe('Tools', () => { it('Delete All Models', DeleteAllTestModels) })
-
-export function DeleteAllTestModels()
+export function DeleteAllTestGeneratedModels()
 {
   homePage.Visit()
 
   // We must "Enqueue" this function call so that Cypress will have one "Cypress Command" 
   // still running when the DeleteAllRows function exits. If not for this, only one row will
   // get deleted then test execution will stop.
-  cy.Enqueue(DeleteAllTestRows).then(() => { helpers.ConLog(`Delete All Test Generated Models`, `DONE - All test generated models have been Deleted`) })
+  cy.Enqueue(DeleteAllTestGeneratedModelRows).then(() => { helpers.ConLog(`Delete All Test Generated Models`, `DONE - All test generated models have been Deleted`) })
 }
 
-function DeleteAllTestRows()
+function DeleteAllTestGeneratedModelRows()
 {
   var nextPotentialRowToDelete = 0
 
-  function DeleteATestRow(resolve)
+  function DeleteATestGeneratedModelRow(resolve)
   {
-    var thisFuncName = `DeleteATestRow`
+    var thisFuncName = `DeleteATestGeneratedModelRow`
     helpers.ConLog(thisFuncName, `Trying to find a test generated model to delete...`)
 
     homePage.DeleteNextTestGeneratedModel(nextPotentialRowToDelete).then(nextRow =>
@@ -33,15 +31,14 @@ function DeleteAllTestRows()
       if (!nextRow)
       {
         helpers.ConLog(thisFuncName, `DONE - there are no more test generated models to delete`)
-        resolve()
-        return
+        return resolve()
       }
       
       nextPotentialRowToDelete = nextRow
       helpers.ConLog(thisFuncName, `nextRow: ${nextRow} - nextPotentialRowToDelete: ${nextPotentialRowToDelete}`)
-      DeleteATestRow(resolve)
+      DeleteATestGeneratedModelRow(resolve)
     })
   }
   
-  return new Promise((resolve) => { DeleteATestRow(resolve) })
+  return new Promise((resolve) => { DeleteATestGeneratedModelRow(resolve) })
 }

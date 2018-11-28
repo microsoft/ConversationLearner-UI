@@ -11,19 +11,19 @@ const actions = require('../support/Actions')
 
 export function AllEntityTypes()
 {
-  models.CreateNewModel('z-allEntTypes')
+  models.CreateNewModel('z-allEntityTypes')
 
   entities.CreateNewEntity({name: 'multiValuedEntity', multiValued: true})
   entities.CreateNewEntity({name: 'negatableEntity', negatable: true})
   entities.CreateNewEntity({name: `my-Programmatic`, type: "Programmatic"})
   entities.pretrainedEntityTypes.forEach(entityType => { entities.CreateNewEntity({type: entityType}) })
 
-  // Manually EXPORT this to fixtures folder and name it 'z-allEntTypes.cl'
+  // Manually EXPORT this to fixtures folder and name it 'z-allEntityTypes'
 }
 
 export function DisqualifyingEntities()
 {
-  models.CreateNewModel('z-disqualEnt')
+  models.CreateNewModel('z-disqualifyngEnt')
   
   entities.CreateNewEntity({name: 'name'})
   entities.CreateNewEntity({name: 'want'})
@@ -35,7 +35,7 @@ export function DisqualifyingEntities()
   actions.CreateNewAction({response: 'Hey $name{enter}, what do you really want?', expectedEntities: 'want', disqualifyingEntities: ['sweets', 'want']})
   actions.CreateNewAction({response: "Sorry $name{enter}, I can't help you get $want{enter}"})
 
-  // Manually EXPORT this to fixtures folder and name it 'z-disqualEnt.cl'
+  // Manually EXPORT this to fixtures folder and name it 'z-disqualifyngEnt'
 }
 
 export function WaitVsNoWaitActions()
@@ -52,12 +52,12 @@ export function WaitVsNoWaitActions()
 
 export function WhatsYourName()
 {
-  models.CreateNewModel('z-whatsYorName')
+  models.CreateNewModel('z-whatsYourName')
   entities.CreateNewEntity({name: 'name'})
   actions.CreateNewAction({response: "What's your name?", expectedEntities: 'name'})
   
   // NOTE: the {enter} in this call is necessary to triger the entity detection.
   actions.CreateNewAction({response: 'Hello $name{enter}'})
 
-  // Manually EXPORT this to fixtures folder and name it 'z-whatsYorName.cl'
+  // Manually EXPORT this to fixtures folder and name it 'z-whatsYourName.cl'
 }

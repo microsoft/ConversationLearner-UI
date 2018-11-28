@@ -27,25 +27,19 @@ export function DeleteNextTestGeneratedModel(nextPotentialRowToDelete)
 {
   return new Promise((resolve) =>
   {
-    helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `Start`)
     cy.Get('[data-testid="model-list-model-name"]').then(elements =>
     {
-      var row 
-      helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `${row} should be UNDEFINED!`)
       for(var i = nextPotentialRowToDelete; i < elements.length; i++) 
       {
-        if(elements[i].innerText.startsWith('Model1-')) //'z-')) 
+        // TODO: Once the CircleCI machine has run and eliminated all tests generated models remove the last two 'startsWith' evaluations...
+        if(elements[i].innerText.startsWith('z-') || elements[i].innerText.startsWith('Model-') || elements[i].innerText.startsWith('Model1-')) 
         {
-          row = i; 
-          break;
+          cy.wrap(elements[i]).parents('[role="presentation"].ms-List-cell').find('i[data-icon-name="Delete"]').Click()
+          ClickConfirmButton()
+          return resolve(i)
         }
       }
-      if (!row) return resolve(undefined)
-      
-      helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `Find parent of model[${row}] '${elements[row].innerText}'`)
-      cy.wrap(elements[row]).parents('[role="presentation"].ms-List-cell').find('i[data-icon-name="Delete"]').Click()
-      ClickConfirmButton()//.then(() => {return row})
-      resolve(row)
+      return resolve(undefined)
     })
   })
 }

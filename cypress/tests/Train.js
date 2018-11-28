@@ -13,7 +13,7 @@ const editDialogModal = require('../support/components/EditDialogModal')
 
 export function DisqualifyingEntities()
 {
-  var modelName = models.ImportModel('z-disqualEnt', 'z-disqualEnt.cl')
+  var modelName = models.ImportModel('z-disqualifyngEnt', 'z-disqualifyngEnt.cl')
   
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -97,9 +97,9 @@ export function WaitVsNoWaitActions()
   train.Save()
 }
 
-export function WhatsYourName1()
+export function WhatsYourName()
 {
-  var modelName = models.ImportModel('z-whatsYorName', 'z-whatsYorName.cl')
+  var modelName = models.ImportModel('z-whatsYourName', 'z-whatsYourName.cl')
 
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -124,7 +124,7 @@ export function WhatsYourName1()
   // Manually EXPORT this to fixtures folder and name it 'z-myNameIs.cl'
 }
 
-export function WhatsYourName2()
+export function MyNameIs()
 {
   var modelName = models.ImportModel('z-myNameIs', 'z-myNameIs.cl')
   modelPage.NavigateToTrainDialogs()
