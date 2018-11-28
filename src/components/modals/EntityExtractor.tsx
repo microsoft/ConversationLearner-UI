@@ -16,10 +16,10 @@ import EntityCreatorEditor from './EntityCreatorEditor'
 import actions from '../../actions'
 import * as ToolTips from '../ToolTips/ToolTips'
 import HelpIcon from '../HelpIcon'
-import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.'
 import { FM } from '../../react-intl-messages'
+import * as Util from '../../Utils/util'
 import './EntityExtractor.css'
 
 interface ExtractResponseForDisplay {
@@ -388,7 +388,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         return (
             <div className="entity-extractor">
                 <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus}`}>
-                    <FormattedMessageId id={FM.TOOLTIP_ENTITY_EXTRACTOR_HELP} />
+                    {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_HELP)}
                     <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_HELP} />
                 </OF.Label>
                 {extractResponsesForDisplay.map(({ isValid, extractResponse }, key) => {
@@ -415,10 +415,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             </button>
                             {!isValid && ToolTips.wrap(
                                 <OF.Icon iconName="IncidentTriangle" className="editor-button-invalid" />,
-                                ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
+                                `<span class="ms-TextField-errorMessage">${ToolTips.TipType.ENTITY_EXTRACTOR_WARNING}</span>`)}
                         </div>}
                         {!isValid && <div className="ms-TextField-errorMessage">
-                            <FormattedMessageId id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} />
+                            {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING)}
                         </div>}
                     </div>
                 })}
@@ -493,7 +493,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         hidden={!this.state.warningOpen}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
-                            title: 'Text variations must all have same tagged entities.'
+                            title: Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_DLG_SAMETAGGED)
                         }}
                         modalProps={{
                             isBlocking: false
@@ -508,7 +508,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         hidden={this.state.savedExtractResponses.length === 0}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
-                            title: 'Do you want to save your Entity Detection changes?'
+                            title: Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_DLG_SAVECHANGES)
                         }}
                         modalProps={{
                             isBlocking: true
