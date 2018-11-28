@@ -413,6 +413,8 @@ export enum FM {
     TOOLTIP_ENTITY_ACTION_DISQUALIFIED = 'ToolTip.ENTITY_ACTION_BLOCKED',
     TOOLTIP_ENTITY_EXTRACTOR_HELP = 'ToolTipo.ENTITY_EXTRACTOR_HELP',
     TOOLTIP_ENTITY_EXTRACTOR_WARNING = 'ToolTip.ENTITY_EXTRACTOR_WARNING',
+    TOOLTIP_ENTITY_EXTRACTOR_DLG_SAMETAGGED = 'ToolTip.ENTITY_EXTRACTOR_DIALOG_SameTaggedEntities',
+    TOOLTIP_ENTITY_EXTRACTOR_DLG_SAVECHANGES = 'ToolTip.ENTITY_EXTRACTOR_WARNING',
     TOOLTIP_ENTITY_NAME = 'ToolTip.ENTITY_NAME',
     TOOLTIP_ENTITY_VALUE = 'ToolTip.ENTITY_VALUE',
     TOOLTIP_EXAMPLE = 'ToolTip.EXAMPLE',
@@ -469,6 +471,8 @@ export enum FM {
     TRAINDIALOGS_TURNS = 'TrainDialogs.turns',
     TRAINDIALOGS_CREATED_DATE_TIME = 'TrainDialogs.createdDateTime',
     TRAINDIALOGS_LAST_MODIFIED_DATE_TIME = 'TrainDialogs.lastModifiedDateTime',
+    TRAINDIALOGS_FILTERING_ENTITIES = 'TrainDialogs.FilteringEntities',
+    TRAINDIALOGS_FILTERING_ACTIONS = 'TrainDialogs.FilteringActions',
 
     // Tutorial Importer
     TUTORIALIMPORTER_TITLE = 'TutorialImporter.Title',
@@ -778,7 +782,10 @@ export default {
         [FM.TOOLTIP_ENTITY_ACTION_DISQUALIFIED]: `Actions that are blocked from use if this Entity is set`,
         [FM.TOOLTIP_ENTITY_ACTION_REQUIRED]: `Actions that are only employed when this Entity is set`,
         [FM.TOOLTIP_ENTITY_EXTRACTOR_HELP]: `Select text to label it as an entity`,
-        [FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING]: 'Text Variations must contain the same detected Entities as the original input text.',
+        [FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING]: 'Equivalent input must contain the same detected Entities as the original input text.',
+        [FM.TOOLTIP_ENTITY_EXTRACTOR_DLG_SAMETAGGED]: 'Equivalent input must all have same tagged entities.',
+        [FM.TOOLTIP_ENTITY_EXTRACTOR_DLG_SAVECHANGES]: 'Do you want to save your Entity Detection changes?',
+
         [FM.TOOLTIP_ENTITY_NAME]: 'Name of the Entity',
         [FM.TOOLTIP_ENTITY_VALUE]: 'What the Bot currently has in Memory for this Entity',
         [FM.TOOLTIP_EXAMPLE]: 'For Example:',
@@ -806,6 +813,8 @@ export default {
         [FM.TRAINDIALOGS_TURNS]: 'Turns',
         [FM.TRAINDIALOGS_CREATED_DATE_TIME]: 'Created',
         [FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
+        [FM.TRAINDIALOGS_FILTERING_ENTITIES]: '* Any entities',
+        [FM.TRAINDIALOGS_FILTERING_ACTIONS]: '* Any actions',
 
         // Tutorial Importer
         [FM.TUTORIALIMPORTER_TITLE]: 'Tutorials',
