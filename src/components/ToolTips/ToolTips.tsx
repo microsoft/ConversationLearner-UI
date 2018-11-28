@@ -52,6 +52,7 @@ export enum TipType {
     LUIS_OVERVIEW = 'luisOverview',
     LUIS_SUBSCRIPTION_KEY = 'luisSubscriptionKey',
 
+    MEMORY_CONVERTER = 'memoryConverter',
     MEMORY_MANAGER = 'memoryManager',
 
     PACKAGECREATOR_LIVE_TOGGLE = 'packageCreatorLiveToggle',
@@ -138,33 +139,41 @@ const renderCodeSample =
     
         // save result in entity
         return \`\${num1String} + \${num2string} = \${result}\`
-    })`;
+    })`
+
+let memoryConverterSample =
+    `
+    AS_VALUE_LIST       returns MemoryValue[]
+    AS_STRING           returns string
+    AS_STRING_LIST      returns string[] 
+    AS_NUMBER           returns number 
+    AS_NUMBER_LIST      returns  number[]
+    AS_BOOLEAN          returns boolean
+    AS_BOOLEAN_LIST     returns boolean[]`
 
 let memoryManagerSample =
-    `// Values in bot memory
-memoryManager.EntityValue(entityName: string): (string | null)
-memoryManager.EntityValueAsPrebuilt(entityName: string): MemoryValue[]
-memoryManager.EntityValueAsList(entityName: string): string[]
-memoryManager.EntityValueAsObject<T>(entityName: string): (T | null)
-memoryManager.EntityValueAsBoolean(entityName: string): (boolean | null)
-memoryManager.EntityValueAsNumber(entityName: string): (number | null)
-memoryManager.GetFilledEntities(): FilledEntity[]
+    `
+    // GET - Values currently in bot memory
+    memoryManager.Get(entityName: string, converter: (memoryValues: MemoryValue[])
+    i.e. memoryManager.Get("counters", ClientMemoryManager.AS_NUMBER_LIST)
 
-// Values in memory before new Entity detection
-memoryManager.PrevEntityValue(entityName: string): (string | null)
-memoryManager.PrevEntityValueAsPrebuilt(entityName: string): MemoryValue[]
-memoryManager.PrevEntityValueAsList(entityName: string): string[]
-memoryManager.PrevEntityValueAsObject<T>(entityName: string): (T | null)
-memoryManager.PrevValueAsBoolean(entityName: string): (boolean | null)
-memoryManager.PrevValueAsNumber(entityName: string): (number | null)
+    // GET - Values in memory before new Entity detection
+    memoryManager.GetPrevious(entityName: string, converter: (memoryValues: MemoryValue[])
+    i.e. memoryManager.GetPrevious("location", ClientMemoryManager.AS_VALUE)
 
-// Memory manipulation methods
-memoryManager.RememberEntity(entityName: string, entityValue: string): void
-memoryManager.RememberEntities(entityName: string, entityValues: string[]): void
-memoryManager.ForgetEntity(entityName: string, value?: string): void
-memoryManager.ForgetAllEntities(saveEntityNames: string[]): void
-memoryManager.CopyEntity(entityNameFrom: string, entityNameTo: string): void
-`;
+    // SET
+    memoryManager.Set(entityName: string, true)
+    i.e. memoryManager.Set("toppings", ["cheese", "peppers"])
+   
+    // DELETE
+    memoryManager.Delete(entityName: string, value?: string): void
+    memoryManager.DeleteAll(saveEntityNames: string[]): void
+
+    // COPY
+    memoryManager.CopyEntity(entityNameFrom: string, entityNameTo: string): void
+
+    // Info about the current running Session
+    memoryManager.SessionInfo(): SessionInfo`;
 
 export function getTip(tipType: string) {
     switch (tipType) {
@@ -445,11 +454,20 @@ export function getTip(tipType: string) {
                     />
                 </div>
             )
+        case TipType.MEMORY_CONVERTER:
+            return (
+                <div>
+                    {render(FM.TOOLTIP_MEMORYCONVERTER_TITLE, [FM.TOOLTIP_MEMORYCONVERTER])}
+                    <pre>{memoryConverterSample}</pre>
+                    <div>See also: <HelpLink label="Memory Manager" tipType={TipType.MEMORY_MANAGER} /></div>
+                </div>
+            )
         case TipType.MEMORY_MANAGER:
             return (
                 <div>
                     {render(FM.TOOLTIP_MEMORYMANAGER_TITLE, [FM.TOOLTIP_MEMORYMANAGER])}
                     <pre>{memoryManagerSample}</pre>
+                    <div>See also: <HelpLink label="Converter" tipType={TipType.MEMORY_CONVERTER} /></div>
                 </div>
             )
         case TipType.ENTITY_EXTRACTOR_HELP:
