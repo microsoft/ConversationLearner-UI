@@ -74,5 +74,3 @@ Cypress.Commands.add("WaitForTrainingStatusCompleted", () =>
 // Use this to enqueue regular JavaScript code into the Cypress process queue.
 // This causes your JavaScript code to execute in the same time frame as all of cy.*commands*
 Cypress.Commands.add("Enqueue", functionToRun => { functionToRun() })
-
-Cypress.Commands.add("RunAndReturn", functionToRun => { return functionToRun() })
