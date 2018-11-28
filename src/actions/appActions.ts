@@ -83,15 +83,16 @@ export const editApplicationThunkAsync = (app: AppBase) => {
     }
 }
 
-export const editAppLiveTagThunkAsync = (appId: string, tagId: string) => {
+export const editAppLiveTagThunkAsync = (app: AppBase, tagId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_APP_LIVE_TAG_ASYNC)
-        dispatch(editAppLiveTagAsync(appId, tagId))
+        dispatch(editAppLiveTagAsync(app.appId, tagId))
 
         try {
-            const updatedApp = await clClient.appSetLiveTag(appId, tagId)
-            dispatch(editAppLiveTagFulfilled(updatedApp))
-            return updatedApp
+            await clClient.appSetLiveTag(app.appId, tagId)
+            let newApp = {...app, livePackageId: tagId}
+            dispatch(editAppLiveTagFulfilled(newApp))
+            return newApp
         }
         catch (e) {
             const error = e as AxiosError
@@ -309,7 +310,6 @@ export const fetchApplicationsThunkAsync = (userId: string) => {
         }
     }
 }
-
 
 const poller = new Poller({ interval: 2000 })
 
