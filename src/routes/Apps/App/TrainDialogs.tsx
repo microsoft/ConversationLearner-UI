@@ -836,7 +836,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             isEditDialogModalOpen: false,
         })
-        
+
         const deleteDialogId = this.state.currentTrainDialog.trainDialogId
         this.props.deleteTrainDialogThunkAsync(this.props.user.id, this.props.app, deleteDialogId)
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
@@ -1185,7 +1185,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                     // Only show positive versions of negatable entities
                                     .filter(e => e.positiveId == null)
                                     .map(e => this.toEntityFilter(e))
-                                    .concat({ key: -1, text: '-- any --', data: null })
+                                    .concat({ key: -1, text: Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES), data: null })
                                 }
                             />
 
@@ -1199,7 +1199,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 options={this.props.actions
                                     .map(a => this.toActionFilter(a, this.props.entities))
                                     .filter(s => s !== null)
-                                    .concat({ key: -1, text: '-- any --' })
+                                    .concat({ key: -1, text: Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS) })
                                 }
                             />
                         </div>
