@@ -25,24 +25,30 @@ export function GetModelListRowCount()
 
 export function DeleteNextTestGeneratedModel(nextPotentialRowToDelete) 
 {
-  cy.Get('[data-testid="model-list-model-name"]').then(elements =>
+  return new Promise((resolve) =>
   {
-    for(var i = nextPotentialRowToDelete; i < elements.length; i++) 
+    helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `Start`)
+    return cy.Get('[data-testid="model-list-model-name"]').then(elements =>
     {
-      if(elements[i].innerText.startsWith('z-')) 
+      return cy.RunAndReturn(()=>
       {
-        helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `Find parent of model[${i}] '${elements[i].innerText}'`)
-        cy.wrap(elements[i]).parents('[role="presentation"].ms-List-cell').then(element =>
+        var row
+        for(var i = nextPotentialRowToDelete; i < elements.length; i++) 
         {
-          nextPotentialRowToDelete = +element.attr('data-list-index')
-          helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `Delete row with model[${i}] '${element.innerText}'`)
-          cy.wrap(element).find('i[data-icon-name="Delete"]').Click()
-          ClickConfirmButton()
-          return nextPotentialRowToDelete
-        })
-      }
-    }
-    return undefined
+          if(elements[i].innerText.startsWith('z-')) 
+          {
+            row = i; 
+            break;
+          }
+        }
+        if (!row) return -1
+        
+        helpers.ConLog(`DeleteNextTestGeneratedModel(${nextPotentialRowToDelete})`, `Find parent of model[${row}] '${elements[row].innerText}'`)
+        cy.wrap(elements[row]).parents('[role="presentation"].ms-List-cell').find('i[data-icon-name="Delete"]').Click()
+        ClickConfirmButton()//.then(() => {return row})
+        return row
+      })
+    })
   })
 }
 

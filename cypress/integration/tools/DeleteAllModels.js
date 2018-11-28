@@ -15,7 +15,7 @@ export function DeleteAllTestModels()
   // We must "Enqueue" this function call so that Cypress will have one "Cypress Command" 
   // still running when the DeleteAllRows function exits. If not for this, only one row will
   // get deleted then test execution will stop.
-  cy.Enqueue(DeleteAllTestRows).then(() => { helpers.ConLog(`Delete All Models`, `DONE - All Applications have been Deleted`) })
+  cy.Enqueue(DeleteAllTestRows).then(() => { helpers.ConLog(`Delete All Test Generated Models`, `DONE - All test generated models have been Deleted`) })
 }
 
 function DeleteAllTestRows()
@@ -29,7 +29,9 @@ function DeleteAllTestRows()
 
     homePage.DeleteNextTestGeneratedModel(nextPotentialRowToDelete).then(nextRow =>
     {
-      if (!nextRow) 
+      helpers.Dump(thisFuncName, nextRow)
+      //if (!nextRow)
+      if (nextRow == -1)
       {
         helpers.ConLog(thisFuncName, `DONE - there are no more test generated models to delete`)
         resolve()
@@ -37,6 +39,7 @@ function DeleteAllTestRows()
       }
       
       nextPotentialRowToDelete = nextRow
+      helpers.ConLog(thisFuncName, `nextRow: ${nextRow} - nextPotentialRowToDelete: ${nextPotentialRowToDelete}`)
       DeleteATestRow(resolve)
     })
   }
