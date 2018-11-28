@@ -16,7 +16,8 @@ export function CreateNewEntity({name, multiValued, negatable, type = "Custom Tr
   if (multiValued) entityModal.ClickMultiValueCheckbox()
   if (negatable) entityModal.ClickNegatableCheckbox()
   entityModal.ClickCreateButton()
-  entitiesGrid.VerifyItemInList(name)
+  if (name) entitiesGrid.VerifyItemInList(name)
+  else entitiesGrid.VerifyItemInList(`builtin-${type.toLowerCase()}`)
 }
 
 export function SelectEntityType(type)
@@ -25,9 +26,8 @@ export function SelectEntityType(type)
   entityModal.ClickEntityType(type)
 }
 
-export const entityTypes = 
+export const pretrainedEntityTypes = 
 [
-  "Programmatic",
   "datetimeV2",
   "number",
   "ordinal",

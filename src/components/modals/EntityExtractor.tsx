@@ -7,7 +7,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { setStateAsync } from '../../Utils/util'
+import { setStateAsync, formatMessageId } from '../../Utils/util'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
@@ -16,7 +16,8 @@ import EntityCreatorEditor from './EntityCreatorEditor'
 import actions from '../../actions'
 import * as ToolTips from '../ToolTips/ToolTips'
 import HelpIcon from '../HelpIcon'
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../FormattedMessageId'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.'
 import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
@@ -387,10 +388,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         return (
             <div className="entity-extractor">
                 <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus}`}>
-                    <FormattedMessage
-                        id={FM.TOOLTIP_ENTITY_EXTRACTOR_HELP}
-                        defaultMessage="Select text to label it as an entity."
-                    />
+                    <FormattedMessageId id={FM.TOOLTIP_ENTITY_EXTRACTOR_HELP} />
                     <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_HELP} />
                 </OF.Label>
                 {extractResponsesForDisplay.map(({ isValid, extractResponse }, key) => {
@@ -420,7 +418,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                 ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
                         </div>}
                         {!isValid && <div className="ms-TextField-errorMessage css-84 errorMessage_20d9206e">
-                            <FormattedMessage id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} defaultMessage="Text Variations must contain the same detected Entities as the primary input text." />
+                            <FormattedMessageId id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} />
                         </div>}
                     </div>
                 })}
@@ -430,10 +428,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             data-testid="entity-extractor-alternative-input-text"
                             value={this.state.textVariationValue}
                             onChanged={this.onChangeTextVariation}
-                            placeholder={this.props.intl.formatMessage({
-                                id: FM.TEXTVARIATION_PLACEHOLDER,
-                                defaultMessage: "Add alternative input..."
-                            })}
+                            placeholder={formatMessageId(this.props.intl, FM.TEXTVARIATION_PLACEHOLDER)}
                             onKeyPress={(event) => {
                                 if (event.key === 'Enter') {
                                     this.onSubmitTextVariation()
@@ -474,7 +469,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             data-testid="score-actions-button"
-                            disabled={!allExtractResponsesValid || this.state.pendingVariationChange}
+                            disabled={!allExtractResponsesValid || this.state.pendingVariationChange || !canEdit}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Score Actions'}
                             text={'Score Actions'}

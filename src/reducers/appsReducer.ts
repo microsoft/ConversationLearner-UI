@@ -19,7 +19,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
         case AT.USER_LOGOUT:
             return { ...initialState };
         case AT.FETCH_APPLICATIONS_FULFILLED:
-            return { ...state, all: action.uiAppList.appList.apps, activeApps: action.uiAppList.activeApps } 
+            return { ...state, all: action.uiAppList.appList.apps, activeApps: action.uiAppList.activeApps }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC: {
             const app = state.all.find(a => a.appId === action.appId)
             // User may have deleted the app
@@ -78,7 +78,25 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:
             return { ...state, all: replace(state.all, action.app, app => app.appId) }
         case AT.EDIT_APP_EDITING_TAG_FULFILLED:
-            return { ...state, activeApps: action.activeApps}
+            return { ...state, activeApps: action.activeApps }
+
+        // TODO: We're expecting more handlers here, as we're simply updating lastModifiedDateTime...
+        case AT.EDIT_TRAINDIALOG_FULFILLED:
+
+            const app = state.all.find(a => a.appId === action.appId)
+
+            // App may have been deleted
+            if (!app) {
+                return state;
+            }
+
+            const newApp: App = {
+                ...(app as App),
+                lastModifiedDateTime: `${new Date().toISOString().slice(0, 19)}+00:00`,
+            }
+
+            return { ...state, all: replace(state.all, newApp, a => a.appId) }
+
         default:
             return state;
     }

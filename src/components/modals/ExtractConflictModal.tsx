@@ -7,6 +7,7 @@ import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import * as CLM from '@conversationlearner/models'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
+import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import * as Util from '../../Utils/util'
 
@@ -29,10 +30,7 @@ const ExtractConflictModal: React.SFC<Props> = (props: Props) => {
             onDismiss={() => props.onClose()}
             dialogContentProps={{
                 type: OF.DialogType.normal,
-                title: intl.formatMessage({
-                    id: FM.EXTRACTCONFLICTMODAL_TITLE,
-                    defaultMessage: Util.getDefaultText(FM.EXTRACTCONFLICTMODAL_TITLE)
-                })
+                title: formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_TITLE)
             }}
             getStyles={() => {
                 return {
@@ -71,17 +69,11 @@ const ExtractConflictModal: React.SFC<Props> = (props: Props) => {
             <OF.DialogFooter>
                 <OF.DefaultButton
                     onClick={() => props.onClose()}
-                    text={intl.formatMessage({
-                        id: FM.BUTTON_CLOSE,
-                        defaultMessage: Util.getDefaultText(FM.BUTTON_CLOSE)
-                    })}
+                    text={formatMessageId(intl, FM.BUTTON_CLOSE)}
                 />
                 <OF.PrimaryButton
                     onClick={() => props.onAccept()}
-                    text={intl.formatMessage({
-                        id: FM.BUTTON_ACCEPT,
-                        defaultMessage: Util.getDefaultText(FM.BUTTON_ACCEPT)
-                    })}
+                    text={formatMessageId(intl, FM.BUTTON_ACCEPT)}
                 />
             </OF.DialogFooter>
         </OF.Dialog>

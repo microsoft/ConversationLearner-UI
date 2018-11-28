@@ -13,18 +13,13 @@ export function ClickSubmitButton()             { cy.Get('[data-testid="model-cr
 export function UploadImportModelFile(name)     { cy.UploadFile(name, `[data-testid=model-creator-import-file-picker] > div > input[type="file"]`)}
 
 export function ClickDeleteModelButton(row)     { cy.Get(`[data-list-index="${row}"] > .ms-FocusZone > .ms-DetailsRow-fields`).find('i[data-icon-name="Delete"]').Click() }
-export function ClickConfirmButton()            { cy.Get('.ms-Dialog-main').contains('Confirm').Click() }
+export function ClickConfirmButton()            { return cy.Get('.ms-Dialog-main').contains('Confirm').Click() }
 
-export function GetModelListRowCountThen(func) 
+export function GetModelListRowCount() 
 {
-  cy.Get('[data-automationid="DetailsList"] > [role="grid"]')
+  return cy.Get('[data-automationid="DetailsList"] > [role="grid"]')
   .then((gridElement) => { var rowCount = +gridElement.attr('aria-rowcount') -1; return rowCount })
-  .then((rowCount) => { func(rowCount) })
 }
-
-
-
-
 
 // data-testid="model-list-model-name"
 // data-testid="model-list-is-editing"

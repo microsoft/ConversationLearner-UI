@@ -9,11 +9,13 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
+import { formatMessageId } from '../../Utils/util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { ActionBase, ActionTypes, AppBase, EntityBase, EntityType, RenderedActionArgument, SessionAction, TextAction, ApiAction, CardAction, IActionArgument, Callback, Template, ActionPayload, CardPayload, TextPayload } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
+import FormattedMessageId from '../FormattedMessageId'
 import * as ActionPayloadEditor from './ActionPayloadEditor'
 import { State } from '../../types'
 import * as ToolTip from '../ToolTips/ToolTips'
@@ -25,18 +27,19 @@ import './ActionCreatorEditor.css'
 import HelpIcon from '../HelpIcon'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+
 import { FM } from '../../react-intl-messages'
 
 const TEXT_SLOT = '#TEXT_SLOT#';
 
-const convertEntityToOption = (entity: EntityBase): ActionPayloadEditor.IOption =>
+const convertEntityToOption = (entity: CLM.EntityBase): ActionPayloadEditor.IOption =>
     ({
         id: entity.entityId,
         name: entity.entityName
     })
 
-const convertEntityToTag = (entity: EntityBase): OF.ITag =>
+const convertEntityToTag = (entity: CLM.EntityBase): OF.ITag =>
     ({
         key: entity.entityId,
         name: entity.entityName
@@ -48,19 +51,19 @@ const convertOptionToTag = (option: ActionPayloadEditor.IOption): OF.ITag =>
         name: option.name
     })
 
-const convertCallbackToOption = (callback: Callback): OF.IDropdownOption =>
+const convertCallbackToOption = (callback: CLM.Callback): OF.IDropdownOption =>
     ({
         key: callback.name,
         text: callback.name
     })
 
-const convertTemplateToOption = (template: Template): OF.IDropdownOption =>
+const convertTemplateToOption = (template: CLM.Template): OF.IDropdownOption =>
     ({
         key: template.name,
         text: template.name
     })
 
-const convertEntityIdsToTags = (ids: string[], entities: EntityBase[]): OF.ITag[] => {
+const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[]): OF.ITag[] => {
     return entities
         .filter(e => ids.some(id => id === e.entityId))
         .map<OF.ITag>(convertEntityToTag)
@@ -91,7 +94,7 @@ const tryCreateSlateValue = (actionType: string, slotName: string, content: obje
     SlotName: ${slotName}
     content:\n`, content, options)
         console.error(error)
-        return Plain.deserialize('Error occurred while attempting to display action. Please re-enter the value and re-save the action.')
+        return Plain.deserialize("Action references an Entity that doesn't exist. Please re-enter the value and re-save the action.")
     }
 }
 
@@ -111,7 +114,7 @@ const createSlateValue = (content: object | string, options: ActionPayloadEditor
     return Value.fromJSON(updatedJson)
 }
 
-const actionTypeOptions = Object.values(ActionTypes)
+const actionTypeOptions = Object.values(CLM.ActionTypes)
     .map<OF.IDropdownOption>(actionTypeString => {
         return {
             key: actionTypeString,
@@ -137,8 +140,9 @@ interface ComponentState {
     isConfirmEditModalOpen: boolean
     showValidationWarning: boolean
     isPayloadFocused: boolean
-    isPayloadValid: boolean
-    newOrEditedAction: ActionBase | null
+    isPayloadMissing: boolean
+    entityWarning: boolean
+    newOrEditedAction: CLM.ActionBase | null
     selectedActionTypeOptionKey: string | number
     availableExpectedEntityTags: OF.ITag[]
     entityTags: OF.ITag[]
@@ -167,7 +171,8 @@ const initialState: ComponentState = {
     isConfirmEditModalOpen: false,
     showValidationWarning: false,
     isPayloadFocused: false,
-    isPayloadValid: false,
+    isPayloadMissing: true,
+    entityWarning: false,
     newOrEditedAction: null,
     selectedActionTypeOptionKey: actionTypeOptions[0].key,
     availableExpectedEntityTags: [],
@@ -200,12 +205,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }))
 
         const availableExpectedEntityTags = entities
-            .filter(e => e.entityType === EntityType.LUIS)
+            .filter(e => e.entityType === CLM.EntityType.LUIS)
             .map<OF.ITag>(convertEntityToTag)
 
         const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
         const cardOptions = botInfo.templates.map<OF.IDropdownOption>(convertTemplateToOption)
-    
+
         return {
             ...initialState,
             apiOptions,
@@ -231,7 +236,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     const entityTags = nextProps.entities.filter(e => !e.doNotMemorize).map<OF.ITag>(convertEntityToTag)
 
                     const availableExpectedEntityTags = nextProps.entities
-                        .filter(e => e.entityType === EntityType.LUIS)
+                        .filter(e => e.entityType === CLM.EntityType.LUIS)
                         .map<OF.ITag>(convertEntityToTag)
 
                     nextState = {
@@ -269,36 +274,45 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const payloadOptions = this.props.entities.map(convertEntityToOption)
                 const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
-                let selectedApiOptionKey: string | null = null;
-                let selectedCardOptionKey: string | null = null;
+                let selectedApiOptionKey: string | null = null
+                let selectedCardOptionKey: string | null = null
+                let entityWarning = false
 
                 const slateValuesMap = {}
                 const secondarySlateValuesMap = {}
-                if (action.actionType === ActionTypes.TEXT) {
-                    const textAction = new TextAction(action)
-                    slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(ActionTypes.TEXT, TEXT_SLOT, textAction.value, payloadOptions)
-                } else if (action.actionType === ActionTypes.END_SESSION) {
-                    const sessionAction = new SessionAction(action)
-                    slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(ActionTypes.TEXT, TEXT_SLOT, sessionAction.value, payloadOptions)
-                } else if (action.actionType === ActionTypes.API_LOCAL) {
-                    const apiAction = new ApiAction(action)
+                if (action.actionType === CLM.ActionTypes.TEXT) {
+                    const textAction = new CLM.TextAction(action)
+                    try {
+                        slateValuesMap[TEXT_SLOT] = createSlateValue(textAction.value, payloadOptions)
+                    }
+                    catch {
+                         // Default to raw value
+                        let contentString: string = JSON.parse(textAction.payload).text
+                        slateValuesMap[TEXT_SLOT] = Plain.deserialize(contentString)
+                        entityWarning = true
+                    }
+                } else if (action.actionType === CLM.ActionTypes.END_SESSION) {
+                    const sessionAction = new CLM.SessionAction(action)
+                    slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(CLM.ActionTypes.TEXT, TEXT_SLOT, sessionAction.value, payloadOptions)
+                } else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
+                    const apiAction = new CLM.ApiAction(action)
                     selectedApiOptionKey = apiAction.name
                     const callback = this.props.botInfo.callbacks.find(t => t.name === selectedApiOptionKey)
                     if (callback) {
                         for (let actionArgumentName of callback.logicArguments) {
                             const argument = apiAction.logicArguments.find(a => a.parameter === actionArgumentName)
                             const initialValue = argument ? argument.value : ''
-                            slateValuesMap[actionArgumentName] = tryCreateSlateValue(ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
+                            slateValuesMap[actionArgumentName] = tryCreateSlateValue(CLM.ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
                         }
                         for (let actionArgumentName of callback.renderArguments) {
                             const argument = apiAction.renderArguments.find(a => a.parameter === actionArgumentName)
                             const initialValue = argument ? argument.value : ''
-                            secondarySlateValuesMap[actionArgumentName] = tryCreateSlateValue(ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
+                            secondarySlateValuesMap[actionArgumentName] = tryCreateSlateValue(CLM.ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
                         }
                     }
 
-                } else if (action.actionType === ActionTypes.CARD) {
-                    const cardAction = new CardAction(action)
+                } else if (action.actionType === CLM.ActionTypes.CARD) {
+                    const cardAction = new CLM.CardAction(action)
                     selectedCardOptionKey = cardAction.templateName
                     const template = this.props.botInfo.templates.find(t => t.name === selectedCardOptionKey)
                     if (template) {
@@ -306,7 +320,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         for (let cardTemplateVariable of template.variables) {
                             const argument = cardAction.arguments.find(a => a.parameter === cardTemplateVariable.key)
                             const initialValue = argument ? argument.value : ''
-                            slateValuesMap[cardTemplateVariable.key] = tryCreateSlateValue(ActionTypes.CARD, cardTemplateVariable.key, initialValue, payloadOptions)
+                            slateValuesMap[cardTemplateVariable.key] = tryCreateSlateValue(CLM.ActionTypes.CARD, cardTemplateVariable.key, initialValue, payloadOptions)
                         }
                     }
                 }
@@ -323,7 +337,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                 nextState = {
                     ...nextState,
-                    isPayloadValid: action.actionType === ActionTypes.API_LOCAL || action.payload.length !== 0,
+                    isPayloadMissing: action.actionType === CLM.ActionTypes.TEXT && action.payload.length === 0,
+                    entityWarning,
                     selectedActionTypeOptionKey: action.actionType,
                     selectedApiOptionKey,
                     selectedCardOptionKey,
@@ -379,10 +394,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (!initialEditState) {
             return
         }
-        
+
         const isAnyPayloadChanged = this.areSlateValuesChanged(this.state.slateValuesMap, initialEditState.slateValuesMap)
             || this.areSlateValuesChanged(this.state.secondarySlateValuesMap, initialEditState.secondarySlateValuesMap)
-        
+
         const expectedEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.expectedEntityTags, initialEditState.expectedEntityTags)
         const requiredEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.requiredEntityTags, initialEditState.requiredEntityTags)
         const disqualifyingEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.negativeEntityTags, initialEditState.negativeEntityTags)
@@ -473,10 +488,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    getActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }): IActionArgument[] {
+    getActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }): CLM.IActionArgument[] {
         return Object.entries(slateValuesMap)
             .filter(([parameter, value]) => value.document.text.length > 0)
-            .map<IActionArgument>(([parameter, value]) => ({
+            .map<CLM.IActionArgument>(([parameter, value]) => ({
                 parameter,
                 value: {
                     json: value.toJSON()
@@ -487,10 +502,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     /**
      * Pre-render slate values for display in card template
      */
-    getRenderedActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }, entities: EntityBase[]): RenderedActionArgument[] {
+    getRenderedActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }, entities: CLM.EntityBase[]): CLM.RenderedActionArgument[] {
         return Object.entries(slateValuesMap)
             .filter(([parameter, value]) => value.document.text.length > 0)
-            .map<RenderedActionArgument>(([parameter, value]) => ({
+            .map<CLM.RenderedActionArgument>(([parameter, value]) => ({
                 parameter,
                 // TODO: Investigate alternative to get around need to use EntityIdSerializer directly is to construct mock CardAction and call .renderArguments()
                 // ActionPayloadEditor.EntityIdSerializer.serialize(value, entityValueMap)
@@ -498,7 +513,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }))
     }
 
-    convertStateToModel(): ActionBase {
+    convertStateToModel(): CLM.ActionBase {
         let payload: string | null = null
 
         /**
@@ -521,32 +536,32 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
          * }
          */
         switch (this.state.selectedActionTypeOptionKey) {
-            case ActionTypes.TEXT: {
+            case CLM.ActionTypes.TEXT: {
                 const textValue = this.state.slateValuesMap[TEXT_SLOT]
-                const tp: TextPayload = {
+                const tp: CLM.TextPayload = {
                     json: textValue.toJSON()
-                } 
+                }
                 payload = JSON.stringify(tp)
                 break;
             }
-            case ActionTypes.CARD:
-                const cp: CardPayload = {
+            case CLM.ActionTypes.CARD:
+                const cp: CLM.CardPayload = {
                     payload: this.state.selectedCardOptionKey!.toString(),
                     arguments: this.getActionArguments(this.state.slateValuesMap)
                 }
                 payload = JSON.stringify(cp)
                 break;
-            case ActionTypes.API_LOCAL:
-                const ap: ActionPayload = {
+            case CLM.ActionTypes.API_LOCAL:
+                const ap: CLM.ActionPayload = {
                     payload: this.state.selectedApiOptionKey!.toString(),
                     logicArguments: this.getActionArguments(this.state.slateValuesMap),
                     renderArguments: this.getActionArguments(this.state.secondarySlateValuesMap),
                 }
                 payload = JSON.stringify(ap)
                 break;
-            case ActionTypes.END_SESSION:
+            case CLM.ActionTypes.END_SESSION:
                 const value = this.state.slateValuesMap[TEXT_SLOT]
-                const t: TextPayload = {
+                const t: CLM.TextPayload = {
                     json: value.toJSON()
                 }
                 payload = JSON.stringify(t)
@@ -556,7 +571,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         // TODO: This should be new model such as ActionInput for creation only.
-        const model = new ActionBase({
+        const model = new CLM.ActionBase({
             actionId: null!,
             payload,
             createdDateTime: new Date().toJSON(),
@@ -568,7 +583,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             version: 0,
             packageCreationId: 0,
             packageDeletionId: 0,
-            actionType: ActionTypes[this.state.selectedActionTypeOptionKey]
+            actionType: CLM.ActionTypes[this.state.selectedActionTypeOptionKey]
         })
 
         if (this.state.isEditing && this.props.action) {
@@ -624,16 +639,16 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                 if (invalidTrainingDialogIds) {
                     this.setState(
-                    {
-                        isConfirmDeleteModalOpen: true,
-                        showValidationWarning: invalidTrainingDialogIds.length > 0
-                    });
+                        {
+                            isConfirmDeleteModalOpen: true,
+                            showValidationWarning: invalidTrainingDialogIds.length > 0
+                        });
                 }
             })
             .catch(error => {
                 console.warn(`Error when attempting to validate delete: `, error)
             }
-        )
+            )
     }
 
     @OF.autobind
@@ -694,12 +709,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
-        const isPayloadValid = actionTypeOption.key !== ActionTypes.TEXT && actionTypeOption.key !== ActionTypes.END_SESSION
-            ? true
-            : textPayload && (textPayload.document.text.length !== 0)
+        let isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload.document.text.length === 0)
 
         this.setState({
-            isPayloadValid,
+            isPayloadMissing,
             selectedActionTypeOptionKey: actionTypeOption.key,
             slateValuesMap: {
                 [TEXT_SLOT]: Plain.deserialize('')
@@ -803,7 +816,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const slateValuesMap = isSecondary
             ? { ...this.state.secondarySlateValuesMap }
             : { ...this.state.slateValuesMap }
-        
+
         const otherValuesMap = isSecondary
             ? { ...this.state.slateValuesMap }
             : { ...this.state.secondarySlateValuesMap }
@@ -820,13 +833,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         // If we added entity to a payload which was already in the list of required entities remove it to avoid duplicates.
         const requiredEntityTags = this.state.requiredEntityTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
-        const isPayloadValid = (this.state.selectedActionTypeOptionKey !== ActionTypes.TEXT
-            && this.state.selectedActionTypeOptionKey !== ActionTypes.END_SESSION)
-                ? true
-                : value.document.text.length !== 0
+
+        let isPayloadMissing = (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.TEXT && value.document.text.length === 0)
 
         const nextState: Partial<ComponentState> = {
-            isPayloadValid,
+            entityWarning: false,
+            isPayloadMissing,
             requiredEntityTagsFromPayload,
             requiredEntityTags
         }
@@ -842,9 +854,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     saveDisabled(): boolean {
-        const areInputsInvalid = (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
+        const areInputsInvalid = (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
             ? this.state.selectedApiOptionKey === null
-            : !this.state.isPayloadValid)
+            : this.state.isPayloadMissing)
 
         return areInputsInvalid
             || (this.state.isEditing && !this.state.hasPendingChanges)
@@ -865,11 +877,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     render() {
+        const { intl } = this.props
+
+        const payloadError = this.state.entityWarning 
+            ? formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_ENTITY) 
+            : this.state.isPayloadMissing 
+            ? formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD) : null 
+
         // Disable payload if we're editing existing action and no API or CARD data available
-        const isPayloadDisabled = 
-            (this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
+        const isPayloadDisabled =
+            (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
                 && (this.state.apiOptions.length === 0))
-            || (this.state.selectedActionTypeOptionKey === ActionTypes.CARD
+            || (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD
                 && (this.state.cardOptions.length === 0));
 
         // Available Mentions: All entities - expected entity - required entities from payload - disqualified entities
@@ -882,19 +901,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .filter(e => !e.doNotMemorize)
             .map(convertEntityToOption)
 
-        const { intl } = this.props
+
 
         const disabled = this.state.isEditing && this.isUsedByTrainingDialogs()
 
-        const template = this.state.selectedActionTypeOptionKey === ActionTypes.CARD
-                            && this.state.selectedCardOptionKey
-                            ? this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)
-                            : undefined
+        const template = this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD
+            && this.state.selectedCardOptionKey
+            ? this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)
+            : undefined
 
-        const callback = this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
-                            && this.state.selectedApiOptionKey
-                            ? this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey)
-                            : undefined
+        const callback = this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
+            && this.state.selectedApiOptionKey
+            ? this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey)
+            : undefined
         return (
             <Modal
                 isOpen={this.props.open}
@@ -917,7 +936,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             tipType={ToolTip.TipType.ACTION_TYPE}
                         />
 
-                        {this.state.selectedActionTypeOptionKey === ActionTypes.API_LOCAL
+                        {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
                             && <div>
                                 <div className="cl-dropdownWithButton-dropdown">
                                     <TC.Dropdown
@@ -940,56 +959,56 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 </div>
                                 {this.state.selectedApiOptionKey
                                     && (callback
-                                    ? <div>
-                                        {callback.logicArguments.length > 0
-                                            && <div>
-                                            <OF.Label>Logic Arguments</OF.Label>
-                                            {callback.logicArguments
-                                                .map(apiArgument => {
-                                                    return (
-                                                        <React.Fragment key={apiArgument}>
-                                                            <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}/></OF.Label>
-                                                            <ActionPayloadEditor.Editor
-                                                                options={optionsAvailableForPayload}
-                                                                value={this.state.slateValuesMap[apiArgument]}
-                                                                placeholder={''}
-                                                                onChange={eState => this.onChangePayloadEditor(eState, apiArgument)}
-                                                                onSubmit={() => this.onSubmitPayloadEditor()}
-                                                                disabled={isPayloadDisabled}
-                                                            />
-                                                        </React.Fragment>
-                                                    )
-                                                })}
-                                        </div>}
-                                        {callback.renderArguments.length > 0
-                                            && <div>
-                                            <OF.Label>Render Arguments</OF.Label>
-                                            {callback.renderArguments
-                                                .map(apiArgument => {
-                                                    return (
-                                                        <React.Fragment key={apiArgument}>
-                                                            <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}/></OF.Label>
-                                                            <ActionPayloadEditor.Editor
-                                                                options={optionsAvailableForPayload}
-                                                                value={this.state.secondarySlateValuesMap[apiArgument]}
-                                                                placeholder={''}
-                                                                onChange={eState => this.onChangePayloadEditor(eState, apiArgument, true)}
-                                                                onSubmit={() => this.onSubmitPayloadEditor()}
-                                                                disabled={isPayloadDisabled}
-                                                            />
-                                                        </React.Fragment>
-                                                    )
-                                                })}
-                                        </div>}
-                                    </div>
-                                    : <div className="cl-errorpanel">
-                                        <div>ERROR: Bot Missing Callback: {this.state.selectedApiOptionKey}</div>
-                                    </div>)
+                                        ? <div>
+                                            {callback.logicArguments.length > 0
+                                                && <div>
+                                                    <OF.Label>Logic Arguments</OF.Label>
+                                                    {callback.logicArguments
+                                                        .map(apiArgument => {
+                                                            return (
+                                                                <React.Fragment key={apiArgument}>
+                                                                    <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
+                                                                    <ActionPayloadEditor.Editor
+                                                                        options={optionsAvailableForPayload}
+                                                                        value={this.state.slateValuesMap[apiArgument]}
+                                                                        placeholder={''}
+                                                                        onChange={eState => this.onChangePayloadEditor(eState, apiArgument)}
+                                                                        onSubmit={() => this.onSubmitPayloadEditor()}
+                                                                        disabled={isPayloadDisabled}
+                                                                    />
+                                                                </React.Fragment>
+                                                            )
+                                                        })}
+                                                </div>}
+                                            {callback.renderArguments.length > 0
+                                                && <div>
+                                                    <OF.Label>Render Arguments</OF.Label>
+                                                    {callback.renderArguments
+                                                        .map(apiArgument => {
+                                                            return (
+                                                                <React.Fragment key={apiArgument}>
+                                                                    <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
+                                                                    <ActionPayloadEditor.Editor
+                                                                        options={optionsAvailableForPayload}
+                                                                        value={this.state.secondarySlateValuesMap[apiArgument]}
+                                                                        placeholder={''}
+                                                                        onChange={eState => this.onChangePayloadEditor(eState, apiArgument, true)}
+                                                                        onSubmit={() => this.onSubmitPayloadEditor()}
+                                                                        disabled={isPayloadDisabled}
+                                                                    />
+                                                                </React.Fragment>
+                                                            )
+                                                        })}
+                                                </div>}
+                                        </div>
+                                        : <div className="cl-errorpanel">
+                                            <div>ERROR: Bot Missing Callback: {this.state.selectedApiOptionKey}</div>
+                                        </div>)
                                 }
                             </div>
                         }
 
-                        {this.state.selectedActionTypeOptionKey === ActionTypes.CARD
+                        {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD
                             && <div>
                                 <div className="cl-dropdownWithButton-dropdown">
                                     <TC.Dropdown
@@ -1019,34 +1038,34 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 </div>
                                 {this.state.selectedCardOptionKey
                                     && (template
-                                    ? template.variables
-                                        .map(cardTemplateVariable => {
-                                            return (
-                                                <React.Fragment key={cardTemplateVariable.key}>
-                                                    <OF.Label className="cl-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS}/></OF.Label>
-                                                    <ActionPayloadEditor.Editor
-                                                        options={optionsAvailableForPayload}
-                                                        value={this.state.slateValuesMap[cardTemplateVariable.key]}
-                                                        placeholder={''}
-                                                        onChange={eState => this.onChangePayloadEditor(eState, cardTemplateVariable.key)}
-                                                        onSubmit={() => this.onSubmitPayloadEditor()}
-                                                        disabled={isPayloadDisabled}
-                                                    />
-                                                </React.Fragment>
-                                            )
-                                        })
-                                    : <div className="cl-errorpanel">
-                                        <div>ERROR: Bot Missing Template: {this.state.selectedCardOptionKey}</div>
-                                    </div>)
+                                        ? template.variables
+                                            .map(cardTemplateVariable => {
+                                                return (
+                                                    <React.Fragment key={cardTemplateVariable.key}>
+                                                        <OF.Label className="cl-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
+                                                        <ActionPayloadEditor.Editor
+                                                            options={optionsAvailableForPayload}
+                                                            value={this.state.slateValuesMap[cardTemplateVariable.key]}
+                                                            placeholder={''}
+                                                            onChange={eState => this.onChangePayloadEditor(eState, cardTemplateVariable.key)}
+                                                            onSubmit={() => this.onSubmitPayloadEditor()}
+                                                            disabled={isPayloadDisabled}
+                                                        />
+                                                    </React.Fragment>
+                                                )
+                                            })
+                                        : <div className="cl-errorpanel">
+                                            <div>ERROR: Bot Missing Template: {this.state.selectedCardOptionKey}</div>
+                                        </div>)
                                 }
                             </div>
                         }
 
-                        {this.state.selectedActionTypeOptionKey === ActionTypes.TEXT
-                            && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
+                        {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.TEXT
+                            && (<div className={(payloadError ? 'editor--error' : '')}>
                                 <div>
-                                    <OF.Label className="ms-Label--tight">Bot's response... 
-                                        <HelpIcon tipType={ToolTip.TipType.ACTION_RESPONSE_TEXT}/>
+                                    <OF.Label className="ms-Label--tight">Bot's response...
+                                        <HelpIcon tipType={ToolTip.TipType.ACTION_RESPONSE_TEXT} />
                                     </OF.Label>
                                     <ActionPayloadEditor.Editor
                                         options={optionsAvailableForPayload}
@@ -1057,19 +1076,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         disabled={isPayloadDisabled}
                                     />
                                 </div>
-                                {!this.state.isPayloadValid &&
+                                {payloadError &&
                                     (<div>
                                         <p className="ms-TextField-errorMessage css-83 errorMessage_20d9206e">
-                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
+                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">{payloadError}</span>
                                         </p>
                                     </div>)}
                             </div>
                             )}
 
-                        {this.state.selectedActionTypeOptionKey === ActionTypes.END_SESSION
-                            && (<div className={(this.state.isPayloadValid ? '' : 'editor--error')}>
+                        {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.END_SESSION
+                            && (<div className={(payloadError ? 'editor--error' : '')}>
                                 <div>
-                                    <OF.Label className="ms-Label--tight">Data... <HelpIcon tipType={ToolTip.TipType.ACTION_END_SESSION}/></OF.Label>
+                                    <OF.Label className="ms-Label--tight">Data... <HelpIcon tipType={ToolTip.TipType.ACTION_END_SESSION} /></OF.Label>
                                     <ActionPayloadEditor.Editor
                                         options={optionsAvailableForPayload}
                                         value={this.state.slateValuesMap[TEXT_SLOT]}
@@ -1079,17 +1098,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         disabled={isPayloadDisabled}
                                     />
                                 </div>
-                                {!this.state.isPayloadValid &&
+                                {payloadError &&
                                     (<div>
                                         <p className="ms-TextField-errorMessage css-83 errorMessage_20d9206e">
-                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
+                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">{payloadError}</span>
                                         </p>
                                     </div>)}
                             </div>
                             )}
 
-                        {this.state.selectedActionTypeOptionKey !== ActionTypes.CARD &&
-                         this.state.selectedActionTypeOptionKey !== ActionTypes.END_SESSION &&
+                        {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CARD &&
+                            this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.END_SESSION &&
                             (<div className="cl-action-creator--expected-entities">
                                 <TC.TagPicker
                                     label="Expected Entity in User reply..."
@@ -1154,7 +1173,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
                                 style={{ marginTop: '1em', display: 'inline-block' }}
-                                disabled={this.state.selectedActionTypeOptionKey === ActionTypes.END_SESSION}
+                                disabled={this.state.selectedActionTypeOptionKey === CLM.ActionTypes.END_SESSION}
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>
@@ -1167,14 +1186,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton
                                 onClick={this.onClickTrainDialogs}
                                 iconProps={{ iconName: 'QueryList' }}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Train Dialogs'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT,
-                                    defaultMessage: 'Train Dialogs'
-                                })}
+                                ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION)}
+                                text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT)}
                             />
                         }
                         <OF.DefaultButton
@@ -1190,49 +1203,25 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             disabled={this.saveDisabled()}
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
-                                intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Save'
-                                }) :
-                                intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Create'
-                                })}
+                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION) :
+                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION)}
                             text={this.state.isEditing ?
-                                intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT,
-                                    defaultMessage: 'Save'
-                                }) :
-                                intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT,
-                                    defaultMessage: 'Create'
-                                })}
+                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT) :
+                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT)}
                         />
 
                         <OF.DefaultButton
                             onClick={this.onClickCancel}
-                            ariaDescription={intl.formatMessage({
-                                id: FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION,
-                                defaultMessage: 'Cancel'
-                            })}
-                            text={intl.formatMessage({
-                                id: FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT,
-                                defaultMessage: 'Cancel'
-                            })}
+                            ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
+                            text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
                         />
 
                         {this.state.isEditing &&
                             <OF.DefaultButton
                                 className="cl-button-delete"
                                 onClick={this.onClickDelete}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Delete'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT,
-                                    defaultMessage: 'Delete'
-                                })}
+                                ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
+                                text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
                             />}
                     </div>
                 </div>
@@ -1240,35 +1229,23 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     open={this.state.isConfirmDeleteModalOpen}
                     onCancel={this.onCancelDelete}
                     onConfirm={this.onConfirmDelete}
-                    title={intl.formatMessage({
-                        id: FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE,
-                        defaultMessage: 'Are you sure you want to delete this action?'
-                    })}
+                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
                     message={() => this.state.showValidationWarning &&
                         <div className="cl-text--warning">
                             <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
-                            <FormattedMessage
-                                id={FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING}
-                                defaultMessage='This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.'
-                            />
-                    </div>}
+                            <FormattedMessageId id={FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING} />
+                        </div>}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmEditModalOpen}
                     onCancel={this.onCancelEdit}
                     onConfirm={this.onConfirmEdit}
-                    title={intl.formatMessage({
-                        id: FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE,
-                        defaultMessage: 'Are you sure you want to edit this action?'
-                    })}
+                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE)}
                     message={() => this.state.showValidationWarning &&
                         <div className="cl-text--warning">
-                        <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
-                        <FormattedMessage
-                            id={FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING}
-                            defaultMessage='This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.'
-                        />
-                    </div>}
+                            <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
+                        <FormattedMessageId id={FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING} />
+                        </div>}
                 />
                 <EntityCreatorEditor
                     app={this.props.app}
@@ -1305,7 +1282,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
     if (!state.bot.botInfo) {
         throw new Error(`You attempted to render the ActionCreatorEditor which requires botInfo, but botInfo was not defined. This is likely a problem with higher level component. Please open an issue.`)
     }
-    
+
     return {
         entities: state.entities,
         trainDialogs: state.trainDialogs,
@@ -1315,13 +1292,13 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceiveProps {
-    app: AppBase
+    app: CLM.AppBase
     editingPackageId: string
     open: boolean
-    action: ActionBase | null
-    handleEdit: (action: ActionBase) => void
+    action: CLM.ActionBase | null
+    handleEdit: (action: CLM.ActionBase) => void
     handleClose: () => void
-    handleDelete: (action: ActionBase) => void
+    handleDelete: (action: CLM.ActionBase) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

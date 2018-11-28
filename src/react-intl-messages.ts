@@ -42,6 +42,8 @@ export enum FM {
     ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING = 'ActionCreatorEditor.confirmDeleteWarning',
     ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE = 'ActionCreatorEditor.confirmEditTitle',
     ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING = 'ActionCreatorEditor.confirmEditWarning',
+    ACTIONCREATOREDITOR_WARNING_ENTITY = 'ActionCreatorEditor.warningEntity',
+    ACTIONCREATOREDITOR_WARNING_PAYLOAD = 'ActionCreatorEditor.warningPayload',
 
     // ActionDetails
     ACTIONDETAILSLIST_COLUMNS_RESPONSE = 'ActionDetailsList.columns.response',
@@ -272,6 +274,7 @@ export enum FM {
 
     // ReplayErrorList
     REPLAYERROR_EXISTS = 'ReplayError.exists',
+    REPLAYERROR_EXISTS_LOG = 'ReplayErrorLog.exists',
     REPLAYERROR_WARNING = 'ReplayError.warning',
     REPLAYERROR_LOGDIALOG_VALIDATION_TITLE = 'ReplayError.logdialogvalidation.title',
     REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE = 'ReplayError.logdialogvalidation.message',
@@ -415,6 +418,8 @@ export enum FM {
     TOOLTIP_LOGGING_TOGGLE = 'ToolTip.LOGGING_TOGGLE',
     TOOLTIP_MEMORYMANAGER = 'ToolTip.ACTION_MEMORYMANAGER',
     TOOLTIP_MEMORYMANAGER_TITLE = 'ToolTip.ACTION_MEMORYMANAGER_TITLE',
+    TOOLTIP_MEMORYCONVERTER = 'ToolTip.ACTION_MEMORYCONVERTER',
+    TOOLTIP_MEMORYCONVERTER_TITLE = 'ToolTip.ACTION_MEMORYCONVERTER_TITLE',
     TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE = 'ToolTip.PACKAGECREATOR_LIVE_TOGGLE',
     TOOLTIP_REPLAY = 'ToolTop.REPLAY',
     TOOLTIP_TAG_EDITING = 'ToolTip.TAG_EDITING',
@@ -512,6 +517,9 @@ export default {
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure you want to edit this action?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
+        [FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD]: 'Bot Response is Required',
+        [FM.ACTIONCREATOREDITOR_WARNING_ENTITY]: 'Removed reference to undefined Entity',
+
 
         // ActionScorer
         [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
@@ -654,6 +662,7 @@ export default {
 
         // ReplayErrorList
         [FM.REPLAYERROR_EXISTS]: 'This Train Dialog has errors that must be fixed before it can be used to train your model',
+        [FM.REPLAYERROR_EXISTS_LOG]: 'This Log Dialog has errors that must be fixed before it can be converted to a Train Dialog',
         [FM.REPLAYERROR_WARNING]: 'This Train Dialog has some potential errors',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incomptibilities were found:',
@@ -774,6 +783,8 @@ export default {
         [FM.TOOLTIP_LOGGING_TOGGLE]: 'Enables or disables logging of user conversations. When logging is enabled, Bot performance can be improved by providing corrections to Logs that contain undesired Bot responses.  The corrected Log Dialogs become new Training Dialogs',
         [FM.TOOLTIP_MEMORYMANAGER]: `The memory manager provides the following functions for manipulating the Bot's memory:`,
         [FM.TOOLTIP_MEMORYMANAGER_TITLE]: 'Memory Manager',
+        [FM.TOOLTIP_MEMORYCONVERTER]: `Conversation Learner provides the following converters, but developers are free to write additional ones:`,
+        [FM.TOOLTIP_MEMORYCONVERTER_TITLE]: 'Memory Converters',
         [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
         [FM.TOOLTIP_REPLAY]: `Replay each step in the Dialog, calling the EntityDetectionCallback and any API callbacks.  This will update the Dialog to reflect any changes made to the Bot's APIs`,
         [FM.TOOLTIP_TAG_EDITING]: 'The version (tag) of the model to edit in UI',
