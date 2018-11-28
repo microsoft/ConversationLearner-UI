@@ -155,6 +155,13 @@ html {
   padding-right: 5px;
 }
 
+.cl-input-warning {
+  color: var(--cl-color-error);
+  padding: 0px;
+  margin: 0px;
+  font-size: 12px;
+}
+
 .cl-color-warning {
   color: var(--cl-color-warning) !important;
 }
