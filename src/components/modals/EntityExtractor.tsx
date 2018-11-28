@@ -417,7 +417,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                 <OF.Icon iconName="IncidentTriangle" className="editor-button-invalid" />,
                                 ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
                         </div>}
-                        {!isValid && <div className="ms-TextField-errorMessage css-84 errorMessage_20d9206e">
+                        {!isValid && <div className="ms-TextField-errorMessage">
                             <FormattedMessageId id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} />
                         </div>}
                     </div>
