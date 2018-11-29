@@ -8,7 +8,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { EditDialogType } from '.'
 import ConfirmCancelModal from './ConfirmCancelModal'
-import { FontClassNames, Icon, PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
+import { FontClassNames, Icon } from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types';
 import Webchat, { renderActivity } from '../Webchat'
@@ -21,16 +22,19 @@ import * as Util from '../../Utils/util'
 
 interface ComponentState {
     isSessionEndModalOpen: boolean
+    hasChatActivity: boolean
 }
 class SessionWindow extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
         this.state = {
-            isSessionEndModalOpen: false
+            isSessionEndModalOpen: false,
+            hasChatActivity: false
         }
     }
 
+    @OF.autobind
     onClickDone() {
         if (this.props.chatSession.current !== null) {
             this.props.deleteChatSessionThunkAsync(this.props.user.id, this.props.chatSession.current, this.props.app, this.props.editingPackageId)
@@ -39,7 +43,25 @@ class SessionWindow extends React.Component<Props, ComponentState> {
         this.props.onClose();
     }
 
+    @OF.autobind
+    async onClickAbandon() {
+
+        if (this.props.chatSession.current !== null) {
+            let logDialogId = this.props.chatSession.current.logDialogId
+            if (this.props.chatSession.current.logDialogId) {
+                await this.props.deleteChatSessionThunkAsync(this.props.user.id, this.props.chatSession.current, this.props.app, this.props.editingPackageId)
+                // Empty chats are removed automatically
+                if (this.state.hasChatActivity) {
+                    await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, logDialogId, this.props.editingPackageId)
+                }
+            }
+        }
+
+        this.props.onClose();
+    }
+
     // Force timeout of the session
+    @OF.autobind
     onClickExpire() {
         if (this.props.chatSession.current !== null) {
             this.props.editChatSessionExpireThunkAsync(this.props.app.appId, this.props.chatSession.current.sessionId)
@@ -48,6 +70,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
+        this.setState({ hasChatActivity: true })
         return renderActivity(activityProps, children, setRef, null, EditDialogType.LOG_ORIGINAL)
     }
 
@@ -84,17 +107,24 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary" />
                         <div className="cl-modal-buttons_primary">
-                            <PrimaryButton
+                            <OF.PrimaryButton
                                 data-testid="chat-session-modal-done-testing-button"
-                                onClick={() => this.onClickDone()}
+                                onClick={this.onClickDone}
                                 ariaDescription={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION)}
                                 text={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT)}
                             />
-                            <DefaultButton
+                            <OF.DefaultButton
                                 data-testid="chat-session-modal-session-timeout-button"
-                                onClick={() => this.onClickExpire()}
+                                onClick={this.onClickExpire}
                                 ariaDescription={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION)}
                                 text={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT)}
+                            />
+                            <OF.DefaultButton
+                                data-testid="teach-session-modal-abandon-button"
+                                className="cl-button-delete"
+                                onClick={this.onClickAbandon}
+                                ariaDescription={Util.formatMessageId(intl, FM.BUTTON_ABANDON)}
+                                text={Util.formatMessageId(intl, FM.BUTTON_ABANDON)}
                             />
                         </div>
                     </div>
@@ -111,7 +141,8 @@ class SessionWindow extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         deleteChatSessionThunkAsync: actions.chat.deleteChatSessionThunkAsync,
-        editChatSessionExpireThunkAsync: actions.chat.editChatSessionExpireThunkAsync
+        editChatSessionExpireThunkAsync: actions.chat.editChatSessionExpireThunkAsync,
+        deleteLogDialogThunkAsync: actions.log.deleteLogDialogThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
