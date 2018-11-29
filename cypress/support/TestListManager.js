@@ -7,16 +7,15 @@ const createModels = require('../tests/CreateModels')
 const train = require('../tests/Train')
 const log = require('../tests/Log')
 const editAndBranching = require('../tests/EditAndBranching')
+const deleteAllTestGeneratedModels = require('../tests/DeleteAllTestGeneratedModels')
 const helpers = require('./Helpers')
-const path = require('path')
-const pathParse = require('path-parse')
 
 // ************ MODIFY THIS LIST *****************************************
 // This is the list of tests that will be executed when "RunTestsFromList"
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "EditAndBranching.Branching",
+  "CreateModels.AllEntityTypes",
 ]
 
 // Do NOT alter this list except to add in new test cases as they are created.
@@ -31,8 +30,9 @@ export const masterListOfAllTestCases =
   "Log.WhatsYourName",
   "Train.DisqualifyingEntities",
   "Train.WaitVsNoWaitActions",
-  "Train.WhatsYourName1",
-  "Train.WhatsYourName2",
+  "Train.WhatsYourName",
+  "Train.MyNameIs",
+  "CleanUp.DeleteAllTestGeneratedModels"
 ]
 
 // The lists above are in a format that is convenient for a developer to copy
@@ -43,35 +43,41 @@ const testGroups =
 [
   {
     name: 'CreateModels', tests:
-      [
-        { name: "All Entity Types", func: createModels.AllEntityTypes },
-        { name: "Disqualifying Entities", func: createModels.DisqualifyingEntities },
-        { name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions },
-        { name: "What's Your Name", func: createModels.WhatsYourName },
-      ]
+    [
+      { name: "All Entity Types", func: createModels.AllEntityTypes },
+      { name: "Disqualifying Entities", func: createModels.DisqualifyingEntities },
+      { name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions },
+      { name: "What's Your Name", func: createModels.WhatsYourName },
+    ]
   },
   {
     name: 'EditAndBranching', tests:
-      [
-        { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
-        { name: "Branching", func: editAndBranching.Branching },
-      ]
+    [
+      { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
+      { name: "Branching", func: editAndBranching.Branching },
+    ]
   },
   {
     name: 'Log', tests:
-      [
-        { name: "What's Your Name", func: log.WhatsYourName },
-      ]
+    [
+      { name: "What's Your Name", func: log.WhatsYourName },
+    ]
   },
   {
     name: 'Train', tests:
-      [
-        { name: "Disqualifying Entities", func: train.DisqualifyingEntities },
-        { name: "Wait vs No Wait Action", func: train.WaitVsNoWaitActions },
-        { name: "What's Your Name 1", func: train.WhatsYourName1 },
-        { name: "What's Your Name 2", func: train.WhatsYourName2 },
-      ]
+    [
+      { name: "Disqualifying Entities", func: train.DisqualifyingEntities },
+      { name: "Wait vs No Wait Action", func: train.WaitVsNoWaitActions },
+      { name: "What's Your Name", func: train.WhatsYourName },
+      { name: "My Name Is", func: train.MyNameIs },
+    ]
   },
+  {
+    name: 'CleanUp', tests:
+    [
+      { name: 'Delete All Test Generated Models', func: deleteAllTestGeneratedModels.DeleteAllTestGeneratedModels},
+    ]
+  }
 ]
 
 export function AddToCypressTestList(testList) 

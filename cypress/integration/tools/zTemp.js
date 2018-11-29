@@ -16,10 +16,9 @@ describe('zTemp test', () =>
   it('zTemp test', () => 
   {
     homePage.Visit()
-    homePage.NavigateToModelPage("BigTrain")
+    // homePage.NavigateToModelPage("BigTrain")
     // modelPage.NavigateToTrainDialogs()
-    cy.pause()//.then(() =>
-    cy.Train_CaptureAllChatMessages()
-    cy.pause()
+    // cy.pause()
+    // cy.Train_CaptureAllChatMessages()
   })
 })

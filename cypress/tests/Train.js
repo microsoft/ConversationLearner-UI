@@ -13,7 +13,7 @@ const editDialogModal = require('../support/components/EditDialogModal')
 
 export function DisqualifyingEntities()
 {
-  var modelName = models.ImportModel('Model-disq', 'Model-disq.cl')
+  var modelName = models.ImportModel('z-disqualifyngEnt', 'z-disqualifyngEnt.cl')
   
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -62,7 +62,7 @@ export function DisqualifyingEntities()
 
 export function WaitVsNoWaitActions()
 {
-  var modelName = models.ImportModel('Model-0wait', 'Model-0wait.cl')
+  var modelName = models.ImportModel('z-waitNoWait', 'z-waitNoWait.cl')
   
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -97,9 +97,9 @@ export function WaitVsNoWaitActions()
   train.Save()
 }
 
-export function WhatsYourName1()
+export function WhatsYourName()
 {
-  var modelName = models.ImportModel('Model1-wyn', 'Model1.cl')
+  var modelName = models.ImportModel('z-whatsYourName', 'z-whatsYourName.cl')
 
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -121,12 +121,12 @@ export function WhatsYourName1()
 
   train.Save()
 
-  // Manually EXPORT this to fixtures folder and name it 'Model1-wyn.cl'
+  // Manually EXPORT this to fixtures folder and name it 'z-myNameIs.cl'
 }
 
-export function WhatsYourName2()
+export function MyNameIs()
 {
-  var modelName = models.ImportModel('Model1-mni', 'Model1-wyn.cl')
+  var modelName = models.ImportModel('z-myNameIs', 'z-myNameIs.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
 
@@ -152,6 +152,6 @@ export function WhatsYourName2()
 
   train.Save()
 
-  // Manually EXPORT this to fixtures folder and name it 'Model1-mni.cl'
+  // Manually EXPORT this to fixtures folder and name it 'z-nameTrained.cl'
 }
 

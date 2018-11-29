@@ -150,16 +150,32 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             warningOpen: true
         })
     }
+
+    withoutPreBuilts(preditedEntities: CLM.PredictedEntity[]): CLM.PredictedEntity[] {
+        return preditedEntities.filter(pe => {
+            let entity = this.props.entities.find(e => e.entityId === pe.entityId)
+            if (entity) {
+                return !entity.doNotMemorize
+            }
+            console.log('Missing Entity')
+            return false
+        })
+    }
     // Returns true if predicted entities match
     isValid(primaryResponse: CLM.ExtractResponse, extractResponse: CLM.ExtractResponse): boolean {
-        let missing = primaryResponse.predictedEntities.filter(item =>
-            !extractResponse.predictedEntities.find(er => item.entityId === er.entityId));
+        // Ignore prebuilts that aren't resolvers
+        let primaryEntities = this.withoutPreBuilts(primaryResponse.predictedEntities)
+        let extractEntities = this.withoutPreBuilts(extractResponse.predictedEntities)
+
+        let missing = primaryEntities.filter(item =>
+            !extractEntities.find(er => item.entityId === er.entityId));
 
         if (missing.length > 0) {
             return false;
         }
-        missing = extractResponse.predictedEntities.filter(item =>
-            !primaryResponse.predictedEntities.find(er => item.entityId === er.entityId));
+
+        missing = extractEntities.filter(item =>
+            !primaryEntities.find(er => item.entityId === er.entityId));
         if (missing.length > 0) {
             return false;
         }
