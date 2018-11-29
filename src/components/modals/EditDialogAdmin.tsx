@@ -352,7 +352,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
                             </div>
                         </div>
-                        <div className="cl-ux-flexpanel--right" style={{ width: "20%" }}>
+                        <div className="cl-ux-flexpanel--right" style={{ width: "20%", marginRight: '3em' }}>
                             <TrainingStatusContainer
                                 app={this.props.app}
                             />
