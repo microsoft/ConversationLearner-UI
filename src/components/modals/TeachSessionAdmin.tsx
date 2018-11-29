@@ -300,7 +300,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
                             </div>
                         </div>
-                        <div className="cl-ux-flexpanel--right" style={{ width: '35%', marginRight: '2em' }}>
+                        <div className="cl-ux-flexpanel--right" style={{ width: '35%', marginRight: '3em' }}>
                             <TrainingStatusContainer
                                 app={this.props.app}
                             />
