@@ -404,7 +404,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     onCloseTeachSession(save: boolean) {
 
-        if (this.props.teachSession && this.props.teachSession.teach) {
+        if (this.state.history.length && (this.props.teachSession && this.props.teachSession.teach)) {
             if (save) {
                 // If source was a trainDialog, delete the original
                 let sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
