@@ -3,6 +3,8 @@
  * Licensed under the MIT License.
  */
 
+const helpers = require('../Helpers')
+
 export function Visit()                         { cy.visit('http://localhost:5050') }
 export function NavigateToModelPage(name)       { cy.Get('button.root-65').ExactMatch(`${name}`).Click() }
 export function ClickNewModelButton()           { cy.Get('[data-testid="model-list-create-new-button"]').Click() }
@@ -18,7 +20,28 @@ export function ClickConfirmButton()            { return cy.Get('.ms-Dialog-main
 export function GetModelListRowCount() 
 {
   return cy.Get('[data-automationid="DetailsList"] > [role="grid"]')
-  .then((gridElement) => { var rowCount = +gridElement.attr('aria-rowcount') -1; return rowCount })
+  .then(gridElement => { var rowCount = +gridElement.attr('aria-rowcount') -1; return rowCount })
+}
+
+export function DeleteNextTestGeneratedModel(nextPotentialRowToDelete) 
+{
+  return new Promise((resolve) =>
+  {
+    cy.Get('[data-testid="model-list-model-name"]').then(elements =>
+    {
+      for(var i = nextPotentialRowToDelete; i < elements.length; i++) 
+      {
+        // TODO: Once the CircleCI machine has run and eliminated all tests generated models remove the last two 'startsWith' evaluations...
+        if(elements[i].innerText.startsWith('z-') || elements[i].innerText.startsWith('Model-') || elements[i].innerText.startsWith('Model1-')) 
+        {
+          cy.wrap(elements[i]).parents('[role="presentation"].ms-List-cell').find('i[data-icon-name="Delete"]').Click()
+          ClickConfirmButton()
+          return resolve(i)
+        }
+      }
+      return resolve(undefined)
+    })
+  })
 }
 
 // data-testid="model-list-model-name"
