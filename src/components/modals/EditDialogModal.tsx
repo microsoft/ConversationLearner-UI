@@ -58,6 +58,13 @@ const initialState: ComponentState = {
 class EditDialogModal extends React.Component<Props, ComponentState> {
     state = initialState
 
+    @OF.autobind
+    resetWebchat() {
+        this.setState({
+            webchatKey: this.state.webchatKey + 1,
+        })
+    }
+
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.open === false && nextProps.open === true) {
             this.setState(initialState);
@@ -191,7 +198,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     // User is continuing the train dialog by typing something new
     @OF.autobind
-    onPostNewActivity(activity: Activity) {
+    async onPostNewActivity(activity: Activity) {
 
         if (activity.type === 'message') {
 
@@ -204,9 +211,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             newTrainDialog.definitions = definitions
 
             const initialUserInput: CLM.UserInput = { text: activity.text! }
+            
             // Allow webchat to scroll to bottom 
             this.props.clearWebchatScrollPosition()
-            this.props.onContinueDialog(newTrainDialog, initialUserInput)
+
+            // If there's an error when I try to continue, reset webchat to ignore new input
+            await this.props.setErrorDismissCallback(this.resetWebchat)
+            await this.props.onContinueDialog(newTrainDialog, initialUserInput)
         }
     }
 
@@ -847,7 +858,8 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
-        clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition
+        clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
+        setErrorDismissCallback: actions.display.setErrorDismissCallback
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

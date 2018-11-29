@@ -11,7 +11,8 @@ const initialState: ErrorState = {
     type: ErrorType.Error,
     title: null,
     messages: [],
-    actionType: AT.NO_OP
+    actionType: AT.NO_OP,
+    closeCallback: null
 }
 
 const errorReducer: Reducer<ErrorState> = (state = initialState, action: ActionObject): ErrorState => {
@@ -20,18 +21,22 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action: ActionO
             return { ...initialState }
         case AT.SET_ERROR_DISPLAY:
             return { 
+                ...state,
                 type: action.errorType,
                 title: action.title,
                 messages: action.messages,
                 actionType: action.actionType
             }
+        case AT.SET_ERROR_DISMISS_CALLBACK:
+            return {...state, closeCallback: action.closeCallback}
         case AT.FETCH_BOTINFO_FULFILLED:
             if (action.botInfo.validationErrors.length > 0) {
                 return {
                     type: ErrorType.Error,
                     title: `Configuration Error`,
                     messages: action.botInfo.validationErrors,
-                    actionType: AT.FETCH_BOTINFO_ASYNC
+                    actionType: AT.FETCH_BOTINFO_ASYNC,
+                    closeCallback: null
                 }
             }
             return { ...state }

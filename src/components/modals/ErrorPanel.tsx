@@ -28,6 +28,10 @@ class ErrorPanel extends React.Component<Props, {}> {
         if (actionType) {
             ErrorHandler.handleError(actionType)
         }
+
+        if (this.props.error.closeCallback) {
+            this.props.error.closeCallback()
+        }
     }
 
     onRenderFooterContent(): JSX.Element {

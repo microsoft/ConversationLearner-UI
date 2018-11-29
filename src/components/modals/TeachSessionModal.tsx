@@ -12,11 +12,10 @@ import { AT } from '../../types/ActionTypes'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import * as BotChat from '@conversationlearner/webchat'
 import * as OF from 'office-ui-fabric-react';
-import * as Utils from '../../Utils/util'
+import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import { State, TeachSessionState } from '../../types';
 import Webchat, { renderActivity } from '../Webchat'
-import { formatMessageId } from '../../Utils/util'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
 import FormattedMessageId from '../FormattedMessageId'
@@ -176,7 +175,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onClickConfirmDelete() {
-        await Utils.setStateAsync(this, {
+        await Util.setStateAsync(this, {
             isConfirmDeleteOpen: false
         })
         this.props.onClose(false)
@@ -216,7 +215,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    onWebChatPostActivity(activity: Activity) {
+    async onWebChatPostActivity(activity: Activity) {
         if (activity.type === 'message') {
 
             let userInput: CLM.UserInput
@@ -249,7 +248,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 selectedHistoryActivity: null
             })
 
-            this.props.runExtractorThunkAsync(
+            // If there's an error when I try to continue, reset webchat to ignore new input
+            await this.props.setErrorDismissCallback(this.onClickUndoInput)
+            await this.props.runExtractorThunkAsync(
                 this.props.app.appId,
                 CLM.DialogType.TEACH,
                 this.props.teachSession.teach.teachId,
@@ -417,8 +418,17 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickUndoInput(): void {
-        // Replay dialog to get rid of input
-        this.props.onEditTeach(0, null, this.props.onReplayDialog)
+        if (this.state.nextActivityIndex > 1) {
+            // Replay dialog to get rid of input
+            this.props.onEditTeach(0, null, this.props.onReplayDialog)
+        }
+        else {
+            // Reset webchat to clear input
+            this.setState({
+                webchatKey: this.state.webchatKey + 1,
+                nextActivityIndex: 0
+            })
+        }
     }
 
     @OF.autobind
@@ -507,17 +517,17 @@ class TeachModal extends React.Component<Props, ComponentState> {
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
-                return formatMessageId(intl, FM.BUTTON_ABANDON)
+                return Util.formatMessageId(intl, FM.BUTTON_ABANDON)
             case EditDialogType.BRANCH:
-                return formatMessageId(intl, FM.BUTTON_ABANDON_BRANCH)
+                return Util.formatMessageId(intl, FM.BUTTON_ABANDON_BRANCH)
             case EditDialogType.LOG_EDITED:
-                return formatMessageId(intl, FM.BUTTON_ABANDON_EDIT)
+                return Util.formatMessageId(intl, FM.BUTTON_ABANDON_EDIT)
             case EditDialogType.LOG_ORIGINAL:
-                return formatMessageId(intl, FM.BUTTON_ABANDON)
+                return Util.formatMessageId(intl, FM.BUTTON_ABANDON)
             case EditDialogType.TRAIN_EDITED:
-                return formatMessageId(intl, FM.BUTTON_ABANDON_EDIT)
+                return Util.formatMessageId(intl, FM.BUTTON_ABANDON_EDIT)
             case EditDialogType.TRAIN_ORIGINAL:
-                return formatMessageId(intl, FM.BUTTON_ABANDON)
+                return Util.formatMessageId(intl, FM.BUTTON_ABANDON)
             default:
                 return ""
         }
@@ -526,17 +536,17 @@ class TeachModal extends React.Component<Props, ComponentState> {
     renderSaveText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
-                return formatMessageId(intl, FM.BUTTON_SAVE)
+                return Util.formatMessageId(intl, FM.BUTTON_SAVE)
             case EditDialogType.BRANCH:
-                return formatMessageId(intl, FM.BUTTON_SAVE_BRANCH)
+                return Util.formatMessageId(intl, FM.BUTTON_SAVE_BRANCH)
             case EditDialogType.LOG_EDITED:
-                return formatMessageId(intl, FM.BUTTON_SAVE_AS_TRAIN_DIALOG)
+                return Util.formatMessageId(intl, FM.BUTTON_SAVE_AS_TRAIN_DIALOG)
             case EditDialogType.LOG_ORIGINAL:
-                return formatMessageId(intl, FM.BUTTON_SAVE_AS_TRAIN_DIALOG)
+                return Util.formatMessageId(intl, FM.BUTTON_SAVE_AS_TRAIN_DIALOG)
             case EditDialogType.TRAIN_EDITED:
-                return formatMessageId(intl, FM.BUTTON_SAVE_EDIT)
+                return Util.formatMessageId(intl, FM.BUTTON_SAVE_EDIT)
             case EditDialogType.TRAIN_ORIGINAL:
-                return formatMessageId(intl, FM.BUTTON_SAVE)
+                return Util.formatMessageId(intl, FM.BUTTON_SAVE)
             default:
                 return ""
         }
@@ -546,15 +556,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
         switch (this.props.editType) {
             case EditDialogType.NEW:
             case EditDialogType.BRANCH:
-                return formatMessageId(intl, FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE)
+                return Util.formatMessageId(intl, FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE)
             case EditDialogType.LOG_EDITED:
-                return formatMessageId(intl, FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE)
+                return Util.formatMessageId(intl, FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE)
             case EditDialogType.LOG_ORIGINAL:
-                return formatMessageId(intl, FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE)
+                return Util.formatMessageId(intl, FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE)
             case EditDialogType.TRAIN_EDITED:
-                return formatMessageId(intl, FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE)
+                return Util.formatMessageId(intl, FM.TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE)
             case EditDialogType.TRAIN_ORIGINAL:
-                return formatMessageId(intl, FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE)
+                return Util.formatMessageId(intl, FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE)
             default:
                 return ""
         }
@@ -690,8 +700,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         data-testid="teach-session-set-initial-state"
                                         disabled={false}
                                         onClick={this.onInitStateClicked}
-                                        ariaDescription={formatMessageId(intl, FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION)}
-                                        text={formatMessageId(intl, FM.TEACHSESSIONMODAL_INITSTATE_TEXT)}
+                                        ariaDescription={Util.formatMessageId(intl, FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION)}
+                                        text={Util.formatMessageId(intl, FM.TEACHSESSIONMODAL_INITSTATE_TEXT)}
                                     />
                                 }
                                 <div className="cl-modal-buttons_secondary">
@@ -705,8 +715,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         data-testid="teach-session-footer-button-save"
                                         disabled={false}
                                         onClick={this.onClickUndoInput}
-                                        ariaDescription={formatMessageId(intl, FM.BUTTON_UNDO)}
-                                        text={formatMessageId(intl, FM.BUTTON_UNDO)}
+                                        ariaDescription={Util.formatMessageId(intl, FM.BUTTON_UNDO)}
+                                        text={Util.formatMessageId(intl, FM.BUTTON_UNDO)}
                                     />
                                 }
                                 <OF.PrimaryButton
@@ -765,6 +775,7 @@ const mapDispatchToProps = (dispatch: any) => {
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
         toggleAutoTeach: actions.teach.toggleAutoTeach,
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
+        setErrorDismissCallback: actions.display.setErrorDismissCallback
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
