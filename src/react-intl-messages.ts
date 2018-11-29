@@ -225,6 +225,7 @@ export enum FM {
     ERROR_WARNING = 'Error.warning',
     ERROR_PRIMARYBUTTON_ARIADESCRIPTION = 'Error.ariaDescription',
     ERROR_PRIMARYBUTTON_TEXT = 'Error.text',
+    ERROR_TOOMANYCHARACTERS = 'Error.tooManyChars',
 
     // ExtractConflictModal
     EXTRACTCONFLICTMODAL_TITLE = 'ExtractConflictModal.title',
@@ -897,6 +898,7 @@ export default {
         [FM.ERROR_WARNING]: 'Warning',
         [FM.ERROR_PRIMARYBUTTON_ARIADESCRIPTION]: 'Ok',
         [FM.ERROR_PRIMARYBUTTON_TEXT]: 'Ok',
+        [FM.ERROR_TOOMANYCHARACTERS]: 'Current value exceeds maximum supported length.',
 
         // ExtractConflictModal
         [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Entity is labelled differently in another user utterance',
