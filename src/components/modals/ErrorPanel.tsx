@@ -14,6 +14,7 @@ import { injectIntl, InjectedIntlProps, InjectedIntl, FormattedMessage } from 'r
 import { AT } from '../../types/ActionTypes'
 import { FM } from '../../react-intl-messages'
 import { getTip, TipType } from '../ToolTips/ToolTips'
+import * as Util from '../../Utils/util'
 
 class ErrorPanel extends React.Component<Props, {}> {
     static customErrors = {
@@ -33,6 +34,7 @@ class ErrorPanel extends React.Component<Props, {}> {
         return (
             <div>
                 <OF.DefaultButton
+                    className="cl-button-close cl-ux-flexpanel--right" style={{ marginBottom: '1em' }}
                     onClick={() => this.handleClose(this.props.error.actionType)}
                 >
                     Close
@@ -48,10 +50,7 @@ class ErrorPanel extends React.Component<Props, {}> {
 
         const formattedMessageId = ErrorPanel.customErrors[error.title]
         return formattedMessageId &&
-            intl.formatMessage({
-                id: formattedMessageId,
-                defaultMessage: formattedMessageId
-            })
+            Util.formatMessageId(intl, formattedMessageId)
     }
 
     render() {
