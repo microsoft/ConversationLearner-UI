@@ -472,7 +472,9 @@ export enum FM {
     TRAINDIALOGS_TURNS = 'TrainDialogs.turns',
     TRAINDIALOGS_CREATED_DATE_TIME = 'TrainDialogs.createdDateTime',
     TRAINDIALOGS_LAST_MODIFIED_DATE_TIME = 'TrainDialogs.lastModifiedDateTime',
+    TRAINDIALOGS_FILTERING_ENTITIES_LABEL = 'TrainDialogs.FilteringEntities.Label',
     TRAINDIALOGS_FILTERING_ENTITIES = 'TrainDialogs.FilteringEntities',
+    TRAINDIALOGS_FILTERING_ACTIONS_LABEL = 'TrainDialogs.FilteringActions.Label',
     TRAINDIALOGS_FILTERING_ACTIONS = 'TrainDialogs.FilteringActions',
 
     // Tutorial Importer
@@ -814,8 +816,10 @@ export default {
         [FM.TRAINDIALOGS_TURNS]: 'Turns',
         [FM.TRAINDIALOGS_CREATED_DATE_TIME]: 'Created',
         [FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
-        [FM.TRAINDIALOGS_FILTERING_ENTITIES]: '* Any entities',
-        [FM.TRAINDIALOGS_FILTERING_ACTIONS]: '* Any actions',
+        [FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL]: 'Filter by Entity:',
+        [FM.TRAINDIALOGS_FILTERING_ENTITIES]: 'All entities',
+        [FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL]: 'Filter by Actions:',
+        [FM.TRAINDIALOGS_FILTERING_ACTIONS]: 'All actions',
 
         // Tutorial Importer
         [FM.TUTORIALIMPORTER_TITLE]: 'Tutorials',
