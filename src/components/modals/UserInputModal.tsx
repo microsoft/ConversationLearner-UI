@@ -51,7 +51,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file
-        if (event.key === 'Enter' && this.state.userInputVal) {
+        if ((this.onGetInputErrorMessage(this.state.userInputVal) === "") && (event.key === 'Enter') && this.state.userInputVal) {
             this.onClickSubmit();
         }
     }
