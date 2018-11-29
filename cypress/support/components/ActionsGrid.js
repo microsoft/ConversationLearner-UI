@@ -45,7 +45,7 @@ function ValidateEntities(selector, emptySelector, entities1, entities2)
       entities = [...entities, ...entities2]
     }
     entities = helpers.RemoveDuplicates(entities)
-
+helpers.ConLog(`ValidateEntities`, entities)
     cy.Get('@responseDetailsRow').find(selector).as('entitiesList')
     entities.forEach(entity => cy.Get('@entitiesList').contains(entity))
     cy.Get('@entitiesList').should('have.length', entities.length)
