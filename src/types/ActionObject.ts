@@ -99,6 +99,10 @@ export type DisplayAction = {
     messages: string[],
     actionType: AT | null
 } | {
+    // fuction to call when error display is closeed
+    type: AT.SET_ERROR_DISMISS_CALLBACK
+    closeCallback: (() => void) | null
+} | {
     type: AT.SET_WEBCHAT_SCROLL_POSITION,
     position: number
 } | {
