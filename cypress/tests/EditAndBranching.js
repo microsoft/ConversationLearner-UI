@@ -13,7 +13,7 @@ const editDialogModal = require('../support/components/EditDialogModal')
 
 export function VerifyEditTrainingControlsAndLabels()
 {
-  var modelName = models.ImportModel('Model-EdCon', 'Model1-mni.cl')
+  var modelName = models.ImportModel('z-editContols', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
 
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
@@ -38,7 +38,7 @@ export function VerifyEditTrainingControlsAndLabels()
 
 export function Branching()
 {
-  var modelName = models.ImportModel('Model-Branch', 'Model1-mni.cl')
+  var modelName = models.ImportModel('z-branching', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
   
