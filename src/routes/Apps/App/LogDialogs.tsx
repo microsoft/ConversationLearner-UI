@@ -648,14 +648,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             }
 
             // Copy, Remove rounds / scorer steps below insert
-            let history = JSON.parse(JSON.stringify(trainDialog))
-            history.definitions = definitions
-            history.rounds = history.rounds.slice(0, roundIndex + 1)
+            let partialTrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            partialTrainDialog.definitions = definitions
+            partialTrainDialog.rounds = partialTrainDialog.rounds.slice(0, roundIndex + 1)
+            let lastRound = partialTrainDialog.rounds[partialTrainDialog.rounds.length - 1]
+            lastRound.scorerSteps = lastRound.scorerSteps.slice(0, scoreIndex)
 
             const userInput: CLM.UserInput = { text: inputText }
 
             // Get extraction
-            const extractResponse = await ((this.props.extractFromHistoryThunkAsync(this.props.app.appId, history, userInput) as any) as Promise<CLM.ExtractResponse>)
+            const extractResponse = await ((this.props.extractFromHistoryThunkAsync(this.props.app.appId, partialTrainDialog, userInput) as any) as Promise<CLM.ExtractResponse>)
 
             if (!extractResponse) {
                 throw new Error("No extract response")

@@ -13,7 +13,7 @@ export function validityColorClassName(validity: CLM.Validity): string {
         case CLM.Validity.UNKNOWN:
             return 'cl-color-caution'
         case CLM.Validity.WARNING:
-            return 'cl-color-warning' // LARS
+            return 'cl-color-warning' 
         default:
             return ""
     }
@@ -27,7 +27,7 @@ export function validityBorderClassName(validity: CLM.Validity): string {
         case CLM.Validity.UNKNOWN:
             return 'wc-border-warning-from-'
         case CLM.Validity.WARNING:
-            return 'wc-border-warning-from-' // LARS
+            return 'wc-border-warning-from-'
         default:
             return ""
     }
@@ -41,7 +41,7 @@ export function validityToolTip(validity: CLM.Validity): string {
         case CLM.Validity.UNKNOWN:
             return FM.TOOLTIP_TRAINDIALOG_UNKNOWN
         case CLM.Validity.WARNING:
-            return FM.TOOLTIP_TRAINDIALOG_WARNING // LARS
+            return FM.TOOLTIP_TRAINDIALOG_WARNING 
         default:
             return ""
     }
