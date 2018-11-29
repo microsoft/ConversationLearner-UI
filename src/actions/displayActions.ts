@@ -83,6 +83,13 @@ export const setErrorDisplay = (errorType: ErrorType, title: string, messages: s
     }
 }
 
+export const setErrorDismissCallback = (closeCallback: () => void): ActionObject => {
+    return {
+        type: AT.SET_ERROR_DISMISS_CALLBACK,
+        closeCallback
+    }
+}
+
 export const setWebchatScrollPosition = (position: number): ActionObject => {
     return {
         type: AT.SET_WEBCHAT_SCROLL_POSITION,
