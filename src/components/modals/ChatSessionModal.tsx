@@ -17,12 +17,13 @@ import actions from '../../actions'
 import { FM } from '../../react-intl-messages'
 import * as BotChat from '@conversationlearner/webchat'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import * as Util from '../../Utils/util'
 
 interface ComponentState {
     isSessionEndModalOpen: boolean
 }
 class SessionWindow extends React.Component<Props, ComponentState> {
-    
+
     constructor(props: Props) {
         super(props)
         this.state = {
@@ -42,7 +43,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     onClickExpire() {
         if (this.props.chatSession.current !== null) {
             this.props.editChatSessionExpireThunkAsync(this.props.app.appId, this.props.chatSession.current.sessionId)
-            this.setState({isSessionEndModalOpen: true})
+            this.setState({ isSessionEndModalOpen: true })
         }
     }
 
@@ -59,7 +60,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                 containerClassName="cl-modal cl-modal--narrow cl-modal--log"
             >
                 <div className="cl-modal_body">
-                    <div className="cl-sessionmodal">
+                    <div className="cl-sessionmodal" onKeyDown={(key: any) => { key.keyCode === 27 /* ESC */ ? this.onClickDone() : null }}>
                         <div className="cl-sessionmodal-title">
                             <div className={`cl-dialog-title cl-dialog-title--log ${FontClassNames.xxLarge}`}>
                                 <Icon iconName="UserFollowed" />Log Dialog
@@ -81,42 +82,27 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
-                        <div className="cl-modal-buttons_secondary"/>
+                        <div className="cl-modal-buttons_secondary" />
                         <div className="cl-modal-buttons_primary">
                             <PrimaryButton
                                 data-testid="chat-session-modal-done-testing-button"
                                 onClick={() => this.onClickDone()}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Done Testing'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT,
-                                    defaultMessage: 'Done Testing'
-                                })}
+                                ariaDescription={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION)}
+                                text={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT)}
                             />
                             <DefaultButton
                                 data-testid="chat-session-modal-session-timeout-button"
                                 onClick={() => this.onClickExpire()}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Expire Session'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT,
-                                    defaultMessage: 'Expire Session'
-                                })}
+                                ariaDescription={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION)}
+                                text={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT)}
                             />
                         </div>
                     </div>
                 </div>
                 <ConfirmCancelModal
                     open={this.state.isSessionEndModalOpen}
-                    onOk={() =>  this.setState({isSessionEndModalOpen: false})}
-                    title={intl.formatMessage({
-                        id: FM.CHATSESSIONMODAL_TIMEOUT_TITLE,
-                        defaultMessage: 'On the next turn the EndSession callback will be called and a new Session startedd'
-                    })}
+                    onOk={() => this.setState({ isSessionEndModalOpen: false })}
+                    title={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_TIMEOUT_TITLE)}
                 />
             </Modal>
         );
