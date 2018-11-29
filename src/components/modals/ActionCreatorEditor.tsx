@@ -375,11 +375,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             return {
                 key: k,
                 current: v,
-                prev: prevValue
+                prev: prevValue,
+                currentEntities: ActionPayloadEditor.Utilities.getEntitiesFromValue(v),
+                prevEntities: ActionPayloadEditor.Utilities.getEntitiesFromValue(prevValue)
             }
         })
 
-        return pairedValues.some(pv => !pv.prev || pv.current.document.text !== pv.prev.document.text)
+        return pairedValues.some(pv => !pv.prev 
+            || pv.current.document.text !== pv.prev.document.text
+            || pv.currentEntities.length !== pv.prevEntities.length)
     }
 
     areTagsIdentical(tags1: OF.ITag[], tags2: OF.ITag[]): boolean {
