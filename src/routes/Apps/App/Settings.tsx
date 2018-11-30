@@ -362,7 +362,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             onClick={this.onClickExport}
                             ariaDescription={util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION)}
-                            text={util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONTEXT,)}
+                            text={util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONTEXT)}
                         />
                         <OF.PrimaryButton
                             onClick={this.onClickCopy}
@@ -384,12 +384,15 @@ class Settings extends React.Component<Props, ComponentState> {
                             />
                         </OF.Label>
                         <div>
-                            <a href={`https://www.luis.ai/applications/${this.props.app.luisAppId}/versions/0.1/manage/endpoints`} target="_blank">
-                                <OF.DefaultButton
-                                    iconProps={{ iconName: "OpenInNewWindow" }}
-                                    ariaDescription="Go to LUIS"
-                                    text="Go to LUIS"
-                                />
+                            <a
+                                href={`https://www.luis.ai/applications/${this.props.app.luisAppId}/versions/0.1/manage/endpoints`} 
+                                rel="noopener noreferrer"
+                                target="_blank">
+                                    <OF.DefaultButton
+                                        iconProps={{ iconName: "OpenInNewWindow" }}
+                                        ariaDescription="Go to LUIS"
+                                        text="Go to LUIS"
+                            />
                             </a>
                         </div>
                     </div>

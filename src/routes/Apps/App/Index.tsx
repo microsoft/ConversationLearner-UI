@@ -209,10 +209,10 @@ class Index extends React.Component<Props, ComponentState> {
                     />
                     <div className={`cl-nav ${OF.FontClassNames.mediumPlus}`}>
                         <div className="cl-nav_section">
-                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-home" exact to={{ pathname: `${match.url}`, state: { app } }}>
+                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-home" exact={true} to={{ pathname: `${match.url}`, state: { app } }}>
                                 <OF.Icon iconName="Home" />
-                                <span className={invalidBot ? 'cl-font--highlight' : ''}>Home
-                                        {invalidBot &&
+                                <span className={(this.state.modelLoaded && invalidBot) ? 'cl-font--highlight' : ''}>Home
+                                        {this.state.modelLoaded && invalidBot &&
                                         <TooltipHost
                                             content={intl.formatMessage({
                                                 id: FM.TOOLTIP_BOTINFO_INVALID,
@@ -236,8 +236,11 @@ class Index extends React.Component<Props, ComponentState> {
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-train-dialogs" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
                                 <OF.Icon iconName="List" />
-                                <span className={trainDialogValidity !== CLM.Validity.VALID ? 'cl-font--highlight' : ''}>Train Dialogs
-                                        {trainDialogValidity !== CLM.Validity.VALID &&
+                                <span 
+                                    className={(this.state.modelLoaded && trainDialogValidity !== CLM.Validity.VALID) ? 'cl-font--highlight' : ''}
+                                >
+                                    Train Dialogs
+                                    {this.state.modelLoaded && trainDialogValidity !== CLM.Validity.VALID &&
                                         <TooltipHost
                                             content={intl.formatMessage({
                                                 id: ValidityUtils.validityToolTip(trainDialogValidity),
@@ -250,7 +253,8 @@ class Index extends React.Component<Props, ComponentState> {
                                                 iconName="IncidentTriangle"
                                             />
                                         </TooltipHost>
-                                    }</span>
+                                    }
+                                </span>
                                 <span className="count">{this.state.modelLoaded ? this.props.trainDialogs.length : ''}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-log-dialogs" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
@@ -291,7 +295,7 @@ class Index extends React.Component<Props, ComponentState> {
                     <Route
                         exact={true}
                         path={match.url}
-                        render={props => <Dashboard {...props} app={app} validationErrors={this.state.botValidationErrors} />}
+                        render={props => <Dashboard {...props} app={app} modelLoaded={this.state.modelLoaded} validationErrors={this.state.botValidationErrors} />}
                     />
                 </Switch>
             </div>
