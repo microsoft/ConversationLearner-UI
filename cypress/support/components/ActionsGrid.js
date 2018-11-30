@@ -30,28 +30,26 @@ function ValidateEntitiesIsEmpty(selector)              { cy.Get('@responseDetai
 
 function ValidateEntities(selector, emptySelector, entities1, entities2)
 { 
-  if (!entities1 && !entities2) ValidateEntitiesIsEmpty(emptySelector)
-  else
-  {
-    var entities = new Array()
-    if (entities1)
-    {
-      if(!Array.isArray(entities1)) entities1 = [entities1]
-      entities = entities1
-    }
-    if (entities2)
-    {
-      if(!Array.isArray(entities2)) entities2 = [entities2]
-      entities = [...entities, ...entities2]
-    }
-    entities = helpers.RemoveDuplicates(entities)
-    
-    if (entities.length == 0) return
+  if (!entities1 && !entities2) return ValidateEntitiesIsEmpty(emptySelector)
 
-    cy.Get('@responseDetailsRow').find(selector).as('entitiesList')
-    entities.forEach(entity => cy.Get('@entitiesList').contains(entity))
-    cy.Get('@entitiesList').should('have.length', entities.length)
+  var entities = new Array()
+  if (entities1)
+  {
+    if(!Array.isArray(entities1)) entities1 = [entities1]
+    entities = entities1
   }
+  if (entities2)
+  {
+    if(!Array.isArray(entities2)) entities2 = [entities2]
+    entities = [...entities, ...entities2]
+  }
+  entities = helpers.RemoveDuplicates(entities)
+  
+  if (entities.length == 0) return ValidateEntitiesIsEmpty(emptySelector)
+
+  cy.Get('@responseDetailsRow').find(selector).as('entitiesList')
+  entities.forEach(entity => cy.Get('@entitiesList').contains(entity))
+  cy.Get('@entitiesList').should('have.length', entities.length)
 }
 
 

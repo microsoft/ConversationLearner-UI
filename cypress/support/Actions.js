@@ -1,5 +1,3 @@
-import { addEmitHelpers } from 'typescript';
-
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
@@ -72,10 +70,10 @@ export function IsAlphaNumeric(string)
 {
   for (var i = 0; i < string.length; i++) 
   {
-    var code = string.charCodeAt(i)
-    if (!(code > 47 && code < 58) &&  // numeric (0-9)
-        !(code > 64 && code < 91) &&  // upper alpha (A-Z)
-        !(code > 96 && code < 123))   // lower alpha (a-z)
+    var charCode = string.charCodeAt(i)
+    if (!(charCode > 47 && charCode < 58) &&  // numeric (0-9)
+        !(charCode > 64 && charCode < 91) &&  // upper alpha (A-Z)
+        !(charCode > 96 && charCode < 123))   // lower alpha (a-z)
         return false
   } 
   return true
