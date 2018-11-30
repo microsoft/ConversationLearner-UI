@@ -13,7 +13,8 @@ export type ErrorState = {
     type: ErrorType,
     title: string | null,
     messages: string[],
-    actionType: AT | null
+    actionType: AT | null,
+    closeCallback: (() => void) | null
 }
 export type TrainDialogState = CLM.TrainDialog[];
 

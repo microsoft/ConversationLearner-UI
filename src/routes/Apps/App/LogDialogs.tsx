@@ -377,7 +377,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.setState({
             isEditDialogModalOpen: false,
         })
-        
+
         if (this.state.currentLogDialogId) {
             await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
         }
@@ -648,14 +648,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             }
 
             // Copy, Remove rounds / scorer steps below insert
-            let history = JSON.parse(JSON.stringify(trainDialog))
-            history.definitions = definitions
-            history.rounds = history.rounds.slice(0, roundIndex + 1)
+            let partialTrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            partialTrainDialog.definitions = definitions
+            partialTrainDialog.rounds = partialTrainDialog.rounds.slice(0, roundIndex + 1)
+            let lastRound = partialTrainDialog.rounds[partialTrainDialog.rounds.length - 1]
+            lastRound.scorerSteps = lastRound.scorerSteps.slice(0, scoreIndex)
 
             const userInput: CLM.UserInput = { text: inputText }
 
             // Get extraction
-            const extractResponse = await ((this.props.extractFromHistoryThunkAsync(this.props.app.appId, history, userInput) as any) as Promise<CLM.ExtractResponse>)
+            const extractResponse = await ((this.props.extractFromHistoryThunkAsync(this.props.app.appId, partialTrainDialog, userInput) as any) as Promise<CLM.ExtractResponse>)
 
             if (!extractResponse) {
                 throw new Error("No extract response")
@@ -978,54 +980,57 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         iconProps={{ iconName: 'Sync' }}
                     />
                 </div>
-                {logDialogs.length === 0
-                    ? <div className="cl-page-placeholder">
-                        <div className="cl-page-placeholder__content">
-                            <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
-                            <OF.PrimaryButton
-                                iconProps={{
-                                    iconName: "Add"
-                                }}
-                                disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
-                                onClick={this.onClickNewChatSession}
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                                text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
-                            />
+                {
+                    logDialogs.length === 0
+                        ? <div className="cl-page-placeholder">
+                            <div className="cl-page-placeholder__content">
+                                <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
+                                <OF.PrimaryButton
+                                    iconProps={{
+                                        iconName: "Add"
+                                    }}
+                                    disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                                    onClick={this.onClickNewChatSession}
+                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
+                                    text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
+                                />
+                            </div>
                         </div>
-                    </div>
-                    : <React.Fragment>
-                        <div>
-                            <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
-                                Search:
+                        : <React.Fragment>
+                            <div>
+                                <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
+                                    Search:
                             </OF.Label>
-                            <OF.SearchBox
-                                id="logdialogs-input-search"
-                                data-testid="logdialogs-search-box"
-                                className={OF.FontClassNames.mediumPlus}
-                                onChange={(newValue) => this.onChange(newValue)}
-                                onSearch={(newValue) => this.onChange(newValue)}
-                            />
-                        </div>
+                                <OF.SearchBox
+                                    id="logdialogs-input-search"
+                                    data-testid="logdialogs-search-box"
+                                    className={OF.FontClassNames.mediumPlus}
+                                    onChange={(newValue) => this.onChange(newValue)}
+                                    onSearch={(newValue) => this.onChange(newValue)}
+                                />
+                            </div>
 
-                        <OF.DetailsList
-                            data-testid="logdialogs-details-list"
-                            key={this.state.dialogKey}
-                            className={OF.FontClassNames.mediumPlus}
-                            items={computedLogDialogs}
-                            columns={this.state.columns}
-                            checkboxVisibility={OF.CheckboxVisibility.hidden}
-                            onColumnHeaderClick={this.onClickColumnHeader}
-                            onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
-                            onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
-                        />
-                    </React.Fragment>}
+                            <OF.DetailsList
+                                data-testid="logdialogs-details-list"
+                                key={this.state.dialogKey}
+                                className={OF.FontClassNames.mediumPlus}
+                                items={computedLogDialogs}
+                                columns={this.state.columns}
+                                checkboxVisibility={OF.CheckboxVisibility.hidden}
+                                onColumnHeaderClick={this.onClickColumnHeader}
+                                onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
+                                onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
+                            />
+                        </React.Fragment>
+                }
                 <ChatSessionModal
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
                     open={this.state.isChatSessionWindowOpen}
                     onClose={this.onCloseChatSessionWindow}
                 />
-                {teachSession && teachSession.teach &&
+                {
+                    teachSession && teachSession.teach &&
                     <TeachSessionModal
                         isOpen={this.state.isTeachDialogModalOpen}
                         app={this.props.app}

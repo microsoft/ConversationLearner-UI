@@ -404,7 +404,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     onCloseTeachSession(save: boolean) {
 
-        if (this.props.teachSession && this.props.teachSession.teach) {
+        if (this.state.history.length && (this.props.teachSession && this.props.teachSession.teach)) {
             if (save) {
                 // If source was a trainDialog, delete the original
                 let sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
@@ -428,13 +428,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     // User has edited an Activity in a TeachSession
     async onEditTeach(historyIndex: number, args: EditHandlerArgs | null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any) {
 
-        // LARS do in log dialog too!+
         try {
-
             if (this.props.teachSession.teach) {
                 // Get train dialog associated with the teach session
                 let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.props.teachSession.teach.trainDialogId, false) as any) as Promise<CLM.TrainDialog>)
-
                 trainDialog.definitions = {
                     entities: this.props.entities,
                     actions: this.props.actions,
@@ -741,7 +738,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         try {
             const clData: CLM.CLChannelData = selectedActivity.channelData.clData
             const roundIndex = clData.roundIndex!
-            const scoreIndex = clData.scoreIndex!
+            const scoreIndex = clData.scoreIndex || 0
             const senderType = clData.senderType
 
             const definitions = {
@@ -751,14 +748,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
 
             // Copy, Remove rounds / scorer steps below insert
-            let history = JSON.parse(JSON.stringify(trainDialog))
-            history.definitions = definitions
-            history.rounds = history.rounds.slice(0, roundIndex + 1)
+            let partialTrainDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            partialTrainDialog.definitions = definitions
+            partialTrainDialog.rounds = partialTrainDialog.rounds.slice(0, roundIndex + 1)
+            let lastRound = partialTrainDialog.rounds[partialTrainDialog.rounds.length - 1]
+            lastRound.scorerSteps = lastRound.scorerSteps.slice(0, scoreIndex)
 
             const userInput: CLM.UserInput = { text: inputText }
 
             // Get extraction
-            const extractResponse = await ((this.props.extractFromHistoryThunkAsync(this.props.app.appId, history, userInput) as any) as Promise<CLM.ExtractResponse>)
+            const extractResponse = await ((this.props.extractFromHistoryThunkAsync(this.props.app.appId, partialTrainDialog, userInput) as any) as Promise<CLM.ExtractResponse>)
 
             if (!extractResponse) {
                 throw new Error("No extract response")
@@ -892,30 +891,25 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     async onContinueTrainDialog(newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) {
 
-        try {
-            if (this.props.teachSession && this.props.teachSession.teach) {
-                // Delete the teach session w/o saving
-                await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null)
-            }
-
-            let teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput) as any) as Promise<CLM.TeachWithHistory>)
-
-            const editType = (this.state.editType !== EditDialogType.NEW && this.state.editType !== EditDialogType.BRANCH) ?
-                EditDialogType.TRAIN_EDITED : this.state.editType
-
-            // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
-            this.setState({
-                history: teachWithHistory.history,
-                lastAction: teachWithHistory.lastAction,
-                isEditDialogModalOpen: false,
-                selectedActivityIndex: null,
-                isTeachDialogModalOpen: true,
-                editType
-            })
+        if (this.props.teachSession && this.props.teachSession.teach) {
+            // Delete the teach session w/o saving
+            await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null)
         }
-        catch (error) {
-            console.warn(`Error when attempting to create teach session from train dialog: `, error)
-        }
+
+        let teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput) as any) as Promise<CLM.TeachWithHistory>)
+
+        const editType = (this.state.editType !== EditDialogType.NEW && this.state.editType !== EditDialogType.BRANCH) ?
+            EditDialogType.TRAIN_EDITED : this.state.editType
+
+        // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
+        this.setState({
+            history: teachWithHistory.history,
+            lastAction: teachWithHistory.lastAction,
+            isEditDialogModalOpen: false,
+            selectedActivityIndex: null,
+            isTeachDialogModalOpen: true,
+            editType
+        })
     }
 
     // Replace the current trainDialog with a new one
@@ -1176,11 +1170,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         <div className="cl-list-filters">
                             <OF.Dropdown
                                 data-testid="dropdown-filter-by-entity"
-                                ariaLabel="Entity:"
-                                label="Entity:"
+                                ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
+                                label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
                                 selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : -1)}
                                 onChanged={this.onSelectEntityFilter}
-                                placeHolder="Filter by Entity"
+                                placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
                                 options={this.props.entities
                                     // Only show positive versions of negatable entities
                                     .filter(e => e.positiveId == null)
@@ -1191,11 +1185,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
                             <OF.Dropdown
                                 data-testid="dropdown-filter-by-action"
-                                ariaLabel="Action:"
-                                label="Action:"
+                                ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
+                                label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
                                 selectedKey={(this.state.actionFilter ? this.state.actionFilter.key : -1)}
                                 onChanged={this.onSelectActionFilter}
-                                placeHolder="Filter by Action"
+                                placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
                                 options={this.props.actions
                                     .map(a => this.toActionFilter(a, this.props.entities))
                                     .filter(s => s !== null)
