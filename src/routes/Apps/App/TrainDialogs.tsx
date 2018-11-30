@@ -1057,7 +1057,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         }
                     }
                     for (let ss of round.scorerSteps) {
-                        let foundAction = this.props.actions.find(a => a.actionId === ss.labelAction);
+                        let foundAction = this.props.actions.find(a => a.actionId === ss.labelAction)
                         // Invalid train dialogs can contain deleted actions
                         if (!foundAction) {
                             continue
@@ -1081,25 +1081,33 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 if (entityFilter && entityFilter.key
                     && !entitiesInTD.find(en => en.entityId === entityFilter.key)
                     && !entitiesInTD.find(en => en.entityId === entityFilter.data)) {
-                    return false;
+                    return false
                 }
                 const actionFilter = this.state.actionFilter
                 if (actionFilter && actionFilter.key
                     && !actionsInTD.find(a => a.actionId === actionFilter.key)) {
-                    return false;
+                    return false
                 }
 
-                let entityNames = entitiesInTD.map(e => e.entityName);
-                let actionPayloads = actionsInTD.map(a => CLM.ActionBase.GetPayload(a, Util.getDefaultEntityMap(this.props.entities)));
+                let entityNames = entitiesInTD.map(e => e.entityName)
+                let actionPayloads = actionsInTD.map(a => {
+                    try {
+                        return CLM.ActionBase.GetPayload(a, Util.getDefaultEntityMap(this.props.entities))
+                    }
+                    catch {
+                        // Backwards compatibility to models with old payload type
+                        return ""
+                    }
+                })
 
                 // Then check search terms
-                let searchString = variationText.concat(actionPayloads).concat(entityNames).join(' ').toLowerCase();
-                return searchString.indexOf(this.state.searchValue) > -1;
+                let searchString = variationText.concat(actionPayloads).concat(entityNames).join(' ').toLowerCase()
+                return searchString.indexOf(this.state.searchValue) > -1
             })
         }
 
-        filteredTrainDialogs = this.sortTrainDialogs(filteredTrainDialogs);
-        return filteredTrainDialogs;
+        filteredTrainDialogs = this.sortTrainDialogs(filteredTrainDialogs)
+        return filteredTrainDialogs
     }
 
     render() {
