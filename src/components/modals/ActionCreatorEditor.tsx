@@ -15,7 +15,6 @@ import * as CLM from '@conversationlearner/models'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
-import FormattedMessageId from '../FormattedMessageId'
 import * as ActionPayloadEditor from './ActionPayloadEditor'
 import { State } from '../../types'
 import * as ToolTip from '../ToolTips/ToolTips'
@@ -28,7 +27,6 @@ import HelpIcon from '../HelpIcon'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-
 import { FM } from '../../react-intl-messages'
 
 const TEXT_SLOT = '#TEXT_SLOT#';
@@ -138,7 +136,7 @@ interface ComponentState {
     isCardViewerModalOpen: boolean
     isConfirmDeleteModalOpen: boolean
     isConfirmEditModalOpen: boolean
-    showValidationWarning: boolean
+    validationWarnings: string[]
     isPayloadFocused: boolean
     isPayloadMissing: boolean
     entityWarning: boolean
@@ -169,7 +167,7 @@ const initialState: ComponentState = {
     isCardViewerModalOpen: false,
     isConfirmDeleteModalOpen: false,
     isConfirmEditModalOpen: false,
-    showValidationWarning: false,
+    validationWarnings: [],
     isPayloadFocused: false,
     isPayloadMissing: true,
     entityWarning: false,
@@ -375,11 +373,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             return {
                 key: k,
                 current: v,
-                prev: prevValue
+                prev: prevValue,
+                currentEntities: ActionPayloadEditor.Utilities.getEntitiesFromValue(v),
+                prevEntities: ActionPayloadEditor.Utilities.getEntitiesFromValue(prevValue)
             }
         })
 
-        return pairedValues.some(pv => !pv.prev || pv.current.document.text !== pv.prev.document.text)
+        return pairedValues.some(pv => !pv.prev 
+            || pv.current.document.text !== pv.prev.document.text
+            || pv.currentEntities.length !== pv.prevEntities.length)
     }
 
     areTagsIdentical(tags1: OF.ITag[], tags2: OF.ITag[]): boolean {
@@ -389,6 +391,40 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return tags1.reduce((acc, x, i) => { return acc && tags1[i].key === tags2[i].key }, true);
 
     }
+
+    // Return list of any strings that look like they should be attached to 
+    // entities but aren't
+    untaggedEntities(): string[] {
+        const primaryEntries = Object.entries(this.state.slateValuesMap)
+        const secondaryEntries = Object.entries(this.state.secondarySlateValuesMap)
+
+        let unattachedEntities: string[] = []
+        primaryEntries.forEach(([k, v]) => {
+            let text: string = v.document.text
+            let tags = text.split(" ").filter(t => t.startsWith("$"))
+            let entities = ActionPayloadEditor.Utilities.getEntitiesFromValue(v)
+                .map(e => `$${e.name}`)
+            tags.forEach(tag => {
+                if (!entities.find(e => e === tag)) {
+                    unattachedEntities.push(tag)
+                }
+            })
+        })
+
+        secondaryEntries.forEach(([k, v]) => {
+            let text: string = v.document.text
+            let tags = text.split(" ").filter(t => t.startsWith("$"))
+            let entities = ActionPayloadEditor.Utilities.getEntitiesFromValue(v)
+                .map(e => `$${e.name}`)
+            tags.forEach(tag => {
+                if (!entities.find(e => e === tag)) {
+                    unattachedEntities.push(tag)
+                }
+            })
+        })
+        return unattachedEntities
+    }
+
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
         const initialEditState = this.state.initialEditState
         if (!initialEditState) {
@@ -595,28 +631,38 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onClickSaveCreate() {
         let newOrEditedAction = this.convertStateToModel();
-
-        // If a new action just create it
-        if (!this.state.isEditing) {
-            this.props.handleEdit(newOrEditedAction);
-            return;
-        }
+        let validationWarnings: string[] = []
 
         // Otherwise need to validate changes
         try {
-            const invalidTrainingDialogIds = await ((this.props.fetchActionEditValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, newOrEditedAction) as any) as Promise<string[]>)
-            if (invalidTrainingDialogIds) {
-                if (invalidTrainingDialogIds.length > 0) {
-                    this.setState({
-                        isConfirmEditModalOpen: true,
-                        showValidationWarning: true,
-                        newOrEditedAction: newOrEditedAction
-                    });
-                } else {
-                    this.props.handleEdit(newOrEditedAction);
+
+            // If editing look for training dialog invalidations
+            if (this.state.isEditing) {
+                const invalidTrainingDialogIds = await ((this.props.fetchActionEditValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, newOrEditedAction) as any) as Promise<string[]>)
+                if (invalidTrainingDialogIds) {
+                    if (invalidTrainingDialogIds.length > 0) {
+                        validationWarnings.push(formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING))
+                    }
                 }
             }
-        }
+
+            // Note any untagged entities
+            let untaggedEntities = this.untaggedEntities()
+            untaggedEntities.forEach(e => 
+                validationWarnings.push(`"${e}" ${formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_MISSINGLABEL_WARNING)}`)
+            )
+
+            if (validationWarnings.length > 0) {
+                this.setState({
+                    isConfirmEditModalOpen: true,
+                    validationWarnings: validationWarnings,
+                    newOrEditedAction: newOrEditedAction
+                })
+            }
+            else {
+                this.props.handleEdit(newOrEditedAction);
+            }
+        } 
         catch (e) {
             const error = e as Error
             console.warn(`Error when attempting to validate edit: `, error)
@@ -638,17 +684,20 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .then(invalidTrainingDialogIds => {
 
                 if (invalidTrainingDialogIds) {
+                    let validationWarnings = (invalidTrainingDialogIds.length > 0 )
+                        ? [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING)]
+                        : []
+                   
                     this.setState(
                         {
                             isConfirmDeleteModalOpen: true,
-                            showValidationWarning: invalidTrainingDialogIds.length > 0
+                            validationWarnings: validationWarnings
                         });
                 }
             })
             .catch(error => {
                 console.warn(`Error when attempting to validate delete: `, error)
-            }
-            )
+            })
     }
 
     @OF.autobind
@@ -673,11 +722,20 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             return
         }
 
-        this.props.handleEdit(this.state.newOrEditedAction)
-        this.setState({
-            isConfirmEditModalOpen: false,
-            newOrEditedAction: null
-        })
+        let validationWarnings = [...this.state.validationWarnings]
+        validationWarnings.pop()
+        // Move to next validation warning if there is one
+        if (validationWarnings.length > 0) {
+            this.setState({validationWarnings})
+        }
+        else {
+            // Otherwise save
+            this.props.handleEdit(this.state.newOrEditedAction)
+            this.setState({
+                isConfirmEditModalOpen: false,
+                newOrEditedAction: null
+            }) 
+        }
     }
 
     @OF.autobind
@@ -874,6 +932,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
         let tdString = JSON.stringify(this.props.trainDialogs)
         return tdString.indexOf(this.props.action.actionId) > -1
+    }
+
+    @OF.autobind
+    validationWarning(): JSX.Element | null {
+        if (this.state.validationWarnings.length > 0) {
+            return (
+                <div className="cl-text--warning">
+                    <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
+                    {this.state.validationWarnings[this.state.validationWarnings.length-1]}
+                </div>
+            )
+        }
+        return null
     }
 
     render() {
@@ -1230,22 +1301,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     onCancel={this.onCancelDelete}
                     onConfirm={this.onConfirmDelete}
                     title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
-                    message={() => this.state.showValidationWarning &&
-                        <div className="cl-text--warning">
-                            <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
-                            <FormattedMessageId id={FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING} />
-                        </div>}
+                    message={this.validationWarning}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmEditModalOpen}
                     onCancel={this.onCancelEdit}
                     onConfirm={this.onConfirmEdit}
                     title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE)}
-                    message={() => this.state.showValidationWarning &&
-                        <div className="cl-text--warning">
-                            <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
-                        <FormattedMessageId id={FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING} />
-                        </div>}
+                    message={this.validationWarning}
                 />
                 <EntityCreatorEditor
                     app={this.props.app}
