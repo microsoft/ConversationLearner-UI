@@ -70,7 +70,6 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
-        this.setState({ hasChatActivity: true })
         return renderActivity(activityProps, children, setRef, null, EditDialogType.LOG_ORIGINAL)
     }
 
@@ -83,7 +82,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                 containerClassName="cl-modal cl-modal--narrow cl-modal--log"
             >
                 <div className="cl-modal_body">
-                    <div className="cl-sessionmodal" onKeyDown={(key: any) => { key.keyCode === 27 /* ESC */ ? this.onClickDone() : null }}>
+                    <div className="cl-sessionmodal">
                         <div className="cl-sessionmodal-title">
                             <div className={`cl-dialog-title cl-dialog-title--log ${FontClassNames.xxLarge}`}>
                                 <Icon iconName="UserFollowed" />Log Dialog
@@ -94,7 +93,11 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 isOpen={this.props.open && this.props.error == null}
                                 app={this.props.app}
                                 history={[]}
-                                onPostActivity={() => { }}
+                                onPostActivity={() => { 
+                                    if (!this.state.hasChatActivity) {
+                                      this.setState({ hasChatActivity: true })
+                                    }
+                                }}
                                 onSelectActivity={() => { }}
                                 hideInput={false}
                                 focusInput={true}
