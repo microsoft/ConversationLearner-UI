@@ -327,9 +327,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         // Can only delete first user input if it has no scorer steps
         // and is followed by user input
         const canDeleteRound =
-            roundIndex !== 0 ||
+            (roundIndex !== 0 && roundIndex !== undefined) ||
             senderType !== CLM.SenderType.User ||
-            curRound.scorerSteps.length === 0 ||
             (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)
 
         const hideBranch =
