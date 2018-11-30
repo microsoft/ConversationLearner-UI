@@ -633,9 +633,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         // Put mask of webchat if waiting for extraction labelling
         let chatDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor ? <div className="cl-overlay" /> : null;
-        let saveDisable = !this.state.hasTerminalAction
-            || this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
-            || this.props.teachSession.botAPIError !== null
+        let saveDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor || this.props.teachSession.botAPIError !== null
         return (
             <div>
                 <Modal

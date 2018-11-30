@@ -404,7 +404,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     onCloseTeachSession(save: boolean) {
 
-        if (this.props.teachSession && this.props.teachSession.teach) {
+        if (this.state.history.length && (this.props.teachSession && this.props.teachSession.teach)) {
             if (save) {
                 // If source was a trainDialog, delete the original
                 let sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
@@ -1170,11 +1170,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         <div className="cl-list-filters">
                             <OF.Dropdown
                                 data-testid="dropdown-filter-by-entity"
-                                ariaLabel="Entity:"
-                                label="Entity:"
+                                ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
+                                label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
                                 selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : -1)}
                                 onChanged={this.onSelectEntityFilter}
-                                placeHolder="Filter by Entity"
+                                placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
                                 options={this.props.entities
                                     // Only show positive versions of negatable entities
                                     .filter(e => e.positiveId == null)
@@ -1185,11 +1185,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
                             <OF.Dropdown
                                 data-testid="dropdown-filter-by-action"
-                                ariaLabel="Action:"
-                                label="Action:"
+                                ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
+                                label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
                                 selectedKey={(this.state.actionFilter ? this.state.actionFilter.key : -1)}
                                 onChanged={this.onSelectActionFilter}
-                                placeHolder="Filter by Action"
+                                placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
                                 options={this.props.actions
                                     .map(a => this.toActionFilter(a, this.props.entities))
                                     .filter(s => s !== null)
