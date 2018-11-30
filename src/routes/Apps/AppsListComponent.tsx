@@ -87,7 +87,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => moment(app.lastModifiedDateTime).format(`YYYYMMDDHHmmSS`),
-            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-last-modified-time">{moment(app.lastModifiedDateTime).format('L')}</span>
+            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-last-modified-time">{earlierDateOrTimeToday(app.lastModifiedDateTime)}</span>
         },
         {
             key: 'createdDateTime',
@@ -97,7 +97,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => moment(app.createdDateTime).format(`YYYYMMDDHHmmSS`),
-            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-created-date-time">{moment(app.createdDateTime).format('L')}</span>
+            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-created-date-time">{earlierDateOrTimeToday(app.createdDateTime)}</span>
         },
         {
             key: 'locale',
@@ -120,6 +120,10 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             render: (app, props) => <a onClick={() => props.onClickDeleteApp(app)} data-testid="model-list-delete-button"><OF.Icon iconName="Delete" className="cl-icon" />&nbsp;&nbsp;</a>
         }
     ]
+}
+
+function earlierDateOrTimeToday(timestamp: string): string {
+    return moment(timestamp).format(moment().format('L') === moment(timestamp).format('L') ? 'LTS' : 'L')
 }
 
 interface Props extends InjectedIntlProps {
