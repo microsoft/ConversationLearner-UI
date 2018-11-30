@@ -76,7 +76,7 @@ class Dashboard extends React.Component<Props, ComponentState> {
                 <span className={OF.FontClassNames.mediumPlus}>
                     <FormattedMessageId id={FM.DASHBOARD_SUBTITLE} />
                 </span>
-                {appDefinitionChange && appDefinitionChange.isChanged
+                {this.props.modelLoaded && appDefinitionChange && appDefinitionChange.isChanged
                     && <div>
                         <h2 className={OF.FontClassNames.large}>Upgrade Notice:</h2>
                         <p>You are running a version of the SDK that requires a newer version of the model than the one you have attempted to load.  The local copy of the model was upgraded to allow viewing.</p>
@@ -102,7 +102,7 @@ class Dashboard extends React.Component<Props, ComponentState> {
                                 <p>You cannot save this updated model because you are currently viewing an older tag: {app.packageVersions.find(pv => pv.packageId === editPackageId)!.packageVersion}</p>
                             </div>}
                     </div>}
-                {this.props.validationErrors.length > 0 &&
+                {this.props.modelLoaded && this.props.validationErrors.length > 0 &&
                     (
                         <div className="cl-errorpanel" >
                             <div className={`cl-font--emphasis ${OF.FontClassNames.medium}`}>Please check that the correct version of your Bot is running.</div>
@@ -159,6 +159,7 @@ const mapDispatchToProps = (dispatch: any) => {
 
 export interface ReceivedProps {
     app: AppBase,
+    modelLoaded: boolean,
     validationErrors: string[]
 }
 
