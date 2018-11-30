@@ -381,7 +381,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             isResizable: false,
             getSortValue: action => moment(action.createdDateTime).valueOf().toString(),
-            render: action => <span className={OF.FontClassNames.mediumPlus}>{moment(action.createdDateTime).format('L')}</span>
+            render: action => <span className={OF.FontClassNames.mediumPlus}>{Util.earlierDateOrTimeToday(action.createdDateTime)}</span>
         }
     ]
 }

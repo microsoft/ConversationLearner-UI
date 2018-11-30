@@ -42,6 +42,7 @@ export enum FM {
     ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING = 'ActionCreatorEditor.confirmDeleteWarning',
     ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE = 'ActionCreatorEditor.confirmEditTitle',
     ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING = 'ActionCreatorEditor.confirmEditWarning',
+    ACTIONCREATOREDITOR_CONFIRM_MISSINGLABEL_WARNING = 'ActionCreatorEditor.confirmMissingLabelWarning',
     ACTIONCREATOREDITOR_WARNING_ENTITY = 'ActionCreatorEditor.warningEntity',
     ACTIONCREATOREDITOR_WARNING_PAYLOAD = 'ActionCreatorEditor.warningPayload',
 
@@ -415,7 +416,7 @@ export enum FM {
     TOOLTIP_ENTITY_EXTRACTOR_HELP = 'ToolTipo.ENTITY_EXTRACTOR_HELP',
     TOOLTIP_ENTITY_EXTRACTOR_WARNING = 'ToolTip.ENTITY_EXTRACTOR_WARNING',
     TOOLTIP_ENTITY_EXTRACTOR_DLG_SAMETAGGED = 'ToolTip.ENTITY_EXTRACTOR_DIALOG_SameTaggedEntities',
-    TOOLTIP_ENTITY_EXTRACTOR_DLG_SAVECHANGES = 'ToolTip.ENTITY_EXTRACTOR_WARNING',
+    TOOLTIP_ENTITY_EXTRACTOR_DLG_SAVECHANGES = 'ToolTip.ENTITY_EXTRACTOR_SAVECHANGES',
     TOOLTIP_ENTITY_NAME = 'ToolTip.ENTITY_NAME',
     TOOLTIP_ENTITY_VALUE = 'ToolTip.ENTITY_VALUE',
     TOOLTIP_EXAMPLE = 'ToolTip.EXAMPLE',
@@ -523,8 +524,9 @@ export default {
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this action?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure you want to edit this action?',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_MISSINGLABEL_WARNING]: 'is a plain string not attached to an Entity',
         [FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD]: 'Bot Response is Required',
         [FM.ACTIONCREATOREDITOR_WARNING_ENTITY]: 'Removed reference to undefined Entity',
 

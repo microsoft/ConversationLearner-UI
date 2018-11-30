@@ -887,3 +887,19 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   border: 1px solid #aaaaaa !important;
 
 }
+
+.cl-error-message-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: #a80000;
+  margin: 0;
+  padding-top: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  margin-top:0.15em;
+  margin-bottom:1em;
+}

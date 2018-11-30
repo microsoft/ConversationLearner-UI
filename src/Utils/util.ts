@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as IntlMessages from '../react-intl-messages'
+import * as moment from 'moment'
 
 export function notNullOrUndefined<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -81,4 +82,8 @@ export function formatMessageId(intl: ReactIntl.InjectedIntl, id: IntlMessages.F
         id: id,
         defaultMessage: getDefaultText(id)
     })
+}
+
+export function earlierDateOrTimeToday(timestamp: string): string {
+    return moment(timestamp).format(moment().format('L') === moment(timestamp).format('L') ? 'LTS' : 'L')
 }
