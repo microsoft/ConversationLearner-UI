@@ -39,6 +39,7 @@ export function CreateNewAction({response, expectedEntities, requiredEntities, d
 
 // Input string looks something like this: "Sorry $name{enter}, I can't help you get $want{enter}"
 // Returns an array containing entities like this: ['name', 'want']
+// ...OR...Returns an empty array if there are no entities in the response string.
 export function ExtractEntities(response)
 {
   var entitiesToReturn = new Array()
