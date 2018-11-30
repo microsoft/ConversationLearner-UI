@@ -15,6 +15,7 @@ import { AppBase, EntityBase, EntityType } from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
+import * as Util from '../../../Utils/util'
 import * as moment from 'moment'
 
 interface IRenderableColumn extends OF.IColumn {
@@ -129,7 +130,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             isResizable: false,
             getSortValue: entity => moment(entity.createdDateTime).valueOf().toString(),
-            render: entity => <span className={OF.FontClassNames.mediumPlus}>{moment(entity.createdDateTime).format('L')}</span>
+            render: entity => <span className={OF.FontClassNames.mediumPlus}>{Util.earlierDateOrTimeToday(entity.createdDateTime)}</span>
         }
     ]
 }
