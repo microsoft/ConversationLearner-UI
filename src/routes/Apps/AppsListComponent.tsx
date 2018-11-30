@@ -5,12 +5,11 @@
 import * as React from 'react'
 import { AppCreator as AppCreatorModal, TutorialImporterModal, ConfirmCancelModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react';
-import { formatMessageId } from '../../Utils/util'
 import { AppBase, AppDefinition } from '@conversationlearner/models'
 import FormattedMessageId from '../../components/FormattedMessageId'
 import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import * as util from '../../Utils/util'
+import * as Util from '../../Utils/util'
 import { User, AppCreatorType } from '../../types';
 import * as moment from 'moment'
 
@@ -23,7 +22,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
     return [
         {
             key: 'appName',
-            name: formatMessageId(intl, FM.APPSLIST_COLUMN_NAME),
+            name: Util.formatMessageId(intl, FM.APPSLIST_COLUMN_NAME),
             fieldName: 'appName',
             minWidth: 100,
             maxWidth: 200,
@@ -61,7 +60,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             isResizable: true,
             getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
             render: (app) => {
-                const packageReference = util.packageReferences(app).find(pv => pv.packageId === app.livePackageId)
+                const packageReference = Util.packageReferences(app).find(pv => pv.packageId === app.livePackageId)
                 if (!packageReference) {
                     throw new Error(`Could not find package reference by id: ${app.livePackageId}`)
                 }
@@ -71,7 +70,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
         },
         {
             key: 'isLoggingOn',
-            name: formatMessageId(intl, FM.APPSLIST_COLUMNS_LOGGING),
+            name: Util.formatMessageId(intl, FM.APPSLIST_COLUMNS_LOGGING),
             fieldName: 'isloggingon',
             minWidth: 100,
             maxWidth: 200,
@@ -81,27 +80,27 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
         },
         {
             key: 'lastModifiedDateTime',
-            name: formatMessageId(intl, FM.APPSLIST_COLUMNS_LAST_MODIFIED_DATE_TIME),
+            name: Util.formatMessageId(intl, FM.APPSLIST_COLUMNS_LAST_MODIFIED_DATE_TIME),
             fieldName: 'lastModifiedDateTime',
             minWidth: 100,
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => moment(app.lastModifiedDateTime).format(`YYYYMMDDHHmmSS`),
-            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-last-modified-time">{moment(app.lastModifiedDateTime).format('L')}</span>
+            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-last-modified-time">{Util.earlierDateOrTimeToday(app.lastModifiedDateTime)}</span>
         },
         {
             key: 'createdDateTime',
-            name: formatMessageId(intl, FM.APPSLIST_COLUMNS_CREATED_DATE_TIME),
+            name: Util.formatMessageId(intl, FM.APPSLIST_COLUMNS_CREATED_DATE_TIME),
             fieldName: 'createdDateTime',
             minWidth: 100,
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => moment(app.createdDateTime).format(`YYYYMMDDHHmmSS`),
-            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-created-date-time">{moment(app.createdDateTime).format('L')}</span>
+            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-created-date-time">{Util.earlierDateOrTimeToday(app.createdDateTime)}</span>
         },
         {
             key: 'locale',
-            name: formatMessageId(intl, FM.APPSLIST_COLUMNS_LOCALE),
+            name: Util.formatMessageId(intl, FM.APPSLIST_COLUMNS_LOCALE),
             fieldName: 'locale',
             minWidth: 100,
             maxWidth: 100,
@@ -111,7 +110,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
         },
         {
             key: 'actions',
-            name: formatMessageId(intl, FM.APPSLIST_COLUMNS_ACTIONS),
+            name: Util.formatMessageId(intl, FM.APPSLIST_COLUMNS_ACTIONS),
             fieldName: 'appId',
             minWidth: 100,
             maxWidth: 100,
@@ -222,21 +221,21 @@ export class Component extends React.Component<Props, ComponentState> {
                 <OF.PrimaryButton
                     data-testid="model-list-create-new-button"
                     onClick={props.onClickCreateNewApp}
-                    ariaDescription={formatMessageId(props.intl, FM.APPSLIST_CREATEBUTTONARIADESCRIPTION)}
-                    text={formatMessageId(props.intl, FM.APPSLIST_CREATEBUTTONTEXT)}
+                    ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEBUTTONARIADESCRIPTION)}
+                    text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEBUTTONTEXT)}
                 />
                 <OF.DefaultButton
                     data-testid="model-list-import-model-button"
                     onClick={props.onClickImportApp}
-                    ariaDescription={formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION)}
-                    text={formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONTEXT)}
+                    ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION)}
+                    text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONTEXT)}
                 />
-                {!util.isDemoAccount(props.user.id) &&
+                {!Util.isDemoAccount(props.user.id) &&
                     <OF.DefaultButton
                         data-testid="model-list-import-tutorials-button"
                         onClick={props.onClickImportDemoApps}
-                        ariaDescription={formatMessageId(props.intl, FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION)}
-                        text={formatMessageId(props.intl, FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT)}
+                        ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION)}
+                        text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT)}
                     />
                 }
             </div>
@@ -260,7 +259,7 @@ export class Component extends React.Component<Props, ComponentState> {
                 onConfirm={props.onConfirmDeleteApp}
                 title={props.intl.formatMessage({
                     id: FM.APPSLIST_CONFIRMCANCELMODALTITLE,
-                    defaultMessage: util.getDefaultText(FM.APPSLIST_CONFIRMCANCELMODALTITLE)
+                    defaultMessage: Util.getDefaultText(FM.APPSLIST_CONFIRMCANCELMODALTITLE)
                 }, {
                         appName: props.appToDelete ? props.appToDelete.appName : ''
                     })}

@@ -429,11 +429,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             <button type="button" className={`editor-button-delete ${OF.FontClassNames.large}`} onClick={() => this.onRemoveExtractResponse(extractResponse)}>
                                 <OF.Icon iconName="Delete" />
                             </button>
-                            {!isValid && ToolTips.wrap(
-                                <OF.Icon iconName="IncidentTriangle" className="editor-button-invalid" />,
-                                `<span class="ms-TextField-errorMessage">${ToolTips.TipType.ENTITY_EXTRACTOR_WARNING}</span>`)}
                         </div>}
-                        {!isValid && <div className="ms-TextField-errorMessage">
+                        {!isValid && <div className="cl-error-message-label">
                             {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING)}
                         </div>}
                     </div>
