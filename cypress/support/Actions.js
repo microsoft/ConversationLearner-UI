@@ -27,9 +27,7 @@ export function CreateNewAction({response, expectedEntities, requiredEntities, d
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
   actionModal.ClickCreateButton()
 
-  var requiredEntitiesFromResponse2 = ExtractEntities(response)
-  var requiredEntitiesFromResponse = response.match(/(?<=\$)[^ ]+?(?={enter})/g)
-  helpers.ConLog(`CreateNewAction`, `1:${requiredEntitiesFromResponse} -- 2:${requiredEntitiesFromResponse2}`)
+  var requiredEntitiesFromResponse = ExtractEntities(response)
   response = response.replace(/{enter}/g, '')
   
   // Get the row that we are going to validate and assign a Cypress Alias to it.
@@ -63,9 +61,10 @@ export function ExtractEntities(response)
     else
     {
       entitiesToReturn.push(entityName)
-      iCurrent = iEnd + 7
+      iCurrent = iEnd + 7 // 7 = "{enter}".length
     }
   }
+  
   return entitiesToReturn
 }
 
