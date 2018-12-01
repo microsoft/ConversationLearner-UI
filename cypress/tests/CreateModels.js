@@ -6,8 +6,11 @@ import { func } from 'prop-types';
 */
 
 const models = require('../support/Models')
+const modelPage = require('../support/components/ModelPage')
 const entities = require('../support/Entities')
 const actions = require('../support/Actions')
+const editDialogModal = require('../support/components/EditDialogModal')
+const train = require('../support/Train')
 
 export function AllEntityTypes()
 {
@@ -60,4 +63,40 @@ export function WhatsYourName()
   actions.CreateNewAction({response: 'Hello $name{enter}'})
 
   // Manually EXPORT this to fixtures folder and name it 'z-whatsYourName.cl'
+}
+
+// TODO: Postpone getting this to work due to issue in LabelTextAsEntity()
+export function TagAndFrog()
+{
+  models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
+  // models.CreateNewModel('z-tagAndFrog')
+  // entities.CreateNewEntity({name: 'multi'})
+  // actions.CreateNewAction({response: "Hello"})
+  // actions.CreateNewAction({response: "Hi"})
+
+  modelPage.NavigateToTrainDialogs()
+  cy.WaitForTrainingStatusCompleted()
+
+  train.CreateNewTrainDialog()
+
+  train.TypeYourMessage('This is Tag.')
+  editDialogModal.LabelTextAsEntity('Tag', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  train.SelectAction('Hello')
+
+  train.TypeYourMessage('This is Frog and Tag.')
+  editDialogModal.VerifyDetectedEntity('multi', 'Frog')
+  editDialogModal.LabelTextAsEntity('Tag', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  train.SelectAction('Hi')
+
+  train.TypeYourMessage('This is Tag and Frog.')
+  editDialogModal.VerifyDetectedEntity('multi', 'Tag')
+  editDialogModal.LabelTextAsEntity('Frog', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  train.SelectAction('Hi')
+
+  train.Save()
+
+  // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog.cl'
 }

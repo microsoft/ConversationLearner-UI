@@ -16,6 +16,8 @@ describe('zTemp test', () =>
   it('zTemp test', () => 
   {
     homePage.Visit()
+    cy.pause()
+    editDialogModal.LabelTextAsEntity('are', 'frog')
     // homePage.NavigateToModelPage("BigTrain")
     // modelPage.NavigateToTrainDialogs()
     // cy.pause()

@@ -118,22 +118,15 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage)
   cy.DoesNotContain('[data-testid="chat-edit-add-input-button"]', '+')
 }
 
-
-
-
-export function HighlightWord(word) {
-  cy.get('span[class="cl-token-node"]')
-    .trigger('keydown')
-    .click(10, 10)
-    .wait(1000)
-
-  cy.get('.custom-toolbar.custom-toolbar--visible')
-    .invoke('show')
-    .wait()
+// TODO: This method DOES NOT WORK! Need Lars or Brian to come up with a solution.
+export function LabelTextAsEntity(text, entity)
+{
+  cy.Get('[data-testid="token-node-entity-value"]').contains(text)
+  //.parents('[data-testid="token-node-entity-value"]')
+  .focus()
+  //.select()
+  //.click({ force: true })
+  //.trigger('MouseDown').wait(100).trigger('MouseUp')
+  cy.wait(1000)
+  cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
 }
-
-export function VerifyTokenNodeExists() {
-  cy.get('.cl-token-node')
-    .should('exists')
-}
-

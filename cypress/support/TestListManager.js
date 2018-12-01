@@ -15,7 +15,7 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "CreateModels.DisqualifyingEntities",
+  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
 ]
 
 // Do NOT alter this list except to add in new test cases as they are created.
@@ -25,6 +25,7 @@ export const masterListOfAllTestCases =
   "CreateModels.DisqualifyingEntities",
   "CreateModels.WaitVsNoWaitActions",
   "CreateModels.WhatsYourName",
+  "CreateModels.TagAndFrog",
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
   "Log.WhatsYourName",
@@ -48,6 +49,7 @@ const testGroups =
       { name: "Disqualifying Entities", func: createModels.DisqualifyingEntities },
       { name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions },
       { name: "What's Your Name", func: createModels.WhatsYourName },
+      { name: "Tag and Frog", func: createModels.TagAndFrog },
     ]
   },
   {
