@@ -121,9 +121,11 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage)
 // TODO: This method DOES NOT WORK! Need Lars or Brian to come up with a solution.
 export function LabelTextAsEntity(text, entity)
 {
-  cy.Get('[data-testid="token-node-entity-value"]').contains(text)
+  cy.Get('[data-testid="entity-extractor-alternative-input-text"]').type('{shift}{tab}{rightarrow}')
+
+  //cy.Get('[data-testid="token-node-entity-value"]').contains(text)
   //.parents('[data-testid="token-node-entity-value"]')
-  .focus()
+  //.focus().select()
   //.select()
   //.click({ force: true })
   //.trigger('MouseDown').wait(100).trigger('MouseUp')
