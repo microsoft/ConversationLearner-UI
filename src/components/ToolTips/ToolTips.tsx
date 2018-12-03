@@ -37,6 +37,7 @@ export enum TipType {
     ENTITY_ACTION_REQUIRED = 'entityActionRequired',
     ENTITY_ACTION_DISQUALIFIED = 'entityActionDisqualified',
     ENTITY_EXTRACTOR_HELP = 'entityExtractorHelp',
+    ENTITY_EXTRACTOR_TEXTVARIATION = 'entityExtractorTextVariation',
     ENTITY_EXTRACTOR_WARNING = 'extractorWarning',
     ENTITY_MULTIVALUE = 'isBucketable',
     ENTITY_NAME = 'entityName',
@@ -493,6 +494,14 @@ export function getTip(tipType: string) {
                     <ul>
                         <li>Pre-Built entities in blue are not editable</li>
                     </ul>
+                </div>
+            )
+        case TipType.ENTITY_EXTRACTOR_TEXTVARIATION:
+            return (
+                <div>
+                    <h2>Entity Extractor Text Variation</h2>
+
+                    <h2>TBD</h2>
                 </div>
             )
         case TipType.INVALID_BOT:
