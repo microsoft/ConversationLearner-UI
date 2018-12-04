@@ -85,5 +85,5 @@ export function formatMessageId(intl: ReactIntl.InjectedIntl, id: IntlMessages.F
 }
 
 export function earlierDateOrTimeToday(timestamp: string): string {
-    return moment(timestamp).format(moment().format('L') === moment(timestamp).format('L') ? 'LTS' : 'L')
+    return moment(timestamp).format(moment().diff(moment(timestamp), "hours") < 24 ? 'LTS' : 'L')
 }
