@@ -37,6 +37,7 @@ export enum TipType {
     ENTITY_ACTION_REQUIRED = 'entityActionRequired',
     ENTITY_ACTION_DISQUALIFIED = 'entityActionDisqualified',
     ENTITY_EXTRACTOR_HELP = 'entityExtractorHelp',
+    ENTITY_EXTRACTOR_TEXTVARIATION = 'entityExtractorTextVariation',
     ENTITY_EXTRACTOR_WARNING = 'extractorWarning',
     ENTITY_MULTIVALUE = 'isBucketable',
     ENTITY_NAME = 'entityName',
@@ -492,6 +493,26 @@ export function getTip(tipType: string) {
                     <h2>Notes:</h2>
                     <ul>
                         <li>Pre-Built entities in blue are not editable</li>
+                    </ul>
+                </div>
+            )
+        case TipType.ENTITY_EXTRACTOR_TEXTVARIATION:
+            return (
+                <div>
+                    <h2>Alternative Inputs</h2>
+
+                    <p>Model performance can be improved by providing examples of alternative ways the user might say the same thing.</p>
+                    <p>For example, after the Bot asks: "What is your name?" some alternive inputs might be:</p>                    
+                    <ul>
+                        <li>I go by Joe</li>
+                        <li>Call me Joe</li>
+                        <li>I'm Joe</li>
+                    </ul>
+                    <p>Or, for a pizza order:</p>  
+                    <ul>
+                        <li>Remove peppers and add olives</li>
+                        <li>Replace the peppers with olives</li>
+                        <li>Substitute olives for peppers</li>
                     </ul>
                 </div>
             )

@@ -436,7 +436,16 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     </div>
                 })}
                 {canEdit &&
-                    <div className='cl-textfield--withButton editor-alt-offset'>
+                    <div className='cl-textfield--withLeftButton editor-alt-offset'>
+                        <OF.PrimaryButton
+                            data-testid="entity-extractor-add-alternative-input-button"
+                            className='cl-button--inline'
+                            disabled={this.state.textVariationValue.trim().length === 0}
+                            onClick={this.onSubmitTextVariation}
+                            ariaDescription={'Add'}
+                            text={'Add'}
+                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                        />
                         <OF.TextField
                             data-testid="entity-extractor-alternative-input-text"
                             value={this.state.textVariationValue}
@@ -449,15 +458,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                 }
                             }}
                         />
-                        <OF.PrimaryButton
-                            data-testid="entity-extractor-add-alternative-input-button"
-                            className='cl-button--inline'
-                            disabled={this.state.textVariationValue.trim().length === 0}
-                            onClick={this.onSubmitTextVariation}
-                            ariaDescription={'Add'}
-                            text={'Add'}
-                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
-                        />
+                        <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_TEXTVARIATION} />
                     </div>}
                 {editingRound &&
                     <div className="cl-buttons-row">
