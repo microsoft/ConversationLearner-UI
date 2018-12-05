@@ -499,9 +499,21 @@ export function getTip(tipType: string) {
         case TipType.ENTITY_EXTRACTOR_TEXTVARIATION:
             return (
                 <div>
-                    <h2>Entity Extractor Text Variation</h2>
+                    <h2>Alternative Inputs</h2>
 
-                    <h2>TBD</h2>
+                    <p>Model performance can be improved by providing examples of alternative ways the user might say the same thing.</p>
+                    <p>For example, after the Bot asks: "What is your name?" some alternive inputs might be:</p>                    
+                    <ul>
+                        <li>I go by Joe</li>
+                        <li>Call me Joe</li>
+                        <li>I'm Joe</li>
+                    </ul>
+                    <p>Or, for a pizza order:</p>  
+                    <ul>
+                        <li>Remove peppers and add olives</li>
+                        <li>Replace the peppers with olives</li>
+                        <li>Substitute olives for peppers</li>
+                    </ul>
                 </div>
             )
         case TipType.INVALID_BOT:
