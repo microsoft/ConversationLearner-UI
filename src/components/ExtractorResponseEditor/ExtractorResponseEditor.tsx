@@ -56,6 +56,7 @@ const externalChangeOperations = ['insert_node', 'remove_node']
 class ExtractorResponseEditor extends React.Component<Props, State> {
     tokenMenu: HTMLElement
     menu: HTMLElement
+    editor: React.RefObject<any>
 
     state = {
         isSelectionOverlappingOtherEntities: false,
@@ -73,6 +74,8 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props)
+
+        this.editor = React.createRef();
 
         this.state.value = convertEntitiesAndTextToTokenizedEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType)
         this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
@@ -220,6 +223,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     onChange = (change: any) => {
         const { value, operations } = change
+
         const operationsJs = operations.toJS()
         // console.log(`operationsJs: `, operationsJs)
         // console.log(`disallowedOperations: `, disallowedOperations)
@@ -345,7 +349,49 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         this.props.onClickNewEntity(entityTypeFilter)
     }
 
+    componentDidMount() {
+        // For end 2 end unit testing.
+        document.addEventListener("Test_SelectWord", this.onTestSelectWord)
+    }
+    
+    componentWillUnmount() {
+        // For end 2 end unit testing.
+        document.removeEventListener("Test_SelectWord", this.onTestSelectWord)
+    }
+
+    // For end 2 end unit testing.
+    @OF.autobind
+    onTestSelectWord(val: any) {
+        let slateEditor = val.detail.parentElement.parentElement.parentElement.parentElement
+
+        // Events are special, can't use spread or Object.keys
+        let selectEvent: any = {}
+        for (let key in val) { 
+            if (key === 'currentTarget') {
+                
+                selectEvent['currentTarget'] = slateEditor
+            }
+            else if (key === 'type') {
+                selectEvent['type'] = "select"
+            }
+            else {
+                selectEvent[key] = val[key] 
+            }
+        }
+       
+        // Make selection
+        let selection = window.getSelection();        
+        let range = document.createRange();
+        range.selectNodeContents(val.detail);
+        selection.removeAllRanges();
+        selection.addRange(range)
+
+        // Fire select event
+        this.editor.current.onEvent("onSelect", selectEvent)
+    }
+
     render() {
+
         return (
             <div className="entity-labeler">
                 <div className={`entity-labeler__custom-editor ${this.props.readOnly ? 'entity-labeler__custom-editor--read-only' : ''} ${this.props.isValid ? '' : 'entity-labeler__custom-editor--error'}`}>
@@ -359,6 +405,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             onKeyDown={this.onKeyDown}
                             renderNode={this.renderNode}
                             readOnly={this.props.readOnly}
+                            ref={this.editor}
                         />
                         <EntityPicker
                             data-testid="extractorresponseeditor-entitypicker"
