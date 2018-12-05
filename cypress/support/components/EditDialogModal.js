@@ -41,6 +41,7 @@ export function AbandonBranchChanges()
 }
 // data-testid="edit-dialog-modal-replay-button"
 
+// TODO: This needs to be replaced by VerifyEntityLabels()
 export function VerifyDetectedEntity(entityName, entityValue)
 {
   cy.Get('[data-testid="custom-entity-name-button"]').contains(entityName)
@@ -118,16 +119,68 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage)
   cy.DoesNotContain('[data-testid="chat-edit-add-input-button"]', '+')
 }
 
-// TODO: This method DOES NOT WORK! Need Lars or Brian to come up with a solution.
-export function LabelTextAsEntity(text, entity)
+export function LabelWordAsEntity(word, entity)
 {
-  cy.Get('[data-testid="entity-extractor-alternative-input-text"]').type('{shift}{tab}{rightarrow}')
+  cy.WaitForStableDOM() // Do NOT move this to inside of the cy.Enqueue scope.
+  
+  cy.Enqueue(() => 
+  { 
+    var words = helpers.StringArrayFromInnerHtml('[data-testid="token-node-entity-value"] > span > span') 
+    var index = words.indexOf(word)
+    expect(index).to.be.greaterThan(-1)
+    var toType = '{selectall}{leftarrow}{rightarrow}'
+    if (index > 0) toType += '{rightArrow}'.repeat(3 * index)
+    helpers.ConLog(`LabelTextAsEntity('${word}', '${entity}')`, `index: ${index} - toType: '${toType}'`)
+    cy.Get('.slate-editor').click().type(toType)
+    cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
+  })
+}
+
+// Verify that a specific word of a user utterance has been labeled as an entity.
+// text = text within utterance that should be labeled
+// entity = name of entity that should contain the text
+// index = in the case where multiple words are labled with the same entity, 
+//         this index points us to the expected instance to verify.
+export function VerifyEntityLabel(text, entity, index = 0)
+{
+  cy.Get('[data-testid="token-node-entity-value"] > span > span')
+    .ExactMatch(text)
+    .parents('.cl-entity-node--custom')
+    .find('[data-testid="custom-entity-name-button"]')
+    .contains(entity)
+
+  //cy.Get('[data-testid="custom-entity-name-button"]').contains(entity).then((elements)=>
+  // {
+  //   helpers.ConLog(`VerifyEntityLabel('${text}', '${entity}', ${index})`, `Entity Verified in ${elements.length} Elements`)
+  //   cy.wrap(elements[0])
+  //     .parents('.cl-entity-node--custom')
+  //     .find('[data-testid="custom-entity-name-button"]').contains(entity)
+    //   .then((elements) => 
+    // {
+    //   var word = elements[0].innerHTML
+    //   helpers.ConLog(`VerifyEntityLabel('${text}', '${entity}', ${index})`, `word: '${word}'`)
+    //   expect(word).to.equal(text)
+    // })
+  // })
+}
+
+export function LabelTextAsEntityFailures(text, entity)
+{
+    //cy.Get('[data-testid="entity-extractor-alternative-input-text"]').type('{shift}{tab}{rightarrow}')
 
   //cy.Get('[data-testid="token-node-entity-value"]').contains(text)
+  cy.Get('.slate-editor')
+  //.parents('[data-testid="token-node-entity-value"]')
+  //.focus().type('a')
+  .click()//{ force: true })
+  .type('{selectall}{leftarrow}{rightarrow}')
+  .type('{selectall}{leftarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}')
+  .type('{selectall}{leftarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}{rightarrow}')
+  //{leftarrow}{leftarrow}{leftarrow}{leftarrow}')
+  //.trigger('mousedown', 4, 4).wait(100).trigger('mouseup', 16, 16)//.wait(100).trigger('click', 'topLeft')
   //.parents('[data-testid="token-node-entity-value"]')
   //.focus().select()
   //.select()
-  //.click({ force: true })
   //.trigger('MouseDown').wait(100).trigger('MouseUp')
   cy.wait(1000)
   cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
