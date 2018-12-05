@@ -362,7 +362,16 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     // For end 2 end unit testing.
     @OF.autobind
     onTestSelectWord(val: any) {
-        let slateEditor = val.detail.parentElement.parentElement.parentElement.parentElement
+
+        let words = val.detail.split(" ")
+
+        // Get start div
+        let arr = Array.from(document.querySelectorAll(".cl-token-node"))
+
+        let firstDiv = arr.filter(element => element.children[0].textContent === words[0])[0].children[0].children[0]
+        let lastDiv = arr.filter(element => element.children[0].textContent === words[words.length - 1])[0].children[0].children[0]
+
+        let slateEditor = firstDiv!.parentElement!.parentElement!.parentElement!.parentElement
 
         // Events are special, can't use spread or Object.keys
         let selectEvent: any = {}
@@ -378,11 +387,14 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                 selectEvent[key] = val[key] 
             }
         }
-       
+  
         // Make selection
         let selection = window.getSelection();        
         let range = document.createRange();
-        range.selectNodeContents(val.detail);
+
+        range.setStartBefore(firstDiv)
+        range.setEndAfter(lastDiv)
+
         selection.removeAllRanges();
         selection.addRange(range)
 
