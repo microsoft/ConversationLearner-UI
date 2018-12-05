@@ -24,6 +24,8 @@ export function CreateNewTrainDialog()
       LastInput: undefined,
       LastResponse: undefined,
       Turns: 0,
+      MomentSaveStarted: undefined,
+      MomentSaveEnded: undefined,
       LastModifiedDate: undefined,
       CreatedDate: undefined,
       TrainGridRowCount: (turns ? turns.length : 0) + 1
@@ -107,14 +109,17 @@ export function ClickScoreActionsButton(lastResponse)
 
 export function Save()
 {
+  cy.Enqueue(() => { window.currentTrainingSummary.MomentSaveStarted = Cypress.moment() })
   editDialogModal.ClickSaveCloseButton()
   trainDialogsGrid.VerifyPageTitle()
   cy.Enqueue(() => 
   { 
+    window.currentTrainingSummary.MomentSaveEndeded = Cypress.moment()
+    
     if (window.isBranched) VerifyTrainingSummaryIsInGrid(window.originalTrainingSummary)
 
-    window.currentTrainingSummary.LastModifiedDate = Today() 
-    if (window.currentTrainingSummary.CreatedDate == undefined) window.currentTrainingSummary.CreatedDate = window.currentTrainingSummary.LastModifiedDate
+    // REMOVE: window.currentTrainingSummary.LastModifiedDate = Today() 
+    // REMOVE: if (window.currentTrainingSummary.CreatedDate == undefined) window.currentTrainingSummary.CreatedDate = window.currentTrainingSummary.LastModifiedDate
     VerifyTrainingSummaryIsInGrid(window.currentTrainingSummary)
   })
 }
@@ -132,7 +137,8 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary)
     
     for (var i = 0; i < trainingSummary.TrainGridRowCount; i++)
     {
-      if (lastModifiedDates[i] == trainingSummary.LastModifiedDate && 
+      if (((trainingSummary.lastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
+          Cypress.moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentSaveStarted, trainingSummary.MomentSaveEndeded)) && 
           turns[i] == trainingSummary.Turns &&
           createdDates[i] == trainingSummary.CreatedDate &&
           firstInputs[i] == trainingSummary.FirstInput &&
