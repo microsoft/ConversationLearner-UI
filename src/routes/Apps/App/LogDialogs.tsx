@@ -783,6 +783,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: newTrainDialog,
                 isEditDialogModalOpen: true,
+                isTeachDialogModalOpen: false,
                 selectedHistoryIndex: activityIndex,
                 editType: EditDialogType.LOG_EDITED
             })

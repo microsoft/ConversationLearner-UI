@@ -774,6 +774,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
+                    <div className="cl-debug-marker"/>
                         <div className="cl-modal-buttons_secondary">
                             {this.renderWarning()}
                         </div>

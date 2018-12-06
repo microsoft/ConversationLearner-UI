@@ -239,32 +239,39 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                     // Get prevmemories
                     prevMemories = this.getPrevMemories();
 
-                    let scoredAction: CLM.ScoredAction = {
-                        actionId: selectedAction.actionId,
-                        payload: selectedAction.payload,
-                        isTerminal: selectedAction.isTerminal,
-                        score: 1,
-                        actionType: selectedAction.actionType
+                    // If originated from LogDialog, I'll have score response data
+                    if (scorerStep.uiScoreResponse) {
+                        scoreResponse = scorerStep.uiScoreResponse
                     }
+                    // Otherwise generate it
+                    else {
+                        let scoredAction: CLM.ScoredAction = {
+                            actionId: selectedAction.actionId,
+                            payload: selectedAction.payload,
+                            isTerminal: selectedAction.isTerminal,
+                            score: 1,
+                            actionType: selectedAction.actionType
+                        }
 
-                    // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
-                    let unscoredActions = this.props.actions
-                        .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
-                        .map<CLM.UnscoredAction>(action =>
-                            ({
-                                actionId: action.actionId,
-                                payload: action.payload,
-                                isTerminal: action.isTerminal,
-                                reason: CLM.ScoreReason.NotCalculated,
-                                actionType: action.actionType
+                        // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
+                        let unscoredActions = this.props.actions
+                            .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
+                            .map<CLM.UnscoredAction>(action =>
+                                ({
+                                    actionId: action.actionId,
+                                    payload: action.payload,
+                                    isTerminal: action.isTerminal,
+                                    reason: CLM.ScoreReason.NotCalculated,
+                                    actionType: action.actionType
                             }));
 
-                    scoreResponse = {
-                        metrics: {
-                            wallTime: 0
-                        },
-                        scoredActions: [scoredAction],
-                        unscoredActions: unscoredActions
+                        scoreResponse = {
+                            metrics: {
+                                wallTime: 0
+                            },
+                            scoredActions: [scoredAction],
+                            unscoredActions: unscoredActions
+                        }
                     }
                 }
                 // If user round, get filled entities from first scorer step

@@ -555,6 +555,15 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   /* background-color: var(--color-blueMid); */
 }
 
+.cl-debug-marker {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  background-color: #000000;
+}
+
 .cl-dialog-title i[role="presentation"] {
   margin: -0.4em 0.5em -0.4em 0;
   padding: 0.4em 0.3em 0.4em 0.5em;
