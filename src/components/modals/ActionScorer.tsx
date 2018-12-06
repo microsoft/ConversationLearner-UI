@@ -176,19 +176,14 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                 }
                 let fieldContent: number | string = (action as CLM.ScoredAction).score
                 if (fieldContent) {
-                    // No scores in TrainDialogs
-                    if (component.props.dialogType === CLM.DialogType.TRAINDIALOG) {
-                        fieldContent = '';
-                    } else {
-                        fieldContent = `${(fieldContent as number * 100).toFixed(1)}%`
-                    }
+                    fieldContent = `${(fieldContent as number * 100).toFixed(1)}%`
                 } else if (component.isMasked(action.actionId)) {
                     fieldContent = "Masked"
                 } else {
                     let isAvailable = component.isUnscoredActionAvailable(action as CLM.UnscoredAction);
                     if (isAvailable) {
-                        fieldContent = (component.props.dialogType !== CLM.DialogType.TEACH) ?
-                            'Unknown' : "Training...";
+                        fieldContent = (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected) 
+                            ? '-' : "Training...";
                     }
                     else {
                         fieldContent = "Disqualified";
