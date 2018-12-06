@@ -25,7 +25,7 @@ export function CreateNewTrainDialog()
       LastResponse: undefined,
       Turns: 0,
       MomentTrainingStarted: Cypress.moment(),
-      MomentSaveEnded: undefined,
+      MomentTrainingEnded: undefined,
       LastModifiedDate: undefined,
       CreatedDate: undefined,
       TrainGridRowCount: (turns ? turns.length : 0) + 1
@@ -59,7 +59,7 @@ export function EditTraining(firstInput, lastInput, lastResponse)
           LastResponse: lastResponses[i],
           Turns: turns[i],
           MomentTrainingStarted: Cypress.moment(),
-          MomentSaveEnded: undefined,
+          MomentTrainingEnded: undefined,
           LastModifiedDate: lastModifiedDates[i],
           CreatedDate: createdDates[i],
           TrainGridRowCount: (turns ? turns.length : 0)
@@ -119,8 +119,6 @@ export function Save()
     
     if (window.isBranched) VerifyTrainingSummaryIsInGrid(window.originalTrainingSummary)
 
-    // REMOVE: window.currentTrainingSummary.LastModifiedDate = Today() 
-    // REMOVE: if (window.currentTrainingSummary.CreatedDate == undefined) window.currentTrainingSummary.CreatedDate = window.currentTrainingSummary.LastModifiedDate
     VerifyTrainingSummaryIsInGrid(window.currentTrainingSummary)
   })
 }
