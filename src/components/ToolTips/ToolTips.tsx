@@ -610,7 +610,7 @@ export function getTip(tipType: string) {
         case TipType.REPLAYERROR_DESC_ACTION_AFTER_WAIT:
             return (
                 <div>
-                    <h2>Error: Second Wait Action follows a Wait Action</h2>
+                    <h2>Error: Action follows a Wait Action</h2>
                     <p>Wait Actions must be immediately followed by User Input</p>
                     <p>Ways to fix:</p>
                     <ol>
