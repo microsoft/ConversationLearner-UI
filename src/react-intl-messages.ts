@@ -199,6 +199,9 @@ export enum FM {
     ERROR_PRIMARYBUTTON_ARIADESCRIPTION = 'Error.ariaDescription',
     ERROR_PRIMARYBUTTON_TEXT = 'Error.text',
 
+    // Help Panel
+    HELP_PANEL_CLOSE = 'HelpPanel.close',
+    
     // LogDialogModal
     LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'LogDialogModal.defaultButton.ariaDescription',
     LOGDIALOGMODAL_DEFAULTBUTTON_TEXT = 'LogDialogModal.defaultButton.text',
@@ -769,6 +772,9 @@ export default {
         [FM.ERROR_WARNING]: 'Warning',
         [FM.ERROR_PRIMARYBUTTON_ARIADESCRIPTION]: 'Ok',
         [FM.ERROR_PRIMARYBUTTON_TEXT]: 'Ok',
+
+        // Help Panel
+        [FM.HELP_PANEL_CLOSE]: 'Close',
 
         // LogDialogModal
         [FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
