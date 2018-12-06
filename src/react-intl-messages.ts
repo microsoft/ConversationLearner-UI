@@ -676,7 +676,7 @@ export default {
         [FM.REPLAYERROR_EXISTS_LOG]: 'This Log Dialog has errors that must be fixed before it can be converted to a Train Dialog',
         [FM.REPLAYERROR_WARNING]: 'This Train Dialog has some potential errors',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
-        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incomptibilities were found:',
+        [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incompatibilities were found:',
         [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
         [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues need to be corrected first',
         [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to continue Dialog',
@@ -947,7 +947,7 @@ export default {
         [FM.TEACHSESSIONADMIN_TRAINSTATUS_NEWSCORES]: 'New Scores Available',
         [FM.TEACHSESSIONADMIN_TRAINSTATUS_REFRESH]: 'Refresh',
         [FM.TEACHSESSIONADMIN_TRAINSTATUS_FAILED]: 'Train Status: Failed',
-        [FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING]: 'Train Status: Runnning...',
+        [FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING]: 'Train Status: Running...',
 
         [FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER]: 'Initial value...',
         [FM.TEACHSESSIONINIT_TITLE]: 'Set Initial Entity Values',

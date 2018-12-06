@@ -343,7 +343,7 @@ export function getTip(tipType: string) {
             return (
                 <div>
                     <h2>Multivalue</h2>
-                    <p>Determines what happens when mulitple instances of an Entity are labeled</p>
+                    <p>Determines what happens when multiple instances of an Entity are labeled</p>
                     <img
                         className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_MULTIVALUE_1.png"
@@ -351,7 +351,7 @@ export function getTip(tipType: string) {
                         alt="Entity Type Custom"
                     />
                     <h3>Multivalue</h3>
-                    <p>Additional occurences of the Entity add to list of previous values.</p>
+                    <p>Additional occurrences of the Entity add to list of previous values.</p>
                     <img
                         className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_MULTIVALUE_2.png"
@@ -359,7 +359,7 @@ export function getTip(tipType: string) {
                         alt="Entity Type Custom"
                     />
                     <h3>Not Multivalue</h3>
-                    <p>Additional occurences replace previous values.</p>
+                    <p>Additional occurrences replace previous values.</p>
                     <img
                         className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_MULTIVALUE_3.png"
@@ -502,13 +502,13 @@ export function getTip(tipType: string) {
                     <h2>Alternative Inputs</h2>
 
                     <p>Model performance can be improved by providing examples of alternative ways the user might say the same thing.</p>
-                    <p>For example, after the Bot asks: "What is your name?" some alternive inputs might be:</p>                    
+                    <p>For example, after the Bot asks: "What is your name?" some alternative inputs might be:</p>
                     <ul>
                         <li>I go by Joe</li>
                         <li>Call me Joe</li>
                         <li>I'm Joe</li>
                     </ul>
-                    <p>Or, for a pizza order:</p>  
+                    <p>Or, for a pizza order:</p>
                     <ul>
                         <li>Remove peppers and add olives</li>
                         <li>Replace the peppers with olives</li>
@@ -543,7 +543,7 @@ export function getTip(tipType: string) {
 
                     <h4>What does Conversation Learner need my subscription key?</h4>
                     <p>When you publish your bot, you want to set the LUIS_SUBSCRIPTION_KEY.  When set, the Subscription Key (rather than the Authoring Key) is used by Conversation Learner to get predictions from LUIS.  Using the Subscription Key avoids using up the quota for your Authoring key (which would block further usage of Conversation Learner).</p>
-                    <p>You can also increase the pricing teir of your subscription key to 50 calls per second instead of 5</p>
+                    <p>You can also increase the pricing tier of your subscription key to 50 calls per second instead of 5</p>
                 </div>
             )
         case TipType.LUIS_AUTHORING_KEY:
@@ -574,7 +574,7 @@ export function getTip(tipType: string) {
 
                         <h4>What does Conversation Learner need my Subscription key?</h4>
                         <p>When you publish your bot, you want to set the LUIS_SUBSCRIPTION_KEY.  When set, the Subscription Key (rather than the Authoring Key) is used by Conversation Learner to get predictions from LUIS.  Using the Subscription Key avoids using up the quota for your Authoring key (which would block further usage of Conversation Learner).</p>
-                        <p>You can also increase the pricing teir of your subscription key to 50 calls per second instead of 5</p>
+                        <p>You can also increase the pricing tier of your subscription key to 50 calls per second instead of 5</p>
                     </div></div>
                 </div>
             )
@@ -586,7 +586,7 @@ export function getTip(tipType: string) {
 
                     <h3>When does Conversation Learner need a <b>Subscription key</b>?</h3>
                     <p>When you publish your bot, you want to set the LUIS_SUBSCRIPTION_KEY.  When set, the Subscription Key (rather than the Authoring Key) is used by Conversation Learner to get predictions from LUIS.  Using the Subscription Key avoids using up the quota for your Authoring key (which would block further usage of Conversation Learner).</p>
-                    <p>You can also increase the pricing teir of your subscription key to 50 calls per second instead of 5</p>
+                    <p>You can also increase the pricing tier of your subscription key to 50 calls per second instead of 5</p>
 
                     <h2>Find / Set your LUIS Subscription key:</h2>
                     <ol>
@@ -594,7 +594,7 @@ export function getTip(tipType: string) {
                         <li>In your LUIS' apps "Keys and Endpoint settings", click on "Assign resource"
                             <img src="https://blisstorage.blob.core.windows.net/uiimages/addkey.PNG" width="50%" alt="Add Key" />
                         </li>
-                        <li>If you don't yet have an Azure Suscription key you'll need to <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/azureibizasubscription" target="_blank" rel="noopener noreferrer">Create One</a></li>
+                        <li>If you don't yet have an Azure Subscription key you'll need to <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/azureibizasubscription" target="_blank" rel="noopener noreferrer">Create One</a></li>
                         <li>Then select the subscription and add the key to your LUIS model</li>
                         <img src="https://blisstorage.blob.core.windows.net/uiimages/assignkey.PNG" width="50%" alt="Assign Key" />
                         <li>Click the Key String to copy the key value and use it as the LUIS_SUBSCRIPTION_KEY value for your model
@@ -628,7 +628,7 @@ export function getTip(tipType: string) {
                     <p>Each User Input must be immediately followed by an Action</p>
                     <p>Ways to fix:</p>
                     <ol>
-                        <li>Add an Action after the seledted User Input</li>
+                        <li>Add an Action after the selected User Input</li>
                         <li>Delete the selected User Input</li>
                     </ol>
                 </div>
@@ -641,7 +641,7 @@ export function getTip(tipType: string) {
                     <p>Non-Wait Actions must be immediately followed by another Action</p>
                     <p>Ways to fix:</p>
                     <ol>
-                        <li>Add a Wait Action before the seledted User Input</li>
+                        <li>Add a Wait Action before the selected User Input</li>
                         <li>Change the preceding Action to be a Wait Action</li>
                         <li>Delete the selected User Input</li>
                     </ol>
@@ -651,7 +651,7 @@ export function getTip(tipType: string) {
         case TipType.REPLAYERROR_DESC_ACTION_UNAVAILABLE:
             return (
                 <div>
-                    <h2>Error: Action is unvailable</h2>
+                    <h2>Error: Action is unavailable</h2>
                     <p>Selected Action is blocked by one or more Required or Disqualifying Entities.</p>
                     <p>Ways to fix:</p>
                     <ol>
