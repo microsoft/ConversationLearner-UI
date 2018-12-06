@@ -43,3 +43,15 @@ export function NumericArrayFromInnerHtml(selector)
   for (var i = 0; i < elements.length; i++) { returnValues.push(Number(elements[i].innerHTML)) }
   return returnValues
 }
+
+export function Moment(dateTime)
+{
+  if (dateTime.includes('/'))
+  {
+    if (dateTime.includes(':')) return Cypress.moment(dateTime, 'MM/DD/YYY h:mm:ss a')
+    else return Cypress.moment(dateTime, 'MM/DD/YYY')
+  }
+  
+  if (dateTime.includes(':')) return Cypress.moment(dateTime, 'h:mm:ss a')
+  return undefined
+}

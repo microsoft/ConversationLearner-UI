@@ -6,8 +6,12 @@ import { func } from 'prop-types';
 */
 
 const models = require('../support/Models')
+const modelPage = require('../support/components/ModelPage')
 const entities = require('../support/Entities')
 const actions = require('../support/Actions')
+const editDialogModal = require('../support/components/EditDialogModal')
+const train = require('../support/Train')
+const memoryTableComponent = require('../support/components/MemoryTableComponent')
 
 export function AllEntityTypes()
 {
@@ -60,4 +64,45 @@ export function WhatsYourName()
   actions.CreateNewAction({response: 'Hello $name{enter}'})
 
   // Manually EXPORT this to fixtures folder and name it 'z-whatsYourName.cl'
+}
+
+// This model is created with a Training in it as well as Entities and Actions because
+// this model is intended to test features of using a trained model.
+export function TagAndFrog()
+{
+  // models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
+  models.CreateNewModel('z-tagAndFrog')
+  entities.CreateNewEntity({name: 'multi'})
+  actions.CreateNewAction({response: "Hello"})
+  actions.CreateNewAction({response: "Hi"})
+
+  modelPage.NavigateToTrainDialogs()
+  cy.WaitForTrainingStatusCompleted()
+
+  train.CreateNewTrainDialog()
+
+  train.TypeYourMessage('This is Tag.')
+  editDialogModal.LabelWordAsEntity('Tag', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  train.SelectAction('Hello')
+  cy.WaitForTrainingStatusCompleted()
+
+  train.TypeYourMessage('This is Frog and Tag.')
+  memoryTableComponent.VerifyEntityInMemory('multi', 'Tag')
+  editDialogModal.VerifyEntityLabel('Tag', 'multi')
+  editDialogModal.LabelWordAsEntity('Frog', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  train.SelectAction('Hi')
+  cy.WaitForTrainingStatusCompleted()
+
+  train.TypeYourMessage('This is Tag and Frog.')
+  memoryTableComponent.VerifyEntityInMemory('multi', 'Tag', 'Frog')
+  editDialogModal.VerifyEntityLabel('Tag', 'multi')
+  editDialogModal.VerifyEntityLabel('Frog', 'multi', 1)
+  editDialogModal.ClickScoreActionsButton()
+  train.SelectAction('Hi')
+
+  train.Save()
+
+  // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog.cl'
 }
