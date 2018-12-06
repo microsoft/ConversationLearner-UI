@@ -24,6 +24,8 @@ export function CreateNewTrainDialog()
       LastInput: undefined,
       LastResponse: undefined,
       Turns: 0,
+      MomentTrainingStarted: Cypress.moment(),
+      MomentTrainingEnded: undefined,
       LastModifiedDate: undefined,
       CreatedDate: undefined,
       TrainGridRowCount: (turns ? turns.length : 0) + 1
@@ -56,6 +58,8 @@ export function EditTraining(firstInput, lastInput, lastResponse)
           LastInput: lastInputs[i],
           LastResponse: lastResponses[i],
           Turns: turns[i],
+          MomentTrainingStarted: Cypress.moment(),
+          MomentTrainingEnded: undefined,
           LastModifiedDate: lastModifiedDates[i],
           CreatedDate: createdDates[i],
           TrainGridRowCount: (turns ? turns.length : 0)
@@ -83,6 +87,8 @@ export function TypeYourMessage(message)
   })
 }
 
+// lastResponse parameter is optional. It is necessary only when there are $entities
+// in the Action that produced the Bot's last response.
 export function SelectAction(expectedResponse, lastResponse)
 {
   scorerModal.ClickAction(expectedResponse)
@@ -109,10 +115,10 @@ export function Save()
   trainDialogsGrid.VerifyPageTitle()
   cy.Enqueue(() => 
   { 
+    window.currentTrainingSummary.MomentTrainingEnded = Cypress.moment()
+    
     if (window.isBranched) VerifyTrainingSummaryIsInGrid(window.originalTrainingSummary)
 
-    window.currentTrainingSummary.LastModifiedDate = Today() 
-    if (window.currentTrainingSummary.CreatedDate == undefined) window.currentTrainingSummary.CreatedDate = window.currentTrainingSummary.LastModifiedDate
     VerifyTrainingSummaryIsInGrid(window.currentTrainingSummary)
   })
 }
@@ -121,6 +127,11 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary)
 {
   trainDialogsGrid.WaitForGridReadyThen(trainingSummary.TrainGridRowCount, () =>
   {
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDate: ${trainingSummary.LastModifiedDate}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDate: ${trainingSummary.CreatedDate}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
+
     var turns = trainDialogsGrid.GetTurns()
     var firstInputs = trainDialogsGrid.GetFirstInputs()
     var lastInputs = trainDialogsGrid.GetLastInputs()
@@ -129,10 +140,14 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary)
     var createdDates = trainDialogsGrid.GetCreatedDates()
     
     for (var i = 0; i < trainingSummary.TrainGridRowCount; i++)
-    {
-      if (lastModifiedDates[i] == trainingSummary.LastModifiedDate && 
+    { // TODO: This needs to be tested at edge cases, like starting before midnight, ending after midnight, etc...
+      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDates[${i}]: ${lastModifiedDates[i]}`)
+      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDates[${i}]: ${createdDates[i]}`)
+      if (((trainingSummary.LastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
+          helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) && 
           turns[i] == trainingSummary.Turns &&
-          createdDates[i] == trainingSummary.CreatedDate &&
+          ((trainingSummary.CreatedDate && createdDates[i] == trainingSummary.CreatedDate) ||
+          helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) && 
           firstInputs[i] == trainingSummary.FirstInput &&
           lastInputs[i] == trainingSummary.LastInput &&
           lastResponses[i] == trainingSummary.LastResponse)
