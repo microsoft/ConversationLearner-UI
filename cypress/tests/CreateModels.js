@@ -66,14 +66,15 @@ export function WhatsYourName()
   // Manually EXPORT this to fixtures folder and name it 'z-whatsYourName.cl'
 }
 
-// TODO: Postpone getting this to work due to issue in LabelTextAsEntity()
+// This model is created with a Training in it as well as Entities and Actions because
+// this model is intended to test features of using a trained model.
 export function TagAndFrog()
 {
-  models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
-  // models.CreateNewModel('z-tagAndFrog')
-  // entities.CreateNewEntity({name: 'multi'})
-  // actions.CreateNewAction({response: "Hello"})
-  // actions.CreateNewAction({response: "Hi"})
+  // models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
+  models.CreateNewModel('z-tagAndFrog')
+  entities.CreateNewEntity({name: 'multi'})
+  actions.CreateNewAction({response: "Hello"})
+  actions.CreateNewAction({response: "Hi"})
 
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
