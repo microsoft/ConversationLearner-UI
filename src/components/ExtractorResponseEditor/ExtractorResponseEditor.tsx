@@ -317,7 +317,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             isOverlappingOtherEntities={this.state.isSelectionOverlappingOtherEntities}
                             isVisible={this.state.isMenuVisible}
                             options={this.props.options}
-                            maxDisplayedOptions={4}
+                            maxDisplayedOptions={10}
                             menuRef={this.menuRef}
                             position={this.state.menuPosition}
                             value={this.state.value}

@@ -53,6 +53,8 @@
     padding: 0;
     padding-bottom: 0.25em;
     border-bottom: 1px solid lightgrey;
+    overflow-y: auto;
+    max-height: 7em;
 }
 
 .custom-toolbar__result {

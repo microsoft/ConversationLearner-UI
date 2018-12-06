@@ -19,6 +19,7 @@ interface MenuProps {
     onClickNewEntity: () => void
     position: IPosition
     menuRef: any
+    resultsRef: React.Ref<HTMLUListElement>
     searchText: string
     value: any
 }
@@ -40,7 +41,7 @@ export default class EntityPicker extends React.Component<MenuProps> {
                     ? <div className="custom-toolbar__warning">Cannot add overlapping entities.<br />Remove the entity or change the selection.</div>
                     : <React.Fragment>
                         {this.props.matchedOptions.length !== 0
-                            && <ul className="custom-toolbar__results">
+                            && <ul className="custom-toolbar__results" ref={this.props.resultsRef}>
                                 {this.props.matchedOptions.map((matchedOption, i) =>
                                     <li
                                         key={matchedOption.original.id}
