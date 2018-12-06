@@ -503,6 +503,7 @@ export function getTip(tipType: string) {
 
                     <p>Model performance can be improved by providing examples of alternative ways the user might say the same thing.</p>
                     <p>For example, after the Bot asks: "What is your name?" some alternative inputs might be:</p>
+                    <p>For example, after the Bot asks: "What is your name?" some alternive inputs might be:</p>
                     <ul>
                         <li>I go by Joe</li>
                         <li>Call me Joe</li>
@@ -610,7 +611,7 @@ export function getTip(tipType: string) {
         case TipType.REPLAYERROR_DESC_ACTION_AFTER_WAIT:
             return (
                 <div>
-                    <h2>Error: Action following a Wait Action</h2>
+                    <h2>Error: Action follows a Wait Action</h2>
                     <p>Wait Actions must be immediately followed by User Input</p>
                     <p>Ways to fix:</p>
                     <ol>
