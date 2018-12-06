@@ -55,6 +55,7 @@ interface Props extends InjectedIntlProps {
     onClickCancel: () => void
 
     isConfirmDeleteModalOpen: boolean
+    showValidationWarning: boolean
     isDeleteErrorModalOpen: boolean
     showDelete: boolean
     onClickDelete: () => void
@@ -65,7 +66,8 @@ interface Props extends InjectedIntlProps {
     onCancelEdit: () => void
     onConfirmEdit: () => void
 
-    showValidationWarning: boolean
+    needPrebuiltWarning: string | null
+    onClosePrebuiltWarning: () => void
 
     selectedResolverKey: string
     resolverOptions: OF.IDropdownOption[]
@@ -248,6 +250,12 @@ const Component: React.SFC<Props> = (props) => {
                 <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
                 <FormattedMessageId id={FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING} />
             </div>}
+        />
+        <ConfirmCancelModal
+            open={props.needPrebuiltWarning != null && !props.isConfirmEditModalOpen}
+            onOk={props.onClosePrebuiltWarning}
+            title={props.needPrebuiltWarning || ""}
+            message={() => <FormattedMessageId id={FM.ENTITYCREATOREDITOR_PREBUILT_WARNING} />}
         />
         <ConfirmCancelModal
             open={props.isDeleteErrorModalOpen}

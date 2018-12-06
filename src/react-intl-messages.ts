@@ -218,6 +218,7 @@ export enum FM {
     ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING = 'EntityCreatorEditor.confirmDeleteWarning',
     ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE = 'EntityCreatorEditor.confirmEditTitle',
     ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING = 'EntityCreatorEditor.confirmEditWarning',
+    ENTITYCREATOREDITOR_PREBUILT_WARNING = 'EntityCreatorEditor.confirmPrebuiltWarning',
     ENTITYCREATOREDITOR_DELETE_ERROR_TITLE = 'EntityCreatorEditor.deleteErrorTitle',
     ENTITYCREATOREDITOR_DELETE_ERROR_WARNING = 'EntityCreatorEditor.deleteErrorWarning',
 
@@ -896,6 +897,7 @@ export default {
         [FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Entity is used by one or more Actions or Training Dialogs.  If you proceed it will also be removed from these Actions and Training Dialogs.',
         [FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure you want to edit this Entity?',
         [FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit may invalidate one or more Training Dialogs.  If you proceed they may be removed from training until fixed.',
+        [FM.ENTITYCREATOREDITOR_PREBUILT_WARNING]: 'Note: You must wait for training to complete before the new pre-trained Entity will be detected',
         [FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE]: 'Unable to delete this Entity',
         [FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING]: 'It is either referenced within the payload or used as suggested entity by one or more Actions',
 
