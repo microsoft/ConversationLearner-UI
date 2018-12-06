@@ -16,6 +16,7 @@ const helpers = require('./Helpers')
 export const testList =
 [
   "CreateModels.TagAndFrog",
+  "Train.MyNameIs",
 ]
 
 // Do NOT alter this list except to add in new test cases as they are created.

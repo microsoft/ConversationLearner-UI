@@ -24,7 +24,7 @@ export function CreateNewTrainDialog()
       LastInput: undefined,
       LastResponse: undefined,
       Turns: 0,
-      MomentSaveStarted: undefined,
+      MomentTrainingStarted: Cypress.moment(),
       MomentSaveEnded: undefined,
       LastModifiedDate: undefined,
       CreatedDate: undefined,
@@ -58,6 +58,8 @@ export function EditTraining(firstInput, lastInput, lastResponse)
           LastInput: lastInputs[i],
           LastResponse: lastResponses[i],
           Turns: turns[i],
+          MomentTrainingStarted: Cypress.moment(),
+          MomentSaveEnded: undefined,
           LastModifiedDate: lastModifiedDates[i],
           CreatedDate: createdDates[i],
           TrainGridRowCount: (turns ? turns.length : 0)
@@ -109,12 +111,11 @@ export function ClickScoreActionsButton(lastResponse)
 
 export function Save()
 {
-  cy.Enqueue(() => { window.currentTrainingSummary.MomentSaveStarted = Cypress.moment() })
   editDialogModal.ClickSaveCloseButton()
   trainDialogsGrid.VerifyPageTitle()
   cy.Enqueue(() => 
   { 
-    window.currentTrainingSummary.MomentSaveEndeded = Cypress.moment()
+    window.currentTrainingSummary.MomentTrainingEnded = Cypress.moment()
     
     if (window.isBranched) VerifyTrainingSummaryIsInGrid(window.originalTrainingSummary)
 
@@ -128,6 +129,11 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary)
 {
   trainDialogsGrid.WaitForGridReadyThen(trainingSummary.TrainGridRowCount, () =>
   {
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDate: ${trainingSummary.LastModifiedDate}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDate: ${trainingSummary.CreatedDate}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
+
     var turns = trainDialogsGrid.GetTurns()
     var firstInputs = trainDialogsGrid.GetFirstInputs()
     var lastInputs = trainDialogsGrid.GetLastInputs()
@@ -136,11 +142,14 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary)
     var createdDates = trainDialogsGrid.GetCreatedDates()
     
     for (var i = 0; i < trainingSummary.TrainGridRowCount; i++)
-    {
-      if (((trainingSummary.lastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
-          Cypress.moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentSaveStarted, trainingSummary.MomentSaveEndeded)) && 
+    { // TODO: This needs to be tested at edge cases, like starting before midnight, ending after midnight, etc...
+      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDates[${i}]: ${lastModifiedDates[i]}`)
+      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDates[${i}]: ${createdDates[i]}`)
+      if (((trainingSummary.LastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
+          helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) && 
           turns[i] == trainingSummary.Turns &&
-          createdDates[i] == trainingSummary.CreatedDate &&
+          ((trainingSummary.CreatedDate && createdDates[i] == trainingSummary.CreatedDate) ||
+          helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) && 
           firstInputs[i] == trainingSummary.FirstInput &&
           lastInputs[i] == trainingSummary.LastInput &&
           lastResponses[i] == trainingSummary.LastResponse)

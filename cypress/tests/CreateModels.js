@@ -96,7 +96,6 @@ export function TagAndFrog()
 
   train.TypeYourMessage('This is Tag and Frog.')
   memoryTableComponent.VerifyEntityInMemory('multi', 'Tag', 'Frog')
-  cy.pause()
   editDialogModal.VerifyEntityLabel('Tag', 'multi')
   editDialogModal.VerifyEntityLabel('Frog', 'multi', 1)
   editDialogModal.ClickScoreActionsButton()
