@@ -522,7 +522,7 @@ export default {
         [FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT]: 'Delete',
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this action?',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this Action?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
@@ -550,10 +550,10 @@ export default {
 
         // Actions
         [FM.ACTIONS_TITLE]: 'Actions',
-        [FM.ACTIONS_SUBTITLE]: `Actions are executed by the bot in response to user input`,
+        [FM.ACTIONS_SUBTITLE]: `Actions are executed by the Bot in response to user input`,
         [FM.ACTIONS_CREATEBUTTONARIADESCRIPTION]: 'Create a New Action',
         [FM.ACTIONS_CREATEBUTTONTITLE]: 'New Action',
-        [FM.ACTIONS_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this action?',
+        [FM.ACTIONS_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this Action?',
 
         // AppCreator
         [FM.APPCREATOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
@@ -642,7 +642,7 @@ export default {
 
         // Entities
         [FM.ENTITIES_TITLE]: 'Entities',
-        [FM.ENTITIES_SUBTITLE]: `Entities hold values from the user or are set by code, and are stored in the bot's memory to track state`,
+        [FM.ENTITIES_SUBTITLE]: `Entities hold values that are extracted from user utterances or set by code. They are stored in the Bot's memory to track state`,
         [FM.ENTITIES_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Entity',
         [FM.ENTITIES_CREATEBUTTONTEXT]: 'New Entity',
         [FM.ENTITIES_COLUMNS_NAME]: 'Name',
@@ -656,7 +656,7 @@ export default {
 
         // LogDialogs
         [FM.LOGDIALOGS_TITLE]: 'Log Dialogs',
-        [FM.LOGDIALOGS_SUBTITLE]: 'Log Dialogs are records of conversations between users and your bot. You can make corrections to Log Dialogs to improve the bot.',
+        [FM.LOGDIALOGS_SUBTITLE]: 'Log Dialogs are records of conversations between users and your Bot. You can make corrections to Log Dialogs to improve the Bot.',
         [FM.LOGDIALOGS_CREATEBUTTONTITLE]: 'New Log Dialog',
         [FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Log Dialog',
         [FM.LOGDIALOGS_FIRSTINPUT]: 'First Input',
@@ -669,7 +669,7 @@ export default {
         [FM.LOGDIALOGS_ALREADYSELECTED]: 'Action already selected',
 
         // LogDialogAdmin
-        [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the bot and convert it into a new Train Dialog',
+        [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the Bot and convert it into a new Train Dialog',
 
         // ReplayErrorList
         [FM.REPLAYERROR_EXISTS]: 'This Train Dialog has errors that must be fixed before it can be used to train your model',
@@ -700,7 +700,7 @@ export default {
         [FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION]: 'Export Model to File',
         [FM.SETTINGS_EXPORTBUTTONTEXT]: 'Export',
         [FM.SETTINGS_FIELDERROR_REQUIREDVALUE]: 'Required Value',
-        [FM.SETTINGS_FIELDERROR_ALPHANUMERIC]: 'Model name may only contain alphanumeric characters',
+        [FM.SETTINGS_FIELDERROR_ALPHANUMERIC]: 'Model names may only contain alphanumeric characters',
         [FM.SETTINGS_FIELDERROR_DISTINCT]: 'Name is already in use.',
         [FM.SETTINGS_FIELDS_NAMELABEL]: 'Name',
         [FM.SETTINGS_FILEDS_APPIDLABEL]: 'Model ID',
@@ -731,7 +731,7 @@ export default {
         [FM.TOOLTIP_ACTION_CARD_TITLE]: `Card`,
         [FM.TOOLTIP_ACTION_END_SESSION]: `Data to send to "onSessionEndCallback" when this Action is selected`,
         [FM.TOOLTIP_ACTION_END_SESSION_TITLE]: `End Session`,
-        [FM.TOOLTIP_ACTION_ENTITIES]: 'Status of Entity requirements for this action:',
+        [FM.TOOLTIP_ACTION_ENTITIES]: 'Status of Entity requirements for this Action:',
         [FM.TOOLTIP_ACTION_ENTITIES_REQ]: 'Required Entity is present',
         [FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT]: 'Required Enitity is missing (DISQUALIFIES ACTION)',
         [FM.TOOLTIP_ACTION_ENTITIES_DISQUAL]: 'Disqualifying Entity is present (DISQUALIFIES ACTION)',
@@ -776,11 +776,11 @@ export default {
         [FM.TOOLTIP_ACTION_TYPE_APILOCAL]: 'An API call to the Bot',
         [FM.TOOLTIP_ACTION_TYPE_ENDSESSION]: 'Indicate Bot is done',
         [FM.TOOLTIP_ACTION_TYPE_CARD]: 'Renders an Adaptive Card template',
-        [FM.TOOLTIP_ACTION_WAIT]: 'When selected, Bot will wait for more user input before taking another action',
+        [FM.TOOLTIP_ACTION_WAIT]: 'When selected, Bot will wait for more user input before taking another Action',
         [FM.TOOLTIP_ACTION_WAIT_TITLE]: 'Wait For Response',
 
         [FM.TOOLTIP_ADD_USER_INPUT_BUTTON]: 'Add a new user input',
-        [FM.TOOLTIP_ADD_BOT_RESONSE_BUTTON]: 'Add a new bot response',
+        [FM.TOOLTIP_ADD_BOT_RESONSE_BUTTON]: 'Add a new Bot response',
         [FM.TOOLTIP_BRANCH_BUTTON]: 'Create a new Train Dialog by branching at this step',
 
         [FM.TOOLTIP_BOTINFO_INVALID]: 'This model contains Card or API references that do not exist in the running Bot',
@@ -793,7 +793,7 @@ export default {
 
         [FM.TOOLTIP_ENTITY_NAME]: 'Name of the Entity',
         [FM.TOOLTIP_ENTITY_VALUE]: 'What the Bot currently has in Memory for this Entity',
-        [FM.TOOLTIP_EXAMPLE]: 'For Example:',
+        [FM.TOOLTIP_EXAMPLE]: 'For example:',
         [FM.TOOLTIP_LOGGING_TOGGLE]: 'Enables or disables logging of user conversations. When logging is enabled, Bot performance can be improved by providing corrections to Logs that contain undesired Bot responses.  The corrected Log Dialogs become new Training Dialogs',
         [FM.TOOLTIP_MEMORYMANAGER]: `The memory manager provides the following functions for manipulating the Bot's memory:`,
         [FM.TOOLTIP_MEMORYMANAGER_TITLE]: 'Memory Manager',
@@ -801,15 +801,15 @@ export default {
         [FM.TOOLTIP_MEMORYCONVERTER_TITLE]: 'Memory Converters',
         [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
         [FM.TOOLTIP_REPLAY]: `Replay each step in the Dialog, calling the EntityDetectionCallback and any API callbacks.  This will update the Dialog to reflect any changes made to the Bot's APIs`,
-        [FM.TOOLTIP_TAG_EDITING]: 'The version (tag) of the model to edit in UI',
-        [FM.TOOLTIP_TAG_LIVE]: 'The version (tag) of the model used when published to external channels (e.g. Skype)',
-        [FM.TOOLTIP_TRAINDIALOG_INVALID]: 'This model contains Train Dialogs that have been invalided.  They must be edited and fixed to be included in training',
-        [FM.TOOLTIP_TRAINDIALOG_UNKNOWN]: 'This model contains Train Dialogs that may have errors. They must be replayed and any errors fixed to be included in training',
-        [FM.TOOLTIP_TRAINDIALOG_WARNING]: 'This model contains Train Dialogs that may have errors.',
+        [FM.TOOLTIP_TAG_EDITING]: 'The version (tag) of the Model to edit in UI',
+        [FM.TOOLTIP_TAG_LIVE]: 'The version (tag) of the Model used when published to external channels (e.g. Skype)',
+        [FM.TOOLTIP_TRAINDIALOG_INVALID]: 'This Model contains Train Dialogs that have been invalided.  They must be edited and fixed to be included in training',
+        [FM.TOOLTIP_TRAINDIALOG_UNKNOWN]: 'This Model contains Train Dialogs that may have errors. They must be replayed and any errors fixed to be included in training',
+        [FM.TOOLTIP_TRAINDIALOG_WARNING]: 'This Model contains Train Dialogs that may have errors.',
 
         // Train Dialogs
         [FM.TRAINDIALOGS_TITLE]: 'Train Dialogs',
-        [FM.TRAINDIALOGS_SUBTITLE]: 'Train Dialogs are example conversations you want your bot to imitate',
+        [FM.TRAINDIALOGS_SUBTITLE]: 'Train Dialogs are example conversations you want your Bot to imitate',
         [FM.TRAINDIALOGS_CREATEBUTTONTITLE]: 'New Train Dialog',
         [FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Train Dialog',
         [FM.TRAINDIALOGS_FIRSTINPUT]: 'First Input',
@@ -855,7 +855,7 @@ export default {
         [FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT]: 'Done Testing',
         [FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION]: 'Session Timeout',
         [FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT]: 'Session Timeout',
-        [FM.CHATSESSIONMODAL_TIMEOUT_TITLE]: 'On the next turn the EndSession callback will be called and a new Session started',
+        [FM.CHATSESSIONMODAL_TIMEOUT_TITLE]: 'The EndSession callback will be invoked on the next user input, and a new Session started',
 
         // ConfirmCancelModal
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
@@ -963,10 +963,10 @@ export default {
         [FM.EDITDIALOGADMIN_DIALOGMODE_TEXT]: 'Bot Response',
         [FM.EDITDIALOGADMIN_MEMORY_TITLE]: 'Memory',
         [FM.EDITDIALOGADMIN_HELPTEXT_TITLE_LOG]: 'Log Dialog',
-        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_LOG]: 'Click on User or Bot turns to the left to view steps in the Log Dialog.',
+        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_LOG]: 'Click on User or Bot turns in the left panel to view steps in the Log Dialog.',
         [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_LOG]: 'You can then make changes to the Log Dialog.',
         [FM.EDITDIALOGADMIN_HELPTEXT_TITLE_TRAIN]: 'Train Dialog',
-        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_TRAIN]: 'Click on User or Bot turns to the left to view steps in the Train Dialog.',
+        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_TRAIN]: 'Click on User or Bot turns in the left panel to view steps in the Train Dialog.',
         [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_TRAIN]: 'You can then make changes to the Train Dialog.',
         [FM.EDITDIALOGADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
         [FM.EDITDIALOGADMIN_ENTITYDETECTION_HELPTEXT]: 'Click on text from the dialog to the left.',
@@ -997,18 +997,18 @@ export default {
          * 
          * It should probably be `errors.application.create` but we're using something like: `CREATE_APPLICATION_ASYNC`
          */
-        [AT.CREATE_APPLICATION_ASYNC]: 'Creating application',
-        [AT.COPY_APPLICATION_ASYNC]: 'Copying application ',
-        [AT.CREATE_ENTITY_ASYNC]: 'Creating entity',
-        [AT.CREATE_ACTION_ASYNC]: 'Creating action',
-        [AT.CREATE_APP_TAG_ASYNC]: 'Creating application tag',
-        [AT.CREATE_CHAT_SESSION_ASYNC]: 'Creating chat session',
-        [AT.CREATE_TEACH_SESSION_ASYNC]: 'Creating teach session',
-        [AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC]: 'Creating teach session from history',
-        [AT.FETCH_BOTINFO_ASYNC]: 'Fetching bot information',
+        [AT.CREATE_APPLICATION_ASYNC]: 'Creating Application',
+        [AT.COPY_APPLICATION_ASYNC]: 'Copying Application ',
+        [AT.CREATE_ENTITY_ASYNC]: 'Creating Entity',
+        [AT.CREATE_ACTION_ASYNC]: 'Creating Action',
+        [AT.CREATE_APP_TAG_ASYNC]: 'Creating Application Tag',
+        [AT.CREATE_CHAT_SESSION_ASYNC]: 'Creating Chat Session',
+        [AT.CREATE_TEACH_SESSION_ASYNC]: 'Creating Teach Session',
+        [AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC]: 'Creating Teach Session from history',
+        [AT.FETCH_BOTINFO_ASYNC]: 'Fetching Bot information',
         [AT.FETCH_HISTORY_ASYNC]: 'Fetching history',
         [AT.FETCH_TUTORIALS_ASYNC]: 'Fetching tutorials',
-        [AT.FETCH_APPSOURCE_ASYNC]: 'Fetching application source',
+        [AT.FETCH_APPSOURCE_ASYNC]: 'Fetching Application source',
         [AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC]: 'Fetching entity deletion information',
         [AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC]: 'Fetching entity edit information',
         [AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC]: 'Fetching action delete information',
@@ -1017,11 +1017,11 @@ export default {
         [AT.GET_SCORES_ASYNC]: 'Fetching scores',
         [AT.RUN_SCORER_ASYNC]: 'Running scorer',
         [AT.POST_SCORE_FEEDBACK_ASYNC]: 'Fetching score feedback',
-        [AT.EDIT_ENTITY_ASYNC]: 'Editing entity',
-        [AT.EDIT_ACTION_ASYNC]: 'Editing action',
-        [AT.EDIT_TRAINDIALOG_ASYNC]: 'Editing train dialog',
-        [AT.EDIT_APP_LIVE_TAG_ASYNC]: 'Editing application live tag',
-        [AT.EDIT_APP_EDITING_TAG_ASYNC]: 'Editing application editing tag',
+        [AT.EDIT_ENTITY_ASYNC]: 'Editing Entity',
+        [AT.EDIT_ACTION_ASYNC]: 'Editing Action',
+        [AT.EDIT_TRAINDIALOG_ASYNC]: 'Editing Train Dialog',
+        [AT.EDIT_APP_LIVE_TAG_ASYNC]: 'Editing Application live tag',
+        [AT.EDIT_APP_EDITING_TAG_ASYNC]: 'Editing Application editing tag',
     },
     'ko': {
         [FM.ABOUT_TITLE]: '약',
