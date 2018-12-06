@@ -17,7 +17,7 @@ export function NavigateToActions()       { cy.Get('[data-testid="app-index-nav-
 export function NavigateToTrainDialogs()  { cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').Click(); trainDialogsGrid.VerifyPageTitle() }
 export function NavigateToLogDialogs()    { cy.Get('[data-testid="app-index-nav-link-log-dialogs"]').Click();   logDialogsGrid.VerifyPageTitle() }
 
-// To validate that this code works, search src/action/appActions.ts for these and alter them:
+// To validate that this code works, search src\actions\appActions.ts for these and alter them:
 //   fetchApplicationTrainingStatusThunkAsync
 //   interval:
 //   maxDuration:
@@ -30,7 +30,11 @@ export function WaitForTrainingStatusCompleted()
      (currentTime > canRefreshTrainingStatusTime))
   {    
     canRefreshTrainingStatusTime = currentTime + (2 * 1000)
-    cy.get('[data-testid="training-status-refresh-button"]').click()
+    
+    // When we get here it is possible there are two refresh buttons on the page, one that
+    // is covered up by a popup dialog. Unfortunately the .click() function can take only
+    // one element to click on, so this code is an attempt to deal with that issue.
+    cy.get('[data-testid="training-status-refresh-button"]').then((elements) => { cy.wrap(elements[elements.length - 1]).click() })
   
     // The reason we need to call this method once again using cy.WaitForTrainingStatusCompleted()
     // is because the .click() function causes the time out to change to a default of 4 seconds

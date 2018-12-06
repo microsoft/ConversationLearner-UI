@@ -39,13 +39,6 @@ export function AbandonBranchChanges()
   ClickAbandonDeleteButton()
   homePage.ClickConfirmButton()
 }
-// data-testid="edit-dialog-modal-replay-button"
-
-export function VerifyDetectedEntity(entityName, entityValue)
-{
-  cy.Get('[data-testid="custom-entity-name-button"]').contains(entityName)
-  cy.Get('[data-testid="token-node-entity-value"]').contains(entityValue)
-}
 
 // Selects FROM ALL chat messages, from both Bot and User
 // Once clicked, more UI elements will become visible & enabled
@@ -104,7 +97,7 @@ export function VerifyChatTurnControls(element, index)
   cy.Contains('[data-testid="chat-edit-add-input-button"]', '+')
 }
 
-// Provide any user message and any bot message expected in chat.
+// Provide any user message and any Bot message expected in chat.
 export function VerifyThereAreNoChatEditControls(userMessage, botMessage)
 {
   // These confirm we are looking at the chat history we are expecting to validate.
@@ -118,22 +111,32 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage)
   cy.DoesNotContain('[data-testid="chat-edit-add-input-button"]', '+')
 }
 
-
-
-
-export function HighlightWord(word) {
-  cy.get('span[class="cl-token-node"]')
-    .trigger('keydown')
-    .click(10, 10)
-    .wait(1000)
-
-  cy.get('.custom-toolbar.custom-toolbar--visible')
-    .invoke('show')
-    .wait()
+export function LabelWordAsEntity(word, entity)
+{
+  cy.WaitForStableDOM() // Do NOT move this to inside of the cy.Enqueue scope.
+  
+  cy.Enqueue(() => 
+  { 
+    var words = helpers.StringArrayFromInnerHtml('[data-testid="token-node-entity-value"] > span > span') 
+    var index = words.indexOf(word)
+    expect(index).to.be.greaterThan(-1)
+    var toType = '{selectall}{leftarrow}{rightarrow}'
+    if (index > 0) toType += '{rightArrow}'.repeat(3 * index)
+    helpers.ConLog(`LabelTextAsEntity('${word}', '${entity}')`, `index: ${index} - toType: '${toType}'`)
+    cy.Get('.slate-editor').click().type(toType)
+    cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
+  })
 }
 
-export function VerifyTokenNodeExists() {
-  cy.get('.cl-token-node')
-    .should('exists')
+// Verify that a specific word of a user utterance has been labeled as an entity.
+// word = a word within the utterance that should be labeled
+// entity = name of entity that should contain the text
+// *** This does NOT work for multiple words. ***
+export function VerifyEntityLabel(word, entity)
+{
+  cy.Get('[data-testid="token-node-entity-value"] > span > span')
+    .ExactMatch(word)
+    .parents('.cl-entity-node--custom')
+    .find('[data-testid="custom-entity-name-button"]')
+    .contains(entity)
 }
-
