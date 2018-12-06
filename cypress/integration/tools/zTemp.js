@@ -9,7 +9,6 @@ const modelPage = require('../../support/components/ModelPage')
 const train = require('../../support/Train')
 const trainDialogsGrid = require('../../support/components/TrainDialogsGrid')
 const editDialogModal = require('../../support/components/EditDialogModal')
-const memoryTableComponent = require('../../support/components/MemoryTableComponent')
 
 // Description: A temporary workspace for experimental code
 describe('zTemp test', () =>
