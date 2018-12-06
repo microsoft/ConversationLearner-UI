@@ -111,21 +111,10 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage)
   cy.DoesNotContain('[data-testid="chat-edit-add-input-button"]', '+')
 }
 
-export function LabelWordAsEntity(word, entity)
+export function LabelWordAsEntity(text, entity)
 {
-  cy.WaitForStableDOM() // Do NOT move this to inside of the cy.Enqueue scope.
-  
-  cy.Enqueue(() => 
-  { 
-    var words = helpers.StringArrayFromInnerHtml('[data-testid="token-node-entity-value"] > span > span') 
-    var index = words.indexOf(word)
-    expect(index).to.be.greaterThan(-1)
-    var toType = '{selectall}{leftarrow}{rightarrow}'
-    if (index > 0) toType += '{rightArrow}'.repeat(3 * index)
-    helpers.ConLog(`LabelTextAsEntity('${word}', '${entity}')`, `index: ${index} - toType: '${toType}'`)
-    cy.Get('.slate-editor').click().type(toType)
-    cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
-  })
+  cy.Get('body').trigger('Test_SelectWord', {detail: text})
+  cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
 }
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
