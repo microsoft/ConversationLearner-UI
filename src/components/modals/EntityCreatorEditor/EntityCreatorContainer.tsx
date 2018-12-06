@@ -45,6 +45,7 @@ const initState: ComponentState = {
     hasPendingChanges: false,
     isConfirmEditModalOpen: false,
     isConfirmDeleteModalOpen: false,
+    needPrebuiltWarning: null,
     isDeleteErrorModalOpen: false,
     showValidationWarning: false,
     newOrEditedEntity: null
@@ -63,6 +64,7 @@ interface ComponentState {
     hasPendingChanges: boolean
     isConfirmEditModalOpen: boolean,
     isConfirmDeleteModalOpen: boolean,
+    needPrebuiltWarning: string | null,
     isDeleteErrorModalOpen: boolean,
     showValidationWarning: boolean,
     newOrEditedEntity: CLM.EntityBase | null
@@ -284,27 +286,53 @@ class Container extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onClickSaveCreate() {
         const newOrEditedEntity = this.convertStateToEntity(this.state)
+
+        let needPrebuildWarning = this.newPrebuilt(newOrEditedEntity)
+        let needValidationWarning = false
+
+        // If editing check for validation errors
+        if (this.state.isEditing) {
+            const appId = this.props.app.appId
+            const isMultiValueChanged = this.props.entity ? newOrEditedEntity.isMultivalue !== this.props.entity.isMultivalue : false
+            const isNegatableChanged = this.props.entity ? newOrEditedEntity.isNegatible !== this.props.entity.isNegatible : false
+            const invalidTrainingDialogIds = await (this.props.fetchEntityEditValidationThunkAsync(appId, this.props.editingPackageId, newOrEditedEntity) as any as Promise<string[]>)
+            needValidationWarning = (isMultiValueChanged || isNegatableChanged || (invalidTrainingDialogIds && invalidTrainingDialogIds.length > 0))
+        }
+
+        if (needPrebuildWarning || needValidationWarning) {
+            this.setState(
+                {
+                    isConfirmEditModalOpen: needValidationWarning,
+                    showValidationWarning: needValidationWarning,
+                    needPrebuiltWarning: needPrebuildWarning,
+                    newOrEditedEntity: newOrEditedEntity
+                })
+        } 
+        // Save and close
+        else {
+            this.saveAndClose(newOrEditedEntity)
+        }
+    }
+
+    @OF.autobind
+    onClosePrebuiltWarning(): void {
+        this.setState({
+            showValidationWarning: false
+        })
+        if (this.state.newOrEditedEntity) {
+          this.saveAndClose(this.state.newOrEditedEntity)
+        }
+    }
+
+    saveAndClose(newOrEditedEntity: CLM.EntityBase) {
         const appId = this.props.app.appId
 
-        // If not editing (creating a new entity) simply create it and close
-        // Otherwise request validation of changes from server to determine if confirmation dialog should be opened
         if (!this.state.isEditing) {
             this.props.createEntityThunkAsync(appId, newOrEditedEntity)
             this.props.handleClose()
             return
         }
-
-        const isMultiValueChanged = this.props.entity ? newOrEditedEntity.isMultivalue !== this.props.entity.isMultivalue : false
-        const isNegatableChanged = this.props.entity ? newOrEditedEntity.isNegatible !== this.props.entity.isNegatible : false
-        const invalidTrainingDialogIds = await (this.props.fetchEntityEditValidationThunkAsync(appId, this.props.editingPackageId, newOrEditedEntity) as any as Promise<string[]>)
-        if (isMultiValueChanged || isNegatableChanged || (invalidTrainingDialogIds && invalidTrainingDialogIds.length > 0)) {
-            this.setState(
-                {
-                    isConfirmEditModalOpen: true,
-                    showValidationWarning: true,
-                    newOrEditedEntity: newOrEditedEntity
-                })
-        } else {
+        else {
             // We know props.entity is valid because we're not editing
             this.props.editEntityThunkAsync(appId, newOrEditedEntity, this.props.entity!)
             this.props.handleClose()
@@ -494,21 +522,50 @@ class Container extends React.Component<Props, ComponentState> {
         })
     }
 
+    newPrebuilt(newOrEditedEntity: CLM.EntityBase): string | null {
+        // Check resolvers
+        if (newOrEditedEntity.resolverType && newOrEditedEntity.resolverType !== "none") {
+          
+            let resolverType = newOrEditedEntity.resolverType
+            let existingBuiltIn = this.props.entities.find(e => 
+                e.resolverType === resolverType ||
+                e.entityType === resolverType)
+
+            if (!existingBuiltIn) {
+                return resolverType
+            }
+        }
+
+        // Check prebuilts
+        if (this.state.isPrebuilt) {
+     
+            // If a prebuilt - entity name is prebuilt name
+           let existingBuiltIn = this.props.entities.find(e => 
+                e.resolverType === newOrEditedEntity.entityType ||
+                e.entityType === newOrEditedEntity.entityType)
+
+            if (!existingBuiltIn) { 
+                return newOrEditedEntity.entityName
+            }
+        }
+        return null
+    }
+
     @OF.autobind
     onConfirmEdit() {
         if (!this.state.newOrEditedEntity) {
             console.warn(`You confirmed the edit, but the newOrEditedEntity state was not available. This should not be possible. Contact Support`)
             return
         }
-
-        const entity = { ...this.state.newOrEditedEntity }
+ 
         this.setState({
             isConfirmEditModalOpen: false,
             newOrEditedEntity: null
         })
 
-        this.props.editEntityThunkAsync(this.props.app.appId, entity, this.props.entity!)
-        this.props.handleClose()
+        if (!this.state.needPrebuiltWarning) {
+            this.saveAndClose(this.state.newOrEditedEntity)
+        }
     }
 
     @OF.autobind
@@ -581,6 +638,9 @@ class Container extends React.Component<Props, ComponentState> {
 
             showValidationWarning={this.state.showValidationWarning}
 
+            needPrebuiltWarning={this.state.needPrebuiltWarning}
+            onClosePrebuiltWarning={this.onClosePrebuiltWarning}
+        
             selectedResolverKey={this.state.entityResolverVal}
             needResolverType={!this.state.isPrebuilt && !this.state.isProgrammaticVal}
             resolverOptions={this.resolverOptions}
