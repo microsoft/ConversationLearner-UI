@@ -39,14 +39,6 @@ export function AbandonBranchChanges()
   ClickAbandonDeleteButton()
   homePage.ClickConfirmButton()
 }
-// data-testid="edit-dialog-modal-replay-button"
-
-// TODO: This needs to be replaced by VerifyEntityLabels()
-export function VerifyDetectedEntity(entityName, entityValue)
-{
-  cy.Get('[data-testid="custom-entity-name-button"]').contains(entityName)
-  cy.Get('[data-testid="token-node-entity-value"]').contains(entityValue)
-}
 
 // Selects FROM ALL chat messages, from both Bot and User
 // Once clicked, more UI elements will become visible & enabled
