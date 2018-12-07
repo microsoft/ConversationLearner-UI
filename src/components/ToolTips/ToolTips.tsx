@@ -492,7 +492,7 @@ export function getTip(tipType: string) {
 
                     <h2>Notes:</h2>
                     <ul>
-                        <li>Pre-Built entities in blue are not editable</li>
+                        <li>Pre-Trained entities in blue are not editable</li>
                     </ul>
                 </div>
             )
