@@ -146,16 +146,16 @@ function VerifyEntityLabeledDifferentPopupAndClickButton(texts, entities, button
   { 
     for (var i = 0; i < texts.length; i++) 
     {
-      //VerifyEntityLabel(texts[i], entities[i]) 
-      cy.get('[data-testid="token-node-entity-value"] > span > span')
-        .contains(texts[i]) //.ExactMatch(texts[i])
-        .parents('.cl-entity-node--custom')
-        .find('[data-testid="custom-entity-name-button"]')
-        .contains(entities[i])
+      VerifyEntityLabel(texts[i], entities[i]) 
+      // cy.get('[data-testid="token-node-entity-value"] > span > span')
+      //   .ExactMatch(texts[i])
+      //   .parents('.cl-entity-node--custom')
+      //   .find('[data-testid="custom-entity-name-button"]')
+      //   .contains(entities[i])
     }
   })
 
-  cy.Get('@popup').within(popup => { cy.get('button.ms-Button').ExactMatch(buttonLabel).Click() })
+  cy.Get('@popup').within(popup => { cy.get('button.ms-Button').contains(buttonLabel).Click() })
 }
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
@@ -164,6 +164,7 @@ function VerifyEntityLabeledDifferentPopupAndClickButton(texts, entities, button
 // *** This does NOT work for multiple words. ***
 export function RemoveEntityLabel(word, entity)
 {
+  cy.Get('.slate-editor').click()
   cy.Get('[data-testid="token-node-entity-value"] > span > span')
     .ExactMatch(word)
     .parents('.cl-entity-node--custom')
