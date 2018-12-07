@@ -250,7 +250,7 @@ class Index extends React.Component<Props, ComponentState> {
                     <Route
                         exact={true}
                         path={match.url}
-                        render={props => <Dashboard {...props} app={app} loading={this.state.loading} validationErrors={this.state.validationErrors} />}
+                        render={props => <Dashboard {...props} app={app} validationErrors={this.state.loading ? [] : this.state.validationErrors} />}
                     />
                 </Switch>
             </div>
