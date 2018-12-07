@@ -10,11 +10,11 @@ const scorerModal = require('../../support/components/ScorerModal')
 export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p'
 
 export function TypeYourMessage(trainMessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainMessage}{enter}`) }  // data-testid NOT possible
+export function TypeAlternativeInput(trainMessage)    { cy.Get('[data-testid="entity-extractor-alternative-input-text"]').type(`${trainMessage}{enter}`) }
 export function ClickSetInitialStateButton()          { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
 export function ClickScoreActionsButton()             { cy.Get('[data-testid="score-actions-button"]').Click() }
 export function VerifyEntityMemoryIsEmpty()           { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function EntitySearch()                        { cy.Get('[data-testid="entity-picker-entity-search"]') }
-export function AlternativeInputText()                { cy.Get('[data-testid="entity-extractor-alternative-input-text"]') }
 export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 
@@ -128,4 +128,48 @@ export function VerifyEntityLabel(word, entity)
     .parents('.cl-entity-node--custom')
     .find('[data-testid="custom-entity-name-button"]')
     .contains(entity)
+}
+
+export function VerifyEntityLabeledDifferentPopupAndClose(texts, entities)   {VerifyEntityLabeledDifferentPopupAndClickButton(texts, entities, 'Close')}
+export function VerifyEntityLabeledDifferentPopupAndAccept(texts, entities)  {VerifyEntityLabeledDifferentPopupAndClickButton(texts, entities, 'Accept')}
+
+function VerifyEntityLabeledDifferentPopupAndClickButton(texts, entities, buttonLabel) 
+{ 
+  if (!Array.isArray(texts)) texts = [texts]
+  if (!Array.isArray(entities)) entities = [entities]
+  expect(texts.length).to.equal(entities.length)
+
+  //cy.Get('.ms-Dialog-main').as('popup')
+  cy.Get('.ms-Dialog-main').contains('Entity is labelled differently in another user utterance').parents('.ms-Dialog-main').as('popup')
+  
+  cy.Get('@popup').within(() => 
+  { 
+    for (var i = 0; i < texts.length; i++) 
+    {
+      //VerifyEntityLabel(texts[i], entities[i]) 
+      cy.get('[data-testid="token-node-entity-value"] > span > span')
+        .contains(texts[i]) //.ExactMatch(texts[i])
+        .parents('.cl-entity-node--custom')
+        .find('[data-testid="custom-entity-name-button"]')
+        .contains(entities[i])
+    }
+  })
+
+  cy.Get('@popup').within(popup => { cy.get('button.ms-Button').ExactMatch(buttonLabel).Click() })
+}
+
+// Verify that a specific word of a user utterance has been labeled as an entity.
+// word = a word within the utterance that should be labeled
+// entity = name of entity that should contain the text
+// *** This does NOT work for multiple words. ***
+export function RemoveEntityLabel(word, entity)
+{
+  cy.Get('[data-testid="token-node-entity-value"] > span > span')
+    .ExactMatch(word)
+    .parents('.cl-entity-node--custom')
+    .find('[data-testid="custom-entity-name-button"]')
+    .contains(entity)
+    .Click()
+  
+  cy.Get('button[title="Unselect Entity"]').Click()
 }

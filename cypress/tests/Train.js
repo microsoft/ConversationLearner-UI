@@ -13,7 +13,7 @@ const editDialogModal = require('../support/components/EditDialogModal')
 
 export function DisqualifyingEntities()
 {
-  var modelName = models.ImportModel('z-disqualifyngEnt', 'z-disqualifyngEnt.cl')
+  models.ImportModel('z-disqualifyngEnt', 'z-disqualifyngEnt.cl')
   
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -62,7 +62,7 @@ export function DisqualifyingEntities()
 
 export function WaitVsNoWaitActions()
 {
-  var modelName = models.ImportModel('z-waitNoWait', 'z-waitNoWait.cl')
+  models.ImportModel('z-waitNoWait', 'z-waitNoWait.cl')
   
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -99,7 +99,7 @@ export function WaitVsNoWaitActions()
 
 export function WhatsYourName()
 {
-  var modelName = models.ImportModel('z-whatsYourName', 'z-whatsYourName.cl')
+  models.ImportModel('z-whatsYourName', 'z-whatsYourName.cl')
 
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -126,7 +126,7 @@ export function WhatsYourName()
 
 export function MyNameIs()
 {
-  var modelName = models.ImportModel('z-myNameIs', 'z-myNameIs.cl')
+  models.ImportModel('z-myNameIs', 'z-myNameIs.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
 
@@ -155,3 +155,64 @@ export function MyNameIs()
   // Manually EXPORT this to fixtures folder and name it 'z-nameTrained.cl'
 }
 
+export function TagAndFrog()
+{
+  models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
+  modelPage.NavigateToTrainDialogs()
+  cy.WaitForTrainingStatusCompleted()
+
+  train.CreateNewTrainDialog()
+
+  train.TypeYourMessage('This is Tag.')
+  editDialogModal.RemoveEntityLabel('Tag', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose('Tag', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept('Tag', 'multi')
+  train.SelectAction('Hello')
+
+  train.TypeYourMessage('This is Frog and Tag.')
+  editDialogModal.RemoveEntityLabel('Frog', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(['Tag', 'Frog'], ['multi', 'multi'])
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(['Tag', 'Frog'], ['multi', 'multi'])
+  train.SelectAction('Hi')
+
+  train.TypeYourMessage('This is Tag and Frog.')
+  editDialogModal.RemoveEntityLabel('Tag', 'multi')
+  editDialogModal.RemoveEntityLabel('Frog', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(['Tag', 'Frog'], ['multi', 'multi'])
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(['Tag', 'Frog'], ['multi', 'multi'])
+  train.SelectAction('Hi')
+
+  editDialogModal.ClickAbandonDeleteButton()
+  //data-testid="entity-extractor-alternative-input-text"
+}
+
+function HoldOffOnThisForNow()
+{
+  cy.WaitForTrainingStatusCompleted()
+  train.CreateNewTrainDialog()
+
+  train.TypeYourMessage('This is Tag.')
+  train.TypeAlternativeInput('This is Frog and Tag.')
+  train.TypeAlternativeInput('This is Tag and Frog.')
+
+  editDialogModal.VerifyEntityLabel('Tag', 'multi', 0)
+  editDialogModal.VerifyEntityLabel('Tag', 'multi', 0)
+  editDialogModal.VerifyEntityLabel('Tag', 'multi', 0)
+
+  editDialogModal.RemoveEntityLabel('Tag', 'multi')
+  editDialogModal.RemoveEntityLabel('Frog', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(['Tag', 'Frog'], ['multi', 'multi'])
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(['Tag', 'Frog'], ['multi', 'multi'])
+  train.SelectAction('Hi')
+
+
+  //data-testid="entity-extractor-alternative-input-text"
+}

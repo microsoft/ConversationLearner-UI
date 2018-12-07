@@ -1,5 +1,177 @@
 ﻿{
-  "trainDialogs": [],
+  "trainDialogs": [
+    {
+      "trainDialogId": "518aef46-f67c-4df7-805a-da557dd2bbb2",
+      "rounds": [
+        {
+          "extractorStep": {
+            "textVariations": [
+              {
+                "text": "This is Tag.",
+                "labelEntities": [
+                  {
+                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "startCharIndex": 8,
+                    "endCharIndex": 10,
+                    "entityText": "Tag",
+                    "resolution": {},
+                    "builtinType": "LUIS"
+                  }
+                ]
+              }
+            ]
+          },
+          "scorerSteps": [
+            {
+              "input": {
+                "filledEntities": [
+                  {
+                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "values": [
+                      {
+                        "userText": "Tag",
+                        "displayText": "Tag",
+                        "builtinType": "LUIS",
+                        "resolution": {}
+                      }
+                    ]
+                  }
+                ],
+                "context": {},
+                "maskedActions": []
+              },
+              "labelAction": "369d7dc7-cd03-4473-90dc-a6e9abf49342",
+              "metrics": {
+                "predictMetrics": {
+                  "blisTime": 0.01170969009399414,
+                  "contextDialogBlisTime": 0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "extractorStep": {
+            "textVariations": [
+              {
+                "text": "This is Frog and Tag.",
+                "labelEntities": [
+                  {
+                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "startCharIndex": 8,
+                    "endCharIndex": 11,
+                    "entityText": "Frog",
+                    "resolution": {},
+                    "builtinType": "LUIS"
+                  },
+                  {
+                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "startCharIndex": 17,
+                    "endCharIndex": 19,
+                    "entityText": "Tag"
+                  }
+                ]
+              }
+            ]
+          },
+          "scorerSteps": [
+            {
+              "input": {
+                "filledEntities": [
+                  {
+                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "values": [
+                      {
+                        "userText": "Tag",
+                        "displayText": "Tag",
+                        "builtinType": "LUIS",
+                        "resolution": {}
+                      },
+                      {
+                        "userText": "Frog",
+                        "displayText": "Frog",
+                        "builtinType": "LUIS",
+                        "resolution": {}
+                      }
+                    ]
+                  }
+                ],
+                "context": {},
+                "maskedActions": []
+              },
+              "labelAction": "25711d4e-2bef-4ae6-8a1a-474e8ebcf6aa",
+              "metrics": {
+                "predictMetrics": {
+                  "blisTime": 0.01284933090209961,
+                  "contextDialogBlisTime": 0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "extractorStep": {
+            "textVariations": [
+              {
+                "text": "This is Tag and Frog.",
+                "labelEntities": [
+                  {
+                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "startCharIndex": 8,
+                    "endCharIndex": 10,
+                    "entityText": "Tag"
+                  },
+                  {
+                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "startCharIndex": 16,
+                    "endCharIndex": 19,
+                    "entityText": "Frog"
+                  }
+                ]
+              }
+            ]
+          },
+          "scorerSteps": [
+            {
+              "input": {
+                "filledEntities": [
+                  {
+                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "values": [
+                      {
+                        "userText": "Tag",
+                        "displayText": "Tag",
+                        "builtinType": "LUIS",
+                        "resolution": {}
+                      },
+                      {
+                        "userText": "Frog",
+                        "displayText": "Frog",
+                        "builtinType": "LUIS",
+                        "resolution": {}
+                      }
+                    ]
+                  }
+                ],
+                "context": {},
+                "maskedActions": []
+              },
+              "labelAction": "25711d4e-2bef-4ae6-8a1a-474e8ebcf6aa",
+              "metrics": {
+                "predictMetrics": {
+                  "blisTime": 0.010688066482543945,
+                  "contextDialogBlisTime": 0
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "initialFilledEntities": [],
+      "createdDateTime": "2018-12-06T00:05:41.0023214+00:00",
+      "lastModifiedDateTime": "2018-12-06T00:06:51+00:00"
+    }
+  ],
   "actions": [
     {
       "actionId": "369d7dc7-cd03-4473-90dc-a6e9abf49342",
@@ -33,5 +205,5 @@
       "resolverType": "none"
     }
   ],
-  "packageId": "a29ef8f6-010b-4d7f-9180-d644685eba2d"
+  "packageId": "9320f023-1dbd-4ec0-b62f-2fbc063bb06a"
 }

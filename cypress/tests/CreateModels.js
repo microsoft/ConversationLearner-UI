@@ -78,7 +78,6 @@ export function TagAndFrog()
 
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
-
   train.CreateNewTrainDialog()
 
   train.TypeYourMessage('This is Tag.')
@@ -103,6 +102,7 @@ export function TagAndFrog()
   train.SelectAction('Hi')
 
   train.Save()
+
 
   // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog.cl'
 }
