@@ -157,6 +157,8 @@ export function MyNameIs()
 
 export function TagAndFrog()
 {
+  var textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
+
   models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -166,26 +168,26 @@ export function TagAndFrog()
   train.TypeYourMessage('This is Tag.')
   editDialogModal.RemoveEntityLabel('Tag', 'multi')
   editDialogModal.ClickScoreActionsButton()
-  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose('Tag', 'multi')
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose({text: 'Tag', entity: 'multi'})
   editDialogModal.ClickScoreActionsButton()
-  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept('Tag', 'multi')
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept({text: 'Tag', entity: 'multi'})
   train.SelectAction('Hello')
 
   train.TypeYourMessage('This is Frog and Tag.')
   editDialogModal.RemoveEntityLabel('Frog', 'multi')
   editDialogModal.ClickScoreActionsButton()
-  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(['Tag', 'Frog'], ['multi', 'multi'])
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
   editDialogModal.ClickScoreActionsButton()
-  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(['Tag', 'Frog'], ['multi', 'multi'])
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
   train.SelectAction('Hi')
 
   train.TypeYourMessage('This is Tag and Frog.')
   editDialogModal.RemoveEntityLabel('Tag', 'multi')
   editDialogModal.RemoveEntityLabel('Frog', 'multi')
   editDialogModal.ClickScoreActionsButton()
-  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(['Tag', 'Frog'], ['multi', 'multi'])
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
   editDialogModal.ClickScoreActionsButton()
-  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(['Tag', 'Frog'], ['multi', 'multi'])
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
   train.SelectAction('Hi')
 
   editDialogModal.ClickAbandonDeleteButton()
@@ -194,6 +196,8 @@ export function TagAndFrog()
 
 function HoldOffOnThisForNow()
 {
+  var textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
+
   cy.WaitForTrainingStatusCompleted()
   train.CreateNewTrainDialog()
 
@@ -208,9 +212,9 @@ function HoldOffOnThisForNow()
   editDialogModal.RemoveEntityLabel('Tag', 'multi')
   editDialogModal.RemoveEntityLabel('Frog', 'multi')
   editDialogModal.ClickScoreActionsButton()
-  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(['Tag', 'Frog'], ['multi', 'multi'])
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
   editDialogModal.ClickScoreActionsButton()
-  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(['Tag', 'Frog'], ['multi', 'multi'])
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
   train.SelectAction('Hi')
 
 
