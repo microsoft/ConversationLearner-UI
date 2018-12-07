@@ -111,57 +111,17 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage)
   cy.DoesNotContain('[data-testid="chat-edit-add-input-button"]', '+')
 }
 
-export function LabelWordAsEntity(text, entity)
+export function LabelTextAsEntity(text, entity)
 {
   cy.Get('body').trigger('Test_SelectWord', {detail: text})
   cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
 }
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
-// word = a word within the utterance that should be labeled
-// entity = name of entity that should contain the text
-// *** This does NOT work for multiple words. ***
-export function VerifyEntityLabel(word, entity)
-{
-  cy.Get('[data-testid="token-node-entity-value"] > span > span')
-    .ExactMatch(word)
-    .parents('.cl-entity-node--custom')
-    .find('[data-testid="custom-entity-name-button"]')
-    .contains(entity)
-}
-
-export function VerifyEntityLabeledDifferentPopupAndClose(texts, entities)   {VerifyEntityLabeledDifferentPopupAndClickButton(texts, entities, 'Close')}
-export function VerifyEntityLabeledDifferentPopupAndAccept(texts, entities)  {VerifyEntityLabeledDifferentPopupAndClickButton(texts, entities, 'Accept')}
-
-function VerifyEntityLabeledDifferentPopupAndClickButton(texts, entities, buttonLabel) 
-{ 
-  if (!Array.isArray(texts)) texts = [texts]
-  if (!Array.isArray(entities)) entities = [entities]
-  expect(texts.length).to.equal(entities.length)
-
-  //cy.Get('.ms-Dialog-main').as('popup')
-  cy.Get('.ms-Dialog-main').contains('Entity is labelled differently in another user utterance').parents('.ms-Dialog-main').as('popup')
-  
-  cy.Get('@popup').within(() => 
-  { 
-    for (var i = 0; i < texts.length; i++) 
-    {
-      VerifyEntityLabel(texts[i], entities[i]) 
-      // cy.get('[data-testid="token-node-entity-value"] > span > span')
-      //   .ExactMatch(texts[i])
-      //   .parents('.cl-entity-node--custom')
-      //   .find('[data-testid="custom-entity-name-button"]')
-      //   .contains(entities[i])
-    }
-  })
-
-  cy.Get('@popup').within(popup => { cy.get('button.ms-Button').contains(buttonLabel).Click() })
-}
-
-// Verify that a specific word of a user utterance has been labeled as an entity.
-// word = a word within the utterance that should be labeled
-// entity = name of entity that should contain the text
-// *** This does NOT work for multiple words. ***
+// word = a word within the utterance that should be labeled already
+// entity = name of entity the word was labled with
+// *** This may work for multiple word labels, but you can only pass in the one
+// *** word that uniquely identifies the labeled text
 export function RemoveEntityLabel(word, entity)
 {
   cy.Get('.slate-editor').click()
@@ -174,3 +134,38 @@ export function RemoveEntityLabel(word, entity)
   
   cy.Get('button[title="Unselect Entity"]').Click()
 }
+
+// Verify that a specific word of a user utterance has been labeled as an entity.
+// textEntityPairs object contains these two variables, it can be either an array or single instance:
+//  text = a word within the utterance that should be labeled
+//  entity = name of entity to label the word with
+// *** This does NOT work for multiple words. ***
+export function VerifyEntityLabel(word, entity)
+{
+  cy.Get('[data-testid="token-node-entity-value"] > span > span')
+    .ExactMatch(word)
+    .parents('.cl-entity-node--custom')
+    .find('[data-testid="custom-entity-name-button"]')
+    .contains(entity)
+}
+
+// textEntityPairs object contains these two variables, it can be either an array or single instance:
+//  text = a word within the utterance that should be labeled
+//  entity = name of entity to label the word with
+export function VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)  {VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, 'Close')}
+export function VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs) {VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, 'Accept')}
+
+function VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, buttonLabel) 
+{ 
+  cy.Get('.ms-Dialog-main')     // This returns multiple parent objects
+    .contains('Entity is labelled differently in another user utterance') // Narrows it down to 1
+    .parents('.ms-Dialog-main') // Back to the single parent object
+    .within(() =>
+  {
+    if (!Array.isArray(textEntityPairs)) textEntityPairs = [textEntityPairs]
+    VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
+
+    cy.get('button.ms-Button').ExactMatch(buttonLabel).Click()
+  })
+}
+
