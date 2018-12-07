@@ -452,7 +452,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                         <Expando
                             className={'entity-labeler__title'}
                             isOpen={this.state.isPreBuiltExpandoOpen}
-                            text="Extracted Pre-Built Entities:"
+                            text="Extracted Pre-Trained Entities:"
                             onToggle={() => this.setState({ isPreBuiltExpandoOpen: !this.state.isPreBuiltExpandoOpen })}
                         />
 
@@ -463,7 +463,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                                         data-testid="extractorresponseeditor-editor-prebuilt-text"
                                         key={i}
                                         className="slate-editor"
-                                        placeholder="Enter pre-built some text..."
+                                        placeholder="Enter some text..."
                                         value={preBuiltEditorValue}
                                         renderNode={this.renderNode}
                                         readOnly={true}
