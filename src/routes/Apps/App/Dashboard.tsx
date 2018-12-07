@@ -59,7 +59,8 @@ class Dashboard extends React.Component<Props, ComponentState> {
                         defaultMessage="Notifications about this model..."
                     />
                 </span>
-                {this.props.validationErrors.length > 0 && 
+                {this.props.validationErrors.length > 0
+                    && !this.props.loading &&
                 (
                     <div className="cl-errorpanel" >
                         <div className={`cl-font--emphasis ${FontClassNames.medium}`}>Please check that the correct version of your Bot is running.</div>
@@ -111,7 +112,8 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 
 export interface ReceivedProps {
-    app: AppBase, 
+    app: AppBase,
+    loading: boolean,
     validationErrors: string[]
 }
 

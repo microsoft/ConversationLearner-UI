@@ -33,26 +33,38 @@ import './Index.css'
 // this would eliminate the use of page title strings as navigation keys and instead use the url
 
 interface ComponentState {
+    loading: boolean
     validationErrors: string[];
     packageId: string;
 }
 
 class Index extends React.Component<Props, ComponentState> {
     state: ComponentState = {
+        loading: false,
         validationErrors: [],
         packageId: null
     }
 
     async loadApp(app: AppBase, packageId: string): Promise<void> {
-        this.setState({ packageId: packageId})
+        this.setState({
+            packageId,
+            loading: true,
+            validationErrors: []
+        })
 
         await this.props.fetchBotInfoThunkAsync(this.props.browserId)
 
         this.props.setCurrentApp(this.props.user.id, app)
-        this.props.fetchAllLogDialogsAsync(this.props.user.id, app, packageId) // Note: a separate call as eventually we want to page
-        this.props.fetchAppSource(app.appId, packageId)
-        // this.props.fetchAllChatSessionsAsync(app.appId)
-        // this.props.fetchAllTeachSessions(app.appId)
+        await Promise.all([
+            this.props.fetchAllLogDialogsAsync(this.props.user.id, app, packageId), // Note: a separate call as eventually we want to page
+            this.props.fetchAppSource(app.appId, packageId),
+            // this.props.fetchAllChatSessionsAsync(app.appId),
+            // this.props.fetchAllTeachSessions(app.appId)
+        ])
+
+        this.setState({
+            loading: false
+        })
     }
 
     componentWillMount() {
@@ -166,8 +178,8 @@ class Index extends React.Component<Props, ComponentState> {
                         <div className="cl-nav_section">
                             <NavLink className="cl-nav-link" exact to={{ pathname: `${match.url}`, state: { app } }}>
                                 <Icon iconName="Home" />
-                                    <span className={invalidBot ? 'cl-font--highlight' : ''}>Home
-                                        {invalidBot &&
+                                    <span className={!this.state.loading && invalidBot ? 'cl-font--highlight' : ''}>Home
+                                        {!this.state.loading && invalidBot &&
                                             <TooltipHost 
                                                 content={intl.formatMessage({
                                                     id: FM.TOOLTIP_BOTINFO_INVALID,
@@ -184,15 +196,15 @@ class Index extends React.Component<Props, ComponentState> {
                                         }</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/entities`, state: { app } }}>
-                                <Icon iconName="List" /><span>Entities</span><span className="count">{this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).length}</span>
+                                <Icon iconName="List" /><span>Entities</span>{!this.state.loading && <span className="count">{this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).length}</span>}
                             </NavLink>
                             <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/actions`, state: { app } }}>
-                                <Icon iconName="List" /><span>Actions</span><span className="count">{this.props.actions.length}</span>
+                                <Icon iconName="List" /><span>Actions</span>{!this.state.loading && <span className="count">{this.props.actions.length}</span>}
                             </NavLink>
                             <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
                                 <Icon iconName="List" />
-                                    <span className={invalidTrainDialogs ? 'cl-font--highlight' : ''}>Train Dialogs
-                                        {invalidTrainDialogs && 
+                                    <span className={!this.state.loading && invalidTrainDialogs ? 'cl-font--highlight' : ''}>Train Dialogs
+                                        {!this.state.loading && invalidTrainDialogs && 
                                             <TooltipHost 
                                                 content={intl.formatMessage({
                                                     id: FM.TOOLTIP_TRAINDIALOG_INVALID,
@@ -203,7 +215,7 @@ class Index extends React.Component<Props, ComponentState> {
                                                 <Icon className="cl-icon" iconName="IncidentTriangle" />
                                             </TooltipHost>
                                         }</span>
-                                    <span className="count">{this.props.trainDialogs.length}</span>
+                                    {!this.state.loading && <span className="count">{this.props.trainDialogs.length}</span>}
                             </NavLink>
                             <NavLink className="cl-nav-link" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
                                 <Icon iconName="List" /><span>Log Dialogs</span>
@@ -238,7 +250,7 @@ class Index extends React.Component<Props, ComponentState> {
                     <Route
                         exact={true}
                         path={match.url}
-                        render={props => <Dashboard {...props} app={app} validationErrors={this.state.validationErrors} />}
+                        render={props => <Dashboard {...props} app={app} loading={this.state.loading} validationErrors={this.state.validationErrors} />}
                     />
                 </Switch>
             </div>
