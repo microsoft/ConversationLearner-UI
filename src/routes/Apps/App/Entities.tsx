@@ -165,10 +165,12 @@ class Entities extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     handleDelete(entity: EntityBase) {
-        this.props.deleteEntityThunkAsync(this.props.app.appId, entity)
         this.setState({
-            createEditModalOpen: false
+            createEditModalOpen: false,
+            entitySelected: null
         })
+        this.props.deleteEntityThunkAsync(this.props.app.appId, entity)
+        setTimeout(() => this.newEntityButton.focus(), 1000)
     }
 
     @OF.autobind

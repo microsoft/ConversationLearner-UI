@@ -171,15 +171,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             getSortValue: logDialog => logDialog.rounds.length.toString().padStart(4, '0')
         },
         {
-            key: 'lastModifiedDateTime',
-            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME),
-            fieldName: 'lastModifiedDateTime',
-            minWidth: 100,
-            isResizable: false,
-            render: logDialog => <span className={OF.FontClassNames.mediumPlus}>{Util.earlierDateOrTimeToday(logDialog.lastModifiedDateTime)}</span>,
-            getSortValue: logDialog => moment(logDialog.lastModifiedDateTime).valueOf().toString()
-        },
-        {
             key: 'created',
             name: Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATED_DATE_TIME),
             fieldName: 'created',
@@ -783,6 +774,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: newTrainDialog,
                 isEditDialogModalOpen: true,
+                isTeachDialogModalOpen: false,
                 selectedHistoryIndex: activityIndex,
                 editType: EditDialogType.LOG_EDITED
             })
