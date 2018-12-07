@@ -682,7 +682,7 @@ export default {
         [FM.REPLAYERROR_FAILMESSAGE]: 'The following issues need to be corrected first',
         [FM.REPLAYERROR_EDIT_TITLE]: 'Unable to continue Dialog',
         [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
-        [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Action following and Wait Action',
+        [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Action follows a Wait Action',
         [FM.REPLAYERROR_DESC_ACTION_UNDEFINED]: 'Action does not exist',
         [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'User Input following a non-Wait Action',
         [FM.REPLAYERROR_DESC_ENTITY_UNDEFINED]: 'Entity does not exist',
