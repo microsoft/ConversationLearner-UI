@@ -100,6 +100,11 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                     }
 
                     this.props.onChangeCustomEntities([...nextProps.customEntities, newCustomEntity])
+
+                    // EntityPicker stays open after creation of new entity. Force it to close.
+                    this.setState({
+                        isMenuVisible: false
+                    })
                     return
                 }
             }
