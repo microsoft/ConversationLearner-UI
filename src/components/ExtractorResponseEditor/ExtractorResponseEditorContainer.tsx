@@ -41,6 +41,13 @@ class ExtractorResponseEditorContainer extends React.Component<Props, {}> {
     }
 
     render() {
+        console.log(`extractResponseContainer: `)
+        if (this.props.extractorResponse) {
+            console.log(this.props.extractorResponse.text, this.props.extractorResponse)
+        }
+        else {
+            console.log(this.props)
+        }
         const editorProps = convertExtractorResponseToEditorModels(this.props.extractorResponse, this.props.entities)
         return this.props.render(editorProps, this.onChangeCustomEntities)
     }
