@@ -401,7 +401,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         let unattachedEntities: string[] = []
         primaryEntries.forEach(([k, v]) => {
             let text: string = v.document.text
-            let tags = text.split(/[^A-Za-z$-]/).filter(t => t.startsWith("$"))
+            let tags = text.split(/[^0-9A-Za-z$-]/).filter(t => t.startsWith("$"))
             let entities = ActionPayloadEditor.Utilities.getEntitiesFromValue(v)
                 .map(e => `$${e.name}`)
             tags.forEach(tag => {
