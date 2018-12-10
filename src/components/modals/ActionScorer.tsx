@@ -530,7 +530,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
     calculateReason(unscoredAction: CLM.UnscoredAction): CLM.ScoreReason {
 
-        if (!unscoredAction.reason || unscoredAction.reason === CLM.ScoreReason.NotCalculated) {
+        if (this.props.dialogType !== CLM.DialogType.TEACH 
+            || !unscoredAction.reason 
+            || unscoredAction.reason === CLM.ScoreReason.NotCalculated) {
 
             let action = this.props.actions.filter((a: CLM.ActionBase) => a.actionId === unscoredAction.actionId)[0];
 
