@@ -116,7 +116,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             let turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.activityIndex - 1 : this.state.turnLookupOffset
 
             turnLookup.push({ textVariations, memories: [...this.props.teachSession.memories] })
-            turnLookup.push({ uiScoreResponse })
+            turnLookup.push({ uiScoreResponse, memories: [...this.props.teachSession.memories]  })
             this.setState({
                 isScoresRefreshVisible: true,
                 turnLookup,
@@ -147,6 +147,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         // Send channel data to add to activity so can process when clicked on later
         const clData: CLM.CLChannelData = {
+            senderType: CLM.SenderType.Bot,
+            roundIndex: null,
+            scoreIndex: null,
             activityIndex: this.props.activityIndex,
             validWaitAction: !scoredAction.isTerminal || undefined  // Draws carrot under card if a wait action
         }
@@ -174,7 +177,14 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         if (!waitForUser) {
             const uiScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
             let turnLookup = [...this.state.turnLookup]
-            turnLookup.push({ uiScoreResponse })
+
+            // Update memory on previous turn as may have been an API call
+            let lastLookup = turnLookup[turnLookup.length - 1]
+            lastLookup.memories = [...this.props.teachSession.memories]
+
+            turnLookup.push({ uiScoreResponse, memories: [...this.props.teachSession.memories] })
+
+            // Update memory on previous turn as may have been an API call
             this.setState({
                 isScoresRefreshVisible: true,
                 turnLookup
@@ -235,7 +245,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         dialogMode: CLM.DialogMode.Scorer,
                         scoreInput: turnData.uiScoreResponse.scoreInput,
                         scoreResponse: turnData.uiScoreResponse.scoreResponse,
-                        memories: DialogUtils.filterDummyEntities(turnData.uiScoreResponse.memories!),
+                        memories: turnData.memories ? DialogUtils.filterDummyEntities(turnData.memories) : [],
                         prevMemories: DialogUtils.filterDummyEntities(prevMemories),
                         extractResponses: this.props.teachSession.extractResponses,
                         textVariations: [],

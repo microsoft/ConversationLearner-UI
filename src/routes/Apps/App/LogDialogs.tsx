@@ -415,8 +415,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         try {
             const clData: CLM.CLChannelData = selectedActivity.channelData.clData
-            const roundIndex = clData.roundIndex!
-            let scoreIndex = clData.scoreIndex!
+            const roundIndex = clData.roundIndex || 0
+            let scoreIndex = clData.scoreIndex
             const definitions = {
                 entities: this.props.entities,
                 actions: this.props.actions,
@@ -433,12 +433,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             if (history.rounds[roundIndex].scorerSteps.length > 0 && history.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
                 history.rounds[roundIndex].scorerSteps = []
             }
-            else if (!scoreIndex) {
+            else if (scoreIndex === null) {
                 history.rounds[roundIndex].scorerSteps = []
             }
             // Or remove following scorer steps 
             else {
-                history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
+                history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex + 1);
             }
 
             // Get a score for this step
@@ -477,13 +477,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 curRound.scorerSteps = [scorerStep]
             }
             // Or insert 
+            else if (scoreIndex === null) {
+                curRound.scorerSteps = [scorerStep, ...curRound.scorerSteps]
+            }
             else {
                 curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)
             }
 
             // If inserted at end of conversation, allow to scroll to bottom
             if (roundIndex === trainDialog.rounds.length - 1 &&
-                (scoreIndex === undefined || scoreIndex === curRound.scorerSteps.length - 1)) {
+                (scoreIndex === null || scoreIndex === curRound.scorerSteps.length - 1)) {
                 this.props.clearWebchatScrollPosition()
             }
 
@@ -502,7 +505,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         try {
             const clData: CLM.CLChannelData = selectedActivity.channelData.clData
-            const roundIndex = clData.roundIndex!
+            const roundIndex = clData.roundIndex || 0
             const scoreIndex = clData.scoreIndex!
             const definitions = {
                 entities: this.props.entities,
@@ -559,7 +562,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const clData: CLM.CLChannelData = selectedActivity.channelData.clData
         const senderType = clData.senderType
         const roundIndex = clData.roundIndex!
-        const scoreIndex = clData.scoreIndex!
+        const scoreIndex = clData.scoreIndex
 
         let newTrainDialog: CLM.TrainDialog = { ...trainDialog }
         newTrainDialog.definitions = {
@@ -583,7 +586,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Delete round 
             newTrainDialog.rounds.splice(roundIndex, 1)
         }
-        else { //CLM.SenderType.Bot
+        else { //CLM.SenderType.Bot 
+            if (scoreIndex === null) {
+                throw new Error("Unexpected null scoreIndex")
+            }
             // If Action deleted remove it
             curRound.scorerSteps.splice(scoreIndex, 1)
         }
@@ -629,7 +635,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         try {
             const clData: CLM.CLChannelData = selectedActivity.channelData.clData
             const roundIndex = clData.roundIndex!
-            const scoreIndex = clData.scoreIndex!
+            const scoreIndex = clData.scoreIndex || 0
             const senderType = clData.senderType
 
             const definitions = {

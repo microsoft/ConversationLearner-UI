@@ -235,6 +235,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
             // Add channel data to activity so can process when clicked on later
             const clData: CLM.CLChannelData = {
+                senderType: CLM.SenderType.User,
+                roundIndex: null,
+                scoreIndex: null,
                 activityIndex: this.state.nextActivityIndex,
             }
             activity.channelData.clData = clData
