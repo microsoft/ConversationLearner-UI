@@ -979,8 +979,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 </div>
                                 {!this.state.isPayloadValid &&
                                     (<div>
-                                        <p className="ms-TextField-errorMessage css-83 errorMessage_20d9206e">
-                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
+                                        <p className="ms-TextField-errorMessage errorMessage_20d9206e">
+                                            <OF.Icon iconName="Error" />&nbsp;<span aria-live="assertive" data-automation-id="error-message">Response is required</span>
                                         </p>
                                     </div>)}
                             </div>
@@ -1001,8 +1001,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 </div>
                                 {!this.state.isPayloadValid &&
                                     (<div>
-                                        <p className="ms-TextField-errorMessage css-83 errorMessage_20d9206e">
-                                            <OF.Icon iconName="Error" /><span aria-live="assertive" data-automation-id="error-message">Response is required</span>
+                                        <p className="ms-TextField-errorMessage errorMessage_20d9206e">
+                                            <OF.Icon iconName="Error" />&nbsp;<span aria-live="assertive" data-automation-id="error-message">Response is required</span>
                                         </p>
                                     </div>)}
                             </div>
