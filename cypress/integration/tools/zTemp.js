@@ -16,8 +16,6 @@ describe('zTemp test', () =>
   it('zTemp test', () => 
   {
     homePage.Visit()
-    cy.pause()
-    editDialogModal.ClickConfirmAbandonDialogButton()
     // homePage.NavigateToModelPage("BigTrain")
     // modelPage.NavigateToTrainDialogs()
     // cy.pause()
