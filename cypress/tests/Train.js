@@ -161,8 +161,8 @@ export function TagAndFrog()
 
   models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
   modelPage.NavigateToTrainDialogs()
-  cy.WaitForTrainingStatusCompleted()
 
+  cy.WaitForTrainingStatusCompleted()
   train.CreateNewTrainDialog()
 
   train.TypeYourMessage('This is Tag.')
@@ -196,25 +196,27 @@ export function TagAndFrog()
   train.CreateNewTrainDialog()
 
   train.TypeYourMessage('This is Tag.')
-  train.TypeAlternativeInput('This is Frog and Tag.')
-  train.TypeAlternativeInput('This is Tag and Frog.')
+  editDialogModal.TypeAlternativeInput('This is Frog and Tag.')
+  editDialogModal.TypeAlternativeInput('This is Tag and Frog.')
 
-  editDialogModal.VerifyEntityLabel('Tag', 'multi', 0)
-  editDialogModal.VerifyEntityLabel('Tag', 'multi', 0)
-  editDialogModal.VerifyEntityLabel('Tag', 'multi', 0)
+  editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs[0], 0)
+  editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
+  editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
 
-  editDialogModal.RemoveEntityLabel('Tag', 'multi')
-  editDialogModal.RemoveEntityLabel('Frog', 'multi')
+  editDialogModal.RemoveEntityLabel('Tag', 'multi', 1)
+  editDialogModal.RemoveEntityLabel('Frog', 'multi', 2)
+
   editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+
   editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
   editDialogModal.ClickScoreActionsButton()
   editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
   train.SelectAction('Hi')
 
+  train.Save()
 
-  //data-testid="entity-extractor-alternative-input-text"
-}
-
-function HoldOffOnThisForNow()
-{
+  // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog2.cl'
 }

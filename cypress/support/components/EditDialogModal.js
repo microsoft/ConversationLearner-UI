@@ -17,7 +17,7 @@ export function VerifyEntityMemoryIsEmpty()           { cy.Get('[data-testid="me
 export function EntitySearch()                        { cy.Get('[data-testid="entity-picker-entity-search"]') }
 export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
-
+export function ClickSubmitChangesButton()            { cy.Get('[data-testid="submit-changes-button"]').Click() }
 export function GetAllChatMessages()                  { return helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)}
 
 export function ClickSaveCloseButton()                { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
@@ -27,7 +27,7 @@ export function ClickAbandonDeleteButton()            { cy.Get('[data-testid="ed
 export function VerifyDeleteButtonLabel()             { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Delete') }
 export function VerifyAbandonBranchButtonLabel()      { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Abandon Branch') }
 
-export function ClickConfirmAbandonDialogButton()     { return cy.Get('.ms-Dialog-main').contains('abandon this dialog').parents('.ms-Dialog-main').contains('Confirm').Click() }
+export function ClickConfirmAbandonDialogButton()     { return cy.Get('.ms-Dialog-main').contains('abandon').parents('.ms-Dialog-main').contains('Confirm').Click() }
 
 // Verify that the branch button is within the same control group as the message.
 export function VerifyBranchButtonGroupContainsMessage(message)
@@ -124,23 +124,31 @@ export function LabelTextAsEntity(text, entity)
 // entity = name of entity the word was labled with
 // *** This may work for multiple word labels, but you can only pass in the one
 // *** word that uniquely identifies the labeled text
-export function RemoveEntityLabel(word, entity)
+export function RemoveEntityLabel(word, entity, index = 0)
 {
-  cy.Get('.slate-editor').click()
-  cy.Get('[data-testid="token-node-entity-value"] > span > span')
-    .ExactMatch(word)
-    .parents('.cl-entity-node--custom')
-    .find('[data-testid="custom-entity-name-button"]')
-    .contains(entity)
-    .Click()
-  
-  cy.Get('button[title="Unselect Entity"]').Click()
+  cy.Get('div.slate-editor').then(elements =>
+  {
+    expect(elements.length).to.be.at.least(index - 1)
+    cy.wrap(elements[index]).within(() =>
+    {
+      cy.wrap(elements[index]).click()
+      cy.Get('[data-testid="token-node-entity-value"] > span > span')
+        .ExactMatch(word)
+        .parents('.cl-entity-node--custom')
+        .find('[data-testid="custom-entity-name-button"]')
+        .contains(entity)
+        .Click()
+      
+      cy.Get('button[title="Unselect Entity"]').Click()
+    })
+  })
+
 }
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
 // textEntityPairs object contains these two variables, it can be either an array or single instance:
-//  text = a word within the utterance that should be labeled
-//  entity = name of entity to label the word with
+//  word = a word within the utterance that should be labeled
+//  entity = name of entity the word should be labeled with
 // *** This does NOT work for multiple words. ***
 export function VerifyEntityLabel(word, entity)
 {
@@ -173,12 +181,15 @@ function VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, button
   })
 }
 
-export function VerifyEntityLabelWithinSpecificInput(input, textEntityPairs)
+export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index)
 {
-  // Get 'div.slate-editor'
-  // For each one, then get 
-  cy.Get('[data-testid="token-node-entity-value"] > span > span')
-  // which will be an array of words
-  // combine the words so that they can be compared against 'input'
-  // once found then we can call VerifyEntityLabel from a WITHIN call.
+  cy.Get('div.slate-editor').then(elements =>
+  {
+    expect(elements.length).to.be.at.least(index - 1)
+    cy.wrap(elements[index]).within(() =>
+    {
+      if (!Array.isArray(textEntityPairs)) textEntityPairs = [textEntityPairs]
+      for (var i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
+    })
+  })
 }

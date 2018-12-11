@@ -15,6 +15,7 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
+  "EditAndBranching.TagAndFrog",
   "Train.TagAndFrog",
 ]
 
@@ -28,6 +29,7 @@ export const masterListOfAllTestCases =
   "CreateModels.TagAndFrog",
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
+  "EditAndBranching.TagAndFrog",
   "Log.WhatsYourName",
   "Train.DisqualifyingEntities",
   "Train.WaitVsNoWaitActions",
@@ -58,6 +60,7 @@ const testGroups =
     [
       { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
       { name: "Branching", func: editAndBranching.Branching },
+      { name: "Tag and Frog", func: editAndBranching.TagAndFrog },
     ]
   },
   {
