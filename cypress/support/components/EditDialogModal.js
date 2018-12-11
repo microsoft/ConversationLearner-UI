@@ -120,9 +120,9 @@ export function LabelTextAsEntity(text, entity)
 }
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
-// word = a word within the utterance that should be labeled already
+// word = a word within the utterance that should already be labeled
 // entity = name of entity the word was labled with
-// *** This may work for multiple word labels, but you can only pass in the one
+// *** This may work for multiple word labels, but you must only pass in the one
 // *** word that uniquely identifies the labeled text
 export function RemoveEntityLabel(word, entity, index = 0)
 {
@@ -147,7 +147,7 @@ export function RemoveEntityLabel(word, entity, index = 0)
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
 // textEntityPairs object contains these two variables, it can be either an array or single instance:
-//  word = a word within the utterance that should be labeled
+//  word = a word within the utterance that should already be labeled
 //  entity = name of entity the word should be labeled with
 // *** This does NOT work for multiple words. ***
 export function VerifyEntityLabel(word, entity)
@@ -160,7 +160,7 @@ export function VerifyEntityLabel(word, entity)
 }
 
 // textEntityPairs object contains these two variables, it can be either an array or single instance:
-//  text = a word within the utterance that should be labeled
+//  text = a word within the utterance that should already be labeled
 //  entity = name of entity to label the word with
 export function VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)  {VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, 'Close')}
 export function VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs) {VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, 'Accept')}
