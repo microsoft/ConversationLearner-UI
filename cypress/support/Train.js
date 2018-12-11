@@ -252,3 +252,9 @@ export function SelectAndVerifyEachChatTurn(index = 0)
     }
   })
 }
+
+export function AbandonDialog()
+{
+  editDialogModal.ClickAbandonDeleteButton()
+  editDialogModal.ClickConfirmAbandonDialogButton()
+}

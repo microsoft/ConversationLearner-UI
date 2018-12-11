@@ -730,7 +730,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     text={this.renderSaveText(intl)}
                                 />
                                 <OF.DefaultButton
-                                    data-testid="teach-session-modal-abandon-button"
+                                    data-testid="edit-dialog-modal-abandon-delete-button"
                                     disabled={false}
                                     className="cl-button-delete"
                                     onClick={this.onClickAbandonTeach}

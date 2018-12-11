@@ -123,7 +123,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 text={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT)}
                             />
                             <OF.DefaultButton
-                                data-testid="teach-session-modal-abandon-button"
+                                data-testid="edit-dialog-modal-abandon-delete-button"
                                 className="cl-button-delete"
                                 onClick={this.onClickAbandon}
                                 ariaDescription={Util.formatMessageId(intl, FM.BUTTON_ABANDON)}

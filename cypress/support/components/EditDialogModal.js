@@ -23,9 +23,11 @@ export function GetAllChatMessages()                  { return helpers.StringArr
 export function ClickSaveCloseButton()                { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
 export function VerifyCloseButtonLabel()              { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Close') }
 export function VerifySaveBranchButtonLabel()         { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Save Branch') }
-export function ClickAbandonDeleteButton()            { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').Click() }
-export function VerifyDeleteButtonLabel()             { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').contains('Delete') }
-export function VerifyAbandonBranchButtonLabel()      { cy.Get('[data-testid="edit-dialog-modal-delete-button"]').contains('Abandon Branch') }
+export function ClickAbandonDeleteButton()            { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').Click() }
+export function VerifyDeleteButtonLabel()             { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Delete') }
+export function VerifyAbandonBranchButtonLabel()      { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Abandon Branch') }
+
+export function ClickConfirmAbandonDialogButton()     { return cy.Get('.ms-Dialog-main').contains('abandon this dialog').parents('.ms-Dialog-main').contains('Confirm').Click() }
 
 // Verify that the branch button is within the same control group as the message.
 export function VerifyBranchButtonGroupContainsMessage(message)
@@ -163,9 +165,20 @@ function VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, button
     .within(() =>
   {
     if (!Array.isArray(textEntityPairs)) textEntityPairs = [textEntityPairs]
-    VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
+    for (var i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
 
-    cy.get('button.ms-Button').ExactMatch(buttonLabel).Click()
+    // TODO: Wanted to use 'ExactMatch' instead of 'contains', but there is a weird problem...
+    //       for some reson the first two button texts on this popup all end with a newline.
+    cy.get('button.ms-Button').contains(buttonLabel).Click()
   })
 }
 
+export function VerifyEntityLabelWithinSpecificInput(input, textEntityPairs)
+{
+  // Get 'div.slate-editor'
+  // For each one, then get 
+  cy.Get('[data-testid="token-node-entity-value"] > span > span')
+  // which will be an array of words
+  // combine the words so that they can be compared against 'input'
+  // once found then we can call VerifyEntityLabel from a WITHIN call.
+}

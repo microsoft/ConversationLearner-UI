@@ -189,14 +189,8 @@ export function TagAndFrog()
   editDialogModal.ClickScoreActionsButton()
   editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
   train.SelectAction('Hi')
-
-  editDialogModal.ClickAbandonDeleteButton()
-  //data-testid="entity-extractor-alternative-input-text"
-}
-
-function HoldOffOnThisForNow()
-{
-  var textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
+  
+  train.AbandonDialog()
 
   cy.WaitForTrainingStatusCompleted()
   train.CreateNewTrainDialog()
@@ -219,4 +213,8 @@ function HoldOffOnThisForNow()
 
 
   //data-testid="entity-extractor-alternative-input-text"
+}
+
+function HoldOffOnThisForNow()
+{
 }
