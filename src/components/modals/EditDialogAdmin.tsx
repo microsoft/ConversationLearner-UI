@@ -38,34 +38,55 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         if (newProps.selectedActivity && newProps.trainDialog) {
             let clData: CLM.CLChannelData = newProps.selectedActivity.channelData.clData
             // If rounds were trimmed, selectedActivity could have been in deleted rounds
-            if (clData.roundIndex && clData.roundIndex > newProps.trainDialog.rounds.length - 1) {
+
+            if (clData.roundIndex === null) {
                 this.setState({
-                    senderType: clData.senderType!,
-                    roundIndex: newProps.trainDialog.rounds.length - 1,
-                    scoreIndex: 0
+                    senderType: null,
+                    roundIndex: null,
+                    scoreIndex: null
                 })
+                return
             }
-            else if (clData.scoreIndex === 0) {
+            // If past last round, pick previous round, last scorer step
+            const lastRoundIndex = newProps.trainDialog.rounds.length - 1
+            if (clData.roundIndex > lastRoundIndex) {
+                const lastRound = newProps.trainDialog.rounds[lastRoundIndex]
+                const roundLastScoreIndex = lastRound.scorerSteps.length - 1
                 this.setState({
-                    senderType: clData.senderType!,
-                    roundIndex: clData.roundIndex!,
-                    scoreIndex: 0
+                    senderType: clData.senderType,
+                    roundIndex: lastRoundIndex,
+                    scoreIndex: lastRound.scorerSteps.length > 0 ? roundLastScoreIndex : null
                 })
+                return
             }
-            else if (clData.scoreIndex! > newProps.trainDialog.rounds[clData.roundIndex!].scorerSteps.length - 1) {
+            
+            // If no scorer steps
+            if (clData.scoreIndex === null) {
                 this.setState({
-                    senderType: clData.senderType!,
-                    roundIndex: clData.roundIndex!,
-                    scoreIndex: clData.scoreIndex! - 1
+                    senderType: clData.senderType,
+                    roundIndex: clData.roundIndex,
+                    scoreIndex: null
                 })
+                return
             }
-            else {
+
+            // If past last scorer step, pick previous scorer step or null (is is none)
+            const lastScoreIndex = newProps.trainDialog.rounds[clData.roundIndex].scorerSteps.length - 1
+            if (clData.scoreIndex > lastScoreIndex) {
                 this.setState({
-                    senderType: clData.senderType!,
-                    roundIndex: clData.roundIndex!,
-                    scoreIndex: clData.scoreIndex!
+                    senderType: clData.senderType,
+                    roundIndex: clData.roundIndex,
+                    scoreIndex: lastScoreIndex > 0 ? lastScoreIndex : null
                 })
+                return
+
             }
+
+            this.setState({
+                senderType: clData.senderType,
+                roundIndex: clData.roundIndex,
+                scoreIndex: clData.scoreIndex
+            })
         }
         else {
             this.setState({
@@ -227,7 +248,11 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         }
                     }
 
-                    memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
+                    let filledEntities =  scorerStep.logicResult
+                        ? [...scorerStep.input.filledEntities, ...scorerStep.logicResult.changedFilledEntities]
+                        : [...scorerStep.input.filledEntities]
+                    
+                    memories = filledEntities.map<CLM.Memory>((fe) => {
                         let entity = this.props.entities.find(e => e.entityId === fe.entityId);
                         let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
                         return {

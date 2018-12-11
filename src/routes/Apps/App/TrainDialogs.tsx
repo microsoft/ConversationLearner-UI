@@ -467,9 +467,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         try {
             const clData: CLM.CLChannelData = selectedActivity.channelData.clData
-            const senderType = clData.senderType
-            const roundIndex = clData.roundIndex!
-            let scoreIndex = clData.scoreIndex!
+            const roundIndex = clData.roundIndex || 0
+            let scoreIndex = clData.scoreIndex
             const definitions = {
                 entities: this.props.entities,
                 actions: this.props.actions,
@@ -486,12 +485,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             if (history.rounds[roundIndex].scorerSteps.length > 0 && history.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
                 history.rounds[roundIndex].scorerSteps = []
             }
-            else if (!scoreIndex) {
+            else if (scoreIndex === null) {
                 history.rounds[roundIndex].scorerSteps = []
             }
             // Or remove following scorer steps 
             else {
-                history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
+                history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex + 1);
             }
 
             // Get a score for this step
@@ -529,10 +528,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             if (curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined) {
                 curRound.scorerSteps = [scorerStep]
             }
-            else if (senderType === CLM.SenderType.User) {
+            // Or insert
+            else if (scoreIndex === null) {
                 curRound.scorerSteps = [scorerStep, ...curRound.scorerSteps]
-            }
-            // Or insert 
+            } 
             else {
                 curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)
             }
