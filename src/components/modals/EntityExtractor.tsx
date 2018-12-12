@@ -323,7 +323,7 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
     static getInconsistentResponses(trainDialogs: TrainDialog[], pendingExtractResponses: ExtractResponse[]): ExtractResponse[] {
         const textVariations = trainDialogs
             .map(td => td.rounds.map(r => r.extractorStep.textVariations))
-            .reduce((a, b) => [...a, ...b]).reduce((a, b) => [...a, ...b])
+            .reduce((a, b) => [...a, ...b], []).reduce((a, b) => [...a, ...b], [])
 
         const inconsistentTextVariations = textVariations.reduce<TextVariation[]>((inconsistentVariations, textVariation) => {
             // If text variation is inconsistent with new extract responses and it's not already in the list of inconsistent
@@ -389,8 +389,6 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
     render() {
         const allResponses = this.allResponses();
         const inconsistentResponses = EntityExtractor.getInconsistentResponses(this.props.trainDialogs, allResponses)
-        console.log(`inconsistentResponses: `, inconsistentResponses)
-
         const hasInconsistentResponses = inconsistentResponses.length > 0
         const primaryExtractResponse = allResponses[0]
         if (!primaryExtractResponse) {
