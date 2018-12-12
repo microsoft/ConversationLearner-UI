@@ -199,6 +199,10 @@ export enum FM {
     ERROR_PRIMARYBUTTON_ARIADESCRIPTION = 'Error.ariaDescription',
     ERROR_PRIMARYBUTTON_TEXT = 'Error.text',
 
+    // Inconsistent Entity Label
+    INCONSISTENT_ENTITY_LABEL_TITLE = 'InconsistentEntityLabelModal.title',
+    INCONSISTENT_ENTITY_LABEL_DESCRIPTION = 'InconsistentEntityLabelModal.description',
+
     // LogDialogModal
     LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'LogDialogModal.defaultButton.ariaDescription',
     LOGDIALOGMODAL_DEFAULTBUTTON_TEXT = 'LogDialogModal.defaultButton.text',
@@ -508,6 +512,9 @@ export default {
         [FM.ENTITIES_COLUMNS_IS_NEGATABLE]: 'Negatable',
         [FM.ENTITIES_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this entity?',
 
+        // Inconsistent Entity Label Modal
+        [FM.INCONSISTENT_ENTITY_LABEL_TITLE]: `Entity labelled differently in another utterance`,
+        [FM.INCONSISTENT_ENTITY_LABEL_DESCRIPTION]: `Clicking 'Accept' will replace your current labels with the existing labels.`,
         // LogDialogs
         [FM.LOGDIALOGS_TITLE]: 'Log Dialogs',
         [FM.LOGDIALOGS_SUBTITLE]: 'Log Dialogs are records of conversations between users and your bot. You can make corrections to Log Dialogs to improve the bot.',

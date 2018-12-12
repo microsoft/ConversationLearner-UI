@@ -7,11 +7,12 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { State } from '../../types'
 import { ExtractResponse } from '@conversationlearner/models'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import * as OF from 'office-ui-fabric-react'
+import { FM } from '../../react-intl-messages'
 
 interface ComponentState {
     currentResponseIndex: number
@@ -46,7 +47,9 @@ class InconsistentEntityLabellingModal extends React.Component<Props, ComponentS
             isOpen={this.props.isOpen && this.props.inconsistentExtractResponses.length > 0}
             containerClassName={`cl-modal cl-modal--small ${OF.FontClassNames.large}`}
         >
-            <div className={`cl-modal_header ${OF.FontClassNames.xLarge}`}>Entity labelled differently in another utterance</div>
+            <div className={`cl-modal_header ${OF.FontClassNames.xLarge}`}>
+                <FormattedMessage id={FM.INCONSISTENT_ENTITY_LABEL_TITLE} defaultMessage="Entity labelled differently in another utterance" />
+            </div>
 
             {inconsistentResponse
                 ? <ExtractorResponseEditor.EditorWrapper
@@ -67,7 +70,7 @@ class InconsistentEntityLabellingModal extends React.Component<Props, ComponentS
                 : <div>Response not defined.</div>}
 
             <div>
-                Clicking 'Accept' will replace your current labels with the existing labels.
+                <FormattedMessage id={FM.INCONSISTENT_ENTITY_LABEL_DESCRIPTION} defaultMessage="Clicking 'Accept' will replace your current labels with the existing labels." />
             </div>
 
             <div className="cl-modal_footer cl-modal-buttons">
