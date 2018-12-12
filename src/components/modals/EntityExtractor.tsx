@@ -41,7 +41,7 @@ interface ComponentState {
 
 // TODO: Need to re-define TextVariation / ExtractResponse class defs so we don't need
 // to do all the messy conversion back and forth
-class EntityExtractor extends React.Component<Props, ComponentState> {
+export class EntityExtractor extends React.Component<Props, ComponentState> {
     private doneExtractingButton: any = null;
 
     constructor(p: any) {
@@ -320,7 +320,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     /**
      * Get all text variations that have same text but different entities
      */
-    static getInconsistentResponses = (trainDialogs: TrainDialog[], pendingExtractResponses: ExtractResponse[]): ExtractResponse[] => {
+    static getInconsistentResponses(trainDialogs: TrainDialog[], pendingExtractResponses: ExtractResponse[]): ExtractResponse[] {
         const textVariations = trainDialogs
             .map(td => td.rounds.map(r => r.extractorStep.textVariations ))
             .reduce((a, b) => [...a, ...b]).reduce((a, b) => [...a, ...b])
@@ -339,7 +339,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     /**
      * Return true if textVariation contains same text but different entities
      */
-    static isInconsistentExtraction = (newExtractResponse: ExtractResponse, textVariation: TextVariation): boolean => {
+    static isInconsistentExtraction(newExtractResponse: ExtractResponse, textVariation: TextVariation): boolean {
         // If responses have different text they are not comparable, cannot conclude inconsistency
         if (newExtractResponse.text !== textVariation.text) {
             return false
