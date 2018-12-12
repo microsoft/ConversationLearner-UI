@@ -325,13 +325,8 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
             .map(td => td.rounds.map(r => r.extractorStep.textVariations ))
             .reduce((a, b) => [...a, ...b]).reduce((a, b) => [...a, ...b])
 
-        console.log(`textVariations: `, textVariations.map(tv => tv.text))
-
         const inconsistentResponses = ModelUtils.ToExtractResponses(textVariations
-            .filter((tv, i) => pendingExtractResponses.some((e, j) => {
-                console.log(`isInconsistent: ${i}`, `\ntv ${j}: `, tv.text, `\nextract ${j}: `, e.text)
-                return EntityExtractor.isInconsistentExtraction(e, tv)
-            })))
+            .filter(tv => pendingExtractResponses.some(e => EntityExtractor.isInconsistentExtraction(e, tv))))
 
         return inconsistentResponses
     }
@@ -385,8 +380,6 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
     render() {
         const allResponses = this.allResponses();
         const inconsistentResponses = EntityExtractor.getInconsistentResponses(this.props.trainDialogs, allResponses)
-        console.log(`trainDialogs: `, this.props.trainDialogs)
-        console.log(`inconsistentResponses: `, inconsistentResponses)
         const hasInconsistentResponses = inconsistentResponses.length > 0
         const primaryExtractResponse = allResponses[0]
         if (!primaryExtractResponse) {
@@ -395,7 +388,6 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
 
         // Don't show edit components when in auto TEACH or on score step
         const canEdit = (!this.props.autoTeach && this.props.dialogMode === DialogMode.Extractor && this.props.canEdit) 
-        console.log(`AllResponses: `, allResponses)
         // If editing is not allowed, only show the primary response which is the first response
         const extractResponsesToRender = canEdit ? allResponses : [primaryExtractResponse]
         const extractResponsesForDisplay = extractResponsesToRender
@@ -416,7 +408,6 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
                     <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_HELP} />
                 </OF.Label>
                 {extractResponsesForDisplay.map(({ isValid, extractResponse }, key) => {
-                    console.log(`extractResponse prop: `, extractResponse)
                     return <div key={key} className={`editor-container ${OF.FontClassNames.mediumPlus}`}>
                         <ExtractorResponseEditor.EditorWrapper
                             render={(editorProps, onChangeCustomEntities) =>

@@ -34,6 +34,12 @@ class InconsistentEntityLabellingModal extends React.Component<Props, ComponentS
     }
 
     render() {
+        /**
+         * TODO: Clean up props logic
+         * THere is race condition where this inconsistentExtractResponses will be an empty array while the modal
+         * is still open. This causes inconsistentResponse which is undefined to be passed to the EditorWrapper 
+         * which should not happe. 
+         */
         const inconsistentResponse = this.props.inconsistentExtractResponses[this.state.currentResponseIndex]
 
         return <Modal
@@ -42,21 +48,23 @@ class InconsistentEntityLabellingModal extends React.Component<Props, ComponentS
         >
             <div className={`cl-modal_header ${OF.FontClassNames.xLarge}`}>Entity labelled differently in another utterance</div>
 
-            <ExtractorResponseEditor.EditorWrapper
-                render={(editorProps, onChangeCustomEntities) =>
-                    <ExtractorResponseEditor.Editor
-                        readOnly={true}
-                        isValid={true}
-                        {...editorProps}
+            {inconsistentResponse 
+                ? <ExtractorResponseEditor.EditorWrapper
+                    render={(editorProps, onChangeCustomEntities) =>
+                        <ExtractorResponseEditor.Editor
+                            readOnly={true}
+                            isValid={true}
+                            {...editorProps}
 
-                        onChangeCustomEntities={onChangeCustomEntities}
-                        onClickNewEntity={() => {}}
-                    />
-                }
-                entities={this.props.entities}
-                extractorResponse={inconsistentResponse}
-                onChange={() => {}}
-            />
+                            onChangeCustomEntities={onChangeCustomEntities}
+                            onClickNewEntity={() => {}}
+                        />
+                    }
+                    entities={this.props.entities}
+                    extractorResponse={inconsistentResponse}
+                    onChange={() => {}}
+                />
+                : <div>Response not defined.</div>}
 
             <div>
                 Clicking 'Accept' will replace your current labels with the existing labels.
