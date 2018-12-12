@@ -15,7 +15,6 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "EditAndBranching.TagAndFrog",
   "Train.TagAndFrog",
 ]
 

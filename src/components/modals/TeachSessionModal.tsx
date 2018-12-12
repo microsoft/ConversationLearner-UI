@@ -715,7 +715,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             <div className="cl-modal-buttons_primary">
                                 {this.props.teachSession.dialogMode === CLM.DialogMode.Extractor && this.state.nextActivityIndex > 1 &&
                                     <OF.PrimaryButton
-                                        data-testid="teach-session-footer-button-save"
+                                        data-testid="edit-teach-dialog-undo-button"
                                         disabled={false}
                                         onClick={this.onClickUndoInput}
                                         ariaDescription={Util.formatMessageId(intl, FM.BUTTON_UNDO)}

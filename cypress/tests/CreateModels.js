@@ -72,7 +72,7 @@ export function TagAndFrog()
 {
   // models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
   models.CreateNewModel('z-tagAndFrog')
-  entities.CreateNewEntity({name: 'multi'})
+  entities.CreateNewEntity({name: 'multi', multiValued: true})
   actions.CreateNewAction({response: "Hello"})
   actions.CreateNewAction({response: "Hi"})
 
@@ -95,14 +95,13 @@ export function TagAndFrog()
   cy.WaitForTrainingStatusCompleted()
 
   train.TypeYourMessage('This is Tag and Frog.')
-  memoryTableComponent.VerifyEntityInMemory('multi', 'Tag', 'Frog')
+  memoryTableComponent.VerifyEntityInMemory('multi', ['Tag', 'Frog'])
   editDialogModal.VerifyEntityLabel('Tag', 'multi')
   editDialogModal.VerifyEntityLabel('Frog', 'multi', 1)
   editDialogModal.ClickScoreActionsButton()
   train.SelectAction('Hi')
 
   train.Save()
-
 
   // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog.cl'
 }

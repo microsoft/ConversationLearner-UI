@@ -26,6 +26,7 @@ export function VerifySaveBranchButtonLabel()         { cy.Get('[data-testid="ed
 export function ClickAbandonDeleteButton()            { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').Click() }
 export function VerifyDeleteButtonLabel()             { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Delete') }
 export function VerifyAbandonBranchButtonLabel()      { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Abandon Branch') }
+export function ClickUndoButton()                     { cy.Get('[data-testid="edit-teach-dialog-undo-button"]').Click() }
 
 export function ClickConfirmAbandonDialogButton()     { return cy.Get('.ms-Dialog-main').contains('abandon').parents('.ms-Dialog-main').contains('Confirm').Click() }
 

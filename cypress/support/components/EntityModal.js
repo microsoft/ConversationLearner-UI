@@ -11,3 +11,4 @@ export function ClickCreateButton()             { cy.Get('[data-testid="entity-c
 export function ClickMultiValueCheckbox()       { cy.Get('[data-testid="entity-creator-multi-valued-checkbox"] > button.cl-checkbox').Click() }
 export function ClickNegatableCheckbox()        { cy.Get('[data-testid="entity-creator-negatable-checkbox"] > button.cl-checkbox').Click() }
 
+export function ClickOkayNoteAboutPreTrainedButton()  { return cy.Get('.ms-Dialog-main').contains('pre-trained Entity').parents('.ms-Dialog-main').contains('OK').Click() }
