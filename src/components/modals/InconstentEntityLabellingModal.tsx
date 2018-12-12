@@ -48,7 +48,7 @@ class InconsistentEntityLabellingModal extends React.Component<Props, ComponentS
         >
             <div className={`cl-modal_header ${OF.FontClassNames.xLarge}`}>Entity labelled differently in another utterance</div>
 
-            {inconsistentResponse 
+            {inconsistentResponse
                 ? <ExtractorResponseEditor.EditorWrapper
                     render={(editorProps, onChangeCustomEntities) =>
                         <ExtractorResponseEditor.Editor

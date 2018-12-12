@@ -322,13 +322,21 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
      */
     static getInconsistentResponses(trainDialogs: TrainDialog[], pendingExtractResponses: ExtractResponse[]): ExtractResponse[] {
         const textVariations = trainDialogs
-            .map(td => td.rounds.map(r => r.extractorStep.textVariations ))
+            .map(td => td.rounds.map(r => r.extractorStep.textVariations))
             .reduce((a, b) => [...a, ...b]).reduce((a, b) => [...a, ...b])
 
-        const inconsistentResponses = ModelUtils.ToExtractResponses(textVariations
-            .filter(tv => pendingExtractResponses.some(e => EntityExtractor.isInconsistentExtraction(e, tv))))
+        const inconsistentTextVariations = textVariations.reduce<TextVariation[]>((inconsistentVariations, textVariation) => {
+            // If text variation is inconsistent with new extract responses and it's not already in the list of inconsistent
+            // TODO: Use more than text to check for uniquness
+            if (pendingExtractResponses.some(e => EntityExtractor.isInconsistentExtraction(e, textVariation))
+                && !inconsistentVariations.find(iv => iv.text == textVariation.text))
+            {
+                inconsistentVariations.push(textVariation)
+            }
+            return inconsistentVariations
+        }, [])
 
-        return inconsistentResponses
+        return ModelUtils.ToExtractResponses(inconsistentTextVariations)
     }
 
     /**
@@ -345,13 +353,17 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
             return true
         }
 
-        // If new response contains different entities
+        // If response contains different entities (id or position)
         const inconsistentEntities = newExtractResponse.predictedEntities.reduce((entityConsistency, predictedEntity) => {
             const matchingLabelledEntity = textVariation.labelEntities
                 .find(le => le.entityId === predictedEntity.entityId
-                && le.startCharIndex === predictedEntity.startCharIndex
-                && le.endCharIndex == predictedEntity.endCharIndex)
+                    && le.startCharIndex === predictedEntity.startCharIndex
+                    && le.endCharIndex == predictedEntity.endCharIndex)
 
+            /**
+             * If there is no matching labelled entity for the given predicted entity
+             * then there must be an inconsistency
+             */
             if (!matchingLabelledEntity) {
                 entityConsistency.push(predictedEntity)
             }
@@ -362,12 +374,9 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
     }
 
     onClickAcceptInconsistentEntityModal = (extractResponses: ExtractResponse[]) => {
-        const firstResponse = extractResponses[0]
-        // extractResponses.forEach(extractResponse => this.props.updateExtractResponse(extractResponse))
+        extractResponses.forEach(extractResponse => this.props.updateExtractResponse(extractResponse))
         this.setState({
             inconsistentEntityModalOpen: false
-        }, () => {
-            this.onUpdateExtractResponse(firstResponse)
         })
     }
 
@@ -380,6 +389,8 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
     render() {
         const allResponses = this.allResponses();
         const inconsistentResponses = EntityExtractor.getInconsistentResponses(this.props.trainDialogs, allResponses)
+        console.log(`inconsistentResponses: `, inconsistentResponses)
+
         const hasInconsistentResponses = inconsistentResponses.length > 0
         const primaryExtractResponse = allResponses[0]
         if (!primaryExtractResponse) {
