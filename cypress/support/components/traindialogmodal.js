@@ -58,10 +58,33 @@ function clickDoneTeaching() {
     .click();
 }
 
+function labelWords(phrase, entityName) {
+  cy.get('.slate-editor')
+    .type('{selectall}')
+
+  cy.get('.slate-editor')
+    .get('.cl-token-node')
+    .contains('hovercraft')
+    .then(element => {
+      selectWord(element[0])
+    })
+
+  cy.wait(10000) 
+}
+
+function selectWord(element) {
+  const range = document.createRange();
+  range.selectNodeContents(element);  
+  var selection = window.getSelection();
+  selection.removeAllRanges(); 
+  selection.addRange(range);
+}
+
 export {
   typeYourMessage,
   clickScoreActions,
   clickDoneTeaching,
   highlightWord,
-  verifyTokenNodeExists
+  verifyTokenNodeExists,
+  labelWords
 };
