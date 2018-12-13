@@ -317,26 +317,43 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
 
+    static getUnique <T>(xs: T[], getKey: (x: T) => any): T[] {
+        const map = new Map<any, T>()
+
+        xs.forEach(x => {
+            const key = getKey(x)
+
+            if (!map.has(key)) {
+                map.set(key, x)
+            }
+        })
+
+        return Array.from(map.values())
+    }
+
     /**
      * Get all text variations that have same text but different entities
      */
     static getInconsistentResponses(trainDialogs: TrainDialog[], pendingExtractResponses: ExtractResponse[]): ExtractResponse[] {
-        const textVariations = trainDialogs
+        // We assume all text variations within existing valid train dialogs are consistent
+        const textVarations = trainDialogs
+            .filter(td => !td.invalid)
             .map(td => td.rounds.map(r => r.extractorStep.textVariations))
             .reduce((a, b) => [...a, ...b], []).reduce((a, b) => [...a, ...b], [])
 
-        const inconsistentTextVariations = textVariations.reduce<TextVariation[]>((inconsistentVariations, textVariation) => {
+        const uniqueTextVarations = EntityExtractor.getUnique(textVarations, tv => tv.text.toLocaleLowerCase())
+
+        const inconsistentTextVariations = uniqueTextVarations.reduce<ExtractResponse[]>((inconsistentVariations, textVariation) => {
             // If text variation is inconsistent with new extract responses and it's not already in the list of inconsistent
             // TODO: Use more than text to check for uniquness
-            if (pendingExtractResponses.some(e => EntityExtractor.isInconsistentExtraction(e, textVariation))
-                && !inconsistentVariations.find(iv => iv.text == textVariation.text))
+            if (pendingExtractResponses.some(e => EntityExtractor.isInconsistentExtraction(e, textVariation)))
             {
-                inconsistentVariations.push(textVariation)
+                inconsistentVariations.push(ModelUtils.ToExtractResponses([textVariation])[0])
             }
             return inconsistentVariations
         }, [])
 
-        return ModelUtils.ToExtractResponses(inconsistentTextVariations)
+        return inconsistentTextVariations
     }
 
     /**
@@ -390,6 +407,7 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
         const allResponses = this.allResponses();
         const inconsistentResponses = EntityExtractor.getInconsistentResponses(this.props.trainDialogs, allResponses)
         const hasInconsistentResponses = inconsistentResponses.length > 0
+        console.log(`trainDialogs: `, this.props.trainDialogs)
         const primaryExtractResponse = allResponses[0]
         if (!primaryExtractResponse) {
             return null;
