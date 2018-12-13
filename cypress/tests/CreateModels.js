@@ -78,11 +78,10 @@ export function TagAndFrog()
 
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
-
   train.CreateNewTrainDialog()
 
   train.TypeYourMessage('This is Tag.')
-  editDialogModal.LabelWordAsEntity('Tag', 'multi')
+  editDialogModal.LabelTextAsEntity('Tag', 'multi')
   editDialogModal.ClickScoreActionsButton()
   train.SelectAction('Hello')
   cy.WaitForTrainingStatusCompleted()
@@ -90,7 +89,7 @@ export function TagAndFrog()
   train.TypeYourMessage('This is Frog and Tag.')
   memoryTableComponent.VerifyEntityInMemory('multi', 'Tag')
   editDialogModal.VerifyEntityLabel('Tag', 'multi')
-  editDialogModal.LabelWordAsEntity('Frog', 'multi')
+  editDialogModal.LabelTextAsEntity('Frog', 'multi')
   editDialogModal.ClickScoreActionsButton()
   train.SelectAction('Hi')
   cy.WaitForTrainingStatusCompleted()
@@ -103,6 +102,7 @@ export function TagAndFrog()
   train.SelectAction('Hi')
 
   train.Save()
+
 
   // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog.cl'
 }

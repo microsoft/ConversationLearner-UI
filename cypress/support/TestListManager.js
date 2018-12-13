@@ -15,12 +15,8 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  // "Train.DisqualifyingEntities",
-  // "Train.WaitVsNoWaitActions",
-  // "Train.WhatsYourName",
-  // "EditAndBranching.Branching",
-  // "CreateModels.TagAndFrog",
-  "Train.MyNameIs",
+  "EditAndBranching.TagAndFrog",
+  "Train.TagAndFrog",
 ]
 
 // Do NOT alter this list except to add in new test cases as they are created.
@@ -33,11 +29,13 @@ export const masterListOfAllTestCases =
   "CreateModels.TagAndFrog",
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
+  "EditAndBranching.TagAndFrog",
   "Log.WhatsYourName",
   "Train.DisqualifyingEntities",
   "Train.WaitVsNoWaitActions",
   "Train.WhatsYourName",
   "Train.MyNameIs",
+  "Train.TagAndFrog",
   "CleanUp.DeleteAllTestGeneratedModels"
 ]
 
@@ -62,6 +60,7 @@ const testGroups =
     [
       { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
       { name: "Branching", func: editAndBranching.Branching },
+      { name: "Tag and Frog", func: editAndBranching.TagAndFrog },
     ]
   },
   {
@@ -77,6 +76,7 @@ const testGroups =
       { name: "Wait vs No Wait Action", func: train.WaitVsNoWaitActions },
       { name: "What's Your Name", func: train.WhatsYourName },
       { name: "My Name Is", func: train.MyNameIs },
+      { name: "Tag and Frog", func: train.TagAndFrog },
     ]
   },
   {

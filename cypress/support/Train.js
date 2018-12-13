@@ -24,7 +24,9 @@ export function CreateNewTrainDialog()
       LastInput: undefined,
       LastResponse: undefined,
       Turns: 0,
-      MomentTrainingStarted: Cypress.moment(),
+      // FUDGING on the time - subtract 10 seconds because the time is set by the server
+      // which is not exactly the same as our test machine.
+      MomentTrainingStarted: Cypress.moment().subtract(10, 'seconds'),  
       MomentTrainingEnded: undefined,
       LastModifiedDate: undefined,
       CreatedDate: undefined,
@@ -58,7 +60,9 @@ export function EditTraining(firstInput, lastInput, lastResponse)
           LastInput: lastInputs[i],
           LastResponse: lastResponses[i],
           Turns: turns[i],
-          MomentTrainingStarted: Cypress.moment(),
+          // FUDGING on the time - subtract 10 seconds because the time is set by the server
+          // which is not exactly the same as our test machine.
+          MomentTrainingStarted: Cypress.moment().subtract(10, 'seconds'),  
           MomentTrainingEnded: undefined,
           LastModifiedDate: lastModifiedDates[i],
           CreatedDate: createdDates[i],
@@ -72,7 +76,7 @@ export function EditTraining(firstInput, lastInput, lastResponse)
         return
       }
     }
-    throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`
+    throw `Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`
   })
 }
 
@@ -115,7 +119,9 @@ export function Save()
   trainDialogsGrid.VerifyPageTitle()
   cy.Enqueue(() => 
   { 
-    window.currentTrainingSummary.MomentTrainingEnded = Cypress.moment()
+    // FUDGING on the time - adding 10 seconds because the time is set by the server
+    // which is not exactly the same as our test machine.
+    window.currentTrainingSummary.MomentTrainingEnded = Cypress.moment().add(10, 'seconds')
     
     if (window.isBranched) VerifyTrainingSummaryIsInGrid(window.originalTrainingSummary)
 
@@ -127,10 +133,11 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary)
 {
   trainDialogsGrid.WaitForGridReadyThen(trainingSummary.TrainGridRowCount, () =>
   {
-    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDate: ${trainingSummary.LastModifiedDate}`)
-    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDate: ${trainingSummary.CreatedDate}`)
-    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
-    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
+    // Keep these lines of logging code in this method, they come in handy when things go bad.
+    // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDate: ${trainingSummary.CreatedDate}`)
+    // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDate: ${trainingSummary.LastModifiedDate}`)
+    // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
+    // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
 
     var turns = trainDialogsGrid.GetTurns()
     var firstInputs = trainDialogsGrid.GetFirstInputs()
@@ -140,9 +147,11 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary)
     var createdDates = trainDialogsGrid.GetCreatedDates()
     
     for (var i = 0; i < trainingSummary.TrainGridRowCount; i++)
-    { // TODO: This needs to be tested at edge cases, like starting before midnight, ending after midnight, etc...
-      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDates[${i}]: ${lastModifiedDates[i]}`)
-      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDates[${i}]: ${createdDates[i]}`)
+    { 
+      // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDates[${i}]: ${createdDates[i]} --- ${helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
+      // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDates[${i}]: ${lastModifiedDates[i]} --- ${helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
+      // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `Turns: ${turns[i]}`)
+
       if (((trainingSummary.LastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
           helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) && 
           turns[i] == trainingSummary.Turns &&
@@ -251,4 +260,10 @@ export function SelectAndVerifyEachChatTurn(index = 0)
       })
     }
   })
+}
+
+export function AbandonDialog()
+{
+  editDialogModal.ClickAbandonDeleteButton()
+  editDialogModal.ClickConfirmAbandonDialogButton()
 }

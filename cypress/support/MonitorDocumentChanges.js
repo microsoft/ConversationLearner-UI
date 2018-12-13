@@ -1,6 +1,21 @@
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
+ * 
+ * AUTHOR: Michael Skowronski
+ *
+ * This code eliminiates the need for adding cy.wait() commands to your code and also
+ * cy.route() commands used only for waiting. It does this by constantly monitoring the
+ * DOM for changes and tracking the Milliseconds Since the Last Change and also resetting
+ * those Milliseconds to zero when we see the spinner is displayed. Certain cy.commands(),
+ * such as cy.Get(), are then modified to prevent execution until this Millisecond count
+ * reaches at least 700.
+ * 
+ * The basic premis this works on is that when the application under test is making API
+ * calls, the spinner is displayed, therefore further test steps should be paused. Also when 
+ * the spinner is not visible, the Javascript on the page should either be actively updating
+ * the DOM or should not be running. Experience shows that these updates almost always complete
+ * within 700 milliseconds since the last change, or another one occures to reset the count.
 */
 
 const helpers = require('./Helpers.js')

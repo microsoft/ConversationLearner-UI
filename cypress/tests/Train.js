@@ -13,7 +13,7 @@ const editDialogModal = require('../support/components/EditDialogModal')
 
 export function DisqualifyingEntities()
 {
-  var modelName = models.ImportModel('z-disqualifyngEnt', 'z-disqualifyngEnt.cl')
+  models.ImportModel('z-disqualifyngEnt', 'z-disqualifyngEnt.cl')
   
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -62,7 +62,7 @@ export function DisqualifyingEntities()
 
 export function WaitVsNoWaitActions()
 {
-  var modelName = models.ImportModel('z-waitNoWait', 'z-waitNoWait.cl')
+  models.ImportModel('z-waitNoWait', 'z-waitNoWait.cl')
   
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -99,7 +99,7 @@ export function WaitVsNoWaitActions()
 
 export function WhatsYourName()
 {
-  var modelName = models.ImportModel('z-whatsYourName', 'z-whatsYourName.cl')
+  models.ImportModel('z-whatsYourName', 'z-whatsYourName.cl')
 
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -126,7 +126,7 @@ export function WhatsYourName()
 
 export function MyNameIs()
 {
-  var modelName = models.ImportModel('z-myNameIs', 'z-myNameIs.cl')
+  models.ImportModel('z-myNameIs', 'z-myNameIs.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
 
@@ -155,3 +155,68 @@ export function MyNameIs()
   // Manually EXPORT this to fixtures folder and name it 'z-nameTrained.cl'
 }
 
+export function TagAndFrog()
+{
+  var textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
+
+  models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
+  modelPage.NavigateToTrainDialogs()
+
+  cy.WaitForTrainingStatusCompleted()
+  train.CreateNewTrainDialog()
+
+  train.TypeYourMessage('This is Tag.')
+  editDialogModal.RemoveEntityLabel('Tag', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose({text: 'Tag', entity: 'multi'})
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept({text: 'Tag', entity: 'multi'})
+  train.SelectAction('Hello')
+
+  train.TypeYourMessage('This is Frog and Tag.')
+  editDialogModal.RemoveEntityLabel('Frog', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+  train.SelectAction('Hi')
+
+  train.TypeYourMessage('This is Tag and Frog.')
+  editDialogModal.RemoveEntityLabel('Tag', 'multi')
+  editDialogModal.RemoveEntityLabel('Frog', 'multi')
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+  train.SelectAction('Hi')
+  
+  train.AbandonDialog()
+
+  cy.WaitForTrainingStatusCompleted()
+  train.CreateNewTrainDialog()
+
+  train.TypeYourMessage('This is Tag.')
+  editDialogModal.TypeAlternativeInput('This is Frog and Tag.')
+  editDialogModal.TypeAlternativeInput('This is Tag and Frog.')
+
+  editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs[0], 0)
+  editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
+  editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
+
+  editDialogModal.RemoveEntityLabel('Tag', 'multi', 1)
+  editDialogModal.RemoveEntityLabel('Frog', 'multi', 2)
+
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+  train.SelectAction('Hi')
+
+  train.Save()
+
+  // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog2.cl'
+}
