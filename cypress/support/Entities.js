@@ -18,7 +18,7 @@ export function CreateNewEntity({name, multiValued, negatable, type = 'Custom Tr
   if (negatable) entityModal.ClickNegatableCheckbox()
 
   entityModal.ClickCreateButton()
-  if (type != 'Custom Trained' && type != 'Programmatic') entityModal.ClickOkNoteAboutPreTrainedButton()
+  if (type != 'Custom Trained' && type != 'Programmatic') entityModal.ClickOkButtonOnNoteAboutPreTrained()
 
   if (name) entitiesGrid.VerifyItemInList(name)
   else entitiesGrid.VerifyItemInList(`builtin-${type.toLowerCase()}`)
