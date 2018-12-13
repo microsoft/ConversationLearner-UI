@@ -9,7 +9,7 @@ const testLog = require('../utils/testlog')
 function navigateTo() {
   testLog.logStart("Navigate to homepage");
   cy.server()
-  cy.route('GET', '/apps?**').as('getHomePage')
+  cy.route('GET', '/sdk/apps?**').as('getHomePage')
 
   // Open application
   cy.visit('http://localhost:5050')
@@ -21,7 +21,7 @@ function navigateTo() {
 function createNewModel(modelName) {
   testLog.logStart("Create New Model");
   cy.server()
-  cy.route('POST', '/app?userId=**').as('postcreateNew')
+  cy.route('POST', '/sdk/app?userId=**').as('postcreateNew')
 
   // Click the button to create app
   cy.get('[data-testid="apps-list-button-create-new"]')

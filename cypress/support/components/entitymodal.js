@@ -40,7 +40,7 @@ function clickOnNegatable() {
 function clickCreateButton() {
     testLog.logStart("Entity Modal: Click Create (save)");
     cy.server()
-    cy.route('POST', '/app/*/entity').as('postEntity')
+    cy.route('POST', '/sdk/app/*/entity').as('postEntity')
     cy.get('[data-testid="entity-creator-button-save"]')
         .then(function (response) {
             testLog.logStep("Click create button")

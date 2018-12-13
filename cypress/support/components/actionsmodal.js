@@ -85,8 +85,8 @@ function clickWaitForResponse() {
 function clickCreateButton() {
   testLog.logStart("ActionsModal: Click Create (save)");
   cy.server();
-  cy.route('POST', '/app/*/action').as('postAction');
-  cy.route('GET', '/app/*/trainingstatus').as('getTrainingstatus');
+  cy.route('POST', '/sdk/app/*/action').as('postAction');
+  cy.route('GET', '/sdk/app/*/trainingstatus').as('getTrainingstatus');
   cy.get('[data-testid="actioncreator-button-create"]')
     .should("be.visible")
     .click();

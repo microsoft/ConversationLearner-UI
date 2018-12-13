@@ -15,7 +15,7 @@ function verifyPageTitle(modelName) {
 /** Navigate back to the Converation Learner Home page */
 function navigateToHomepage() {
   cy.server()
-  cy.route('GET', '/apps?**').as('getHomePage')
+  cy.route('GET', '/sdk/apps?**').as('getHomePage')
   cy.visit('http://localhost:5050')
   cy.wait('@getHomePage')
 }

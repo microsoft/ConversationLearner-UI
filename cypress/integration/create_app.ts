@@ -3,7 +3,7 @@ describe('Create application', function () {
 
   it('should create new application with random name and verify name on application page', function () {
     cy.server()
-    cy.route('GET', '/apps?**').as('getApps')
+    cy.route('GET', '/sdk/apps?**').as('getApps')
 
     // Open application
     cy.visit('http://localhost:5050')
@@ -20,7 +20,7 @@ describe('Create application', function () {
     cy.get('[data-testid="app-create-input-name"]')
       .type(newAppName)
 
-    cy.route('POST', '/app?userId=**').as('postApp')
+    cy.route('POST', '/sdk/app?userId=**').as('postApp')
 
     // Click the submit button
     cy.get('[data-testid="app-create-button-submit"]')
@@ -57,7 +57,7 @@ describe('Create application', function () {
     cy.get('[data-testid="entitycreator-checkbox-multivalued"]')
       .click()
 
-    cy.route('POST', '/app/*/entity').as('postEntity')
+    cy.route('POST', '/sdk/app/*/entity').as('postEntity')
 
     // Select the submit button
     cy.get('[data-testid="entity-creator-button-save"]')
@@ -85,7 +85,7 @@ describe('Create application', function () {
       .click()
 
     // Select name for actions
-    cy.route('POST', '/app/*/action').as('postAction')
+    cy.route('POST', '/sdk/app/*/action').as('postAction')
 
     const samplePayload = "some payload"
     cy.get('.editor-container [contenteditable="true"]')

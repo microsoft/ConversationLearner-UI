@@ -7,7 +7,7 @@ const testLog = require('../utils/testlog')
 /** Selects the first enabled action */
 function selectAnAction() {
     cy.server()
-    cy.route('POST', '/app/*/teach/*/scorer').as('postScore')
+    cy.route('POST', '/sdk/app/*/teach/*/scorer').as('postScore')
     cy.get('[data-testid="actionscorer-buttonClickable"]')
         .should("be.visible")
         .then(function (response) {
@@ -22,7 +22,7 @@ function selectAnActionWithText(action) {
     cy.wait(3000);
     testLog.logStart("Scorer: Action Selection")
     cy.server()
-    cy.route('POST', '/app/*/teach/*/scorer').as('postScore')
+    cy.route('POST', '/sdk/app/*/teach/*/scorer').as('postScore')
 
     cy.get('.ms-List-page').should("be.visible").within(() => {
         cy.contains(action)
