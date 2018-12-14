@@ -18,7 +18,7 @@ import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react';
 import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
-import InconstentEntityLabellingModal from './InconstentEntityLabellingModal'
+import InconstentEntityLabellingModal, { InconsistentExtractResponse } from './InconstentEntityLabellingModal'
 
 interface ExtractResponseForDisplay {
     extractResponse: ExtractResponse
@@ -167,25 +167,20 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickSubmitExtractions(extractResponses: ExtractResponse[], inconsistenceResponses: ExtractResponse[]) {
+    onClickSubmitExtractions(extractResponses: ExtractResponse[]) {
         this.setState({
             extractionChanged: false,
         });
         if (this.props.onExtractionsChanged) {
             this.props.onExtractionsChanged(false);
         }
-        this.submitExtractions(extractResponses, inconsistenceResponses, this.props.roundIndex);
+        this.submitExtractions(extractResponses, this.props.roundIndex);
     }
-    submitExtractions(allResponses: ExtractResponse[], inconsistenceResponses: ExtractResponse[], roundIndex: number) {
+    submitExtractions(allResponses: ExtractResponse[], roundIndex: number) {
         const primaryExtractResponse = allResponses[0]
         
         if (!this.allValid(primaryExtractResponse, allResponses)) {
             this.handleOpenWarning();
-            return;
-        }
-
-        if (inconsistenceResponses.length > 0) {
-            this.openInconsistentEntityReviewModal()
             return;
         }
 
@@ -197,12 +192,6 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
         }))
 
         this.props.onTextVariationsExtracted(primaryExtractResponse, textVariations, roundIndex);
-    }
-
-    openInconsistentEntityReviewModal = () => {
-        this.setState({
-            inconsistentEntityModalOpen: true
-        })
     }
 
     onAddExtractResponse(): void {
@@ -276,7 +265,7 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
     }
     onClickSaveCheckYes() {
         // Submit saved extractions and clear saved responses
-        this.submitExtractions(this.state.savedExtractResponses, [], this.state.savedRoundIndex);
+        this.submitExtractions(this.state.savedExtractResponses, this.state.savedRoundIndex);
         this.setState({
             savedExtractResponses: [],
             savedRoundIndex: 0
@@ -334,22 +323,30 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
     /**
      * Get all text variations that have same text but different entities
      */
-    static getInconsistentResponses(trainDialogs: TrainDialog[], pendingExtractResponses: ExtractResponse[]): ExtractResponse[] {
+    static getInconsistentResponses(trainDialogs: TrainDialog[], pendingExtractResponses: ExtractResponse[]): InconsistentExtractResponse[] {
         // We assume all text variations within existing valid train dialogs are consistent
         const textVarations = trainDialogs
             .filter(td => !td.invalid)
             .map(td => td.rounds.map(r => r.extractorStep.textVariations))
             .reduce((a, b) => [...a, ...b], []).reduce((a, b) => [...a, ...b], [])
 
-        const uniqueTextVarations = EntityExtractor.getUnique(textVarations, tv => tv.text.toLocaleLowerCase())
+        const uniqueTextVarations = EntityExtractor.getUnique(textVarations, tv => tv.text.toLowerCase())
 
-        const inconsistentTextVariations = uniqueTextVarations.reduce<ExtractResponse[]>((inconsistentVariations, textVariation) => {
-            // If text variation is inconsistent with new extract responses and it's not already in the list of inconsistent
-            // TODO: Use more than text to check for uniquness
-            if (pendingExtractResponses.some(e => EntityExtractor.isInconsistentExtraction(e, textVariation)))
-            {
-                inconsistentVariations.push(ModelUtils.ToExtractResponses([textVariation])[0])
-            }
+        const inconsistentTextVariations = uniqueTextVarations.reduce<InconsistentExtractResponse[]>((inconsistentVariations, textVariation) => {
+            // If text variation is inconsistent with new extract responses
+            pendingExtractResponses.some(e => {
+                const inconsistent = EntityExtractor.isInconsistentExtraction(e, textVariation)
+
+                if (inconsistent) {
+                    inconsistentVariations.push({
+                        new: e,
+                        existing: ModelUtils.ToExtractResponses([textVariation])[0]
+                    })
+                }
+
+                return inconsistent
+            })
+
             return inconsistentVariations
         }, [])
 
@@ -361,7 +358,7 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
      */
     static isInconsistentExtraction(newExtractResponse: ExtractResponse, textVariation: TextVariation): boolean {
         // If responses have different text they are not comparable, cannot conclude inconsistency
-        if (newExtractResponse.text !== textVariation.text) {
+        if (newExtractResponse.text.toLowerCase() !== textVariation.text.toLowerCase()) {
             return false
         }
 
@@ -390,16 +387,16 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
         return inconsistentEntities.length > 0
     }
 
-    onClickAcceptInconsistentEntityModal = (extractResponses: ExtractResponse[]) => {
+    onClickCloseInconsistentEntityModal = (extractResponses: ExtractResponse[]) => {
         extractResponses.forEach(extractResponse => this.props.updateExtractResponse(extractResponse))
         this.setState({
             inconsistentEntityModalOpen: false
         })
     }
 
-    onClickCloseInconsistentEntityModal = () => {
+    onClickReviewChanges = () => {
         this.setState({
-            inconsistentEntityModalOpen: false
+            inconsistentEntityModalOpen: true
         })
     }
 
@@ -407,7 +404,6 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
         const allResponses = this.allResponses();
         const inconsistentResponses = EntityExtractor.getInconsistentResponses(this.props.trainDialogs, allResponses)
         const hasInconsistentResponses = inconsistentResponses.length > 0
-        console.log(`trainDialogs: `, this.props.trainDialogs)
         const primaryExtractResponse = allResponses[0]
         if (!primaryExtractResponse) {
             return null;
@@ -493,7 +489,7 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             disabled={!this.state.extractionChanged || !allExtractResponsesValid || this.state.pendingVariationChange}
-                            onClick={() => this.onClickSubmitExtractions(allResponses, inconsistentResponses)}
+                            onClick={() => this.onClickSubmitExtractions(allResponses)}
                             ariaDescription={'Submit Changes'}
                             text={'Submit Changes'}
                             componentRef={(ref: any) => { this.doneExtractingButton = ref }}
@@ -509,16 +505,24 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
                 {canEdit && this.props.extractType === DialogType.TEACH &&
                     <div>
                         {hasInconsistentResponses
-                        && <div>
+                            && <div>
                             <div className="ms-TextField-errorMessage css-84 errorMessage_20d9206e">
-                                <OF.Icon iconName="IncidentTriangle" className="editor-button-invalid" />&nbsp;<FormattedMessage id={FM.TOOLTIP_ENTITY_EXTRACTOR_INCONSISTENT_LABEL} defaultMessage="Entities labelled differently in other phrase." />
+                                <OF.Icon iconName="IncidentTriangle" className="editor-button-invalid" />&nbsp;<FormattedMessage id={FM.TOOLTIP_ENTITY_EXTRACTOR_INCONSISTENT_LABEL} defaultMessage="Entities labelled differently in another utterance." />
+                            </div>
+                            <div className="cl-buttons-row">
+                                <OF.PrimaryButton
+                                    data-testid="entityextractor-review-changes"
+                                    onClick={() => this.onClickReviewChanges()}
+                                    ariaDescription={'Review Entity Labels'}
+                                    text={'Review Entity Labels'}
+                                />
                             </div>
                         </div>}
                         <div className="cl-buttons-row">
                             <OF.PrimaryButton
                                 data-testid="button-proceedto-scoreactions"
-                                disabled={!allExtractResponsesValid || this.state.pendingVariationChange}
-                                onClick={() => this.onClickSubmitExtractions(allResponses, inconsistentResponses)}
+                                disabled={!allExtractResponsesValid || this.state.pendingVariationChange || hasInconsistentResponses}
+                                onClick={() => this.onClickSubmitExtractions(allResponses)}
                                 ariaDescription={'Score Actions'}
                                 text={'Score Actions'}
                                 componentRef={(ref: any) => { this.doneExtractingButton = ref }}
@@ -540,7 +544,7 @@ export class EntityExtractor extends React.Component<Props, ComponentState> {
                     <InconstentEntityLabellingModal
                         isOpen={this.state.inconsistentEntityModalOpen}
                         inconsistentExtractResponses={inconsistentResponses}
-                        onClickAccept={this.onClickAcceptInconsistentEntityModal}
+                        onClickAccept={this.onClickCloseInconsistentEntityModal}
                         onClickClose={this.onClickCloseInconsistentEntityModal}
                     />
                     <OF.Dialog

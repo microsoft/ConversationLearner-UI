@@ -13,24 +13,37 @@ import { ExtractResponse } from '@conversationlearner/models'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
+import './InconsistentEntityLabellingModal.css'
+
+export interface InconsistentExtractResponse {
+    new: ExtractResponse
+    existing: ExtractResponse
+}
 
 interface ComponentState {
     currentResponseIndex: number
+    acceptedResponses: ExtractResponse[]
 }
 
 class InconsistentEntityLabellingModal extends React.Component<Props, ComponentState> {
     state: ComponentState = {
-        currentResponseIndex: 0
+        currentResponseIndex: 0,
+        acceptedResponses: []
     }
 
-    onClickAccept = () => {
+    onClickAccept = (inconsistentResponse: InconsistentExtractResponse) => {
+        // Use the labels from the correct response but text from new input to preserve casing for text comparison
+        const currentResponse = inconsistentResponse.existing
+        currentResponse.text = inconsistentResponse.new.text
+
         if (this.state.currentResponseIndex === this.props.inconsistentExtractResponses.length - 1) {
-            this.props.onClickAccept(this.props.inconsistentExtractResponses)
+            this.props.onClickAccept([...this.state.acceptedResponses, currentResponse])
             return
         }
 
         this.setState(prevState => ({
-            currentResponseIndex: prevState.currentResponseIndex + 1
+            currentResponseIndex: prevState.currentResponseIndex + 1,
+            acceptedResponses: [...prevState.acceptedResponses, currentResponse]
         }))
     }
 
@@ -45,44 +58,70 @@ class InconsistentEntityLabellingModal extends React.Component<Props, ComponentS
 
         return <Modal
             isOpen={this.props.isOpen && this.props.inconsistentExtractResponses.length > 0}
-            containerClassName={`cl-modal cl-modal--small ${OF.FontClassNames.large}`}
+            containerClassName={`cl-modal cl-modal--medium ${OF.FontClassNames.large}`}
         >
-            <div className={`cl-modal_header ${OF.FontClassNames.xLarge}`}>
-                <FormattedMessage id={FM.INCONSISTENT_ENTITY_LABEL_TITLE} defaultMessage="Entity labelled differently in another utterance" />
+            <div className={`cl-modal_header cl-text--error ${OF.FontClassNames.xLarge} `}>
+                <OF.Icon iconName="Warning" />&nbsp;<FormattedMessage id={FM.INCONSISTENT_ENTITY_LABEL_TITLE} defaultMessage="Inconsistent Entity Labels" />
             </div>
 
+            <div className="cl-modal_body">
+                <div>
+                    <p><FormattedMessage id={FM.INCONSISTENT_ENTITY_LABEL_SUBTITLE} defaultMessage="Entity labelled differently in another utterance" /></p>
             {inconsistentResponse
-                ? <ExtractorResponseEditor.EditorWrapper
-                    render={(editorProps, onChangeCustomEntities) =>
-                        <ExtractorResponseEditor.Editor
-                            readOnly={true}
-                            isValid={true}
-                            {...editorProps}
+                ? <div>
+                    <div className="cl-inconsistent-entity-modal-header cl-text--error"><OF.Icon iconName="ChromeClose" />&nbsp;Attempted Input:</div>
+                    <ExtractorResponseEditor.EditorWrapper
+                        render={(editorProps, onChangeCustomEntities) =>
+                            <ExtractorResponseEditor.Editor
+                                readOnly={true}
+                                isValid={true}
+                                {...editorProps}
 
-                            onChangeCustomEntities={onChangeCustomEntities}
-                            onClickNewEntity={() => {}}
-                        />
-                    }
-                    entities={this.props.entities}
-                    extractorResponse={inconsistentResponse}
-                    onChange={() => {}}
-                />
+                                onChangeCustomEntities={onChangeCustomEntities}
+                                onClickNewEntity={() => {}}
+                            />
+                        }
+                        entities={this.props.entities}
+                        extractorResponse={inconsistentResponse.new}
+                        onChange={() => {}}
+                    />
+
+                    <div className="cl-inconsistent-entity-modal-header cl-text--success"><OF.Icon iconName="Accept" />&nbsp;Previous Input:</div>
+                    <ExtractorResponseEditor.EditorWrapper
+                        render={(editorProps, onChangeCustomEntities) =>
+                            <ExtractorResponseEditor.Editor
+                                readOnly={true}
+                                isValid={true}
+                                {...editorProps}
+
+                                onChangeCustomEntities={onChangeCustomEntities}
+                                onClickNewEntity={() => {}}
+                            />
+                        }
+                        entities={this.props.entities}
+                        extractorResponse={inconsistentResponse.existing}
+                        onChange={() => {}}
+                    />
+                </div>
                 : <div>Response not defined.</div>}
 
-            <div>
-                <FormattedMessage id={FM.INCONSISTENT_ENTITY_LABEL_DESCRIPTION} defaultMessage="Clicking 'Accept' will replace your current labels with the existing labels." />
+                    <p>
+                        <FormattedMessage id={FM.INCONSISTENT_ENTITY_LABEL_DESCRIPTION} defaultMessage="Clicking 'Accept' will replace your current labels with the existing labels." />
+                    </p>
+                </div>
             </div>
+
 
             <div className="cl-modal_footer cl-modal-buttons">
                 <div className="cl-modal-buttons_secondary"></div>
                 <div className="cl-modal-buttons_primary">
                     <OF.PrimaryButton
-                        onClick={() => this.onClickAccept()}
+                        onClick={() => this.onClickAccept(inconsistentResponse)}
                         ariaDescription={'Accept'}
                         text={'Accept'}
                     />
                     <OF.DefaultButton
-                        onClick={() => this.props.onClickClose()}
+                        onClick={() => this.props.onClickClose(this.state.acceptedResponses)}
                         ariaDescription={'Close'}
                         text={'Close'}
                     />
@@ -104,9 +143,9 @@ const mapStateToProps = (state: State) => {
 
 interface ReceivedProps {
     isOpen: boolean
-    inconsistentExtractResponses: ExtractResponse[]
-    onClickAccept: (extractorResponse: ExtractResponse[]) => void
-    onClickClose: () => void
+    inconsistentExtractResponses: InconsistentExtractResponse[]
+    onClickAccept: (extractorResponses: ExtractResponse[]) => void
+    onClickClose: (acceptedResponses: ExtractResponse[]) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

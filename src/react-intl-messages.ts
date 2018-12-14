@@ -201,6 +201,7 @@ export enum FM {
 
     // Inconsistent Entity Label
     INCONSISTENT_ENTITY_LABEL_TITLE = 'InconsistentEntityLabelModal.title',
+    INCONSISTENT_ENTITY_LABEL_SUBTITLE = 'InconsistentEntityLabelModal.subtitle',
     INCONSISTENT_ENTITY_LABEL_DESCRIPTION = 'InconsistentEntityLabelModal.description',
 
     // LogDialogModal
@@ -513,8 +514,10 @@ export default {
         [FM.ENTITIES_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this entity?',
 
         // Inconsistent Entity Label Modal
-        [FM.INCONSISTENT_ENTITY_LABEL_TITLE]: `Entity labelled differently in another utterance`,
-        [FM.INCONSISTENT_ENTITY_LABEL_DESCRIPTION]: `Clicking 'Accept' will replace your current labels with the existing labels.`,
+        [FM.INCONSISTENT_ENTITY_LABEL_TITLE]: `Inconsistent Entity Labels`,
+        [FM.INCONSISTENT_ENTITY_LABEL_SUBTITLE]: `You attempted to submit an input with entities labelled differently than another similar user input in a previous train dialog. Please review the labels below:`,
+        [FM.INCONSISTENT_ENTITY_LABEL_DESCRIPTION]: `Clicking 'Accept' will replace the current labels with the existing labels.`,
+
         // LogDialogs
         [FM.LOGDIALOGS_TITLE]: 'Log Dialogs',
         [FM.LOGDIALOGS_SUBTITLE]: 'Log Dialogs are records of conversations between users and your bot. You can make corrections to Log Dialogs to improve the bot.',
@@ -631,7 +634,7 @@ export default {
         [FM.TOOLTIP_ENTITY_ACTION_REQUIRED]: `Actions that are only employed when this Entity is set`,
         [FM.TOOLTIP_ENTITY_EXTRACTOR_HELP]: `Select text to label it as an entity`,
         [FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING]: 'Text Variations must contain the same detected Entities as the original input text.',
-        [FM.TOOLTIP_ENTITY_EXTRACTOR_INCONSISTENT_LABEL]: 'Entities labelled differently in another utterance.',
+        [FM.TOOLTIP_ENTITY_EXTRACTOR_INCONSISTENT_LABEL]: 'Entities must be labelled consistently in similar user inputs across all train dialogs.',
         [FM.TOOLTIP_ENTITY_NAME]: 'Name of the Entity',
         [FM.TOOLTIP_ENTITY_VALUE]: 'What the Bot currently has in Memory for this Entity',
         [FM.TOOLTIP_ENTITY_TYPE]: 'Type of Entity: CUSTOM or name existing of Pre-Built Entity',

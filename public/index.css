@@ -70,6 +70,10 @@ html {
   padding: 5px
 }
 
+.cl-text--success {
+  color: var(--color-success);
+}
+
 .cl-text--error {
   color: var(--color-error);
 }

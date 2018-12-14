@@ -211,7 +211,7 @@ describe(`EntityExtractor`, () => {
 
             const inconsistentResponses = ModelUtils.ToExtractResponses([trainDialogs[0].rounds[0].extractorStep.textVariations[1]])
 
-            expect(EntityExtractor.getInconsistentResponses(trainDialogs, userAttemptedExtractResponses)).toEqual(inconsistentResponses)
+            expect(EntityExtractor.getInconsistentResponses(trainDialogs, userAttemptedExtractResponses).map(ir => ir.existing)).toEqual(inconsistentResponses)
         })
     })
 })
