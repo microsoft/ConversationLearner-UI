@@ -18,6 +18,8 @@ export function CreateNewModel(modelNamePrefix)
   homePage.TypeModelName(name)
   homePage.ClickSubmitButton()
   modelPage.VerifyModelName(name)
+
+  return name
 }
 
 export function ImportModel(modelNamePrefix, fileName)
@@ -27,7 +29,6 @@ export function ImportModel(modelNamePrefix, fileName)
 
   homePage.Visit()
   homePage.ClickImportModelButton()
-
   homePage.TypeModelName(name)
   homePage.UploadImportModelFile(fileName)
   homePage.ClickSubmitButton()

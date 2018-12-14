@@ -15,8 +15,7 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "EditAndBranching.TagAndFrog",
-  "Train.TagAndFrog",
+  "CreateModels.EndlessLoop",
 ]
 
 // Do NOT alter this list except to add in new test cases as they are created.
@@ -27,6 +26,7 @@ export const masterListOfAllTestCases =
   "CreateModels.WaitVsNoWaitActions",
   "CreateModels.WhatsYourName",
   "CreateModels.TagAndFrog",
+  "CreateModels.EndlessLoop",
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
   "EditAndBranching.TagAndFrog",
@@ -53,6 +53,7 @@ const testGroups =
       { name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions },
       { name: "What's Your Name", func: createModels.WhatsYourName },
       { name: "Tag and Frog", func: createModels.TagAndFrog },
+      { name: "Endless Loop", func: createModels.EndlessLoop },
     ]
   },
   {
