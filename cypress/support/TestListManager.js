@@ -15,7 +15,7 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "CreateModels.EndlessLoop",
+  "Log.EndlessLoop",
 ]
 
 // Do NOT alter this list except to add in new test cases as they are created.
@@ -31,6 +31,7 @@ export const masterListOfAllTestCases =
   "EditAndBranching.Branching",
   "EditAndBranching.TagAndFrog",
   "Log.WhatsYourName",
+  "Log.EndlessLoop",
   "Train.DisqualifyingEntities",
   "Train.WaitVsNoWaitActions",
   "Train.WhatsYourName",
@@ -68,6 +69,7 @@ const testGroups =
     name: 'Log', tests:
     [
       { name: "What's Your Name", func: log.WhatsYourName },
+      { name: "Endless Loop", func: log.EndlessLoop },
     ]
   },
   {

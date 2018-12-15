@@ -4,7 +4,7 @@
  */
 
 export function CreateNewLogDialogButton()  { cy.Get('[data-testid="log-dialogs-new-button"]').Click() }
-export function ClickDoneTestingButton()    { cy.Get('[data-testid="chat-session-modal-done-testing-button"]').Click() }
+export function ClickDoneTestingButton()    { return cy.Get('[data-testid="chat-session-modal-done-testing-button"]').Click() }
 export function ClickSessionTimeoutButton() { cy.Get('[data-testid="chat-session-modal-session-timeout-button"]').Click() }
 export function TypeYourMessage(message)    { cy.Get('input[placeholder="Type your message..."]').type(`${message}{enter}`) }  // data-testid NOT possible
 
