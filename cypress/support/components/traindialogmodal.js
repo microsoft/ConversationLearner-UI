@@ -22,6 +22,7 @@ function typeYourMessage(trainmessage) {
 
 function highlightWord(word) {
   cy.get('span[class="cl-token-node"]')
+    .contains(word)
     .trigger('keydown')
     .click(10, 10)
     .wait(1000);
@@ -58,23 +59,80 @@ function clickDoneTeaching() {
     .click();
 }
 
-function labelWords(phrase, entityName) {
-  cy.get('.slate-editor')
-    .type('{selectall}')
+function getPhraseStartEndIndicies(containingPhrase, phrase) {
+  const start = containingPhrase.search(phrase)
+  if (start === -1) {
+    throw new Error(`Text: ${containingPhrase} did not contain phrase: ${phrase}`)
+  }
 
+  return [start, start + phrase.length]
+}
+
+function labelWords(phrase, entityName) {
+  /**
+   * Attempt to get words start / end indicies
+   */
+  cy.get('.slate-editor')
+    .then(element => {
+      const text = element[0].textContent
+      const [startIndex, endIndex] = getPhraseStartEndIndicies(text, phrase)
+      console.log(`startIndex: `, startIndex)
+      console.log(`endIndex: `, endIndex)
+
+      // setSelection(element, startIndex, endIndex)
+    })
+
+
+  /**
+   * Attempt #1 use cy.type to automatically submit browser events
+   * Begin with right arrow which selects first word
+   * Skip to next word by holding Cntrl and then select by holding Shift
+   */
+  // TODO: Fix to select adjacent words specified instead of HardCoding
+  cy.get('.slate-editor')
+    .focus()
+    .type('{rightarrow}{ctrl}{rightarrow}{shift}{rightarrow}{rightarrow}')
+    .get('.custom-toolbar__new-entity-button')
+    .click()
+    .wait(3000)
+
+  /**
+   * Attempt #2 - Use trigger to emit mouse events
+   * 
+   * Doesn't seem to have any affect
+   */
   cy.get('.slate-editor')
     .get('.cl-token-node')
     .contains('hovercraft')
-    .then(element => {
-      selectWord(element[0])
-    })
+    .trigger('mousedown')
+    .trigger('mousemove')
 
-  cy.wait(10000) 
+  cy.get('.slate-editor')
+    .get('.cl-token-node')
+    .contains('is')
+    .trigger('mousemove')
+    .trigger('mouseup')
+
+  /**
+   * Attempt #3 - Use native browser selection
+   * 
+   * Seems to highlight text but doesn't activate the SlateEditor
+   * The EntityPicker menu never shows up
+   */
+  cy.get('.slate-editor')
+    .then(element => {
+      selectTextInElement(element[0])
+    })
+    .wait(2000)
+
+  cy.get('.custom-toolbar__new-entity-button')
+    .click()
+    .wait(3000)
 }
 
-function selectWord(element) {
+function selectTextInElement(element) {
   const range = document.createRange();
-  range.selectNodeContents(element);  
+  range.selectNodeContents(element)
   var selection = window.getSelection();
   selection.removeAllRanges(); 
   selection.addRange(range);
