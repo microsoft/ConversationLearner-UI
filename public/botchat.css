@@ -462,7 +462,9 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   position: relative;
   stroke: none;
   left: 11px;
+  width: 100%;
 }
+
 .wc-message-downarrow-points {
   fill: #DCDFE0;
 }
