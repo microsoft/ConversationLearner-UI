@@ -47,7 +47,9 @@ interface ComponentState {
     // If activity selected its index
     selectedActivityIndex: number | null,
     // If activity was part of existing history, the actual item
-    selectedHistoryActivity: Activity | null
+    selectedHistoryActivity: Activity | null,
+    // Was last post a button sumbit
+    wasSubmitPost: boolean
 }
 
 class TeachModal extends React.Component<Props, ComponentState> {
@@ -64,7 +66,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
         hasTerminalAction: false,
         nextActivityIndex: 0,
         selectedActivityIndex: null,
-        selectedHistoryActivity: null
+        selectedHistoryActivity: null,
+        wasSubmitPost: false
     }
 
     private callbacksId: string | null = null;
@@ -98,11 +101,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let selectedActivityIndex = this.state.selectedActivityIndex
         let selectedHistoryActivity = this.state.selectedHistoryActivity
         let initialEntities = this.state.initialEntities
+        let wasSubmitPost = this.state.wasSubmitPost
 
         if (!newProps.isOpen) {
             selectedActivityIndex = null
             selectedHistoryActivity = null
             initialEntities = null
+            wasSubmitPost = false
         }
 
         if (this.props.initialHistory !== newProps.initialHistory) {
@@ -134,7 +139,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 initialEntities,
                 nextActivityIndex,
                 selectedActivityIndex,
-                selectedHistoryActivity
+                selectedHistoryActivity,
+                wasSubmitPost
             })
         }
     }
@@ -194,6 +200,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     async onWebChatSelectActivity(activity: Activity) {
 
+        // If last action was button submit, ignore the selection
+        if (this.state.wasSubmitPost) {
+            this.setState({wasSubmitPost: false})
+            return
+        }
         // Activities from history can be looked up
         if (this.props.initialHistory.length > 0) {
             const selectedActivityIndex = this.props.initialHistory.findIndex(a => a.id === activity.id)
@@ -217,28 +228,40 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     async onWebChatPostActivity(activity: Activity) {
         if (activity.type === 'message') {
-
-            let userInput: CLM.UserInput
-
-            // Check if button submit info
-            if (!activity.text && activity.value && activity.value['submit']) {
-                userInput = { text: activity.value['submit'] }
-            }
-            // Otherwise use text
-            else {
-                userInput = { text: activity.text! }
-            }
-
+         
             if (!this.props.teachSession.teach) {
                 throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
             }
 
+            // Content could come from button submit
+            const buttonSubmit = activity.value ? activity.value['submit'] : null
+            const userInput: CLM.UserInput = { text: buttonSubmit || activity.text! }
+
+            // If selected was a selected, insert it
+            if (this.state.selectedActivityIndex) {
+                this.onSubmitAddUserInput(userInput.text)
+                return
+            }
+            // If no activity selected, ingore next activity selection if button click 
+            else if (buttonSubmit) {
+                await Util.setStateAsync(this, {wasSubmitPost: true})
+
+                // If button clicked when not waiting for user input, must insert rather than continue as not valid combination
+                if (this.props.teachSession.dialogMode !== CLM.DialogMode.Wait) {
+                    await Util.setStateAsync(this, {selectedActivityIndex: this.state.nextActivityIndex - 1})
+                    this.onSubmitAddUserInput(userInput.text)
+                    return
+                }
+            }
             // Add channel data to activity so can process when clicked on later
             const clData: CLM.CLChannelData = {
                 senderType: CLM.SenderType.User,
                 roundIndex: null,
                 scoreIndex: null,
                 activityIndex: this.state.nextActivityIndex,
+            }
+            if (!activity.channelData) {
+                activity.channelData = {}
             }
             activity.channelData.clData = clData
 
