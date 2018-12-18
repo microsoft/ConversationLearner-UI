@@ -178,7 +178,7 @@ class Webchat extends React.Component<Props, {}> {
                 ...dl,
                 postActivity: (activity: any) => {
                     this.props.onPostActivity(activity)
-                    if (this.props.disableDL && (!activity.value &&  activity.value['submit'])) {
+                    if (this.props.disableDL && (activity.value && activity.value['submit'])) {
                         return Observable.empty()
                     }
                     return dl.postActivity(activity)
