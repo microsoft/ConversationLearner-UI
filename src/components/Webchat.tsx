@@ -19,7 +19,8 @@ export function renderActivity(
     children: React.ReactNode, 
     setRef: (div: HTMLDivElement | null) => void,
     renderSelected: ((activity: Activity) => JSX.Element | null) | null,
-    editType: EditDialogType
+    editType: EditDialogType,
+    shouldRenderHighlight: boolean,
     ): JSX.Element {
         
     let timeLine = <span> {activityProps.fromMe ? "User" : "Bot"}</span>;
@@ -54,7 +55,7 @@ export function renderActivity(
         }
     }
     
-    if (activityProps.selected) {
+    if (activityProps.selected && shouldRenderHighlight) {
         wrapperClassName += ` wc-message-selected`
     }
 
@@ -177,7 +178,10 @@ class Webchat extends React.Component<Props, {}> {
                 ...dl,
                 postActivity: (activity: any) => {
                     this.props.onPostActivity(activity)
-                    return this.props.disableDL ? null : dl.postActivity(activity)
+                    if (this.props.disableDL && (!activity.value &&  activity.value['submit'])) {
+                        return Observable.empty()
+                    }
+                    return dl.postActivity(activity)
                 }
             }
 
@@ -224,7 +228,6 @@ class Webchat extends React.Component<Props, {}> {
         chatProps.renderActivity = this.props.renderActivity
         chatProps.renderInput = this.props.renderInput
         chatProps.selectedActivityIndex = this.props.selectedActivityIndex
-        chatProps.highlightClassName = this.props.highlightClassName
 
         return (
             <div id="botchat" className="webchatwindow wc-app">
@@ -263,7 +266,6 @@ export interface ReceivedProps {
     onScrollChange?: (position: number) => void,
     renderActivity?: (props: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)
     renderInput?: () => JSX.Element | null
-    highlightClassName?: string
     // Used to select activity from outside webchat
     selectedActivityIndex?: number | null
 

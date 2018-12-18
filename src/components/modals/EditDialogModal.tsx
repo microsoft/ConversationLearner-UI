@@ -210,14 +210,29 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             }
             newTrainDialog.definitions = definitions
 
-            const initialUserInput: CLM.UserInput = { text: activity.text! }
+            // Content could come from button submit
+            const buttonSubmit = activity.value ? activity.value['submit'] : null
+            const userInput: CLM.UserInput = { text: buttonSubmit || activity.text! }
             
             // Allow webchat to scroll to bottom 
             this.props.clearWebchatScrollPosition()
 
             // If there's an error when I try to continue, reset webchat to ignore new input
             await this.props.setErrorDismissCallback(this.resetWebchat)
-            await this.props.onContinueDialog(newTrainDialog, initialUserInput)
+
+            // If button submit, and have selected action, insert at that step
+            if (this.state.selectedActivity) {
+                await this.props.onInsertInput(this.state.currentTrainDialog!, this.state.selectedActivity, userInput.text, this.state.addUserInputSelectionType)
+            }
+            // If next action should be score, need to insert, not continue
+            else if (this.waitingForScore()) {
+                const lastActivity = this.props.history[this.props.history.length - 1 ]
+                await this.props.onInsertInput(this.state.currentTrainDialog!, lastActivity, userInput.text, this.state.addUserInputSelectionType)
+            }
+            // Otherwise continue
+            else {
+                await this.props.onContinueDialog(newTrainDialog, userInput)
+            }
         }
     }
 
@@ -295,7 +310,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
-        return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType)
+        return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType, this.state.selectedActivity != null)
     }
 
     @OF.autobind
@@ -408,7 +423,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return false
     }
 
-    shouldShowScoreButton(): boolean {
+    waitingForScore(): boolean {
         if (!this.props.trainDialog || this.props.trainDialog.rounds.length === 0) {
             return false
         }
@@ -587,7 +602,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     renderWebchatInput(showDisableInput: boolean): JSX.Element | null {
-        if (this.shouldShowScoreButton() && this.state.currentTrainDialog) {
+        if (this.waitingForScore() && this.state.currentTrainDialog) {
             return (
                 <div className="wc-console">
                     <OF.PrimaryButton
@@ -746,7 +761,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 disableDL={true} // Prevents ProcessActivity from being called
                                 renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
                                 renderInput={() => this.renderWebchatInput(disableUserInput || hasBlockingError)}
-                                highlightClassName={'wc-message-selected'}
                                 selectedActivityIndex={this.props.initialSelectedActivityIndex}
                             />
                             {chatDisable}
