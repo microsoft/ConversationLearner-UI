@@ -70,7 +70,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
-        return renderActivity(activityProps, children, setRef, null, EditDialogType.LOG_ORIGINAL)
+        return renderActivity(activityProps, children, setRef, null, EditDialogType.LOG_ORIGINAL, false)
     }
 
     render() {

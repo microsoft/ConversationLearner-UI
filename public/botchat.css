@@ -167,7 +167,9 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   border-radius: 2px;
   box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.2);
   padding: 8px;
-  word-break: break-word; }
+  word-break: break-word; 
+  min-width: 50px;
+}
 
 .wc-message-content.clickable {
   cursor: pointer; }
