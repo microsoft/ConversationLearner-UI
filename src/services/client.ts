@@ -465,19 +465,19 @@ export default class ClClient {
             .then(response => response.data)
     }
 
-    chatSessionsExpire(appId: string, sessionId: string): Promise<void> {
+    chatSessionsExpire(appId: string): Promise<void> {
         return this.send<void>({
             method: 'put',
-            url: `${this.baseUrl}/app/${appId}/session/${sessionId}`
+            url: `${this.baseUrl}/app/${appId}/session`
         })
             .then(response => { })
     }
 
     // AT.DELETE_CHAT_SESSION_ASYNC
-    chatSessionsDelete(appId: string, sessionId: string): Promise<void> {
+    chatSessionsDelete(appId: string): Promise<void> {
         return this.send({
             method: 'delete',
-            url: `${this.baseUrl}/app/${appId}/session/${sessionId}`
+            url: `${this.baseUrl}/app/${appId}/session`
         })
             .then(rsponse => { })
     }

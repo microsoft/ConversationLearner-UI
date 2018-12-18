@@ -52,7 +52,7 @@ export const deleteChatSessionThunkAsync = (key: string, session: Session, app: 
         const clClient = ClientFactory.getInstance(AT.DELETE_CHAT_SESSION_ASYNC)
 
         try {
-            await clClient.chatSessionsDelete(app.appId, session.sessionId);
+            await clClient.chatSessionsDelete(app.appId);
             dispatch(deleteChatSessionFulfilled(session.sessionId));
             dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
             return true;
@@ -91,15 +91,15 @@ const editChatSessionExpireAsync = (appId: string, sessionId: string): ActionObj
 
 export const editChatSessionExpireThunkAsync = (appId: string, sessionId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.EDIT_APP_LIVE_TAG_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC)
         dispatch(editChatSessionExpireAsync(appId, sessionId))
 
         try {
-            await clClient.chatSessionsExpire(appId, sessionId)
+            await clClient.chatSessionsExpire(appId)
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_APP_LIVE_TAG_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC))
             throw error
         }
     }
