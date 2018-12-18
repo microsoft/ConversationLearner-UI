@@ -34,6 +34,12 @@ class SessionWindow extends React.Component<Props, ComponentState> {
         }
     }
 
+    componentWillReceiveProps(newProps: Props) {
+        if (this.props.open && !newProps.open) {
+            // Reset
+            this.setState({hasChatActivity: false})
+        }
+    }
     @OF.autobind
     onClickDone() {
         if (this.props.chatSession.current !== null) {
