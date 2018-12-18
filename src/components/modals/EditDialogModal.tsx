@@ -310,7 +310,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
-        return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType)
+        return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType, this.state.selectedActivity != null)
     }
 
     @OF.autobind
@@ -761,7 +761,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 disableDL={true} // Prevents ProcessActivity from being called
                                 renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
                                 renderInput={() => this.renderWebchatInput(disableUserInput || hasBlockingError)}
-                                highlightClassName={'wc-message-selected'}
                                 selectedActivityIndex={this.props.initialSelectedActivityIndex}
                             />
                             {chatDisable}

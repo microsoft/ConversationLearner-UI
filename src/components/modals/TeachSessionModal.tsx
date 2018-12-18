@@ -504,7 +504,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
-        return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType)
+        return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType, this.state.selectedActivityIndex != null)
     }
 
     @OF.autobind
@@ -683,7 +683,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     onScrollChange={position => this.onScrollChange(position)}
                                     hideInput={this.props.teachSession.dialogMode !== CLM.DialogMode.Wait}
                                     focusInput={this.props.teachSession.dialogMode === CLM.DialogMode.Wait}
-                                    highlightClassName={'wc-message-selected'}
                                     renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
                                     renderInput={() => this.renderWebchatInput()}
                                     selectedActivityIndex={this.state.selectedActivityIndex}
