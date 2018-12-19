@@ -78,6 +78,11 @@ export const editEntityThunkAsync = (appId: string, entity: EntityBase, prevEnti
                 // Need to remove negative entity from memory
                 dispatch(deleteEntityFulfilled(prevEntity.negativeId!))
             }
+            // If entity is negatable and negative entity have changed as a result of this edit
+            else if (entity.isNegatible && changedEntityResponse.negativeEntityId) {
+                const negEntity = await clClient.entitiesGetById(appId, changedEntityResponse.negativeEntityId)
+                dispatch(editEntityFulfilled(negEntity))
+            }
 
             // If updated entity has a different resolver, we fetch all entities to make sure 
             // that definition of prebuilt entity is in the memory
