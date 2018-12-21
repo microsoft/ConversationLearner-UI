@@ -30,7 +30,8 @@ export default class EntityPicker extends React.Component<MenuProps> {
         const style: any = {
             left: this.props.isVisible ? `1em` : null,
             bottom: this.props.isVisible ? `${this.props.position.bottom}px` : null,
-            height: "14em"
+            height: !this.props.isOverlappingOtherEntities ? "14em" : "4em",
+            marginBottom: !this.props.isOverlappingOtherEntities ? "0" : "1em"
         }
 
         if (this.props.isOverlappingOtherEntities) {
