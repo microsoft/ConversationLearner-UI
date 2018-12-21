@@ -15,6 +15,9 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
+  "Train.DisqualifyingEntities",
+  "Train.WaitVsNoWaitActions",
+  "Train.WhatsYourName",
   "Train.MyNameIs",
   "Train.TagAndFrog",
 ]
@@ -38,7 +41,7 @@ export const masterListOfAllTestCases =
   "Train.WhatsYourName",
   "Train.MyNameIs",
   "Train.TagAndFrog",
-  "CleanUp.DeleteAllTestGeneratedModels"
+  "CleanUp.DeleteAllTestGeneratedModels",
 ]
 
 // The lists above are in a format that is convenient for a developer to copy
