@@ -34,6 +34,7 @@ interface Props {
 interface State {
     isSelectionOverlappingOtherEntities: boolean
     isMenuVisible: boolean
+    isDeleteButtonVisible: boolean
     isPreBuiltExpandoOpen: boolean
     menuPosition: IPosition | null
     value: SlateValue
@@ -61,6 +62,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     state = {
         isSelectionOverlappingOtherEntities: false,
         isMenuVisible: false,
+        isDeleteButtonVisible: false,
         isPreBuiltExpandoOpen: true,
         menuPosition: {
             top: 0,
@@ -221,19 +223,55 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
     }
 
+    // If user clicks on a single character, ohChange gets called with empty item.  This changes the
+    // selection to pick the charater
+    onSelectChar = () => {
+        // Make selection
+        let selection = window.getSelection();
+        const parentNode = selection 
+            && selection.anchorNode 
+            && selection.anchorNode.parentElement 
+            && selection.anchorNode.parentElement.parentNode
+
+        if (parentNode) {
+            const sibling = parentNode.nextSibling ? parentNode.nextSibling : parentNode.parentNode && parentNode.parentNode.nextSibling
+
+            if (sibling && sibling.firstChild && sibling.firstChild.firstChild && sibling.firstChild.firstChild.firstChild) {
+                const newSelection = sibling.firstChild.firstChild.firstChild
+                let range = document.createRange();
+                range.selectNode(newSelection)
+                selection.removeAllRanges();
+                selection.addRange(range)
+            }
+        }
+    }
+
     onChange = (change: any) => {
         const { value, operations } = change
 
         const operationsJs = operations.toJS()
-        // console.log(`operationsJs: `, operationsJs)
+        // console.log(`operationsJs: `, operationsJs.map((o:any) => o.type))
         // console.log(`disallowedOperations: `, disallowedOperations)
-        const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
 
-        if (containsDisallowedOperations) {
+        let ignoreOperations = [...disallowedOperations]
+
+        // If delete button is up, disallow any new selection
+        if (this.state.isDeleteButtonVisible) {
+            ignoreOperations.push("set_selection")
+        }
+
+        if (operationsJs.some((o: any) =>  ignoreOperations.includes(o.type))) {
             return
         }
 
         const tokenNodes = value.inlines.filter((n: any) => n.type === NodeType.TokenNodeType)
+
+        // User clicked next to a single character.  Go ahead and autoselect it
+        if (tokenNodes.size === 0 && operationsJs.length === 1) {
+            console.log("SELECT CHAR")
+            this.onSelectChar()
+            return
+        }
         if (tokenNodes.size > 0) {
             let shouldExpandSelection = true
             const parentNodes = tokenNodes.map((n: any) => value.document.getParent(n.key))
@@ -241,7 +279,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
             // If all parents nodes are the same node and the type of that node is CustomEntity then it means selection is all within a custom entity
             // In this case we assume the user wants to delete the entity and do not expand the selection to prevent the picker menu from showing
-            if (firstParent.type === NodeType.CustomEntityNodeType && parentNodes.every((x: any) => x === firstParent)) {
+            if (firstParent && firstParent.type === NodeType.CustomEntityNodeType && parentNodes.every((x: any) => x === firstParent)) {
                 shouldExpandSelection = false
             }
 
@@ -313,11 +351,20 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         this.menu = menu
     }
 
+    @OF.autobind
+    onDeleteButtonVisible(isDeleteButtonVisible: boolean): void {
+        this.setState({isDeleteButtonVisible})
+    }
+
     renderNode = (props: any): React.ReactNode | void => {
         switch (props.node.type) {
-            case NodeType.TokenNodeType: return <TokenNode {...props} />
-            case NodeType.CustomEntityNodeType: return <CustomEntityNode {...props} />
-            case NodeType.PreBuiltEntityNodeType: return <PreBuiltEntityNode {...props} />
+            case NodeType.TokenNodeType: 
+                return <TokenNode {...props} />
+            case NodeType.CustomEntityNodeType: 
+                let cenProps = {...props, onDeleteButtonVisible: this.onDeleteButtonVisible}
+                return <CustomEntityNode {...cenProps} />
+            case NodeType.PreBuiltEntityNodeType:   
+                return <PreBuiltEntityNode {...props} />
             default: return
         }
     }
@@ -406,6 +453,13 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         return (
             <div className="entity-labeler">
+                {(this.state.isMenuVisible || this.state.isDeleteButtonVisible) &&
+                    <div 
+                        className="entity-labeler-overlay"
+                        onClick={() => this.setState({isMenuVisible: false})}
+                        role="button"
+                    />
+                }
                 <div className={`entity-labeler__custom-editor ${this.props.readOnly ? 'entity-labeler__custom-editor--read-only' : ''} ${this.props.isValid ? '' : 'entity-labeler__custom-editor--error'}`}>
                     <div className="entity-labeler__editor">
                         <Editor
