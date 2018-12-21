@@ -476,16 +476,16 @@ export function getTip(tipType: string) {
                 <div>
                     <h2>Label Text as Entity</h2>
                     <ol>
-                        <li>Select text</li>
-                        <li>Pick entity from menu</li>
+                        <li>Select the text range</li>
+                        <li>Select the corresponding Entity from the menu, or create a New Entity</li>
                     </ol>
 
                     <img src="/entity-extractor-label.gif" width="560px" height="368px" alt="Entity Extractor Label" />
 
                     <h2>Remove Label</h2>
                     <ol>
-                        <li>Click on green highlighted text</li>
-                        <li>Click on red 'X'</li>
+                        <li>Click on highlighted text</li>
+                        <li>Click the delete icon</li>
                     </ol>
 
                     <img src="/entity-extractor-remove-label.gif" width="518px" height="184px" alt="Entity Extractor Remove Label" />
