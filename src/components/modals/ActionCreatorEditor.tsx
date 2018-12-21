@@ -284,7 +284,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         slateValuesMap[TEXT_SLOT] = createSlateValue(textAction.value, payloadOptions)
                     }
                     catch {
-                         // Default to raw value
+                        // Default to raw value
                         let contentString: string = JSON.parse(textAction.payload).text
                         slateValuesMap[TEXT_SLOT] = Plain.deserialize(contentString)
                         entityWarning = true
@@ -379,7 +379,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }
         })
 
-        return pairedValues.some(pv => !pv.prev 
+        return pairedValues.some(pv => !pv.prev
             || pv.current.document.text !== pv.prev.document.text
             || pv.currentEntities.length !== pv.prevEntities.length)
     }
@@ -648,7 +648,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
             // Note any untagged entities
             let untaggedEntities = this.untaggedEntities()
-            untaggedEntities.forEach(e => 
+            untaggedEntities.forEach(e =>
                 validationWarnings.push(`"${e}" ${formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_MISSINGLABEL_WARNING)}`)
             )
 
@@ -662,7 +662,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             else {
                 this.props.handleEdit(newOrEditedAction);
             }
-        } 
+        }
         catch (e) {
             const error = e as Error
             console.warn(`Error when attempting to validate edit: `, error)
@@ -684,10 +684,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .then(invalidTrainingDialogIds => {
 
                 if (invalidTrainingDialogIds) {
-                    let validationWarnings = (invalidTrainingDialogIds.length > 0 )
+                    let validationWarnings = (invalidTrainingDialogIds.length > 0)
                         ? [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING)]
                         : []
-                   
+
                     this.setState(
                         {
                             isConfirmDeleteModalOpen: true,
@@ -726,7 +726,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         validationWarnings.pop()
         // Move to next validation warning if there is one
         if (validationWarnings.length > 0) {
-            this.setState({validationWarnings})
+            this.setState({ validationWarnings })
         }
         else {
             // Otherwise save
@@ -734,7 +734,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             this.setState({
                 isConfirmEditModalOpen: false,
                 newOrEditedAction: null
-            }) 
+            })
         }
     }
 
@@ -940,7 +940,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             return (
                 <div className="cl-text--warning">
                     <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
-                    {this.state.validationWarnings[this.state.validationWarnings.length-1]}
+                    {this.state.validationWarnings[this.state.validationWarnings.length - 1]}
                 </div>
             )
         }
@@ -950,10 +950,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
 
-        const payloadError = this.state.entityWarning 
-            ? formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_ENTITY) 
-            : this.state.isPayloadMissing 
-            ? formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD) : null 
+        const payloadError = this.state.entityWarning
+            ? formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_ENTITY)
+            : this.state.isPayloadMissing
+                ? formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD) : null
 
         // Disable payload if we're editing existing action and no API or CARD data available
         const isPayloadDisabled =
@@ -1186,6 +1186,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
                                     onRenderItem={this.onRenderExpectedTag}
                                     getTextFromItem={item => item.name}
+                                    disabled={!this.state.isTerminal}
                                     onChange={this.onChangeExpectedEntityTags}
                                     pickerSuggestionsProps={
                                         {
