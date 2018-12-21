@@ -103,6 +103,54 @@ export function TagAndFrog()
 
   train.Save()
 
-
   // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog.cl'
+}
+
+export function EndlessLoop()
+{
+  // models.ImportModel('z-endlessLoop', 'z-endlessLoop.cl')
+  models.CreateNewModel('z-endlessLoop')
+  actions.CreateNewAction({response: "Action One", uncheckWaitForResponse: true})
+  actions.CreateNewAction({response: "Action Two", uncheckWaitForResponse: true})
+  actions.CreateNewAction({response: "Action Three", uncheckWaitForResponse: true})
+
+  modelPage.NavigateToTrainDialogs()
+  cy.WaitForTrainingStatusCompleted()
+  train.CreateNewTrainDialog()
+
+  train.TypeYourMessage('hi')
+  editDialogModal.ClickScoreActionsButton()
+  train.SelectAction('Action One')
+  cy.WaitForTrainingStatusCompleted()
+  train.SelectAction('Action Two')
+  cy.WaitForTrainingStatusCompleted()
+  train.SelectAction('Action Three')
+
+  train.Save()
+
+  train.CreateNewTrainDialog()
+
+  train.TypeYourMessage('howdy')
+  editDialogModal.ClickScoreActionsButton()
+  train.SelectAction('Action Two')
+  cy.WaitForTrainingStatusCompleted()
+  train.SelectAction('Action Three')
+  cy.WaitForTrainingStatusCompleted()
+  train.SelectAction('Action One')
+
+  train.Save()
+
+  train.CreateNewTrainDialog()
+
+  train.TypeYourMessage('namaste')
+  editDialogModal.ClickScoreActionsButton()
+  train.SelectAction('Action Three')
+  cy.WaitForTrainingStatusCompleted()
+  train.SelectAction('Action Two')
+  cy.WaitForTrainingStatusCompleted()
+  train.SelectAction('Action One')
+
+  train.Save()
+
+  // Manually EXPORT this to fixtures folder and name it 'z-endlessLoop.cl'
 }
