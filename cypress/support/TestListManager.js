@@ -15,7 +15,7 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "EditAndBranching.TagAndFrog",
+  "Train.MyNameIs",
   "Train.TagAndFrog",
 ]
 
@@ -27,10 +27,12 @@ export const masterListOfAllTestCases =
   "CreateModels.WaitVsNoWaitActions",
   "CreateModels.WhatsYourName",
   "CreateModels.TagAndFrog",
+  "CreateModels.EndlessLoop",
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
   "EditAndBranching.TagAndFrog",
   "Log.WhatsYourName",
+  "Log.EndlessLoop",
   "Train.DisqualifyingEntities",
   "Train.WaitVsNoWaitActions",
   "Train.WhatsYourName",
@@ -53,6 +55,7 @@ const testGroups =
       { name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions },
       { name: "What's Your Name", func: createModels.WhatsYourName },
       { name: "Tag and Frog", func: createModels.TagAndFrog },
+      { name: "Endless Loop", func: createModels.EndlessLoop },
     ]
   },
   {
@@ -67,6 +70,7 @@ const testGroups =
     name: 'Log', tests:
     [
       { name: "What's Your Name", func: log.WhatsYourName },
+      { name: "Endless Loop", func: log.EndlessLoop },
     ]
   },
   {
