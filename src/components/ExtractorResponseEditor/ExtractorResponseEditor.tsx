@@ -141,7 +141,9 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             || nextProps.preBuiltEntities.length !== this.props.preBuiltEntities.length) {
             this.setState({
                 value: convertEntitiesAndTextToTokenizedEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
-                preBuiltEditorValues: nextProps.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(nextProps.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
+                preBuiltEditorValues: nextProps.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(nextProps.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType)),
+                isMenuVisible: false,
+                isSelectionOverlappingOtherEntities: false
             })
         }
     }
