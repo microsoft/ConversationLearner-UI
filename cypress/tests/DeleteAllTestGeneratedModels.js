@@ -18,24 +18,24 @@ export function DeleteAllTestGeneratedModels()
 
 function DeleteAllTestGeneratedModelRows()
 {
-  var nextPotentialRowToDelete = 0
+  var indexNextPotentialRowToDelete = 0
 
   function DeleteATestGeneratedModelRow(resolve)
   {
     var thisFuncName = `DeleteATestGeneratedModelRow`
     helpers.ConLog(thisFuncName, `Trying to find a test generated model to delete...`)
 
-    homePage.DeleteNextTestGeneratedModel(nextPotentialRowToDelete).then(nextRow =>
+    homePage.DeleteNextTestGeneratedModel(indexNextPotentialRowToDelete).then(indexNextRow =>
     {
-      helpers.Dump(thisFuncName, nextRow)
-      if (!nextRow)
+      helpers.Dump(thisFuncName, indexNextRow)
+      if (!indexNextRow)
       {
         helpers.ConLog(thisFuncName, `DONE - there are no more test generated models to delete`)
         return resolve()
       }
       
-      nextPotentialRowToDelete = nextRow
-      helpers.ConLog(thisFuncName, `nextRow: ${nextRow} - nextPotentialRowToDelete: ${nextPotentialRowToDelete}`)
+      indexNextPotentialRowToDelete = indexNextRow
+      helpers.ConLog(thisFuncName, `nextRow: ${indexNextRow} - nextPotentialRowToDelete: ${indexNextPotentialRowToDelete}`)
       DeleteATestGeneratedModelRow(resolve)
     })
   }

@@ -18,22 +18,40 @@ export function CreateNewModel(modelNamePrefix)
   homePage.TypeModelName(name)
   homePage.ClickSubmitButton()
   modelPage.VerifyModelName(name)
-}
-
-export function ImportModel(modelNamePrefix, fileName)
-{
-  // Maximum Name Length is 30 Characters
-  const name = `${modelNamePrefix}-${ModelNameTime()}`
-
-  homePage.Visit()
-  homePage.ClickImportModelButton()
-
-  homePage.TypeModelName(name)
-  homePage.UploadImportModelFile(fileName)
-  homePage.ClickSubmitButton()
 
   return name
 }
 
-function ModelNameTime() { return Cypress.moment().format("MMMDD-HHmmss") }
+export function ImportModel(modelNamePrefix, fileName)
+{
+  return new Promise((resolve) => 
+  { 
+    // Maximum Name Length is 30 Characters
+    const name = `${modelNamePrefix}-${ModelNameTime()}`
+
+    homePage.Visit()
+    homePage.ClickImportModelButton()
+    homePage.TypeModelName(name)
+    homePage.UploadImportModelFile(fileName)
+    homePage.ClickSubmitButton()
+    
+    cy.WaitForStableDOM().then(() => { resolve(name) })
+  })
+}
+
+// Get a unique time to use as a suffix for the model name.
+var lastModelNameTime
+function ModelNameTime() 
+{ 
+  var modelNameMoment = Cypress.moment()
+  var modelNameTime = modelNameMoment.format("MMMDD-HHmmss")
+  if (lastModelNameTime && modelNameTime == lastModelNameTime)
+  {
+    modelNameMoment = modelNameMoment.add(1, 'seconds')
+    modelNameTime = modelNameMoment.format("MMMDD-HHmmss")
+  }
+  
+  lastModelNameTime = modelNameTime
+  return modelNameTime
+}
 

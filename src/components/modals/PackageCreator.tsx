@@ -12,24 +12,10 @@ import { PackageReference } from '@conversationlearner/models'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import FormattedMessageId from '../FormattedMessageId'
-import { injectIntl, InjectedIntlProps, defineMessages } from 'react-intl'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 import * as TC from '../tipComponents'
 import * as ToolTips from '../ToolTips/ToolTips'
-
-const messages = defineMessages({
-    fieldErrorRequired: {
-        id: FM.APPCREATOR_FIELDERROR_REQUIREDVALUE,
-        defaultMessage: 'Required Value'
-    },
-    fieldErrorAlphanumeric: {
-        id: FM.APPCREATOR_FIELDERROR_ALPHANUMERIC,
-        defaultMessage: 'Tag name may only contain alphanumeric characters'
-    },
-    fieldErrorDistinct: {
-        id: FM.APPCREATOR_FIELDERROR_DISTINCT,
-        defaultMessage: 'Name is already in use.'
-    }
-})
+import * as Util from '../../Utils/util'
 
 interface ComponentState {
     tagNameVal: string
@@ -54,7 +40,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
             tagNameVal: text
         })
     }
-    
+
     @OF.autobind
     onClickCancel() {
         this.props.onCancel()
@@ -77,17 +63,22 @@ class PackageCreator extends React.Component<Props, ComponentState> {
     onGetNameErrorMessage(value: string): string {
         const { intl } = this.props
         if (value.length === 0) {
-            return intl.formatMessage(messages.fieldErrorRequired)
+            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_REQUIREDVALUE)
+
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
-            return intl.formatMessage(messages.fieldErrorAlphanumeric)
+            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_ALPHANUMERIC)
         }
 
         // Check that name isn't in use
         let foundName = this.props.packageReferences.find(pr => pr.packageVersion === value)
         if (foundName) {
-            return intl.formatMessage(messages.fieldErrorDistinct)
+            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
+        }
+
+        if ("Master".toLowerCase() === value.toLowerCase()) {
+            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
         }
 
         return ''
@@ -128,20 +119,20 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                                 defaultMessage: 'Tag Name...'
                             })}
                             onKeyDown={key => this.onKeyDown(key)}
-                            value={this.state.tagNameVal} 
+                            value={this.state.tagNameVal}
                         />
-                    </div>    
+                    </div>
                     <div className="cl-entity-creator-checkbox">
-                            <TC.Checkbox
-                                label={intl.formatMessage({
-                                    id: FM.PACKAGECREATOR_LIVE_LABEL,
-                                    defaultMessage: 'Make Live Version'
-                                })}
-                                checked={this.state.isLiveVal}
-                                onChange={this.onToggleSetLive}
-                                tipType={ToolTips.TipType.PACKAGECREATOR_LIVE_TOGGLE}
-                            />
-                        </div>
+                        <TC.Checkbox
+                            label={intl.formatMessage({
+                                id: FM.PACKAGECREATOR_LIVE_LABEL,
+                                defaultMessage: 'Make Live Version'
+                            })}
+                            checked={this.state.isLiveVal}
+                            onChange={this.onToggleSetLive}
+                            tipType={ToolTips.TipType.PACKAGECREATOR_LIVE_TOGGLE}
+                        />
+                    </div>
                     <div className="cl-modal_footer">
                         <div className="cl-modal-buttons">
                             <div className="cl-modal-buttons_primary">
@@ -181,7 +172,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({}, dispatch);
 }
 const mapStateToProps = (state: State) => {
-    return { }
+    return {}
 }
 
 export interface ReceivedProps {

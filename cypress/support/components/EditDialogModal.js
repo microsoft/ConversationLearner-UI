@@ -9,7 +9,7 @@ const scorerModal = require('../../support/components/ScorerModal')
 
 export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p'
 
-export function TypeYourMessage(trainMessage)         { cy.Get('input[class="wc-shellinput"]').type(`${trainMessage}{enter}`) }  // data-testid NOT possible
+export function TypeYourMessage(trainMessage)         { cy.Get('input.wc-shellinput').type(`${trainMessage}{enter}`) }  // data-testid NOT possible
 export function TypeAlternativeInput(trainMessage)    { cy.Get('[data-testid="entity-extractor-alternative-input-text"]').type(`${trainMessage}{enter}`) }
 export function ClickSetInitialStateButton()          { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
 export function ClickScoreActionsButton()             { cy.Get('[data-testid="score-actions-button"]').Click() }

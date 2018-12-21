@@ -5,16 +5,16 @@
 
 const helpers = require('../Helpers')
 
-export function Visit()                         { cy.visit('http://localhost:5050') }
-export function NavigateToModelPage(name)       { cy.Get('button.root-65').ExactMatch(`${name}`).Click() }
-export function ClickNewModelButton()           { cy.Get('[data-testid="model-list-create-new-button"]').Click() }
-export function ClickImportModelButton()        { cy.Get('[data-testid="model-list-import-model-button"]').Click() }
-export function TypeModelName(name)             { cy.Get('[data-testid="model-creator-input-name"]').type(name) }
-export function ClickSubmitButton()             { cy.Get('[data-testid="model-creator-submit-button"]').Click() }
+export function Visit()                         { return cy.visit('http://localhost:5050') }
+export function NavigateToModelPage(name)       { return cy.Get('[data-testid="model-list-model-name"]').ExactMatch(`${name}`).Click() }
+export function ClickNewModelButton()           { return cy.Get('[data-testid="model-list-create-new-button"]').Click() }
+export function ClickImportModelButton()        { return cy.Get('[data-testid="model-list-import-model-button"]').Click() }
+export function TypeModelName(name)             { return cy.Get('[data-testid="model-creator-input-name"]').type(name) }
+export function ClickSubmitButton()             { return cy.Get('[data-testid="model-creator-submit-button"]').Click() }
 
-export function UploadImportModelFile(name)     { cy.UploadFile(name, `[data-testid=model-creator-import-file-picker] > div > input[type="file"]`)}
+export function UploadImportModelFile(name)     { return cy.UploadFile(name, `[data-testid=model-creator-import-file-picker] > div > input[type="file"]`)}
 
-export function ClickDeleteModelButton(row)     { cy.Get(`[data-list-index="${row}"] > .ms-FocusZone > .ms-DetailsRow-fields`).find('i[data-icon-name="Delete"]').Click() }
+export function ClickDeleteModelButton(row)     { return cy.Get(`[data-list-index="${row}"] > .ms-FocusZone > .ms-DetailsRow-fields`).find('i[data-icon-name="Delete"]').Click() }
 export function ClickConfirmButton()            { return cy.Get('.ms-Dialog-main').contains('Confirm').Click() }
 
 export function GetModelListRowCount() 
@@ -23,13 +23,14 @@ export function GetModelListRowCount()
   .then(gridElement => { var rowCount = +gridElement.attr('aria-rowcount') -1; return rowCount })
 }
 
-export function DeleteNextTestGeneratedModel(nextPotentialRowToDelete) 
+// Returns the index to the next potential row to delete.
+export function DeleteNextTestGeneratedModel(indexNextPotentialRowToDelete) 
 {
   return new Promise((resolve) =>
   {
     cy.Get('[data-testid="model-list-model-name"]').then(elements =>
     {
-      for(var i = nextPotentialRowToDelete; i < elements.length; i++) 
+      for(var i = indexNextPotentialRowToDelete; i < elements.length; i++) 
       {
         // TODO: Once the CircleCI machine has run and eliminated all tests generated models remove the last two 'startsWith' evaluations...
         if(elements[i].innerText.startsWith('z-') || elements[i].innerText.startsWith('Model-') || elements[i].innerText.startsWith('Model1-')) 

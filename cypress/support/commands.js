@@ -51,6 +51,19 @@ Cypress.Commands.add('UploadFile', (fileName, selector) =>
 
 // This function operates similar to the "cy.contains" command except that it expects
 // the text content of the elements to contain an EXACT MATCH to the expected text.
+Cypress.Commands.add('DoesNotContain', { prevSubject: 'element'}, (elements, expectedText) => 
+{   
+  helpers.ConLog(`DoesNotContain('${expectedText}')`, `Start`)
+  for(var i = 0; i < elements.length; i++) 
+  {
+    helpers.ConLog(`DoesNotContain('${expectedText}')`, `elements[${i}].innerText: '${elements[i].innerText}'`)
+    if(!elements[i].innerText.includes(expectedText)) return elements[i]
+  }
+  throw `Element expected to Not Contain '${expectedText}'`
+})
+
+// This function operates similar to the "cy.contains" command except that it expects
+// the text content of the elements to contain an EXACT MATCH to the expected text.
 Cypress.Commands.add('ExactMatch', { prevSubject: 'element'}, (elements, expectedText) => 
 {   
   helpers.ConLog(`ExactMatch('${expectedText}')`, `Start`)
