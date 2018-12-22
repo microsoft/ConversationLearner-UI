@@ -102,6 +102,7 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
             required={true}
             value={props.name}
             disabled={props.isNameDisabled}
+            ref={setFocused}
         />
         {props.needResolverType &&
             <TC.Dropdown
@@ -268,6 +269,10 @@ const Component: React.SFC<Props> = (props) => {
             </div>}
         />
     </Modal >
+}
+
+function setFocused(ref: OF.TextField) {
+    if (ref) ref.focus()
 }
 
 export default Component
