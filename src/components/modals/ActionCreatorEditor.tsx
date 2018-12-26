@@ -196,14 +196,16 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     initProps(): ComponentState {
         const { entities, botInfo } = this.props
-        const entityTags = entities.filter(e => !e.doNotMemorize).map<OF.ITag>(e =>
+        // Ignore resolvers and negative entities
+        const entityTags = entities.filter(e => !e.doNotMemorize && !e.positiveId).map<OF.ITag>(e =>
             ({
                 key: e.entityId,
                 name: e.entityName
             }))
 
         const availableExpectedEntityTags = entities
-            .filter(e => e.entityType === CLM.EntityType.LUIS)
+            // Must be LUIS entity and not the negative
+            .filter(e => e.entityType === CLM.EntityType.LUIS && !e.positiveId)
             .map<OF.ITag>(convertEntityToTag)
 
         const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
@@ -231,10 +233,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             // Otherwise reset only if props have changed
             else {
                 if (nextProps.entities !== this.props.entities) {
-                    const entityTags = nextProps.entities.filter(e => !e.doNotMemorize).map<OF.ITag>(convertEntityToTag)
+                    // Ignore resolvers and negative entities
+                    const entityTags = nextProps.entities.filter(e => !e.doNotMemorize && !e.positiveId).map<OF.ITag>(convertEntityToTag)
 
                     const availableExpectedEntityTags = nextProps.entities
-                        .filter(e => e.entityType === CLM.EntityType.LUIS)
+                        // Must be LUIS entity and not the negative
+                        .filter(e => e.entityType === CLM.EntityType.LUIS && !e.positiveId)
                         .map<OF.ITag>(convertEntityToTag)
 
                     nextState = {
