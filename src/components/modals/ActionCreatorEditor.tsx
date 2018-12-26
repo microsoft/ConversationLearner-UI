@@ -325,7 +325,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                 const requiredEntityTagsFromPayload = Object.values(slateValuesMap)
                     .reduce<OF.ITag[]>((entities, value) => {
-                        const newEntities = ActionPayloadEditor.Utilities.getEntitiesFromValue(value).map(convertOptionToTag)
+                        const newEntities = ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(value).map(convertOptionToTag)
                         // Only add new entities which are not already included from a previous payload
                         return [...entities, ...newEntities.filter(ne => !entities.some(e => e.key === ne.key))]
                     }, [])
@@ -374,8 +374,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 key: k,
                 current: v,
                 prev: prevValue,
-                currentEntities: ActionPayloadEditor.Utilities.getEntitiesFromValue(v),
-                prevEntities: ActionPayloadEditor.Utilities.getEntitiesFromValue(prevValue)
+                // TODO: Should these be be getAllEntitiesFromValue
+                currentEntities: ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(v),
+                prevEntities: ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(prevValue)
             }
         })
 
@@ -402,7 +403,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         primaryEntries.forEach(([k, v]) => {
             let text: string = v.document.text
             let tags = text.split(/[^0-9A-Za-z$-]/).filter(t => t.startsWith("$"))
-            let entities = ActionPayloadEditor.Utilities.getEntitiesFromValue(v)
+            let entities = ActionPayloadEditor.Utilities.getAllEntitiesFromValue(v)
                 .map(e => `$${e.name}`)
             tags.forEach(tag => {
                 if (!entities.find(e => e === tag)) {
@@ -414,7 +415,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         secondaryEntries.forEach(([k, v]) => {
             let text: string = v.document.text
             let tags = text.split(" ").filter(t => t.startsWith("$"))
-            let entities = ActionPayloadEditor.Utilities.getEntitiesFromValue(v)
+            let entities = ActionPayloadEditor.Utilities.getAllEntitiesFromValue(v)
                 .map(e => `$${e.name}`)
             tags.forEach(tag => {
                 if (!entities.find(e => e === tag)) {
@@ -884,7 +885,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         // TODO: Would be more optimized to store required entities PER payload in the map instead of single value. This reduces computation for ALL
         // payloads during editing
         const requiredEntityTagsFromPayload = [...Object.values(slateValuesMap), ...Object.values(otherValuesMap)]
-            .map(val => ActionPayloadEditor.Utilities.getEntitiesFromValue(val).map(convertOptionToTag))
+            .map(val => ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(val).map(convertOptionToTag))
             .reduce((a, b) => a.concat(b))
             .filter((t, i, xs) => i === xs.findIndex(tag => tag.key === t.key))
             .sort((a, b) => a.name.localeCompare(b.name))
