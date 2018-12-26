@@ -115,6 +115,10 @@ class AppCreator extends React.Component<Props, ComponentState> {
         if (this.props.creatorType !== AppCreatorType.IMPORT && event.key === 'Enter' && this.state.appNameVal) {
             this.onClickCreate();
         }
+
+        if (this.props.creatorType === AppCreatorType.IMPORT && event.key === 'Enter' && this.state.appNameVal && this.state.file) {
+            this.onClickCreate();
+        }
     }
 
     onGetNameErrorMessage(value: string): string {
