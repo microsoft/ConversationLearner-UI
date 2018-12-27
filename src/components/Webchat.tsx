@@ -228,6 +228,8 @@ class Webchat extends React.Component<Props, {}> {
         chatProps.renderActivity = this.props.renderActivity
         chatProps.renderInput = this.props.renderInput
         chatProps.selectedActivityIndex = this.props.selectedActivityIndex
+        chatProps.replaceActivityText = this.props.replaceActivityText
+        chatProps.replaceActivityIndex = this.props.replaceActivityIndex
 
         return (
             <div id="botchat" className="webchatwindow wc-app">
@@ -268,6 +270,8 @@ export interface ReceivedProps {
     renderInput?: () => JSX.Element | null
     // Used to select activity from outside webchat
     selectedActivityIndex?: number | null
+    replaceActivityText?: string | null
+    replaceActivityIndex?: number | null
 
 }
 
