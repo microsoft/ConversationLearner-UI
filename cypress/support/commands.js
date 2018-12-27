@@ -4,6 +4,13 @@ const helpers = require('./Helpers.js')
 const modelPage = require('./components/ModelPage')
 const train = require('../support/Train')
 
+// **********************************************************************************************
+// OTHER cy.* COMMANDS are defined in MonitorDocumentChanges.js
+// They are defined there so as to have access to the correct instance 
+// of the MillisecondsSinceLastChange function.
+// **********************************************************************************************
+
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -47,19 +54,6 @@ Cypress.Commands.add('UploadFile', (fileName, selector) =>
       element.files = dataTransfer.files
     })
   })
-})
-
-// This function operates similar to the "cy.contains" command except that it expects
-// the text content of the elements to contain an EXACT MATCH to the expected text.
-Cypress.Commands.add('DoesNotContain', { prevSubject: 'element'}, (elements, expectedText) => 
-{   
-  helpers.ConLog(`DoesNotContain('${expectedText}')`, `Start`)
-  for(var i = 0; i < elements.length; i++) 
-  {
-    helpers.ConLog(`DoesNotContain('${expectedText}')`, `elements[${i}].innerText: '${elements[i].innerText}'`)
-    if(!elements[i].innerText.includes(expectedText)) return elements[i]
-  }
-  throw `Element expected to Not Contain '${expectedText}'`
 })
 
 // This function operates similar to the "cy.contains" command except that it expects

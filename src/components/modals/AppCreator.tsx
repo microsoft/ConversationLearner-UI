@@ -74,7 +74,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     nameChanged(text: string) {
         this.setState({
-            appNameVal: text
+            appNameVal: text.trim().length ? text : ""
         })
     }
     localeChanged(obj: OF.IDropdownOption) {
@@ -89,7 +89,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     getAppInput(): AppInput {
         return {
-            appName: this.state.appNameVal,
+            appName: this.state.appNameVal.trim(),
             locale: this.state.localeVal,
             metadata: {
                 botFrameworkApps: [],
@@ -134,6 +134,10 @@ class AppCreator extends React.Component<Props, ComponentState> {
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
+            return Utils.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_ALPHANUMERIC)
+        }
+
+        if (!value.trim().length) {
             return Utils.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_ALPHANUMERIC)
         }
 
