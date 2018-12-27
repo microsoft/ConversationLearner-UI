@@ -22,6 +22,28 @@ export const testList =
   "Train.TagAndFrog",
 ]
 
+// ************ MODIFY THIS LIST *****************************************
+// This is the list of tests that will be executed when "(All)"
+// is selected from the Cypress Test GUI.
+export const regressionTestList =
+[
+  "CreateModels.AllEntityTypes",
+  "CreateModels.DisqualifyingEntities",
+  "CreateModels.WaitVsNoWaitActions",
+  "CreateModels.WhatsYourName",
+  "CreateModels.TagAndFrog",
+  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
+  "EditAndBranching.Branching",
+  "EditAndBranching.TagAndFrog",
+  "Log.WhatsYourName",
+  "Train.DisqualifyingEntities",
+  "Train.WaitVsNoWaitActions",
+  "Train.WhatsYourName",
+  "Train.MyNameIs",
+  "Train.TagAndFrog",
+  "CleanUp.DeleteAllTestGeneratedModels",
+]
+
 // Do NOT alter this list except to add in new test cases as they are created.
 export const masterListOfAllTestCases = 
 [
