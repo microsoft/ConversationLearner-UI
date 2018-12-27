@@ -5,13 +5,14 @@
 import Editor, { SlateValue } from './PayloadEditor'
 import { defaultOptions } from './MentionPlugin'
 import initialValue from './value'
-import { getEntitiesFromValue } from './utilities'
+import { getNonOptionalEntitiesFromValue, getAllEntitiesFromValue } from './utilities'
 import SlateTransformer from './slateTransformer'
 import { IOption } from './APEModels'
 
 const triggerCharacter = defaultOptions.triggerCharacter
 const Utilities = {
-    getEntitiesFromValue,
+    getNonOptionalEntitiesFromValue: getNonOptionalEntitiesFromValue,
+    getAllEntitiesFromValue: getAllEntitiesFromValue,
     updateOptionNames: SlateTransformer.updateOptionNames
 }
 export {
