@@ -113,7 +113,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         if (!uiScoreResponse.extractConflict && !uiScoreResponse.botAPIError) {
             let turnLookup = [...this.state.turnLookup]
             // If first turn, set offset based on existing activities
-            let turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.activityIndex - 1 : this.state.turnLookupOffset
+            let turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.nextActivityIndex - 1 : this.state.turnLookupOffset
 
             turnLookup.push({ textVariations, memories: [...this.props.teachSession.memories] })
             turnLookup.push({ uiScoreResponse, memories: [...this.props.teachSession.memories]  })
@@ -122,6 +122,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 turnLookup,
                 turnLookupOffset
             })
+
+            let userText = CLM.ModelUtils.textVariationToMarkdown(textVariations[0])
+            this.props.onReplaceActivityText(userText, this.props.nextActivityIndex - 1 /*LARSturnLookupOffset + turnLookup.length - 2*/)
 
             this.props.clearExtractResponses()
         }
@@ -150,7 +153,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             senderType: CLM.SenderType.Bot,
             roundIndex: null,
             scoreIndex: null,
-            activityIndex: this.props.activityIndex,
+            activityIndex: this.props.nextActivityIndex,
             validWaitAction: !scoredAction.isTerminal || undefined  // Draws carrot under card if a wait action
         }
 
@@ -479,6 +482,7 @@ export interface ReceivedProps {
     onScoredAction: (scoredAction: CLM.ScoredAction) => void;
     onEditExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onEditAction: (trainScorerStep: CLM.TrainScorerStep) => any
+    onReplaceActivityText: (userText: string, index: number) => void
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string
@@ -489,7 +493,7 @@ export interface ReceivedProps {
     editType: EditDialogType,
     initialEntities: CLM.FilledEntityMap | null,
     // Index to attach to channel data
-    activityIndex: number
+    nextActivityIndex: number
     // If user clicked on an Activity
     selectedActivityIndex: number | null
     historyRenderData: (() => DialogUtils.DialogRenderData) | null

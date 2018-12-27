@@ -50,6 +50,8 @@ interface ComponentState {
     selectedHistoryActivity: Activity | null,
     // Was last post a button sumbit
     wasSubmitPost: boolean
+    replaceActivityText: string | null
+    replaceActivityIndex: number | null
 }
 
 class TeachModal extends React.Component<Props, ComponentState> {
@@ -67,7 +69,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
         nextActivityIndex: 0,
         selectedActivityIndex: null,
         selectedHistoryActivity: null,
-        wasSubmitPost: false
+        wasSubmitPost: false,
+        replaceActivityText: null,
+        replaceActivityIndex: null
     }
 
     private callbacksId: string | null = null;
@@ -102,18 +106,24 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let selectedHistoryActivity = this.state.selectedHistoryActivity
         let initialEntities = this.state.initialEntities
         let wasSubmitPost = this.state.wasSubmitPost
+        let replaceActivityText = this.state.replaceActivityText
+        let replaceActivityIndex = this.state.replaceActivityIndex
 
         if (!newProps.isOpen) {
             selectedActivityIndex = null
             selectedHistoryActivity = null
             initialEntities = null
             wasSubmitPost = false
+            replaceActivityText = null
+            replaceActivityIndex = null
         }
 
         if (this.props.initialHistory !== newProps.initialHistory) {
             webchatKey = this.state.webchatKey + 1
             isInitAvailable = !newProps.initialHistory || newProps.initialHistory.length === 0
             nextActivityIndex = newProps.initialHistory.length
+            replaceActivityText = null
+            replaceActivityIndex = null
         }
 
         // If new session
@@ -140,7 +150,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 nextActivityIndex,
                 selectedActivityIndex,
                 selectedHistoryActivity,
-                wasSubmitPost
+                wasSubmitPost,
+                replaceActivityText,
+                replaceActivityIndex
             })
         }
     }
@@ -686,6 +698,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
                                     renderInput={() => this.renderWebchatInput()}
                                     selectedActivityIndex={this.state.selectedActivityIndex}
+                                    replaceActivityText={this.state.replaceActivityText}
+                                    replaceActivityIndex={this.state.replaceActivityIndex}
                                 />
                                 {chatDisable}
                             </div>
@@ -700,7 +714,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         sourceTrainDialog={this.props.sourceTrainDialog}
                                         editType={this.props.editType}
                                         initialEntities={this.state.initialEntities}
-                                        activityIndex={this.state.nextActivityIndex}
+                                        nextActivityIndex={this.state.nextActivityIndex}
                                         selectedActivityIndex={this.state.selectedActivityIndex}
                                         historyRenderData={this.state.selectedHistoryActivity ? this.historyRender : null}
                                         onScoredAction={(scoredAction) => {
@@ -708,8 +722,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                                 hasTerminalAction: scoredAction.isTerminal,
                                                 nextActivityIndex: this.state.nextActivityIndex + 1
                                             })
-                                        }
-                                        }
+                                        }}
+                                        onReplaceActivityText={(userText, index) => {   
+                                            this.setState({
+                                                replaceActivityIndex: index,
+                                                replaceActivityText: userText
+                                            })
+                                        }}
+
                                         onEditExtraction={this.onEditExtraction}
                                         onEditAction={this.onEditScore}
                                     />
