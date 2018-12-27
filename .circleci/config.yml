@@ -29,8 +29,13 @@ jobs:
       - run: npm run test
       - run: npm run cibuild
 
-      # Clone, install, and build sample application
+      # Clone the Samples BOT
       - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
+      
+      # Randomly pick 1 out of 5 LUIS Authoring Keys and modify the .env file with it.
+      - run: node .circleci\SetLuisAuthoringKey.js
+      
+      # Install and build sample Bot application
       - run: cd ../cl-samples && npm ci
       - run: cd ../cl-samples && npm run build
 
