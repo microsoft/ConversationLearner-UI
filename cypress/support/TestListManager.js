@@ -28,10 +28,6 @@ export const testList =
 // is selected from the Cypress Test GUI.
 export const regressionTestList =
 [
-  //"CreateModels.WaitVsNoWaitActions",
-  "Tools.CreateModel3"
-]
-/*
   "CreateModels.AllEntityTypes",
   "CreateModels.DisqualifyingEntities",
   "CreateModels.WaitVsNoWaitActions",
@@ -48,7 +44,6 @@ export const regressionTestList =
   "Train.TagAndFrog",
   "CleanUp.DeleteAllTestGeneratedModels",
 ]
-*/
 
 // Do NOT alter this list except to add in new test cases as they are created.
 export const masterListOfAllTestCases = 
