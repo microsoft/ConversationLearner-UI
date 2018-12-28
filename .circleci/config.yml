@@ -26,14 +26,14 @@ jobs:
             - ~/.npm
             - ~/.cache
 
+      # Randomly pick 1 out of 5 LUIS Authoring Keys and set the BASH_ENV with it.
+      - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
+
       - run: npm run test
       - run: npm run cibuild
 
       # Clone the Samples BOT
       - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
-      
-      # Randomly pick 1 out of 5 LUIS Authoring Keys and modify the .env file with it.
-      - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
       
       # Install and build sample Bot application
       - run: cd ../cl-samples && npm ci
