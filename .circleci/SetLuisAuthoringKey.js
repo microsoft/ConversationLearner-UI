@@ -44,7 +44,7 @@ var samplesDir = `${loc}/../cl-samples`
 files = fs.readdirSync(samplesDir)
 Log(`cl-samples-files: ${files}`)
 
-ShowFile(`${samplesDir}/.circleci`)
+ShowFile(`${samplesDir}/.circleci/config.yml`)
 ShowFile(`${samplesDir}/.env`)
 
 throw "Aborting so I can see what's up"
