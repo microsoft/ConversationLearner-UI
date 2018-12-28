@@ -29,7 +29,7 @@ export const testList =
 export const regressionTestList =
 [
   //"CreateModels.WaitVsNoWaitActions",
-  "Tools.CreateModel3"
+  "Tools.CreateModel4"
 ]
 /*
   "CreateModels.AllEntityTypes",
