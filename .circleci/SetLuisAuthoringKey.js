@@ -11,6 +11,10 @@ const authoringKeys =
   '55555555555555555555555555555555',
 ]
 
+var logString = ''
+function Log(message) { logString += message + '\n'; console.log(message); }
+
+
 // Randomly pick a authoring key from array.
 var randomIndex = Math.floor(Math.random() * 5) + 1
 var luisAuthoringKey = authoringKeys[randomIndex]
@@ -22,8 +26,23 @@ var dataOut = `LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`
 fs.writeFile(envFilePath, dataOut, (writeFileErr) => 
 {
   if (writeFileErr) throw writeFileErr;
-  console.log('The .env file has been saved!');
+  Log('The .env file has been saved!');
 })
+
+var loc = process.cwd() //document.location.pathname;
+Log(`loc: ${loc}`)
+
+// var dir = loc.substring(0, loc.lastIndexOf('/'));
+// Log(`dir: ${dir}`)
+
+var files = fs.readdirSync('.')
+Log(`files: ${files}`)
+
+files = fs.readdirSync('../cl-samples')
+Log(`cl-samples-files: ${files}`)
+
+throw "Aborting so I can see what's up\n" + logString
+
 
 // fs.readFile(envFilePath, (readFileErr, buffer) => 
 // {
