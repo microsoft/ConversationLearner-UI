@@ -8,7 +8,7 @@ const authoringKeys =
 ]
 
 // Randomly pick an authoring key from the array.
-var randomIndex = Math.floor(Math.random() * 5)
+var randomIndex = new Date().getTime() % 5
 var luisAuthoringKey = authoringKeys[randomIndex]
 
 console.log(`export LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`)
