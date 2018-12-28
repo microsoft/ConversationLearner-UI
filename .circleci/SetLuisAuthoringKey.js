@@ -12,8 +12,13 @@ const authoringKeys =
 ]
 
 var logString = ''
-function Log(message) { logString += message + '\n'; console.log(message); }
+function Log(message) { console.log(message); }
 
+function ShowFile(filePath)
+{
+  var buffer = fs.readFileSync(filePath)
+  Log(`\n${filePath}:\n${buffer.toString()}`)
+}
 
 // Randomly pick a authoring key from array.
 var randomIndex = Math.floor(Math.random() * 5) + 1
@@ -23,11 +28,8 @@ var luisAuthoringKey = authoringKeys[randomIndex]
 var dataOut = `LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`
 
 // Rewrite the modified file contents back to the same file.
-fs.writeFile(envFilePath, dataOut, (writeFileErr) => 
-{
-  if (writeFileErr) throw writeFileErr;
-  Log('The .env file has been saved!');
-})
+fs.writeFileSync(envFilePath, dataOut)
+Log('The .env file has been saved!');
 
 var loc = process.cwd() //document.location.pathname;
 Log(`loc: ${loc}`)
@@ -35,13 +37,17 @@ Log(`loc: ${loc}`)
 // var dir = loc.substring(0, loc.lastIndexOf('/'));
 // Log(`dir: ${dir}`)
 
-var files = fs.readdirSync('.')
+var files = fs.readdirSync(loc)
 Log(`files: ${files}`)
 
-files = fs.readdirSync('../cl-samples')
+var samplesDir = `${loc}/../cl-samples`
+files = fs.readdirSync(samplesDir)
 Log(`cl-samples-files: ${files}`)
 
-throw "Aborting so I can see what's up\n" + logString
+ShowFile(`${samplesDir}/.circleci`)
+ShowFile(`${samplesDir}/.env`)
+
+throw "Aborting so I can see what's up"
 
 
 // fs.readFile(envFilePath, (readFileErr, buffer) => 
