@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
 */
 
+const homePage = require('../support/components/HomePage')
 const createModels = require('../tests/CreateModels')
 const train = require('../tests/Train')
 const log = require('../tests/Log')
