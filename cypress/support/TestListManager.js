@@ -132,7 +132,7 @@ function VisitHomePage()
 {
   homePage.Visit()
   homePage.GetModelListRowCount()
-  cy.Alert(Cypress.env(LUIS_AUTHORING_KEY))
+  //cy.Alert(Cypress.env(LUIS_AUTHORING_KEY))
 }
 
 export function AddToCypressTestList(testList) 

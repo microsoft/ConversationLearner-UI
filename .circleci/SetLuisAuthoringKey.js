@@ -29,7 +29,7 @@ function ShowFile(filePath)
 var randomIndex = Math.floor(Math.random() * 5)
 var luisAuthoringKey = authoringKeys[randomIndex]
 
-Log(`export LUIS_AUTHORING_KEY=${luisAuthoringKey}`)
+Log(`export LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`)
 
 // // Format the output string
 // var dataOut = `LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`
