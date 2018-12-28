@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
 */
 
-const homePage = require('../support/components/HomePage')
+const tools = require('../tests/Tools')
 const createModels = require('../tests/CreateModels')
 const train = require('../tests/Train')
 const log = require('../tests/Log')
@@ -29,7 +29,7 @@ export const testList =
 export const regressionTestList =
 [
   //"CreateModels.WaitVsNoWaitActions",
-  "Tools.VisitHomePage"
+  "Tools.CreateModel1"
 ]
 /*
   "CreateModels.AllEntityTypes",
@@ -123,17 +123,15 @@ const testGroups =
   {
     name: 'Tools', tests:
     [
-      { name: 'Visit Home Page', func: VisitHomePage},
+      { name: 'Visit Home Page', func: tools.VisitHomePage},
+      { name: 'Create Model 1', func: tools.CreateModel1},
+      { name: 'Create Model 2', func: tools.CreateModel2},
+      { name: 'Create Model 3', func: tools.CreateModel3},
+      { name: 'Create Model 4', func: tools.CreateModel4},
+      { name: 'Create Model 5', func: tools.CreateModel5},
     ]
   },
 ]
-
-function VisitHomePage()
-{
-  homePage.Visit()
-  homePage.GetModelListRowCount()
-  //cy.Alert(Cypress.env(LUIS_AUTHORING_KEY))
-}
 
 export function AddToCypressTestList(testList) 
 {
