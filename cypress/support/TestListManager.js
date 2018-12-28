@@ -27,6 +27,10 @@ export const testList =
 // is selected from the Cypress Test GUI.
 export const regressionTestList =
 [
+  //"CreateModels.WaitVsNoWaitActions",
+  "Tools.VisitHomePage"
+]
+/*
   "CreateModels.AllEntityTypes",
   "CreateModels.DisqualifyingEntities",
   "CreateModels.WaitVsNoWaitActions",
@@ -43,6 +47,7 @@ export const regressionTestList =
   "Train.TagAndFrog",
   "CleanUp.DeleteAllTestGeneratedModels",
 ]
+*/
 
 // Do NOT alter this list except to add in new test cases as they are created.
 export const masterListOfAllTestCases = 
@@ -113,8 +118,21 @@ const testGroups =
     [
       { name: 'Delete All Test Generated Models', func: deleteAllTestGeneratedModels.DeleteAllTestGeneratedModels},
     ]
-  }
+  },
+  {
+    name: 'Tools', tests:
+    [
+      { name: 'Visit Home Page', func: VisitHomePage},
+    ]
+  },
 ]
+
+function VisitHomePage()
+{
+  homePage.Visit()
+  homePage.GetModelListRowCount()
+  cy.Alert(Cypress.env(LUIS_AUTHORING_KEY))
+}
 
 export function AddToCypressTestList(testList) 
 {

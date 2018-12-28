@@ -4,11 +4,16 @@ const envFilePath = '../cl-samples/.env'
 
 const authoringKeys =
 [
-  '11111111111111111111111111111111',
-  '22222222222222222222222222222222',
-  '33333333333333333333333333333333',
-  '44444444444444444444444444444444',
-  '55555555555555555555555555555555',
+  process.env.LUIS_AUTHORING_KEY_ALT_1,
+  process.env.LUIS_AUTHORING_KEY_ALT_2,
+  process.env.LUIS_AUTHORING_KEY_ALT_3,
+  process.env.LUIS_AUTHORING_KEY_ALT_4,
+  process.env.LUIS_AUTHORING_KEY_ALT_5,
+  // '11111111111111111111111111111111',
+  // '22222222222222222222222222222222',
+  // '33333333333333333333333333333333',
+  // '44444444444444444444444444444444',
+  // '55555555555555555555555555555555',
 ]
 
 var logString = ''
@@ -21,28 +26,27 @@ function ShowFile(filePath)
 }
 
 // Randomly pick a authoring key from array.
-var randomIndex = Math.floor(Math.random() * 5) + 1
+var randomIndex = Math.floor(Math.random() * 5)
 var luisAuthoringKey = authoringKeys[randomIndex]
 
-// Format the output string
-var dataOut = `LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`
+Log(`export LUIS_AUTHORING_KEY=${luisAuthoringKey}`)
+
+// // Format the output string
+// var dataOut = `LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`
 
 // Rewrite the modified file contents back to the same file.
-fs.writeFileSync(envFilePath, dataOut)
-Log('The .env file has been saved!');
+// fs.writeFileSync(envFilePath, dataOut)
+// Log('The .env file has been saved!');
 
-var loc = process.cwd() //document.location.pathname;
-Log(`loc: ${loc}`)
+// var loc = process.cwd() //document.location.pathname;
+// Log(`loc: ${loc}`)
 
-// var dir = loc.substring(0, loc.lastIndexOf('/'));
-// Log(`dir: ${dir}`)
+// var files = fs.readdirSync(loc)
+// Log(`files: ${files}`)
 
-var files = fs.readdirSync(loc)
-Log(`files: ${files}`)
-
-var samplesDir = `${loc}/../cl-samples`
-files = fs.readdirSync(samplesDir)
-Log(`cl-samples-files: ${files}`)
+// var samplesDir = `${loc}/../cl-samples`
+// files = fs.readdirSync(samplesDir)
+// Log(`cl-samples-files: ${files}`)
 
 // ShowFile(`${samplesDir}/.circleci/config.yml`)
 // ShowFile(`${samplesDir}/.env`)
