@@ -152,3 +152,10 @@ export function EndlessLoop()
 
   // Manually EXPORT this to fixtures folder and name it 'z-endlessLoop.cl'
 }
+
+export function Travel()
+{
+  models.CreateNewModel('z-travel')
+  entities.CreateNewEntity({name: 'departure', resolverType: 'datetimeV2'})
+  //actions.CreateNewAction({response: "Hi"})
+}
