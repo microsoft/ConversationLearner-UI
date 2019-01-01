@@ -16,7 +16,8 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "CreateModels.Travel",
+//  "CreateModels.Travel",
+  "Train.BookMeAFlight",
 ]
 
 // ************ MODIFY THIS LIST *****************************************
@@ -39,6 +40,7 @@ export const regressionTestList =
   "Train.WhatsYourName",
   "Train.MyNameIs",
   "Train.TagAndFrog",
+//  "Train.BookMeAFlight",
   "CleanUp.DeleteAllTestGeneratedModels",
 ]
 
@@ -62,6 +64,7 @@ export const masterListOfAllTestCases =
   "Train.WhatsYourName",
   "Train.MyNameIs",
   "Train.TagAndFrog",
+  "Train.BookMeAFlight",
   "CleanUp.DeleteAllTestGeneratedModels",
 ]
 
@@ -106,6 +109,7 @@ const testGroups =
       { name: "What's Your Name", func: train.WhatsYourName },
       { name: "My Name Is", func: train.MyNameIs },
       { name: "Tag and Frog", func: train.TagAndFrog },
+      { name: "Book me a Flight", func: train.BookMeAFlight}
     ]
   },
   {

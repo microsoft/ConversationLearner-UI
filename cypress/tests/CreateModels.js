@@ -156,6 +156,10 @@ export function EndlessLoop()
 export function Travel()
 {
   models.CreateNewModel('z-travel')
-  entities.CreateNewEntity({name: 'departure', resolverType: 'datetimeV2'})
-  //actions.CreateNewAction({response: "Hi"})
+  entities.CreateNewEntity({name: 'departure', resolverType: 'datetimeV2', expectPopup: true})
+  entities.CreateNewEntity({name: 'return', resolverType: 'datetimeV2'})
+  actions.CreateNewAction({response: 'You are leaving on $departure{enter} and returning on $return{enter}', requiredEntities: ['departure', 'return']})
+  actions.CreateNewAction({response: 'When are you planning to travel?', disqualifyingEntities: ['departure', 'return']})
+
+  // Manually EXPORT this to fixtures folder and name it 'z-travel.cl'
 }

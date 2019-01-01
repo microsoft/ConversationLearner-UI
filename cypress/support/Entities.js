@@ -7,7 +7,7 @@ const modelPage = require('../support/components/ModelPage')
 const entitiesGrid = require('./components/EntitiesGrid')
 const entityModal = require('../support/components/EntityModal')
 
-export function CreateNewEntity({name, multiValued, negatable, resolverType, type = 'Custom Trained'})
+export function CreateNewEntity({name, multiValued, negatable, resolverType, type = 'Custom Trained', expectPopup = false})
 {
   modelPage.NavigateToEntities()
   entitiesGrid.ClickButtonNewEntity()
@@ -19,7 +19,7 @@ export function CreateNewEntity({name, multiValued, negatable, resolverType, typ
   if (resolverType) entityModal.SelectResolverType(resolverType)
 
   entityModal.ClickCreateButton()
-  if (resolverType || (type != 'Custom Trained' && type != 'Programmatic')) entityModal.ClickOkButtonOnNoteAboutPreTrained()
+  if (expectPopup || (type != 'Custom Trained' && type != 'Programmatic')) entityModal.ClickOkButtonOnNoteAboutPreTrained()
 
   if (name) entitiesGrid.VerifyItemInList(name)
   else entitiesGrid.VerifyItemInList(`builtin-${type.toLowerCase()}`)
