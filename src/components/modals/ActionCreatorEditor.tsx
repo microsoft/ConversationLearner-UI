@@ -923,6 +923,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         return areInputsInvalid
             || (this.state.isEditing && !this.state.hasPendingChanges)
+            || (!this.state.isTerminal && (this.state.expectedEntityTags.length > 0))
     }
 
     @OF.autobind
@@ -1191,7 +1192,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
                                     onRenderItem={this.onRenderExpectedTag}
                                     getTextFromItem={item => item.name}
-                                    disabled={!this.state.isTerminal}
                                     onChange={this.onChangeExpectedEntityTags}
                                     pickerSuggestionsProps={
                                         {
@@ -1253,6 +1253,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 disabled={this.state.selectedActionTypeOptionKey === CLM.ActionTypes.END_SESSION}
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
+                        </div>
+                        <div className="cl-error-message-label"
+                            style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}>
+                            {formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD)}
                         </div>
                     </div>
                 </div>
