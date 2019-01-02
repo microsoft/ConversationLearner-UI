@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
 */
 
+const tools = require('../tests/Tools')
 const createModels = require('../tests/CreateModels')
 const train = require('../tests/Train')
 const log = require('../tests/Log')
@@ -15,11 +16,8 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "Train.DisqualifyingEntities",
-  "Train.WaitVsNoWaitActions",
-  "Train.WhatsYourName",
-  "Train.MyNameIs",
-  "Train.TagAndFrog",
+//  "CreateModels.Travel",
+  "Train.BookMeAFlight",
 ]
 
 // ************ MODIFY THIS LIST *****************************************
@@ -32,6 +30,7 @@ export const regressionTestList =
   "CreateModels.WaitVsNoWaitActions",
   "CreateModels.WhatsYourName",
   "CreateModels.TagAndFrog",
+  "CreateModels.Travel",
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
   "EditAndBranching.TagAndFrog",
@@ -41,6 +40,7 @@ export const regressionTestList =
   "Train.WhatsYourName",
   "Train.MyNameIs",
   "Train.TagAndFrog",
+//  "Train.BookMeAFlight",
   "CleanUp.DeleteAllTestGeneratedModels",
 ]
 
@@ -53,6 +53,7 @@ export const masterListOfAllTestCases =
   "CreateModels.WhatsYourName",
   "CreateModels.TagAndFrog",
   "CreateModels.EndlessLoop",
+  "CreateModels.Travel",
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
   "EditAndBranching.TagAndFrog",
@@ -63,6 +64,7 @@ export const masterListOfAllTestCases =
   "Train.WhatsYourName",
   "Train.MyNameIs",
   "Train.TagAndFrog",
+  "Train.BookMeAFlight",
   "CleanUp.DeleteAllTestGeneratedModels",
 ]
 
@@ -81,6 +83,7 @@ const testGroups =
       { name: "What's Your Name", func: createModels.WhatsYourName },
       { name: "Tag and Frog", func: createModels.TagAndFrog },
       { name: "Endless Loop", func: createModels.EndlessLoop },
+      { name: "Travel", func: createModels.Travel },
     ]
   },
   {
@@ -106,6 +109,7 @@ const testGroups =
       { name: "What's Your Name", func: train.WhatsYourName },
       { name: "My Name Is", func: train.MyNameIs },
       { name: "Tag and Frog", func: train.TagAndFrog },
+      { name: "Book me a Flight", func: train.BookMeAFlight}
     ]
   },
   {
@@ -113,7 +117,18 @@ const testGroups =
     [
       { name: 'Delete All Test Generated Models', func: deleteAllTestGeneratedModels.DeleteAllTestGeneratedModels},
     ]
-  }
+  },
+  {
+    name: 'Tools', tests:
+    [
+      { name: 'Visit Home Page', func: tools.VisitHomePage},
+      { name: 'Create Model 1', func: tools.CreateModel1},
+      { name: 'Create Model 2', func: tools.CreateModel2},
+      { name: 'Create Model 3', func: tools.CreateModel3},
+      { name: 'Create Model 4', func: tools.CreateModel4},
+      { name: 'Create Model 5', func: tools.CreateModel5},
+    ]
+  },
 ]
 
 export function AddToCypressTestList(testList) 
