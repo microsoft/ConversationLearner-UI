@@ -24,5 +24,5 @@ Video Demo: https://youtu.be/qf7c-KxBBZc?t=37s
 
 #
 
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
