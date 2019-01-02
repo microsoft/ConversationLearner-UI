@@ -77,7 +77,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
             return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
         }
 
-        if ("Master".toLowerCase() === value.toLowerCase()) {
+        if ("Master".toLowerCase() === value.toLowerCase().trim()) {
             return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
         }
 
