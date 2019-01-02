@@ -16,8 +16,8 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
-  //"EditAndBranching.Branching",
+//  "CreateModels.Travel",
+  "Train.BookMeAFlight",
 ]
 
 // ************ MODIFY THIS LIST *****************************************
@@ -30,6 +30,7 @@ export const regressionTestList =
   "CreateModels.WaitVsNoWaitActions",
   "CreateModels.WhatsYourName",
   "CreateModels.TagAndFrog",
+  "CreateModels.Travel",
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
   "EditAndBranching.TagAndFrog",
@@ -39,6 +40,7 @@ export const regressionTestList =
   "Train.WhatsYourName",
   "Train.MyNameIs",
   "Train.TagAndFrog",
+//  "Train.BookMeAFlight",
   "CleanUp.DeleteAllTestGeneratedModels",
 ]
 
@@ -51,6 +53,7 @@ export const masterListOfAllTestCases =
   "CreateModels.WhatsYourName",
   "CreateModels.TagAndFrog",
   "CreateModels.EndlessLoop",
+  "CreateModels.Travel",
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
   "EditAndBranching.TagAndFrog",
@@ -61,6 +64,7 @@ export const masterListOfAllTestCases =
   "Train.WhatsYourName",
   "Train.MyNameIs",
   "Train.TagAndFrog",
+  "Train.BookMeAFlight",
   "CleanUp.DeleteAllTestGeneratedModels",
 ]
 
@@ -79,6 +83,7 @@ const testGroups =
       { name: "What's Your Name", func: createModels.WhatsYourName },
       { name: "Tag and Frog", func: createModels.TagAndFrog },
       { name: "Endless Loop", func: createModels.EndlessLoop },
+      { name: "Travel", func: createModels.Travel },
     ]
   },
   {
@@ -104,6 +109,7 @@ const testGroups =
       { name: "What's Your Name", func: train.WhatsYourName },
       { name: "My Name Is", func: train.MyNameIs },
       { name: "Tag and Frog", func: train.TagAndFrog },
+      { name: "Book me a Flight", func: train.BookMeAFlight}
     ]
   },
   {
