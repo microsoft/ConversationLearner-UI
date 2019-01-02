@@ -38,7 +38,7 @@ export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_ENTITY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_ENTITY_ASYNC))
         }
     }
 }
@@ -101,7 +101,7 @@ export const editEntityThunkAsync = (appId: string, entity: EntityBase, prevEnti
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_ENTITY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.EDIT_ENTITY_ASYNC))
             throw error
         }
     }
@@ -157,7 +157,7 @@ export const deleteEntityThunkAsync = (appId: string, entity: EntityBase) => {
             return true;
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_ENTITY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_ENTITY_ASYNC))
             return false;
         }
     }
@@ -203,7 +203,7 @@ export const fetchAllEntitiesThunkAsync = (appId: string) => {
             return entities
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ENTITIES_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_ENTITIES_ASYNC))
             return null;
         }
     }
@@ -220,7 +220,7 @@ export const fetchEntityDeleteValidationThunkAsync = (appId: string, packageId: 
             return invalidTrainDialogIds
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC))
             return null;
         }
     }
@@ -252,7 +252,7 @@ export const fetchEntityEditValidationThunkAsync = (appId: string, packageId: st
             return invalidTrainDialogIds
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC))
             return null;
         }
     }

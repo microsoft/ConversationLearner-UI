@@ -38,7 +38,7 @@ export const fetchBotInfoThunkAsync = (browserId: string, appId?: string) => {
             return botInfo
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_BOTINFO_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_BOTINFO_ASYNC))
             throw error
         }
     }

@@ -21,7 +21,7 @@ export const deleteLogDialogThunkAsync = (userId: string, app: AppBase, logDialo
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_LOG_DIALOG_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_LOG_DIALOG_ASYNC))
             dispatch(deleteLogDialogRejected())
             dispatch(fetchAllLogDialogsThunkAsync(app, packageId));
         }
@@ -66,7 +66,7 @@ export const fetchAllLogDialogsThunkAsync = (app: AppBase, packageId: string) =>
             return logDialogs
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_LOG_DIALOGS_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_LOG_DIALOGS_ASYNC))
             return null;
         }
     }

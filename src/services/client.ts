@@ -6,6 +6,11 @@ import * as CLM from '@conversationlearner/models'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { AppInput } from '../types/models';
 
+export interface ClientHeaders {
+    botChecksum: string
+    memoryKey: string
+}
+
 interface TypedAxiosResponse<T> extends AxiosResponse {
     data: T
 }
@@ -43,13 +48,12 @@ export default class ClClient {
     }
     forceError: boolean = false
 
-    // The memory is key is used by ConversationLearner-SDK to access the memory partition for a particular user
-    // TODO: Need to further find out why this is required. (I would expect this to also partition on session)
-    getMemoryKey: () => string
+    // The memory is key is used by ConversationLearner-SDK to access the memory partition for a particular user and check consistency of running bot
+    getClientHeaders: () => ClientHeaders
 
-    constructor(baseUrl: string, getMemoryKey: () => string, defaultHeaders?: { [x: string]: string }, forceError: boolean = false) {
+    constructor(baseUrl: string, getClientHeaders: () => ClientHeaders, defaultHeaders?: { [x: string]: string }, forceError: boolean = false) {
         this.baseUrl = baseUrl
-        this.getMemoryKey = getMemoryKey
+        this.getClientHeaders = getClientHeaders
         this.defaultConfig.headers = { ...this.defaultConfig.headers, ...defaultHeaders }
         this.forceError = forceError
     }
@@ -59,13 +63,14 @@ export default class ClClient {
             return Promise.reject(new Error("Injected Error"));
         }
 
-        const memoryKey = this.getMemoryKey()
+        const clientHeaders = this.getClientHeaders()
         const finalConfig = {
             ...this.defaultConfig,
             ...config
         }
 
-        finalConfig.headers[CLM.MEMORY_KEY_HEADER_NAME] = memoryKey
+        finalConfig.headers[CLM.MEMORY_KEY_HEADER_NAME] = clientHeaders.memoryKey
+        finalConfig.headers[CLM.BOT_CHECKSUM_HEADER_NAME] = clientHeaders.botChecksum
         
         return Axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }

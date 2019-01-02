@@ -26,7 +26,7 @@ export const createTrainDialogThunkAsync = (appId: string, trainDialog: TrainDia
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_TRAIN_DIALOG_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TRAIN_DIALOG_ASYNC))
             throw error
         }
     }
@@ -62,7 +62,7 @@ export const editTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialo
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_TRAINDIALOG_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.EDIT_TRAINDIALOG_ASYNC))
             throw error
         }
     }
@@ -99,7 +99,7 @@ export const fetchTrainDialogThunkAsync = (appId: string, trainDialogId: string,
             return trainDialog
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TRAIN_DIALOG_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRAIN_DIALOG_ASYNC))
             return null;
         }
     }
@@ -136,7 +136,7 @@ export const scoreFromHistoryThunkAsync = (appId: string, trainDialog: TrainDial
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_SCOREFROMHISTORY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_SCOREFROMHISTORY_ASYNC))
             throw error
         }
     }
@@ -172,7 +172,7 @@ export const extractFromHistoryThunkAsync = (appId: string, trainDialog: TrainDi
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_EXTRACTFROMHISTORY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_EXTRACTFROMHISTORY_ASYNC))
             throw error
         }
     }
@@ -209,7 +209,7 @@ export const trainDialogReplayThunkAsync = (appId: string, trainDialog: TrainDia
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TRAINDIALOGREPLAY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRAINDIALOGREPLAY_ASYNC))
             throw error
         }
     }
@@ -245,7 +245,7 @@ export const fetchTextVariationConflictThunkAsync = (appId: string, trainDialogI
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC))
             throw error
         }
     }
@@ -288,7 +288,7 @@ export const deleteTrainDialogThunkAsync = (userId: string, app: AppBase, trainD
             dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_TRAIN_DIALOG_REJECTED))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(deleteTrainDialogRejected())
             dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
         }
@@ -329,7 +329,7 @@ export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
             return trainDialogs
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TRAIN_DIALOGS_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRAIN_DIALOGS_ASYNC))
             return null;
         }
     }
@@ -363,7 +363,7 @@ export const fetchHistoryThunkAsync = (appId: string, trainDialog: TrainDialog, 
             return teachWithHistory
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_HISTORY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_HISTORY_ASYNC))
             return null;
         }
     }
