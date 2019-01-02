@@ -19,6 +19,7 @@ export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="en
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 export function ClickSubmitChangesButton()            { cy.Get('[data-testid="submit-changes-button"]').Click() }
 export function GetAllChatMessages()                  { return helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)}
+export function VerifyErrorMessage(expectedMessage)   { cy.Get('div.cl-editdialog-error > div > span').ExactMatch(expectedMessage)}
 
 export function ClickSaveCloseButton()                { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
 export function VerifyCloseButtonLabel()              { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Close') }

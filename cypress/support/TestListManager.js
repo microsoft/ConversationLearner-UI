@@ -16,8 +16,7 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-//  "CreateModels.Travel",
-  "Train.BookMeAFlight",
+  "Train.MyNameIs",
 ]
 
 // ************ MODIFY THIS LIST *****************************************
