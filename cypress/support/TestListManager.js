@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
 */
 
+const tools = require('../tests/Tools')
 const createModels = require('../tests/CreateModels')
 const train = require('../tests/Train')
 const log = require('../tests/Log')
@@ -113,7 +114,18 @@ const testGroups =
     [
       { name: 'Delete All Test Generated Models', func: deleteAllTestGeneratedModels.DeleteAllTestGeneratedModels},
     ]
-  }
+  },
+  {
+    name: 'Tools', tests:
+    [
+      { name: 'Visit Home Page', func: tools.VisitHomePage},
+      { name: 'Create Model 1', func: tools.CreateModel1},
+      { name: 'Create Model 2', func: tools.CreateModel2},
+      { name: 'Create Model 3', func: tools.CreateModel3},
+      { name: 'Create Model 4', func: tools.CreateModel4},
+      { name: 'Create Model 5', func: tools.CreateModel5},
+    ]
+  },
 ]
 
 export function AddToCypressTestList(testList) 
