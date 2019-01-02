@@ -16,11 +16,8 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "Train.DisqualifyingEntities",
-  "Train.WaitVsNoWaitActions",
-  "Train.WhatsYourName",
-  "Train.MyNameIs",
-  "Train.TagAndFrog",
+  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
+  //"EditAndBranching.Branching",
 ]
 
 // ************ MODIFY THIS LIST *****************************************
