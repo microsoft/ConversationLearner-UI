@@ -11,7 +11,8 @@ import { App } from '../types/models'
 
 const initialState: AppsState = {
     all: [],
-    activeApps: {}
+    activeApps: {},
+    selectedAppId: undefined
 };
 
 const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObject): AppsState => {
@@ -45,7 +46,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
                 didPollingExpire: true
             }
 
-            return { ...state, all: replace(state.all, newApp, a => a.appId) }
+            return { ...state, all: replace(state.all, newApp, a => a.appId)}
         }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED: {
             const app = state.all.find(a => a.appId === action.appId)
@@ -65,14 +66,14 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
                     : null
             }
 
-            return { ...state, all: replace(state.all, newApp, a => a.appId) }
+            return { ...state, all: replace(state.all, newApp, a => a.appId)}
         }
         case AT.CREATE_APPLICATION_FULFILLED:
-            return { ...state, all: [...state.all, action.app] }
+            return { ...state, all: [...state.all, action.app], selectedAppId: action.app.appId }
         case AT.SET_CURRENT_APP_FULFILLED:
-            return { ...state };
+            return { ...state, selectedAppId: action.app.appId };
         case AT.DELETE_APPLICATION_FULFILLED:
-            return { ...state, all: state.all.filter(app => app.appId !== action.appId) };
+            return { ...state, all: state.all.filter(app => app.appId !== action.appId), selectedAppId: undefined };
         case AT.EDIT_APPLICATION_FULFILLED:
         case AT.CREATE_APP_TAG_FULFILLED:
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:

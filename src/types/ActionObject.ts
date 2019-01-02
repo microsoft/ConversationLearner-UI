@@ -96,7 +96,7 @@ export type DisplayAction = {
     type: AT.SET_ERROR_DISPLAY,
     errorType: ErrorType,
     title: string | null,
-    messages: string[],
+    message: string,
     actionType: AT | null
 } | {
     // fuction to call when error display is closeed
