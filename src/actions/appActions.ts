@@ -30,7 +30,7 @@ export const createApplicationThunkAsync = (userId: string, application: AppBase
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_APPLICATION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_APPLICATION_ASYNC))
             throw error
         }
     }
@@ -77,7 +77,7 @@ export const editApplicationThunkAsync = (app: AppBase) => {
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_APPLICATION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.EDIT_APPLICATION_ASYNC))
             throw error
         }
     }
@@ -96,7 +96,7 @@ export const editAppLiveTagThunkAsync = (app: AppBase, tagId: string) => {
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_APP_LIVE_TAG_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.EDIT_APP_LIVE_TAG_ASYNC))
             throw error
         }
     }
@@ -128,7 +128,7 @@ export const editAppEditingTagThunkAsync = (appId: string, packageId: string) =>
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_APP_EDITING_TAG_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.EDIT_APP_EDITING_TAG_ASYNC))
             throw error
         }
     }
@@ -159,7 +159,7 @@ export const setAppSourceThunkAsync = (appId: string, appDefinition: AppDefiniti
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_APPLICATION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_APPLICATION_ASYNC))
             throw error
         }
     }
@@ -190,7 +190,7 @@ export const copyApplicationThunkAsync = (srcUserId: string, destUserId: string,
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.COPY_APPLICATION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.COPY_APPLICATION_ASYNC))
             throw error
         }
         return;
@@ -224,7 +224,7 @@ export const createAppTagThunkAsync = (appId: string, tagName: string, makeLive:
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_APP_TAG_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_APP_TAG_ASYNC))
             throw error
         }
     }
@@ -271,7 +271,7 @@ export const deleteApplicationThunkAsync = (appId: string) => {
             return true;
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_APPLICATION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_APPLICATION_ASYNC))
             return false;
         }
     }
@@ -305,7 +305,7 @@ export const fetchApplicationsThunkAsync = (userId: string) => {
             return uiAppList
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_APPLICATIONS_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_APPLICATIONS_ASYNC))
             return null;
         }
     }
@@ -381,7 +381,7 @@ export const fetchAppSourceThunkAsync = (appId: string, packageId: string, updat
             }
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_APPSOURCE_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_APPSOURCE_ASYNC))
             return null;
         }
     }
@@ -413,7 +413,7 @@ export const fetchTutorialsThunkAsync = (userId: string) => {
             return tutorials
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_TUTORIALS_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TUTORIALS_ASYNC))
             return null;
         }
     }

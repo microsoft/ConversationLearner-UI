@@ -12,7 +12,7 @@ export type EntityState = CLM.EntityBase[];
 export type ErrorState = {
     type: ErrorType,
     title: string | null,
-    messages: string[],
+    message: string,
     actionType: AT | null,
     closeCallback: (() => void) | null
 }
@@ -23,6 +23,7 @@ export type LogDialogState = CLM.LogDialog[]
 export type AppsState = {
     all: CLM.AppBase[],
     activeApps: { [appId: string]: string };  // appId: packageId
+    selectedAppId: string | undefined
 }
 export type BotState = {
     botInfo: CLM.BotInfo | null

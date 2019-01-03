@@ -12,24 +12,9 @@ import { AxiosError } from 'axios';
 import { deleteTrainDialogThunkAsync, fetchAllTrainDialogsThunkAsync } from './trainActions'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions';
 
-export const createTeachSessionThunkAsync = (appId: string, initialFilledEntities: CLM.FilledEntity[] = []) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
-        dispatch(createTeachSessionAsync())
-
-        try {
-            const teachResponse = await clClient.teachSessionCreate(appId, initialFilledEntities)
-            dispatch(createTeachSessionFulfilled(teachResponse))
-            return teachResponse
-        }
-        catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_TEACH_SESSION_ASYNC))
-            dispatch(createTeachSessionRejected())
-            throw error
-        }
-    }
-}
+// --------------------------
+// createTeachSession
+// --------------------------
 const createTeachSessionAsync = (): ActionObject =>
     ({
         type: AT.CREATE_TEACH_SESSION_ASYNC
@@ -46,28 +31,28 @@ const createTeachSessionFulfilled = (teachResponse: CLM.TeachResponse): ActionOb
         teachSession: teachResponse as CLM.Teach
     })
 
-// --------------------------
-// TeachSessionFromHistory
-// --------------------------
-export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string, initialUserInput: CLM.UserInput | null = null) => {
+export const createTeachSessionThunkAsync = (appId: string, initialFilledEntities: CLM.FilledEntity[] = []) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
-        dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
+        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
+        dispatch(createTeachSessionAsync())
 
         try {
-            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, initialUserInput, userName, userId)
-            dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
-            return teachWithHistory
+            const teachResponse = await clClient.teachSessionCreate(appId, initialFilledEntities)
+            dispatch(createTeachSessionFulfilled(teachResponse))
+            return teachResponse
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TEACH_SESSION_ASYNC))
             dispatch(createTeachSessionRejected())
             throw error
         }
     }
 }
 
+// --------------------------
+// TeachSessionFromHistory
+// --------------------------
 const createTeachSessionFromHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
     return {
         type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
@@ -86,9 +71,48 @@ const createTeachSessionFromHistoryFulfilled = (teachWithHistory: CLM.TeachWithH
     }
 }
 
+export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string, initialUserInput: CLM.UserInput | null = null) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
+        dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
+
+        try {
+            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, initialUserInput, userName, userId)
+            dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
+            return teachWithHistory
+        }
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC))
+            dispatch(createTeachSessionRejected())
+            throw error
+        }
+    }
+}
+
 // --------------------------
 // DeleteTeachSession
 // --------------------------
+const deleteTeachSessionAsync = (key: string, teachSession: CLM.Teach, appId: string, save: boolean): ActionObject => {
+    return {
+        type: AT.DELETE_TEACH_SESSION_ASYNC,
+        key: key,
+        teachSession: teachSession,
+        appId: appId,
+        save: save
+    }
+}
+
+const deleteTeachSessionFulfilled = (key: string, teachSession: CLM.Teach, sourceLogDialogId: string | null, appId: string): ActionObject => {
+    return {
+        type: AT.DELETE_TEACH_SESSION_FULFILLED,
+        key: key,
+        appId: appId,
+        teachSessionGUID: teachSession.teachId,
+        trainDialogId: teachSession.trainDialogId,
+        sourceLogDialogId: sourceLogDialogId
+    }
+}
 export const deleteTeachSessionThunkAsync = (
     key: string,
     teachSession: CLM.Teach,
@@ -115,51 +139,16 @@ export const deleteTeachSessionThunkAsync = (
             return true;
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_TRAIN_DIALOG_REJECTED))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
             return false;
         }
     }
 }
 
-const deleteTeachSessionAsync = (key: string, teachSession: CLM.Teach, appId: string, save: boolean): ActionObject => {
-    return {
-        type: AT.DELETE_TEACH_SESSION_ASYNC,
-        key: key,
-        teachSession: teachSession,
-        appId: appId,
-        save: save
-    }
-}
-
-const deleteTeachSessionFulfilled = (key: string, teachSession: CLM.Teach, sourceLogDialogId: string | null, appId: string): ActionObject => {
-    return {
-        type: AT.DELETE_TEACH_SESSION_FULFILLED,
-        key: key,
-        appId: appId,
-        teachSessionGUID: teachSession.teachId,
-        trainDialogId: teachSession.trainDialogId,
-        sourceLogDialogId: sourceLogDialogId
-    }
-}
-
-export const deleteMemoryThunkAsync = (key: string, currentAppId: string) => {
-    return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteMemoryAsync(key, currentAppId))
-        const clClient = ClientFactory.getInstance(AT.DELETE_MEMORY_ASYNC)
-
-        try {
-            await clClient.memoryDelete(currentAppId);
-            dispatch(deleteMemoryFulfilled());
-            return true;
-        } catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_MEMORY_ASYNC))
-            return false;
-        }
-    }
-}
-
+// --------------------------
+// deleteMemory
+// --------------------------
 const deleteMemoryAsync = (key: string, currentAppId: string): ActionObject => {
     return {
         type: AT.DELETE_MEMORY_ASYNC,
@@ -173,10 +162,46 @@ const deleteMemoryFulfilled = (): ActionObject => {
         type: AT.DELETE_MEMORY_FULFILLED
     }
 }
+export const deleteMemoryThunkAsync = (key: string, currentAppId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(deleteMemoryAsync(key, currentAppId))
+        const clClient = ClientFactory.getInstance(AT.DELETE_MEMORY_ASYNC)
+
+        try {
+            await clClient.memoryDelete(currentAppId);
+            dispatch(deleteMemoryFulfilled());
+            return true;
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_MEMORY_ASYNC))
+            return false;
+        }
+    }
+}
 
 // --------------------------
 // RunExtractor
 // --------------------------
+const runExtractorAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput): ActionObject => {
+    return {
+        type: AT.RUN_EXTRACTOR_ASYNC,
+        appId: appId,
+        extractType: extractType,
+        sessionId: sessionId,
+        turnIndex: turnIndex,
+        userInput: userInput
+    }
+}
+
+const runExtractorFulfilled = (appId: string, sessionId: string, uiExtractResponse: CLM.UIExtractResponse): ActionObject => {
+    return {
+        type: AT.RUN_EXTRACTOR_FULFILLED,
+        appId: appId,
+        sessionId: sessionId,
+        uiExtractResponse: uiExtractResponse
+    }
+}
+
 export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput, filteredDialog: string | null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.RUN_EXTRACTOR_ASYNC)
@@ -210,31 +235,12 @@ export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogTyp
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.RUN_EXTRACTOR_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.RUN_EXTRACTOR_ASYNC))
             throw error
         }
     }
 }
 
-const runExtractorAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput): ActionObject => {
-    return {
-        type: AT.RUN_EXTRACTOR_ASYNC,
-        appId: appId,
-        extractType: extractType,
-        sessionId: sessionId,
-        turnIndex: turnIndex,
-        userInput: userInput
-    }
-}
-
-const runExtractorFulfilled = (appId: string, sessionId: string, uiExtractResponse: CLM.UIExtractResponse): ActionObject => {
-    return {
-        type: AT.RUN_EXTRACTOR_FULFILLED,
-        appId: appId,
-        sessionId: sessionId,
-        uiExtractResponse: uiExtractResponse
-    }
-}
 //---------------------------------------------------------
 // User makes an update to an extract response
 export const updateExtractResponse = (extractResponse: CLM.ExtractResponse): ActionObject => {
@@ -269,24 +275,6 @@ export const clearExtractConflict = (): ActionObject => {
 // --------------------------
 // GetScores
 // --------------------------
-export const getScoresThunkAsync = (key: string, appId: string, sessionId: string, scoreInput: CLM.ScoreInput) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.GET_SCORES_ASYNC)
-        dispatch(getScoresAsync(key, appId, sessionId, scoreInput))
-
-        try {
-            let uiScoreResponse = await clClient.teachSessionRescore(appId, sessionId, scoreInput)
-            dispatch(getScoresFulfilled(key, appId, sessionId, uiScoreResponse))
-            return uiScoreResponse
-        }
-        catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.GET_SCORES_ASYNC))
-            throw error
-        }
-    }
-}
-
 const getScoresAsync = (key: string, appId: string, sessionId: string, scoreInput: CLM.ScoreInput): ActionObject =>
     ({
         type: AT.GET_SCORES_ASYNC,
@@ -304,29 +292,27 @@ const getScoresFulfilled = (key: string, appId: string, sessionId: string, uiSco
         sessionId,
         uiScoreResponse,
     })
-
-// --------------------------
-// RunScorer
-// --------------------------
-export const runScorerThunkAsync = (key: string, appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput) => {
+export const getScoresThunkAsync = (key: string, appId: string, sessionId: string, scoreInput: CLM.ScoreInput) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.RUN_SCORER_ASYNC)
-        dispatch(runScorerAsync(key, appId, teachId, uiScoreInput))
+        const clClient = ClientFactory.getInstance(AT.GET_SCORES_ASYNC)
+        dispatch(getScoresAsync(key, appId, sessionId, scoreInput))
 
         try {
-            let uiScoreResponse =  await clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
-            dispatch(runScorerFulfilled(key, appId, teachId, uiScoreResponse))
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+            let uiScoreResponse = await clClient.teachSessionRescore(appId, sessionId, scoreInput)
+            dispatch(getScoresFulfilled(key, appId, sessionId, uiScoreResponse))
             return uiScoreResponse
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.RUN_SCORER_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.GET_SCORES_ASYNC))
             throw error
-         }
+        }
     }
 }
 
+// --------------------------
+// RunScorer
+// --------------------------
 const runScorerAsync = (key: string, appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput): ActionObject => {
     return {
         type: AT.RUN_SCORER_ASYNC,
@@ -345,38 +331,28 @@ const runScorerFulfilled = (key: string, appId: string, teachId: string, uiScore
         uiScoreResponse
     }
 }
+export const runScorerThunkAsync = (key: string, appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.RUN_SCORER_ASYNC)
+        dispatch(runScorerAsync(key, appId, teachId, uiScoreInput))
+
+        try {
+            let uiScoreResponse =  await clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
+            dispatch(runScorerFulfilled(key, appId, teachId, uiScoreResponse))
+            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+            return uiScoreResponse
+        }
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.RUN_SCORER_ASYNC))
+            throw error
+         }
+    }
+}
 
 // --------------------------
 // PostScorerFeedback
 // --------------------------
-export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId: string, uiTrainScorerStep: CLM.UITrainScorerStep, waitForUser: boolean, uiScoreInput: CLM.UIScoreInput) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.POST_SCORE_FEEDBACK_ASYNC)
-        dispatch(postScorerFeedbackAsync(key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput))
-
-        try {
-            let uiPostScoreResponse = await clClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
-
-            if (!waitForUser) {
-                // Don't re-send predicted entities on subsequent score call
-                uiScoreInput.extractResponse.predictedEntities = [];
-               //LARS todo -  force end task to always be wait
-                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, CLM.DialogMode.Scorer, uiPostScoreResponse, uiScoreInput))     
-            }
-            else {
-                let dialogMode = uiPostScoreResponse.isEndTask ? CLM.DialogMode.EndSession : CLM.DialogMode.Wait
-                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, dialogMode, uiPostScoreResponse, null))
-            }
-            return uiPostScoreResponse
-        }
-        catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.POST_SCORE_FEEDBACK_ASYNC))
-            throw error
-        }
-    }
-}
-
 const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, uiTrainScorerStep: CLM.UITrainScorerStep, waitForUser: boolean, uiScoreInput: CLM.UIScoreInput): ActionObject => {
     return {
         type: AT.POST_SCORE_FEEDBACK_ASYNC,
@@ -402,6 +378,33 @@ const postScorerFeedbackFulfilled = (key: string, appId: string, teachId: string
     }
 }
 
+export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId: string, uiTrainScorerStep: CLM.UITrainScorerStep, waitForUser: boolean, uiScoreInput: CLM.UIScoreInput) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.POST_SCORE_FEEDBACK_ASYNC)
+        dispatch(postScorerFeedbackAsync(key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput))
+
+        try {
+            let uiPostScoreResponse = await clClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
+
+            if (!waitForUser) {
+                // Don't re-send predicted entities on subsequent score call
+                uiScoreInput.extractResponse.predictedEntities = [];
+               //LARS todo -  force end task to always be wait
+                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, CLM.DialogMode.Scorer, uiPostScoreResponse, uiScoreInput))     
+            }
+            else {
+                let dialogMode = uiPostScoreResponse.isEndTask ? CLM.DialogMode.EndSession : CLM.DialogMode.Wait
+                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, dialogMode, uiPostScoreResponse, null))
+            }
+            return uiPostScoreResponse
+        }
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.POST_SCORE_FEEDBACK_ASYNC))
+            throw error
+        }
+    }
+}
 // --------------------------
 // ToggleAutoTeach
 // --------------------------

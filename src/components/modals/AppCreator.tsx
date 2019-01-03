@@ -177,7 +177,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
             }
             catch (e) {
                 const error = e as Error
-                this.props.setErrorDisplay(ErrorType.Error, error.message, ["Invalid file contents"], AT.CREATE_APPLICATION_ASYNC)
+                this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", AT.CREATE_APPLICATION_ASYNC)
             }
         }
         reader.readAsText(this.state.file)
@@ -252,7 +252,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             <FilePicker
                                 extensions={['cl']}
                                 onChange={this.onChangeFile}
-                                onError={(error: string) => this.props.setErrorDisplay(ErrorType.Error, error, [], null)}
+                                onError={(error: string) => this.props.setErrorDisplay(ErrorType.Error, error, "", null)}
                                 maxSize={10}
                             >
                                 <div className="cl-action-creator-file-picker">

@@ -36,7 +36,7 @@ export const setCurrentAppThunkAsync = (key: string, application: AppBase) => {
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.SET_CURRENT_APP_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.SET_CURRENT_APP_ASYNC))
             throw error
         }
     }
@@ -60,7 +60,7 @@ export const setConversationIdThunkAsync = (userName: string, userId: string, co
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.SET_CONVERSATION_ID_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.SET_CONVERSATION_ID_ASYNC))
             throw error
         }
     }
@@ -73,12 +73,12 @@ export const setTipType = (tipType: TipType): ActionObject => {
     }
 }
 
-export const setErrorDisplay = (errorType: ErrorType, title: string, messages: string[], actionType: AT | null): ActionObject => {
+export const setErrorDisplay = (errorType: ErrorType, title: string, message: string, actionType: AT | null): ActionObject => {
     return {
         type: AT.SET_ERROR_DISPLAY,
         errorType,
         title,
-        messages,
+        message,
         actionType
     }
 }

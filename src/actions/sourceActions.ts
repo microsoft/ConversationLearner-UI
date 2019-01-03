@@ -34,7 +34,7 @@ export const promoteUpdatedAppDefinitionThunkAsync = (appId: string, updatedAppD
             return updatedAppDefinition
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION))
             return null;
         }
     }
