@@ -214,12 +214,7 @@ export class Component extends React.Component<Props, ComponentState> {
         return (
             <div>
                 <h1 className="cl-ux-msg-cautionary">{Util.formatMessageId(this.props.intl, FM.APP_MESSAGE_PERMDELETE)}</h1>
-                <p>
-                    {this.props.intl.formatMessage({
-                        id: FM.APPSLIST_CONFIRMCANCELMODALTITLE,
-                        defaultMessage: Util.getDefaultText(FM.APPSLIST_CONFIRMCANCELMODALTITLE)
-                    }, { model_named: this.props.appToDelete ? this.props.appToDelete.appName : '' })}
-                </p>
+                <p>Confirm permanent deletion of the <strong>{this.props.appToDelete ? this.props.appToDelete.appName : ''}</strong> Model by entering its name.</p>
             </div>
         )
     }
