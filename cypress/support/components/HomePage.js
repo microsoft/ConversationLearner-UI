@@ -23,7 +23,7 @@ export function GetModelListRowCount()
   .then(gridElement => { var rowCount = +gridElement.attr('aria-rowcount') -1; return rowCount })
 }
 
-// Returns the index to the next potential row to delete.
+// Returns the index to the next potential row to delete, or undefined to indicate complete.
 export function DeleteNextTestGeneratedModel(indexNextPotentialRowToDelete) 
 {
   return new Promise((resolve) =>
@@ -32,11 +32,10 @@ export function DeleteNextTestGeneratedModel(indexNextPotentialRowToDelete)
     {
       for(var i = indexNextPotentialRowToDelete; i < elements.length; i++) 
       {
-        // TODO: Once the CircleCI machine has run and eliminated all tests generated models remove the last two 'startsWith' evaluations...
-        if(elements[i].innerText.startsWith('z-') || elements[i].innerText.startsWith('Model-') || elements[i].innerText.startsWith('Model1-')) 
+        if(elements[i].innerText.startsWith('z-')) 
         {
           cy.wrap(elements[i]).parents('[role="presentation"].ms-List-cell').find('i[data-icon-name="Delete"]').Click()
-          ClickConfirmButton()
+          cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${elements[i].innerText}{enter}`)
           return resolve(i)
         }
       }
