@@ -919,3 +919,8 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   margin-top:0.15em;
   margin-bottom:1em;
 }
+
+.cl-ux-msg-cautionary {
+  color: var(--color-alert) !important;
+  font-weight: 900;
+}

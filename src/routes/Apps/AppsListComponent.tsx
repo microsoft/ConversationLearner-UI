@@ -210,9 +210,23 @@ export class Component extends React.Component<Props, ComponentState> {
         });
     }
 
+    getDeleteDialogBoxText = () => {
+        return (
+            <div>
+                <h1 className="cl-ux-msg-cautionary">{Util.formatMessageId(this.props.intl, FM.APP_MESSAGE_PERMDELETE)}</h1>
+                <p>
+                    {this.props.intl.formatMessage({
+                        id: FM.APPSLIST_CONFIRMCANCELMODALTITLE,
+                        defaultMessage: Util.getDefaultText(FM.APPSLIST_CONFIRMCANCELMODALTITLE)
+                    }, { model_named: this.props.appToDelete ? this.props.appToDelete.appName : '' })}
+                </p>
+            </div>
+        )
+    }
+
     render() {
         const props = this.props
-        const apps = this.getSortedApplications(this.state.sortColumn, props.apps);
+        const apps = this.getSortedApplications(this.state.sortColumn, props.apps)
 
         return <div className="cl-page">
             <span className={OF.FontClassNames.mediumPlus}>
@@ -256,13 +270,15 @@ export class Component extends React.Component<Props, ComponentState> {
             />
             <TextboxRestrictableModal
                 open={props.isConfirmDeleteAppModalOpen}
-                message={Util.getDefaultText(FM.APPSLIST_CONFIRMCANCELMODALTITLE)}
-                placeholder={""}
+                message={this.getDeleteDialogBoxText()}
+                placeholder=""
                 matched_text={props.appToDelete ? props.appToDelete.appName : null}
                 button_ok={Util.getDefaultText(FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
                 button_cancel={Util.getDefaultText(FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
                 onOK={props.onConfirmDeleteApp}
                 onCancel={props.onCancelDeleteModal}
+                css_ok={"cl-button-delete"}
+                css_cancel={""}
             />
             <TutorialImporterModal
                 open={props.isImportTutorialsOpen}

@@ -492,6 +492,9 @@ export enum FM {
     VALIDATE_UNABLE_TO_EDIT = 'Validate.unableToEdit',
     VALIDATE_UNABLE_TO_BRANCH = 'Validate.unableToBranch',
     VALIDATE_ENTITY_REASON = 'Validate.entityReason',
+
+    // General/misc text added for localization support
+    APP_MESSAGE_PERMDELETE = 'App.messages.permDelete',
 }
 
 // Message ids follow convention of '<componentname>.<area>[.<subarea>]*`
@@ -605,7 +608,7 @@ export default {
         [FM.APPSLIST_IMPORTAPP_BUTTONTEXT]: 'Import Model',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION]: 'Import Tutorials Models',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT]: 'Import Tutorials',
-        [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: `Confirm the deletion by entering the Model's name`,
+        [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: `Confirm permanent deletion of the {model_named} Model by entering its name.`,
         [FM.APPSLIST_COLUMN_NAME]: 'Name',
         [FM.APPSLIST_COLUMNS_LOCALE]: 'Locale',
         [FM.APPSLIST_COLUMNS_LINKEDBOTS]: 'Linked Bots',
@@ -1025,6 +1028,9 @@ export default {
         [AT.EDIT_TRAINDIALOG_ASYNC]: 'Editing Train Dialog',
         [AT.EDIT_APP_LIVE_TAG_ASYNC]: 'Editing Application live tag',
         [AT.EDIT_APP_EDITING_TAG_ASYNC]: 'Editing Application editing tag',
+
+        // General UX strings not fitting elsewhere
+        [FM.APP_MESSAGE_PERMDELETE]: 'Deletion is irreversible.',
     },
     'ko': {
         [FM.ABOUT_TITLE]: '약',

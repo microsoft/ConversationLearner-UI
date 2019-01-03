@@ -80,7 +80,8 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
                         <div className="cl-modal-buttons_secondary" />
                         <div className="cl-modal-buttons_primary">
 
-                            <OF.PrimaryButton
+                            <OF.DefaultButton
+                                className={this.props.css_ok}
                                 disabled={this.isContinueDisabled()}
                                 data-testid="app-modal-continue-button"
                                 onClick={this.onClickOK}
@@ -88,6 +89,7 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
                                 text={this.props.button_ok}
                             />
                             <OF.DefaultButton
+                                className={this.props.css_cancel}
                                 onClick={this.onClickCancel}
                                 ariaDescription={this.props.button_cancel}
                                 text={this.props.button_cancel}
@@ -112,13 +114,15 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     open: boolean
-    message: string
+    message: JSX.Element
     placeholder: string
     matched_text: any
     button_ok: string
     button_cancel: string
     onOK: (userInput: string) => void
     onCancel: () => void
+    css_ok: string
+    css_cancel: string
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
