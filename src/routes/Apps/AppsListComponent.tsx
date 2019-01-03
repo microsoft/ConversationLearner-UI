@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { AppCreator as AppCreatorModal, TutorialImporterModal, ConfirmCancelModal } from '../../components/modals'
+import { AppCreator as AppCreatorModal, TutorialImporterModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react';
 import { AppBase, AppDefinition } from '@conversationlearner/models'
 import FormattedMessageId from '../../components/FormattedMessageId'
@@ -12,6 +12,7 @@ import { FM } from '../../react-intl-messages'
 import * as Util from '../../Utils/util'
 import { User, AppCreatorType } from '../../types';
 import * as moment from 'moment'
+import TextboxRestrictableModal from '../../components/modals/TextboxRestrictable'
 
 export interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: AppBase, props: Props) => JSX.Element
@@ -253,16 +254,15 @@ export class Component extends React.Component<Props, ComponentState> {
                 onCancel={props.onCancelAppCreateModal}
                 creatorType={props.appCreatorType}
             />
-            <ConfirmCancelModal
+            <TextboxRestrictableModal
                 open={props.isConfirmDeleteAppModalOpen}
+                message={Util.getDefaultText(FM.APPSLIST_CONFIRMCANCELMODALTITLE)}
+                placeholder={""}
+                matched_text={props.appToDelete ? props.appToDelete.appName : null}
+                button_ok={Util.getDefaultText(FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
+                button_cancel={Util.getDefaultText(FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
+                onOK={props.onConfirmDeleteApp}
                 onCancel={props.onCancelDeleteModal}
-                onConfirm={props.onConfirmDeleteApp}
-                title={props.intl.formatMessage({
-                    id: FM.APPSLIST_CONFIRMCANCELMODALTITLE,
-                    defaultMessage: Util.getDefaultText(FM.APPSLIST_CONFIRMCANCELMODALTITLE)
-                }, {
-                        appName: props.appToDelete ? props.appToDelete.appName : ''
-                    })}
             />
             <TutorialImporterModal
                 open={props.isImportTutorialsOpen}
