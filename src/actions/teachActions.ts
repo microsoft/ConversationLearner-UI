@@ -12,6 +12,25 @@ import { AxiosError } from 'axios';
 import { deleteTrainDialogThunkAsync, fetchAllTrainDialogsThunkAsync } from './trainActions'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions';
 
+// --------------------------
+// createTeachSession
+// --------------------------
+const createTeachSessionAsync = (): ActionObject =>
+    ({
+        type: AT.CREATE_TEACH_SESSION_ASYNC
+    })
+
+const createTeachSessionRejected = (): ActionObject =>
+    ({
+        type: AT.CREATE_TEACH_SESSION_REJECTED
+    })
+
+const createTeachSessionFulfilled = (teachResponse: CLM.TeachResponse): ActionObject =>
+    ({
+        type: AT.CREATE_TEACH_SESSION_FULFILLED,
+        teachSession: teachResponse as CLM.Teach
+    })
+
 export const createTeachSessionThunkAsync = (appId: string, initialFilledEntities: CLM.FilledEntity[] = []) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
@@ -30,25 +49,28 @@ export const createTeachSessionThunkAsync = (appId: string, initialFilledEntitie
         }
     }
 }
-const createTeachSessionAsync = (): ActionObject =>
-    ({
-        type: AT.CREATE_TEACH_SESSION_ASYNC
-    })
-
-const createTeachSessionRejected = (): ActionObject =>
-    ({
-        type: AT.CREATE_TEACH_SESSION_REJECTED
-    })
-
-const createTeachSessionFulfilled = (teachResponse: CLM.TeachResponse): ActionObject =>
-    ({
-        type: AT.CREATE_TEACH_SESSION_FULFILLED,
-        teachSession: teachResponse as CLM.Teach
-    })
 
 // --------------------------
 // TeachSessionFromHistory
 // --------------------------
+const createTeachSessionFromHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
+    return {
+        type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
+        appId: appId,
+        userName: userName,
+        userId: userId,
+        trainDialog: trainDialog
+    }
+}
+
+const createTeachSessionFromHistoryFulfilled = (teachWithHistory: CLM.TeachWithHistory): ActionObject => {
+    // Needs a fulfilled version to handle response from Epic
+    return {
+        type: AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED,
+        teachWithHistory: teachWithHistory
+    }
+}
+
 export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string, initialUserInput: CLM.UserInput | null = null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
@@ -68,27 +90,29 @@ export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainD
     }
 }
 
-const createTeachSessionFromHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
-    return {
-        type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
-        appId: appId,
-        userName: userName,
-        userId: userId,
-        trainDialog: trainDialog
-    }
-}
-
-const createTeachSessionFromHistoryFulfilled = (teachWithHistory: CLM.TeachWithHistory): ActionObject => {
-    // Needs a fulfilled version to handle response from Epic
-    return {
-        type: AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED,
-        teachWithHistory: teachWithHistory
-    }
-}
-
 // --------------------------
 // DeleteTeachSession
 // --------------------------
+const deleteTeachSessionAsync = (key: string, teachSession: CLM.Teach, appId: string, save: boolean): ActionObject => {
+    return {
+        type: AT.DELETE_TEACH_SESSION_ASYNC,
+        key: key,
+        teachSession: teachSession,
+        appId: appId,
+        save: save
+    }
+}
+
+const deleteTeachSessionFulfilled = (key: string, teachSession: CLM.Teach, sourceLogDialogId: string | null, appId: string): ActionObject => {
+    return {
+        type: AT.DELETE_TEACH_SESSION_FULFILLED,
+        key: key,
+        appId: appId,
+        teachSessionGUID: teachSession.teachId,
+        trainDialogId: teachSession.trainDialogId,
+        sourceLogDialogId: sourceLogDialogId
+    }
+}
 export const deleteTeachSessionThunkAsync = (
     key: string,
     teachSession: CLM.Teach,
@@ -122,27 +146,22 @@ export const deleteTeachSessionThunkAsync = (
     }
 }
 
-const deleteTeachSessionAsync = (key: string, teachSession: CLM.Teach, appId: string, save: boolean): ActionObject => {
+// --------------------------
+// deleteMemory
+// --------------------------
+const deleteMemoryAsync = (key: string, currentAppId: string): ActionObject => {
     return {
-        type: AT.DELETE_TEACH_SESSION_ASYNC,
+        type: AT.DELETE_MEMORY_ASYNC,
         key: key,
-        teachSession: teachSession,
-        appId: appId,
-        save: save
+        appId: currentAppId
     }
 }
 
-const deleteTeachSessionFulfilled = (key: string, teachSession: CLM.Teach, sourceLogDialogId: string | null, appId: string): ActionObject => {
+const deleteMemoryFulfilled = (): ActionObject => {
     return {
-        type: AT.DELETE_TEACH_SESSION_FULFILLED,
-        key: key,
-        appId: appId,
-        teachSessionGUID: teachSession.teachId,
-        trainDialogId: teachSession.trainDialogId,
-        sourceLogDialogId: sourceLogDialogId
+        type: AT.DELETE_MEMORY_FULFILLED
     }
 }
-
 export const deleteMemoryThunkAsync = (key: string, currentAppId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteMemoryAsync(key, currentAppId))
@@ -160,23 +179,29 @@ export const deleteMemoryThunkAsync = (key: string, currentAppId: string) => {
     }
 }
 
-const deleteMemoryAsync = (key: string, currentAppId: string): ActionObject => {
-    return {
-        type: AT.DELETE_MEMORY_ASYNC,
-        key: key,
-        appId: currentAppId
-    }
-}
-
-const deleteMemoryFulfilled = (): ActionObject => {
-    return {
-        type: AT.DELETE_MEMORY_FULFILLED
-    }
-}
-
 // --------------------------
 // RunExtractor
 // --------------------------
+const runExtractorAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput): ActionObject => {
+    return {
+        type: AT.RUN_EXTRACTOR_ASYNC,
+        appId: appId,
+        extractType: extractType,
+        sessionId: sessionId,
+        turnIndex: turnIndex,
+        userInput: userInput
+    }
+}
+
+const runExtractorFulfilled = (appId: string, sessionId: string, uiExtractResponse: CLM.UIExtractResponse): ActionObject => {
+    return {
+        type: AT.RUN_EXTRACTOR_FULFILLED,
+        appId: appId,
+        sessionId: sessionId,
+        uiExtractResponse: uiExtractResponse
+    }
+}
+
 export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput, filteredDialog: string | null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.RUN_EXTRACTOR_ASYNC)
@@ -216,25 +241,6 @@ export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogTyp
     }
 }
 
-const runExtractorAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput): ActionObject => {
-    return {
-        type: AT.RUN_EXTRACTOR_ASYNC,
-        appId: appId,
-        extractType: extractType,
-        sessionId: sessionId,
-        turnIndex: turnIndex,
-        userInput: userInput
-    }
-}
-
-const runExtractorFulfilled = (appId: string, sessionId: string, uiExtractResponse: CLM.UIExtractResponse): ActionObject => {
-    return {
-        type: AT.RUN_EXTRACTOR_FULFILLED,
-        appId: appId,
-        sessionId: sessionId,
-        uiExtractResponse: uiExtractResponse
-    }
-}
 //---------------------------------------------------------
 // User makes an update to an extract response
 export const updateExtractResponse = (extractResponse: CLM.ExtractResponse): ActionObject => {
@@ -269,6 +275,23 @@ export const clearExtractConflict = (): ActionObject => {
 // --------------------------
 // GetScores
 // --------------------------
+const getScoresAsync = (key: string, appId: string, sessionId: string, scoreInput: CLM.ScoreInput): ActionObject =>
+    ({
+        type: AT.GET_SCORES_ASYNC,
+        key,
+        appId,
+        sessionId,
+        scoreInput
+    })
+
+const getScoresFulfilled = (key: string, appId: string, sessionId: string, uiScoreResponse: CLM.UIScoreResponse): ActionObject =>
+    ({
+        type: AT.GET_SCORES_FULFILLED,
+        key,
+        appId,
+        sessionId,
+        uiScoreResponse,
+    })
 export const getScoresThunkAsync = (key: string, appId: string, sessionId: string, scoreInput: CLM.ScoreInput) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.GET_SCORES_ASYNC)
@@ -287,27 +310,27 @@ export const getScoresThunkAsync = (key: string, appId: string, sessionId: strin
     }
 }
 
-const getScoresAsync = (key: string, appId: string, sessionId: string, scoreInput: CLM.ScoreInput): ActionObject =>
-    ({
-        type: AT.GET_SCORES_ASYNC,
-        key,
-        appId,
-        sessionId,
-        scoreInput
-    })
-
-const getScoresFulfilled = (key: string, appId: string, sessionId: string, uiScoreResponse: CLM.UIScoreResponse): ActionObject =>
-    ({
-        type: AT.GET_SCORES_FULFILLED,
-        key,
-        appId,
-        sessionId,
-        uiScoreResponse,
-    })
-
 // --------------------------
 // RunScorer
 // --------------------------
+const runScorerAsync = (key: string, appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput): ActionObject => {
+    return {
+        type: AT.RUN_SCORER_ASYNC,
+        key: key,
+        appId: appId,
+        sessionId: teachId,
+        uiScoreInput: uiScoreInput
+    }
+}
+const runScorerFulfilled = (key: string, appId: string, teachId: string, uiScoreResponse: CLM.UIScoreResponse): ActionObject => {
+    return {
+        type: AT.RUN_SCORER_FULFILLED,
+        key,
+        appId,
+        sessionId: teachId,
+        uiScoreResponse
+    }
+}
 export const runScorerThunkAsync = (key: string, appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.RUN_SCORER_ASYNC)
@@ -327,28 +350,34 @@ export const runScorerThunkAsync = (key: string, appId: string, teachId: string,
     }
 }
 
-const runScorerAsync = (key: string, appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput): ActionObject => {
-    return {
-        type: AT.RUN_SCORER_ASYNC,
-        key: key,
-        appId: appId,
-        sessionId: teachId,
-        uiScoreInput: uiScoreInput
-    }
-}
-const runScorerFulfilled = (key: string, appId: string, teachId: string, uiScoreResponse: CLM.UIScoreResponse): ActionObject => {
-    return {
-        type: AT.RUN_SCORER_FULFILLED,
-        key,
-        appId,
-        sessionId: teachId,
-        uiScoreResponse
-    }
-}
-
 // --------------------------
 // PostScorerFeedback
 // --------------------------
+const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, uiTrainScorerStep: CLM.UITrainScorerStep, waitForUser: boolean, uiScoreInput: CLM.UIScoreInput): ActionObject => {
+    return {
+        type: AT.POST_SCORE_FEEDBACK_ASYNC,
+        key: key,
+        appId: appId,
+        sessionId: teachId,
+        uiTrainScorerStep: uiTrainScorerStep,
+        waitForUser: waitForUser,
+        uiScoreInput: uiScoreInput
+    }
+}
+
+// Score has been posted.  Action is Terminal
+const postScorerFeedbackFulfilled = (key: string, appId: string, teachId: string, dialogMode: CLM.DialogMode, uiPostScoreResponse: CLM.UIPostScoreResponse, uiScoreInput: CLM.UIScoreInput | null): ActionObject => {
+    return {
+        type: AT.POST_SCORE_FEEDBACK_FULFILLED,
+        key: key,
+        appId: appId,
+        sessionId: teachId,
+        dialogMode: dialogMode,
+        uiPostScoreResponse: uiPostScoreResponse,
+        uiScoreInput: uiScoreInput
+    }
+}
+
 export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId: string, uiTrainScorerStep: CLM.UITrainScorerStep, waitForUser: boolean, uiScoreInput: CLM.UIScoreInput) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.POST_SCORE_FEEDBACK_ASYNC)
@@ -376,32 +405,6 @@ export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId
         }
     }
 }
-
-const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, uiTrainScorerStep: CLM.UITrainScorerStep, waitForUser: boolean, uiScoreInput: CLM.UIScoreInput): ActionObject => {
-    return {
-        type: AT.POST_SCORE_FEEDBACK_ASYNC,
-        key: key,
-        appId: appId,
-        sessionId: teachId,
-        uiTrainScorerStep: uiTrainScorerStep,
-        waitForUser: waitForUser,
-        uiScoreInput: uiScoreInput
-    }
-}
-
-// Score has been posted.  Action is Terminal
-const postScorerFeedbackFulfilled = (key: string, appId: string, teachId: string, dialogMode: CLM.DialogMode, uiPostScoreResponse: CLM.UIPostScoreResponse, uiScoreInput: CLM.UIScoreInput | null): ActionObject => {
-    return {
-        type: AT.POST_SCORE_FEEDBACK_FULFILLED,
-        key: key,
-        appId: appId,
-        sessionId: teachId,
-        dialogMode: dialogMode,
-        uiPostScoreResponse: uiPostScoreResponse,
-        uiScoreInput: uiScoreInput
-    }
-}
-
 // --------------------------
 // ToggleAutoTeach
 // --------------------------
