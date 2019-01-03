@@ -91,3 +91,15 @@ export function TagAndFrog()
 
   train.AbandonDialog()
 }
+
+export function ValidateErrorHandling()
+{
+  models.ImportModel('z-errorHandling', 'z-disqualifyngEnt.Trained.cl')
+  modelPage.NavigateToTrainDialogs()
+  cy.WaitForTrainingStatusCompleted()
+
+  train.EditTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
+  editDialogModal.SelectChatTurn('Sam')
+  
+
+}

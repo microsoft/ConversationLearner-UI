@@ -28,3 +28,4 @@ export function GetTurns()                        { return helpers.NumericArrayF
 export function GetLastModifiedDates()            { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-last-modified"]')}
 export function GetCreatedDates()                 { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-created"]')}
 
+export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).find('i[data-icon-name="IncidentTriangle"].cl-color-error') }
