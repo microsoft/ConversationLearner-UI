@@ -26,7 +26,7 @@ export const createChatSessionThunkAsync = (appId: string, packageId: string, sa
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_CHAT_SESSION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_CHAT_SESSION_ASYNC))
             throw error
         }
     }
@@ -58,7 +58,7 @@ export const deleteChatSessionThunkAsync = (key: string, session: Session, app: 
             return true;
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_CHAT_SESSION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_CHAT_SESSION_ASYNC))
             return false;
         }
     }
@@ -99,7 +99,7 @@ export const editChatSessionExpireThunkAsync = (appId: string, sessionId: string
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC))
             throw error
         }
     }
