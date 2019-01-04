@@ -107,6 +107,11 @@ html {
   color: var(--color-themePrimary) !important;
 }
 
+.cl-icon:hover {
+  color: var(--color-orangeLighter) !important;
+  background-color:transparent !important;
+}
+
 .cl-icon--transparent {
   background-color:transparent !important;
   color: #ffffff !important;
@@ -132,7 +137,7 @@ html {
 }
 
 .cl-icon[data-icon-name="Warning"] {
-  color: var(--color-alert);
+  color: var(--color-orangeLighter);
   vertical-align: sub;
   font-size: 1.2em;
 }
