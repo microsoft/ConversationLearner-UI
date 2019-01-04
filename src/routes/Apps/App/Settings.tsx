@@ -335,6 +335,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
     @autobind
     onConfirmDeleteApp() {
+        // actions.app.deleteApplicationThunkAsync(this.props.app.appId)
         this.setState({
             isConfirmDeleteAppModalOpen: false
         })
