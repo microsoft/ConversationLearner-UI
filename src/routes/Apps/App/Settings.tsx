@@ -17,52 +17,13 @@ import { AppBase, AppDefinition, TrainingStatusCode } from '@conversationlearner
 import './Settings.css'
 import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
-import { injectIntl, InjectedIntlProps, defineMessages } from 'react-intl'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import * as TC from '../../../components/tipComponents'
 import * as ToolTip from '../../../components/ToolTips/ToolTips'
 import HelpIcon from '../../../components/HelpIcon'
 import * as Util from '../../../Utils/util'
 import TextboxRestrictableModal from '../../../components/modals/TextboxRestrictable'
-
-const messages = defineMessages({
-    fieldErrorRequired: {
-        id: FM.SETTINGS_FIELDERROR_REQUIREDVALUE,
-        defaultMessage: 'Required Value'
-    },
-    fieldErrorAlphanumeric: {
-        id: FM.SETTINGS_FIELDERROR_ALPHANUMERIC,
-        defaultMessage: 'Model name may only contain alphanumeric characters'
-    },
-    fieldErrorDistinct: {
-        id: FM.SETTINGS_FIELDERROR_DISTINCT,
-        defaultMessage: 'Name is already in use.'
-    },
-    passwordHidden: {
-        id: FM.SETTINGS_PASSWORDHIDDEN,
-        defaultMessage: 'Show'
-    },
-    passwordVisible: {
-        id: FM.SETTINGS_PASSWORDVISIBLE,
-        defaultMessage: 'Hide'
-    },
-    botFrameworkAppIdFieldLabel: {
-        id: FM.SETTINGS_BOTFRAMEWORKAPPIDFIELDLABEL,
-        defaultMessage: 'Model ID'
-    },
-    botFrameworkAddBotButtonText: {
-        id: FM.SETTINGS_BOTFRAMEWORKADDBOTBUTTONTEXT,
-        defaultMessage: 'Add'
-    },
-    saveChanges: {
-        id: FM.SETTINGS_SAVECHANGES,
-        defaultMessage: 'Save Changes'
-    },
-    discard: {
-        id: FM.SETTINGS_DISCARD,
-        defaultMessages: 'Discard'
-    }
-})
 
 interface ComponentState {
     localeVal: string
@@ -268,19 +229,18 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     onGetNameErrorMessage(value: string): string {
-        const { intl } = this.props
         if (value.length === 0) {
-            return intl.formatMessage(messages.fieldErrorRequired)
+            return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_REQUIREDVALUE)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
-            return intl.formatMessage(messages.fieldErrorAlphanumeric)
+            return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_ALPHANUMERIC)
         }
 
         // Check that name isn't in use
         let foundApp = this.props.apps.find(a => (a.appName === value && a.appId !== this.props.app.appId));
         if (foundApp) {
-            return intl.formatMessage(messages.fieldErrorDistinct)
+            return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_DISTINCT)
         }
 
         return ''
@@ -335,7 +295,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
     @autobind
     onConfirmDeleteApp() {
-        // actions.app.deleteApplicationThunkAsync(this.props.app.appId)
+        this.props.onDeleteApp(this.props.app.appId)
         this.setState({
             isConfirmDeleteAppModalOpen: false
         })
@@ -508,7 +468,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             <div>
                                 <OF.DefaultButton
                                     onClick={() => this.onOpenDebugErrors()}
-                                    ariaDescription={intl.formatMessage(messages.discard)}
+                                    ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_DISCARD)}
                                     text={'Inject Errors'}
                                 />
                             </div>
@@ -519,14 +479,14 @@ class Settings extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             disabled={this.state.edited === false || this.onGetNameErrorMessage(this.state.appNameVal) !== ''}
                             onClick={this.onClickSave}
-                            ariaDescription={intl.formatMessage(messages.saveChanges)}
-                            text={intl.formatMessage(messages.saveChanges)}
+                            ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_SAVECHANGES)}
+                            text={Util.formatMessageId(intl, FM.SETTINGS_SAVECHANGES)}
                         />
                         <OF.DefaultButton
                             disabled={this.state.edited === false}
                             onClick={this.onClickDiscard}
-                            ariaDescription={intl.formatMessage(messages.discard)}
-                            text={intl.formatMessage(messages.discard)}
+                            ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_DISCARD)}
+                            text={Util.formatMessageId(intl, FM.SETTINGS_DISCARD)}
                         />
                     </div>
 
@@ -560,7 +520,8 @@ const mapDispatchToProps = (dispatch: any) => {
         editApplicationThunkAsync: actions.app.editApplicationThunkAsync,
         editAppEditingTagThunkAsync: actions.app.editAppEditingTagThunkAsync,
         editAppLiveTagThunkAsync: actions.app.editAppLiveTagThunkAsync,
-        fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync
+        fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
+        deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -578,6 +539,7 @@ export interface ReceivedProps {
     app: AppBase,
     editingPackageId: string,
     onCreateApp: (app: AppBase, source: AppDefinition) => void
+    onDeleteApp: (id: string) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
