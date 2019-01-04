@@ -199,9 +199,11 @@ export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index)
 export function InsertUserInputAfter(existingMessage, newMessage)
 {
   SelectChatTurn(existingMessage)
-  cy.Get('[data-testid="chat-edit-add-user-input-button"]').click().then(()=>
-  {
-    cy.wait(1000)
-    cy.Get('data-testid="user-input-modal-new-message-input"').type(`${newMessage}{enter}`)
-  })
+  cy.wait(1000)
+  cy.get('[data-testid="chat-edit-add-bot-response-button"]').click()
+  //cy.get('[data-testid="chat-edit-add-user-input-button"]').click()//.then(()=>
+  // {
+  //   cy.wait(1000)
+  //   cy.Get('data-testid="user-input-modal-new-message-input"').type(`${newMessage}{enter}`)
+  // })
 }
