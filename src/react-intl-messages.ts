@@ -769,7 +769,7 @@ export default {
         [FM.TOOLTIP_ACTION_SCORE_TRAINING]: `Action can't be scored yet as Conversation Learner is still training`,
         [FM.TOOLTIP_ACTION_SCORE_DISQUALIFIED]: 'Action has been disqualified - Required Entities are missing or Blocked Entities are present',
 
-        [FM.TOOLTIP_ACTION_SUGGESTED]: `Hint to Conversation Learner that the user's reply to this Action will likely be a value for this Entity`,
+        [FM.TOOLTIP_ACTION_SUGGESTED]: `Hint to Conversation Learner that the user's reply to this Action will likely be a value for this Entity. Pre-Trained Entities cannot be used as Expected Entities.`,
         [FM.TOOLTIP_ACTION_SUGGESTED_TITLE]: 'Expected Response',
         [FM.TOOLTIP_ACTION_SUGGESTED_ROW1]: '"What is your name?"',
         [FM.TOOLTIP_ACTION_SUGGESTED_ROW2]: '$name',
