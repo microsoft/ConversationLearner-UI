@@ -105,6 +105,12 @@ class Index extends React.Component<Props, ComponentState> {
         history.push(`/home/${app.appId}`, { app })
     }
 
+    onDeleteApp = async (appIdToDelete: string) => {
+        await (this.props.deleteApplicationThunkAsync(appIdToDelete!) as any as Promise<CLM.AppBase>)
+        const { history } = this.props
+        history.push(`/home`)
+    }
+
     // Returns any incompatibilities between the running Bot and the selected Model
     botValidationErrors(botInfo: CLM.BotInfo, actionList: CLM.ActionBase[]): string[] {
         // Check for missing APIs
@@ -236,7 +242,7 @@ class Index extends React.Component<Props, ComponentState> {
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-train-dialogs" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
                                 <OF.Icon iconName="List" />
-                                <span 
+                                <span
                                     className={(this.state.modelLoaded && trainDialogValidity !== CLM.Validity.VALID) ? 'cl-font--highlight' : ''}
                                 >
                                     Train Dialogs
@@ -274,7 +280,7 @@ class Index extends React.Component<Props, ComponentState> {
                 <Switch>
                     <Route
                         path={`${match.url}/settings`}
-                        render={props => <Settings {...props} app={app} editingPackageId={editPackageId} onCreateApp={this.onCreateApp} />}
+                        render={props => <Settings {...props} app={app} editingPackageId={editPackageId} onCreateApp={this.onCreateApp} onDeleteApp={this.onDeleteApp} />}
                     />
                     <Route
                         path={`${match.url}/entities`}
@@ -308,7 +314,8 @@ const mapDispatchToProps = (dispatch: any) => {
         createApplicationThunkAsync: actions.app.createApplicationThunkAsync,
         fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
         fetchAllLogDialogsThunkAsync: actions.log.fetchAllLogDialogsThunkAsync,
-        fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync
+        fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync,
+        deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
