@@ -123,8 +123,10 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 turnLookupOffset
             })
 
-            let userText = CLM.ModelUtils.textVariationToMarkdown(textVariations[0])
-            this.props.onReplaceActivityText(userText, this.props.nextActivityIndex - 1 /*LARSturnLookupOffset + turnLookup.length - 2*/)
+            // Replace webchat text with markdown version where labelled entities are bold
+            let excludedEntities = this.props.entities.filter(e => e.doNotMemorize).map(e => e.entityId)
+            let userText = CLM.ModelUtils.textVariationToMarkdown(textVariations[0], excludedEntities)
+            this.props.onReplaceActivityText(userText, this.props.nextActivityIndex - 1)
 
             this.props.clearExtractResponses()
         }
