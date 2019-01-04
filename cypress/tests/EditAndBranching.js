@@ -99,7 +99,5 @@ export function ValidateErrorHandling()
   cy.WaitForTrainingStatusCompleted()
 
   train.EditTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
-  editDialogModal.SelectChatTurn('Sam')
-  
-
+  editDialogModal.InsertUserInputAfter('Sam', 'Joe')
 }

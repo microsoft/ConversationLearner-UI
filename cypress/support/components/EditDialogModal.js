@@ -93,12 +93,12 @@ export function VerifyChatTurnControls(element, index)
   if (index > 0) cy.Contains('[data-testid="edit-dialog-modal-delete-turn-button"]', 'Delete Turn')
   else cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
   
-  cy.Contains('[data-testid="chat-edit-add-score-button"]', '+')
+  cy.Contains('[data-testid="chat-edit-add-bot-response-button"]', '+')
 
   if (userMessage) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`VerifyChatTurnControls()`, 'Branch Found')
   else cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
 
-  cy.Contains('[data-testid="chat-edit-add-input-button"]', '+')
+  cy.Contains('[data-testid="chat-edit-add-user-input-button"]', '+')
 }
 
 // Provide any user message and any Bot message expected in chat.
@@ -110,9 +110,9 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage)
 
   // These do the actual validation this function is intended to validate.
   cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
-  cy.DoesNotContain('[data-testid="chat-edit-add-score-button"]', '+')
+  cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+')
   cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
-  cy.DoesNotContain('[data-testid="chat-edit-add-input-button"]', '+')
+  cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]', '+')
 }
 
 export function LabelTextAsEntity(text, entity)
@@ -193,5 +193,15 @@ export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index)
       if (!Array.isArray(textEntityPairs)) textEntityPairs = [textEntityPairs]
       for (var i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
     })
+  })
+}
+
+export function InsertUserInputAfter(existingMessage, newMessage)
+{
+  SelectChatTurn(existingMessage)
+  cy.Get('[data-testid="chat-edit-add-user-input-button"]').click().then(()=>
+  {
+    cy.wait(1000)
+    cy.Get('data-testid="user-input-modal-new-message-input"').type(`${newMessage}{enter}`)
   })
 }
