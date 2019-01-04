@@ -325,6 +325,7 @@ export enum FM {
     SETTINGS_SAVECHANGES = 'Settings.saveChanges',
     SETTINGS_DISCARD = 'Settings.discard',
     SETTINGS_LOGGINGON_LABEL = 'Settings.loggingon',
+    SETINGS_DELETEISPERMANENT = 'Settings.deleteIsPermanent',
 
     // TeachSessionAdmin
     TEACHSESSIONADMIN_DIALOGMODE_USER = 'TeachSessionAdmin.dialogMode.user',
@@ -721,6 +722,7 @@ export default {
         [FM.SETTINGS_SAVECHANGES]: 'Save Changes',
         [FM.SETTINGS_DISCARD]: 'Discard',
         [FM.SETTINGS_LOGGINGON_LABEL]: 'Log Conversations',
+        [FM.SETINGS_DELETEISPERMANENT]: 'Deletion is irreversible.',
 
         // ToolTip
         [FM.TOOLTIP_ACTION_API]: 'APIs exposed in the running Bot of the form:',

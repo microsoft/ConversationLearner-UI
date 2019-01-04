@@ -112,7 +112,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     open: boolean
-    message: string
+    message: JSX.Element
     placeholder: string
     matched_text: any
     button_ok: string
