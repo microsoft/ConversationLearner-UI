@@ -88,7 +88,7 @@ export function VerifyErrorsFoundInTraining(firstInput, lastInput, lastResponse)
     var lastInputs = trainDialogsGrid.GetLastInputs()
     var lastResponses = trainDialogsGrid.GetLastResponses()
 
-    helpers.ConLog(`VerifyErrorsFoundInTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `${firstInput.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
+    helpers.ConLog(`VerifyErrorsFoundInTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `Before Loop of ${firstInputs.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
 
     for (var i = 0; i < firstInputs.length; i++)
     {
@@ -96,6 +96,7 @@ export function VerifyErrorsFoundInTraining(firstInput, lastInput, lastResponse)
       {
         helpers.ConLog(`VerifyErrorsFoundInTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `Index: ${i} - ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
         trainDialogsGrid.VerifyErrorIconForTrainGridRow(i)
+        helpers.ConLog(`VerifyErrorsFoundInTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `Verified - Found IT!`)
         return
       }
     }

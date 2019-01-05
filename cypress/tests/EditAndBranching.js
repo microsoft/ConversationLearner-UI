@@ -94,7 +94,7 @@ export function ValidateErrorHandling()
 {
   models.ImportModel('z-errorHandling', 'z-disqualifyngEnt.Trained.cl')
   modelPage.NavigateToTrainDialogs()
-  cy.WaitForTrainingStatusCompleted()
+  //cy.WaitForTrainingStatusCompleted()
   
   modelPage.VerifyNoErrorIconOnPage()
 
@@ -106,7 +106,7 @@ export function ValidateErrorHandling()
   editDialogModal.ClickSaveCloseButton()
 
   modelPage.VerifyErrorIconForTrainDialogs()
-  train.VerifyErrorsFoundInTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
+  train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Hey`, 'world peace', "Sorry $name, I can't help you get $want")
 
   train.EditTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
   editDialogModal.SelectChatTurn('Sam')
