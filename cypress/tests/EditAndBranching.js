@@ -5,10 +5,8 @@
 
 const models = require('../support/Models')
 const modelPage = require('../support/components/ModelPage')
-const memoryTableComponent = require('../support/components/MemoryTableComponent')
 const scorerModal = require('../support/components/ScorerModal')
 const train = require('../support/Train')
-const trainDialogsGrid = require('../support/components/TrainDialogsGrid')
 const editDialogModal = require('../support/components/EditDialogModal')
 
 export function VerifyEditTrainingControlsAndLabels()
@@ -97,7 +95,26 @@ export function ValidateErrorHandling()
   models.ImportModel('z-errorHandling', 'z-disqualifyngEnt.Trained.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
+  
+  modelPage.VerifyNoErrorIconOnPage()
 
   train.EditTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
-  editDialogModal.InsertUserInputAfter('Sam', 'Joe')
+  editDialogModal.InsertUserInputAfter('Sam', 'InsertedText')
+  editDialogModal.SelectChatTurn('Sam')
+  editDialogModal.VerifyErrorMessage('Two consecutive User Inputs')
+
+  editDialogModal.ClickSaveCloseButton()
+
+  modelPage.VerifyErrorIconForTrainDialogs()
+  train.VerifyErrorsFoundInTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
+
+  train.EditTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
+  editDialogModal.SelectChatTurn('Sam')
+  editDialogModal.VerifyErrorMessage('Two consecutive User Inputs')
+  editDialogModal.SelectChatTurn('InsertedText')
+  editDialogModal.ClickDeleteChatTurn()
+  editDialogModal.VerifyNoErrorMessage()
+
+  editDialogModal.ClickSaveCloseButton()
+  modelPage.VerifyNoErrorIconOnPage()
 }
