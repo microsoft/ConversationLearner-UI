@@ -12,7 +12,6 @@ import { FM } from '../../react-intl-messages'
 import * as Util from '../../Utils/util'
 import { User, AppCreatorType } from '../../types';
 import * as moment from 'moment'
-import TextboxRestrictableModal from '../../components/modals/TextboxRestrictable'
 
 export interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: AppBase, props: Props) => JSX.Element
@@ -109,16 +108,6 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             getSortValue: app => app.locale,
             render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-locale">{app.locale}</span>
         },
-        {
-            key: 'actions',
-            name: Util.formatMessageId(intl, FM.APPSLIST_COLUMNS_ACTIONS),
-            fieldName: 'appId',
-            minWidth: 100,
-            maxWidth: 100,
-            isResizable: false,
-            getSortValue: app => 0,
-            render: (app, props) => <a onClick={() => props.onClickDeleteApp(app)} data-testid="model-list-delete-button"><OF.Icon iconName="Delete" className="cl-icon" />&nbsp;&nbsp;</a>
-        }
     ]
 }
 
@@ -127,17 +116,11 @@ interface Props extends InjectedIntlProps {
     apps: AppBase[]
     activeApps: { [appId: string]: string }
     onClickApp: (app: AppBase) => void
-    onClickDeleteApp: (app: AppBase) => void
 
     isAppCreateModalOpen: boolean
     onSubmitAppCreateModal: (app: AppBase, source: AppDefinition | undefined) => void
     onCancelAppCreateModal: () => void
     appCreatorType: AppCreatorType
-
-    isConfirmDeleteAppModalOpen: boolean
-    onCancelDeleteModal: () => void
-    onConfirmDeleteApp: () => void
-    appToDelete: AppBase | null
 
     onClickCreateNewApp: () => void
     onClickImportApp: () => void
@@ -253,16 +236,6 @@ export class Component extends React.Component<Props, ComponentState> {
                 onSubmit={props.onSubmitAppCreateModal}
                 onCancel={props.onCancelAppCreateModal}
                 creatorType={props.appCreatorType}
-            />
-            <TextboxRestrictableModal
-                open={props.isConfirmDeleteAppModalOpen}
-                message={Util.getDefaultText(FM.APPSLIST_CONFIRMCANCELMODALTITLE)}
-                placeholder={""}
-                matched_text={props.appToDelete ? props.appToDelete.appName : null}
-                button_ok={Util.getDefaultText(FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
-                button_cancel={Util.getDefaultText(FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
-                onOK={props.onConfirmDeleteApp}
-                onCancel={props.onCancelDeleteModal}
             />
             <TutorialImporterModal
                 open={props.isImportTutorialsOpen}

@@ -18,7 +18,6 @@ import AppsListComponent from './AppsListComponent'
 interface ComponentState {
     readonly isAppCreateModalOpen: boolean
     readonly appCreatorType: AppCreatorType
-    readonly isConfirmDeleteAppModalOpen: boolean
     readonly isImportTutorialsOpen: boolean
     readonly appToDelete: AppBase | null
     readonly tutorials: AppBase[] | null
@@ -28,28 +27,9 @@ class AppsList extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isAppCreateModalOpen: false,
         appCreatorType: AppCreatorType.NEW,
-        isConfirmDeleteAppModalOpen: false,
         isImportTutorialsOpen: false,
         appToDelete: null,
         tutorials: null
-    }
-
-    @autobind
-    onConfirmDeleteApp() {
-        // Assume appToDelete is set by the time this is called
-        this.props.onClickDeleteApp(this.state.appToDelete!)
-        this.setState({
-            isConfirmDeleteAppModalOpen: false,
-            appToDelete: null,
-        })
-    }
-
-    @autobind
-    onCancelDeleteModal() {
-        this.setState({
-            isConfirmDeleteAppModalOpen: false,
-            appToDelete: null
-        })
     }
 
     @autobind
@@ -77,14 +57,6 @@ class AppsList extends React.Component<Props, ComponentState> {
         this.setState({
             tutorials: tutorials,
             isImportTutorialsOpen: true
-        })
-    }
-
-    @autobind
-    onClickDeleteApp(app: AppBase) {
-        this.setState({
-            isConfirmDeleteAppModalOpen: true,
-            appToDelete: app
         })
     }
 
@@ -123,17 +95,11 @@ class AppsList extends React.Component<Props, ComponentState> {
             apps={this.props.apps}
             activeApps={this.props.activeApps}
             onClickApp={this.onClickApp}
-            onClickDeleteApp={this.onClickDeleteApp}
 
             isAppCreateModalOpen={this.state.isAppCreateModalOpen}
             onSubmitAppCreateModal={this.onSubmitAppCreateModal}
             onCancelAppCreateModal={this.onCancelAppCreateModal}
             appCreatorType={this.state.appCreatorType}
-
-            isConfirmDeleteAppModalOpen={this.state.isConfirmDeleteAppModalOpen}
-            onCancelDeleteModal={this.onCancelDeleteModal}
-            onConfirmDeleteApp={this.onConfirmDeleteApp}
-            appToDelete={this.state.appToDelete}
 
             onClickCreateNewApp={this.onClickCreateNewApp}
             onClickImportApp={this.onClickImportApp}
