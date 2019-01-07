@@ -100,6 +100,7 @@ export function ValidateErrorHandling()
 
   train.EditTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
   editDialogModal.InsertUserInputAfter('Sam', 'InsertedText')
+  editDialogModal.VerifyErrorMessage('This Train Dialog has errors that must be fixed before it can be used to train your model')
   editDialogModal.SelectChatTurn('Sam')
   editDialogModal.VerifyErrorMessage('Two consecutive User Inputs')
 
@@ -109,6 +110,7 @@ export function ValidateErrorHandling()
   train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Hey`, 'world peace', "Sorry $name, I can't help you get $want")
 
   train.EditTraining(`${String.fromCharCode(59412)}Hey`, 'world peace', "Sorry $name, I can't help you get $want")
+  editDialogModal.VerifyErrorMessage('This Train Dialog has errors that must be fixed before it can be used to train your model')
   editDialogModal.SelectChatTurn('Sam')
   editDialogModal.VerifyErrorMessage('Two consecutive User Inputs')
   editDialogModal.SelectChatTurn('InsertedText')
