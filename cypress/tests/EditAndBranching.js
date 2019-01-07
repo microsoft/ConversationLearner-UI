@@ -94,7 +94,7 @@ export function ValidateErrorHandling()
 {
   models.ImportModel('z-errorHandling', 'z-disqualifyngEnt.Trained.cl')
   modelPage.NavigateToTrainDialogs()
-  //cy.WaitForTrainingStatusCompleted()
+  cy.WaitForTrainingStatusCompleted()
   
   modelPage.VerifyNoErrorIconOnPage()
 
@@ -108,7 +108,7 @@ export function ValidateErrorHandling()
   modelPage.VerifyErrorIconForTrainDialogs()
   train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Hey`, 'world peace', "Sorry $name, I can't help you get $want")
 
-  train.EditTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
+  train.EditTraining(`${String.fromCharCode(59412)}Hey`, 'world peace', "Sorry $name, I can't help you get $want")
   editDialogModal.SelectChatTurn('Sam')
   editDialogModal.VerifyErrorMessage('Two consecutive User Inputs')
   editDialogModal.SelectChatTurn('InsertedText')

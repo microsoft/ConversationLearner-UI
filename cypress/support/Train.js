@@ -94,9 +94,8 @@ export function VerifyErrorsFoundInTraining(firstInput, lastInput, lastResponse)
     {
       if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse)
       {
-        helpers.ConLog(`VerifyErrorsFoundInTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `Index: ${i} - ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
+        helpers.ConLog(`VerifyErrorsFoundInTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `Found it at Index: ${i} - ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
         trainDialogsGrid.VerifyErrorIconForTrainGridRow(i)
-        helpers.ConLog(`VerifyErrorsFoundInTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `Verified - Found IT!`)
         return
       }
     }

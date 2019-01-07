@@ -33,7 +33,7 @@ export const regressionTestList =
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
   "EditAndBranching.TagAndFrog",
-//  "EditAndBranching.ValidateErrorHandling",
+  "EditAndBranching.ValidateErrorHandling",
   "Log.WhatsYourName",
   "Train.DisqualifyingEntities",
   "Train.WaitVsNoWaitActions",
