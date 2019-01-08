@@ -6,9 +6,11 @@ import { settings } from 'cluster';
  */
 
 const modelPage = require('../components/ModelPage')
+const settings = require('../components/Settings')
 const helpers = require('../Helpers')
 
 export function Visit()                         { return cy.visit('http://localhost:5050') }
+export function VerifyPageTitle()               { cy.Get('[data-testid="model-list-title"]').contains('Create and manage your Conversation Learner models').should('be.visible') }
 export function NavigateToModelPage(name)       { return cy.Get('[data-testid="model-list-model-name"]').ExactMatch(`${name}`).Click() }
 export function ClickNewModelButton()           { return cy.Get('[data-testid="model-list-create-new-button"]').Click() }
 export function ClickImportModelButton()        { return cy.Get('[data-testid="model-list-import-model-button"]').Click() }
@@ -35,11 +37,15 @@ export function DeleteNextTestGeneratedModel(indexNextPotentialRowToDelete)
     {
       for(var i = indexNextPotentialRowToDelete; i < elements.length; i++) 
       {
-        if(elements[i].innerText.startsWith('z-')) 
+        var modelName = elements[i].innerText
+        if(modelName.startsWith('z-')) 
         {
-          NavigateToModelPage(elements[i].innerText)
+          NavigateToModelPage(modelName)
           modelPage.NavigateToSettings()
-          settings.DeleteModel()
+          settings.DeleteModel(modelName)
+          VerifyPageTitle() // To Ensure we have landed back on this same model list home page.
+          if(elements.length == 0) cy.DoesNotContain('[data-testid="model-list-model-name"]')
+          cy.Get('[data-testid="model-list-model-name"]').DoesNotContain(modelName)
           return resolve(i)
         }
       }
