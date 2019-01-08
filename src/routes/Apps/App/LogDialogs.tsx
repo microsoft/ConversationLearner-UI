@@ -411,7 +411,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
+    async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, isLastActivity: boolean) {
 
         try {
             const clData: CLM.CLChannelData = selectedActivity.channelData.clData
@@ -448,8 +448,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 throw new Error("Empty Score REsponse")
             }
 
+            // End sesion call only allowed on last turn if one doesn't exist already
+            const canEndSession = isLastActivity && !DialogUtils.hasEndSession(trainDialog, this.props.actions)
+
             // Find top scoring Action
-            let insertedAction = this.getBestAction(uiScoreResponse.scoreResponse)
+            let insertedAction = DialogUtils.getBestAction(uiScoreResponse.scoreResponse, this.props.actions, canEndSession)
 
             // None were qualified so pick the first (will show in UI as invalid)
             if (!insertedAction && uiScoreResponse.scoreResponse.unscoredActions[0]) {
@@ -708,21 +711,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    // Return best action from ScoreResponse 
-    getBestAction(scoreResponse: CLM.ScoreResponse): CLM.ScoredAction | undefined {
-
-        let scoredActions = scoreResponse.scoredActions
-
-        // Get highest scoring Action 
-        let best
-        for (let test of scoredActions) {
-            if (!best || test.score > best.score) {
-                best = test
-            }
-        }
-        return best
-    }
-
     async onContinueTrainDialog(newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) {
 
         try {
@@ -745,6 +733,32 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         catch (error) {
             console.warn(`Error when attempting to create teach session from train dialog: `, error)
+        }
+    }
+
+     // End Session activity selected.  Switch from Teach to Edit
+     @OF.autobind
+     async onEndSessionActivity() {
+
+        try {
+            if (this.props.teachSession.teach) {
+                // Get train dialog associated with the teach session
+                let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.props.teachSession.teach.trainDialogId, false) as any) as Promise<CLM.TrainDialog>)
+                trainDialog.definitions = {
+                    entities: this.props.entities,
+                    actions: this.props.actions,
+                    trainDialogs: []
+                }
+
+                // EndSession callback close the teach session, but UI state still needs to be updates after fetch
+                await ((this.props.clearTeachSession() as any) as Promise<CLM.TrainDialog>)
+
+                // Generate history
+                await this.onUpdateHistory(trainDialog, null, SelectionType.NONE)  
+            }
+        }
+        catch (error) {
+            console.warn(`Error when attempting to use EndSession Action`, error)
         }
     }
 
@@ -1038,11 +1052,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onClose={this.onCloseTeachSession}
                         onSetInitialEntities={null}
                         onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
-                        onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
+                        onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.isLastActivity!)}
                         onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)}
                         onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                         onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)}
                         onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)}
+                        onEndSessionActivity={this.onEndSessionActivity}
                         onReplayDialog={(trainDialog) => this.onReplayTrainDialog(trainDialog)}
                         editType={this.state.editType}
                         initialHistory={this.state.history}
@@ -1062,7 +1077,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     history={this.state.history}
                     initialSelectedActivityIndex={this.state.selectedHistoryIndex}
                     editType={this.state.editType}
-                    onInsertAction={(trainDialog, activity) => this.onInsertAction(trainDialog, activity)}
+                    onInsertAction={(trainDialog, activity, isLastActivity) => this.onInsertAction(trainDialog, activity, isLastActivity)}
                     onInsertInput={(trainDialog, activity, userInput) => this.onInsertInput(trainDialog, activity, userInput)}
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}
@@ -1083,6 +1098,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
+        clearTeachSession: actions.teach.clearTeachSession,
         createChatSessionThunkAsync: actions.chat.createChatSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,
