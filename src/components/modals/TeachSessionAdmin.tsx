@@ -25,8 +25,10 @@ import './TeachSessionAdmin.css'
 interface RoundLookup {
     textVariations?: CLM.TextVariation[] | null
     uiScoreResponse?: CLM.UIScoreResponse | null
+    selectedActionId?: string
     memories?: CLM.Memory[]
 }
+
 interface ComponentState {
     isScoresRefreshVisible: boolean
     turnLookup: RoundLookup[]
@@ -159,6 +161,15 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             validWaitAction: !scoredAction.isTerminal || undefined  // Draws carrot under card if a wait action
         }
 
+        // Store selected action in "turn lookup"
+        if (this.state.turnLookup.length > 0) {
+            let turnLookup = [...this.state.turnLookup]
+            turnLookup[this.state.turnLookup.length - 1].selectedActionId = scoredAction.actionId
+            this.setState({
+                turnLookup
+            })
+        }
+
         const uiTrainScorerStep: CLM.UITrainScorerStep = {
             trainScorerStep,
             clData,
@@ -233,7 +244,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
     getRenderData(): DialogUtils.DialogRenderData {
 
-        // If user click on and activity
+        // If user clicked on an activity
         if (this.props.selectedActivityIndex != null) {
 
             // Offset lookup index based on pre-existing activities
@@ -250,6 +261,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         dialogMode: CLM.DialogMode.Scorer,
                         scoreInput: turnData.uiScoreResponse.scoreInput,
                         scoreResponse: turnData.uiScoreResponse.scoreResponse,
+                        selectedActionId: turnData.selectedActionId,
                         memories: turnData.memories ? DialogUtils.filterDummyEntities(turnData.memories) : [],
                         prevMemories: DialogUtils.filterDummyEntities(prevMemories),
                         extractResponses: this.props.teachSession.extractResponses,
@@ -302,6 +314,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const autoTeachWithRound = this.props.teachSession.autoTeach
         const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL)
         const editTypeClass = isLogDialog ? 'log' : 'train'
+        const isEndSessionAvailable = !this.props.selectedActivityIndex || this.props.isLastActivitySelected
 
         return (
             <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
@@ -442,12 +455,13 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 editingPackageId={this.props.editingPackageId}
                                 historyItemSelected={this.props.selectedActivityIndex !== null}
                                 canEdit={true}
-                                hideScore={false}
+                                isEndSessionAvailable={isEndSessionAvailable}
                                 dialogType={CLM.DialogType.TEACH}
                                 autoTeach={this.props.teachSession.autoTeach}
                                 dialogMode={renderData.dialogMode}
                                 scoreResponse={renderData.scoreResponse}
                                 scoreInput={renderData.scoreInput}
+                                selectedActionId={renderData.selectedActionId}
                                 memories={renderData.memories}
                                 onActionSelected={this.onActionScorerSubmit}
                             />
@@ -498,6 +512,7 @@ export interface ReceivedProps {
     nextActivityIndex: number
     // If user clicked on an Activity
     selectedActivityIndex: number | null
+    isLastActivitySelected: boolean,
     historyRenderData: (() => DialogUtils.DialogRenderData) | null
 }
 

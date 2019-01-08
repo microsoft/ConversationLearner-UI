@@ -113,6 +113,13 @@ const deleteTeachSessionFulfilled = (key: string, teachSession: CLM.Teach, sourc
         sourceLogDialogId: sourceLogDialogId
     }
 }
+
+export const clearTeachSession = (): ActionObject => {
+    return {
+        type: AT.CLEAR_TEACH_SESSION
+    }
+}
+
 export const deleteTeachSessionThunkAsync = (
     key: string,
     teachSession: CLM.Teach,
@@ -139,6 +146,7 @@ export const deleteTeachSessionThunkAsync = (
             return true;
         } catch (e) {
             const error = e as AxiosError
+            dispatch(clearTeachSession())
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
             return false;

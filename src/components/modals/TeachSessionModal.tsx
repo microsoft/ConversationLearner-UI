@@ -490,7 +490,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         if (this.state.selectedActivityIndex != null) {
             const isLastActivity = this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1)
             const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
-            this.props.onEditTeach(this.state.selectedActivityIndex, { selectionType }, this.props.onInsertAction)
+            this.props.onEditTeach(this.state.selectedActivityIndex, { isLastActivity, selectionType }, this.props.onInsertAction)
         }
     }
 
@@ -530,16 +530,23 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         // Can't delete first user input
         const canDeleteRound = this.state.selectedActivityIndex !== 0
+        const isEndSession = this.props.teachSession.dialogMode === CLM.DialogMode.EndSession 
+            && activity.channelData.clData
+            && this.state.nextActivityIndex === activity.channelData.clData.activityIndex + 1
 
         return (
             <div className="cl-wc-buttonbar">
-                <AddButtonInput
-                    onClick={this.onClickAddUserInput}
-                    editType={this.props.editType}
-                />
-                <AddButtonScore
-                    onClick={this.onInsertAction}
-                />
+                {!isEndSession &&
+                    <AddButtonInput
+                        onClick={this.onClickAddUserInput}
+                        editType={this.props.editType}
+                    />
+                }
+                {!isEndSession &&
+                    <AddButtonScore
+                        onClick={this.onInsertAction}
+                    />
+                }
                 {canDeleteRound &&
                     <OF.IconButton
                         className={`cl-wc-deleteturn ${isUser ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
@@ -612,6 +619,17 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.props.setWebchatScrollPosition(position)
     }
 
+    @OF.autobind
+    onScoredAction(scoredAction: CLM.ScoredAction) {
+        this.setState({
+            hasTerminalAction: scoredAction.isTerminal,
+            nextActivityIndex: this.state.nextActivityIndex + 1
+        })
+        if (scoredAction.actionType === CLM.ActionTypes.END_SESSION) {
+            this.props.onEndSessionActivity()
+        }
+    }
+
     // Does history have any replay errors
     hasReplayError(): boolean {
         if (!this.props.initialHistory || this.props.initialHistory.length === 0) {
@@ -669,11 +687,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
 
-        // Put mask of webchat if waiting for extraction labelling
-        let chatDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor ? <div className="cl-overlay" /> : null;
+        // Put mask of webchat if waiting for score selector or extraction labelling
+        const waitingForScore = this.state.selectedActivityIndex === null && this.props.teachSession.dialogMode === CLM.DialogMode.Scorer
+        const waitingForExtract = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
+        let chatDisable = (waitingForScore || waitingForExtract) ? <div className="cl-overlay" /> : null;
         let saveDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor 
                             || this.props.teachSession.botAPIError !== null 
                             || this.state.isInitAvailable  // Empty TD
+        const isLastActivitySelected = this.state.selectedActivityIndex ? this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1) : false
         return (
             <div>
                 <Modal
@@ -716,13 +737,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         initialEntities={this.state.initialEntities}
                                         nextActivityIndex={this.state.nextActivityIndex}
                                         selectedActivityIndex={this.state.selectedActivityIndex}
+                                        isLastActivitySelected={isLastActivitySelected}
                                         historyRenderData={this.state.selectedHistoryActivity ? this.historyRender : null}
-                                        onScoredAction={(scoredAction) => {
-                                            this.setState({
-                                                hasTerminalAction: scoredAction.isTerminal,
-                                                nextActivityIndex: this.state.nextActivityIndex + 1
-                                            })
-                                        }}
+                                        onScoredAction={this.onScoredAction}
                                         onReplaceActivityText={(userText, index) => {   
                                             this.setState({
                                                 replaceActivityIndex: index,
@@ -844,6 +861,7 @@ export interface ReceivedProps {
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
+    onEndSessionActivity: () => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any
     onSetInitialEntities: ((initialFilledEntities: CLM.FilledEntity[]) => void) | null
     app: CLM.AppBase
