@@ -28,6 +28,7 @@ export interface EditHandlerArgs {
     textVariations?: CLM.TextVariation[],
     trainScorerStep?: CLM.TrainScorerStep
     selectionType?: SelectionType
+    isLastActivity?: boolean
 }
 
 interface IRenderableColumn extends OF.IColumn {
@@ -219,7 +220,7 @@ interface ComponentState {
     dialogKey: number,
     entityFilter: OF.IDropdownOption | null
     actionFilter: OF.IDropdownOption | null
-    // Hack to keep screen from flashing when transition to Edit Page
+    // Used to prevent screen from flashing when transition to Edit Page
     lastTeachSession: TeachSessionState | null
 }
 
@@ -264,11 +265,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     componentWillReceiveProps(newProps: Props) {
-        // A hack to prevent the screen from flashing
+        // Prevent flash when swiching to EditDialogModal by keeping teach session around
+        // after teach session has been terminated
         // Will go away once Edit/Teach dialogs are merged
         if (newProps.teachSession && newProps.teachSession !== this.props.teachSession) {
             this.setState({
-                lastTeachSession: this.props.teachSession
+                lastTeachSession: this.props.teachSession //{...this.props.teachSession, dialogMode: newProps.teachSession.dialogMode}
             })
         }
         if (newProps.filteredAction && this.props.filteredAction !== newProps.filteredAction) {
@@ -405,14 +407,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     onCloseTeachSession(save: boolean) {
 
         if (this.props.teachSession && this.props.teachSession.teach) {
-            if (save) {
-                // If source was a trainDialog, delete the original
-                let sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
-                    ? this.state.currentTrainDialog.trainDialogId : null;
-                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, null)
-            }
-            else {
-                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
+            // Delete the teach session unless it was already closed with and EndSessionAction
+            if (this.props.teachSession.dialogMode !== CLM.DialogMode.EndSession) {
+                if (save) {
+                    // If source was a trainDialog, delete the original
+                    let sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
+                        ? this.state.currentTrainDialog.trainDialogId : null;
+                    this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, null)
+                }
+                else {
+                    this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
+                }
             }
         }
         this.setState({
@@ -463,7 +468,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, selectionType: SelectionType) {
+    async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, isLastActivity: boolean, selectionType: SelectionType) {
 
         try {
             const clData: CLM.CLChannelData = selectedActivity.channelData.clData
@@ -477,31 +482,34 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
             // Created shorted verion of TrainDialog at insert point
             // Copy, Remove rounds / scorer steps below insert
-            let history = JSON.parse(JSON.stringify(trainDialog))
-            history.definitions = definitions
-            history.rounds = history.rounds.slice(0, roundIndex + 1)
+            let shortTrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            shortTrainDialog.definitions = definitions
+            shortTrainDialog.rounds = shortTrainDialog.rounds.slice(0, roundIndex + 1)
 
             // Remove actionless dummy step (used for rendering) if it exits
-            if (history.rounds[roundIndex].scorerSteps.length > 0 && history.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
-                history.rounds[roundIndex].scorerSteps = []
+            if (shortTrainDialog.rounds[roundIndex].scorerSteps.length > 0 && shortTrainDialog.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
+                shortTrainDialog.rounds[roundIndex].scorerSteps = []
             }
             else if (scoreIndex === null) {
-                history.rounds[roundIndex].scorerSteps = []
+                shortTrainDialog.rounds[roundIndex].scorerSteps = []
             }
             // Or remove following scorer steps 
             else {
-                history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex + 1);
+                shortTrainDialog.rounds[roundIndex].scorerSteps = shortTrainDialog.rounds[roundIndex].scorerSteps.slice(0, scoreIndex + 1);
             }
 
             // Get a score for this step
-            let uiScoreResponse = await ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, history) as any) as Promise<CLM.UIScoreResponse>)
+            let uiScoreResponse = await ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, shortTrainDialog) as any) as Promise<CLM.UIScoreResponse>)
 
             if (!uiScoreResponse.scoreResponse) {
                 throw new Error("Empty Score REsponse")
             }
 
+            // End sesion call only allowed on last turn if one doesn't exist already
+            const canEndSession = isLastActivity && !DialogUtils.hasEndSession(trainDialog, this.props.actions)
+             
             // Find top scoring Action
-            let insertedAction = this.getBestAction(uiScoreResponse.scoreResponse)
+            let insertedAction = DialogUtils.getBestAction(uiScoreResponse.scoreResponse, this.props.actions, canEndSession)
 
             // None were qualified so pick the first (will show in UI as invalid)
             if (!insertedAction && uiScoreResponse.scoreResponse.unscoredActions[0]) {
@@ -811,21 +819,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    // Return best action from ScoreResponse 
-    getBestAction(scoreResponse: CLM.ScoreResponse): CLM.ScoredAction | undefined {
-
-        let scoredActions = scoreResponse.scoredActions
-
-        // Get highest scoring Action 
-        let best
-        for (let test of scoredActions) {
-            if (!best || test.score > best.score) {
-                best = test
-            }
-        }
-        return best
-    }
-
     onDeleteTrainDialog() {
         if (!this.state.currentTrainDialog) {
             throw new Error(`You attempted to delete a train dialog, but currentTrainDialog is not defined. Please open an issue.`)
@@ -839,6 +832,32 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.props.deleteTrainDialogThunkAsync(this.props.user.id, this.props.app, deleteDialogId)
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
         void this.onCloseEditDialogModal();
+    }
+
+     // End Session activity selected.  Switch from Teach to Edit
+     @OF.autobind
+     async onEndSessionActivity() {
+
+        try {
+            if (this.props.teachSession.teach) {
+                // Get train dialog associated with the teach session
+                let trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.props.teachSession.teach.trainDialogId, false) as any) as Promise<CLM.TrainDialog>)
+                trainDialog.definitions = {
+                    entities: this.props.entities,
+                    actions: this.props.actions,
+                    trainDialogs: []
+                }
+
+                // EndSession callback close the teach session, but UI state still needs to be updates after fetch
+                await ((this.props.clearTeachSession() as any) as Promise<CLM.TrainDialog>)
+
+                // Generate history
+                await this.onUpdateHistory(trainDialog, null, SelectionType.NONE, EditDialogType.NEW)  
+            }
+        }
+        catch (error) {
+            console.warn(`Error when attempting to use EndSession Action`, error)
+        }
     }
 
     async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType, editDialogType: EditDialogType) {
@@ -1118,8 +1137,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 ? EditState.INVALID_BOT
                 : EditState.CAN_EDIT
 
-        const teachSession = (this.props.teachSession && this.props.teachSession.teach) ?
-            this.props.teachSession : this.state.lastTeachSession
+        // LastTeachSession used to prevent screen flash when moving between Edit and Teach pages
+        const teachSession = (this.props.teachSession && this.props.teachSession.teach) 
+            ? this.props.teachSession 
+            : this.state.lastTeachSession
 
         return (
             <div className="cl-page">
@@ -1226,11 +1247,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         originalTrainDialogId={this.state.originalTrainDialogId}
                         onClose={this.onCloseTeachSession}
                         onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
-                        onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.selectionType!)}
+                        onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.isLastActivity!, editHandlerArgs.selectionType!)}
                         onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput!, editHandlerArgs.selectionType!)}
                         onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                         onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)}
                         onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)}
+                        onEndSessionActivity={this.onEndSessionActivity}
                         onReplayDialog={(trainDialog) => this.onReplayTrainDialog(trainDialog)}
                         onSetInitialEntities={this.onSetInitialEntities}
                         initialHistory={this.state.history}
@@ -1252,7 +1274,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     initialSelectedActivityIndex={this.state.selectedActivityIndex}
                     editType={this.state.editType}
                     onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
-                    onInsertAction={(trainDialog, activity, selectionType) => this.onInsertAction(trainDialog, activity, selectionType)}
+                    onInsertAction={(trainDialog, activity, isLastActivity, selectionType) => this.onInsertAction(trainDialog, activity, isLastActivity, selectionType)}
                     onInsertInput={(trainDialog, activity, userInput, selectionType) => this.onInsertInput(trainDialog, activity, userInput, selectionType)}
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}
@@ -1271,6 +1293,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
+        clearTeachSession: actions.teach.clearTeachSession,
         createTeachSessionThunkAsync: actions.teach.createTeachSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,

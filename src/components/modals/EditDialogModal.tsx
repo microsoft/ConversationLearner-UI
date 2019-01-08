@@ -39,6 +39,7 @@ interface ComponentState {
     isUserBranchModalOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
+    hasEndSession: boolean
     currentTrainDialog: CLM.TrainDialog | null
     pendingExtractionChanges: boolean,
 }
@@ -51,6 +52,7 @@ const initialState: ComponentState = {
     isUserBranchModalOpen: false,
     selectedActivity: null,
     webchatKey: 0,
+    hasEndSession: false,
     currentTrainDialog: null,
     pendingExtractionChanges: false
 }
@@ -80,10 +82,37 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             this.setState({
                 currentTrainDialog: nextProps.trainDialog,
                 webchatKey: this.state.webchatKey + 1,
-                selectedActivity
+                selectedActivity,
+                hasEndSession: this.hasSessionEnded(nextProps.trainDialog)
             })
 
         }
+    }
+
+    // Did trainDialog end on an EndSession
+    hasSessionEnded(trainDialog: CLM.TrainDialog): boolean {
+
+        if (!trainDialog) {
+            return false
+        }
+
+        const lastRound = trainDialog.rounds[trainDialog.rounds.length - 1]
+        if (lastRound.scorerSteps.length === 0) {
+            return false
+        }
+
+        const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
+        const lastAction = this.props.actions.find(a => a.actionId === lastScorerStep.labelAction)
+        if (!lastAction) {
+            return false
+        }
+
+        // Disable if last action is end session
+        if (lastAction.actionType === CLM.ActionTypes.END_SESSION) {
+            return true
+        }
+
+        return false
     }
 
     @OF.autobind
@@ -107,7 +136,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     onClickAddScore(activity: BotChat.Activity, selectionType: SelectionType) {
         if (this.canReplay(activity)) {
             if (activity && this.state.currentTrainDialog) {
-                this.props.onInsertAction(this.state.currentTrainDialog, activity, selectionType)
+                const isLastActivity = activity === this.props.history[this.props.history.length - 1]
+                this.props.onInsertAction(this.state.currentTrainDialog, activity, isLastActivity, selectionType)
             }
         }
         else {
@@ -354,16 +384,21 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         const isLastActivity = activity === this.props.history[this.props.history.length - 1]
         const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
+        const isEndSession = isLastActivity && this.state.hasEndSession
         return (
             <div className="cl-wc-buttonbar">
-                <AddButtonInput
-                    onClick={() => this.onClickAddUserInput(selectionType)}
-                    editType={this.props.editType}
-                />
-                <AddScoreButton
-                    // Don't select an activity if on last step
-                    onClick={() => this.onClickAddScore(activity, selectionType)}
-                />
+                {!isEndSession &&
+                    <AddButtonInput
+                        onClick={() => this.onClickAddUserInput(selectionType)}
+                        editType={this.props.editType}
+                    />
+                }
+                {!isEndSession &&
+                    <AddScoreButton
+                        // Don't select an activity if on last step
+                        onClick={() => this.onClickAddScore(activity, selectionType)}
+                    />
+                }
                 {canDeleteRound &&
                     <OF.IconButton
                         data-testid="edit-dialog-modal-delete-turn-button"
@@ -414,12 +449,14 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return true
         }
 
-        // Disable if last round's last scorer step isn't terminal
         const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
         const lastAction = this.props.actions.find(a => a.actionId === lastScorerStep.labelAction)
+
+        // Disable if last round's last scorer step isn't terminal
         if (!lastAction || !lastAction.isTerminal) {
             return true
         }
+
         return false
     }
 
@@ -736,7 +773,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay" /> : null;
         const hasBlockingError = this.hasBlockingError()
         const disableUserInput = this.shouldDisableUserInput()
-
+        const isLastActivitySelected = this.state.selectedActivity ? this.state.selectedActivity === this.props.history[this.props.history.length - 1] : false
         const containerClassName = `cl-modal cl-modal--large cl-modal--${this.props.editType === EditDialogType.LOG_EDITED ? "teach" : "log"}`
         return (
             <Modal
@@ -756,7 +793,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 onPostActivity={activity => this.onPostNewActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 onScrollChange={position => this.onScrollChange(position)}
-                                hideInput={disableUserInput || hasBlockingError}
+                                hideInput={disableUserInput || hasBlockingError || this.state.hasEndSession}
                                 focusInput={false}
                                 disableDL={true} // Prevents ProcessActivity from being called
                                 renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
@@ -777,6 +814,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     editState={this.props.editState}
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
+                                    isLastActivitySelected={isLastActivitySelected}
                                     onChangeAction={(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
@@ -900,7 +938,7 @@ export interface ReceivedProps {
     editType: EditDialogType
     // If starting with activity selected
     initialSelectedActivityIndex: number | null
-    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, selectionType: SelectionType) => any
+    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, isLastActivity: boolean, selectionType: SelectionType) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => any
