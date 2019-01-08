@@ -1,8 +1,11 @@
+import { settings } from 'cluster';
+
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
 
+const modelPage = require('../components/ModelPage')
 const helpers = require('../Helpers')
 
 export function Visit()                         { return cy.visit('http://localhost:5050') }
@@ -34,8 +37,9 @@ export function DeleteNextTestGeneratedModel(indexNextPotentialRowToDelete)
       {
         if(elements[i].innerText.startsWith('z-')) 
         {
-          cy.wrap(elements[i]).parents('[role="presentation"].ms-List-cell').find('i[data-icon-name="Delete"]').Click()
-          cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${elements[i].innerText}{enter}`)
+          NavigateToModelPage(elements[i].innerText)
+          modelPage.NavigateToSettings()
+          settings.DeleteModel()
           return resolve(i)
         }
       }
