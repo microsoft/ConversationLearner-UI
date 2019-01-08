@@ -58,6 +58,7 @@ export function DisqualifyingEntities()
   train.SelectAction("Sorry Sam, I can't help you get world peace", "Sorry $name, I can't help you get $want")
 
   train.Save()
+  // Manually EXPORT this to fixtures folder and name it 'z-disqualifyngEnt.Trained.cl'
 }
 
 export function WaitVsNoWaitActions()
@@ -157,6 +158,8 @@ export function MyNameIs()
 
 export function TagAndFrog()
 {
+  // TODO: Need to add another test case or expand this one so that tagging something
+  //       that was NOT tagged in another instance causes the UI to complain.
   var textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
 
   models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')

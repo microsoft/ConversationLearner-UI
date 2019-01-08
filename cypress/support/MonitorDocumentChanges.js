@@ -108,6 +108,15 @@ var MonitorDocumentChanges = (function()
         })
     })
 
+    Cypress.Commands.add('RunAndExpectDomChange', (func) => 
+    {
+      helpers.ConLog(`cy.RunAndExpectDomChange()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
+      lastChangeTime = new Date().getTime()
+      func()
+      helpers.ConLog(`cy.RunAndExpectDomChange()`, `done - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
+      lastChangeTime = new Date().getTime()
+    })
+
     Cypress.Commands.add('DumpHtmlOnDomChange', (boolValue) => {dumpHtml = boolValue})
 
     Cypress.on('window:before:load', () => 
