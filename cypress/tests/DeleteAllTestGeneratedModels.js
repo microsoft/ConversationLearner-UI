@@ -9,7 +9,7 @@ const helpers = require('../support/Helpers')
 export function DeleteAllTestGeneratedModels()
 {
   homePage.Visit()
-
+  
   // We must "Enqueue" this function call so that Cypress will have one "Cypress Command" 
   // still running when the DeleteAllRows function exits. If not for this, only one row will
   // get deleted then test execution will stop.
@@ -27,7 +27,7 @@ function DeleteAllTestGeneratedModelRows()
 
     homePage.DeleteNextTestGeneratedModel(indexNextPotentialRowToDelete).then(indexNextRow =>
     {
-      helpers.Dump(thisFuncName, indexNextRow)
+      helpers.ConLog(thisFuncName, `returned from homePage.DeleteNextTestGeneratedModel: ${indexNextRow}`)
       if (!indexNextRow)
       {
         helpers.ConLog(thisFuncName, `DONE - there are no more test generated models to delete`)

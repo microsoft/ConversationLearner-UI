@@ -16,7 +16,8 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "EditAndBranching.ValidateErrorHandling",
+  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
+  //"EditAndBranching.ValidateErrorHandling",
 ]
 
 // ************ MODIFY THIS LIST *****************************************
