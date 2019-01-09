@@ -169,3 +169,7 @@
     border-left: 1px solid rgba(0,0,0,0.25);
     background: #ffffff !important;
 }
+
+.ms-Button--selected {
+background-color: var(--color-themeDark) !important
+}

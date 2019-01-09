@@ -13,18 +13,11 @@ import { IconButton } from 'office-ui-fabric-react';
 
 class HelpIcon extends React.Component<Props, {}> {
     render() {
-        let className = `cl-icon cl-icon--short ${this.props.customStyle || ''}`
         return (
             <IconButton
-                className={className}
+                className={`cl-icon cl-icon--short ${this.props.customClass || 'cl-icon-redbackground'} ${this.props.customStyle || ''}`}
                 iconProps={{ iconName: this.props.iconName || 'Info' }}
                 onClick={() => { this.props.setTipType(this.props.tipType) }}
-                styles={{
-                    root: [{ color: "#aa3939 !important" }],
-                    rootHovered: [{ backgroundColor: "transparent !important" }],
-                    rootPressed: [{ backgroundColor: "transparent !important" }],
-                    iconHovered: [{ color: "#ffaaaa !important" }],
-                }}
                 title="More Information"
             />
         )
@@ -43,6 +36,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 export interface ReceivedProps {
     tipType: TipType,
     iconName?: string
+    customClass?: string
     customStyle?: string
 }
 

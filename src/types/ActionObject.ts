@@ -413,6 +413,8 @@ export type DeleteAction = {
     key: string,
     appId: string,
 } | {
+    type: AT.CLEAR_TEACH_SESSION
+} | {
     type: AT.DELETE_MEMORY_ASYNC,
     key: string,
     appId: string

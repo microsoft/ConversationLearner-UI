@@ -19,7 +19,7 @@ class AddButtonScore extends React.Component<Props, {}> {
                 role="button"
                 className={`cl-addbutton-add cl-addbutton-addscore`}
                 onClick={this.props.onClick}
-                data-testid="chat-edit-add-score-button"
+                data-testid="chat-edit-add-bot-response-button"
             >
                 <TooltipHost
                     directionalHint={DirectionalHint.topCenter}

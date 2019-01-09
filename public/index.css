@@ -131,6 +131,11 @@ html {
   to { transform: rotate(360deg); }
 }
 
+.cl-icon-redbackground:hover {
+  color:orange !important;
+  background-color:transparent !important;
+}
+
 .cl-icon[data-icon-name="Warning"] {
   color: var(--color-alert);
   vertical-align: sub;
@@ -718,7 +723,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 
 /** TODO: Remove usage of !important */
 .ms-Button--primary:not(:disabled) {
-  background-color: var(--color-themePrimary) !important;
+  background-color: var(--color-themePrimary);
   border: 1px solid var(--color-themePrimary) !important;
   color: white !important;
 }

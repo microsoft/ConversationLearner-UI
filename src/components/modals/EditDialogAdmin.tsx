@@ -370,6 +370,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         }
         const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL)
         const editTypeClass = isLogDialog ? 'log' : 'train'
+        const hasEndSession = DialogUtils.hasEndSession(this.props.trainDialog, this.props.actions)
 
         let renderData = this.getRenderData();
         return (
@@ -486,12 +487,13 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 editingPackageId={this.props.editingPackageId}
                                 historyItemSelected={true}
                                 canEdit={this.props.editState === EditState.CAN_EDIT}
-                                hideScore={false}  // LARS
+                                isEndSessionAvailable={!hasEndSession && this.props.isLastActivitySelected}
                                 dialogType={CLM.DialogType.TRAINDIALOG}
                                 autoTeach={false}
                                 dialogMode={renderData.dialogMode}
                                 scoreResponse={renderData.scoreResponse}
                                 scoreInput={renderData.scoreInput}
+                                selectedActionId={undefined}  // Will always be first one when editing
                                 memories={renderData.memories}
                                 onActionSelected={this.props.onChangeAction}
                             />
@@ -533,6 +535,7 @@ export interface ReceivedProps {
     // Train Dialog that this edit originally came from
     originalTrainDialogId: string | null,
     selectedActivity: Activity | null,
+    isLastActivitySelected: boolean,
     editState: EditState,
     editType: EditDialogType,
     onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
