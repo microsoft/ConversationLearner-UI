@@ -19,6 +19,9 @@ export function ClickAddAlternativeInputButton()      { cy.Get('[data-testid="en
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 export function ClickSubmitChangesButton()            { cy.Get('[data-testid="submit-changes-button"]').Click() }
 export function GetAllChatMessages()                  { return helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)}
+export function VerifyErrorMessage(expectedMessage)   { cy.Get('div.cl-editdialog-error > div > span').ExactMatch(expectedMessage)}
+export function VerifyNoErrorMessage()                { cy.DoesNotContain('div.cl-editdialog-error > div > span')}
+export function ClickDeleteChatTurn()                 { cy.Get('[data-testid="edit-dialog-modal-delete-turn-button"]').Click() }
 
 export function ClickSaveCloseButton()                { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
 export function VerifyCloseButtonLabel()              { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Close') }
@@ -49,7 +52,8 @@ export function SelectChatTurn(message, index = 0)
 {
   message = message.replace(/'/g, "’")
 
-  cy.Get(AllChatMessagesSelector).ExactMatches(message).then(elements => {
+  cy.Get(AllChatMessagesSelector).ExactMatches(message).then(elements => 
+  {
     if (elements.length <= index) throw `Could not find '${message}' #${index} in chat utterances`
     cy.wrap(elements[index]).Click()
   })
@@ -92,12 +96,12 @@ export function VerifyChatTurnControls(element, index)
   if (index > 0) cy.Contains('[data-testid="edit-dialog-modal-delete-turn-button"]', 'Delete Turn')
   else cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
   
-  cy.Contains('[data-testid="chat-edit-add-score-button"]', '+')
+  cy.Contains('[data-testid="chat-edit-add-bot-response-button"]', '+')
 
   if (userMessage) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`VerifyChatTurnControls()`, 'Branch Found')
   else cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
 
-  cy.Contains('[data-testid="chat-edit-add-input-button"]', '+')
+  cy.Contains('[data-testid="chat-edit-add-user-input-button"]', '+')
 }
 
 // Provide any user message and any Bot message expected in chat.
@@ -109,9 +113,9 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage)
 
   // These do the actual validation this function is intended to validate.
   cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
-  cy.DoesNotContain('[data-testid="chat-edit-add-score-button"]', '+')
+  cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+')
   cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
-  cy.DoesNotContain('[data-testid="chat-edit-add-input-button"]', '+')
+  cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]', '+')
 }
 
 export function LabelTextAsEntity(text, entity)
@@ -193,4 +197,11 @@ export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index)
       for (var i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
     })
   })
+}
+
+export function InsertUserInputAfter(existingMessage, newMessage)
+{
+  SelectChatTurn(existingMessage)
+  cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-user-input-button"]')[0].click() })
+  cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
 }

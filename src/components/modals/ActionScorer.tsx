@@ -28,7 +28,7 @@ interface IRenderableColumn extends OF.IColumn {
     render: (x: CLM.ScoredBase, component: ActionScorer, index: number) => React.ReactNode
 }
 
-function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[] {
+function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
             key: 'select',
@@ -40,8 +40,18 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             getSortValue: action => action.actionId,
             render: (action, component, index) => {
 
-                const selected = (index === 0 &&
-                    (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected))
+                // If I'm not in Teach or clicked on history item, highlight selected
+                let selected = false
+                if (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected) {
+                    // If no selected actionId, first item is selected one
+                    if (!component.props.selectedActionId && index === 0) {
+                        selected  = true
+                    }
+                    else if (component.props.selectedActionId === action.actionId) {
+                        selected = true
+                    }
+                }
+
                 const buttonText = Util.formatMessageId(intl, selected ? FM.BUTTON_SELECTED : FM.BUTTON_SELECT)
                 if (!component.props.canEdit) {
                     return (
@@ -55,10 +65,21 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                 }
 
                 const isAvailable = component.isUnscoredActionAvailable(action as CLM.UnscoredAction)
-                if (!isAvailable || selected) {
+                if (!isAvailable) {
                     return (
                         <OF.PrimaryButton
                             data-testid="action-scorer-button-no-click"
+                            disabled={!isAvailable}
+                            ariaDescription={buttonText}
+                            text={buttonText}
+                        />
+                    )
+                }
+                else if (selected) {
+                    return (
+                        <OF.PrimaryButton
+                            className="ms-Button--selected"
+                            data-testid="action-scorer-button-selected"
                             disabled={!isAvailable}
                             ariaDescription={buttonText}
                             text={buttonText}
@@ -143,10 +164,10 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         },
         {
             key: 'actionScore',
-            name: hideScore ? '' : Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_SCORE),
+            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_SCORE),
             fieldName: 'score',
-            minWidth: hideScore ? 1 : 80,
-            maxWidth: hideScore ? 1 : 80,
+            minWidth: 80,
+            maxWidth: 80,
             isResizable: true,
             isSorted: true,
             isSortedDescending: true,
@@ -171,9 +192,6 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                 return score
             },
             render: (action, component) => {
-                if (component.props.hideScore) {
-                    return null;
-                }
                 let fieldContent: number | string = (action as CLM.ScoredAction).score
                 if (fieldContent) {
                     fieldContent = `${(fieldContent as number * 100).toFixed(1)}%`
@@ -244,7 +262,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
         super(p);
 
-        const columns = getColumns(this.props.intl, this.props.hideScore)
+        const columns = getColumns(this.props.intl)
         this.state = {
             actionModalOpen: false,
             columns,
@@ -495,6 +513,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     isUnscoredActionAvailable(action: CLM.UnscoredAction): boolean {
+        // Can't add an end session action if one has already been added
+        if (action.actionType === CLM.ActionTypes.END_SESSION && !this.props.isEndSessionAvailable) {
+            return false
+        }
         if (action.reason === CLM.ScoreReason.NotAvailable) {
             return false;
         } else {
@@ -752,9 +774,10 @@ export interface ReceivedProps {
     dialogMode: CLM.DialogMode,
     scoreResponse: CLM.ScoreResponse,
     scoreInput: CLM.ScoreInput,
+    selectedActionId: string | undefined,
     memories: CLM.Memory[],
-    canEdit: boolean
-    hideScore: boolean,
+    canEdit: boolean,
+    isEndSessionAvailable: boolean,
     onActionSelected: (trainScorerStep: CLM.TrainScorerStep) => void,
 }
 

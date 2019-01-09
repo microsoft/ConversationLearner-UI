@@ -13,6 +13,7 @@ export interface DialogRenderData {
     roundIndex: number | null
     scoreResponse?: CLM.ScoreResponse 
     scoreInput?: CLM.ScoreInput 
+    selectedActionId?: string
     extractResponses?: CLM.ExtractResponse[]
 }
 
@@ -68,4 +69,43 @@ export function filterDummyEntities(memories: CLM.Memory[]): CLM.Memory[] {
     return memories.filter(m => {
         return (m.entityValues.length > 0)
     })
+}
+
+export function hasEndSession(trainDialog: CLM.TrainDialog, allActions: CLM.ActionBase[]): boolean {
+    if (trainDialog.rounds.length === 0) {
+        return false
+    }
+    const lastRound = trainDialog.rounds[trainDialog.rounds.length - 1]
+    if (lastRound.scorerSteps.length === 0) {
+        return false
+    }
+    const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
+    const lastAction = allActions.find(a => a.actionId === lastScorerStep.labelAction)
+    if (lastAction) {
+        return lastAction.actionType === CLM.ActionTypes.END_SESSION
+    }
+    return false
+}
+
+// Return best action from ScoreResponse 
+export function getBestAction(scoreResponse: CLM.ScoreResponse, allActions: CLM.ActionBase[], canEndSession: boolean): CLM.ScoredAction | undefined {
+
+    let scoredActions = scoreResponse.scoredActions
+
+    // Get highest scoring Action 
+    let best
+    for (let test of scoredActions) {
+
+        const action = allActions.find(a => a.actionId === test.actionId)
+        if (action) {
+            // If has end session, disallow any additional End Session actions
+            if (canEndSession || action.actionType !== CLM.ActionTypes.END_SESSION) {
+                // Pick if has better score
+                if (!best || test.score > best.score) {
+                    best = test
+                }
+            }
+        }
+    }
+    return best
 }
