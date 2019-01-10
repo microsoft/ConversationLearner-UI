@@ -58,10 +58,11 @@ export function DeleteNextTestGeneratedModel(indexNextPotentialRowToDelete)
           return
         }
       }
+      helpers.ConLog(thisFuncName, `No Models Found!`)
+      cy.Enqueue(() => {helpers.ConLog(thisFuncName, `Enqueued resolve(undefined)`); resolve(undefined)})
+      return
     })
-    helpers.ConLog(thisFuncName, `No Models Found!`)
-    cy.Enqueue(() => {helpers.ConLog(thisFuncName, `Enqueued resolve(undefined)`); resolve(undefined)})
-    return
+    helpers.ConLog(thisFuncName, `regular time frame completed`)
   })
 }
 
