@@ -66,15 +66,16 @@ export function DeleteNextTestGeneratedModel(indexNextPotentialRowToDelete)
   })
 }
 
-// data-testid="model-list-model-name"
-// data-testid="model-list-is-editing"
-// data-testid="model-list-is-live"
-// data-testid="model-list-is-logging-on"
-// data-testid="model-list-last-modified-time"
-// data-testid="model-list-created-date-time"
-// data-testid="model-list-locale"
-// data-testid="model-list-delete-button"
-// data-testid="model-list-import-tutorials-button"
-// data-testid="model-creator-input-name"
-// data-testid="model-creator-button-submit"
-// data-testid="model-creator-cancel-submit"
+export function GetModelNameIdList()  
+{
+  var listToReturn = new Array()
+  var elements = Cypress.$('[data-testid="model-list-model-name"]')
+  for(var i = 0; i < elements.length; i++)
+  {
+    var modelName = elements[i].innerText
+    var modelId = elements[i].getAttribute('data-model-id');
+    listToReturn.push({modelName: modelName, modelId: modelId})
+    helpers.ConLog('GetModelNameIdList', `modelName: ${modelName} - modelId: ${modelId}`)
+  }
+  return listToReturn
+}
