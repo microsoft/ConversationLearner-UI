@@ -15,142 +15,140 @@ const helpers = require('./Helpers')
 // This is the list of tests that will be executed when "RunTestsFromList"
 // is selected from the Cypress Test GUI.
 export const testList =
-[
-  "EditAndBranching.ValidateErrorHandling",
-]
+  [
+    // "Train.AddOneLastEndSessionAction",
+    // "EditAndBranching.ValidateErrorHandling",
+  ]
 
 // ************ MODIFY THIS LIST *****************************************
 // This is the list of tests that will be executed when "(All)"
 // is selected from the Cypress Test GUI.
 export const regressionTestList =
-[
-  "CreateModels.AllEntityTypes",
-  "CreateModels.DisqualifyingEntities",
-  "CreateModels.WaitVsNoWaitActions",
-  "CreateModels.WhatsYourName",
-  "CreateModels.TagAndFrog",
-  "CreateModels.Travel",
-  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
-  "EditAndBranching.Branching",
-  "EditAndBranching.TagAndFrog",
-  "EditAndBranching.ValidateErrorHandling",
-  "Log.WhatsYourName",
-  "Train.DisqualifyingEntities",
-  "Train.WaitVsNoWaitActions",
-  "Train.WhatsYourName",
-  "Train.MyNameIs",
-  "Train.TagAndFrog",
-//  "Train.BookMeAFlight",
-  "CleanUp.DeleteAllTestGeneratedModels",
-]
+  [
+    "CreateModels.AllEntityTypes",
+    "CreateModels.DisqualifyingEntities",
+    "CreateModels.WaitVsNoWaitActions",
+    "CreateModels.WhatsYourName",
+    "CreateModels.TagAndFrog",
+    "CreateModels.Travel",
+    "EditAndBranching.VerifyEditTrainingControlsAndLabels",
+    "EditAndBranching.Branching",
+    "EditAndBranching.TagAndFrog",
+    "EditAndBranching.ValidateErrorHandling",
+    "Log.WhatsYourName",
+    "Train.DisqualifyingEntities",
+    "Train.WaitVsNoWaitActions",
+    "Train.WhatsYourName",
+    "Train.MyNameIs",
+    "Train.TagAndFrog",
+    //  "Train.BookMeAFlight",
+    "CleanUp.DeleteAllTestGeneratedModels",
+  ]
 
 // Do NOT alter this list except to add in new test cases as they are created.
-export const masterListOfAllTestCases = 
-[
-  "CreateModels.AllEntityTypes",
-  "CreateModels.DisqualifyingEntities",
-  "CreateModels.WaitVsNoWaitActions",
-  "CreateModels.WhatsYourName",
-  "CreateModels.TagAndFrog",
-  "CreateModels.EndlessLoop",
-  "CreateModels.Travel",
-  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
-  "EditAndBranching.Branching",
-  "EditAndBranching.TagAndFrog",
-  "EditAndBranching.ValidateErrorHandling",
-  "Log.WhatsYourName",
-  "Log.EndlessLoop",
-  "Train.DisqualifyingEntities",
-  "Train.WaitVsNoWaitActions",
-  "Train.WhatsYourName",
-  "Train.MyNameIs",
-  "Train.TagAndFrog",
-  "Train.BookMeAFlight",
-  "CleanUp.DeleteAllTestGeneratedModels",
-]
+export const masterListOfAllTestCases =
+  [
+    "CreateModels.AllEntityTypes",
+    "CreateModels.DisqualifyingEntities",
+    "CreateModels.WaitVsNoWaitActions",
+    "CreateModels.WhatsYourName",
+    "CreateModels.TagAndFrog",
+    "CreateModels.EndlessLoop",
+    "CreateModels.Travel",
+    "EditAndBranching.VerifyEditTrainingControlsAndLabels",
+    "EditAndBranching.Branching",
+    "EditAndBranching.TagAndFrog",
+    "EditAndBranching.ValidateErrorHandling",
+    "Log.WhatsYourName",
+    "Log.EndlessLoop",
+    "Train.DisqualifyingEntities",
+    "Train.WaitVsNoWaitActions",
+    "Train.WhatsYourName",
+    "Train.MyNameIs",
+    "Train.TagAndFrog",
+    "Train.BookMeAFlight",
+    "CleanUp.DeleteAllTestGeneratedModels",
+  ]
 
 // The lists above are in a format that is convenient for a developer to copy
 // and paste in order to create a list of tests.
 //
 // This next list has all the details needed for creating the test for Cypress.
 const testGroups =
-[
-  {
-    name: 'CreateModels', tests:
-    [
-      { name: "All Entity Types", func: createModels.AllEntityTypes },
-      { name: "Disqualifying Entities", func: createModels.DisqualifyingEntities },
-      { name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions },
-      { name: "What's Your Name", func: createModels.WhatsYourName },
-      { name: "Tag and Frog", func: createModels.TagAndFrog },
-      { name: "Endless Loop", func: createModels.EndlessLoop },
-      { name: "Travel", func: createModels.Travel },
-    ]
-  },
-  {
-    name: 'EditAndBranching', tests:
-    [
-      { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
-      { name: "Branching", func: editAndBranching.Branching },
-      { name: "Tag and Frog", func: editAndBranching.TagAndFrog },
-      { name: "Validate Error Handling", func: editAndBranching.ValidateErrorHandling },
-    ]
-  },
-  {
-    name: 'Log', tests:
-    [
-      { name: "What's Your Name", func: log.WhatsYourName },
-      { name: "Endless Loop", func: log.EndlessLoop },
-    ]
-  },
-  {
-    name: 'Train', tests:
-    [
-      { name: "Disqualifying Entities", func: train.DisqualifyingEntities },
-      { name: "Wait vs No Wait Action", func: train.WaitVsNoWaitActions },
-      { name: "What's Your Name", func: train.WhatsYourName },
-      { name: "My Name Is", func: train.MyNameIs },
-      { name: "Tag and Frog", func: train.TagAndFrog },
-      { name: "Book me a Flight", func: train.BookMeAFlight}
-    ]
-  },
-  {
-    name: 'CleanUp', tests:
-    [
-      { name: 'Delete All Test Generated Models', func: deleteAllTestGeneratedModels.DeleteAllTestGeneratedModels},
-    ]
-  },
-  {
-    name: 'Tools', tests:
-    [
-      { name: 'Visit Home Page', func: tools.VisitHomePage},
-      { name: 'Create Model 1', func: tools.CreateModel1},
-      { name: 'Create Model 2', func: tools.CreateModel2},
-      { name: 'Create Model 3', func: tools.CreateModel3},
-      { name: 'Create Model 4', func: tools.CreateModel4},
-      { name: 'Create Model 5', func: tools.CreateModel5},
-    ]
-  },
-]
+  [
+    {
+      name: 'CreateModels', tests:
+        [
+          { name: "All Entity Types", func: createModels.AllEntityTypes },
+          { name: "Disqualifying Entities", func: createModels.DisqualifyingEntities },
+          { name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions },
+          { name: "What's Your Name", func: createModels.WhatsYourName },
+          { name: "Tag and Frog", func: createModels.TagAndFrog },
+          { name: "Endless Loop", func: createModels.EndlessLoop },
+          { name: "Travel", func: createModels.Travel },
+        ]
+    },
+    {
+      name: 'EditAndBranching', tests:
+        [
+          { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
+          { name: "Branching", func: editAndBranching.Branching },
+          { name: "Tag and Frog", func: editAndBranching.TagAndFrog },
+          { name: "Validate Error Handling", func: editAndBranching.ValidateErrorHandling },
+        ]
+    },
+    {
+      name: 'Log', tests:
+        [
+          { name: "What's Your Name", func: log.WhatsYourName },
+          { name: "Endless Loop", func: log.EndlessLoop },
+        ]
+    },
+    {
+      name: 'Train', tests:
+        [
+          { name: "Disqualifying Entities", func: train.DisqualifyingEntities },
+          { name: "Wait vs No Wait Action", func: train.WaitVsNoWaitActions },
+          { name: "What's Your Name", func: train.WhatsYourName },
+          { name: "My Name Is", func: train.MyNameIs },
+          { name: "Tag and Frog", func: train.TagAndFrog },
+          { name: "Book me a Flight", func: train.BookMeAFlight },
+          { name: "End Session Action", func: train.AddOneLastEndSessionAction },
+        ]
+    },
+    {
+      name: 'CleanUp', tests:
+        [
+          { name: 'Delete All Test Generated Models', func: deleteAllTestGeneratedModels.DeleteAllTestGeneratedModels },
+        ]
+    },
+    {
+      name: 'Tools', tests:
+        [
+          { name: 'Visit Home Page', func: tools.VisitHomePage },
+          { name: 'Create Model 1', func: tools.CreateModel1 },
+          { name: 'Create Model 2', func: tools.CreateModel2 },
+          { name: 'Create Model 3', func: tools.CreateModel3 },
+          { name: 'Create Model 4', func: tools.CreateModel4 },
+          { name: 'Create Model 5', func: tools.CreateModel5 },
+        ]
+    },
+  ]
 
-export function AddToCypressTestList(testList) 
-{
+export function AddToCypressTestList(testList) {
   var funcName = `AddToCypressTestList()`
   helpers.ConLog(funcName, `List of Tests: ${testList}`)
-  
+
   if (!Array.isArray(testList)) testList = [testList]
-  
+
   var testListIterator = new TestListIterator(testList)
-  
+
   var test = testListIterator.next
-  while (test != undefined)
-  {
+  while (test != undefined) {
     helpers.ConLog(funcName, `Adding Group: ${test.group}`)
-    describe(test.group, () =>
-    {
+    describe(test.group, () => {
       var currentGroupName = test.group
-      while (test != undefined && test.group == currentGroupName)
-      {
+      while (test != undefined && test.group == currentGroupName) {
         helpers.ConLog(funcName, `Adding Test Case: ${test.name}`)
         it(test.name, test.func)
         test = testListIterator.next
@@ -159,13 +157,11 @@ export function AddToCypressTestList(testList)
   }
 }
 
-class TestListIterator
-{
-  constructor(testList)
-  {
+class TestListIterator {
+  constructor(testList) {
     this.testList = testList
     this.index = 0
-    this.currentGroup = {name: ''}
+    this.currentGroup = { name: '' }
   }
 
   // groupName.testName - 'testName' from 'groupName'
@@ -173,8 +169,7 @@ class TestListIterator
   // *.*                - All Groups, All Tests
   // *.testName         - All tests with all groups matching 'testName'
   // groupName.*        - All tests from 'groupName'
-  get next()
-  {
+  get next() {
     if (this.index >= this.testList.length) return undefined
 
     var x = this.testList[this.index].split('.')
@@ -182,39 +177,32 @@ class TestListIterator
     var groupName = x[0]
     var testName = x[1]
 
-    if (this.currentGroup.name != groupName)
-    {
+    if (this.currentGroup.name != groupName) {
       this.currentGroup = GetTestGroup(groupName)
       if (this.currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`
     }
-    
+
     var test = GetTest(this.currentGroup, testName)
     if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`
 
     this.index++
-    return {group: this.currentGroup.name, name: test.name, func: test.func}
+    return { group: this.currentGroup.name, name: test.name, func: test.func }
   }
 }
 
-function GetTestGroup(name)
-{
-  for (var i = 0; i < testGroups.length; i++)
-  {
-    if (testGroups[i].name == name) 
-    {
+function GetTestGroup(name) {
+  for (var i = 0; i < testGroups.length; i++) {
+    if (testGroups[i].name == name) {
       return testGroups[i]
     }
   }
   return undefined
 }
 
-function GetTest(testGroup, testNameToFind)
-{
+function GetTest(testGroup, testNameToFind) {
   var toFind = `function ${testNameToFind}(`
-  for (var i = 0; i < testGroup.tests.length; i++)
-  {
-    if (`${testGroup.tests[i].func}`.startsWith(toFind)) 
-    {
+  for (var i = 0; i < testGroup.tests.length; i++) {
+    if (`${testGroup.tests[i].func}`.startsWith(toFind)) {
       return testGroup.tests[i]
     }
   }
