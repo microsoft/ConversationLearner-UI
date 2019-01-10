@@ -251,10 +251,15 @@ export function BookMeAFlight() {
 
 export function AddOneLastEndSessionAction() {
   models.ImportModel('z-sydney-flight', 'z-sydney-flight.cl')
+
   modelPage.NavigateToTrainDialogs()
+
   cy.WaitForTrainingStatusCompleted()
+
   train.EditTraining('fly to sydney', 'coach', "enjoy your trip. you are booked on Qantas")
-  cy.RunAndExpectDomChange(() => { editDialogModal.ClickScoreActionsButton() /* Cypress.$('[data-testid="score-actions-button"]')[0].click() */ })
+  cy.RunAndExpectDomChange(() => { editDialogModal.ClickScoreActionsButton() })
   editDialogModal.SelectChatTurn('enjoy your trip. you are booked on Qantas', 1)
-  train.SelectAction('0')
+  cy.RunAndExpectDomChange(() => { train.SelectAction('0') })
+  cy.RunAndExpectDomChange(() => { train.Save() })
+
 }
