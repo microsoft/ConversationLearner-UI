@@ -27,7 +27,8 @@ describe('zTemp test', () =>
 export function DeleteAllTestGeneratedModels()
 {
   homePage.Visit()
-  
+  cy.log('STARTING!!!');
+
   // We must "Enqueue" this function call so that Cypress will have one "Cypress Command" 
   // still running when the DeleteAllRows function exits. If not for this, only one row will
   // get deleted then test execution will stop.
@@ -70,44 +71,48 @@ function DeleteNextTestGeneratedModel(indexNextPotentialRowToDelete)
   return new Promise((resolve) =>
   {
     helpers.ConLog(thisFuncName, `Promise has been created and returned.`)
-    cy.Enqueue(()=> {Get('[data-testid="model-list-model-name"]')}).then(elements =>
+    cy.Enqueue(()=> { GetNextModelList() }).then(elements =>
     {
-      helpers.ConLog(thisFuncName, `Elements remaining in model list: ${elements.length}`)
+      helpers.ConLog(thisFuncName, `Elements: ${elements}`)
 
-      for(var i = indexNextPotentialRowToDelete; i < elements.length; i++) 
+      if (elements)
+      //for(var i = indexNextPotentialRowToDelete; i < elements.length; i++) 
       {
         var modelName = elements[i].innerText
         if(modelName.startsWith('z-')) 
         {
-          helpers.ConLog(thisFuncName, `Found a test model named: "${modelName}"`)
+          helpers.ConLog(thisFuncName, `Found a test model named: "${elements}"`)
 
           // NavigateToModelPage(modelName)
           // modelPage.NavigateToSettings()
           // settings.DeleteModel(modelName)
-          VerifyPageTitle() // To Ensure we have landed back on this same model list home page.
+          //VerifyPageTitle() // To Ensure we have landed back on this same model list home page.
           // if(elements.length == 0) cy.DoesNotContain('[data-testid="model-list-model-name"]')
           // else cy.DoesNotContain('[data-testid="model-list-model-name"]', modelName)
-
-          helpers.ConLog(thisFuncName, `Done deleting model named: "${modelName}"`)
-          cy.Enqueue(() => {helpers.ConLog(thisFuncName, `Enqueued resolve(${i})`); resolve(i)})
-          return
+          cy.Enqueue(()=> {helpers.ConLog(thisFuncName, `Doing some cy stuff ${elements}"`)})
+          helpers.ConLog(thisFuncName, `Done deleting model named: "${elements}"`)
+          //cy.Enqueue(() => {helpers.ConLog(thisFuncName, `Enqueued resolve(${i})`); resolve(elements)})
+          return resolve(elements)
         }
       }
       helpers.ConLog(thisFuncName, `No Models Found!`)
-      cy.Enqueue(() => {helpers.ConLog(thisFuncName, `Enqueued resolve(undefined)`); resolve(undefined)})
-      return
+      //cy.Enqueue(() => {helpers.ConLog(thisFuncName, `Enqueued resolve(undefined)`); resolve(undefined)})
+      return resolve(undefined)
     })
     helpers.ConLog(thisFuncName, `regular time frame completed`)
   })
 }
 
-function GetModelList()
+var mlIndex = 0
+function GetNextModelList()
 {
   return new Promise((resolve) =>
   {
     setTimeout(()=>
     {
-
-    }, )
-  }
+      helpers.ConLog('Delete - GetNextModelList', `mlIndex: ${mlIndex}`)
+      if (mlIndex >= 3) resolve(undefined)
+      resolve(mlIndex++)
+    }, 750)
+  })
 }
