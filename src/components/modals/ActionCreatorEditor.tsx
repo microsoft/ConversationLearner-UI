@@ -916,12 +916,21 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.setState(nextState as ComponentState)
     }
 
+    areInputsInvalid(): boolean {
+        switch (this.state.selectedActionTypeOptionKey) {
+            case CLM.ActionTypes.TEXT:
+                return this.state.isPayloadMissing
+            case CLM.ActionTypes.CARD:
+                return this.state.selectedCardOptionKey === undefined
+            case CLM.ActionTypes.API_LOCAL:
+                return this.state.selectedApiOptionKey === undefined
+            default:
+                return true
+        }
+    }
     saveDisabled(): boolean {
-        const areInputsInvalid = (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
-            ? this.state.selectedApiOptionKey === null
-            : this.state.isPayloadMissing)
 
-        return areInputsInvalid
+        return this.areInputsInvalid()
             || (this.state.isEditing && !this.state.hasPendingChanges)
             || (!this.state.isTerminal && (this.state.expectedEntityTags.length > 0))
     }
