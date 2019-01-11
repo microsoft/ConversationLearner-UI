@@ -39,7 +39,6 @@ interface ComponentState {
     addUserInputSelectionType: SelectionType
     isInitStateOpen: boolean,
     isInitAvailable: boolean,
-    initialEntities: CLM.FilledEntityMap | null,
     webchatKey: number,
     editing: boolean,
     hasTerminalAction: boolean,
@@ -62,7 +61,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
         addUserInputSelectionType: SelectionType.NONE,
         isInitStateOpen: false,
         isInitAvailable: true,
-        initialEntities: null,
         webchatKey: 0,
         editing: false,
         hasTerminalAction: false,
@@ -104,7 +102,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let nextActivityIndex = this.state.nextActivityIndex
         let selectedActivityIndex = this.state.selectedActivityIndex
         let selectedHistoryActivity = this.state.selectedHistoryActivity
-        let initialEntities = this.state.initialEntities
         let ignorePostCount = this.state.ignoreSelectionCount
         let replaceActivityText = this.state.replaceActivityText
         let replaceActivityIndex = this.state.replaceActivityIndex
@@ -112,7 +109,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
         if (this.props.isOpen && !newProps.isOpen) {
             selectedActivityIndex = null
             selectedHistoryActivity = null
-            initialEntities = null
             ignorePostCount = 0
             replaceActivityText = null
             replaceActivityIndex = null
@@ -130,7 +126,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
         if (this.props.teachSession.teach !== newProps.teachSession.teach) {
             isInitAvailable = true
             hasTerminalAction = false
-            initialEntities = null
         }
         // Set terminal action from History but only if I just loaded it
         if (this.props.initialHistory !== newProps.initialHistory && newProps.initialHistory && newProps.initialHistory.length > 0) {
@@ -146,7 +141,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 webchatKey,
                 hasTerminalAction,
                 isInitAvailable,
-                initialEntities,
                 nextActivityIndex,
                 selectedActivityIndex,
                 selectedHistoryActivity,
@@ -167,11 +161,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
         if (filledEntityMap && this.props.onSetInitialEntities) {
-            await this.props.onSetInitialEntities(filledEntityMap.FilledEntities())
+            await this.props.onSetInitialEntities(filledEntityMap)
         }
         this.setState({
-            isInitStateOpen: false,
-            initialEntities: filledEntityMap || null
+            isInitStateOpen: false
         })
     }
 
@@ -287,7 +280,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
             this.setState({
                 // No initialization allowed after first input
                 isInitAvailable: false,
-                initialEntities: null,
                 nextActivityIndex: this.state.nextActivityIndex + 1,
                 selectedActivityIndex: null,
                 selectedHistoryActivity: null
@@ -741,7 +733,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         originalTrainDialogId={this.props.originalTrainDialogId}
                                         sourceTrainDialog={this.props.sourceTrainDialog}
                                         editType={this.props.editType}
-                                        initialEntities={this.state.initialEntities}
+                                        initialEntities={this.props.initialEntities}
                                         nextActivityIndex={this.state.nextActivityIndex}
                                         selectedActivityIndex={this.state.selectedActivityIndex}
                                         isLastActivitySelected={isLastActivitySelected}
@@ -870,18 +862,19 @@ export interface ReceivedProps {
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onEndSessionActivity: () => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any
-    onSetInitialEntities: ((initialFilledEntities: CLM.FilledEntity[]) => void) | null
+    onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => void) | null
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string
     // Is it new, from a TrainDialog or LogDialog
-    editType: EditDialogType,
+    editType: EditDialogType
     // When editing and existing log or train dialog
     sourceTrainDialog: CLM.TrainDialog | null
     // Train Dialog that this edit originally came from (not same as sourceTrainDialog)
-    originalTrainDialogId: string | null,
+    originalTrainDialogId: string | null
     // When editing, the intial history before teach starts
     initialHistory: Activity[]
+    initialEntities: CLM.FilledEntityMap | null
     lastAction: CLM.ActionBase | null
 }
 

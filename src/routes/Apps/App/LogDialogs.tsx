@@ -1061,6 +1061,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onReplayDialog={(trainDialog) => this.onReplayTrainDialog(trainDialog)}
                         editType={this.state.editType}
                         initialHistory={this.state.history}
+                        initialEntities={null}
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
                     />

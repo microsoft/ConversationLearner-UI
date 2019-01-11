@@ -214,6 +214,8 @@ interface ComponentState {
     currentTrainDialog: CLM.TrainDialog | null
     // If Train Dialog was edited, the original one
     originalTrainDialogId: string | null,
+    // Initial entities to use in new train dialog
+    initialEntities: CLM.FilledEntityMap | null,
     // Is Dialog being edited a new one, a TrainDialog or a LogDialog
     editType: EditDialogType
     searchValue: string,
@@ -241,6 +243,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             selectedActivityIndex: null,
             currentTrainDialog: null,
             originalTrainDialogId: null,
+            initialEntities: null,
             editType: EditDialogType.TRAIN_ORIGINAL,
             searchValue: '',
             dialogKey: 0,
@@ -378,24 +381,27 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onSetInitialEntities(initialFilledEntities: CLM.FilledEntity[]) {
+    async onSetInitialEntities(initialFilledEntityMap: CLM.FilledEntityMap) {
 
         if (this.props.teachSession.teach) {
             // Delete existing teach session
             await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
 
             // Create new one with initial entities
-            await this.onClickNewTeachSession(initialFilledEntities)
+            await this.onClickNewTeachSession(initialFilledEntityMap)
         }
     }
 
-    onClickNewTeachSession(initialFilledEntities: CLM.FilledEntity[] = []) {
+    onClickNewTeachSession(initialFilledEntityMap: CLM.FilledEntityMap | null = null) {
+        let initialFilledEntities: CLM.FilledEntity[] = initialFilledEntityMap ? initialFilledEntityMap.FilledEntities() : [];
+        
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
         ((this.props.createTeachSessionThunkAsync(this.props.app.appId, initialFilledEntities) as any) as Promise<CLM.TeachResponse>)
             .then(teachResponse => {
                 this.setState({
                     isTeachDialogModalOpen: true,
-                    editType: EditDialogType.NEW
+                    editType: EditDialogType.NEW,
+                    initialEntities: initialFilledEntityMap
                 })
             })
             .catch(error => {
@@ -426,6 +432,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             lastAction: null,
             currentTrainDialog: null,
             // originalTrainDialogId - do not clear. Need for later 
+            initialEntities: null,
             dialogKey: this.state.dialogKey + 1
         })
     }
@@ -896,6 +903,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: newTrainDialog,
                 originalTrainDialogId: originalId,
+                initialEntities: null,
                 selectedActivityIndex: activityIndex,
                 isEditDialogModalOpen: true,
                 isTeachDialogModalOpen: false,
@@ -1005,6 +1013,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     lastAction: teachWithHistory.lastAction,
                     currentTrainDialog: trainDialog,
                     originalTrainDialogId: originalId,
+                    initialEntities: null,
                     editType: EditDialogType.TRAIN_ORIGINAL,
                     isEditDialogModalOpen: true,
                     selectedActivityIndex: null
@@ -1031,6 +1040,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             selectedActivityIndex: null,
             currentTrainDialog: null,
             // originalTrainDialogId: Do not clear.  Save for later 
+            initialEntities: null,
             history: [],
             lastAction: null,
             dialogKey: this.state.dialogKey + 1
@@ -1256,6 +1266,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onReplayDialog={(trainDialog) => this.onReplayTrainDialog(trainDialog)}
                         onSetInitialEntities={this.onSetInitialEntities}
                         initialHistory={this.state.history}
+                        initialEntities={this.state.initialEntities}
                         editType={this.state.editType}
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
