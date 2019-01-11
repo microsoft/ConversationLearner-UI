@@ -131,6 +131,11 @@ html {
   to { transform: rotate(360deg); }
 }
 
+.cl-icon-redbackground:hover {
+  color:orange !important;
+  background-color:transparent !important;
+}
+
 .cl-icon[data-icon-name="Warning"] {
   color: var(--color-alert);
   vertical-align: sub;
