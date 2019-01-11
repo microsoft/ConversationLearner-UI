@@ -90,9 +90,40 @@ export function TagAndFrog()
   train.AbandonDialog()
 }
 
-export function ValidateErrorHandling()
+export function TwoConsecutiveUserInputErrorHandling()
 {
-  models.ImportModel('z-errorHandling', 'z-disqualifyngEnt.Trained.cl')
+  models.ImportModel('z-2UserInputs', 'z-disqualifyngEnt.Trained.cl')
+  modelPage.NavigateToTrainDialogs()
+  cy.WaitForTrainingStatusCompleted()
+  
+  modelPage.VerifyNoErrorIconOnPage()
+
+  train.EditTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
+  editDialogModal.InsertUserInputAfter('Sam', 'InsertedText')
+  editDialogModal.VerifyErrorMessage('This Train Dialog has errors that must be fixed before it can be used to train your model')
+  editDialogModal.SelectChatTurn('Sam')
+  editDialogModal.VerifyErrorMessage('Two consecutive User Inputs')
+
+  editDialogModal.ClickSaveCloseButton()
+
+  modelPage.VerifyErrorIconForTrainDialogs()
+  train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Hey`, 'world peace', "Sorry $name, I can't help you get $want")
+
+  train.EditTraining(`${String.fromCharCode(59412)}Hey`, 'world peace', "Sorry $name, I can't help you get $want")
+  editDialogModal.VerifyErrorMessage('This Train Dialog has errors that must be fixed before it can be used to train your model')
+  editDialogModal.SelectChatTurn('Sam')
+  editDialogModal.VerifyErrorMessage('Two consecutive User Inputs')
+  editDialogModal.SelectChatTurn('InsertedText')
+  editDialogModal.ClickDeleteChatTurn()
+  editDialogModal.VerifyNoErrorMessage()
+
+  editDialogModal.ClickSaveCloseButton()
+  modelPage.VerifyNoErrorIconOnPage()
+}
+
+export function UserInputFollowsNonWaitActionErrorHandling()
+{
+  models.ImportModel('z-uInputNoWait', 'z-waitNoWait.cl.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
   

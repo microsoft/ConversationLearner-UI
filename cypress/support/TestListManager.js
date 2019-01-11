@@ -16,7 +16,7 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "EditAndBranching.ValidateErrorHandling",
+  "Train.WaitVsNoWaitActions",
 ]
 
 // ************ MODIFY THIS LIST *****************************************
@@ -33,7 +33,7 @@ export const regressionTestList =
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
   "EditAndBranching.TagAndFrog",
-  "EditAndBranching.ValidateErrorHandling",
+  "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
   "Log.WhatsYourName",
   "Train.DisqualifyingEntities",
   "Train.WaitVsNoWaitActions",
@@ -57,7 +57,7 @@ export const masterListOfAllTestCases =
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
   "EditAndBranching.TagAndFrog",
-  "EditAndBranching.ValidateErrorHandling",
+  "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
   "Log.WhatsYourName",
   "Log.EndlessLoop",
   "Train.DisqualifyingEntities",
@@ -93,7 +93,7 @@ const testGroups =
       { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
       { name: "Branching", func: editAndBranching.Branching },
       { name: "Tag and Frog", func: editAndBranching.TagAndFrog },
-      { name: "Validate Error Handling", func: editAndBranching.ValidateErrorHandling },
+      { name: "Validate Error Handling", func: editAndBranching.TwoConsecutiveUserInputErrorHandling },
     ]
   },
   {
