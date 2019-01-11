@@ -37,6 +37,6 @@ export function GetModelNameIdList()
     listToReturn.push({name: modelName, id: modelId})
     helpers.ConLog('GetModelNameIdList', `modelName: ${modelName} - modelId: ${modelId}`)
   }
-  helpers.ConLog('GetModelNameIdList', `Returning a list of ${listToReturn.length} models to delete`)
+  helpers.ConLog('GetModelNameIdList', `Returning a list of ${listToReturn.length} models`)
   return listToReturn
 }
