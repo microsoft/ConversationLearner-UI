@@ -132,7 +132,7 @@ html {
 }
 
 .cl-icon-redbackground:hover {
-  color:orange !important;
+  color:rgb(252, 167, 9) !important;
   background-color:transparent !important;
 }
 
@@ -209,7 +209,7 @@ html {
 }
 
 .ms-Button-icon:not(:disabled):hover {
-  color: var(--color-themeDark) !important;
+  color:rgb(252, 167, 9) !important;
 }
 
 .ms-Button-icon[data-icon-name="CommentAdd"] {
@@ -235,8 +235,6 @@ html {
   background-color: transparent !important;
 }
 
-
-
 .ms-Button-icon[data-icon-name="Delete"]:not(:disabled) {
   color: var(--color-red);
 }
@@ -258,7 +256,6 @@ html {
   color: var(--color-error);
   background: transparent !important
 }
-
 
 .ms-Button-icon[data-icon-name="MessageFill"]:not(:disabled):hover {
   color: var(--color-red) !important;
@@ -293,7 +290,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .cl-tip.ms-Checkbox{
   display: inline-block;
 }
-
 
 .cl-font--emphasis 
 {
