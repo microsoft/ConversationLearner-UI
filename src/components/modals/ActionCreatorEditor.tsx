@@ -925,7 +925,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             case CLM.ActionTypes.API_LOCAL:
                 return this.state.selectedApiOptionKey === undefined
             default:
-                return true
+                return false
         }
     }
     saveDisabled(): boolean {
