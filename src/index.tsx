@@ -6,8 +6,7 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { createReduxStore } from './reduxStore'
-import App from './routes/App';
-import { unregister } from './registerServiceWorker'
+import App from './routes/App'
 import { addLocaleData, IntlProvider } from 'react-intl'
 // TODO: It should not be wild card import but TypeScript won't allow the default import
 import * as en from 'react-intl/locale-data/en'
@@ -46,5 +45,3 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root') as HTMLElement
 );
-
-unregister();
