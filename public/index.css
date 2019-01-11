@@ -897,16 +897,17 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 
 .cl-ux-opaque {
-
   background-color:#ffffff;
-
 }
 
 .cl-ux-shadowed {
-  
   box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3) !important;
   border: 1px solid #aaaaaa !important;
+}
 
+.cl-ux-bolditalic {
+  font-style:italic;
+  font-weight: 600;
 }
 
 .cl-error-message-label {

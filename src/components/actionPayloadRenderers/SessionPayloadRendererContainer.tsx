@@ -26,6 +26,7 @@ export default class Component extends React.Component<Props, {}> {
 
         return (
             <TextPayloadRenderer
+                classNameEx="cl-ux-bolditalic"
                 original={renderStringUsingEntityNames}
                 currentMemory={renderStringUsingCurrentMemory}
             />)
