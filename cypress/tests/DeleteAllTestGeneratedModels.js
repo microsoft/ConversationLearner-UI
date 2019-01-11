@@ -6,39 +6,37 @@
 const homePage = require('../support/components/HomePage')
 const helpers = require('../support/Helpers')
 
-export function DeleteAllTestGeneratedModels()
+export function DeleteAllTestGeneratedModels() 
 {
   homePage.Visit()
-
+  cy.WaitForStableDOM()
   // We must "Enqueue" this function call so that Cypress will have one "Cypress Command" 
   // still running when the DeleteAllRows function exits. If not for this, only one row will
   // get deleted then test execution will stop.
   cy.Enqueue(DeleteAllTestGeneratedModelRows).then(() => { helpers.ConLog(`Delete All Test Generated Models`, `DONE - All test generated models have been Deleted`) })
+  cy.reload()
 }
 
-function DeleteAllTestGeneratedModelRows()
+function DeleteAllTestGeneratedModelRows() 
 {
-  var indexNextPotentialRowToDelete = 0
+  var thisFuncName = `DeleteAllTestGeneratedModelRows`
+  var modelNameIdList = homePage.GetModelNameIdList()
 
-  function DeleteATestGeneratedModelRow(resolve)
+  modelNameIdList.forEach(modelNameId => 
   {
-    var thisFuncName = `DeleteATestGeneratedModelRow`
-    helpers.ConLog(thisFuncName, `Trying to find a test generated model to delete...`)
-
-    homePage.DeleteNextTestGeneratedModel(indexNextPotentialRowToDelete).then(indexNextRow =>
+    if (modelNameId.name.startsWith('z-')) 
     {
-      helpers.Dump(thisFuncName, indexNextRow)
-      if (!indexNextRow)
-      {
-        helpers.ConLog(thisFuncName, `DONE - there are no more test generated models to delete`)
-        return resolve()
-      }
-      
-      indexNextPotentialRowToDelete = indexNextRow
-      helpers.ConLog(thisFuncName, `nextRow: ${indexNextRow} - nextPotentialRowToDelete: ${indexNextPotentialRowToDelete}`)
-      DeleteATestGeneratedModelRow(resolve)
-    })
-  }
-  
-  return new Promise((resolve) => { DeleteATestGeneratedModelRow(resolve) })
+      helpers.ConLog(thisFuncName, `Sending Request to Delete Model: ${modelNameId.name}`)
+      cy.request(
+      { 
+        url: `http://localhost:3978/sdk/app/${modelNameId.id}`, 
+        method: "DELETE", 
+        headers: { 'x-conversationlearner-memory-key': 'x' } 
+      }).then(resp => 
+      { 
+        helpers.ConLog(thisFuncName, `Response Status: ${resp.status} - Model: ${modelNameId.name}`); 
+        expect(resp.status).to.eq(200)
+      })
+    }
+  })
 }

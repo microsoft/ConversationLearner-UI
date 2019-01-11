@@ -198,7 +198,7 @@ export class Component extends React.Component<Props, ComponentState> {
         const apps = this.getSortedApplications(this.state.sortColumn, props.apps);
 
         return <div className="cl-page">
-            <span className={OF.FontClassNames.mediumPlus}>
+            <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-title">
                 <FormattedMessageId id={FM.APPSLIST_SUBTITLE} />
             </span>
             <div className="cl-buttons-row">
