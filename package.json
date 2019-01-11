@@ -99,7 +99,7 @@
     "test:debug": "react-scripts-ts --inspect-brk test --runInBand --env=jsdom",
     "eject": "react-scripts-ts eject",
     "tsc": "tsc",
-    "builduipackage": "tsc -p ./publish/tsconfig.json --listFiles && tsc -p ./scripts/tsconfig.json --listFiles && node ./scripts/publish.js",
+    "builduipackage": "tsc -p ./publish/tsconfig.json --outDir ./package --listFiles && tsc -p ./scripts/tsconfig.json --listFiles && node ./scripts/publish.js",
     "commit": "git-cz",
     "commitmsg": "commitlint -E GIT_PARAMS"
   },

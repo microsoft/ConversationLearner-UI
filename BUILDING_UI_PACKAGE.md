@@ -29,15 +29,11 @@
 
   > At this point the `/package` folder should have all of the contents necessary to be considered valid NPM package
 
-  5. Navigate into the `/package` folder and increment the package version and publish
+  5. Navigate into the `/package` folder and increment the package version
 
   6. Run `npm publish`
-
 
 ## Future Improvements
 
 - Find way to complete automation so this script can be run by VSTS or Travis CI
   - When I was testing I would run into permissions errors when trying to copy files into package folder.
-- Could re-use `package.json` from root and modify in the publish script
-  - Downside of this is added complexity for little benefit.  Even though it's duplicating the package name and version, it gives you an easy declarative way to know exactly what the `package.json` will be when publishing.
-- Set outDir for scripts and publish tsconfigs using command line to make `/package` folder arbitrary instead of hardcoded.
