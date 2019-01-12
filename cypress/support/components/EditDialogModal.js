@@ -1,3 +1,5 @@
+import { SelectAction } from '../Train';
+
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
@@ -204,4 +206,11 @@ export function InsertUserInputAfter(existingMessage, newMessage)
   SelectChatTurn(existingMessage)
   cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-user-input-button"]')[0].click() })
   cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
+}
+
+export function InsertBotResponseAfter(existingMessage, newMessage)
+{
+  SelectChatTurn(existingMessage)
+  cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })
+  if (newMessage) SelectAction(newMessage)
 }
