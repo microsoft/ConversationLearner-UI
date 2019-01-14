@@ -52,12 +52,34 @@ export function AbandonBranchChanges()
 // Once clicked, more UI elements will become visible & enabled
 export function SelectChatTurn(message, index = 0)
 {
-  message = message.replace(/'/g, "’")
-
-  cy.Get(AllChatMessagesSelector).ExactMatches(message).then(elements => 
+  var funcName = `SelectChatTurn(${message}, ${index})`
+  return new Promise(resolve =>
   {
-    if (elements.length <= index) throw `Could not find '${message}' #${index} in chat utterances`
-    cy.wrap(elements[index]).Click()
+    cy.WaitForStableDOM()
+    cy.Enqueue(() =>
+    {
+      message = message.replace(/'/g, "’")
+      helpers.ConLog(funcName, `Get all chat message elements`)
+      var elements = Cypress.$(AllChatMessagesSelector)
+      helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
+      for (var i = 0; i < elements.length; i++) 
+      {
+        helpers.ConLog(funcName, `chat turn: '${elements[i].innerHTML}'`)
+        if(elements[i].innerHTML == message)
+        {
+          helpers.ConLog(funcName, `FOUND!`)
+          if (index > 0) index --
+          else
+          {
+            cy.wrap(elements[i]).Click().then(() => { resolve(i) })
+            return
+          }
+        }
+        else helpers.ConLog(funcName, `NOT A MATCH`)
+        helpers.ConLog(funcName, `NEXT`)
+      }
+      throw `Could not find '${message}' #${index} in chat utterances`
+    })
   })
 }
 
@@ -210,7 +232,11 @@ export function InsertUserInputAfter(existingMessage, newMessage)
 
 export function InsertBotResponseAfter(existingMessage, newMessage)
 {
-  SelectChatTurn(existingMessage)
-  cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })
-  if (newMessage) SelectAction(newMessage)
+  var expectedIndexForActionPlacement
+  SelectChatTurn(existingMessage).then(indexOfSelectedChatTurn =>
+  {
+    helpers.ConLog(`InsertBotResponseAfter`, `expectedIndexForActionPlacement: ${indexOfSelectedChatTurn}`)
+    cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })
+    if (newMessage) SelectAction(newMessage, undefined, indexOfSelectedChatTurn + 1)
+  })
 }

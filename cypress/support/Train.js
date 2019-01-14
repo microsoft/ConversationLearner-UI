@@ -116,9 +116,11 @@ export function TypeYourMessage(message)
 
 // lastResponse parameter is optional. It is necessary only when there are $entities
 // in the Action that produced the Bot's last response.
-export function SelectAction(expectedResponse, lastResponse)
+//
+//
+export function SelectAction(expectedResponse, lastResponse, expectedIndexForActionPlacement)
 {
-  scorerModal.ClickAction(expectedResponse)
+  scorerModal.ClickAction(expectedResponse, expectedIndexForActionPlacement)
   cy.Enqueue(() => 
   { 
     if (lastResponse) window.currentTrainingSummary.LastResponse = lastResponse
