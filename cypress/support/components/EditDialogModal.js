@@ -48,10 +48,11 @@ export function AbandonBranchChanges()
   homePage.ClickConfirmButton()
 }
 
-// Selects FROM ALL chat messages, from both Bot and User
-// Once clicked, more UI elements will become visible & enabled
+// Selects FROM ALL chat messages, from both Bot and User.
+// Once clicked, more UI elements will become visible & enabled.
 // OPTIONAL index parameter lets you select other than the 1st 
-// instance of a message
+// instance of a message.
+// RETURNS: A Promise containing the index of the selected turn.
 export function SelectChatTurn(message, index = 0)
 {
   return new Promise(resolve =>
@@ -227,11 +228,17 @@ export function InsertUserInputAfter(existingMessage, newMessage)
 
 export function InsertBotResponseAfter(existingMessage, newMessage)
 {
-  var expectedIndexForActionPlacement
   SelectChatTurn(existingMessage).then(indexOfSelectedChatTurn =>
   {
-    helpers.ConLog(`InsertBotResponseAfter`, `expectedIndexForActionPlacement: ${indexOfSelectedChatTurn}`)
+    var indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
     cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })
-    if (newMessage) SelectAction(newMessage, undefined, indexOfSelectedChatTurn + 1)
+    if (newMessage) 
+    { // Sometimes the UI has already automaticly selected the Bot response we want
+      // so we need to confirm that we actually need to click on the action, 
+      // otherwise an unnecessary message box pops up that we don't want to deal with.
+      var chatMessages = helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)
+      if (chatMessages[indexOfInsertedBotResponse] != newMessage)
+        scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
+    }
   })
 }

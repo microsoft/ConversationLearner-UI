@@ -118,9 +118,9 @@ export function TypeYourMessage(message)
 // in the Action that produced the Bot's last response.
 //
 //
-export function SelectAction(expectedResponse, lastResponse, expectedIndexForActionPlacement)
+export function SelectAction(expectedResponse, lastResponse)
 {
-  scorerModal.ClickAction(expectedResponse, expectedIndexForActionPlacement)
+  scorerModal.ClickAction(expectedResponse)
   cy.Enqueue(() => 
   { 
     if (lastResponse) window.currentTrainingSummary.LastResponse = lastResponse

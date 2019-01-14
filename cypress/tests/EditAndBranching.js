@@ -152,6 +152,8 @@ export function UserInputFollowsNonWaitActionErrorHandling()
   modelPage.VerifyErrorIconForTrainDialogs()
   train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', "Fish just swim.")
 
+  // - - - Open the same Train Dialog, validate and fix the errors. - - -
+
   train.EditTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', "Fish just swim.")
   editDialogModal.VerifyErrorMessage('This Train Dialog has errors that must be fixed before it can be used to train your model')
 
