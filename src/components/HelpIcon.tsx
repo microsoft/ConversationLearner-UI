@@ -15,7 +15,7 @@ class HelpIcon extends React.Component<Props, {}> {
     render() {
         return (
             <IconButton
-                className={`cl-icon cl-icon--short ${this.props.customClass || 'cl-icon-redbackground'} ${this.props.customStyle || ''}`}
+                className={`cl-icon cl-icon--short ${this.props.customClass || 'cl-icon-whitebackground'}`}
                 iconProps={{ iconName: this.props.iconName || 'Info' }}
                 onClick={() => { this.props.setTipType(this.props.tipType) }}
                 title="More Information"
@@ -37,7 +37,6 @@ export interface ReceivedProps {
     tipType: TipType,
     iconName?: string
     customClass?: string
-    customStyle?: string
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

@@ -131,8 +131,33 @@ html {
   to { transform: rotate(360deg); }
 }
 
+.cl-icon-whitebackground {
+  color:rgb(16, 110, 190) !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-whitebackground:hover {
+  color:#ff0000 !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-orangebackground {
+  color:#c9c9c9 !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-orangebackground:hover {
+  color:rgb(255, 255, 0) !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-redbackground {
+  color:rgb(255, 159, 159) !important;
+  background-color:transparent !important;
+}
+
 .cl-icon-redbackground:hover {
-  color:rgb(252, 167, 9) !important;
+  color:rgb(255, 255, 0) !important;
   background-color:transparent !important;
 }
 
@@ -206,10 +231,6 @@ html {
   font-size: 12px;
   margin-right: 8px;
   color: var(--color-themePrimary) !important;
-}
-
-.ms-Button-icon:not(:disabled):hover {
-  color:rgb(252, 167, 9) !important;
 }
 
 .ms-Button-icon[data-icon-name="CommentAdd"] {
