@@ -50,24 +50,21 @@ export function AbandonBranchChanges()
 
 // Selects FROM ALL chat messages, from both Bot and User
 // Once clicked, more UI elements will become visible & enabled
+// OPTIONAL index parameter lets you select other than the 1st 
+// instance of a message
 export function SelectChatTurn(message, index = 0)
 {
-  var funcName = `SelectChatTurn(${message}, ${index})`
   return new Promise(resolve =>
   {
     cy.WaitForStableDOM()
     cy.Enqueue(() =>
     {
       message = message.replace(/'/g, "’")
-      helpers.ConLog(funcName, `Get all chat message elements`)
       var elements = Cypress.$(AllChatMessagesSelector)
-      helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
       for (var i = 0; i < elements.length; i++) 
       {
-        helpers.ConLog(funcName, `chat turn: '${elements[i].innerHTML}'`)
         if(elements[i].innerHTML == message)
         {
-          helpers.ConLog(funcName, `FOUND!`)
           if (index > 0) index --
           else
           {
@@ -75,8 +72,6 @@ export function SelectChatTurn(message, index = 0)
             return
           }
         }
-        else helpers.ConLog(funcName, `NOT A MATCH`)
-        helpers.ConLog(funcName, `NEXT`)
       }
       throw `Could not find '${message}' #${index} in chat utterances`
     })

@@ -8,5 +8,5 @@
   "reporterOptions": {
     "configFile": "config-mocha-reporter.json"
   },
-  "numTestsKeptInMemory": 0
+  "XnumTestsKeptInMemory": 0
 }
