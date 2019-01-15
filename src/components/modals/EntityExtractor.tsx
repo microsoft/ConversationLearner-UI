@@ -105,6 +105,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.setState({
             isPendingSubmit: true
         })
+        if (this.props.onPendingStatusChanged) {
+            this.props.onPendingStatusChanged(true)
+        }
         this.props.clearExtractConflict()
     }
 
