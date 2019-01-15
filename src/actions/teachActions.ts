@@ -136,13 +136,18 @@ export const deleteTeachSessionThunkAsync = (
             await clClient.teachSessionDelete(app.appId, teachSession, save);
             dispatch(deleteTeachSessionFulfilled(key, teachSession, sourceLogDialogId, app.appId));
 
-            // If saving to a TrainDialog, delete any source TrainDialog (LogDialogs not deleted)
-            if (save && sourceTrainDialogId) {
-                await dispatch(deleteTrainDialogThunkAsync(key, app, sourceTrainDialogId));
+            // If saving to a TrainDialog
+            if (save) {
+                // If source train dialog exists for new dialog delete it (LogDialogs not deleted)
+                if (sourceTrainDialogId) {
+                    await dispatch(deleteTrainDialogThunkAsync(key, app, sourceTrainDialogId));
+                }
+                
+                // If we're adding a new train dialog as consequence of the session save, refetch train dialogs and start poll for train status
+                dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
+                dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
             }
 
-            dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
-            dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
             return true;
         } catch (e) {
             const error = e as AxiosError
