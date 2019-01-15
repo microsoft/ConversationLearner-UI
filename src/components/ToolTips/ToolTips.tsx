@@ -326,8 +326,9 @@ export function getTip(tipType: string) {
             return (
                 <div>
                     <h2>Replay is needed</h2>
-                    <p>One or more edits to Action or Entity properties, may have invalidated turns in this conversation</p>
-                    <p>It must be replayed to see if any errors were introduced before it can be used in trianing</p>
+                    <p>One or more turns in this conversation may have been invalidated by edits
+                        to Action or Entities. Replay this conversation so it may be used in
+                        training as errors were introduced.</p>
                 </div>
             )
         case TipType.ENTITY_NAME:
