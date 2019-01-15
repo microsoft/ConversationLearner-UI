@@ -260,7 +260,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             */
             // If next action should be score, need to insert, not continue
             if (this.waitingForScore()) {
-                const lastActivity = this.props.history[this.props.history.length - 1 ]
+                const lastActivity = this.props.history[this.props.history.length - 1]
                 await this.props.onInsertInput(this.state.currentTrainDialog!, lastActivity, userInput.text, this.state.addUserInputSelectionType)
             }
             // Otherwise continue
@@ -750,7 +750,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     <div className="cl-editdialog-caution">
                         <div className={OF.FontClassNames.mediumPlus}>
                             <FormattedMessageId id={FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} />
-                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} customStyle="cl-icon--transparent" />
+                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} customClass="cl-icon-orangebackground" />
                         </div>
                     </div>
                 </div>
@@ -762,7 +762,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     <div className="cl-editdialog-warning">
                         <div className={OF.FontClassNames.mediumPlus}>
                             <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY} />
-                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY} customStyle="cl-icon--transparent" />
+                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY} customClass="cl-icon-orangebackground" />
                         </div>
                     </div>
                 </div>
@@ -830,7 +830,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
-                    <div className="cl-debug-marker"/>
+                        <div className="cl-debug-marker" />
                         <div className="cl-modal-buttons_secondary">
                             {this.renderWarning()}
                         </div>
