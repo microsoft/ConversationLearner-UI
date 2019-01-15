@@ -16,8 +16,7 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
-  //"EditAndBranching.ValidateErrorHandling",
+  "EditAndBranching.UserInputFollowsNonWaitActionErrorHandling",
 ]
 
 // ************ MODIFY THIS LIST *****************************************
@@ -34,7 +33,8 @@ export const regressionTestList =
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
   "EditAndBranching.TagAndFrog",
-  "EditAndBranching.ValidateErrorHandling",
+  "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
+  "EditAndBranching.UserInputFollowsNonWaitActionErrorHandling",
   "Log.WhatsYourName",
   "Train.DisqualifyingEntities",
   "Train.WaitVsNoWaitActions",
@@ -58,7 +58,8 @@ export const masterListOfAllTestCases =
   "EditAndBranching.VerifyEditTrainingControlsAndLabels",
   "EditAndBranching.Branching",
   "EditAndBranching.TagAndFrog",
-  "EditAndBranching.ValidateErrorHandling",
+  "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
+  "EditAndBranching.UserInputFollowsNonWaitActionErrorHandling",
   "Log.WhatsYourName",
   "Log.EndlessLoop",
   "Train.DisqualifyingEntities",
@@ -94,7 +95,8 @@ const testGroups =
       { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
       { name: "Branching", func: editAndBranching.Branching },
       { name: "Tag and Frog", func: editAndBranching.TagAndFrog },
-      { name: "Validate Error Handling", func: editAndBranching.ValidateErrorHandling },
+      { name: "Two Consecutive User Input Error Handling", func: editAndBranching.TwoConsecutiveUserInputErrorHandling },
+      { name: "User Input Follows Non-Wait Action Error Handling", func: editAndBranching.UserInputFollowsNonWaitActionErrorHandling },
     ]
   },
   {

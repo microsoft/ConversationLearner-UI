@@ -48,6 +48,22 @@ export function WaitVsNoWaitActions()
   actions.CreateNewAction({response: 'Which animal would you like?'})
   actions.CreateNewAction({response: 'Cows say moo!', uncheckWaitForResponse: true})
   actions.CreateNewAction({response: 'Ducks say quack!', uncheckWaitForResponse: true})
+  actions.CreateNewAction({response: 'Fish just swim.', uncheckWaitForResponse: true})
+
+  modelPage.NavigateToTrainDialogs()
+  cy.WaitForTrainingStatusCompleted()
+  train.CreateNewTrainDialog()
+
+  train.TypeYourMessage('Duck')
+  editDialogModal.ClickScoreActionsButton()
+  train.SelectAction('Ducks say quack!')
+  train.SelectAction('Which animal would you like?')
+
+  train.TypeYourMessage('Fish')
+  editDialogModal.ClickScoreActionsButton()
+  train.SelectAction('Fish just swim.')
+
+  train.Save()
 
   // Manually EXPORT this to fixtures folder and name it 'z-waitNoWait.cl'
 }
