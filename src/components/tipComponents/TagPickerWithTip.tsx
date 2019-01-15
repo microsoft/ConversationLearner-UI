@@ -16,7 +16,7 @@ export default function component(props: ITagPickerWithTipProps) {
     const { label, tipType, ...pickerProps } = props
     return (
         <div>
-            <OF.Label>{label}
+            <OF.Label className="cl-label">{label}
                 <HelpIcon tipType={tipType} />
             </OF.Label>
             <OF.TagPicker
