@@ -25,13 +25,12 @@ export default class Component extends React.Component<Props, {}> {
             ? null
             : sessionAction.renderValue(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
 
-        return <div className={`${OF.FontClassNames.mediumPlus} cl-text-payload`}>
+        return <div className={`${OF.FontClassNames.mediumPlus} cl-text-payload cl-font--emphasis`}>
             <div className="cl-text-payload__string" data-testid="action-scorer-text-response">
-                <strong> EndSession: {(renderStringUsingCurrentMemory === null)
+                EndSession: {(renderStringUsingCurrentMemory === null)
                     ? `${renderStringUsingEntityNames}`
                     : `${renderStringUsingCurrentMemory}`
                 }
-                </strong>
             </div>
         </div>
     }
