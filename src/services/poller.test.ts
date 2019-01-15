@@ -49,9 +49,9 @@ describe('Poller', () => {
         const poller1 = new poller.Poller({ interval: 100 })
         await poller1.addPoll(pollConfig)
 
-        expect(requestMock.mock.calls.length).toBe(4)
-        expect(isResolvedMock.mock.calls.length).toBe(4)
-        expect(onUpdateMock.mock.calls.length).toBe(4)
+        expect(requestMock.mock.calls.length).toBeGreaterThanOrEqual(4)
+        expect(isResolvedMock.mock.calls.length).toBeGreaterThanOrEqual(4)
+        expect(onUpdateMock.mock.calls.length).toBeGreaterThanOrEqual(4)
     })
 
     test('poll should stop polling after isResolved returns true', async () => {
@@ -103,9 +103,10 @@ describe('Poller', () => {
         const p1 = poller1.addPoll(pollConfig1)
         await delay(200)
         void poller1.addPoll(pollConfig2)
+        // Will expire after 600ms (delay of 200ms and added new poll with same id to extend expiration time by another 400)
         await p1
         const after = new Date().getTime()
-
+        
         // 200 + 400
         expect(after - now).toBeGreaterThanOrEqual(600)
     })
@@ -143,7 +144,7 @@ describe('Poller', () => {
         await p1 // Will still resolve after 400 expiration
         const after = new Date().getTime()
         
-        expect(after - now).toBeGreaterThanOrEqual(400)
+        expect(after - now).toBeLessThanOrEqual(500)
     })
 
     test('poll removePoll should remove from list of polls preventing further polling', async () => {
