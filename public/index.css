@@ -76,6 +76,10 @@ html {
   cursor: pointer;
 }
 
+.cl-payloadrenderer-session-primary {
+  font-style: italic;
+}
+
 .cl-icon {
   color: var(--color-themePrimary) !important;
 }
