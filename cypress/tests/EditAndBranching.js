@@ -214,4 +214,3 @@ export function WaitNonWaitErrorHandling()
   editDialogModal.ClickSaveCloseButton()
   modelPage.VerifyNoErrorIconOnPage()
 }
-
