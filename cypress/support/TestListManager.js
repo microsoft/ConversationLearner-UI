@@ -16,9 +16,8 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "CreateModels.TagAndFrog",
 //  "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
-//  "EditAndBranching.WaitNonWaitErrorHandling",
+  "EditAndBranching.WaitNonWaitErrorHandling",
 ]
 
 // ************ MODIFY THIS LIST *****************************************

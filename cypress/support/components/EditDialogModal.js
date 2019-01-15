@@ -53,6 +53,7 @@ export function AbandonBranchChanges()
 // RETURNS: A Promise containing the index of the selected turn.
 export function SelectChatTurn(message, index = 0)
 {
+  var funcName = `SelectChatTurn(${message}, ${index})`
   cy.ConLog(`SelectChatTurn(${message}, ${index})`, `Start`)
   return new Promise(resolve =>
   {
@@ -61,19 +62,24 @@ export function SelectChatTurn(message, index = 0)
     {
       message = message.replace(/'/g, "’")
       var elements = Cypress.$(AllChatMessagesSelector)
+      helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
       for (var i = 0; i < elements.length; i++) 
       {
+        helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
         if(helpers.RemoveMarkup(elements[i].innerHTML) == message)
         {
           if (index > 0) index --
           else
           {
+            helpers.ConLog(funcName, `FOUND!`)
             cy.wrap(elements[i]).Click().then(() => { resolve(i) })
             return
           }
         }
+        else helpers.ConLog(funcName, `NOT A MATCH`)
+        helpers.ConLog(funcName, `NEXT`)
       }
-      throw `Could not find '${message}' #${index} in chat utterances`
+      throw `${funcName} - Failed to find the message in chat utterances`
     })
   })
 }
@@ -225,10 +231,12 @@ export function InsertUserInputAfter(existingMessage, newMessage)
   cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
 }
 
-export function InsertBotResponseAfter(existingMessage, newMessage)
+// OPTIONAL index parameter lets you select other than the 1st 
+// instance of a message as the point of insertion.
+export function InsertBotResponseAfter(existingMessage, newMessage, index = 0)
 {
   cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `Start`)
-  SelectChatTurn(existingMessage).then(indexOfSelectedChatTurn =>
+  SelectChatTurn(existingMessage, index).then(indexOfSelectedChatTurn =>
   {
     var indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
     cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })

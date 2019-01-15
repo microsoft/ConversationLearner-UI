@@ -157,7 +157,7 @@ export function WaitNonWaitErrorHandling()
     editDialogModal.SelectChatTurn('Fish')
     editDialogModal.VerifyErrorMessage('User Input following a non-Wait Action')
 
-    if (errCount > 1)
+    if (errCount > 2)
     {
       editDialogModal.SelectChatTurn('Which animal would you like?', 1)
       editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
@@ -171,12 +171,12 @@ export function WaitNonWaitErrorHandling()
   }
   Validations(1)
 
-  editDialogModal.InsertBotResponseAfter('Duck') //, 'Which animal would you like?')
+  editDialogModal.InsertBotResponseAfter('Duck', 'Which animal would you like?')
   editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
   
   Validations(2)
 
-  editDialogModal.InsertBotResponseAfter('Fish') //, 'Which animal would you like?')
+  editDialogModal.InsertBotResponseAfter('Fish', 'Which animal would you like?')
   editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
 
   Validations(3)
