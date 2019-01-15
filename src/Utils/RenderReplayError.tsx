@@ -45,7 +45,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessageId id={FM.REPLAYERROR_DESC_API_UNDEFINED} />
-                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_API_UNDEFINED} customStyle="cl-icon--transparent" />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_API_UNDEFINED} customClass="cl-icon-redbackground" />
                     </div>
                 </div>
             )
