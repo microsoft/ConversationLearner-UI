@@ -53,6 +53,7 @@ export function AbandonBranchChanges()
 // RETURNS: A Promise containing the index of the selected turn.
 export function SelectChatTurn(message, index = 0)
 {
+  cy.ConLog(`SelectChatTurn(${message}, ${index})`, `Start`)
   return new Promise(resolve =>
   {
     cy.WaitForStableDOM()
@@ -62,7 +63,7 @@ export function SelectChatTurn(message, index = 0)
       var elements = Cypress.$(AllChatMessagesSelector)
       for (var i = 0; i < elements.length; i++) 
       {
-        if(elements[i].innerHTML == message)
+        if(helpers.RemoveMarkup(elements[i].innerHTML) == message)
         {
           if (index > 0) index --
           else
@@ -226,17 +227,24 @@ export function InsertUserInputAfter(existingMessage, newMessage)
 
 export function InsertBotResponseAfter(existingMessage, newMessage)
 {
+  cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `Start`)
   SelectChatTurn(existingMessage).then(indexOfSelectedChatTurn =>
   {
     var indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
     cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })
-    if (newMessage) 
-    { // Sometimes the UI has already automaticly selected the Bot response we want
-      // so we need to confirm that we actually need to click on the action, 
-      // otherwise an unnecessary message box pops up that we don't want to deal with.
-      var chatMessages = helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)
-      if (chatMessages[indexOfInsertedBotResponse] != newMessage)
-        scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
+    if (newMessage)       
+    {
+      cy.wait(5000)
+      cy.Enqueue(() =>
+      { // Sometimes the UI has already automaticly selected the Bot response we want
+        // so we need to confirm that we actually need to click on the action, 
+        // otherwise an unnecessary message box pops up that we don't want to deal with.
+        
+        var chatMessages = helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)
+        if (chatMessages[indexOfInsertedBotResponse] != newMessage)
+          scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
+      })
     }
+    cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `End`)
   })
 }
