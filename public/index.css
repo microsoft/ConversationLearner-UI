@@ -14,17 +14,6 @@ html {
 * {
   box-sizing: border-box;
 }
-.cl-button--right {
-  float: right;
-}
-.cl-button--widemargin {
-  margin: 20px;
-}
-.cl-button--hidden {
-  width: 1px;
-  height: 1px;
-  opacity: 0.0;
-}
 
 .cl-button--inline {
   margin-left: -1px;
@@ -46,12 +35,6 @@ html {
   position: relative;
 }
 
-.cl-textfield--withButton {
-  display: grid;
-  grid-template: auto / 1fr auto auto;
-  grid-auto-columns: min-content;
-}
-
 .cl-textfield--withLeftButton {
   display: grid;
   grid-template-columns: 0fr auto 0fr;
@@ -70,16 +53,6 @@ html {
 
 .cl-wc-disabled {
   pointer-events: none;
-}
-
-.cl-callout {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 400;
-  color: #333333;
-  padding: 18px 24px 12px;
-  font-weight: 300;
-  max-width: 300px;
 }
 
 .cl-errorpanel {
@@ -105,15 +78,6 @@ html {
 
 .cl-icon {
   color: var(--color-themePrimary) !important;
-}
-
-.cl-icon--transparent {
-  background-color:transparent !important;
-  color: #ffffff !important;
-}
-
-.cl-icon--transparentdark {
-  background-color:transparent !important;
 }
 
 .cl-icon--short {
@@ -890,9 +854,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 .cl-entity--mismatch {
   background: #ffe0e0;
-}
-
-.cl-ux-flexpanel {
 }
 
 .cl-ux-flexpanel--primary {
