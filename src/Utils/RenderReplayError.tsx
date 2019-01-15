@@ -40,6 +40,15 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                     </div>
                 </div>
             )
+        case CLM.ReplayErrorType.APIUndefined:
+            return (
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_API_UNDEFINED} />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_API_UNDEFINED} customStyle="cl-icon--transparent" />
+                    </div>
+                </div>
+            )
         case CLM.ReplayErrorType.EntityUnexpectedMultivalue:
             return (
                 <div className="cl-editdialog-warning">
