@@ -46,7 +46,7 @@ export function Branching()
   train.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
   cy.wait(5000)
   editDialogModal.ClickScoreActionsButton('Hello $name')
-  scorerModal.VerifyLastChatMessage('Hello Joseph')
+  scorerModal.VerifyChatMessage('Hello Joseph')
   train.CaptureEditedChatMessages()
   cy.wait(30000)
   train.Save()
@@ -90,9 +90,9 @@ export function TagAndFrog()
   train.AbandonDialog()
 }
 
-export function ValidateErrorHandling()
+export function TwoConsecutiveUserInputErrorHandling()
 {
-  models.ImportModel('z-errorHandling', 'z-disqualifyngEnt.Trained.cl')
+  models.ImportModel('z-2UserInputs', 'z-disqualifyngEnt.Trained.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
   
@@ -115,6 +115,54 @@ export function ValidateErrorHandling()
   editDialogModal.VerifyErrorMessage('Two consecutive User Inputs')
   editDialogModal.SelectChatTurn('InsertedText')
   editDialogModal.ClickDeleteChatTurn()
+  editDialogModal.VerifyNoErrorMessage()
+
+  editDialogModal.ClickSaveCloseButton()
+  modelPage.VerifyNoErrorIconOnPage()
+}
+
+export function UserInputFollowsNonWaitActionErrorHandling()
+{
+  models.ImportModel('z-uInputNoWait', 'z-waitNoWait.cl')
+  modelPage.NavigateToTrainDialogs()
+  cy.WaitForTrainingStatusCompleted()
+  
+  modelPage.VerifyNoErrorIconOnPage()
+
+  train.EditTraining('Duck', 'Fish', "Fish just swim.")
+  editDialogModal.SelectChatTurn('Which animal would you like?')
+  editDialogModal.ClickDeleteChatTurn()
+  editDialogModal.VerifyErrorMessage('User Input following a non-Wait Action')
+
+  function Validations() 
+  {
+    editDialogModal.SelectChatTurn('Duck')
+    editDialogModal.VerifyErrorMessage('This Train Dialog has errors that must be fixed before it can be used to train your model')
+
+    editDialogModal.SelectChatTurn('Fish')
+    editDialogModal.VerifyErrorMessage('User Input following a non-Wait Action')
+
+    editDialogModal.SelectChatTurn('Fish just swim.')
+    editDialogModal.VerifyErrorMessage('This Train Dialog has errors that must be fixed before it can be used to train your model')
+  }
+  Validations()
+
+  editDialogModal.ClickSaveCloseButton()
+
+  modelPage.VerifyErrorIconForTrainDialogs()
+  train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', "Fish just swim.")
+
+  // - - - Open the same Train Dialog, validate and fix the errors. - - -
+
+  train.EditTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', "Fish just swim.")
+  editDialogModal.VerifyErrorMessage('This Train Dialog has errors that must be fixed before it can be used to train your model')
+
+  Validations()
+
+  editDialogModal.SelectChatTurn('Fish')
+  editDialogModal.VerifyErrorMessage('User Input following a non-Wait Action')
+
+  editDialogModal.InsertBotResponseAfter('Ducks say quack!', 'Which animal would you like?')
   editDialogModal.VerifyNoErrorMessage()
 
   editDialogModal.ClickSaveCloseButton()
