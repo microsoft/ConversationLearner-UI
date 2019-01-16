@@ -16,7 +16,6 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-//  "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
   "EditAndBranching.WaitNonWaitErrorHandling",
 ]
 

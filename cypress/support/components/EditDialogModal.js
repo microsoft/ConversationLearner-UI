@@ -242,7 +242,7 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0)
     cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })
     if (newMessage)       
     {
-      cy.wait(5000)
+      cy.wait(5000) // TODO: Remove this after fixing Bug 1855: More Odd Rendering in Train Dialog Chat Pane
       cy.Enqueue(() =>
       { // Sometimes the UI has already automaticly selected the Bot response we want
         // so we need to confirm that we actually need to click on the action, 

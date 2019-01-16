@@ -10,6 +10,13 @@ const train = require('../support/Train')
 const editDialogModal = require('../support/components/EditDialogModal')
 
 const trainDialogHasErrorsMessage = 'This Train Dialog has errors that must be fixed before it can be used to train your model'
+const actionFollowsWaitActionErrorMessage = 'Action follows a Wait Action'
+const userInputFollowsNonWaitErrorMessage = 'User Input following a non-Wait Action'
+
+const ducksSayQuack = 'Ducks say quack!'
+const fishJustSwim = 'Fish just swim.'
+const whichAnimalWouldYouLike = 'Which animal would you like?'
+
 
 export function VerifyEditTrainingControlsAndLabels()
 {
@@ -133,10 +140,10 @@ export function WaitNonWaitErrorHandling()
   
   modelPage.VerifyNoErrorIconOnPage()
 
-  train.EditTraining('Duck', 'Fish', "Fish just swim.")
-  editDialogModal.SelectChatTurn('Which animal would you like?')
+  train.EditTraining('Duck', 'Fish', fishJustSwim)
+  editDialogModal.SelectChatTurn(whichAnimalWouldYouLike)
   editDialogModal.ClickDeleteChatTurn()
-  editDialogModal.VerifyErrorMessage('User Input following a non-Wait Action')
+  editDialogModal.VerifyErrorMessage(userInputFollowsNonWaitErrorMessage)
 
   function Validations(errCount)
   {
@@ -146,37 +153,37 @@ export function WaitNonWaitErrorHandling()
 
     if (errCount > 1)
     {
-      editDialogModal.SelectChatTurn('Which animal would you like?')
+      editDialogModal.SelectChatTurn(whichAnimalWouldYouLike)
       editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
     }
 
-    editDialogModal.SelectChatTurn('Ducks say quack!')
+    editDialogModal.SelectChatTurn(ducksSayQuack)
     if (errCount == 1) editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
-    else editDialogModal.VerifyErrorMessage('Action follows a Wait Action')
+    else editDialogModal.VerifyErrorMessage(actionFollowsWaitActionErrorMessage)
 
     editDialogModal.SelectChatTurn('Fish')
-    editDialogModal.VerifyErrorMessage('User Input following a non-Wait Action')
+    editDialogModal.VerifyErrorMessage(userInputFollowsNonWaitErrorMessage)
 
     if (errCount > 2)
     {
-      editDialogModal.SelectChatTurn('Which animal would you like?', 1)
+      editDialogModal.SelectChatTurn(whichAnimalWouldYouLike, 1)
       editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
     }
 
-    editDialogModal.SelectChatTurn('Fish just swim.')
+    editDialogModal.SelectChatTurn(fishJustSwim)
     if (errCount < 3) editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
-    else editDialogModal.VerifyErrorMessage('Action follows a Wait Action')
+    else editDialogModal.VerifyErrorMessage(actionFollowsWaitActionErrorMessage)
 
     cy.ConLog(`Validations(${errCount})`, `End`)
   }
   Validations(1)
 
-  editDialogModal.InsertBotResponseAfter('Duck', 'Which animal would you like?')
+  editDialogModal.InsertBotResponseAfter('Duck', whichAnimalWouldYouLike)
   editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
   
   Validations(2)
 
-  editDialogModal.InsertBotResponseAfter('Fish', 'Which animal would you like?')
+  editDialogModal.InsertBotResponseAfter('Fish', whichAnimalWouldYouLike)
   editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
 
   Validations(3)
@@ -184,31 +191,31 @@ export function WaitNonWaitErrorHandling()
   editDialogModal.ClickSaveCloseButton()
 
   modelPage.VerifyErrorIconForTrainDialogs()
-  train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', "Fish just swim.")
+  train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', fishJustSwim)
 
   // - - - Open the same Train Dialog, validate and fix the errors. - - -
 
-  train.EditTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', "Fish just swim.")
+  train.EditTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', fishJustSwim)
   editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
 
   Validations(3)
 
-  editDialogModal.SelectChatTurn('Which animal would you like?', 1)
+  editDialogModal.SelectChatTurn(whichAnimalWouldYouLike, 1)
   editDialogModal.ClickDeleteChatTurn()
   editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
 
   Validations(2)
 
-  editDialogModal.SelectChatTurn('Which animal would you like?')
+  editDialogModal.SelectChatTurn(whichAnimalWouldYouLike)
   editDialogModal.ClickDeleteChatTurn()
   editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
 
   Validations(1)
 
   editDialogModal.SelectChatTurn('Fish')
-  editDialogModal.VerifyErrorMessage('User Input following a non-Wait Action')
+  editDialogModal.VerifyErrorMessage(userInputFollowsNonWaitErrorMessage)
 
-  editDialogModal.InsertBotResponseAfter('Ducks say quack!', 'Which animal would you like?')
+  editDialogModal.InsertBotResponseAfter(ducksSayQuack, whichAnimalWouldYouLike)
   editDialogModal.VerifyNoErrorMessage()
 
   editDialogModal.ClickSaveCloseButton()
