@@ -18,14 +18,19 @@ export function ClickAction(expectedResponse)
   VerifyLastChatMessage(expectedResponse)
 }
 
+// Currently this function is known to work ONLY for:
+// TEXT and END_SESSION Actions.
 export function VerifyLastChatMessage(expectedMessage)
 {
   var expectedUtterance = expectedMessage.replace(/'/g, "’")
-
-  cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
-    cy.wrap(elements[elements.length - 1]).within(e => {
-      cy.get('div.format-markdown > p').should('have.text', expectedUtterance)
-    })})
+  cy.Get('[data-testid="web-chat-utterances"]').then(elements => 
+  {
+    var element = elements[elements.length - 1]
+    if (Cypress.$(element).find('div.wc-adaptive-card').length > 0)
+      expectedUtterance = 'EndSession: ' + expectedUtterance
+    var text = helpers.RemoveMarkup(Cypress.$(element).find('p').text())
+    expect(text).to.equal(expectedUtterance)
+  })
 }
 
 export function VerifyContainsEnabledAction(expectedResponse)

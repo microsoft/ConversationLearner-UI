@@ -257,9 +257,8 @@ export function AddOneLastEndSessionAction() {
   cy.WaitForTrainingStatusCompleted()
 
   train.EditTraining('fly to sydney', 'coach', "enjoy your trip. you are booked on Qantas")
-  cy.RunAndExpectDomChange(() => { editDialogModal.ClickScoreActionsButton() })
+  editDialogModal.ClickScoreActionsButton()
   editDialogModal.SelectChatTurn('enjoy your trip. you are booked on Qantas', 1)
-  cy.RunAndExpectDomChange(() => { train.SelectAction('0') })
-  cy.RunAndExpectDomChange(() => { train.Save() })
-
+  train.SelectAction('0')
+  train.Save()
 }

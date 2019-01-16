@@ -16,8 +16,8 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
   [
-    // "Train.AddOneLastEndSessionAction",
-    // "EditAndBranching.ValidateErrorHandling",
+    "Train.WhatsYourName",
+    "Train.AddOneLastEndSessionAction",
   ]
 
 // ************ MODIFY THIS LIST *****************************************
