@@ -5,7 +5,7 @@
 
 const helpers = require('../../support/Helpers')
 
-export function VerifyPageTitle()                       { cy.Get('[data-testid="actions-title"]').contains('Actions').should('be.visible') }
+export function VerifyPageTitle()                       { cy.get('[data-testid="actions-title"]').contains('Actions').should('be.visible') }
 export function ValidateExpectedEntities(entities)      { ValidateEntities('[data-testid="action-details-expected-entity"]', '[data-testid="action-details-empty-expected-entities"]', entities)}
 
 // The UI automatically populates the Required Entities field with entities found in the response text,
@@ -19,14 +19,14 @@ export function ValidateDisqualifyingEntities(expectedEntities, disqualifyingEnt
 // IMPORTANT: Call this method before calling any of the Validate* methods.
 export function GetRowToBeValidated(response)
 {
-  cy.Get('[data-testid="action-scorer-text-response"]')
+  cy.get('[data-testid="action-scorer-text-response"]')
     .contains(response)
     .parents('div.ms-DetailsRow-fields')
     .as('responseDetailsRow')
 }
 
 
-function ValidateEntitiesIsEmpty(selector)              { cy.Get('@responseDetailsRow').find(selector) }
+function ValidateEntitiesIsEmpty(selector)              { cy.get('@responseDetailsRow').find(selector) }
 
 function ValidateEntities(selector, emptySelector, entities1, entities2)
 { 
@@ -47,9 +47,9 @@ function ValidateEntities(selector, emptySelector, entities1, entities2)
   
   if (entities.length == 0) return ValidateEntitiesIsEmpty(emptySelector)
 
-  cy.Get('@responseDetailsRow').find(selector).as('entitiesList')
-  entities.forEach(entity => cy.Get('@entitiesList').contains(entity))
-  cy.Get('@entitiesList').should('have.length', entities.length)
+  cy.get('@responseDetailsRow').find(selector).as('entitiesList')
+  entities.forEach(entity => cy.get('@entitiesList').contains(entity))
+  cy.get('@entitiesList').should('have.length', entities.length)
 }
 
 

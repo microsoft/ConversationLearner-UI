@@ -9,19 +9,19 @@ const trainDialogsGrid = require('./TrainDialogsGrid')
 const logDialogsGrid = require('../../support/components/LogDialogsGrid')
 const settings = require('../../support/components/Settings')
  
-export function VerifyModelName(name)     { cy.Get('[data-testid="app-index-model-name"]').should(el => { expect(el).to.contain(name) })}
-export function VerifyPageTitle()         { cy.Get('[data-testid="dashboard-title"]').contains('Log Dialogs').should('be.visible') }
+export function VerifyModelName(name)     { cy.get('[data-testid="app-index-model-name"]').should(el => { expect(el).to.contain(name) })}
+export function VerifyPageTitle()         { cy.get('[data-testid="dashboard-title"]').contains('Log Dialogs').should('be.visible') }
 
-export function NavigateToHome()          { cy.Get('[data-testid="app-index-nav-link-home"]').Click();          VerifyPageTitle() }
-export function NavigateToEntities()      { cy.Get('[data-testid="app-index-nav-link-entities"]').Click();      entitiesGrid.VerifyPageTitle() }
-export function NavigateToActions()       { cy.Get('[data-testid="app-index-nav-link-actions"]').Click();       actionsGrid.VerifyPageTitle() }
-export function NavigateToTrainDialogs()  { cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').Click(); trainDialogsGrid.VerifyPageTitle() }
-export function NavigateToLogDialogs()    { cy.Get('[data-testid="app-index-nav-link-log-dialogs"]').Click();   logDialogsGrid.VerifyPageTitle() }
-export function NavigateToSettings()      { cy.Get('[data-testid="app-index-nav-link-settings"]').Click();      settings.VerifyPageTitle() }
+export function NavigateToHome()          { cy.get('[data-testid="app-index-nav-link-home"]').Click();          VerifyPageTitle() }
+export function NavigateToEntities()      { cy.get('[data-testid="app-index-nav-link-entities"]').Click();      entitiesGrid.VerifyPageTitle() }
+export function NavigateToActions()       { cy.get('[data-testid="app-index-nav-link-actions"]').Click();       actionsGrid.VerifyPageTitle() }
+export function NavigateToTrainDialogs()  { cy.get('[data-testid="app-index-nav-link-train-dialogs"]').Click(); trainDialogsGrid.VerifyPageTitle() }
+export function NavigateToLogDialogs()    { cy.get('[data-testid="app-index-nav-link-log-dialogs"]').Click();   logDialogsGrid.VerifyPageTitle() }
+export function NavigateToSettings()      { cy.get('[data-testid="app-index-nav-link-settings"]').Click();      settings.VerifyPageTitle() }
 export function VerifyNoErrorIconOnPage() { cy.DoesNotContain('i[data-icon-name="IncidentTriangle"].cl-color-error') }
 
 // For the Left Pane "Train Dialogs" link.
-export function VerifyErrorIconForTrainDialogs() { cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').find('i[data-icon-name="IncidentTriangle"].cl-color-error') }
+export function VerifyErrorIconForTrainDialogs() { cy.get('[data-testid="app-index-nav-link-train-dialogs"]').find('i[data-icon-name="IncidentTriangle"].cl-color-error') }
 
 // To validate that this code works, search src\actions\appActions.ts for these and alter them:
 //   fetchApplicationTrainingStatusThunkAsync

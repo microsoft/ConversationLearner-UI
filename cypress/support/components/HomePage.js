@@ -8,21 +8,21 @@ const settings = require('../components/Settings')
 const helpers = require('../Helpers')
 
 export function Visit()                         { return cy.visit('http://localhost:5050'); VerifyPageTitle() }
-export function VerifyPageTitle()               { return cy.Get('[data-testid="model-list-title"]').contains('Create and manage your Conversation Learner models').should('be.visible') }
-export function NavigateToModelPage(name)       { return cy.Get('[data-testid="model-list-model-name"]').ExactMatch(`${name}`).Click() }
-export function ClickNewModelButton()           { return cy.Get('[data-testid="model-list-create-new-button"]').Click() }
-export function ClickImportModelButton()        { return cy.Get('[data-testid="model-list-import-model-button"]').Click() }
-export function TypeModelName(name)             { return cy.Get('[data-testid="model-creator-input-name"]').type(name) }
-export function ClickSubmitButton()             { return cy.Get('[data-testid="model-creator-submit-button"]').Click() }
+export function VerifyPageTitle()               { return cy.get('[data-testid="model-list-title"]').contains('Create and manage your Conversation Learner models').should('be.visible') }
+export function NavigateToModelPage(name)       { return cy.get('[data-testid="model-list-model-name"]').ExactMatch(`${name}`).Click() }
+export function ClickNewModelButton()           { return cy.get('[data-testid="model-list-create-new-button"]').Click() }
+export function ClickImportModelButton()        { return cy.get('[data-testid="model-list-import-model-button"]').Click() }
+export function TypeModelName(name)             { return cy.get('[data-testid="model-creator-input-name"]').type(name) }
+export function ClickSubmitButton()             { return cy.get('[data-testid="model-creator-submit-button"]').Click() }
 
 export function UploadImportModelFile(name)     { return cy.UploadFile(name, `[data-testid=model-creator-import-file-picker] > div > input[type="file"]`)}
 
-export function ClickDeleteModelButton(row)     { return cy.Get(`[data-list-index="${row}"] > .ms-FocusZone > .ms-DetailsRow-fields`).find('i[data-icon-name="Delete"]').Click() }
-export function ClickConfirmButton()            { return cy.Get('.ms-Dialog-main').contains('Confirm').Click() }
+export function ClickDeleteModelButton(row)     { return cy.get(`[data-list-index="${row}"] > .ms-FocusZone > .ms-DetailsRow-fields`).find('i[data-icon-name="Delete"]').Click() }
+export function ClickConfirmButton()            { return cy.get('.ms-Dialog-main').contains('Confirm').Click() }
 
 export function GetModelListRowCount() 
 {
-  return cy.Get('[data-automationid="DetailsList"] > [role="grid"]')
+  return cy.get('[data-automationid="DetailsList"] > [role="grid"]')
   .then(gridElement => { var rowCount = +gridElement.attr('aria-rowcount') -1; return rowCount })
 }
 

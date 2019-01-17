@@ -272,7 +272,7 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0)
 export function SelectAndVerifyEachChatTurn(index = 0)
 {
   if (index == 0) editDialogModal.GetAllChatTurns()
-  cy.Get('@allChatTurns').then(elements => 
+  cy.get('@allChatTurns').then(elements => 
   {
     if (index < elements.length)
     {
