@@ -381,26 +381,31 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async onSetInitialEntities(initialFilledEntities: CLM.FilledEntity[]) {
 
         if (this.props.teachSession.teach) {
-            // Delete existing teach session
-            await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
 
+            // Store closing teach session
+            const teach = this.props.teachSession.teach
+            
             // Create new one with initial entities
             await this.onClickNewTeachSession(initialFilledEntities)
+
+            // Delete existing teach session after creating new one so window stays open
+            await this.props.deleteTeachSessionThunkAsync(this.props.user.id, teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
+
         }
     }
 
-    onClickNewTeachSession(initialFilledEntities: CLM.FilledEntity[] = []) {
-        // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createTeachSessionThunkAsync(this.props.app.appId, initialFilledEntities) as any) as Promise<CLM.TeachResponse>)
-            .then(teachResponse => {
-                this.setState({
-                    isTeachDialogModalOpen: true,
-                    editType: EditDialogType.NEW
-                })
+    async onClickNewTeachSession(initialFilledEntities: CLM.FilledEntity[] = []) {
+        try {
+            await this.props.createTeachSessionThunkAsync(this.props.app.appId, initialFilledEntities)
+
+            this.setState({
+                isTeachDialogModalOpen: true,
+                editType: EditDialogType.NEW
             })
-            .catch(error => {
-                console.warn(`Error when attempting to create teach session: `, error)
-            })
+        }
+        catch (error) {
+            console.warn(`Error when attempting to create teach session: `, error)
+        }
     }
 
     @OF.autobind
