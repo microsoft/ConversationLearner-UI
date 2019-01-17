@@ -67,12 +67,13 @@
     --cl-color-warning: var(--color-yellow);
 
     /* Vars */
+    --min-gutter-width: 10px;
     --gutter-width: 100px;
     --nav-link-padding: 1em 2em;
 }
 .cl-app {
     display: grid;
-    grid-template: min-content 1fr / var(--gutter-width) 1fr var(--gutter-width)
+    grid-template: min-content 1fr / minmax(var(--min-gutter-width), var(--gutter-width)) 1fr minmax(var(--min-gutter-width), var(--gutter-width))
 }
 .cl-app_header-placeholder {
     background-color: var(--color-neutralDark)
