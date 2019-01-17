@@ -26,10 +26,13 @@ export function VerifyLastChatMessage(expectedMessage)
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => 
   {
     var element = elements[elements.length - 1]
-    if (Cypress.$(element).find('div.wc-adaptive-card').length > 0)
-      expectedUtterance = 'EndSession: ' + expectedUtterance
-    var text = helpers.RemoveMarkup(Cypress.$(element).find('p').text())
-    expect(text).to.equal(expectedUtterance)
+    if (!Cypress.$(element).find('div.wc-adaptive-card').length) {
+      expect(helpers.RemoveMarkup(Cypress.$(element).find('p').text())).to.equal(expectedUtterance)
+    } else {
+      if (expectedUtterance && (Cypress.$(element).html().indexOf(helpers.RemoveMarkup(expectedUtterance)) < 0)) {
+        throw new Error('Adaptive card rendered incorrectly!!')
+      }
+    }
   })
 }
 
