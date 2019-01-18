@@ -1053,7 +1053,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                         .map(apiArgument => {
                                                             return (
                                                                 <React.Fragment key={apiArgument}>
-                                                                    <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
+                                                                    <OF.Label className="ms-Label--tight cl-label">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
                                                                     <ActionPayloadEditor.Editor
                                                                         options={optionsAvailableForPayload}
                                                                         value={this.state.slateValuesMap[apiArgument]}
@@ -1073,7 +1073,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                         .map(apiArgument => {
                                                             return (
                                                                 <React.Fragment key={apiArgument}>
-                                                                    <OF.Label className="ms-Label--tight">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
+                                                                    <OF.Label className="ms-Label--tight cl-label">{apiArgument} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
                                                                     <ActionPayloadEditor.Editor
                                                                         options={optionsAvailableForPayload}
                                                                         value={this.state.secondarySlateValuesMap[apiArgument]}
@@ -1150,7 +1150,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.TEXT
                             && (<div className={(payloadError ? 'editor--error' : '')}>
                                 <div>
-                                    <OF.Label className="ms-Label--tight">Bot's response...
+                                    <OF.Label className="ms-Label--tight cl-label">Bot's response...
                                         <HelpIcon tipType={ToolTip.TipType.ACTION_RESPONSE_TEXT} />
                                     </OF.Label>
                                     <ActionPayloadEditor.Editor
@@ -1174,7 +1174,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.END_SESSION
                             && (<div className={(payloadError ? 'editor--error' : '')}>
                                 <div>
-                                    <OF.Label className="ms-Label--tight">Data... <HelpIcon tipType={ToolTip.TipType.ACTION_END_SESSION} /></OF.Label>
+                                    <OF.Label className="ms-Label--tight cl-label">Data... <HelpIcon tipType={ToolTip.TipType.ACTION_END_SESSION} /></OF.Label>
                                     <ActionPayloadEditor.Editor
                                         options={optionsAvailableForPayload}
                                         value={this.state.slateValuesMap[TEXT_SLOT]}
