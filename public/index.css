@@ -14,17 +14,6 @@ html {
 * {
   box-sizing: border-box;
 }
-.cl-button--right {
-  float: right;
-}
-.cl-button--widemargin {
-  margin: 20px;
-}
-.cl-button--hidden {
-  width: 1px;
-  height: 1px;
-  opacity: 0.0;
-}
 
 .cl-button--inline {
   margin-left: -1px;
@@ -46,12 +35,6 @@ html {
   position: relative;
 }
 
-.cl-textfield--withButton {
-  display: grid;
-  grid-template: auto / 1fr auto auto;
-  grid-auto-columns: min-content;
-}
-
 .cl-textfield--withLeftButton {
   display: grid;
   grid-template-columns: 0fr auto 0fr;
@@ -70,16 +53,6 @@ html {
 
 .cl-wc-disabled {
   pointer-events: none;
-}
-
-.cl-callout {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 400;
-  color: #333333;
-  padding: 18px 24px 12px;
-  font-weight: 300;
-  max-width: 300px;
 }
 
 .cl-errorpanel {
@@ -107,15 +80,6 @@ html {
   color: var(--color-themePrimary) !important;
 }
 
-.cl-icon--transparent {
-  background-color:transparent !important;
-  color: #ffffff !important;
-}
-
-.cl-icon--transparentdark {
-  background-color:transparent !important;
-}
-
 .cl-icon--short {
   height: 15px !important;
 }
@@ -131,8 +95,33 @@ html {
   to { transform: rotate(360deg); }
 }
 
+.cl-icon-whitebackground {
+  color:rgb(16, 110, 190) !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-whitebackground:hover {
+  color:#ff0000 !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-orangebackground {
+  color:#c9c9c9 !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-orangebackground:hover {
+  color:rgb(255, 255, 0) !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-redbackground {
+  color:rgb(255, 159, 159) !important;
+  background-color:transparent !important;
+}
+
 .cl-icon-redbackground:hover {
-  color:orange !important;
+  color:rgb(255, 255, 0) !important;
   background-color:transparent !important;
 }
 
@@ -208,10 +197,6 @@ html {
   color: var(--color-themePrimary) !important;
 }
 
-.ms-Button-icon:not(:disabled):hover {
-  color: var(--color-themeDark) !important;
-}
-
 .ms-Button-icon[data-icon-name="CommentAdd"] {
   font-size: 18px !important;
 }
@@ -235,8 +220,6 @@ html {
   background-color: transparent !important;
 }
 
-
-
 .ms-Button-icon[data-icon-name="Delete"]:not(:disabled) {
   color: var(--color-red);
 }
@@ -258,7 +241,6 @@ html {
   color: var(--color-error);
   background: transparent !important
 }
-
 
 .ms-Button-icon[data-icon-name="MessageFill"]:not(:disabled):hover {
   color: var(--color-red) !important;
@@ -293,7 +275,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .cl-tip.ms-Checkbox{
   display: inline-block;
 }
-
 
 .cl-font--emphasis 
 {
@@ -873,9 +854,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 .cl-entity--mismatch {
   background: #ffe0e0;
-}
-
-.cl-ux-flexpanel {
 }
 
 .cl-ux-flexpanel--primary {
