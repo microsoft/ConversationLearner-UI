@@ -98,7 +98,6 @@ const testGroups =
           { name: "Tag and Frog", func: editAndBranching.TagAndFrog },
           { name: "Two Consecutive User Input Error Handling", func: editAndBranching.TwoConsecutiveUserInputErrorHandling },
           { name: "Wait-Non-Wait Error Handling", func: editAndBranching.WaitNonWaitErrorHandling },
-          { name: "Wait-Non-Wait Error Handling", func: editAndBranching.WaitNonWaitErrorHandling },
           { name: "End-Session-Action", func: editAndBranching.AddEndSessionAction },
         ]
     },
