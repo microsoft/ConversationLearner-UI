@@ -29,7 +29,7 @@ export default class Component extends React.Component<Props, {}> {
             <div className="cl-payloadrenderer-session-primary" data-testid="action-scorer-session-response">
                 EndSession
             </div>
-            <div data-testid="action-scorer-session-response-extended">
+            <div data-testid="action-scorer-session-response-user">
                 {(renderStringUsingCurrentMemory != null)
                     ? `${renderStringUsingCurrentMemory}`
                     : `${renderStringUsingEntityNames}`
