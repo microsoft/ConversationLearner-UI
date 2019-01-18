@@ -43,7 +43,7 @@ class Settings extends React.Component<Props> {
                         value={this.props.settings.botPort}
                         onChange={this.onChangeSdkPort}
                     />
-                    <div className="cl-input-warning">
+                    <div className="cl-input-warning cl-label">
                         <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
                         <FormattedMessageId id={FM.PROFILE_SETTINGS_BOT_PORT_WARNING} />
                     </div>
