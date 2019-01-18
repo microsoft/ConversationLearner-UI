@@ -10,20 +10,21 @@ export function ClickRefreshScoreButton()       { cy.Get('[data-testid="teach-se
 export function SelectAnAction()                { cy.Get('[data-testid="action-scorer-button-clickable"]').should("be.visible").Click() }
 export function ClickAddActionButton()          { cy.Get('[data-testid="action-scorer-add-action-button"]').Click() }
 
-export function ClickAction(expectedResponse)
+export function ClickAction(expectedResponse, expectedIndexForActionPlacement)
 {
   cy.Get('[data-testid="action-scorer-text-response"]').ExactMatch(expectedResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .Click()
-  VerifyLastChatMessage(expectedResponse)
+  VerifyChatMessage(expectedResponse, expectedIndexForActionPlacement)
 }
 
-export function VerifyLastChatMessage(expectedMessage)
+// To verify the last chat utterance leave expectedIndexOfMessage undefined
+export function VerifyChatMessage(expectedMessage, expectedIndexOfMessage)
 {
   var expectedUtterance = expectedMessage.replace(/'/g, "’")
-
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
-    cy.wrap(elements[elements.length - 1]).within(e => {
+    if(!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
+    cy.wrap(elements[expectedIndexOfMessage]).within(e => {
       cy.get('div.format-markdown > p').should('have.text', expectedUtterance)
     })})
 }

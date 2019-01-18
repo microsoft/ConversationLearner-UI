@@ -46,16 +46,41 @@ export function AbandonBranchChanges()
   homePage.ClickConfirmButton()
 }
 
-// Selects FROM ALL chat messages, from both Bot and User
-// Once clicked, more UI elements will become visible & enabled
+// Selects FROM ALL chat messages, from both Bot and User.
+// Once clicked, more UI elements will become visible & enabled.
+// OPTIONAL index parameter lets you select other than the 1st 
+// instance of a message.
+// RETURNS: A Promise containing the index of the selected turn.
 export function SelectChatTurn(message, index = 0)
 {
-  message = message.replace(/'/g, "’")
-
-  cy.Get(AllChatMessagesSelector).ExactMatches(message).then(elements => 
+  var funcName = `SelectChatTurn(${message}, ${index})`
+  cy.ConLog(`SelectChatTurn(${message}, ${index})`, `Start`)
+  return new Promise(resolve =>
   {
-    if (elements.length <= index) throw `Could not find '${message}' #${index} in chat utterances`
-    cy.wrap(elements[index]).Click()
+    cy.WaitForStableDOM()
+    cy.Enqueue(() =>
+    {
+      message = message.replace(/'/g, "’")
+      var elements = Cypress.$(AllChatMessagesSelector)
+      helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
+      for (var i = 0; i < elements.length; i++) 
+      {
+        helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
+        if(helpers.RemoveMarkup(elements[i].innerHTML) == message)
+        {
+          if (index > 0) index --
+          else
+          {
+            helpers.ConLog(funcName, `FOUND!`)
+            cy.wrap(elements[i]).Click().then(() => { resolve(i) })
+            return
+          }
+        }
+        else helpers.ConLog(funcName, `NOT A MATCH`)
+        helpers.ConLog(funcName, `NEXT`)
+      }
+      throw `${funcName} - Failed to find the message in chat utterances`
+    })
   })
 }
 
@@ -204,4 +229,31 @@ export function InsertUserInputAfter(existingMessage, newMessage)
   SelectChatTurn(existingMessage)
   cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-user-input-button"]')[0].click() })
   cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
+}
+
+// OPTIONAL index parameter lets you select other than the 1st 
+// instance of a message as the point of insertion.
+export function InsertBotResponseAfter(existingMessage, newMessage, index = 0)
+{
+  cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `Start`)
+  SelectChatTurn(existingMessage, index).then(indexOfSelectedChatTurn =>
+  {
+    var indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
+    cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })
+    if (newMessage)       
+    {
+      cy.WaitForStableDOM()
+      cy.wait(1000) // TODO: Remove this after fixing Bug 1855: More Odd Rendering in Train Dialog Chat Pane
+      cy.Enqueue(() =>
+      { // Sometimes the UI has already automaticly selected the Bot response we want
+        // so we need to confirm that we actually need to click on the action, 
+        // otherwise an unnecessary message box pops up that we don't want to deal with.
+        
+        var chatMessages = helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)
+        if (chatMessages[indexOfInsertedBotResponse] != newMessage)
+          scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
+      })
+    }
+    cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `End`)
+  })
 }
