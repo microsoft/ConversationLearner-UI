@@ -11,12 +11,16 @@ const editAndBranching = require('../tests/EditAndBranching')
 const deleteAllTestGeneratedModels = require('../tests/DeleteAllTestGeneratedModels')
 const helpers = require('./Helpers')
 
+window.skipDescribeIt = true
+const dummy = require('../integration/tools/Dummy')
+
 // ************ MODIFY THIS LIST *****************************************
 // This is the list of tests that will be executed when "RunTestsFromList"
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "EditAndBranching.WaitNonWaitErrorHandling",
+  "Tools.Dummy",
+  //"EditAndBranching.TwoConsecutiveUserInputErrorHandling",
 ]
 
 // ************ MODIFY THIS LIST *****************************************
@@ -126,12 +130,13 @@ const testGroups =
   {
     name: 'Tools', tests:
     [
-      { name: 'Visit Home Page', func: tools.VisitHomePage},
-      { name: 'Create Model 1', func: tools.CreateModel1},
-      { name: 'Create Model 2', func: tools.CreateModel2},
-      { name: 'Create Model 3', func: tools.CreateModel3},
-      { name: 'Create Model 4', func: tools.CreateModel4},
-      { name: 'Create Model 5', func: tools.CreateModel5},
+      { name: 'Visit Home Page', func: tools.VisitHomePage },
+      { name: 'Create Model 1', func: tools.CreateModel1 },
+      { name: 'Create Model 2', func: tools.CreateModel2 },
+      { name: 'Create Model 3', func: tools.CreateModel3 },
+      { name: 'Create Model 4', func: tools.CreateModel4 },
+      { name: 'Create Model 5', func: tools.CreateModel5 },
+      { name: 'Dummy', func: dummy.Dummy }
     ]
   },
 ]
