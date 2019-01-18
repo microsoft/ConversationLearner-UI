@@ -3,6 +3,4 @@
  * Licensed under the MIT License.
 */
 
-const deleteAllTestGeneratedModels = require('../../tests/DeleteAllTestGeneratedModels')
-
-describe('Tools', () => { it('Delete All Test Generated Models', deleteAllTestGeneratedModels.DeleteAllTestGeneratedModels) })
+require('../../support/TestListManager').AddToCypressTestList("CleanUp.DeleteAllTestGeneratedModels") 

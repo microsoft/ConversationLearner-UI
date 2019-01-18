@@ -19,7 +19,8 @@ const dummy = require('../integration/tools/Dummy')
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "Tools.Dummy",
+  "CleanUp.DeleteAllTestGeneratedModels",
+//  "Tools.Dummy",
   //"EditAndBranching.TwoConsecutiveUserInputErrorHandling",
 ]
 
