@@ -555,7 +555,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     @OF.autobind
     onClickConvert() {
         if (this.props.editType !== EditDialogType.LOG_ORIGINAL) {
-            throw Error("Invoalid Edit Type for onClickConvert")
+            throw Error("Invalid Edit Type for onClickConvert")
         }
         this.props.onSaveDialog(this.props.trainDialog, this.trainDialogValidity())
     }

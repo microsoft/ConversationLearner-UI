@@ -22,6 +22,7 @@ export const createTrainDialogThunkAsync = (appId: string, trainDialog: TrainDia
         try {
             let createdTrainDialog = await clClient.trainDialogsCreate(appId, trainDialog)
             dispatch(createTrainDialogFulfilled(createdTrainDialog))
+            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return createdTrainDialog
         }
         catch (e) {

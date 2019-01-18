@@ -80,7 +80,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // If I'm switching my round or have added/removed text variations
         if (this.props.teachId !== newProps.teachId ||
             this.props.roundIndex !== newProps.roundIndex ||
-            this.props.originalTextVariations.length !== newProps.originalTextVariations.length) {
+            JSON.stringify(this.props.originalTextVariations) !== JSON.stringify(newProps.originalTextVariations)) {
 
             let nextState: Pick<ComponentState, any> = {
                 newTextVariations: [...newProps.originalTextVariations],

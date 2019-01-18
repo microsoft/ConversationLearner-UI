@@ -478,8 +478,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onCloseBotAPIError(): void {
-        // Delete the most recent turn with the error
-        this.props.onEditTeach(this.state.nextActivityIndex - 1, null, this.props.onDeleteTurn)
+        // If first turn close the train dialog
+        if (this.state.nextActivityIndex === 1) {
+            this.props.onClose(false)
+        }
+        else {
+            // Otherwise delete the most recent turn with the error
+            this.props.onEditTeach(this.state.nextActivityIndex - 1, null, this.props.onDeleteTurn)
+        }
     }
 
     @OF.autobind
