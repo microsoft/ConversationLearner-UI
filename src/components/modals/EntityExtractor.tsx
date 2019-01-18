@@ -406,7 +406,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
         return (
             <div className="entity-extractor">
-                <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus}`}>
+                <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus} cl-label`}>
                     {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_HELP)}
                     <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_HELP} />
                 </OF.Label>

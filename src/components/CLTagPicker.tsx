@@ -23,7 +23,7 @@ export const component = (props: ICLTagPickerProps) => {
     const { nonRemovableTags, nonRemoveableHighlight = true, nonRemoveableStrikethrough = true, ...tagPickerProps } = props
     return (
         <div>
-            <OF.Label>{props.label}
+            <OF.Label className="cl-label">{props.label}
                 <HelpIcon tipType={props.tipType} />
             </OF.Label>
             <div className="cl-tagpicker">
