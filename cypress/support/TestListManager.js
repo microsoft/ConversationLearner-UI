@@ -16,8 +16,7 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
   [
-    "Train.WhatsYourName",
-    "Train.AddOneLastEndSessionAction",
+    // "Train.WhatsYourName",
   ]
 
 // ************ MODIFY THIS LIST *****************************************
@@ -35,8 +34,9 @@ export const regressionTestList =
     "EditAndBranching.Branching",
     "EditAndBranching.TagAndFrog",
     "EditAndBranching.ValidateErrorHandling",
+    "Train.AddEndSessionAction",
     "Log.WhatsYourName",
-    "Train.DisqualifyingEntities",
+    // "Train.DisqualifyingEntities",
     "Train.WaitVsNoWaitActions",
     "Train.WhatsYourName",
     "Train.MyNameIs",
@@ -59,6 +59,7 @@ export const masterListOfAllTestCases =
     "EditAndBranching.Branching",
     "EditAndBranching.TagAndFrog",
     "EditAndBranching.ValidateErrorHandling",
+    "Train.AddEndSessionAction",
     "Log.WhatsYourName",
     "Log.EndlessLoop",
     "Train.DisqualifyingEntities",
@@ -95,6 +96,7 @@ const testGroups =
           { name: "Branching", func: editAndBranching.Branching },
           { name: "Tag and Frog", func: editAndBranching.TagAndFrog },
           { name: "Validate Error Handling", func: editAndBranching.ValidateErrorHandling },
+          { name: "End Session Action", func: editAndBranching.AddEndSessionAction },
         ]
     },
     {
@@ -113,7 +115,6 @@ const testGroups =
           { name: "My Name Is", func: train.MyNameIs },
           { name: "Tag and Frog", func: train.TagAndFrog },
           { name: "Book me a Flight", func: train.BookMeAFlight },
-          { name: "End Session Action", func: train.AddOneLastEndSessionAction },
         ]
     },
     {

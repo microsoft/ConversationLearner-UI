@@ -9,8 +9,7 @@ const scorerModal = require('../support/components/ScorerModal')
 const train = require('../support/Train')
 const editDialogModal = require('../support/components/EditDialogModal')
 
-export function VerifyEditTrainingControlsAndLabels()
-{
+export function VerifyEditTrainingControlsAndLabels() {
   var modelName = models.ImportModel('z-editContols', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
 
@@ -22,7 +21,7 @@ export function VerifyEditTrainingControlsAndLabels()
 
   editDialogModal.VerifyThereAreNoChatEditControls('My name is David.', 'Hello Susan')
   train.SelectAndVerifyEachChatTurn()
-  
+
   train.BranchChatTurn('My name is Susan.', 'I am Groot')
   editDialogModal.VerifySaveBranchButtonLabel()
   editDialogModal.VerifyAbandonBranchButtonLabel()
@@ -34,15 +33,14 @@ export function VerifyEditTrainingControlsAndLabels()
   train.VerifyOriginalChatMessages()
 }
 
-export function Branching()
-{
+export function Branching() {
   var modelName = models.ImportModel('z-branching', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
-  
+
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
   train.CaptureOriginalChatMessages()
-  
+
   train.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
   cy.wait(5000)
   editDialogModal.ClickScoreActionsButton('Hello $name')
@@ -50,7 +48,7 @@ export function Branching()
   train.CaptureEditedChatMessages()
   cy.wait(30000)
   train.Save()
-  
+
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
   train.VerifyOriginalChatMessages()
   editDialogModal.ClickSaveCloseButton()
@@ -60,9 +58,8 @@ export function Branching()
   editDialogModal.ClickSaveCloseButton()
 }
 
-export function TagAndFrog()
-{
-  var textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
+export function TagAndFrog() {
+  var textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
 
   models.ImportModel('z-tagAndFrog2', 'z-tagAndFrog2.cl')
   modelPage.NavigateToTrainDialogs()
@@ -90,12 +87,11 @@ export function TagAndFrog()
   train.AbandonDialog()
 }
 
-export function ValidateErrorHandling()
-{
+export function ValidateErrorHandling() {
   models.ImportModel('z-errorHandling', 'z-disqualifyngEnt.Trained.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
-  
+
   modelPage.VerifyNoErrorIconOnPage()
 
   train.EditTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
@@ -119,4 +115,19 @@ export function ValidateErrorHandling()
 
   editDialogModal.ClickSaveCloseButton()
   modelPage.VerifyNoErrorIconOnPage()
+}
+
+export function AddEndSessionAction() {
+  models.ImportModel('z-sydney-flight', 'z-sydney-flight.cl')
+
+  modelPage.NavigateToTrainDialogs()
+
+  cy.WaitForTrainingStatusCompleted()
+
+  train.EditTraining('fly to sydney', 'coach', "enjoy your trip. you are booked on Qantas")
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.SelectChatTurn('enjoy your trip. you are booked on Qantas', 1)
+  train.SelectAction('0')
+
+  editDialogModal.ClickAbandonDeleteButton()
 }

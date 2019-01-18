@@ -248,17 +248,3 @@ export function BookMeAFlight() {
 
   train.Save()
 }
-
-export function AddOneLastEndSessionAction() {
-  models.ImportModel('z-sydney-flight', 'z-sydney-flight.cl')
-
-  modelPage.NavigateToTrainDialogs()
-
-  cy.WaitForTrainingStatusCompleted()
-
-  train.EditTraining('fly to sydney', 'coach', "enjoy your trip. you are booked on Qantas")
-  editDialogModal.ClickScoreActionsButton()
-  editDialogModal.SelectChatTurn('enjoy your trip. you are booked on Qantas', 1)
-  train.SelectAction('0')
-  train.Save()
-}
