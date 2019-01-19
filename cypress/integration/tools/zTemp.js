@@ -15,11 +15,7 @@ describe('zTemp test', () =>
 {
   it('zTemp test', () => 
   {
-    homePage.Visit()
-    // homePage.NavigateToModelPage("BigTrain")
-    // modelPage.NavigateToTrainDialogs()
-    // cy.pause()
-    // cy.Train_CaptureAllChatMessages()
+    cy.task('exists', 'C:/repo/ConversationLearner-UI/cypress/integration/tools').then(fileExists => {console.log(`fileExists: ${fileExists}`)})
   })
 })
 

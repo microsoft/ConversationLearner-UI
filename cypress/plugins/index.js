@@ -11,6 +11,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 const path = require('path')
+const fs = require('fs')
 
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
@@ -29,6 +30,11 @@ module.exports = (on, config) => {
     }, 
     parse: (filePath) => {
       return path.parse(path.normalize(filePath))
-    }
+    },
+    exists: (path) => {
+      return new Promise(resolve => { 
+        fs.access(path, fs.constants.F_OK, (err) => { resolve(err ? false : true) }) 
+      })
+    },
   })
 }
