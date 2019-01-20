@@ -5,23 +5,19 @@
 
 const tools = require('../tests/Tools')
 const createModels = require('../tests/CreateModels')
-const train = require('../tests/Train')
-const log = require('../tests/Log')
-const editAndBranching = require('../tests/EditAndBranching')
 const deleteAllTestGeneratedModels = require('../tests/DeleteAllTestGeneratedModels')
+const editAndBranching = require('../tests/EditAndBranching')
+const log = require('../tests/Log')
+const train = require('../tests/Train')
 const helpers = require('./Helpers')
-
-window.skipDescribeIt = true
-const dummy = require('../integration/tools/Dummy')
 
 // ************ MODIFY THIS LIST *****************************************
 // This is the list of tests that will be executed when "RunTestsFromList"
 // is selected from the Cypress Test GUI.
 export const testList =
 [
-  "CleanUp.DeleteAllTestGeneratedModels",
-//  "Tools.Dummy",
-  //"EditAndBranching.TwoConsecutiveUserInputErrorHandling",
+  "EditAndBranching.Branching",
+  "Log.WhatsYourName",
 ]
 
 // ************ MODIFY THIS LIST *****************************************
