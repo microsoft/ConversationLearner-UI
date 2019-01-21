@@ -17,7 +17,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessageId id={FM.REPLAYERROR_DESC_ACTION_UNDEFINED} />
-                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_UNDEFINED} customStyle="cl-icon--transparent" />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_UNDEFINED} customClass="cl-icon-redbackground" />
                     </div>
                 </div>
             )
@@ -27,7 +27,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                     <div className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessageId id={FM.REPLAYERROR_DESC_ENTITY_EMPTY} />
                         {` "${(replayError as CLM.ReplayErrorEntityEmpty).values.join(", ")}"`}
-                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_EMPTY} customStyle="cl-icon--transparent" />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_EMPTY} customClass="cl-icon-redbackground" />
                     </div>
                 </div>
             )
@@ -36,7 +36,25 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessageId id={FM.REPLAYERROR_DESC_ENTITY_UNDEFINED} />
-                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_UNDEFINED} customStyle="cl-icon--transparent" />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_UNDEFINED} customClass="cl-icon-redbackground" />
+                    </div>
+                </div>
+            )
+        case CLM.ReplayErrorType.APIUndefined:
+            return (
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_API_UNDEFINED} />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_API_UNDEFINED} customClass="cl-icon-redbackground" />
+                    </div>
+                </div>
+            )
+        case CLM.ReplayErrorType.APIException:
+            return (
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_API_EXCEPTION} />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_API_EXCEPTION} customClass="cl-icon-redbackground" />
                     </div>
                 </div>
             )
@@ -46,7 +64,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                     <div className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessageId id={FM.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE} />
                         {`: "${(replayError as CLM.EntityUnexpectedMultivalue).entityName}"`}
-                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE} customStyle="cl-icon--transparent" />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE} customClass="cl-icon-redbackground" />
                     </div>
                 </div>
             )
@@ -55,7 +73,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessageId id={FM.REPLAYERROR_DESC_ACTION_UNAVAILABLE} />
-                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_UNAVAILABLE} customStyle="cl-icon--transparent" />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_UNAVAILABLE} customClass="cl-icon-redbackground" />
                     </div>
                 </div>
             )
@@ -64,7 +82,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessageId id={FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT} />
-                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_AFTER_WAIT} customStyle="cl-icon--transparent" />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_AFTER_WAIT} customClass="cl-icon-redbackground" />
                     </div>
                 </div>
             )
@@ -73,7 +91,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessageId id={FM.REPLAYERROR_DESC_TWO_USER_INPUTS} />
-                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_TWO_USER_INPUTS} customStyle="cl-icon--transparent" />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_TWO_USER_INPUTS} customClass="cl-icon-redbackground" />
                     </div>
                 </div>
             )
@@ -82,7 +100,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                 <div className="cl-editdialog-error">
                     <div className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessageId id={FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT} />
-                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT} customStyle="cl-icon--transparent" />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT} customClass="cl-icon-redbackground" />
                     </div>
                 </div>
             )

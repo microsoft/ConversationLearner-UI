@@ -6,44 +6,59 @@
 const helpers = require('../../support/Helpers')
 
 // data-testid="teach-session-admin-train-status" (Running, Completed, Failed)
-export function ClickRefreshScoreButton()       { cy.Get('[data-testid="teach-session-admin-refresh-score-button"]').Click() }
-export function SelectAnAction()                { cy.Get('[data-testid="action-scorer-button-clickable"]').should("be.visible").Click() }
-export function ClickAddActionButton()          { cy.Get('[data-testid="action-scorer-add-action-button"]').Click() }
+export function ClickRefreshScoreButton() { cy.Get('[data-testid="teach-session-admin-refresh-score-button"]').Click() }
+export function SelectAnAction() { cy.Get('[data-testid="action-scorer-button-clickable"]').should("be.visible").Click() }
+export function ClickAddActionButton() { cy.Get('[data-testid="action-scorer-add-action-button"]').Click() }
 
-export function ClickAction(expectedResponse)
-{
+export function ClickAction(expectedResponse, expectedIndexForActionPlacement) {
   cy.Get('[data-testid="action-scorer-text-response"]').ExactMatch(expectedResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .Click()
-  VerifyLastChatMessage(expectedResponse)
+  VerifyChatMessage(expectedResponse, expectedIndexForActionPlacement)
 }
 
-export function VerifyLastChatMessage(expectedMessage)
-{
+export function ClickSessionAction(expectedResponse, expectedIndexForActionPlacement) {
+  cy.Get('[data-testid="action-scorer-session-response"]').ExactMatch(expectedResponse)
+    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
+    .Click()
+  VerifyAdaptiveChatMessage(expectedResponse, expectedIndexForActionPlacement)
+}
+
+// To verify the last chat utterance leave expectedIndexOfMessage undefined
+export function VerifyChatMessage(expectedMessage, expectedIndexOfMessage) {
   var expectedUtterance = expectedMessage.replace(/'/g, "’")
-
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
-    cy.wrap(elements[elements.length - 1]).within(e => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
+    cy.wrap(elements[expectedIndexOfMessage]).within(e => {
+//      if (Cypress.$(element).find('div.wc-adaptive-card').length) expectedUtterance = 'EndSession: ' + expectedUtterance
       cy.get('div.format-markdown > p').should('have.text', expectedUtterance)
-    })})
+    })
+  })
 }
 
-export function VerifyContainsEnabledAction(expectedResponse)
-{
-    cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
+export function VerifyAdaptiveChatMessage(expectedMessage, expectedIndexOfMessage) {
+  var expectedUtterance = expectedMessage.replace(/'/g, "’")
+  cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
+    cy.wrap(elements[expectedIndexOfMessage]).within(e => {
+      cy.get('div.wc-adaptive-card > div').should('have.class', 'ac-container' /*expectedUtterance*/)
+    })
+  })
+}
+
+export function VerifyContainsEnabledAction(expectedResponse) {
+  cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .should('be.enabled')
 }
 
-export function VerifyContainsDisabledAction(expectedResponse)
-{
-    cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
+export function VerifyContainsDisabledAction(expectedResponse) {
+  cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-no-click"]')
     .should('be.disabled')
 }
 
-export function VerifyEntityInMemory(entityName, entityValue)
-{
+export function VerifyEntityInMemory(entityName, entityValue) {
   cy.Get('[data-testid="entity-memory-name"]').contains(entityName)
   cy.Get('[data-testid="entity-memory-value"]').contains(entityValue)
 }

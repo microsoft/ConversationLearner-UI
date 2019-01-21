@@ -228,7 +228,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     // User is continuing the train dialog by typing something new
     @OF.autobind
-    async onPostNewActivity(activity: Activity) {
+    async onWebChatPostActivity(activity: Activity) {
 
         if (activity.type === 'message') {
 
@@ -241,22 +241,26 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             newTrainDialog.definitions = definitions
 
             // Content could come from button submit
-            const buttonSubmit = activity.value ? activity.value['submit'] : null
-            const userInput: CLM.UserInput = { text: buttonSubmit || activity.text! }
-            
+            const userInput: CLM.UserInput = { text: activity.text! }
+
             // Allow webchat to scroll to bottom 
             this.props.clearWebchatScrollPosition()
 
             // If there's an error when I try to continue, reset webchat to ignore new input
             await this.props.setErrorDismissCallback(this.resetWebchat)
 
-            // If button submit, and have selected action, insert at that step
-            if (this.state.selectedActivity) {
+            // For now always add button response to bottom of dialog even
+            // when card is selected.  
+            // Can insert here but would be inconsistent with TeachSession behavior
+            /* 
+            const buttonSubmit = activity.channelData && activity.channelData.imback
+            if (this.state.selectedActivity && buttonSubmit) {
                 await this.props.onInsertInput(this.state.currentTrainDialog!, this.state.selectedActivity, userInput.text, this.state.addUserInputSelectionType)
             }
+            */
             // If next action should be score, need to insert, not continue
-            else if (this.waitingForScore()) {
-                const lastActivity = this.props.history[this.props.history.length - 1 ]
+            if (this.waitingForScore()) {
+                const lastActivity = this.props.history[this.props.history.length - 1]
                 await this.props.onInsertInput(this.state.currentTrainDialog!, lastActivity, userInput.text, this.state.addUserInputSelectionType)
             }
             // Otherwise continue
@@ -551,7 +555,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     @OF.autobind
     onClickConvert() {
         if (this.props.editType !== EditDialogType.LOG_ORIGINAL) {
-            throw Error("Invoalid Edit Type for onClickConvert")
+            throw Error("Invalid Edit Type for onClickConvert")
         }
         this.props.onSaveDialog(this.props.trainDialog, this.trainDialogValidity())
     }
@@ -746,7 +750,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     <div className="cl-editdialog-caution">
                         <div className={OF.FontClassNames.mediumPlus}>
                             <FormattedMessageId id={FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} />
-                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} customStyle="cl-icon--transparent" />
+                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} customClass="cl-icon-orangebackground" />
                         </div>
                     </div>
                 </div>
@@ -758,7 +762,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     <div className="cl-editdialog-warning">
                         <div className={OF.FontClassNames.mediumPlus}>
                             <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY} />
-                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY} customStyle="cl-icon--transparent" />
+                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY} customClass="cl-icon-orangebackground" />
                         </div>
                     </div>
                 </div>
@@ -790,7 +794,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 key={this.state.webchatKey}
                                 app={this.props.app}
                                 history={this.props.history}
-                                onPostActivity={activity => this.onPostNewActivity(activity)}
+                                onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 onScrollChange={position => this.onScrollChange(position)}
                                 hideInput={disableUserInput || hasBlockingError || this.state.hasEndSession}
@@ -826,7 +830,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
-                    <div className="cl-debug-marker"/>
+                        <div className="cl-debug-marker" />
                         <div className="cl-modal-buttons_secondary">
                             {this.renderWarning()}
                         </div>

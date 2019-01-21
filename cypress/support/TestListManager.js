@@ -16,8 +16,8 @@ const helpers = require('./Helpers')
 // is selected from the Cypress Test GUI.
 export const testList =
   [
-    // "Train.AddOneLastEndSessionAction",
-    // "EditAndBranching.ValidateErrorHandling",
+    // "EditAndBranching.WaitNonWaitErrorHandling",
+    "EditAndBranching.AddEndSessionAction"
   ]
 
 // ************ MODIFY THIS LIST *****************************************
@@ -34,7 +34,8 @@ export const regressionTestList =
     "EditAndBranching.VerifyEditTrainingControlsAndLabels",
     "EditAndBranching.Branching",
     "EditAndBranching.TagAndFrog",
-    "EditAndBranching.ValidateErrorHandling",
+    "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
+    "EditAndBranching.WaitNonWaitErrorHandling",
     "Log.WhatsYourName",
     "Train.DisqualifyingEntities",
     "Train.WaitVsNoWaitActions",
@@ -58,7 +59,9 @@ export const masterListOfAllTestCases =
     "EditAndBranching.VerifyEditTrainingControlsAndLabels",
     "EditAndBranching.Branching",
     "EditAndBranching.TagAndFrog",
-    "EditAndBranching.ValidateErrorHandling",
+    "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
+    "EditAndBranching.WaitNonWaitErrorHandling",
+    "EditAndBranching.AddEndSessionAction",
     "Log.WhatsYourName",
     "Log.EndlessLoop",
     "Train.DisqualifyingEntities",
@@ -94,7 +97,9 @@ const testGroups =
           { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
           { name: "Branching", func: editAndBranching.Branching },
           { name: "Tag and Frog", func: editAndBranching.TagAndFrog },
-          { name: "Validate Error Handling", func: editAndBranching.ValidateErrorHandling },
+          { name: "Two Consecutive User Input Error Handling", func: editAndBranching.TwoConsecutiveUserInputErrorHandling },
+          { name: "Wait-Non-Wait Error Handling", func: editAndBranching.WaitNonWaitErrorHandling },
+          { name: "End-Session-Action", func: editAndBranching.AddEndSessionAction },
         ]
     },
     {
@@ -112,8 +117,7 @@ const testGroups =
           { name: "What's Your Name", func: train.WhatsYourName },
           { name: "My Name Is", func: train.MyNameIs },
           { name: "Tag and Frog", func: train.TagAndFrog },
-          { name: "Book me a Flight", func: train.BookMeAFlight },
-          { name: "End Session Action", func: train.AddOneLastEndSessionAction },
+          { name: "Book me a Flight", func: train.BookMeAFlight }
         ]
     },
     {

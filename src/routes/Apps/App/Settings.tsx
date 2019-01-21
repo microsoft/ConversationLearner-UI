@@ -364,6 +364,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONTEXT)}
                         />
                         <OF.DefaultButton
+                            data-testId="settings-delete-model-button"
                             className="cl-button-delete"
                             onClick={this.onClickDelete}
                             ariaDescription={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
@@ -377,7 +378,7 @@ class Settings extends React.Component<Props, ComponentState> {
                         value={this.state.appIdVal}
                     />
                     <div>
-                        <OF.Label className={OF.FontClassNames.mediumPlus}>
+                        <OF.Label className={`${OF.FontClassNames.mediumPlus} cl-label`}>
                             LUIS_SUBSCRIPTION_KEY
                             <HelpIcon
                                 tipType={ToolTip.TipType.LUIS_SUBSCRIPTION_KEY}

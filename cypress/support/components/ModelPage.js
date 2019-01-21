@@ -7,6 +7,7 @@ const entitiesGrid = require('../../support/components/EntitiesGrid')
 const actionsGrid  = require('../../support/components/ActionsGrid')
 const trainDialogsGrid = require('./TrainDialogsGrid')
 const logDialogsGrid = require('../../support/components/LogDialogsGrid')
+const settings = require('../../support/components/Settings')
  
 export function VerifyModelName(name)     { cy.Get('[data-testid="app-index-model-name"]').should(el => { expect(el).to.contain(name) })}
 export function VerifyPageTitle()         { cy.Get('[data-testid="dashboard-title"]').contains('Log Dialogs').should('be.visible') }
@@ -16,6 +17,7 @@ export function NavigateToEntities()      { cy.Get('[data-testid="app-index-nav-
 export function NavigateToActions()       { cy.Get('[data-testid="app-index-nav-link-actions"]').Click();       actionsGrid.VerifyPageTitle() }
 export function NavigateToTrainDialogs()  { cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').Click(); trainDialogsGrid.VerifyPageTitle() }
 export function NavigateToLogDialogs()    { cy.Get('[data-testid="app-index-nav-link-log-dialogs"]').Click();   logDialogsGrid.VerifyPageTitle() }
+export function NavigateToSettings()      { cy.Get('[data-testid="app-index-nav-link-settings"]').Click();      settings.VerifyPageTitle() }
 export function VerifyNoErrorIconOnPage() { cy.DoesNotContain('i[data-icon-name="IncidentTriangle"].cl-color-error') }
 
 // For the Left Pane "Train Dialogs" link.

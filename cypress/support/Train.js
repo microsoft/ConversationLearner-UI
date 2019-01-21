@@ -126,6 +126,16 @@ export function SelectAction(expectedResponse, lastResponse)
   })
 }
 
+export function SelectSessionAction(expectedResponse, lastResponse)
+{
+  scorerModal.ClickSessionAction(expectedResponse)
+  cy.Enqueue(() => 
+  { 
+    if (lastResponse) window.currentTrainingSummary.LastResponse = lastResponse
+    else window.currentTrainingSummary.LastResponse = expectedResponse
+  })
+}
+
 // This method is used to score AND AUTO-SELECT the action after branching.
 export function ClickScoreActionsButton(lastResponse)
 {
