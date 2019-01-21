@@ -3,140 +3,76 @@
  * Licensed under the MIT License.
 */
 
+// ----------------------------------------------------------------------
+// *** NOTE: Order of "require" statements is important in this file. ***
+// ----------------------------------------------------------------------
+
+var fullTestList = new Array()
+var testGroups = new Array()
+
+Cypress.TestCase = TestCase
+const helpers = require('./Helpers')
+
+
 const tools = require('../tests/Tools')
 const createModels = require('../tests/CreateModels')
 const deleteAllTestGeneratedModels = require('../tests/DeleteAllTestGeneratedModels')
 const editAndBranching = require('../tests/EditAndBranching')
 const log = require('../tests/Log')
 const train = require('../tests/Train')
-const helpers = require('./Helpers')
 
-// ************ MODIFY THIS LIST *****************************************
-// This is the list of tests that will be executed when "RunTestsFromList"
-// is selected from the Cypress Test GUI.
-export const testList =
-[
-  "EditAndBranching.Branching",
-  "Log.WhatsYourName",
-]
+// Update the TestList.js file, but only if some part of the masterListOfAllTestCases has changed.
+const pathToTestList = 'TestList.js'
+describe('setup', () =>
+{
+  it('setup', () => 
+  {
+    cy.readFile(pathToTestList).then(fileContents =>
+    {
+      var index = fileContents.indexOf('// *** Generated Code Beyond this Point ***')
+      var newFileContents =
+        '// *** Generated Code Beyond this Point ***\r\n' +
+        '// Do NOT manually alter this list or file from this point onwards.\r\n' +
+        '// Any changes you make will be overridden at runtime.\r\n' +
+        'const masterListOfAllTestCases =\r\n' +
+        '[\r\n'
+      fullTestList.forEach(testSpecification => { newFileContents += `'${testSpecification}',\r\n` })
+      newFileContents += '[\r\n'
+      
+      // Only write the file out if something has changed.
+      if (!fileContents.endsWith(newFileContents)) 
+      {
+        cy.writeFile(pathToTestList, fileContents.substring(0, index) + newFileContents)
+        helpers.ConLog('TestListManager', 'TestList.js has been re-written')
+      }
+    })
+  })
+})
 
-// ************ MODIFY THIS LIST *****************************************
-// This is the list of tests that will be executed when "(All)"
-// is selected from the Cypress Test GUI.
-export const regressionTestList =
-[
-  "CreateModels.AllEntityTypes",
-  "CreateModels.DisqualifyingEntities",
-  "CreateModels.WaitVsNoWaitActions",
-  "CreateModels.WhatsYourName",
-  "CreateModels.TagAndFrog",
-  "CreateModels.Travel",
-  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
-  "EditAndBranching.Branching",
-  "EditAndBranching.TagAndFrog",
-  "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
-  "EditAndBranching.WaitNonWaitErrorHandling",
-  "Log.WhatsYourName",
-  "Train.DisqualifyingEntities",
-  "Train.WaitVsNoWaitActions",
-  "Train.WhatsYourName",
-  "Train.MyNameIs",
-  "Train.TagAndFrog",
-//  "Train.BookMeAFlight",
-  "CleanUp.DeleteAllTestGeneratedModels",
-]
 
-// Do NOT alter this list except to add in new test cases as they are created.
-export const masterListOfAllTestCases = 
-[
-  "CreateModels.AllEntityTypes",
-  "CreateModels.DisqualifyingEntities",
-  "CreateModels.WaitVsNoWaitActions",
-  "CreateModels.WhatsYourName",
-  "CreateModels.TagAndFrog",
-  "CreateModels.EndlessLoop",
-  "CreateModels.Travel",
-  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
-  "EditAndBranching.Branching",
-  "EditAndBranching.TagAndFrog",
-  "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
-  "EditAndBranching.WaitNonWaitErrorHandling",
-  "Log.WhatsYourName",
-  "Log.EndlessLoop",
-  "Train.DisqualifyingEntities",
-  "Train.WaitVsNoWaitActions",
-  "Train.WhatsYourName",
-  "Train.MyNameIs",
-  "Train.TagAndFrog",
-  "Train.BookMeAFlight",
-  "CleanUp.DeleteAllTestGeneratedModels",
-]
+Cypress.testList = require('../TestList')
 
-// The lists above are in a format that is convenient for a developer to copy
-// and paste in order to create a list of tests.
-//
-// This next list has all the details needed for creating the test for Cypress.
-const testGroups =
-[
+function TestCase(testGroupName, testDescription, testFunction)
+{
+  helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunction})`)
+  
+  var testGroup = GetTestGroup(testGroupName)
+  if (!testGroup)
   {
-    name: 'CreateModels', tests:
-    [
-      { name: "All Entity Types", func: createModels.AllEntityTypes },
-      { name: "Disqualifying Entities", func: createModels.DisqualifyingEntities },
-      { name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions },
-      { name: "What's Your Name", func: createModels.WhatsYourName },
-      { name: "Tag and Frog", func: createModels.TagAndFrog },
-      { name: "Endless Loop", func: createModels.EndlessLoop },
-      { name: "Travel", func: createModels.Travel },
-    ]
-  },
-  {
-    name: 'EditAndBranching', tests:
-    [
-      { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
-      { name: "Branching", func: editAndBranching.Branching },
-      { name: "Tag and Frog", func: editAndBranching.TagAndFrog },
-      { name: "Two Consecutive User Input Error Handling", func: editAndBranching.TwoConsecutiveUserInputErrorHandling },
-      { name: "Wait-Non-Wait Error Handling", func: editAndBranching.WaitNonWaitErrorHandling },
-    ]
-  },
-  {
-    name: 'Log', tests:
-    [
-      { name: "What's Your Name", func: log.WhatsYourName },
-      { name: "Endless Loop", func: log.EndlessLoop },
-    ]
-  },
-  {
-    name: 'Train', tests:
-    [
-      { name: "Disqualifying Entities", func: train.DisqualifyingEntities },
-      { name: "Wait vs No Wait Action", func: train.WaitVsNoWaitActions },
-      { name: "What's Your Name", func: train.WhatsYourName },
-      { name: "My Name Is", func: train.MyNameIs },
-      { name: "Tag and Frog", func: train.TagAndFrog },
-      { name: "Book me a Flight", func: train.BookMeAFlight}
-    ]
-  },
-  {
-    name: 'CleanUp', tests:
-    [
-      { name: 'Delete All Test Generated Models', func: deleteAllTestGeneratedModels.DeleteAllTestGeneratedModels},
-    ]
-  },
-  {
-    name: 'Tools', tests:
-    [
-      { name: 'Visit Home Page', func: tools.VisitHomePage },
-      { name: 'Create Model 1', func: tools.CreateModel1 },
-      { name: 'Create Model 2', func: tools.CreateModel2 },
-      { name: 'Create Model 3', func: tools.CreateModel3 },
-      { name: 'Create Model 4', func: tools.CreateModel4 },
-      { name: 'Create Model 5', func: tools.CreateModel5 },
-      { name: 'Dummy', func: dummy.Dummy }
-    ]
-  },
-]
+    testGroup = { name: testGroupName, tests: new Array() }
+    testGroups.push(testGroup)
+  }
+
+  var test = { name: testDescription, func: testFunction }
+  testGroup.tests.push(test)
+
+  // .func looks something like this, "function FuncName() {..."
+  var testFunctionName = testFunction.toString()
+  var i = testFunctionName.indexOf('(', 10)
+  testFunctionName = testFunctionName.substring(9,i)
+  fullTestList.push(`${testGroupName}.${testFunctionName}`)
+}
+
 
 export function AddToCypressTestList(testList) 
 {
@@ -215,10 +151,10 @@ function GetTestGroup(name)
 
 function GetTest(testGroup, testNameToFind)
 {
-  var toFind = `function ${testNameToFind}(`
   for (var i = 0; i < testGroup.tests.length; i++)
   {
-    if (`${testGroup.tests[i].func}`.startsWith(toFind)) 
+    // .func looks something like this, "function FuncName() {..."
+    if (`${testGroup.tests[i].func}`.substring(9).startsWith(testNameToFind))
     {
       return testGroup.tests[i]
     }

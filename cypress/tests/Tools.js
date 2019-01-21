@@ -6,13 +6,15 @@
 const models = require('../support/Models')
 const homePage = require('../support/components/HomePage')
 
+Cypress.TestCase('Tools', 'Visit Home Page', VisitHomePage)
 export function VisitHomePage()
 {
   homePage.Visit()
   homePage.GetModelListRowCount()
 }
 
-export function CreateModel(name)
+Cypress.TestCase('Tools', 'CreateModel', CreateModel)
+export function CreateModel(name = 'z-model')
 {
   models.CreateNewModel(name)
   VisitHomePage()
