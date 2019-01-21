@@ -17,7 +17,6 @@ const ducksSayQuack = 'Ducks say quack!'
 const fishJustSwim = 'Fish just swim.'
 const whichAnimalWouldYouLike = 'Which animal would you like?'
 
-
 export function VerifyEditTrainingControlsAndLabels() {
   var modelName = models.ImportModel('z-editContols', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
@@ -224,7 +223,7 @@ export function AddEndSessionAction() {
   train.EditTraining('fly to sydney', 'coach', "enjoy your trip. you are booked on Qantas")
   editDialogModal.ClickScoreActionsButton()
   editDialogModal.SelectChatTurn('enjoy your trip. you are booked on Qantas', 1)
-  train.SelectAction('0')
+  train.SelectSessionAction('EndSession')
 
-  editDialogModal.ClickAbandonDeleteButton()
+  editDialogModal.AbandonBranchChanges()
 }
