@@ -1,3 +1,5 @@
+import { assertNever } from 'office-ui-fabric-react';
+
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
@@ -17,11 +19,11 @@ export function ClickAction(expectedResponse, expectedIndexForActionPlacement) {
   VerifyChatMessage(expectedResponse, expectedIndexForActionPlacement)
 }
 
-export function ClickSessionAction(expectedResponse, expectedIndexForActionPlacement) {
-  cy.Get('[data-testid="action-scorer-session-response"]').ExactMatch(expectedResponse)
+export function ClickSessionAction(action_selector, expected_rendered, expectedIndexForActionPlacement = null) {
+  cy.Get('[data-testid="action-scorer-session-response"]').ExactMatchComplexHTML(action_selector)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .Click()
-  VerifyAdaptiveChatMessage(expectedResponse, expectedIndexForActionPlacement)
+  VerifySessionChatMessage(expected_rendered, expectedIndexForActionPlacement)
 }
 
 // To verify the last chat utterance leave expectedIndexOfMessage undefined
@@ -30,18 +32,18 @@ export function VerifyChatMessage(expectedMessage, expectedIndexOfMessage) {
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
     cy.wrap(elements[expectedIndexOfMessage]).within(e => {
-//      if (Cypress.$(element).find('div.wc-adaptive-card').length) expectedUtterance = 'EndSession: ' + expectedUtterance
+      //      if (Cypress.$(element).find('div.wc-adaptive-card').length) expectedUtterance = 'EndSession: ' + expectedUtterance
       cy.get('div.format-markdown > p').should('have.text', expectedUtterance)
     })
   })
 }
 
-export function VerifyAdaptiveChatMessage(expectedMessage, expectedIndexOfMessage) {
-  var expectedUtterance = expectedMessage.replace(/'/g, "’")
+export function VerifySessionChatMessage(expected_rendered, expectedIndexOfMessage) {
+  var expectedUtterance = expected_rendered.replace(/'/g, "’")
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
-    cy.wrap(elements[expectedIndexOfMessage]).within(e => {
-      cy.get('div.wc-adaptive-card > div').should('have.class', 'ac-container' /*expectedUtterance*/)
+    cy.wrap(elements[expectedIndexOfMessage]).within(element => {
+      assert(helpers.RemoveMarkup(element.html()) === expected_rendered, "Invalid session action chat message")
     })
   })
 }
