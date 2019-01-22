@@ -1,22 +1,59 @@
 const http = require('http');
-const url = require('url')  // Needed to do: 'npm install -s url'
+const url = require('url');  // Needed to do: 'npm install -s url'
+const fs = require('fs')
 
 const hostname = '127.0.0.1';
 const port = 3000;
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello, World!\n');
+const server = http.createServer((request, response) => {
+  debugger;
 
-  var propertyList = ''
-  //for(var property in req) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${req[property]}`
-  //console.log(req)//propertyList)
-  console.log(req.url)
-  console.log(req.method)
-  console.log(url.parse(req.url))
+  if (request.method == 'GET') GetServices(request, response)
+  else if (request.method == 'PUT') PutServices(request, response)
+  else
+  {
+    response.statusCode = 405; // Method Not Allowed
+    response.setHeader('Allow', 'GET, POST');
+    response.setHeader('Content-Type', 'text/plain');
+    response.end();
+  }
 });
 
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
+
+function GetServices(request, response) {
+  var parsed = url.parse(request.url);
+  var query = parsed.query;
+  var pathName = parsed.pathname;
+
+  if (pathName == '/') {
+    response.statusCode = 200;
+    reresponses.setHeader('Content-Type', 'text/plain');
+    response.end('FileServices at your service.\n');
+  }
+  else if (pathname != '/read') {
+    response.statusCode = 400;
+    response.end();
+  }
+  
+  fs.readFile(pathToTestList, (error, fileContents) => {
+    if (error) throw error;
+
+    response.statusCode = 200;
+    responses.setHeader('Content-Type', 'text/plain');
+    response.write(fileContents)
+    response.end();
+  });
+}
+
+function PutServices(request, response) {
+  var parsed = url.parse(request.url);
+  var query = parsed.query;
+  var pathName = parsed.pathname;
+
+  response.statusCode = 200;
+  response.setHeader('Content-Type', 'text/plain');
+  response.end();
+}
