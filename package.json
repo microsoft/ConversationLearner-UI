@@ -54,6 +54,7 @@
     "slate": "0.31.3",
     "slate-plain-serializer": "0.4.16",
     "slate-react": "0.10.17",
+    "url": "^0.11.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
