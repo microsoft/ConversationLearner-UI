@@ -12,6 +12,6 @@ router.get('/ui/*', function(_, res) {
 
 const app = express()
 app.use(router)
-app.listen(9000, () => {
-    console.log(`Testing ${buildPath} on port 9000`)
+const listener = app.listen(9000, () => {
+    console.log(`Testing ${buildPath} on port: ${listener.address().port}`)
 });
