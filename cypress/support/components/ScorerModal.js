@@ -17,6 +17,13 @@ export function ClickAction(expectedResponse, expectedIndexForActionPlacement) {
   VerifyChatMessage(expectedResponse, expectedIndexForActionPlacement)
 }
 
+export function ClickSessionAction(expectedResponse, expectedIndexForActionPlacement) {
+  cy.Get('[data-testid="action-scorer-session-response"]').ExactMatch(expectedResponse)
+    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
+    .Click()
+  VerifyAdaptiveChatMessage(expectedResponse, expectedIndexForActionPlacement)
+}
+
 // To verify the last chat utterance leave expectedIndexOfMessage undefined
 export function VerifyChatMessage(expectedMessage, expectedIndexOfMessage) {
   var expectedUtterance = expectedMessage.replace(/'/g, "’")
@@ -25,6 +32,16 @@ export function VerifyChatMessage(expectedMessage, expectedIndexOfMessage) {
     cy.wrap(elements[expectedIndexOfMessage]).within(e => {
 //      if (Cypress.$(element).find('div.wc-adaptive-card').length) expectedUtterance = 'EndSession: ' + expectedUtterance
       cy.get('div.format-markdown > p').should('have.text', expectedUtterance)
+    })
+  })
+}
+
+export function VerifyAdaptiveChatMessage(expectedMessage, expectedIndexOfMessage) {
+  var expectedUtterance = expectedMessage.replace(/'/g, "’")
+  cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
+    cy.wrap(elements[expectedIndexOfMessage]).within(e => {
+      cy.get('div.wc-adaptive-card > div').should('have.class', 'ac-container' /*expectedUtterance*/)
     })
   })
 }
