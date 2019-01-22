@@ -112,8 +112,8 @@ export function SelectAction(expectedResponse, lastResponse) {
   })
 }
 
-export function SelectSessionAction(action_selector, expected_rendered, lastResponse) {
-  scorerModal.ClickSessionAction(action_selector, expected_rendered)
+export function SelectEndSessionAction(action_selector, expected_rendered, lastResponse) {
+  scorerModal.ClickEndSessionAction(action_selector, expected_rendered)
   cy.Enqueue(() => {
     if (lastResponse) window.currentTrainingSummary.LastResponse = lastResponse
     else window.currentTrainingSummary.LastResponse = expected_rendered

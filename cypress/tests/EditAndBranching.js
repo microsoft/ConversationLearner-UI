@@ -223,7 +223,7 @@ export function AddEndSessionAction() {
   train.EditTraining('fly to sydney', 'coach', "enjoy your trip. you are booked on Qantas")
   editDialogModal.ClickScoreActionsButton()
   editDialogModal.SelectChatTurn('enjoy your trip. you are booked on Qantas', 1)
-  train.SelectSessionAction('EndSession0', 'EndSession: 0')
+  train.SelectEndSessionAction('EndSession0', 'EndSession: 0')
 
   editDialogModal.AbandonBranchChanges()
 }

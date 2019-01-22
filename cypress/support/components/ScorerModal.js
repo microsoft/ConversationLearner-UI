@@ -19,11 +19,11 @@ export function ClickAction(expectedResponse, expectedIndexForActionPlacement) {
   VerifyChatMessage(expectedResponse, expectedIndexForActionPlacement)
 }
 
-export function ClickSessionAction(action_selector, expected_rendered, expectedIndexForActionPlacement = null) {
+export function ClickEndSessionAction(action_selector, expected_rendered, expectedIndexForActionPlacement) {
   cy.Get('[data-testid="action-scorer-session-response"]').ExactMatchComplexHTML(action_selector)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .Click()
-  VerifySessionChatMessage(expected_rendered, expectedIndexForActionPlacement)
+  VerifyEndSessionChatMessage(expected_rendered, expectedIndexForActionPlacement)
 }
 
 // To verify the last chat utterance leave expectedIndexOfMessage undefined
@@ -32,18 +32,17 @@ export function VerifyChatMessage(expectedMessage, expectedIndexOfMessage) {
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
     cy.wrap(elements[expectedIndexOfMessage]).within(e => {
-      //      if (Cypress.$(element).find('div.wc-adaptive-card').length) expectedUtterance = 'EndSession: ' + expectedUtterance
       cy.get('div.format-markdown > p').should('have.text', expectedUtterance)
     })
   })
 }
 
-export function VerifySessionChatMessage(expected_rendered, expectedIndexOfMessage) {
+export function VerifyEndSessionChatMessage(expected_rendered, expectedIndexOfMessage) {
   var expectedUtterance = expected_rendered.replace(/'/g, "’")
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
     cy.wrap(elements[expectedIndexOfMessage]).within(element => {
-      assert(helpers.RemoveMarkup(element.html()) === expected_rendered, "Invalid session action chat message")
+      assert(helpers.RemoveMarkup(element.html()) === expected_rendered, "Invalid end session action chat message")
     })
   })
 }
