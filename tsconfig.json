@@ -30,6 +30,7 @@
     "node_modules",
     "build",
     "scripts",
+    "server",
     "acceptance-tests",
     "webpack",
     "jest",
