@@ -1,3 +1,5 @@
+import { debug } from 'util';
+
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
@@ -12,7 +14,7 @@ var testGroups = new Array()
 
 Cypress.TestCase = TestCase
 const helpers = require('./Helpers')
-
+//var fs = require('../../node_modules/pn/fs')
 
 const tools = require('../tests/Tools')
 const createModels = require('../tests/CreateModels')
@@ -23,30 +25,32 @@ const train = require('../tests/Train')
 
 // Update the TestList.js file, but only if some part of the masterListOfAllTestCases has changed.
 const pathToTestList = 'TestList.js'
-describe('setup', () =>
-{
-  it('setup', () => 
+fs.readFile(pathToTestList, (error, fileContents) => {
+  if (error) throw error;
+  
+  helpers.ConLog('TestListManager', `File Contents: ${fileContents}`)
+
+  var index = fileContents.indexOf('// *** Generated Code Beyond this Point ***')
+  var newFileContents =
+    '// *** Generated Code Beyond this Point ***\r\n' +
+    '// Do NOT manually alter this list or file from this point onwards.\r\n' +
+    '// Any changes you make will be overridden at runtime.\r\n' +
+    'const masterListOfAllTestCases =\r\n' +
+    '[\r\n'
+  fullTestList.forEach(testSpecification => { newFileContents += `'${testSpecification}',\r\n` })
+  newFileContents += '[\r\n'
+  debug()
+  // Only write the file out if something has changed.
+  if (!fileContents.endsWith(newFileContents)) 
   {
-    cy.readFile(pathToTestList).then(fileContents =>
-    {
-      var index = fileContents.indexOf('// *** Generated Code Beyond this Point ***')
-      var newFileContents =
-        '// *** Generated Code Beyond this Point ***\r\n' +
-        '// Do NOT manually alter this list or file from this point onwards.\r\n' +
-        '// Any changes you make will be overridden at runtime.\r\n' +
-        'const masterListOfAllTestCases =\r\n' +
-        '[\r\n'
-      fullTestList.forEach(testSpecification => { newFileContents += `'${testSpecification}',\r\n` })
-      newFileContents += '[\r\n'
-      
-      // Only write the file out if something has changed.
-      if (!fileContents.endsWith(newFileContents)) 
-      {
-        cy.writeFile(pathToTestList, fileContents.substring(0, index) + newFileContents)
-        helpers.ConLog('TestListManager', 'TestList.js has been re-written')
-      }
-    })
-  })
+    newFileContents = fileContents.substring(0, index) + newFileContents
+    fs.writeFile(pathToTestList, newFileContents, (error) => {
+      if (error) throw error;
+      helpers.ConLog('TestListManager', 'TestList.js has been re-written')
+    });
+    //cy.writeFile(pathToTestList, fileContents.substring(0, index) + newFileContents)
+    //helpers.ConLog('TestListManager', 'TestList.js has been re-written')
+  }
 })
 
 

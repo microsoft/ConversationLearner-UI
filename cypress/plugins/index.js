@@ -11,6 +11,8 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 const path = require('path')
+var fs = require('../../node_modules/pn/fs')
+//var tlm = require('../support/TestListManager')
 
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
@@ -22,6 +24,17 @@ module.exports = (on, config) => {
   //     return args
   //   }
   // })
+  on('before:browser:launch', browser, args => {
+      require('./FileServices')
+      //return args
+  })
+
+  fs.writeFile('c:/temp/michael.txt', "This is Michael.4", (error) => {
+    if (error) throw error;
+    console.log('File Written')
+  });
+  alert(`WE ARE HERE!`)
+
   on('task', {
     log: (message) => {
       console.log(message)
@@ -36,4 +49,15 @@ module.exports = (on, config) => {
       })
     },
   })
+  
+  
+  alert(`WE ARE HERE!`)
+
+  fs.readFile(pathToTestList, (error, fileContents) => {
+    if (error) throw error;
+    var y = 0
+    var x = 3/y
+    console.log(`File Contents: ${fileContents}${x}`)
+  })
+  
 }
