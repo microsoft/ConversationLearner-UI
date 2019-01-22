@@ -19,7 +19,7 @@ export function ClickAction(expectedResponse, expectedIndexForActionPlacement) {
   VerifyChatMessage(expectedResponse, expectedIndexForActionPlacement)
 }
 
-export function ClickSessionAction(action_selector, expected_rendered, expectedIndexForActionPlacement = null) {
+export function ClickSessionAction(action_selector, expected_rendered, expectedIndexForActionPlacement) {
   cy.Get('[data-testid="action-scorer-session-response"]').ExactMatchComplexHTML(action_selector)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .Click()
