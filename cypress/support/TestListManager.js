@@ -3,90 +3,44 @@
  * Licensed under the MIT License.
 */
 
+var testLists = require('../TestLists')
+const helpers = require('./Helpers');
+
+var testGroups = new Array();
+Cypress.TestCase = TestCase;
+Cypress.testList = testLists.testList
+
 // ----------------------------------------------------------------------
-// *** NOTE: Order of "require" statements is important in this file. ***
+// NOTE: Placement of these "require" statements is important in this file.
+//
+// Each of these required files will call back into the TestCase function
+// found in this file.
 // ----------------------------------------------------------------------
 
-var fullTestList = new Array()
-var testGroups = new Array()
+const createModels = require('../tests/CreateModels');
+const editAndBranching = require('../tests/EditAndBranching');
+const log = require('../tests/Log');
+const train = require('../tests/Train');
+const tools = require('../tests/Tools');
 
-Cypress.TestCase = TestCase
-const helpers = require('./Helpers')
-//var fs = require('../../node_modules/pn/fs')
+// ----------------------------------------------------------------------
 
-const tools = require('../tests/Tools')
-const createModels = require('../tests/CreateModels')
-const deleteAllTestGeneratedModels = require('../tests/DeleteAllTestGeneratedModels')
-const editAndBranching = require('../tests/EditAndBranching')
-const log = require('../tests/Log')
-const train = require('../tests/Train')
-
-const http = require('http')
-
-// Update the TestList.js file, but only if some part of the masterListOfAllTestCases has changed.
-const pathToTestList = 'TestList.js'
-
-http.get('http://127.0.0.1:3000/read?file=./cypress/TestList.js', response =>
-{
-  var fileContents = [];
-  response.on('error', (err) => {
-    console.error(err);
-  }).on('data', (chunk) => {
-    helpers.ConLog('TestListManager', `got a chunk`)
-    fileContents.push(chunk);
-  }).on('end', () => {
-    helpers.ConLog('TestListManager', `Length: ${fileContents.length}`)
-    fileContents = Buffer.concat(fileContents).toString();
-
-    helpers.ConLog('TestListManager', `File Contents: ${fileContents}`)
-
-    var index = fileContents.indexOf('// *** Generated Code Beyond this Point ***')
-    var newFileContents =
-      '// *** Generated Code Beyond this Point ***\r\n' +
-      '// Do NOT manually alter this file from this point onwards.\r\n' +
-      '// Any changes you make will be overridden at runtime.\r\n' +
-      'const masterListOfAllTestCases =\r\n' +
-      '[\r\n'
-    fullTestList.forEach(testSpecification => { newFileContents += `'${testSpecification}',\r\n` })
-    newFileContents += '[\r\n'
-
-    // Only write the file out if something has changed.
-    if (!fileContents.endsWith(newFileContents)) 
-    {
-      newFileContents = fileContents.substring(0, index) + newFileContents
-      var request = http.request(`http://127.0.0.1:3000/write?file=./cypress/TestList.js`, {method: 'PUT'}, response => {});
-      request.on('error', (error) => {
-        throw error;
-      });
-      request.write(newFileContents);
-      request.end();
-      helpers.ConLog('TestListManager', 'TestList.js has been re-written')
-    }
-  });
-});
-
-
-Cypress.testList = require('../TestList').testList
-
-function TestCase(testGroupName, testDescription, testFunction)
-{
-  helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunction})`)
+function TestCase(testGroupName, testDescription, testFunction) {
+  helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunction})`);
   
-  var testGroup = GetTestGroup(testGroupName)
+  var testGroup = GetTestGroup(testGroupName);
   if (!testGroup)
   {
-    testGroup = { name: testGroupName, tests: new Array() }
-    testGroups.push(testGroup)
+    testGroup = { name: testGroupName, tests: new Array() };
+    testGroups.push(testGroup);
   }
 
-  var test = { name: testDescription, func: testFunction }
-  testGroup.tests.push(test)
+  var test = { name: testDescription, func: testFunction };
+  testGroup.tests.push(test);
 
-  // .func looks something like this, "function FuncName() {..."
-  var testFunctionName = testFunction.toString()
-  var i = testFunctionName.indexOf('(', 10)
-  testFunctionName = testFunctionName.substring(9,i)
-  fullTestList.push(`${testGroupName}.${testFunctionName}`)
+  var testSpecification = `${testGroupName}.${testFunctionName}`;
+  if (!testLists.masterListOfAllTestCases.indexOf(testSpecification)) {
+    throw `There is a syncronization error between our master test list and a TestCase specification for: '${testSpecification}'` }
 }
 
 

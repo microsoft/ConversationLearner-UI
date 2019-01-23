@@ -3,13 +3,10 @@
  * Licensed under the MIT License.
 */
 
-module.exports = {testList, regressionTestList, masterListOfAllTestCases}
-
 // ************ MODIFY THIS LIST *****************************************
 // This is the list of tests that will be executed when "RunTestsFromList"
 // is selected from the Cypress Test GUI.
-const testList =
-[
+export const testList = [
   "EditAndBranching.Branching",
   "Log.WhatsYourName",
 ]
@@ -17,8 +14,7 @@ const testList =
 // ************ MODIFY THIS LIST *****************************************
 // This is the list of tests that will be executed when "(All)"
 // is selected from the Cypress Test GUI.
-const regressionTestList =
-[
+export const regressionTestList = [
   "CreateModels.AllEntityTypes",
   "CreateModels.DisqualifyingEntities",
   "CreateModels.WaitVsNoWaitActions",
@@ -106,8 +102,7 @@ const regressionTestList =
 // *** Generated Code Beyond this Point ***
 // Do NOT manually alter this list. 
 // Any changes you make will be overridden at runtime.
-const masterListOfAllTestCases = 
-[
+export const masterListOfAllTestCases = [
   "CreateModels.AllEntityTypes",
   "CreateModels.DisqualifyingEntities",
   "CreateModels.WaitVsNoWaitActions",

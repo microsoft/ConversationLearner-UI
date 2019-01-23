@@ -10,7 +10,7 @@ const train = require('../support/Train')
 const trainDialogsGrid = require('../support/components/TrainDialogsGrid')
 const editDialogModal = require('../support/components/EditDialogModal')
 
-Cypress.TestCase('Tools', 'Temporary Experimental Test', zTemp)
+Cypress.TestCase('zTemp', 'Temporary Experimental Test', zTemp)
 function zTemp() {
   cy.task('exists', 'C:/repo/ConversationLearner-UI/cypress/integration/tools').then(fileExists => {console.log(`fileExists: ${fileExists}`)})
 }
