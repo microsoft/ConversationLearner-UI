@@ -11,6 +11,7 @@ const train = require('../support/Train')
 const trainDialogsGrid = require('../support/components/TrainDialogsGrid')
 const editDialogModal = require('../support/components/EditDialogModal')
 
+Cypress.TestCase('Train', 'Disqualifying Entities', DisqualifyingEntities)
 export function DisqualifyingEntities()
 {
   models.ImportModel('z-disqualifyngEnt', 'z-disqualifyngEnt.cl')
@@ -61,6 +62,7 @@ export function DisqualifyingEntities()
   // Manually EXPORT this to fixtures folder and name it 'z-disqualifyngEnt.Trained.cl'
 }
 
+Cypress.TestCase('Train', 'Wait vs Non-Wait Actions', WaitVsNoWaitActions)
 export function WaitVsNoWaitActions()
 {
   models.ImportModel('z-waitNoWait', 'z-waitNoWait.cl')
@@ -98,6 +100,7 @@ export function WaitVsNoWaitActions()
   train.Save()
 }
 
+Cypress.TestCase('Train', 'Whats Your Name', WhatsYourName)
 export function WhatsYourName()
 {
   models.ImportModel('z-whatsYourName', 'z-whatsYourName.cl')
@@ -125,6 +128,7 @@ export function WhatsYourName()
   // Manually EXPORT this to fixtures folder and name it 'z-myNameIs.cl'
 }
 
+Cypress.TestCase('Train', 'My Name Is', MyNameIs)
 export function MyNameIs()
 {
   models.ImportModel('z-myNameIs', 'z-myNameIs.cl')
@@ -156,6 +160,7 @@ export function MyNameIs()
   // Manually EXPORT this to fixtures folder and name it 'z-nameTrained.cl'
 }
 
+Cypress.TestCase('Train', 'Tag And Frog', TagAndFrog)
 export function TagAndFrog()
 {
   // TODO: Need to add another test case or expand this one so that tagging something
@@ -224,6 +229,7 @@ export function TagAndFrog()
   // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog2.cl'
 }
 
+Cypress.TestCase('Train', 'Book Me A Flight', BookMeAFlight)
 export function BookMeAFlight()
 {
   models.ImportModel('z-BookMeAFlight', 'z-travel.cl')

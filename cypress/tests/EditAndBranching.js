@@ -17,7 +17,7 @@ const ducksSayQuack = 'Ducks say quack!'
 const fishJustSwim = 'Fish just swim.'
 const whichAnimalWouldYouLike = 'Which animal would you like?'
 
-
+Cypress.TestCase('EditAndBranching', 'Verify Edit Training Controls And Labels', VerifyEditTrainingControlsAndLabels)
 export function VerifyEditTrainingControlsAndLabels()
 {
   var modelName = models.ImportModel('z-editContols', 'z-nameTrained.cl')
@@ -43,6 +43,7 @@ export function VerifyEditTrainingControlsAndLabels()
   train.VerifyOriginalChatMessages()
 }
 
+Cypress.TestCase('EditAndBranching', 'Branching', Branching)
 export function Branching()
 {
   var modelName = models.ImportModel('z-branching', 'z-nameTrained.cl')
@@ -69,6 +70,7 @@ export function Branching()
   editDialogModal.ClickSaveCloseButton()
 }
 
+Cypress.TestCase('EditAndBranching', 'Tag And Frog', TagAndFrog)
 export function TagAndFrog()
 {
   var textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
@@ -99,6 +101,7 @@ export function TagAndFrog()
   train.AbandonDialog()
 }
 
+Cypress.TestCase('EditAndBranching', 'Two Consecutive User Input Error Handling', TwoConsecutiveUserInputErrorHandling)
 export function TwoConsecutiveUserInputErrorHandling()
 {
   models.ImportModel('z-2UserInputs', 'z-disqualifyngEnt.Trained.cl')
@@ -132,6 +135,7 @@ export function TwoConsecutiveUserInputErrorHandling()
   modelPage.VerifyNoErrorIconOnPage()
 }
 
+Cypress.TestCase('EditAndBranching', 'Wait Non Wait Error Handling', WaitNonWaitErrorHandling)
 export function WaitNonWaitErrorHandling()
 {
   models.ImportModel('z-errWaitNoWait', 'z-waitNoWait.cl')
