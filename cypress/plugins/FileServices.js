@@ -50,7 +50,7 @@ function GetServices(request, response) {
 
         response.statusCode = 200;
         response.setHeader('Content-Type', 'text/plain');
-        response.setHeader('Access-Control-Allow-Origin', '*');
+        //response.setHeader('Access-Control-Allow-Origin', '*');
         response.write(fileContents)
         response.end();
       });

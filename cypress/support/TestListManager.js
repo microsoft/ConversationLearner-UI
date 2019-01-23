@@ -1,5 +1,3 @@
-import { debug } from 'util';
-
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
@@ -34,35 +32,37 @@ http.get('http://127.0.0.1:3000/read?file=./cypress/TestList.js', response =>
   response.on('error', (err) => {
     console.error(err);
   }).on('data', (chunk) => {
+    helpers.ConLog('TestListManager', `got a chunk`)
     fileContents.push(chunk);
   }).on('end', () => {
+    helpers.ConLog('TestListManager', `Length: ${fileContents.length}`)
     fileContents = Buffer.concat(fileContents).toString();
+
+    helpers.ConLog('TestListManager', `File Contents: ${fileContents}`)
+
+    var index = fileContents.indexOf('// *** Generated Code Beyond this Point ***')
+    var newFileContents =
+      '// *** Generated Code Beyond this Point ***\r\n' +
+      '// Do NOT manually alter this file from this point onwards.\r\n' +
+      '// Any changes you make will be overridden at runtime.\r\n' +
+      'const masterListOfAllTestCases =\r\n' +
+      '[\r\n'
+    fullTestList.forEach(testSpecification => { newFileContents += `'${testSpecification}',\r\n` })
+    newFileContents += '[\r\n'
+
+    // Only write the file out if something has changed.
+    if (!fileContents.endsWith(newFileContents)) 
+    {
+      newFileContents = fileContents.substring(0, index) + newFileContents
+      var request = http.request(`http://127.0.0.1:3000/write?file=./cypress/TestList.js`, {method: 'PUT'}, response => {});
+      request.on('error', (error) => {
+        throw error;
+      });
+      request.write(newFileContents);
+      request.end();
+      helpers.ConLog('TestListManager', 'TestList.js has been re-written')
+    }
   });
-
-  helpers.ConLog('TestListManager', `File Contents: ${fileContents}`)
-
-  var index = fileContents.indexOf('// *** Generated Code Beyond this Point ***')
-  var newFileContents =
-    '// *** Generated Code Beyond this Point ***\r\n' +
-    '// Do NOT manually alter this file from this point onwards.\r\n' +
-    '// Any changes you make will be overridden at runtime.\r\n' +
-    'const masterListOfAllTestCases =\r\n' +
-    '[\r\n'
-  fullTestList.forEach(testSpecification => { newFileContents += `'${testSpecification}',\r\n` })
-  newFileContents += '[\r\n'
-
-  // Only write the file out if something has changed.
-  if (!fileContents.endsWith(newFileContents)) 
-  {
-    newFileContents = fileContents.substring(0, index) + newFileContents
-    var request = http.request(`http://127.0.0.1:3000/write?file=./cypress/TestList.js`, {method: 'PUT'}, response => {});
-    request.on('error', (error) => {
-      throw error;
-    });
-    request.write(newFileContents);
-    request.end();
-    helpers.ConLog('TestListManager', 'TestList.js has been re-written')
-  }
 });
 
 
