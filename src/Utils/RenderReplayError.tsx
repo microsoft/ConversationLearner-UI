@@ -40,6 +40,24 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
                     </div>
                 </div>
             )
+        case CLM.ReplayErrorType.APIBadCard:
+            return (
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_API_BADCARD} />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_API_BADCARD} customClass="cl-icon-redbackground" />
+                    </div>
+                </div>
+            )
+        case CLM.ReplayErrorType.APIMalformed:
+            return (
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_API_MALFORMED} />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_API_MALFORMED} customClass="cl-icon-redbackground" />
+                    </div>
+                </div>
+            )
         case CLM.ReplayErrorType.APIUndefined:
             return (
                 <div className="cl-editdialog-error">
