@@ -23,38 +23,50 @@ const editAndBranching = require('../tests/EditAndBranching')
 const log = require('../tests/Log')
 const train = require('../tests/Train')
 
+const http = require('http')
+
 // Update the TestList.js file, but only if some part of the masterListOfAllTestCases has changed.
 const pathToTestList = 'TestList.js'
-fs.readFile(pathToTestList, (error, fileContents) => {
-  if (error) throw error;
-  
+
+http.get('http://127.0.0.1:3000/read?file=./cypress/TestList.js', response =>
+{
+  var fileContents = [];
+  response.on('error', (err) => {
+    console.error(err);
+  }).on('data', (chunk) => {
+    fileContents.push(chunk);
+  }).on('end', () => {
+    fileContents = Buffer.concat(fileContents).toString();
+  });
+
   helpers.ConLog('TestListManager', `File Contents: ${fileContents}`)
 
   var index = fileContents.indexOf('// *** Generated Code Beyond this Point ***')
   var newFileContents =
     '// *** Generated Code Beyond this Point ***\r\n' +
-    '// Do NOT manually alter this list or file from this point onwards.\r\n' +
+    '// Do NOT manually alter this file from this point onwards.\r\n' +
     '// Any changes you make will be overridden at runtime.\r\n' +
     'const masterListOfAllTestCases =\r\n' +
     '[\r\n'
   fullTestList.forEach(testSpecification => { newFileContents += `'${testSpecification}',\r\n` })
   newFileContents += '[\r\n'
-  debug()
+
   // Only write the file out if something has changed.
   if (!fileContents.endsWith(newFileContents)) 
   {
     newFileContents = fileContents.substring(0, index) + newFileContents
-    fs.writeFile(pathToTestList, newFileContents, (error) => {
-      if (error) throw error;
-      helpers.ConLog('TestListManager', 'TestList.js has been re-written')
+    var request = http.request(`http://127.0.0.1:3000/write?file=./cypress/TestList.js`, {method: 'PUT'}, response => {});
+    request.on('error', (error) => {
+      throw error;
     });
-    //cy.writeFile(pathToTestList, fileContents.substring(0, index) + newFileContents)
-    //helpers.ConLog('TestListManager', 'TestList.js has been re-written')
+    request.write(newFileContents);
+    request.end();
+    helpers.ConLog('TestListManager', 'TestList.js has been re-written')
   }
-})
+});
 
 
-Cypress.testList = require('../TestList')
+Cypress.testList = require('../TestList').testList
 
 function TestCase(testGroupName, testDescription, testFunction)
 {

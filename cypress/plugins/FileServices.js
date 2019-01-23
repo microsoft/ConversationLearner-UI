@@ -23,37 +23,76 @@ server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
 
+
 function GetServices(request, response) {
   var parsed = url.parse(request.url);
-  var query = parsed.query;
-  var pathName = parsed.pathname;
+  var {pathname, query} = parsed;
 
-  if (pathName == '/') {
+  if (pathname == '/') {
     response.statusCode = 200;
-    reresponses.setHeader('Content-Type', 'text/plain');
+    response.setHeader('Content-Type', 'text/plain');
     response.end('FileServices at your service.\n');
   }
   else if (pathname != '/read') {
     response.statusCode = 400;
     response.end();
   }
-  
-  fs.readFile(pathToTestList, (error, fileContents) => {
-    if (error) throw error;
+  else {
+    if (!query.startsWith('file='))
+    {
+      response.statusCode = 400;
+      response.end();
+    }
+    else {
+      var fileName = query.substring(5)
+      fs.readFile(fileName, (error, fileContents) => {
+        if (error) throw error;
 
-    response.statusCode = 200;
-    responses.setHeader('Content-Type', 'text/plain');
-    response.write(fileContents)
-    response.end();
-  });
+        response.statusCode = 200;
+        response.setHeader('Content-Type', 'text/plain');
+        response.setHeader('Access-Control-Allow-Origin', '*');
+        response.write(fileContents)
+        response.end();
+      });
+    }
+  }
 }
+
 
 function PutServices(request, response) {
   var parsed = url.parse(request.url);
-  var query = parsed.query;
-  var pathName = parsed.pathname;
+  var {pathname, query} = parsed;
 
-  response.statusCode = 200;
-  response.setHeader('Content-Type', 'text/plain');
-  response.end();
+  if (pathname != '/write') {
+    response.statusCode = 400;
+    response.end();
+  }
+  else {
+    if (!query.startsWith('file='))
+    {
+      response.statusCode = 400;
+      response.end();
+    }
+    else {
+      var fileName = query.substring(5)
+
+      var body = [];
+      request.on('error', (err) => {
+        console.error(err);
+      }).on('data', (chunk) => {
+        body.push(chunk);
+      }).on('end', () => {
+        body = Buffer.concat(body).toString();
+      });
+
+      fs.writeFile(fileName, body, (error) => {
+        if (error) throw error;
+        console.log('File Written')
+      });
+
+      response.statusCode = 200;
+      response.setHeader('Content-Type', 'text/plain');
+      response.end();
+    }
+  }
 }
