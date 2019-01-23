@@ -7,8 +7,7 @@ const modelPage = require('../support/components/ModelPage')
 const entitiesGrid = require('./components/EntitiesGrid')
 const entityModal = require('../support/components/EntityModal')
 
-export function CreateNewEntity({name, multiValued, negatable, resolverType, type = 'Custom Trained', expectPopup = false})
-{
+export function CreateNewEntity({ name, multiValued, negatable, resolverType, type = 'Custom Trained', expectPopup = false }) {
   modelPage.NavigateToEntities()
   entitiesGrid.ClickButtonNewEntity()
 
@@ -25,23 +24,22 @@ export function CreateNewEntity({name, multiValued, negatable, resolverType, typ
   else entitiesGrid.VerifyItemInList(`builtin-${type.toLowerCase()}`)
 }
 
-export function SelectEntityType(type)
-{
+export function SelectEntityType(type) {
   entityModal.ClickEntityTypeDropdown()
   entityModal.ClickEntityType(type)
 }
 
-export const pretrainedEntityTypes = 
-[
-  "datetimeV2",
-  "number",
-  "ordinal",
-  "percentage",
-  "temperature",
-  "dimension",
-  "money",
-  "age",
-  "url",
-  "email",
-  "phonenumber",
-]
+export const pretrainedEntityTypes =
+  [
+    "datetimeV2",
+    "number",
+    "ordinal",
+    "percentage",
+    "temperature",
+    "dimension",
+    "money",
+    "age",
+    "url",
+    "email",
+    "phonenumber",
+  ]

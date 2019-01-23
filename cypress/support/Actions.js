@@ -13,8 +13,7 @@ const helpers = require('../support/Helpers')
 // so the caller only needs to specify the ones the UI does not auto populate.
 // However, there are cases where the caller may want to explicitly specify these autopopulated values anyway,
 // and this code does allow for that.
-export function CreateNewAction({response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' })
-{
+export function CreateNewAction({ response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' }) {
   modelPage.NavigateToActions()
   actionModal.ClickNewAction()
   // TODO: this is the default but we need to get this working... actionsModal.selectTypeText()
@@ -27,7 +26,7 @@ export function CreateNewAction({response, expectedEntities, requiredEntities, d
 
   var requiredEntitiesFromResponse = ExtractEntities(response)
   response = response.replace(/{enter}/g, '')
-  
+
   // Get the row that we are going to validate and assign a Cypress Alias to it.
   // If we skip this step, the validations that follow will fail.
   actionsGrid.GetRowToBeValidated(response)
@@ -40,42 +39,37 @@ export function CreateNewAction({response, expectedEntities, requiredEntities, d
 // Input string looks something like this: "Sorry $name{enter}, I can't help you get $want{enter}"
 // Returns an array containing entities like this: ['name', 'want']
 // ...OR...Returns an empty array if there are no entities in the response string.
-function ExtractEntities(response)
-{
+function ExtractEntities(response) {
   var entitiesToReturn = new Array()
   var iCurrent = 0
-  
-  while (iCurrent < response.length)
-  {
+
+  while (iCurrent < response.length) {
     var iStart = response.indexOf('$', iCurrent)
     if (iStart < 0) break;
-    iStart ++
-    
+    iStart++
+
     var iEnd = response.indexOf('{enter}', iStart)
     if (iEnd < 0) break;
 
     var entityName = response.substring(iStart, iEnd)
-    
+
     if (!IsAlphaNumeric(entityName)) iCurrent = iStart
-    else
-    {
+    else {
       entitiesToReturn.push(entityName)
       iCurrent = iEnd + 7 // 7 = "{enter}".length
     }
   }
-  
+
   return entitiesToReturn
 }
 
-function IsAlphaNumeric(string)
-{
-  for (var i = 0; i < string.length; i++) 
-  {
+function IsAlphaNumeric(string) {
+  for (var i = 0; i < string.length; i++) {
     var charCode = string.charCodeAt(i)
     if (!(charCode > 47 && charCode < 58) &&  // numeric (0-9)
-        !(charCode > 64 && charCode < 91) &&  // upper alpha (A-Z)
-        !(charCode > 96 && charCode < 123))   // lower alpha (a-z)
-        return false
-  } 
+      !(charCode > 64 && charCode < 91) &&  // upper alpha (A-Z)
+      !(charCode > 96 && charCode < 123))   // lower alpha (a-z)
+      return false
+  }
   return true
 }

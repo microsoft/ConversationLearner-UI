@@ -9,8 +9,7 @@ const modelPage = require('./components/ModelPage')
 // The test defined prefix can be up to 17 characters.
 // The dash and time suffix takes 13 characters. 
 // 30 characters is the maximum model name.
-export function CreateNewModel(modelNamePrefix)
-{
+export function CreateNewModel(modelNamePrefix) {
   const name = `${modelNamePrefix}-${ModelNameTime()}`
 
   homePage.Visit()
@@ -22,10 +21,8 @@ export function CreateNewModel(modelNamePrefix)
   return name
 }
 
-export function ImportModel(modelNamePrefix, fileName)
-{
-  return new Promise((resolve) => 
-  { 
+export function ImportModel(modelNamePrefix, fileName) {
+  return new Promise((resolve) => {
     // Maximum Name Length is 30 Characters
     const name = `${modelNamePrefix}-${ModelNameTime()}`
 
@@ -34,23 +31,21 @@ export function ImportModel(modelNamePrefix, fileName)
     homePage.TypeModelName(name)
     homePage.UploadImportModelFile(fileName)
     homePage.ClickSubmitButton()
-    
+
     cy.WaitForStableDOM().then(() => { resolve(name) })
   })
 }
 
 // Get a unique time to use as a suffix for the model name.
 var lastModelNameTime
-function ModelNameTime() 
-{ 
+function ModelNameTime() {
   var modelNameMoment = Cypress.moment()
   var modelNameTime = modelNameMoment.format("MMMDD-HHmmss")
-  if (lastModelNameTime && modelNameTime == lastModelNameTime)
-  {
+  if (lastModelNameTime && modelNameTime == lastModelNameTime) {
     modelNameMoment = modelNameMoment.add(1, 'seconds')
     modelNameTime = modelNameMoment.format("MMMDD-HHmmss")
   }
-  
+
   lastModelNameTime = modelNameTime
   return modelNameTime
 }
