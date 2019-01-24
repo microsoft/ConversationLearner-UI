@@ -12,7 +12,7 @@ const editDialogModal = require('../support/components/EditDialogModal')
 
 Cypress.TestCase('zTemp', 'Temporary Experimental Test', zTemp)
 function zTemp() {
-  cy.task('exists', 'C:/repo/ConversationLearner-UI/cypress/integration/Tools').then(fileExists => {console.log(`fileExists: ${fileExists}`)})
+  cy.task('exists', './cypress/integration/Tools').then(fileExists => {console.log(`fileExists: ${fileExists}`)})
 }
 
 // Cypress.TestCase('zTemp', 'Temporary Experimental Test', zzz)

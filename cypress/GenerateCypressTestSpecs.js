@@ -19,7 +19,7 @@
 //   3) The test list: masterListOfAllTestCases
 // ----------------------------------------------------------------------
 
-var fs = require('../node_modules/pn/fs')
+var fs = require('fs')
 
 const pathToTestFiles = './cypress/tests'
 var fullTestList = []
@@ -94,7 +94,7 @@ function CreateSpecFile(groupName, testName) {
   if (!fs.existsSync(folderPath)) { fs.mkdirSync(folderPath) }
   
   var filePath = `${folderPath}/${testName}.js`;
-  if (!fs.existsSync()) {
+  if (!fs.existsSync(filePath)) {
     var newFileContents = `require('../../support/TestListManager').AddToCypressTestList('${groupName}.${testName}')`;
     fs.writeFileSync(filePath, newFileContents)
   }

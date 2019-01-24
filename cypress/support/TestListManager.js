@@ -125,18 +125,9 @@ class TestListIterator {
 }
 
 function GetTestGroup(name) {
-  for (var i = 0; i < testGroups.length; i++) {
-    if (testGroups[i].name == name) { return testGroups[i]; }
-  }
-  return undefined;
+  return testGroups.find(testGroup => testGroup.name === name);
 }
 
 function GetTest(testGroup, testNameToFind) {
-  for (var i = 0; i < testGroup.tests.length; i++) {
-    // .func looks something like this, "function FuncName() {..."
-    if (`${testGroup.tests[i].func}`.substring(9).startsWith(testNameToFind)) {
-      return testGroup.tests[i];
-    }
-  }
-  return undefined;
+  return testGroup.tests.find(test => test.func.toString().substring(9).startsWith(testNameToFind));
 }
