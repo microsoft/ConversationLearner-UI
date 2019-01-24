@@ -3,16 +3,20 @@
  * Licensed under the MIT License.
 */
 
+// ******** NOTICE: The last part of this file is automatically **********
+// ********         generated. Be careful when modifying it.    **********
+
+
 // ************ MODIFY THIS LIST *****************************************
 // This is the list of tests that will be executed when '(RunTestsFromList)'
 // is selected from the Cypress Test GUI.
 export const testList = [
   'EditAndBranching.TagAndFrog',
   'Train.WhatsYourName',
-]
+];
 
 // ************ MODIFY THIS LIST *****************************************
-// This is the list of tests that will be executed when '(All)'
+// This is the list of tests that will be executed when '(Regression)'
 // is selected from the Cypress Test GUI.
 export const regressionTestList = [
   'CreateModels.AllEntityTypes',
@@ -34,7 +38,7 @@ export const regressionTestList = [
   'Train.TagAndFrog',
 //  'Train.BookMeAFlight',
   'Tools.DeleteAllTestGeneratedModels',
-]
+];
 
 // ************ Generated Code Beyond this Point *************************
 // Do NOT manually alter this file from this point onwards.
@@ -65,4 +69,4 @@ export const masterListOfAllTestCases = [
   'Train.TagAndFrog',
   'Train.BookMeAFlight',
   'zTemp.zTemp',
-]
+];

@@ -3,6 +3,23 @@
  * Licensed under the MIT License.
 */
 
+// ----------------------------------------------------------------------
+// This code manages our test cases in such a way that we can run
+// a single, individual test case (spec file) as Cypress intended and
+// also to be able to run a select list of multiple tests in a way that
+// Cypress does not natively support.
+//
+// This is accomplished by doing the following:
+//  1) Place all .js files, which should contain multiple test cases, in 
+//     the "cypress/tests" folder.
+//  2) For each test case, directly before the test function, call the
+//     following function with appropriate parameters:
+//        Cypress.TestCase(testGroupName, testDescription, testFunction)
+//  3) From the command line run: 
+//        node cypress\GenerateCypressTestSpecs.js
+//     (It is intended that this be automated, but at the moment it is not.)
+// ----------------------------------------------------------------------
+
 var testLists = require('../TestLists');
 const helpers = require('./Helpers');
 
