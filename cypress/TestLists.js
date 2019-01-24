@@ -4,36 +4,36 @@
 */
 
 // ************ MODIFY THIS LIST *****************************************
-// This is the list of tests that will be executed when "RunTestsFromList"
+// This is the list of tests that will be executed when '(RunTestsFromList)'
 // is selected from the Cypress Test GUI.
 export const testList = [
-  "EditAndBranching.TagAndFrog",
-  "Train.WhatsYourName",
+  'EditAndBranching.TagAndFrog',
+  'Train.WhatsYourName',
 ]
 
 // ************ MODIFY THIS LIST *****************************************
-// This is the list of tests that will be executed when "(All)"
+// This is the list of tests that will be executed when '(All)'
 // is selected from the Cypress Test GUI.
 export const regressionTestList = [
-  "CreateModels.AllEntityTypes",
-  "CreateModels.DisqualifyingEntities",
-  "CreateModels.WaitVsNoWaitActions",
-  "CreateModels.WhatsYourName",
-  "CreateModels.TagAndFrog",
-  "CreateModels.Travel",
-  "EditAndBranching.VerifyEditTrainingControlsAndLabels",
-  "EditAndBranching.Branching",
-  "EditAndBranching.TagAndFrog",
-  "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
-  "EditAndBranching.WaitNonWaitErrorHandling",
-  "Log.WhatsYourName",
-  "Train.DisqualifyingEntities",
-  "Train.WaitVsNoWaitActions",
-  "Train.WhatsYourName",
-  "Train.MyNameIs",
-  "Train.TagAndFrog",
-//  "Train.BookMeAFlight",
-  "CleanUp.DeleteAllTestGeneratedModels",
+  'CreateModels.AllEntityTypes',
+  'CreateModels.DisqualifyingEntities',
+  'CreateModels.WaitVsNoWaitActions',
+  'CreateModels.WhatsYourName',
+  'CreateModels.TagAndFrog',
+  'CreateModels.Travel',
+  'EditAndBranching.VerifyEditTrainingControlsAndLabels',
+  'EditAndBranching.Branching',
+  'EditAndBranching.TagAndFrog',
+  'EditAndBranching.TwoConsecutiveUserInputErrorHandling',
+  'EditAndBranching.WaitNonWaitErrorHandling',
+  'Log.WhatsYourName',
+  'Train.DisqualifyingEntities',
+  'Train.WaitVsNoWaitActions',
+  'Train.WhatsYourName',
+  'Train.MyNameIs',
+  'Train.TagAndFrog',
+//  'Train.BookMeAFlight',
+  'Tools.DeleteAllTestGeneratedModels',
 ]
 
 // ************ Generated Code Beyond this Point *************************
@@ -65,5 +65,4 @@ export const masterListOfAllTestCases = [
   'Train.TagAndFrog',
   'Train.BookMeAFlight',
   'zTemp.zTemp',
-  'zTemp.zzz',
 ]

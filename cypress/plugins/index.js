@@ -11,7 +11,6 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 const path = require('path')
-var fs = require('../../node_modules/pn/fs')
 
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
@@ -22,6 +21,7 @@ module.exports = (on, config) => {
     
     // BUG BUG - Need to work out why this code does not execute or where it is throwing an exception.
     alert('got here');
+    var fs = require('../../node_modules/pn/fs')
     var logFile = fs.openSync('c:/temp/GenerateCypressTestSpecs.log', 'a');
     fs.appendFileSync(logFile, message);
     fs.closeSync(logFile);
