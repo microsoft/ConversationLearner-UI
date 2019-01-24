@@ -9,6 +9,7 @@ const train = require('../tests/Train')
 const log = require('../tests/Log')
 const editAndBranching = require('../tests/EditAndBranching')
 const deleteAllTestGeneratedModels = require('../tests/DeleteAllTestGeneratedModels')
+const ux = require('../tests/UX')
 const helpers = require('./Helpers')
 
 // ************ MODIFY THIS LIST *****************************************
@@ -17,7 +18,7 @@ const helpers = require('./Helpers')
 export const testList =
   [
     // "EditAndBranching.WaitNonWaitErrorHandling",
-    "EditAndBranching.AddEndSessionAction"
+    "UX.BotModelMismatch"
   ]
 
 // ************ MODIFY THIS LIST *****************************************
@@ -62,6 +63,7 @@ export const masterListOfAllTestCases =
     "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
     "EditAndBranching.WaitNonWaitErrorHandling",
     "EditAndBranching.AddEndSessionAction",
+    "EditAndBranching.BotModelMismatch",
     "Log.WhatsYourName",
     "Log.EndlessLoop",
     "Train.DisqualifyingEntities",
@@ -71,6 +73,7 @@ export const masterListOfAllTestCases =
     "Train.TagAndFrog",
     "Train.BookMeAFlight",
     "CleanUp.DeleteAllTestGeneratedModels",
+    "UX.BotModelMismatch",
   ]
 
 // The lists above are in a format that is convenient for a developer to copy
@@ -100,6 +103,7 @@ const testGroups =
           { name: "Two Consecutive User Input Error Handling", func: editAndBranching.TwoConsecutiveUserInputErrorHandling },
           { name: "Wait-Non-Wait Error Handling", func: editAndBranching.WaitNonWaitErrorHandling },
           { name: "End-Session-Action", func: editAndBranching.AddEndSessionAction },
+          { name: "Bot-Model-Mismatch", func: editAndBranching.BotModelMismatch },
         ]
     },
     {
@@ -135,6 +139,12 @@ const testGroups =
           { name: 'Create Model 3', func: tools.CreateModel3 },
           { name: 'Create Model 4', func: tools.CreateModel4 },
           { name: 'Create Model 5', func: tools.CreateModel5 },
+        ]
+    },
+    {
+      name: 'UX', tests:
+        [
+          { name: 'Bot Model Mismatch', func: ux.BotModelMismatch },
         ]
     },
   ]
