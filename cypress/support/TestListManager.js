@@ -22,11 +22,14 @@ const editAndBranching = require('../tests/EditAndBranching');
 const log = require('../tests/Log');
 const train = require('../tests/Train');
 const tools = require('../tests/Tools');
+const zTemp = require('../tests/zTemp')
 
 // ----------------------------------------------------------------------
 
 function TestCase(testGroupName, testDescription, testFunction) {
-  helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunction})`);
+  var testFunctionAsString = `${testFunction}`;
+  var testFunctionName = testFunctionAsString.substring(9, testFunctionAsString.indexOf('(', 9))
+  helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunctionName})`);
   
   var testGroup = GetTestGroup(testGroupName);
   if (!testGroup)
@@ -37,9 +40,10 @@ function TestCase(testGroupName, testDescription, testFunction) {
 
   var test = { name: testDescription, func: testFunction };
   testGroup.tests.push(test);
+  console.log(testGroup)
 
   var testSpecification = `${testGroupName}.${testFunctionName}`;
-  if (!testLists.masterListOfAllTestCases.indexOf(testSpecification)) {
+  if (-1 == testLists.masterListOfAllTestCases.indexOf(testSpecification)) {
     throw `There is a syncronization error between our master test list and a TestCase specification for: '${testSpecification}'` }
 }
 

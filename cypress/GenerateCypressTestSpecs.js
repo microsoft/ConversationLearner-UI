@@ -21,14 +21,14 @@ function main() {
   testFileDirectory.forEach(fileName => { ParseTestJsFile(fileName); })
 
   // Finalize our findings by re-writing out the TestList.js file ONLY if it has changed.
-  var index = testList_jsContents.indexOf('// *** Generated Code Beyond this Point ***')
+  var index = testList_jsContents.indexOf('// ************ Generated Code Beyond this Point *************************');
   var newFileContents =
-    '// *** Generated Code Beyond this Point ***\r\n' +
+    '// ************ Generated Code Beyond this Point *************************\r\n' +
     '// Do NOT manually alter this file from this point onwards.\r\n' +
     '// Any changes you make will be overridden at runtime.\r\n' +
-    'const masterListOfAllTestCases = [\r\n' +
-  fullTestList.forEach(testSpecification => { newFileContents += `  '${testSpecification}',\r\n` })
-  newFileContents += ']\r\n'
+    'export const masterListOfAllTestCases = [\r\n';
+  fullTestList.forEach(testSpecification => { newFileContents += `  '${testSpecification}',\r\n` });
+  newFileContents += ']\r\n';
 
   // Only write the file out if something has changed.
   if (!testList_jsContents.endsWith(newFileContents)) {
