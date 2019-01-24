@@ -12,18 +12,26 @@
 // the project's config changing)
 const path = require('path')
 var fs = require('../../node_modules/pn/fs')
-//var tlm = require('../support/TestListManager')
 
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
 
-  // on('before:browser:launch', (browser = {}, args) => {
-  //   if (browser.name === 'chrome') {
-  //     args.push('--disable-blink-features=RootLayerScrolling')
-  //     return args
-  //   }
-  // })
+  on('before:browser:launch', (browser = {}, args) => {
+    //require('../GenerateCypressTestSpecs')
+    
+    // BUG BUG - Need to work out why this code does not execute or where it is throwing an exception.
+    alert('got here');
+    var logFile = fs.openSync('c:/temp/GenerateCypressTestSpecs.log', 'a');
+    fs.appendFileSync(logFile, message);
+    fs.closeSync(logFile);
+
+    // if (browser.name === 'chrome') {
+    //   args.push('--disable-blink-features=RootLayerScrolling')
+    //   return args
+    // }
+  })
+
   on('task', {
     log: (message) => {
       console.log(message)

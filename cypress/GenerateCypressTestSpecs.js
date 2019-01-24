@@ -3,7 +3,12 @@ var fs = require('../node_modules/pn/fs')
 const pathToTestFiles = './cypress/tests'
 var fullTestList = []
 
-main()
+try { 
+  LogToFile('Starting GenerateCypressTestSpecs.js')
+  main(); 
+}
+catch(error) { LogToFile(`Caught an Exception:\r\n${error}`)}
+fs.closeSync(logFile)
 
 function main() {
   // Get the test list file that we MIGHT need to modify
@@ -73,3 +78,11 @@ function CreateSpecFile(groupName, testName) {
     fs.writeFileSync(filePath, newFileContents)
   }
 }
+
+var logFile
+function LogToFile(message) {
+  if (!logFile) logFile = fs.openSync('c:/temp/GenerateCypressTestSpecs.log', 'a');
+
+  fs.appendFileSync(logFile, message);
+}
+

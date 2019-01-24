@@ -7,8 +7,8 @@
 // This is the list of tests that will be executed when "RunTestsFromList"
 // is selected from the Cypress Test GUI.
 export const testList = [
-  "EditAndBranching.Branching",
-  "Log.WhatsYourName",
+  "EditAndBranching.TagAndFrog",
+  "Train.WhatsYourName",
 ]
 
 // ************ MODIFY THIS LIST *****************************************
@@ -65,4 +65,5 @@ export const masterListOfAllTestCases = [
   'Train.TagAndFrog',
   'Train.BookMeAFlight',
   'zTemp.zTemp',
+  'zTemp.zzz',
 ]
