@@ -3,13 +3,13 @@
  * Licensed under the MIT License.
 */
 
-var testLists = require('../TestLists')
+var testLists = require('../TestLists');
 const helpers = require('./Helpers');
 
 Cypress.TestCase = TestCase;
-Cypress.testList = testLists.testList
-Cypress.regressionTestList = testLists.regressionTestList
-Cypress.masterListOfAllTestCases = testLists.masterListOfAllTestCases
+Cypress.testList = testLists.testList;
+Cypress.regressionTestList = testLists.regressionTestList;
+Cypress.masterListOfAllTestCases = testLists.masterListOfAllTestCases;
 
 var testGroups = new Array();
 
@@ -31,7 +31,7 @@ const zTemp = require('../tests/zTemp')
 
 function TestCase(testGroupName, testDescription, testFunction) {
   var testFunctionAsString = `${testFunction}`;
-  var testFunctionName = testFunctionAsString.substring(9, testFunctionAsString.indexOf('(', 9))
+  var testFunctionName = testFunctionAsString.substring(9, testFunctionAsString.indexOf('(', 9));
   helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunctionName})`);
   
   var testGroup = GetTestGroup(testGroupName);
@@ -43,7 +43,6 @@ function TestCase(testGroupName, testDescription, testFunction) {
 
   var test = { name: testDescription, func: testFunction };
   testGroup.tests.push(test);
-  console.log(testGroup)
 
   var testSpecification = `${testGroupName}.${testFunctionName}`;
   if (-1 == testLists.masterListOfAllTestCases.indexOf(testSpecification)) {
@@ -51,39 +50,35 @@ function TestCase(testGroupName, testDescription, testFunction) {
 }
 
 
-export function AddToCypressTestList(testList) 
-{
-  var funcName = `AddToCypressTestList()`
-  helpers.ConLog(funcName, `List of Tests: ${testList}`)
+export function AddToCypressTestList(testList) {
+  var funcName = `AddToCypressTestList()`;
+  helpers.ConLog(funcName, `List of Tests: ${testList}`);
   
-  if (!Array.isArray(testList)) testList = [testList]
+  if (!Array.isArray(testList)) testList = [testList];
   
-  var testListIterator = new TestListIterator(testList)
+  var testListIterator = new TestListIterator(testList);
   
-  var test = testListIterator.next
+  var test = testListIterator.next;
   while (test != undefined)
   {
-    helpers.ConLog(funcName, `Adding Group: ${test.group}`)
-    describe(test.group, () =>
-    {
-      var currentGroupName = test.group
+    helpers.ConLog(funcName, `Adding Group: ${test.group}`);
+    describe(test.group, () => {
+      var currentGroupName = test.group;
       while (test != undefined && test.group == currentGroupName)
       {
-        helpers.ConLog(funcName, `Adding Test Case: ${test.name}`)
-        it(test.name, test.func)
-        test = testListIterator.next
+        helpers.ConLog(funcName, `Adding Test Case: ${test.name}`);
+        it(test.name, test.func);
+        test = testListIterator.next;
       }
     })
   }
 }
 
-class TestListIterator
-{
-  constructor(testList)
-  {
-    this.testList = testList
-    this.index = 0
-    this.currentGroup = {name: ''}
+class TestListIterator {
+  constructor(testList) {
+    this.testList = testList;
+    this.index = 0;
+    this.currentGroup = {name: ''};
   }
 
   // groupName.testName - 'testName' from 'groupName'
@@ -91,52 +86,40 @@ class TestListIterator
   // *.*                - All Groups, All Tests
   // *.testName         - All tests with all groups matching 'testName'
   // groupName.*        - All tests from 'groupName'
-  get next()
-  {
-    if (this.index >= this.testList.length) return undefined
+  get next() {
+    if (this.index >= this.testList.length) return undefined;
 
-    var x = this.testList[this.index].split('.')
-    if (x.length != 2) throw `Invalid item in testList[${this.index}]: "${this.testList[this.index]}" - 'group DOT testName' format is expected`
-    var groupName = x[0]
-    var testName = x[1]
+    var x = this.testList[this.index].split('.');
+    if (x.length != 2) throw `Invalid item in testList[${this.index}]: "${this.testList[this.index]}" - 'group DOT testName' format is expected`;
+    var groupName = x[0];
+    var testName = x[1];
 
-    if (this.currentGroup.name != groupName)
-    {
-      this.currentGroup = GetTestGroup(groupName)
-      if (this.currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`
+    if (this.currentGroup.name != groupName) {
+      this.currentGroup = GetTestGroup(groupName);
+      if (this.currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`;
     }
     
-    var test = GetTest(this.currentGroup, testName)
-    if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`
+    var test = GetTest(this.currentGroup, testName);
+    if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`;
 
-    this.index++
-    return {group: this.currentGroup.name, name: test.name, func: test.func}
+    this.index++;
+    return {group: this.currentGroup.name, name: test.name, func: test.func};
   }
 }
 
-function GetTestGroup(name)
-{
-  for (var i = 0; i < testGroups.length; i++)
-  {
-    if (testGroups[i].name == name) 
-    {
-      return testGroups[i]
-    }
+function GetTestGroup(name) {
+  for (var i = 0; i < testGroups.length; i++) {
+    if (testGroups[i].name == name) { return testGroups[i]; }
   }
-  return undefined
+  return undefined;
 }
 
-function GetTest(testGroup, testNameToFind)
-{
-  for (var i = 0; i < testGroup.tests.length; i++)
-  {
+function GetTest(testGroup, testNameToFind) {
+  for (var i = 0; i < testGroup.tests.length; i++) {
     // .func looks something like this, "function FuncName() {..."
-    if (`${testGroup.tests[i].func}`.substring(9).startsWith(testNameToFind))
-    {
-      return testGroup.tests[i]
+    if (`${testGroup.tests[i].func}`.substring(9).startsWith(testNameToFind)) {
+      return testGroup.tests[i];
     }
   }
-  return undefined
+  return undefined;
 }
-
-
