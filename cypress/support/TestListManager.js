@@ -6,9 +6,12 @@
 var testLists = require('../TestLists')
 const helpers = require('./Helpers');
 
-var testGroups = new Array();
 Cypress.TestCase = TestCase;
 Cypress.testList = testLists.testList
+Cypress.regressionTestList = testLists.regressionTestList
+Cypress.masterListOfAllTestCases = testLists.masterListOfAllTestCases
+
+var testGroups = new Array();
 
 // ----------------------------------------------------------------------
 // NOTE: Placement of these "require" statements is important in this file.
