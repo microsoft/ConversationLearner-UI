@@ -192,6 +192,7 @@ class Index extends React.Component<Props, ComponentState> {
 
         const trainDialogValidity = this.getTrainDialogValidity();
         const invalidBot = this.state.botValidationErrors && this.state.botValidationErrors.length > 0;
+        const TRIPLE_DIGIT_LOGDIALOG_COUNT = 99;
 
         return (
             <div className="cl-app-page">
@@ -265,6 +266,7 @@ class Index extends React.Component<Props, ComponentState> {
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-log-dialogs" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
                                 <OF.Icon iconName="List" /><span>Log Dialogs</span>
+                                <span className="count">{this.state.modelLoaded && (this.props.logDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : ''}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-settings" to={{ pathname: `${match.url}/settings`, state: { app } }}>
                                 <OF.Icon iconName="Settings" /><span>Settings</span>
@@ -331,7 +333,8 @@ const mapStateToProps = (state: State) => {
         botInfo: state.bot.botInfo,
         user: state.user.user,
         browserId: state.bot.browserId,
-        activeApps: state.apps.activeApps
+        activeApps: state.apps.activeApps,
+        logDialogs: state.logDialogs
     }
 }
 
