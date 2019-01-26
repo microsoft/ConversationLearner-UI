@@ -268,7 +268,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         // Prevent flash when swiching to EditDialogModal by keeping teach session around
         // after teach session has been terminated
         // Will go away once Edit/Teach dialogs are merged
-        if (newProps.teachSession && newProps.teachSession !== this.props.teachSession) {
+        if (newProps.teachSession && newProps.teachSession.teach && newProps.teachSession !== this.props.teachSession) {
             this.setState({
                 lastTeachSession: {...this.props.teachSession } 
             })
