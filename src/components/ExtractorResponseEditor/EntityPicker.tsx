@@ -19,13 +19,38 @@ interface MenuProps {
     onClickNewEntity: (entityTypeFilter: string) => void
     position: IPosition
     menuRef: any
-    resultsRef: React.Ref<HTMLDivElement>
     searchText: string
     value: any,
     entityTypeFilter: string
 }
 
-export default class EntityPicker extends React.Component<MenuProps> {
+interface ComponentState {
+    resultsRef: React.RefObject<HTMLDivElement>
+}
+export default class EntityPicker extends React.Component<MenuProps, ComponentState> {
+    state: ComponentState = {
+        resultsRef: React.createRef<HTMLDivElement>()
+    }
+
+    componentDidUpdate(prevProps: MenuProps, prevState: ComponentState) {
+        if (this.props.highlightIndex !== prevProps.highlightIndex && this.state.resultsRef.current) {
+            this.scrollHighlightedElementIntoView(this.state.resultsRef.current)
+        }
+    }
+
+    scrollHighlightedElementIntoView = (resultsElement: HTMLDivElement) => {
+        const selectedElement = resultsElement
+            ? resultsElement.querySelector('.custom-toolbar__result--highlight') as HTMLUListElement
+            : null
+
+        if (selectedElement) {
+            selectedElement.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest"
+            })
+        }
+    }
+
     render() {
         const style: any = {
             left: this.props.isVisible ? `1em` : null,
@@ -66,7 +91,7 @@ export default class EntityPicker extends React.Component<MenuProps> {
                     />
                 </div>
                 {this.props.matchedOptions.length !== 0
-                    && <div className="custom-toolbar__results cl-ux-opaque" ref={this.props.resultsRef}>
+                    && <div className="custom-toolbar__results cl-ux-opaque" ref={this.state.resultsRef}>
                         {this.props.matchedOptions.map((matchedOption, i) =>
                             <div
                                 key={matchedOption.original.id}

@@ -146,20 +146,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
 
         this.setState(prevState => ({
             highlightIndex: modifyFunction(prevState.highlightIndex, prevState.matchedOptions.length - 1)
-        }), () => this.scrollHighlightedElementIntoView())
-    }
-
-    scrollHighlightedElementIntoView = () => {
-        const selectedElement = this.resultsElement
-            ? this.resultsElement.querySelector('.custom-toolbar__result--highlight') as HTMLUListElement
-            : null
-
-        if (selectedElement) {
-            selectedElement.scrollIntoView({
-                behavior: "smooth",
-                block: "nearest"
-            })
-        }
+        }))
     }
 
     onSelectHighlightedOption = () => {
@@ -214,7 +201,6 @@ export default class EntityPickerContainer extends React.Component<Props, State>
                 maxDisplayedOptions={this.props.maxDisplayedOptions}
                 position={this.props.position}
                 menuRef={this.props.menuRef}
-                resultsRef={el => this.resultsElement = el}
                 searchText={this.state.searchText}
                 value={this.props.value}
 
