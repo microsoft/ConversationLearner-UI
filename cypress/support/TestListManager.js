@@ -3,169 +3,89 @@
  * Licensed under the MIT License.
 */
 
-const tools = require('../tests/Tools')
-const createModels = require('../tests/CreateModels')
-const train = require('../tests/Train')
-const log = require('../tests/Log')
-const editAndBranching = require('../tests/EditAndBranching')
-const deleteAllTestGeneratedModels = require('../tests/DeleteAllTestGeneratedModels')
-const ux = require('../tests/UX')
-const helpers = require('./Helpers')
-
-// ************ MODIFY THIS LIST *****************************************
-// This is the list of tests that will be executed when "RunTestsFromList"
-// is selected from the Cypress Test GUI.
-export const testList =
-  [
-    // "EditAndBranching.WaitNonWaitErrorHandling",
-    "UX.BotModelMismatch"
-  ]
-
-// ************ MODIFY THIS LIST *****************************************
-// This is the list of tests that will be executed when "(All)"
-// is selected from the Cypress Test GUI.
-export const regressionTestList =
-  [
-    "CreateModels.AllEntityTypes",
-    "CreateModels.DisqualifyingEntities",
-    "CreateModels.WaitVsNoWaitActions",
-    "CreateModels.WhatsYourName",
-    "CreateModels.TagAndFrog",
-    "CreateModels.Travel",
-    "EditAndBranching.VerifyEditTrainingControlsAndLabels",
-    "EditAndBranching.Branching",
-    "EditAndBranching.TagAndFrog",
-    "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
-    "EditAndBranching.WaitNonWaitErrorHandling",
-    "Log.WhatsYourName",
-    "Train.DisqualifyingEntities",
-    "Train.WaitVsNoWaitActions",
-    "Train.WhatsYourName",
-    "Train.MyNameIs",
-    "Train.TagAndFrog",
-    //  "Train.BookMeAFlight",
-    "CleanUp.DeleteAllTestGeneratedModels",
-  ]
-
-// Do NOT alter this list except to add in new test cases as they are created.
-export const masterListOfAllTestCases =
-  [
-    "CreateModels.AllEntityTypes",
-    "CreateModels.DisqualifyingEntities",
-    "CreateModels.WaitVsNoWaitActions",
-    "CreateModels.WhatsYourName",
-    "CreateModels.TagAndFrog",
-    "CreateModels.EndlessLoop",
-    "CreateModels.Travel",
-    "EditAndBranching.VerifyEditTrainingControlsAndLabels",
-    "EditAndBranching.Branching",
-    "EditAndBranching.TagAndFrog",
-    "EditAndBranching.TwoConsecutiveUserInputErrorHandling",
-    "EditAndBranching.WaitNonWaitErrorHandling",
-    "EditAndBranching.AddEndSessionAction",
-    "EditAndBranching.BotModelMismatch",
-    "Log.WhatsYourName",
-    "Log.EndlessLoop",
-    "Train.DisqualifyingEntities",
-    "Train.WaitVsNoWaitActions",
-    "Train.WhatsYourName",
-    "Train.MyNameIs",
-    "Train.TagAndFrog",
-    "Train.BookMeAFlight",
-    "CleanUp.DeleteAllTestGeneratedModels",
-    "UX.BotModelMismatch",
-  ]
-
-// The lists above are in a format that is convenient for a developer to copy
-// and paste in order to create a list of tests.
+// ----------------------------------------------------------------------
+// This code manages our test cases in such a way that we can run
+// a single, individual test case (spec file) as Cypress intended and
+// also to be able to run a select list of multiple tests in a way that
+// Cypress does not natively support.
 //
-// This next list has all the details needed for creating the test for Cypress.
-const testGroups =
-  [
-    {
-      name: 'CreateModels', tests:
-        [
-          { name: "All Entity Types", func: createModels.AllEntityTypes },
-          { name: "Disqualifying Entities", func: createModels.DisqualifyingEntities },
-          { name: "Wait vs No Wait Action Tests", func: createModels.WaitVsNoWaitActions },
-          { name: "What's Your Name", func: createModels.WhatsYourName },
-          { name: "Tag and Frog", func: createModels.TagAndFrog },
-          { name: "Endless Loop", func: createModels.EndlessLoop },
-          { name: "Travel", func: createModels.Travel },
-        ]
-    },
-    {
-      name: 'EditAndBranching', tests:
-        [
-          { name: "Verify Edit Training Controls and Labels", func: editAndBranching.VerifyEditTrainingControlsAndLabels },
-          { name: "Branching", func: editAndBranching.Branching },
-          { name: "Tag and Frog", func: editAndBranching.TagAndFrog },
-          { name: "Two Consecutive User Input Error Handling", func: editAndBranching.TwoConsecutiveUserInputErrorHandling },
-          { name: "Wait-Non-Wait Error Handling", func: editAndBranching.WaitNonWaitErrorHandling },
-          { name: "End-Session-Action", func: editAndBranching.AddEndSessionAction },
-          { name: "Bot-Model-Mismatch", func: editAndBranching.BotModelMismatch },
-        ]
-    },
-    {
-      name: 'Log', tests:
-        [
-          { name: "What's Your Name", func: log.WhatsYourName },
-          { name: "Endless Loop", func: log.EndlessLoop },
-        ]
-    },
-    {
-      name: 'Train', tests:
-        [
-          { name: "Disqualifying Entities", func: train.DisqualifyingEntities },
-          { name: "Wait vs No Wait Action", func: train.WaitVsNoWaitActions },
-          { name: "What's Your Name", func: train.WhatsYourName },
-          { name: "My Name Is", func: train.MyNameIs },
-          { name: "Tag and Frog", func: train.TagAndFrog },
-          { name: "Book me a Flight", func: train.BookMeAFlight }
-        ]
-    },
-    {
-      name: 'CleanUp', tests:
-        [
-          { name: 'Delete All Test Generated Models', func: deleteAllTestGeneratedModels.DeleteAllTestGeneratedModels },
-        ]
-    },
-    {
-      name: 'Tools', tests:
-        [
-          { name: 'Visit Home Page', func: tools.VisitHomePage },
-          { name: 'Create Model 1', func: tools.CreateModel1 },
-          { name: 'Create Model 2', func: tools.CreateModel2 },
-          { name: 'Create Model 3', func: tools.CreateModel3 },
-          { name: 'Create Model 4', func: tools.CreateModel4 },
-          { name: 'Create Model 5', func: tools.CreateModel5 },
-        ]
-    },
-    {
-      name: 'UX', tests:
-        [
-          { name: 'Bot Model Mismatch', func: ux.BotModelMismatch },
-        ]
-    },
-  ]
+// This is accomplished by doing the following:
+//  1) Place all .js files, which should contain multiple test cases, in 
+//     the "cypress/tests" folder.
+//  2) For each test case, directly before the test function, call the
+//     following function with appropriate parameters:
+//        Cypress.TestCase(testGroupName, testDescription, testFunction)
+//  3) From the command line run: 
+//        node cypress\GenerateCypressTestSpecs.js
+//     (It is intended that this be automated, but at the moment it is not.)
+// ----------------------------------------------------------------------
+
+var testLists = require('../TestLists');
+const helpers = require('./Helpers');
+
+Cypress.TestCase = TestCase;
+Cypress.testList = testLists.testList;
+Cypress.regressionTestList = testLists.regressionTestList;
+Cypress.masterListOfAllTestCases = testLists.masterListOfAllTestCases;
+
+var testGroups = new Array();
+
+// ----------------------------------------------------------------------
+// NOTE: Placement of these "require" statements is important in this file.
+//
+// Each of these required files will call back into the TestCase function
+// found in this file.
+// ----------------------------------------------------------------------
+
+const createModels = require('../tests/CreateModels');
+const editAndBranching = require('../tests/EditAndBranching');
+const log = require('../tests/Log');
+const train = require('../tests/Train');
+const tools = require('../tests/Tools');
+const zTemp = require('../tests/zTemp')
+
+// ----------------------------------------------------------------------
+
+function TestCase(testGroupName, testDescription, testFunction) {
+  var testFunctionAsString = `${testFunction}`;
+  var testFunctionName = testFunctionAsString.substring(9, testFunctionAsString.indexOf('(', 9));
+  helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunctionName})`);
+  
+  var testGroup = GetTestGroup(testGroupName);
+  if (!testGroup)
+  {
+    testGroup = { name: testGroupName, tests: new Array() };
+    testGroups.push(testGroup);
+  }
+
+  var test = { name: testDescription, func: testFunction };
+  testGroup.tests.push(test);
+
+  var testSpecification = `${testGroupName}.${testFunctionName}`;
+  if (-1 == testLists.masterListOfAllTestCases.indexOf(testSpecification)) {
+    throw `There is a syncronization error between our master test list and a TestCase specification for: '${testSpecification}'` }
+}
+
 
 export function AddToCypressTestList(testList) {
-  var funcName = `AddToCypressTestList()`
-  helpers.ConLog(funcName, `List of Tests: ${testList}`)
-
-  if (!Array.isArray(testList)) testList = [testList]
-
-  var testListIterator = new TestListIterator(testList)
-
-  var test = testListIterator.next
-  while (test != undefined) {
-    helpers.ConLog(funcName, `Adding Group: ${test.group}`)
+  var funcName = `AddToCypressTestList()`;
+  helpers.ConLog(funcName, `List of Tests: ${testList}`);
+  
+  if (!Array.isArray(testList)) testList = [testList];
+  
+  var testListIterator = new TestListIterator(testList);
+  
+  var test = testListIterator.next;
+  while (test != undefined)
+  {
+    helpers.ConLog(funcName, `Adding Group: ${test.group}`);
     describe(test.group, () => {
-      var currentGroupName = test.group
-      while (test != undefined && test.group == currentGroupName) {
-        helpers.ConLog(funcName, `Adding Test Case: ${test.name}`)
-        it(test.name, test.func)
-        test = testListIterator.next
+      var currentGroupName = test.group;
+      while (test != undefined && test.group == currentGroupName)
+      {
+        helpers.ConLog(funcName, `Adding Test Case: ${test.name}`);
+        it(test.name, test.func);
+        test = testListIterator.next;
       }
     })
   }
@@ -173,9 +93,9 @@ export function AddToCypressTestList(testList) {
 
 class TestListIterator {
   constructor(testList) {
-    this.testList = testList
-    this.index = 0
-    this.currentGroup = { name: '' }
+    this.testList = testList;
+    this.index = 0;
+    this.currentGroup = {name: ''};
   }
 
   // groupName.testName - 'testName' from 'groupName'
@@ -184,43 +104,30 @@ class TestListIterator {
   // *.testName         - All tests with all groups matching 'testName'
   // groupName.*        - All tests from 'groupName'
   get next() {
-    if (this.index >= this.testList.length) return undefined
+    if (this.index >= this.testList.length) return undefined;
 
-    var x = this.testList[this.index].split('.')
-    if (x.length != 2) throw `Invalid item in testList[${this.index}]: "${this.testList[this.index]}" - 'group DOT testName' format is expected`
-    var groupName = x[0]
-    var testName = x[1]
+    var x = this.testList[this.index].split('.');
+    if (x.length != 2) throw `Invalid item in testList[${this.index}]: "${this.testList[this.index]}" - 'group DOT testName' format is expected`;
+    var groupName = x[0];
+    var testName = x[1];
 
     if (this.currentGroup.name != groupName) {
-      this.currentGroup = GetTestGroup(groupName)
-      if (this.currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`
+      this.currentGroup = GetTestGroup(groupName);
+      if (this.currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`;
     }
+    
+    var test = GetTest(this.currentGroup, testName);
+    if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`;
 
-    var test = GetTest(this.currentGroup, testName)
-    if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`
-
-    this.index++
-    return { group: this.currentGroup.name, name: test.name, func: test.func }
+    this.index++;
+    return {group: this.currentGroup.name, name: test.name, func: test.func};
   }
 }
 
 function GetTestGroup(name) {
-  for (var i = 0; i < testGroups.length; i++) {
-    if (testGroups[i].name == name) {
-      return testGroups[i]
-    }
-  }
-  return undefined
+  return testGroups.find(testGroup => testGroup.name === name);
 }
 
 function GetTest(testGroup, testNameToFind) {
-  var toFind = `function ${testNameToFind}(`
-  for (var i = 0; i < testGroup.tests.length; i++) {
-    if (`${testGroup.tests[i].func}`.startsWith(toFind)) {
-      return testGroup.tests[i]
-    }
-  }
-  return undefined
+  return testGroup.tests.find(test => test.func.toString().substring(9).startsWith(testNameToFind));
 }
-
-
