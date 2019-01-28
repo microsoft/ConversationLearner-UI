@@ -646,14 +646,14 @@ describe('Kitchen Sink', function () {
       // Pass options to the visit
       cy.visit('https://example.cypress.io/commands/navigation', {
         timeout: 50000, // increase total time for the visit to resolve
-        onBeforeLoad (contentWindow) {
+        onBeforeLoad(contentWindow) {
           // contentWindow is the remote page's window object
         },
-        onLoad (contentWindow) {
+        onLoad(contentWindow) {
           // contentWindow is the remote page's window object
         },
       })
-      })
+    })
   })
 
   context('Assertions', function () {
@@ -695,27 +695,27 @@ describe('Kitchen Sink', function () {
         // Pass a function to should that can have any number
         // of explicit assertions within it.
         cy.get('.assertions-p').find('p')
-        .should(function ($p) {
-          // return an array of texts from all of the p's
-          let texts = $p.map(function (i, el) {
-            // https://on.cypress.io/$
-            return Cypress.$(el).text()
+          .should(function ($p) {
+            // return an array of texts from all of the p's
+            let texts = $p.map(function (i, el) {
+              // https://on.cypress.io/$
+              return Cypress.$(el).text()
+            })
+
+            // jquery map returns jquery object
+            // and .get() convert this to simple array
+            texts = texts.get()
+
+            // array should have length of 3
+            expect(texts).to.have.length(3)
+
+            // set this specific subject
+            expect(texts).to.deep.eq([
+              'Some text from first p',
+              'More text from second p',
+              'And even more text from third p',
+            ])
           })
-
-          // jquery map returns jquery object
-          // and .get() convert this to simple array
-          texts = texts.get()
-
-          // array should have length of 3
-          expect(texts).to.have.length(3)
-
-          // set this specific subject
-          expect(texts).to.deep.eq([
-            'Some text from first p',
-            'More text from second p',
-            'And even more text from third p',
-          ])
-        })
       })
     })
   })
@@ -1224,7 +1224,7 @@ describe('Kitchen Sink', function () {
       cy.visit('https://example.cypress.io/commands/spies-stubs-clocks')
 
       let obj = {
-        foo () {},
+        foo() { },
       }
 
       let spy = cy.spy(obj, 'foo').as('anyArgs')
@@ -1240,7 +1240,7 @@ describe('Kitchen Sink', function () {
       cy.visit('https://example.cypress.io/commands/spies-stubs-clocks')
 
       let obj = {
-        foo () {},
+        foo() { },
       }
 
       let stub = cy.stub(obj, 'foo').as('foo')
@@ -1329,7 +1329,7 @@ describe('Kitchen Sink', function () {
             $div.append(img)
 
             cy.get('.utility-blob img').click()
-            .should('have.attr', 'src', dataUrl)
+              .should('have.attr', 'src', dataUrl)
           })
       })
     })
@@ -1338,7 +1338,7 @@ describe('Kitchen Sink', function () {
       // https://on.cypress.io/promise
       let waited = false
 
-      function waitOneSecond () {
+      function waitOneSecond() {
         // return a promise that resolves after 1 second
         return new Cypress.Promise(function (resolve, reject) {
           setTimeout(function () {
@@ -1488,7 +1488,7 @@ describe('Kitchen Sink', function () {
       Cypress.Server.defaults({
         delay: 0,
         force404: false,
-        whitelist (xhr) {
+        whitelist(xhr) {
           // handle custom logic for whitelisting
         },
       })

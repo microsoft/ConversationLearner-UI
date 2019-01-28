@@ -167,7 +167,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
         if (filledEntityMap && this.props.onSetInitialEntities) {
-            await this.props.onSetInitialEntities(filledEntityMap.FilledEntities())
+            await this.props.onSetInitialEntities(filledEntityMap)
         }
         this.setState({
             isInitStateOpen: false,
@@ -876,7 +876,7 @@ export interface ReceivedProps {
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onEndSessionActivity: () => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any
-    onSetInitialEntities: ((initialFilledEntities: CLM.FilledEntity[]) => void) | null
+    onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => void) | null
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string
