@@ -572,7 +572,7 @@ export default {
         [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner Model',
         [FM.APPCREATOR_FIELDS_NAME_LABEL]: 'Name',
         [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New Model Name',
-        [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Model Name...',
+        [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Model name...',
         [FM.APPCREATOR_FIELDS_LOCALE_LABEL]: 'Locale',
         [FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION]: 'Copy',
         [FM.APPCREATOR_COPYBUTTON_TEXT]: 'Copy',
