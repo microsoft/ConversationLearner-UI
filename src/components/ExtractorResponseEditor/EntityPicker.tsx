@@ -92,9 +92,10 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
                         onChange={event => this.props.onChangeSearchText(event.target.value)}
                     />
                 </div>
-                {this.props.matchedOptions.length !== 0
-                    && <div className="custom-toolbar__results cl-ux-opaque" ref={this.state.resultsRef}>
-                        {this.props.matchedOptions.map((matchedOption, i) =>
+                <div className="custom-toolbar__results" ref={this.state.resultsRef}>
+                    {this.props.matchedOptions.length === 0
+                        ? <div className="custom-toolbar__result">No matching entites</div>
+                        : this.props.matchedOptions.map((matchedOption, i) =>
                             <div
                                 key={matchedOption.original.id}
                                 onClick={() => this.props.onClickOption(matchedOption.original)}
@@ -104,7 +105,7 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
                                 <FuseMatch matches={matchedOption.matchedStrings} />
                             </div>
                         )}
-                    </div>}
+                    </div>
                 </React.Fragment>
             </div>
         )
