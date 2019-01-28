@@ -110,7 +110,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
             this.setState(prevState => ({
                 ...initialState,
                 matchedOptions,
-                highlightIndex: prevState.highlightIndex > (matchedOptions.length - 1) ? 0 : prevState.highlightIndex
+                highlightIndex: 0 //prevState.highlightIndex > (matchedOptions.length - 1) ? 0 : prevState.highlightIndex
             }))
         }
     }

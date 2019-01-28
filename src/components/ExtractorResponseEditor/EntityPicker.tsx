@@ -44,10 +44,12 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
             : null
 
         if (selectedElement) {
-            selectedElement.scrollIntoView({
-                behavior: "smooth",
-                block: "nearest"
-            })
+            setTimeout(() => {
+                selectedElement.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest"
+                })
+            }, 0)
         }
     }
 
