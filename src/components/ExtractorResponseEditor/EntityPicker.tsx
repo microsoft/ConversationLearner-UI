@@ -6,7 +6,6 @@ import * as React from 'react'
 import { IOption, IPosition, MatchedOption } from './models'
 import FuseMatch from './FuseMatch'
 import './EntityPicker.css'
-import { ScrollablePane } from 'office-ui-fabric-react'
 
 interface MenuProps {
     highlightIndex: number
@@ -20,6 +19,7 @@ interface MenuProps {
     onClickNewEntity: (entityTypeFilter: string) => void
     position: IPosition
     menuRef: any
+    resultsRef: React.Ref<HTMLDivElement>
     searchText: string
     value: any,
     entityTypeFilter: string
@@ -66,7 +66,7 @@ export default class EntityPicker extends React.Component<MenuProps> {
                     />
                 </div>
                 {this.props.matchedOptions.length !== 0
-                    && <ScrollablePane className="cl-ux-opaque" style={{ marginTop: "5.3em" }}>
+                    && <div className="custom-toolbar__results cl-ux-opaque" ref={this.props.resultsRef}>
                         {this.props.matchedOptions.map((matchedOption, i) =>
                             <div
                                 key={matchedOption.original.id}
@@ -77,8 +77,7 @@ export default class EntityPicker extends React.Component<MenuProps> {
                                 <FuseMatch matches={matchedOption.matchedStrings} />
                             </div>
                         )}
-
-                    </ScrollablePane>}
+                    </div>}
                 </React.Fragment>
             </div>
         )
