@@ -270,7 +270,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         // User clicked next to a single character.  Go ahead and autoselect it
         if (tokenNodes.size === 0 && operationsJs.length === 1) {
-            console.log("SELECT CHAR")
             this.onSelectChar()
             return
         }
