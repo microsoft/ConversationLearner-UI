@@ -25,20 +25,23 @@ const createTeachSessionRejected = (): ActionObject =>
         type: AT.CREATE_TEACH_SESSION_REJECTED
     })
 
-const createTeachSessionFulfilled = (teachResponse: CLM.TeachResponse): ActionObject =>
+const createTeachSessionFulfilled = (teachResponse: CLM.TeachResponse, memories: CLM.Memory[]): ActionObject =>
     ({
         type: AT.CREATE_TEACH_SESSION_FULFILLED,
-        teachSession: teachResponse as CLM.Teach
+        teachSession: teachResponse as CLM.Teach,
+        memories
     })
 
-export const createTeachSessionThunkAsync = (appId: string, initialFilledEntities: CLM.FilledEntity[] = []) => {
+export const createTeachSessionThunkAsync = (appId: string, initialEntityMap: CLM.FilledEntityMap | null = null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
         dispatch(createTeachSessionAsync())
 
         try {
+            const initialFilledEntities = initialEntityMap ? initialEntityMap.FilledEntities() : []
+            const initialMemory = initialEntityMap ? initialEntityMap.ToMemory() : []
             const teachResponse = await clClient.teachSessionCreate(appId, initialFilledEntities)
-            dispatch(createTeachSessionFulfilled(teachResponse))
+            dispatch(createTeachSessionFulfilled(teachResponse, initialMemory))
             return teachResponse
         }
         catch (e) {

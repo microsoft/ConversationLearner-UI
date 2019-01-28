@@ -268,9 +268,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         // Prevent flash when swiching to EditDialogModal by keeping teach session around
         // after teach session has been terminated
         // Will go away once Edit/Teach dialogs are merged
-        if (newProps.teachSession && newProps.teachSession !== this.props.teachSession) {
+        if (newProps.teachSession && newProps.teachSession.teach && newProps.teachSession !== this.props.teachSession) {
             this.setState({
-                lastTeachSession: this.props.teachSession //{...this.props.teachSession, dialogMode: newProps.teachSession.dialogMode}
+                lastTeachSession: {...this.props.teachSession } 
             })
         }
         if (newProps.filteredAction && this.props.filteredAction !== newProps.filteredAction) {
@@ -373,30 +373,29 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     onSelectActionFilter(item: OF.IDropdownOption) {
         this.setState({
-            actionFilter: (-1 != item.key) ? item : null
+            actionFilter: (item.key !== -1) ? item : null
         })
     }
 
     @OF.autobind
-    async onSetInitialEntities(initialFilledEntities: CLM.FilledEntity[]) {
+    async onSetInitialEntities(initialFilledEntityMap: CLM.FilledEntityMap) {
 
         if (this.props.teachSession.teach) {
 
-            // Store closing teach session
-            const teach = this.props.teachSession.teach
-            
+            await Util.setStateAsync(this, {
+                lastTeachSession: {...this.props.teachSession }
+            })
+
+            await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
+
             // Create new one with initial entities
-            await this.onClickNewTeachSession(initialFilledEntities)
-
-            // Delete existing teach session after creating new one so window stays open
-            await this.props.deleteTeachSessionThunkAsync(this.props.user.id, teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
-
+            await this.onClickNewTeachSession(initialFilledEntityMap)
         }
     }
 
-    async onClickNewTeachSession(initialFilledEntities: CLM.FilledEntity[] = []) {
+    async onClickNewTeachSession(initialFilledEntityMap: CLM.FilledEntityMap | null = null) {
         try {
-            await this.props.createTeachSessionThunkAsync(this.props.app.appId, initialFilledEntities)
+            await this.props.createTeachSessionThunkAsync(this.props.app.appId, initialFilledEntityMap)
 
             this.setState({
                 isTeachDialogModalOpen: true,
