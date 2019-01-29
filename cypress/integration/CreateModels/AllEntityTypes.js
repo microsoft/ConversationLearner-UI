@@ -1,0 +1,1 @@
+require('../../support/TestListManager').AddToCypressTestList('CreateModels.AllEntityTypes')
