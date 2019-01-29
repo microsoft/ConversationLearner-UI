@@ -54,9 +54,13 @@
     "slate": "0.31.3",
     "slate-plain-serializer": "0.4.16",
     "slate-react": "0.10.17",
+    "url": "^0.11.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
     "@commitlint/cli": "7.0.0",
     "@commitlint/config-conventional": "7.0.1",
     "@types/execa": "^0.8.1",
