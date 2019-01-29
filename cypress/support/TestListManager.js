@@ -45,10 +45,23 @@ const tools = require('../tests/Tools');
 const zTemp = require('../tests/zTemp')
 
 // ----------------------------------------------------------------------
+// Call this function to add an ordinary function to the list of test 
+// cases that Cypress will recognize as a test. This technique is needed
+// to support running multiple tests from any spec file in any order.
+// ----------------------------------------------------------------------
 
 function TestCase(testGroupName, testDescription, testFunction) {
-  var testFunctionAsString = `${testFunction}`;
-  var testFunctionName = testFunctionAsString.substring(9, testFunctionAsString.indexOf('(', 9));
+  // These lines of code converts the testFunction from a callable
+  // function to a string containing the name of this function. It works
+  // like this:
+  //   1) We convert the function to a string containing the full function
+  //      that looks like: 
+  //        "function TheTestFunctionToRun(param1, param2) {...}"
+  //   2) The magic number 9 here is skipping past the string "function "
+  //      and grabbing just the name of the function.
+  var functionPrefixLength = 'function '.length
+  var testFunctionAsString = testFunction.toString();
+  var testFunctionName = testFunctionAsString.substring(functionPrefixLength, testFunctionAsString.indexOf('(', functionPrefixLength));
   helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunctionName})`);
   
   var testGroup = GetTestGroup(testGroupName);

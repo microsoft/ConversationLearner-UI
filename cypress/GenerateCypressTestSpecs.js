@@ -16,54 +16,84 @@
 //   1) The group subfolders within "cypress/integration".
 //   2) An individual test spec file for each, in that same folder as 
 //      expected by Cypress.
-//   3) The test list: masterListOfAllTestCases
+//   3) The test list "masterListOfAllTestCases" in cypress/TestList.js
 // ----------------------------------------------------------------------
 
 var fs = require('fs')
 
 const pathToTestFiles = './cypress/tests'
+const pathToTestSpecFiles = './cypress/integration/'
+const CypressTestCase = 'Cypress.TestCase('
+
 var fullTestList = []
 
-try { 
-  LogToFile('Starting GenerateCypressTestSpecs.js')
-  main(); 
+console.log('--- Generate Cypress Test Spec When Test .js Files Change ---')
+main();
+WatchAndRun('./cypress/tests', () => {
+  console.log(`\r\nDetected a file change in ${pathToTestFiles}`);
+  main()
+});
+
+// ----------------------------------------------------------------------
+// Watch the a folder for changes and when one is found run a function.
+// ----------------------------------------------------------------------
+
+function WatchAndRun(pathToWatch, functionToRun) {
+  var timeoutHandle;
+  var timeOfLastChange;
+  
+  fs.watch(pathToWatch, (eventType, filename) => {
+    var now = new Date();
+    if (timeOfLastChange && now - timeOfLastChange < 1000) { clearTimeout(timeoutHandle); }
+    timeOfLastChange = now;
+    timeoutHandle = setTimeout(functionToRun, 1000)
+  });
 }
-catch(error) { LogToFile(`Caught an Exception:\r\n${error}`)}
-fs.closeSync(logFile);
+
+// ----------------------------------------------------------------------
 
 function main() {
-  // Get the test list file that we MIGHT need to modify.
-  const pathToTestList = './cypress/TestLists.js';
-  var testList_jsContents = fs.readFileSync(pathToTestList, 'ascii');
-  // console.log(testList_jsContents)
-  // console.log()
+  try {
+    fullTestList = []
 
-  // Get the list of test js files.
-  var testFileDirectory = fs.readdirSync(pathToTestFiles);
-  // console.log(testFileDirectory);
-  // console.log()
+    // Get the test list file that we MIGHT need to modify.
+    const pathToTestList = './cypress/TestLists.js';
+    var testList_jsContents = fs.readFileSync(pathToTestList, 'ascii');
+    // console.log(testList_jsContents)
+    // console.log()
 
-  // Parse each test js file.
-  testFileDirectory.forEach(fileName => { ParseTestJsFile(fileName); });
+    // Get the list of test js files.
+    var testFileDirectory = fs.readdirSync(pathToTestFiles);
+    // console.log(testFileDirectory);
+    // console.log()
 
-  // Finalize our findings by re-writing out the TestList.js file ONLY if it has changed.
-  var index = testList_jsContents.indexOf('// ************ Generated Code Beyond this Point *************************');
-  var newFileContents =
-    '// ************ Generated Code Beyond this Point *************************\r\n' +
-    '// Do NOT manually alter this file from this point onwards.\r\n' +
-    '// Any changes you make will be overridden at runtime.\r\n' +
-    'export const masterListOfAllTestCases = [\r\n';
-  fullTestList.forEach(testSpecification => { newFileContents += `  '${testSpecification}',\r\n` });
-  newFileContents += '];\r\n';
+    // Parse each test js file.
+    testFileDirectory.forEach(fileName => { ParseTestJsFile(fileName); });
 
-  // Only write the file out if something has changed.
-  if (!testList_jsContents.endsWith(newFileContents)) {
-    newFileContents = testList_jsContents.substring(0, index) + newFileContents;
-    console.log(`NEW FILE CONTENTS ARE:\r\n${newFileContents}`)
-    fs.writeFileSync(pathToTestList, newFileContents)
+    // Finalize our findings by re-writing out the TestList.js file ONLY if it has changed.
+    var index = testList_jsContents.indexOf('// ************ Generated Code Beyond this Point *************************');
+    var newFileContents = 
+`// ************ Generated Code Beyond this Point *************************
+// Do NOT manually alter this file from this point onwards.
+// Any changes you make will be overridden at runtime.
+export const masterListOfAllTestCases = [
+`;
+    fullTestList.forEach(testSpecification => { newFileContents += `  '${testSpecification}',\r\n` });
+    newFileContents += '];\r\n';
+
+    // Only write the file out if something has changed.
+    if (!testList_jsContents.endsWith(newFileContents)) {
+      newFileContents = testList_jsContents.substring(0, index) + newFileContents;
+      fs.writeFileSync(pathToTestList, newFileContents);
+      console.log(`TestList.js has been re-generated`);
+      RemoveUnusedSpecFiles();
+    }
+    else console.log('NOTHING HAS CHANGED')
   }
-  else console.log('NOTHING HAS CHANGED')
+  catch(error) { console.log(`Caught an Exception:\r\n${error}`)}
 }
+
+// ----------------------------------------------------------------------
 
 function ParseTestJsFile(fileName) {
   var fileContents = fs.readFileSync(`${pathToTestFiles}/${fileName}`, 'ascii')
@@ -73,8 +103,10 @@ function ParseTestJsFile(fileName) {
   
   fileLines.forEach(line => {
     line = line.trim()
-    if (line.startsWith('Cypress.TestCase(')) {
-      var iStart = line.indexOf("'", 17) + 1
+    if (line.startsWith(CypressTestCase)) {
+      // The line we are parsing will look something like this:
+      //    Cypress.TestCase('Tools', 'Visit Home Page', VisitHomePage)
+      var iStart = line.indexOf("'", CypressTestCase.length) + 1
       var iEnd = line.indexOf("'", iStart)
       var groupName = line.substring(iStart, iEnd)
   
@@ -89,21 +121,49 @@ function ParseTestJsFile(fileName) {
   });
 }
 
+// ----------------------------------------------------------------------
+
 function CreateSpecFile(groupName, testName) {
-  var folderPath = `./cypress/integration/${groupName}`;
+  var folderPath = `${pathToTestSpecFiles}/${groupName}`;
   if (!fs.existsSync(folderPath)) { fs.mkdirSync(folderPath) }
   
   var filePath = `${folderPath}/${testName}.js`;
   if (!fs.existsSync(filePath)) {
     var newFileContents = `require('../../support/TestListManager').AddToCypressTestList('${groupName}.${testName}')`;
     fs.writeFileSync(filePath, newFileContents)
+    console.log(`New spec file generated: ${filePath}`)
   }
 }
 
-var logFile
-function LogToFile(message) {
-  if (!logFile) logFile = fs.openSync('c:/temp/GenerateCypressTestSpecs.log', 'a');
+// ----------------------------------------------------------------------
+// We intentionally skip the root Cypress test spec folder because the 
+// root folder contains special hand coded spec files. We only delete
+// spec .js files from the group subfolders that are no longer in our 
+// list of tests because those folders should only contain generated 
+// files.
+// ----------------------------------------------------------------------
 
-  fs.appendFileSync(logFile, message);
+function RemoveUnusedSpecFiles() {
+  var nothingWasDeleted = true
+  // Get a list of directory entries for folders under the Cypress test spec file.
+  var directoryEntries = fs.readdirSync(pathToTestSpecFiles, {withFileTypes: true});
+
+  directoryEntries = directoryEntries.filter(directoryEntry => directoryEntry.isDirectory());
+  
+  directoryEntries.forEach(directoryEntry => {
+    var workingPath = `${pathToTestSpecFiles}${directoryEntry.name}`;
+    var specFileList = fs.readdirSync(workingPath);
+    
+    specFileList.forEach(specFileName => {
+      if(specFileName.endsWith('.js')) {
+        var groupFileSpecification = `${directoryEntry.name}.${specFileName.substring(0, specFileName.length - 3)}`;
+        if(!fullTestList.find(testSpecification => testSpecification === groupFileSpecification)) {
+          fs.unlinkSync(`${workingPath}/${specFileName}`)
+          console.log(`Deleted: ${workingPath}/${specFileName}`);
+          nothingWasDeleted = false;
+        }
+      }
+    });
+  });
+  if (nothingWasDeleted) console.log('No spec file was deleted.')
 }
-
