@@ -5,6 +5,12 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"type": "node",
+			"request": "launch",
+			"name": "Launch FileServices.js",
+			"program": "${workspaceFolder}/cypress/plugins/FileServices.js"
+		},
+		{
 			"name": "Chrome",
 			"type": "chrome",
 			"request": "launch",

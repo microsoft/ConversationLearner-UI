@@ -6,7 +6,6 @@ import * as React from 'react'
 import { IOption, IPosition, MatchedOption } from './models'
 import FuseMatch from './FuseMatch'
 import './EntityPicker.css'
-import { ScrollablePane } from 'office-ui-fabric-react'
 
 interface MenuProps {
     highlightIndex: number
@@ -25,7 +24,35 @@ interface MenuProps {
     entityTypeFilter: string
 }
 
-export default class EntityPicker extends React.Component<MenuProps> {
+interface ComponentState {
+    resultsRef: React.RefObject<HTMLDivElement>
+}
+export default class EntityPicker extends React.Component<MenuProps, ComponentState> {
+    state: ComponentState = {
+        resultsRef: React.createRef<HTMLDivElement>()
+    }
+
+    componentDidUpdate(prevProps: MenuProps, prevState: ComponentState) {
+        if (this.props.highlightIndex !== prevProps.highlightIndex && this.state.resultsRef.current) {
+            this.scrollHighlightedElementIntoView(this.state.resultsRef.current)
+        }
+    }
+
+    scrollHighlightedElementIntoView = (resultsElement: HTMLDivElement) => {
+        const selectedElement = resultsElement
+            ? resultsElement.querySelector('.custom-toolbar__result--highlight') as HTMLUListElement
+            : null
+
+        if (selectedElement) {
+            setTimeout(() => {
+                selectedElement.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest"
+                })
+            }, 0)
+        }
+    }
+
     render() {
         const style: any = {
             left: this.props.isVisible ? `1em` : null,
@@ -65,9 +92,10 @@ export default class EntityPicker extends React.Component<MenuProps> {
                         onChange={event => this.props.onChangeSearchText(event.target.value)}
                     />
                 </div>
-                {this.props.matchedOptions.length !== 0
-                    && <ScrollablePane className="cl-ux-opaque" style={{ marginTop: "5.3em" }}>
-                        {this.props.matchedOptions.map((matchedOption, i) =>
+                <div className="custom-toolbar__results" ref={this.state.resultsRef}>
+                    {this.props.matchedOptions.length === 0
+                        ? <div className="custom-toolbar__result">No matching entites</div>
+                        : this.props.matchedOptions.map((matchedOption, i) =>
                             <div
                                 key={matchedOption.original.id}
                                 onClick={() => this.props.onClickOption(matchedOption.original)}
@@ -77,8 +105,7 @@ export default class EntityPicker extends React.Component<MenuProps> {
                                 <FuseMatch matches={matchedOption.matchedStrings} />
                             </div>
                         )}
-
-                    </ScrollablePane>}
+                    </div>
                 </React.Fragment>
             </div>
         )
