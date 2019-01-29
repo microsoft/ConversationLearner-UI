@@ -49,9 +49,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 180,
             isResizable: true,
             getSortValue: entity => {
-                let display = (entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS)
-                    ? 'CUSTOM' : entity.entityType;
-                return display.toLowerCase();
+                return entity.entityType.toLowerCase();
             },
             render: entity => {
                 let display = entity.entityType
@@ -60,6 +58,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 }
                 else if (display === EntityType.LUIS) {
                     display = "CUSTOM"
+                }
+                else if (display === EntityType.ENUM) {
+                    display = "ENUM"
                 }
                 return (
                     <span className={OF.FontClassNames.mediumPlus}>
