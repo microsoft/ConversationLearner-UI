@@ -307,7 +307,7 @@ class Container extends React.Component<Props, ComponentState> {
                     needPrebuiltWarning: needPrebuildWarning,
                     newOrEditedEntity: newOrEditedEntity
                 })
-        } 
+        }
         // Save and close
         else {
             this.saveAndClose(newOrEditedEntity)
@@ -320,7 +320,7 @@ class Container extends React.Component<Props, ComponentState> {
             showValidationWarning: false
         })
         if (this.state.newOrEditedEntity) {
-          this.saveAndClose(this.state.newOrEditedEntity)
+            this.saveAndClose(this.state.newOrEditedEntity)
         }
     }
 
@@ -525,9 +525,9 @@ class Container extends React.Component<Props, ComponentState> {
     newPrebuilt(newOrEditedEntity: CLM.EntityBase): string | null {
         // Check resolvers
         if (newOrEditedEntity.resolverType && newOrEditedEntity.resolverType !== "none") {
-          
+
             let resolverType = newOrEditedEntity.resolverType
-            let existingBuiltIn = this.props.entities.find(e => 
+            let existingBuiltIn = this.props.entities.find(e =>
                 e.resolverType === resolverType ||
                 e.entityType === resolverType)
 
@@ -538,13 +538,13 @@ class Container extends React.Component<Props, ComponentState> {
 
         // Check prebuilts
         if (this.state.isPrebuilt) {
-     
+
             // If a prebuilt - entity name is prebuilt name
-           let existingBuiltIn = this.props.entities.find(e => 
+            let existingBuiltIn = this.props.entities.find(e =>
                 e.resolverType === newOrEditedEntity.entityType ||
                 e.entityType === newOrEditedEntity.entityType)
 
-            if (!existingBuiltIn) { 
+            if (!existingBuiltIn) {
                 return newOrEditedEntity.entityName
             }
         }
@@ -557,7 +557,7 @@ class Container extends React.Component<Props, ComponentState> {
             console.warn(`You confirmed the edit, but the newOrEditedEntity state was not available. This should not be possible. Contact Support`)
             return
         }
- 
+
         this.setState({
             isConfirmEditModalOpen: false,
             newOrEditedEntity: null
@@ -611,7 +611,7 @@ class Container extends React.Component<Props, ComponentState> {
             onChangeMultiValue={this.onChangeMultivalue}
 
             isNegatable={this.state.isNegatableVal}
-            isNegatableDisabled={this.state.isPrebuilt}
+            isNegatableDisabled={this.state.isPrebuilt || this.state.isProgrammaticVal}
             onChangeNegatable={this.onChangeReversible}
 
             isEditing={this.state.isEditing}
@@ -640,7 +640,7 @@ class Container extends React.Component<Props, ComponentState> {
 
             needPrebuiltWarning={this.state.needPrebuiltWarning}
             onClosePrebuiltWarning={this.onClosePrebuiltWarning}
-        
+
             selectedResolverKey={this.state.entityResolverVal}
             needResolverType={!this.state.isPrebuilt && !this.state.isProgrammaticVal}
             resolverOptions={this.resolverOptions}
