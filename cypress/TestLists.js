@@ -68,5 +68,6 @@ export const masterListOfAllTestCases = [
   'Train.MyNameIs',
   'Train.TagAndFrog',
   'Train.BookMeAFlight',
+  'UX.BotModelMismatch',
   'zTemp.zTemp',
 ];
