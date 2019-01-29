@@ -21,5 +21,13 @@
     ],
     "workbench.colorCustomizations": {
         "activityBar.background": "#164e86"
-    }
+    },
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "cypress.json"
+            ],
+            "url": "https://on.cypress.io/cypress.schema.json"
+        }
+    ]
 }

@@ -16,7 +16,7 @@
 //   1) The group subfolders within "cypress/integration".
 //   2) An individual test spec file for each, in that same folder as 
 //      expected by Cypress.
-//   3) The test list: masterListOfAllTestCases
+//   3) The test list "masterListOfAllTestCases" in cypress/TestList.js
 // ----------------------------------------------------------------------
 
 var fs = require('fs')
@@ -134,7 +134,8 @@ function CreateSpecFile(groupName, testName) {
 // We intentionally skip the root Cypress test spec folder because the 
 // root folder contains special hand coded spec files. We only delete
 // spec .js files from the group subfolders that are no longer in our 
-// list of tests. These should only contain generated files.
+// list of tests because those folders should only contain generated 
+// files.
 // ----------------------------------------------------------------------
 
 function RemoveUnusedSpecFiles() {

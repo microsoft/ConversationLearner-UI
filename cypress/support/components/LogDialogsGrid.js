@@ -3,5 +3,5 @@
  * Licensed under the MIT License.
  */
 
-export function VerifyPageTitle()           { cy.Get('[data-testid="log-dialogs-title"]').contains('Log Dialogs').should('be.visible') }
-export function CreateNewLogDialogButton()  { cy.Get('[data-testid="log-dialogs-new-button"]').Click() }
+export function VerifyPageTitle() { cy.Get('[data-testid="log-dialogs-title"]').contains('Log Dialogs').should('be.visible') }
+export function CreateNewLogDialogButton() { cy.Get('[data-testid="log-dialogs-new-button"]').Click() }

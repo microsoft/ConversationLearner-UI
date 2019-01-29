@@ -30,7 +30,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             // Start with a clean slate
             return { ...initialState };
         case AT.CREATE_TEACH_SESSION_FULFILLED:
-            return { ...state, teach: action.teachSession, dialogMode: DialogMode.Wait, memories: [] }
+            return { ...state, teach: action.teachSession, dialogMode: DialogMode.Wait, memories: action.memories }
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
             return {
                 ...initialState, 
@@ -44,7 +44,10 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
                 uiScoreInput: action.teachWithHistory.uiScoreInput
             }
         case AT.DELETE_TEACH_SESSION_FULFILLED:
-            return { ...initialState }
+            if (state.teach && state.teach.teachId !== action.teachSessionGUID) {
+                console.warn("Deleting Teach session that isn't the active one")
+            }
+            return {...initialState }
         case AT.CLEAR_TEACH_SESSION:
             return { ...initialState }
         case AT.DELETE_MEMORY_FULFILLED:
@@ -59,7 +62,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             let index = state.extractResponses.findIndex(e => e.text === action.extractResponse.text);
             // Should never happen, but protect just in case
             if (index < 0) {
-                return { ...state };
+                return { ...state }
             }
             let editedResponses = state.extractResponses.slice();
             editedResponses[index] = action.extractResponse;

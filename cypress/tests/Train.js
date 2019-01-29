@@ -15,7 +15,7 @@ Cypress.TestCase('Train', 'Disqualifying Entities', DisqualifyingEntities)
 export function DisqualifyingEntities()
 {
   models.ImportModel('z-disqualifyngEnt', 'z-disqualifyngEnt.cl')
-  
+
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
 
@@ -66,7 +66,7 @@ Cypress.TestCase('Train', 'Wait vs Non-Wait Actions', WaitVsNoWaitActions)
 export function WaitVsNoWaitActions()
 {
   models.ImportModel('z-waitNoWait', 'z-waitNoWait.cl')
-  
+
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
 
@@ -85,7 +85,7 @@ export function WaitVsNoWaitActions()
   scorerModal.VerifyContainsEnabledAction('Cows say moo!')
   scorerModal.VerifyContainsEnabledAction('Ducks say quack!')
   train.SelectAction('Cows say moo!')
-  
+
   train.SelectAction('Which animal would you like?')
 
   train.TypeYourMessage('Duck')
@@ -165,7 +165,7 @@ export function TagAndFrog()
 {
   // TODO: Need to add another test case or expand this one so that tagging something
   //       that was NOT tagged in another instance causes the UI to complain.
-  var textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
+  var textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
 
   models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
   modelPage.NavigateToTrainDialogs()
@@ -176,9 +176,9 @@ export function TagAndFrog()
   train.TypeYourMessage('This is Tag.')
   editDialogModal.RemoveEntityLabel('Tag', 'multi')
   editDialogModal.ClickScoreActionsButton()
-  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose({text: 'Tag', entity: 'multi'})
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndClose({ text: 'Tag', entity: 'multi' })
   editDialogModal.ClickScoreActionsButton()
-  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept({text: 'Tag', entity: 'multi'})
+  editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept({ text: 'Tag', entity: 'multi' })
   train.SelectAction('Hello')
 
   train.TypeYourMessage('This is Frog and Tag.')
@@ -197,7 +197,7 @@ export function TagAndFrog()
   editDialogModal.ClickScoreActionsButton()
   editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
   train.SelectAction('Hi')
-  
+
   train.AbandonDialog()
 
   cy.WaitForTrainingStatusCompleted()
@@ -259,4 +259,19 @@ export function BookMeAFlight()
   train.SelectAction(botResponse, 'You are leaving on $departure and returning on $return')
 
   train.Save()
+}
+
+export function AddOneLastEndSessionAction() {
+  models.ImportModel('z-sydney-flight', 'z-sydney-flight.cl')
+
+  modelPage.NavigateToTrainDialogs()
+
+  cy.WaitForTrainingStatusCompleted()
+
+  train.EditTraining('fly to sydney', 'coach', "enjoy your trip. you are booked on Qantas")
+  cy.RunAndExpectDomChange(() => { editDialogModal.ClickScoreActionsButton() })
+  editDialogModal.SelectChatTurn('enjoy your trip. you are booked on Qantas', 1)
+  cy.RunAndExpectDomChange(() => { train.SelectAction('0') })
+  cy.RunAndExpectDomChange(() => { train.Save() })
+
 }

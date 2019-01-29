@@ -62,7 +62,9 @@ export enum TipType {
     REPLAYERROR_DESC_TWO_USER_INPUTS = "REPLAYERROR_DESC_TWO_USER_INPUTS",
     REPLAYERROR_DESC_INPUT_AFTER_NONWAIT = "REPLAYERROR_DESC_INPUT_AFTER_NONWAIT",
     REPLAYERROR_DESC_ACTION_UNAVAILABLE = "REPLAYERROR_DESC_ACTION_UNAVAILABLE",
+    REPLAYERROR_DESC_API_BADCARD = "REPLAYERROR_DESC_API_BADCARD",
     REPLAYERROR_DESC_API_EXCEPTION = "REPLAYERROR_DESC_API_EXCEPTION",
+    REPLAYERROR_DESC_API_MALFORMED = "REPLAYERROR_DESC_API_MALFORMED",
     REPLAYERROR_DESC_API_UNDEFINED = "REPLAYERROR_DESC_API_UNDEFINED",
     REPLAYERROR_DESC_ENTITY_UNDEFINED = "REPLAYERROR_DESC_ENTITY_UNDEFINED",
     REPLAYERROR_DESC_ENTITY_EMPTY = "REPLAYERROR_DESC_ENTITY_EMPTY",
@@ -301,9 +303,9 @@ export function getTip(tipType: string) {
             return (
                 <div>
                     <h2>Replay May be needed</h2>
-                    <p>One or more edits to Action or Entity properties, may have invalidated turns in this conversation</p>
-                    <p>For example, an Entity that is now multi-value may have only stored one value</p>
-                    <p>This can be resolved by Replaying the dialog, including all API callbacks</p>
+                    <p>One or more edits to Action or Entities may have invalidated inputs in this conversation.</p>
+                    <p>For example, an Entity that is now multi-value may have only stored one value.</p>
+                    <p>This can be resolved by replaying the dialog, including all API callbacks.</p>
 
                     <h4>Before replay:</h4>
                     <img
@@ -327,8 +329,7 @@ export function getTip(tipType: string) {
             return (
                 <div>
                     <h2>Replay is needed</h2>
-                    <p>One or more edits to Action or Entity properties, may have invalidated turns in this conversation</p>
-                    <p>It must be replayed to see if any errors were introduced before it can be used in trianing</p>
+                    <p>Recommend replaying this conversation as one or more inputs in this conversation may have been invalidated by edits to Action or Entities.</p>
                 </div>
             )
         case TipType.ENTITY_NAME:
@@ -624,6 +625,14 @@ export function getTip(tipType: string) {
                 </div>
             )
 
+        case TipType.REPLAYERROR_DESC_API_BADCARD:
+            return (
+                <div>
+                    <h2>Error: API Render function returned a malformed Activity</h2>
+                    <p>Render function must return string or valid BotBuilder Activity object</p>
+                </div>
+            )
+
         case TipType.REPLAYERROR_DESC_API_EXCEPTION:
             return (
                 <div>
@@ -633,6 +642,20 @@ export function getTip(tipType: string) {
                     <ol>
                         <li>Fix the bug in the Bot's API</li>
                         <li>Change the selected Action</li>
+                    </ol>
+                    <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
+                </div>
+            )
+
+        case TipType.REPLAYERROR_DESC_API_MALFORMED:
+            return (
+                <div>
+                    <h2>Error: API is malformed</h2>
+                    <p>Logic portion of callback returns a value, but no Render portion defined</p>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Remove return value from Logic portion of API</li>
+                        <li>Add Render portion to API</li>
                     </ol>
                     <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
                 </div>

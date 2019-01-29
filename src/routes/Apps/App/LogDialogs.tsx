@@ -110,7 +110,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: 300,
             isResizable: true,
-            isSortedDescending: true,
             render: logDialog => {
                 let firstInput = getFirstInput(logDialog);
                 if (firstInput) {
@@ -176,6 +175,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             fieldName: 'created',
             minWidth: 100,
             isResizable: false,
+            isSortedDescending: false,
             render: logDialog => <span className={OF.FontClassNames.mediumPlus}>{Util.earlierDateOrTimeToday(logDialog.createdDateTime)}</span>,
             getSortValue: logDialog => moment(logDialog.createdDateTime).valueOf().toString()
         }
@@ -218,7 +218,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         let columns = getColumns(this.props.intl);
         this.state = {
             columns: columns,
-            sortColumn: columns[1],
+            sortColumn: columns[5],
             chatSession: null,
             isChatSessionWindowOpen: false,
             isEditDialogModalOpen: false,
@@ -736,9 +736,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-     // End Session activity selected.  Switch from Teach to Edit
-     @OF.autobind
-     async onEndSessionActivity() {
+    // End Session activity selected.  Switch from Teach to Edit
+    @OF.autobind
+    async onEndSessionActivity() {
 
         try {
             if (this.props.teachSession.teach) {
@@ -754,7 +754,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 await ((this.props.clearTeachSession() as any) as Promise<CLM.TrainDialog>)
 
                 // Generate history
-                await this.onUpdateHistory(trainDialog, null, SelectionType.NONE)  
+                await this.onUpdateHistory(trainDialog, null, SelectionType.NONE)
             }
         }
         catch (error) {

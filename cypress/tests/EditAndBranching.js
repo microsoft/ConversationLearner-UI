@@ -31,7 +31,7 @@ export function VerifyEditTrainingControlsAndLabels()
 
   editDialogModal.VerifyThereAreNoChatEditControls('My name is David.', 'Hello Susan')
   train.SelectAndVerifyEachChatTurn()
-  
+
   train.BranchChatTurn('My name is Susan.', 'I am Groot')
   editDialogModal.VerifySaveBranchButtonLabel()
   editDialogModal.VerifyAbandonBranchButtonLabel()
@@ -49,10 +49,10 @@ export function Branching()
   var modelName = models.ImportModel('z-branching', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
-  
+
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
   train.CaptureOriginalChatMessages()
-  
+
   train.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
   cy.wait(5000)
   editDialogModal.ClickScoreActionsButton('Hello $name')
@@ -60,7 +60,7 @@ export function Branching()
   train.CaptureEditedChatMessages()
   cy.wait(30000)
   train.Save()
-  
+
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
   train.VerifyOriginalChatMessages()
   editDialogModal.ClickSaveCloseButton()
@@ -107,7 +107,7 @@ export function TwoConsecutiveUserInputErrorHandling()
   models.ImportModel('z-2UserInputs', 'z-disqualifyngEnt.Trained.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
-  
+
   modelPage.VerifyNoErrorIconOnPage()
 
   train.EditTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
@@ -141,7 +141,7 @@ export function WaitNonWaitErrorHandling()
   models.ImportModel('z-errWaitNoWait', 'z-waitNoWait.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
-  
+
   modelPage.VerifyNoErrorIconOnPage()
 
   train.EditTraining('Duck', 'Fish', fishJustSwim)
@@ -149,14 +149,12 @@ export function WaitNonWaitErrorHandling()
   editDialogModal.ClickDeleteChatTurn()
   editDialogModal.VerifyErrorMessage(userInputFollowsNonWaitErrorMessage)
 
-  function Validations(errCount)
-  {
+  function Validations(errCount) {
     cy.ConLog(`Validations(${errCount})`, `Start`)
     editDialogModal.SelectChatTurn('Duck')
     editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
 
-    if (errCount > 1)
-    {
+    if (errCount > 1) {
       editDialogModal.SelectChatTurn(whichAnimalWouldYouLike)
       editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
     }
@@ -168,8 +166,7 @@ export function WaitNonWaitErrorHandling()
     editDialogModal.SelectChatTurn('Fish')
     editDialogModal.VerifyErrorMessage(userInputFollowsNonWaitErrorMessage)
 
-    if (errCount > 2)
-    {
+    if (errCount > 2) {
       editDialogModal.SelectChatTurn(whichAnimalWouldYouLike, 1)
       editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
     }
@@ -184,7 +181,7 @@ export function WaitNonWaitErrorHandling()
 
   editDialogModal.InsertBotResponseAfter('Duck', whichAnimalWouldYouLike)
   editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
-  
+
   Validations(2)
 
   editDialogModal.InsertBotResponseAfter('Fish', whichAnimalWouldYouLike)
@@ -224,4 +221,19 @@ export function WaitNonWaitErrorHandling()
 
   editDialogModal.ClickSaveCloseButton()
   modelPage.VerifyNoErrorIconOnPage()
+}
+
+export function AddEndSessionAction() {
+  models.ImportModel('z-sydney-flight', 'z-sydney-flight.cl')
+
+  modelPage.NavigateToTrainDialogs()
+
+  cy.WaitForTrainingStatusCompleted()
+
+  train.EditTraining('fly to sydney', 'coach', "enjoy your trip. you are booked on Qantas")
+  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.SelectChatTurn('enjoy your trip. you are booked on Qantas', 1)
+  train.SelectEndSessionAction('EndSession0', 'EndSession: 0')
+
+  editDialogModal.AbandonBranchChanges()
 }
