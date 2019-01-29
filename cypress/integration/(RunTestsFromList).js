@@ -4,12 +4,3 @@
 */
 
 require('../support/TestListManager').AddToCypressTestList(Cypress.testList) 
-
-// describe('temp', () =>
-// {
-//   it('temp', () => 
-//   {
-//     cy.visit('http://127.0.0.1:3000/')
-//   })
-// })
-

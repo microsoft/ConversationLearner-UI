@@ -11,6 +11,7 @@ const editDialogModal = require('../support/components/EditDialogModal')
 const train = require('../support/Train')
 const memoryTableComponent = require('../support/components/MemoryTableComponent')
 
+Cypress.TestCase('CreateModels', 'All Entity Types', AllEntityTypes)
 export function AllEntityTypes()
 {
   models.CreateNewModel('z-allEntityTypes')
@@ -23,6 +24,7 @@ export function AllEntityTypes()
   // Manually EXPORT this to fixtures folder and name it 'z-allEntityTypes'
 }
 
+Cypress.TestCase('CreateModels', 'Disqualifying Entities', DisqualifyingEntities)
 export function DisqualifyingEntities()
 {
   models.CreateNewModel('z-disqualifyngEnt')
@@ -40,6 +42,7 @@ export function DisqualifyingEntities()
   // Manually EXPORT this to fixtures folder and name it 'z-disqualifyngEnt'
 }
 
+Cypress.TestCase('CreateModels', 'Wait vs Non-Wait Actions', WaitVsNoWaitActions)
 export function WaitVsNoWaitActions()
 {
   models.CreateNewModel('z-waitNoWait')
@@ -68,6 +71,7 @@ export function WaitVsNoWaitActions()
   // Manually EXPORT this to fixtures folder and name it 'z-waitNoWait.cl'
 }
 
+Cypress.TestCase('CreateModels', "What's Your Name", WhatsYourName)
 export function WhatsYourName()
 {
   models.CreateNewModel('z-whatsYourName')
@@ -82,6 +86,7 @@ export function WhatsYourName()
 
 // This model is created with a Training in it as well as Entities and Actions because
 // this model is intended to test features of using a trained model.
+Cypress.TestCase('CreateModels', 'Tag And Frog', TagAndFrog)
 export function TagAndFrog()
 {
   // models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
@@ -120,6 +125,7 @@ export function TagAndFrog()
   // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog.cl'
 }
 
+Cypress.TestCase('CreateModels', 'Endless Loop', EndlessLoop)
 export function EndlessLoop()
 {
   // models.ImportModel('z-endlessLoop', 'z-endlessLoop.cl')
@@ -169,6 +175,7 @@ export function EndlessLoop()
   // Manually EXPORT this to fixtures folder and name it 'z-endlessLoop.cl'
 }
 
+Cypress.TestCase('CreateModels', 'Travel', Travel)
 export function Travel()
 {
   models.CreateNewModel('z-travel')
