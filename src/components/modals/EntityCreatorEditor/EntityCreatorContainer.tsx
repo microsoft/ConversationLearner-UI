@@ -3,14 +3,15 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../../Utils/util'
+import * as CLM from '@conversationlearner/models'
 import { returntypeof } from 'react-redux-typescript'
 import actions from '../../../actions'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import * as OF from 'office-ui-fabric-react'
 import { State, PreBuiltEntities } from '../../../types'
 import { CLDropdownOption } from '../CLDropDownOption'
-import * as CLM from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
 import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { withRouter } from 'react-router-dom'
@@ -39,7 +40,6 @@ const initState: ComponentState = {
     isPrebuilt: false,
     isMultivalueVal: false,
     isNegatableVal: false,
-    isProgrammaticVal: false,
     isEditing: false,
     title: '',
     hasPendingChanges: false,
@@ -58,7 +58,6 @@ interface ComponentState {
     isPrebuilt: boolean
     isMultivalueVal: boolean
     isNegatableVal: boolean
-    isProgrammaticVal: boolean
     isEditing: boolean
     title: string
     hasPendingChanges: boolean
@@ -82,36 +81,22 @@ class Container extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        this.state = { ...initState, entityTypeVal: this.NEW_ENTITY, entityResolverVal: this.NONE_RESOLVER }
+        this.state = { ...initState, entityTypeVal: CLM.EntityType.LUIS, entityResolverVal: this.NONE_RESOLVER }
         this.staticEntityOptions = this.getStaticEntityOptions(this.props.intl)
         this.staticResolverOptions = this.getStaticResolverOptions(this.props.intl)
-    }
-
-    get NEW_ENTITY(): string {
-        return this.props.intl.formatMessage({
-            id: FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW,
-            defaultMessage: 'custom trained'
-        });
-    }
-
-    get PROGRAMMATIC_ENTITY(): string {
-        return this.props.intl.formatMessage({
-            id: FM.ENTITYCREATOREDITOR_ENTITYOPTION_PROG,
-            defaultMessage: 'programmatic'
-        })
     }
 
     getStaticEntityOptions(intl: InjectedIntl): CLDropdownOption[] {
         return [
             {
-                key: this.NEW_ENTITY,
-                text: this.NEW_ENTITY,
+                key: CLM.EntityType.LUIS,
+                text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_LUIS),
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             },
             {
-                key: this.PROGRAMMATIC_ENTITY,
-                text: this.PROGRAMMATIC_ENTITY,
+                key: CLM.EntityType.LOCAL,
+                text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_PROG),
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             },
@@ -177,14 +162,13 @@ class Container extends React.Component<Props, ComponentState> {
                         id: FM.ENTITYCREATOREDITOR_TITLE_CREATE,
                         defaultMessage: 'Create an Entity'
                     }),
-                    entityTypeVal: this.NEW_ENTITY,
+                    entityTypeVal: CLM.EntityType.LUIS,
                     entityResolverVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS ? nextProps.entityTypeFilter : this.NONE_RESOLVER
                 });
             } else {
                 this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
                 this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
                 let entityType = nextProps.entity.entityType
-                let isProgrammatic = false
                 let isPrebuilt = false
 
                 if (entityType !== CLM.EntityType.LUIS
@@ -192,12 +176,6 @@ class Container extends React.Component<Props, ComponentState> {
                     isPrebuilt = true
                 }
 
-                if (entityType === CLM.EntityType.LUIS) {
-                    entityType = this.NEW_ENTITY;
-                } else if (entityType === CLM.EntityType.LOCAL) {
-                    entityType = this.PROGRAMMATIC_ENTITY
-                    isProgrammatic = true
-                }
 
                 let resolverType = nextProps.entity.resolverType === null ? this.NONE_RESOLVER : nextProps.entity.resolverType
 
@@ -208,7 +186,6 @@ class Container extends React.Component<Props, ComponentState> {
                     isPrebuilt: isPrebuilt,
                     isMultivalueVal: nextProps.entity.isMultivalue,
                     isNegatableVal: nextProps.entity.isNegatible,
-                    isProgrammaticVal: isProgrammatic,
                     isEditing: true,
                     title: nextProps.intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
@@ -226,11 +203,10 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         const isNameChanged = this.state.entityNameVal !== entity.entityName
-        const isProgrammaticChanged = this.state.isProgrammaticVal !== (entity.entityType === CLM.EntityType.LOCAL)
         const isMultiValueChanged = this.state.isMultivalueVal !== entity.isMultivalue
         const isNegatableChanged = this.state.isNegatableVal !== entity.isNegatible
         const isResolverChanged = entity.entityType === CLM.EntityType.LUIS && this.state.entityResolverVal !== entity.resolverType
-        const hasPendingChanges = isNameChanged || isProgrammaticChanged || isMultiValueChanged || isNegatableChanged || isResolverChanged
+        const hasPendingChanges = isNameChanged || isMultiValueChanged || isNegatableChanged || isResolverChanged
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
             this.setState({
@@ -245,12 +221,6 @@ class Container extends React.Component<Props, ComponentState> {
         let resolverType = this.state.entityResolverVal
         if (this.state.isPrebuilt) {
             entityName = Container.GetPrebuiltEntityName(entityType)
-        }
-
-        if (this.state.isProgrammaticVal || this.state.entityTypeVal === this.PROGRAMMATIC_ENTITY) {
-            entityType = CLM.EntityType.LOCAL
-        } else if (this.state.entityTypeVal === this.NEW_ENTITY) {
-            entityType = CLM.EntityType.LUIS
         }
 
         const newOrEditedEntity = {
@@ -350,17 +320,16 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     onChangedType = (obj: CLDropdownOption) => {
-        const isPrebuilt = obj.text !== this.NEW_ENTITY && obj.text !== this.PROGRAMMATIC_ENTITY
-        const isProgrammaticVal = obj.text === this.PROGRAMMATIC_ENTITY
+        const isPrebuilt = obj.key !== CLM.EntityType.LUIS && obj.key !== CLM.EntityType.LOCAL
         const isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal
         const isMultivalueVal = this.state.isMultivalueVal
 
+        const entityTypeVal = isPrebuilt ? obj.text : obj.key as string
         this.setState(prevState => ({
             isPrebuilt,
             isMultivalueVal,
             isNegatableVal,
-            isProgrammaticVal,
-            entityTypeVal: obj.text,
+            entityTypeVal,
             entityNameVal: isPrebuilt ? Container.GetPrebuiltEntityName(obj.text) : prevState.entityNameVal,
 
         }))
@@ -605,7 +574,6 @@ class Container extends React.Component<Props, ComponentState> {
             onChangedName={this.onChangedName}
             onKeyDownName={this.onKeyDownName}
 
-            isProgrammatic={this.state.isProgrammaticVal}
             isMultiValue={this.state.isMultivalueVal}
             isMultiValueDisabled={false}
             onChangeMultiValue={this.onChangeMultivalue}
@@ -642,7 +610,7 @@ class Container extends React.Component<Props, ComponentState> {
             onClosePrebuiltWarning={this.onClosePrebuiltWarning}
         
             selectedResolverKey={this.state.entityResolverVal}
-            needResolverType={!this.state.isPrebuilt && !this.state.isProgrammaticVal}
+            needResolverType={this.state.entityTypeVal === CLM.EntityType.LUIS}
             resolverOptions={this.resolverOptions}
             onResolverChanged={this.onChangeResolverType}
         />

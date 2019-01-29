@@ -33,8 +33,6 @@ interface Props extends InjectedIntlProps {
     onChangedName: (name: string) => void
     onKeyDownName: React.KeyboardEventHandler<HTMLInputElement>
 
-    isProgrammatic: boolean
-
     isMultiValue: boolean
     isMultiValueDisabled: boolean
     onChangeMultiValue: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
