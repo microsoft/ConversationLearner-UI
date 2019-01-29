@@ -23,6 +23,8 @@ var fs = require('fs')
 
 const pathToTestFiles = './cypress/tests'
 const pathToTestSpecFiles = './cypress/integration/'
+const CypressTestCase = 'Cypress.TestCase('
+
 var fullTestList = []
 
 console.log('--- Generate Cypress Test Spec When Test .js Files Change ---')
@@ -70,11 +72,12 @@ function main() {
 
     // Finalize our findings by re-writing out the TestList.js file ONLY if it has changed.
     var index = testList_jsContents.indexOf('// ************ Generated Code Beyond this Point *************************');
-    var newFileContents =
-      '// ************ Generated Code Beyond this Point *************************\r\n' +
-      '// Do NOT manually alter this file from this point onwards.\r\n' +
-      '// Any changes you make will be overridden at runtime.\r\n' +
-      'export const masterListOfAllTestCases = [\r\n';
+    var newFileContents = 
+`// ************ Generated Code Beyond this Point *************************
+// Do NOT manually alter this file from this point onwards.
+// Any changes you make will be overridden at runtime.
+export const masterListOfAllTestCases = [
+`;
     fullTestList.forEach(testSpecification => { newFileContents += `  '${testSpecification}',\r\n` });
     newFileContents += '];\r\n';
 
@@ -100,8 +103,10 @@ function ParseTestJsFile(fileName) {
   
   fileLines.forEach(line => {
     line = line.trim()
-    if (line.startsWith('Cypress.TestCase(')) {
-      var iStart = line.indexOf("'", 17) + 1
+    if (line.startsWith(CypressTestCase)) {
+      // The line we are parsing will look something like this:
+      //    Cypress.TestCase('Tools', 'Visit Home Page', VisitHomePage)
+      var iStart = line.indexOf("'", CypressTestCase.length) + 1
       var iEnd = line.indexOf("'", iStart)
       var groupName = line.substring(iStart, iEnd)
   

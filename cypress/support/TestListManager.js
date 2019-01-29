@@ -51,7 +51,7 @@ const zTemp = require('../tests/zTemp')
 // ----------------------------------------------------------------------
 
 function TestCase(testGroupName, testDescription, testFunction) {
-  // These two lines of code converts the testFunction from a callable
+  // These lines of code converts the testFunction from a callable
   // function to a string containing the name of this function. It works
   // like this:
   //   1) We convert the function to a string containing the full function
@@ -59,8 +59,9 @@ function TestCase(testGroupName, testDescription, testFunction) {
   //        "function TheTestFunctionToRun(param1, param2) {...}"
   //   2) The magic number 9 here is skipping past the string "function "
   //      and grabbing just the name of the function.
+  var functionPrefixLength = 'function '.length
   var testFunctionAsString = testFunction.toString();
-  var testFunctionName = testFunctionAsString.substring(9, testFunctionAsString.indexOf('(', 9));
+  var testFunctionName = testFunctionAsString.substring(functionPrefixLength, testFunctionAsString.indexOf('(', functionPrefixLength));
   helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunctionName})`);
   
   var testGroup = GetTestGroup(testGroupName);
