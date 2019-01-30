@@ -166,7 +166,7 @@ export function VerifyEntityLabel(word, entity) {
   cy.Get('[data-testid="token-node-entity-value"] > span > span')
     .ExactMatch(word)
     .parents('.cl-entity-node--custom')
-    .find('[data-testid="custom-entity-name-button"]')
+    .find('[data-testid="custom-entity-nam+e-button"]')
     .contains(entity)
 }
 
@@ -215,13 +215,15 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
     if (newMessage) {
       cy.WaitForStableDOM()
       cy.wait(1000) // TODO: Remove this after fixing Bug 1855: More Odd Rendering in Train Dialog Chat Pane
-      cy.Enqueue(() => { // Sometimes the UI has already automaticly selected the Bot response we want
+      cy.Enqueue(() => { 
+        // Sometimes the UI has already automaticly selected the Bot response we want
         // so we need to confirm that we actually need to click on the action, 
         // otherwise an unnecessary message box pops up that we don't want to deal with.
 
         var chatMessages = helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)
+        var indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1;
         if (chatMessages[indexOfInsertedBotResponse] != newMessage)
-          scorerModal.ClickAction(newMessage)
+          scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
       })
     }
     cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `End`)
