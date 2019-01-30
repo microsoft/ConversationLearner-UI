@@ -228,10 +228,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         onChanged={text => this.nameChanged(text)}
                         label={this.getLabel(intl)}
-                        placeholder={intl.formatMessage({
-                            id: FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER,
-                            defaultMessage: "Model Name..."
-                        })}
+                        placeholder={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER)}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal}
                     />

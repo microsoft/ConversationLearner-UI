@@ -1,0 +1,1 @@
+require('../../support/TestListManager').AddToCypressTestList('Log.EndlessLoop')
