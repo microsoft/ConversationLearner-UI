@@ -6,16 +6,16 @@ import * as React from 'react'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as OF from 'office-ui-fabric-react'
 import * as TC from '../../tipComponents'
+import * as ToolTip from '../../ToolTips/ToolTips'
+import * as CLM from '@conversationlearner/models'
+import * as Util from '../../../Utils/util'
 import ActionDetailsList from '../../ActionDetailsList'
 import ConfirmCancelModal from '../ConfirmCancelModal'
 import { CLDropdownOption } from '../CLDropDownOption'
-import * as ToolTip from '../../ToolTips/ToolTips'
-import { ActionBase } from '@conversationlearner/models'
 import './styles.css'
 import { FM } from '../../../react-intl-messages'
 import FormattedMessageId from '../../FormattedMessageId'
 import { InjectedIntlProps } from 'react-intl'
-import * as Util from '../../../Utils/util'
 
 interface Props extends InjectedIntlProps {
     open: boolean
@@ -23,7 +23,7 @@ interface Props extends InjectedIntlProps {
 
     entityOptions: OF.IDropdownOption[]
 
-    selectedTypeKey: string
+    entityTypeKey: CLM.EntityType | string
     isTypeDisabled: boolean
     onChangedType: (option: OF.IDropdownOption) => void
 
@@ -38,12 +38,11 @@ interface Props extends InjectedIntlProps {
     onChangeMultiValue: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
 
     isNegatable: boolean
-    isNegatableDisabled: boolean
     onChangeNegatable: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
 
     isEditing: boolean
-    requiredActions: ActionBase[]
-    disqualifiedActions: ActionBase[]
+    requiredActions: CLM.ActionBase[]
+    disqualifiedActions: CLM.ActionBase[]
 
     onClickTrainDialogs: () => void
 
@@ -69,7 +68,6 @@ interface Props extends InjectedIntlProps {
 
     selectedResolverKey: string
     resolverOptions: OF.IDropdownOption[]
-    needResolverType: boolean
     onResolverChanged: (option: OF.IDropdownOption) => void
 }
 
@@ -86,7 +84,7 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
                     <span className={option.style}>{option.text}</span>
                 </div>
             }
-            selectedKey={props.selectedTypeKey}
+            selectedKey={props.entityTypeKey}
             disabled={props.isTypeDisabled}
             tipType={ToolTip.TipType.ENTITY_TYPE}
         />
@@ -102,7 +100,7 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
             disabled={props.isNameDisabled}
             ref={setFocused}
         />
-        {props.needResolverType &&
+        {props.entityTypeKey === CLM.EntityType.LUIS &&
             <TC.Dropdown
                 data-testid="entity-creator-resolver-type-dropdown"
                 ariaLabel={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_LABEL)}
@@ -119,22 +117,25 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
             />
         }
         <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
-            <TC.Checkbox
-                data-testid="entity-creator-multi-valued-checkbox"
-                label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL)}
-                checked={props.isMultiValue}
-                onChange={props.onChangeMultiValue}
-                disabled={props.isMultiValueDisabled}
-                tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
-            />
-            <TC.Checkbox
-                data-testid="entity-creator-negatable-checkbox"
-                label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL)}
-                checked={props.isNegatable}
-                onChange={props.onChangeNegatable}
-                disabled={props.isNegatableDisabled}
-                tipType={ToolTip.TipType.ENTITY_NEGATABLE}
-            />
+            {props.entityTypeKey !== CLM.EntityType.ENUM &&            
+                <TC.Checkbox
+                    data-testid="entity-creator-multi-valued-checkbox"
+                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL)}
+                    checked={props.isMultiValue}
+                    onChange={props.onChangeMultiValue}
+                    disabled={props.isMultiValueDisabled}
+                    tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
+                />
+            }
+            {props.entityTypeKey === CLM.EntityType.LUIS &&
+                <TC.Checkbox
+                    data-testid="entity-creator-negatable-checkbox"
+                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL)}
+                    checked={props.isNegatable}
+                    onChange={props.onChangeNegatable}
+                    tipType={ToolTip.TipType.ENTITY_NEGATABLE}
+                />
+            }
         </div>
     </div>
 }

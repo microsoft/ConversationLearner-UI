@@ -100,6 +100,14 @@ class Container extends React.Component<Props, ComponentState> {
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             },
+            /* 
+            {
+                key: CLM.EntityType.ENUM,
+                text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM),
+                itemType: OF.DropdownMenuItemType.Normal,
+                style: 'clDropdown--command'
+            },
+            */
             {
                 key: 'divider',
                 text: '-',
@@ -169,14 +177,7 @@ class Container extends React.Component<Props, ComponentState> {
                 this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
                 this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
                 let entityType = nextProps.entity.entityType
-                let isPrebuilt = false
-
-                if (entityType !== CLM.EntityType.LUIS
-                    && entityType !== CLM.EntityType.LOCAL) {
-                    isPrebuilt = true
-                }
-
-
+                let isPrebuilt = CLM.isPrebuilt(nextProps.entity)
                 let resolverType = nextProps.entity.resolverType === null ? this.NONE_RESOLVER : nextProps.entity.resolverType
 
                 this.setState({
@@ -320,7 +321,7 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     onChangedType = (obj: CLDropdownOption) => {
-        const isPrebuilt = obj.key !== CLM.EntityType.LUIS && obj.key !== CLM.EntityType.LOCAL
+        const isPrebuilt = obj.key !== CLM.EntityType.LUIS && obj.key !== CLM.EntityType.LOCAL && obj.key !== CLM.EntityType.ENUM
         const isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal
         const isMultivalueVal = this.state.isMultivalueVal
 
@@ -365,9 +366,7 @@ class Container extends React.Component<Props, ComponentState> {
         if (!this.state.isEditing) {
             let foundEntity = this.props.entities.find(e => e.entityName === this.state.entityNameVal);
             if (foundEntity) {
-                if (foundEntity.entityType !== CLM.EntityType.LOCAL
-                    && foundEntity.entityType !== CLM.EntityType.LUIS
-                    && foundEntity.entityName === Container.GetPrebuiltEntityName(foundEntity.entityType)
+                if (CLM.isPrebuilt(foundEntity)
                     && typeof foundEntity.doNotMemorize !== 'undefined'
                     && foundEntity.doNotMemorize) {
                     return ''
@@ -564,7 +563,7 @@ class Container extends React.Component<Props, ComponentState> {
             intl={intl}
             entityOptions={this.entityOptions}
 
-            selectedTypeKey={this.state.entityTypeVal}
+            entityTypeKey={this.state.entityTypeVal}
             isTypeDisabled={this.state.isEditing || this.props.entityTypeFilter != null}
             onChangedType={this.onChangedType}
 
@@ -579,7 +578,6 @@ class Container extends React.Component<Props, ComponentState> {
             onChangeMultiValue={this.onChangeMultivalue}
 
             isNegatable={this.state.isNegatableVal}
-            isNegatableDisabled={this.state.isPrebuilt}
             onChangeNegatable={this.onChangeReversible}
 
             isEditing={this.state.isEditing}
@@ -610,7 +608,6 @@ class Container extends React.Component<Props, ComponentState> {
             onClosePrebuiltWarning={this.onClosePrebuiltWarning}
         
             selectedResolverKey={this.state.entityResolverVal}
-            needResolverType={this.state.entityTypeVal === CLM.EntityType.LUIS}
             resolverOptions={this.resolverOptions}
             onResolverChanged={this.onChangeResolverType}
         />
