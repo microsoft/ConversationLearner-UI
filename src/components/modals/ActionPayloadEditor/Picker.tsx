@@ -19,7 +19,34 @@ interface Props {
     onClickOption: (option: IOption) => void
 }
 
-export default class Picker extends React.Component<Props, {}> {
+interface State {
+    listRef: React.RefObject<HTMLDivElement>
+}
+
+export default class Picker extends React.Component<Props, State> {
+    state: State = {
+        listRef: React.createRef<HTMLDivElement>()
+    }
+
+    componentDidUpdate() {
+        if (this.state.listRef.current) {
+            this.scrollHighlightedElementIntoView(this.state.listRef.current)
+        }
+    }
+
+    scrollHighlightedElementIntoView = (resultsElement: HTMLDivElement) => {
+        const selectedElement = resultsElement
+            ? resultsElement.querySelector('.mention-picker-button--active') as HTMLElement
+            : null
+
+        if (selectedElement) {
+            selectedElement.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest"
+            })
+        }
+    }
+
     render() {
         const style: any = {
             left: `${this.props.left}px`,
@@ -31,7 +58,7 @@ export default class Picker extends React.Component<Props, {}> {
             ref={this.props.menuRef}
             style={style}
         >
-            <div className="mention-picker-list">
+            <div className="mention-picker-list" ref={this.state.listRef}>
                 {this.props.matchedOptions.length === 0
                     ? <div className="mention-picker-button">No Results</div>
                     : this.props.matchedOptions.map((matchedOption, i) =>

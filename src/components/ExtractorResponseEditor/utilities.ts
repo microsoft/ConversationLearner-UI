@@ -5,8 +5,7 @@
 import { Value } from 'slate'
 import * as models from './models'
 import * as util from '../../Utils/util'
-import { EntityBase, PredictedEntity, ExtractResponse, EntityType } from '@conversationlearner/models'
-import { getPrebuiltEntityName } from '../modals/EntityCreatorEditor/EntityCreatorContainer'
+import * as CLM from '@conversationlearner/models'
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.
@@ -480,7 +479,7 @@ export const convertMatchedTextIntoMatchedOption = <T>(inputText: string, matche
     }
 }
 
-export const getEntitiesFromValueUsingTokenData = (change: any): models.IGenericEntity<models.IGenericEntityData<PredictedEntity>>[] => {
+export const getEntitiesFromValueUsingTokenData = (change: any): models.IGenericEntity<models.IGenericEntityData<CLM.PredictedEntity>>[] => {
     const entityInlineNodes = change.value.document.filterDescendants((node: any) => node.type === models.NodeType.CustomEntityNodeType)
     return (entityInlineNodes.map((entityNode: any) => {
         const tokenInlineNodes: any[] = entityNode.filterDescendants((node: any) => node.type === models.NodeType.TokenNodeType).toJS()
@@ -491,7 +490,7 @@ export const getEntitiesFromValueUsingTokenData = (change: any): models.IGeneric
 
         const firstToken: IToken = tokenInlineNodes[0].data
         const lastToken: IToken = tokenInlineNodes[tokenInlineNodes.length - 1].data
-        const data: models.IGenericEntityData<PredictedEntity> = entityNode.data.toJS()
+        const data: models.IGenericEntityData<CLM.PredictedEntity> = entityNode.data.toJS()
 
         return {
             startIndex: firstToken.startIndex,
@@ -503,7 +502,7 @@ export const getEntitiesFromValueUsingTokenData = (change: any): models.IGeneric
         .filter(x => x)
 }
 
-export const getPreBuiltEntityDisplayName = (entity: EntityBase, pe: PredictedEntity): string => {
+export const getPreBuiltEntityDisplayName = (entity: CLM.EntityBase, pe: CLM.PredictedEntity): string => {
     if (typeof pe.builtinType !== 'string' || pe.builtinType.length === 0) {
         return entity.entityType
     }
@@ -512,7 +511,7 @@ export const getPreBuiltEntityDisplayName = (entity: EntityBase, pe: PredictedEn
     return names[names.length - 1]
 }
 
-export const convertPredictedEntityToGenericEntity = (pe: PredictedEntity, showSelect: boolean, entityName: string, displayName: string): models.IGenericEntity<models.IGenericEntityData<PredictedEntity>> =>
+export const convertPredictedEntityToGenericEntity = (pe: CLM.PredictedEntity, showSelect: boolean, entityName: string, displayName: string): models.IGenericEntity<models.IGenericEntityData<CLM.PredictedEntity>> =>
     ({
         startIndex: pe.startCharIndex,
         // The predicted entities returned by the service treat indices as characters instead of before or after the character so add 1 to endIndex for slicing using JavaScript
@@ -533,7 +532,7 @@ export const convertPredictedEntityToGenericEntity = (pe: PredictedEntity, showS
         }
     })
 
-export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) => (ge: models.IGenericEntity<models.IGenericEntityData<PredictedEntity>>): PredictedEntity => {
+export const convertGenericEntityToPredictedEntity = (entities: CLM.EntityBase[]) => (ge: models.IGenericEntity<models.IGenericEntityData<CLM.PredictedEntity>>): CLM.PredictedEntity => {
     const predictedEntity = ge.data.original
     if (predictedEntity) {
         return predictedEntity
@@ -544,7 +543,7 @@ export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) =>
     const option = ge.data.option
     const text = ge.data.text || ''
 
-    if (option.type !== EntityType.LUIS) {
+    if (option.type !== CLM.EntityType.LUIS) {
         console.warn(`convertGenericEntityToPredictedEntity option selected as option type other than LUIS, this will most likely cause an error`)
     }
 
@@ -564,9 +563,9 @@ export const convertGenericEntityToPredictedEntity = (entities: EntityBase[]) =>
     }
 }
 
-export const convertExtractorResponseToEditorModels = (extractResponse: ExtractResponse, entities: EntityBase[]): models.IEditorProps => {
+export const convertExtractorResponseToEditorModels = (extractResponse: CLM.ExtractResponse, entities: CLM.EntityBase[]): models.IEditorProps => {
     const options = entities
-        .filter(e => e.entityType !== EntityType.LOCAL && e.entityName !== getPrebuiltEntityName(e.entityType))
+        .filter(e => e.entityType === CLM.EntityType.LUIS)
         .map<models.IOption>(e =>
             ({
                 id: e.entityId,
@@ -589,11 +588,11 @@ export const convertExtractorResponseToEditorModels = (extractResponse: ExtractR
         .filter(ipe => ipe.entity !== null)
 
     const customEntities = internalPredictedEntities
-        .filter(({ entity }) => entity && entity.entityType !== EntityType.LOCAL && entity.entityName !== getPrebuiltEntityName(entity.entityType))
+        .filter(({ entity }) => entity && entity.entityType === CLM.EntityType.LUIS)
         .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity!.doNotMemorize ? true : false, entity!.entityName, util.entityDisplayName(entity!)))
 
     const preBuiltEntities = internalPredictedEntities
-        .filter(({ entity }) => entity && entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL && entity.entityName === getPrebuiltEntityName(entity.entityType))
+        .filter(({ entity }) => entity && CLM.isPrebuilt(entity))
         .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity!.doNotMemorize ? true : false, entity!.entityName, getPreBuiltEntityDisplayName(entity!, predictedEntity)))
 
     return {
