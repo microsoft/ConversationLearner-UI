@@ -419,34 +419,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 data-testid="teach-session-admin-action"
                                 id={FM.TEACHSESSIONADMIN_ACTION_TITLE}
                             />
-                            {/* Consider making this a component although it's display is very custom to the location it's used in the header */}
-                            <span className="cl-training-status-inline">
-                                {this.props.app.trainingStatus === CLM.TrainingStatusCode.Completed
-                                    ? <span data-testid="teach-session-admin-train-status">
-                                        <FormattedMessageId id={FM.TEACHSESSIONADMIN_TRAINSTATUS_COMPLETED} /> &nbsp;
-                                        {this.state.isScoresRefreshVisible
-                                            && <span data-testid="teach-session-admin-train-status-new-scores">
-                                                <FormattedMessageId id={FM.TEACHSESSIONADMIN_TRAINSTATUS_NEWSCORES} /> (
-                                                <button
-                                                    type="button"
-                                                    data-testid="teach-session-admin-refresh-score-button"
-                                                    className={`cl-training-status-inline__button ${OF.FontClassNames.large}`}
-                                                    onClick={this.onClickRefreshScores}
-                                                >
-                                                    <FormattedMessageId id={FM.TEACHSESSIONADMIN_TRAINSTATUS_REFRESH} />
-                                                </button>
-                                                )
-                                            </span>}
-                                    </span>
-                                    : (this.props.app.trainingStatus === CLM.TrainingStatusCode.Failed
-                                        ? <span data-testid="teach-session-admin-train-status">
-                                            <FormattedMessageId id={FM.TEACHSESSIONADMIN_TRAINSTATUS_FAILED} />
-                                        </span>
-                                        : <span data-testid="teach-session-admin-train-status">
-                                            <FormattedMessageId id={FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING} />
-                                        </span>
-                                    )}
-                            </span>
                         </div>
 
                         {renderData.scoreResponse && renderData.scoreInput && (renderData.dialogMode === CLM.DialogMode.Scorer || autoTeachWithRound)
