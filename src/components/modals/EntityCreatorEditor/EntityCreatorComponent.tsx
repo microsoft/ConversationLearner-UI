@@ -17,7 +17,8 @@ import { FM } from '../../../react-intl-messages'
 import FormattedMessageId from '../../FormattedMessageId'
 import { InjectedIntlProps } from 'react-intl'
 
-interface Props extends InjectedIntlProps {
+// Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
+interface ReceivedProps {
     open: boolean
     title: string
 
@@ -71,7 +72,9 @@ interface Props extends InjectedIntlProps {
     onResolverChanged: (option: OF.IDropdownOption) => void
 }
 
-const EditComponent: React.SFC<Props> = (props: Props) => {
+type Props = ReceivedProps & InjectedIntlProps
+
+const EditComponent: React.SFC<Props> = (props) => {
     return <div className="cl-entity-creator-form">
         <TC.Dropdown
             data-testid="entity-creator-entity-type-dropdown"
