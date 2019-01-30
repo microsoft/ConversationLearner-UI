@@ -364,7 +364,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONTEXT)}
                         />
                         <OF.DefaultButton
-                            data-testId="settings-delete-model-button"
+                            data-testid="settings-delete-model-button"
                             className="cl-button-delete"
                             onClick={this.onClickDelete}
                             ariaDescription={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
