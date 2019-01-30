@@ -11,7 +11,9 @@ const editDialogModal = require('../support/components/EditDialogModal')
 const train = require('../support/Train')
 const memoryTableComponent = require('../support/components/MemoryTableComponent')
 
-export function AllEntityTypes() {
+Cypress.TestCase('CreateModels', 'All Entity Types', AllEntityTypes)
+export function AllEntityTypes()
+{
   models.CreateNewModel('z-allEntityTypes')
 
   entities.CreateNewEntity({ name: 'multiValuedEntity', multiValued: true })
@@ -22,7 +24,9 @@ export function AllEntityTypes() {
   // Manually EXPORT this to fixtures folder and name it 'z-allEntityTypes'
 }
 
-export function DisqualifyingEntities() {
+Cypress.TestCase('CreateModels', 'Disqualifying Entities', DisqualifyingEntities)
+export function DisqualifyingEntities()
+{
   models.CreateNewModel('z-disqualifyngEnt')
 
   entities.CreateNewEntity({ name: 'name' })
@@ -38,7 +42,9 @@ export function DisqualifyingEntities() {
   // Manually EXPORT this to fixtures folder and name it 'z-disqualifyngEnt'
 }
 
-export function WaitVsNoWaitActions() {
+Cypress.TestCase('CreateModels', 'Wait vs Non-Wait Actions', WaitVsNoWaitActions)
+export function WaitVsNoWaitActions()
+{
   models.CreateNewModel('z-waitNoWait')
 
   // NOTE: the {enter} in these strings are necessary to triger the entity detection.
@@ -65,7 +71,9 @@ export function WaitVsNoWaitActions() {
   // Manually EXPORT this to fixtures folder and name it 'z-waitNoWait.cl'
 }
 
-export function WhatsYourName() {
+Cypress.TestCase('CreateModels', "What's Your Name", WhatsYourName)
+export function WhatsYourName()
+{
   models.CreateNewModel('z-whatsYourName')
   entities.CreateNewEntity({ name: 'name' })
   actions.CreateNewAction({ response: "What's your name?", expectedEntities: 'name' })
@@ -78,7 +86,9 @@ export function WhatsYourName() {
 
 // This model is created with a Training in it as well as Entities and Actions because
 // this model is intended to test features of using a trained model.
-export function TagAndFrog() {
+Cypress.TestCase('CreateModels', 'Tag And Frog', TagAndFrog)
+export function TagAndFrog()
+{
   // models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
   models.CreateNewModel('z-tagAndFrog')
   entities.CreateNewEntity({ name: 'multi', multiValued: true })
@@ -115,7 +125,9 @@ export function TagAndFrog() {
   // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog.cl'
 }
 
-export function EndlessLoop() {
+Cypress.TestCase('CreateModels', 'Endless Loop', EndlessLoop)
+export function EndlessLoop()
+{
   // models.ImportModel('z-endlessLoop', 'z-endlessLoop.cl')
   models.CreateNewModel('z-endlessLoop')
   actions.CreateNewAction({ response: "Action One", uncheckWaitForResponse: true })
@@ -163,7 +175,9 @@ export function EndlessLoop() {
   // Manually EXPORT this to fixtures folder and name it 'z-endlessLoop.cl'
 }
 
-export function Travel() {
+Cypress.TestCase('CreateModels', 'Travel', Travel)
+export function Travel()
+{
   models.CreateNewModel('z-travel')
   entities.CreateNewEntity({ name: 'departure', resolverType: 'datetimeV2', expectPopup: true })
   entities.CreateNewEntity({ name: 'return', resolverType: 'datetimeV2' })
