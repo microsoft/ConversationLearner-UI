@@ -208,27 +208,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         }
     }
 
-    onClickRefreshScores = (event: React.MouseEvent<HTMLButtonElement>) => {
-        // TODO: This is coupling knowledge about reducers populating this field after runScorer fulfilled
-        if (!this.props.teachSession.scoreInput) {
-            throw new Error(`You attempted to refresh scores but there was no previous score input to re-use.  This is likely a problem with the code. Please open an issue.`)
-        }
-
-        if (!this.props.teachSession.teach) {
-            throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
-        }
-
-        this.props.getScoresThunkAsync(
-            this.props.user.id,
-            this.props.app.appId,
-            this.props.teachSession.teach.teachId,
-            this.props.teachSession.scoreInput)
-
-        this.setState({
-            isScoresRefreshVisible: false
-        })
-    }
-
     // Calculate round index from selectedActivityIndex
     roundIndex(activityIndex: number): number {
         let roundIndex = -1
