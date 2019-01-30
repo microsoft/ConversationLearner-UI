@@ -17,7 +17,9 @@ const ducksSayQuack = 'Ducks say quack!'
 const fishJustSwim = 'Fish just swim.'
 const whichAnimalWouldYouLike = 'Which animal would you like?'
 
-export function VerifyEditTrainingControlsAndLabels() {
+Cypress.TestCase('EditAndBranching', 'Verify Edit Training Controls And Labels', VerifyEditTrainingControlsAndLabels)
+export function VerifyEditTrainingControlsAndLabels()
+{
   var modelName = models.ImportModel('z-editContols', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
 
@@ -41,7 +43,9 @@ export function VerifyEditTrainingControlsAndLabels() {
   train.VerifyOriginalChatMessages()
 }
 
-export function Branching() {
+Cypress.TestCase('EditAndBranching', 'Branching', Branching)
+export function Branching()
+{
   var modelName = models.ImportModel('z-branching', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -66,8 +70,10 @@ export function Branching() {
   editDialogModal.ClickSaveCloseButton()
 }
 
-export function TagAndFrog() {
-  var textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
+Cypress.TestCase('EditAndBranching', 'Tag And Frog', TagAndFrog)
+export function TagAndFrog()
+{
+  var textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
 
   models.ImportModel('z-tagAndFrog2', 'z-tagAndFrog2.cl')
   modelPage.NavigateToTrainDialogs()
@@ -95,7 +101,9 @@ export function TagAndFrog() {
   train.AbandonDialog()
 }
 
-export function TwoConsecutiveUserInputErrorHandling() {
+Cypress.TestCase('EditAndBranching', 'Two Consecutive User Input Error Handling', TwoConsecutiveUserInputErrorHandling)
+export function TwoConsecutiveUserInputErrorHandling()
+{
   models.ImportModel('z-2UserInputs', 'z-disqualifyngEnt.Trained.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -127,7 +135,9 @@ export function TwoConsecutiveUserInputErrorHandling() {
   modelPage.VerifyNoErrorIconOnPage()
 }
 
-export function WaitNonWaitErrorHandling() {
+Cypress.TestCase('EditAndBranching', 'Wait Non Wait Error Handling', WaitNonWaitErrorHandling)
+export function WaitNonWaitErrorHandling()
+{
   models.ImportModel('z-errWaitNoWait', 'z-waitNoWait.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()

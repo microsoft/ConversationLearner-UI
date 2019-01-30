@@ -28,7 +28,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: app => app.appName,
-            render: (app, props) => <span className={OF.FontClassNames.mediumPlus}><OF.Link onClick={() => props.onClickApp(app)} data-testid="model-list-model-name" data-model-id={app.appId}>{app.appName}</OF.Link></span>
+            render: (app, props) => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-model-name" data-model-id={app.appId}>{app.appName}</span>
         },
         {
             key: 'isEditing',
@@ -230,6 +230,7 @@ export class Component extends React.Component<Props, ComponentState> {
                 checkboxVisibility={OF.CheckboxVisibility.hidden}
                 onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
                 onColumnHeaderClick={this.onClickColumnHeader}
+                onActiveItemChanged={app => this.props.onClickApp(app)}
             />
             <AppCreatorModal
                 open={props.isAppCreateModalOpen}

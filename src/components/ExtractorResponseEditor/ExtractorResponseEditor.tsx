@@ -212,7 +212,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                 const builtInEntityId = builtInEntity.data.option.id
                 const builtInEntityDef = this.props.entities.find(e => e.entityId === builtInEntityId)
                 if (builtInEntityDef) {
-                    builtInTypeFilter = builtInEntityDef.entityType
+                    builtInTypeFilter = builtInEntityDef.entityType  
                 }
             }
         }

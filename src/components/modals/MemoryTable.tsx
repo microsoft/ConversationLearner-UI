@@ -3,21 +3,21 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react';
+import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types'
-import * as OF from 'office-ui-fabric-react';
 import { onRenderDetailsHeader, prebuilt, entityObject } from '../ToolTips/ToolTips'
-import { EntityBase, EntityType, Memory } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import FormattedMessageId from '../FormattedMessageId'
 import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 
 interface IRenderableColumn extends OF.IColumn {
-    render: (x: EntityBase, component: MemoryTable) => React.ReactNode
-    getSortValue: (entity: EntityBase, component: MemoryTable) => string
+    render: (x: CLM.EntityBase, component: MemoryTable) => React.ReactNode
+    getSortValue: (entity: CLM.EntityBase, component: MemoryTable) => string
 }
 
 enum MemoryChangeStatus {
@@ -76,7 +76,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             renderedValue = prebuilt(value.memoryValue, renderedValue)
                         }
 
-                        return <span className={`${OF.FontClassNames.mediumPlus} cl-font--preserve`} key={i}>{renderedValue}</span>
+                        return <span className={`${OF.FontClassNames.mediumPlus} cl-font--preserve`} key={i} onMouseDown={component._onItemInvoked}>{renderedValue}</span>
                     })}
                 </React.Fragment>)
             },
@@ -91,11 +91,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             render: entity => {
                 let display = entity.entityType
-                if (display === EntityType.LOCAL) {
+                if (display === CLM.EntityType.LOCAL) {
                     display = "PROGRAMMATIC"
                 }
-                else if (display === EntityType.LUIS) {
+                else if (display === CLM.EntityType.LUIS) {
                     display = "CUSTOM"
+                }
+                else if (display === CLM.EntityType.ENUM) {
+                    display = "ENUM"
                 }
                 return <span className={OF.FontClassNames.mediumPlus} data-testid="entity-memory-type">{display}</span>
             },
@@ -163,7 +166,25 @@ class MemoryTable extends React.Component<Props, ComponentState> {
 
         this.onColumnClick = this.onColumnClick.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
+        this.onCopyTextToClipboard = this.onCopyTextToClipboard.bind(this)
     }
+
+    _onItemInvoked = (event: React.MouseEvent<HTMLSpanElement>) => {
+
+        let text_for_clipboard = "";
+
+        try { text_for_clipboard = (event as any).nativeEvent.target.innerText; } catch (exception) { }
+
+        this.onCopyTextToClipboard(text_for_clipboard);
+
+        return true;
+
+    };
+
+    onCopyTextToClipboard(text_for_clipboard: string) {
+        try { (navigator as any).clipboard.writeText(text_for_clipboard); } catch (exception) { }
+    }
+
     onColumnClick(event: any, column: IRenderableColumn) {
         let { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
@@ -209,10 +230,6 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         return MemoryChangeStatus.Unchanged
     }
 
-    isPrebuilt(entity: EntityBase): boolean {
-        return entity.entityType !== EntityType.LUIS && entity.entityType !== EntityType.LOCAL
-    }
-
     // If text parses as an object, return it
     valuesAsObject(entityValues: string | null): Object | null {
         if (!entityValues) {
@@ -229,7 +246,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
             return null;
         }
     }
-    getEntityValues(entity: EntityBase) {
+    getEntityValues(entity: CLM.EntityBase) {
         // Current entity values
         let curMemory = this.props.memories.find(m => m.entityName === entity.entityName);
         let curMemoryValues = curMemory ? curMemory.entityValues : [];
@@ -254,7 +271,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
                 changeStatus = MemoryChangeStatus.Added
             }
 
-            const isPrebuilt = this.isPrebuilt(entity)
+            const isPrebuilt = CLM.isPrebuilt(entity)
             // Calculate prefix
             let prefix = '';
             if (!entity.isMultivalue) {
@@ -362,8 +379,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
 }
 
 export interface ReceivedProps {
-    memories: Memory[],
-    prevMemories: Memory[]
+    memories: CLM.Memory[],
+    prevMemories: CLM.Memory[]
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

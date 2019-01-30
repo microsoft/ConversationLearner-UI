@@ -4,7 +4,7 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { EntityBase, EntityType } from '@conversationlearner/models'
+import { EntityBase, isPrebuilt } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory' 
@@ -163,7 +163,7 @@ export const deleteEntityThunkAsync = (appId: string, entity: EntityBase) => {
             
             // If deleted entity is prebuilt entity, we fetch all entities to make sure 
             // that entities in the memory are all up to date
-            if (entity.entityType !== EntityType.LOCAL && entity.entityType !== EntityType.LUIS) {
+            if (isPrebuilt(entity)) {
                 dispatch(fetchAllEntitiesThunkAsync(appId));
             }
             
