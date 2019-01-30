@@ -10,7 +10,9 @@ const logDialogsGrid = require('../support/components/LogDialogsGrid')
 const logDialogModal = require('../support/components/LogDialogModal')
 const helpers = require('../support/Helpers')
 
-export function WhatsYourName() {
+Cypress.TestCase('Log', "What's Your Name", WhatsYourName)
+export function WhatsYourName()
+{
   models.ImportModel('z-logMyName', 'z-nameTrained.cl')
 
   modelPage.NavigateToLogDialogs()
@@ -33,7 +35,9 @@ export function WhatsYourName() {
 // at rejected (C:\repo\ConversationLearner-Samples\node_modules\botbuilder\lib\botFrameworkAdapter.js:12:65)
 // at process._tickCallback (internal/process/next_tick.js:68:7)
 // (node:13900) UnhandledPromiseRejectionWarning: Unhandled promise rejection. This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). (rejection id: 8)
-export function EndlessLoop() {
+Cypress.TestCase('Log', 'Endless Loop', EndlessLoop)
+export function EndlessLoop()
+{
   models.ImportModel('z-endlessLoop', 'z-endlessLoop.cl')
   modelPage.NavigateToLogDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -54,8 +58,10 @@ export function EndlessLoop() {
 
 // This version of the test does not get very far before the Bot chokes.
 // Once the Bot's errors are fixed then we can re-visit this test case.
+Cypress.TestCase('Log', 'Endless Loop X', EndlessLoopX)
 export function EndlessLoopX() {
-  cy.Enqueue(() => {
+  cy.Enqueue(() =>
+  {
     return new Promise((resolve) => {
       var modelNames = new Array()
       //models.ImportModel('z-endlessLoop', 'z-endlessLoop.cl').then(modelName => {modelNames.push(modelName)})

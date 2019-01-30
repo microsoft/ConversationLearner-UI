@@ -11,7 +11,9 @@ const train = require('../support/Train')
 const trainDialogsGrid = require('../support/components/TrainDialogsGrid')
 const editDialogModal = require('../support/components/EditDialogModal')
 
-export function DisqualifyingEntities() {
+Cypress.TestCase('Train', 'Disqualifying Entities', DisqualifyingEntities)
+export function DisqualifyingEntities()
+{
   models.ImportModel('z-disqualifyngEnt', 'z-disqualifyngEnt.cl')
 
   modelPage.NavigateToTrainDialogs()
@@ -60,7 +62,9 @@ export function DisqualifyingEntities() {
   // Manually EXPORT this to fixtures folder and name it 'z-disqualifyngEnt.Trained.cl'
 }
 
-export function WaitVsNoWaitActions() {
+Cypress.TestCase('Train', 'Wait vs Non-Wait Actions', WaitVsNoWaitActions)
+export function WaitVsNoWaitActions()
+{
   models.ImportModel('z-waitNoWait', 'z-waitNoWait.cl')
 
   modelPage.NavigateToTrainDialogs()
@@ -96,7 +100,9 @@ export function WaitVsNoWaitActions() {
   train.Save()
 }
 
-export function WhatsYourName() {
+Cypress.TestCase('Train', 'Whats Your Name', WhatsYourName)
+export function WhatsYourName()
+{
   models.ImportModel('z-whatsYourName', 'z-whatsYourName.cl')
 
   modelPage.NavigateToTrainDialogs()
@@ -122,7 +128,9 @@ export function WhatsYourName() {
   // Manually EXPORT this to fixtures folder and name it 'z-myNameIs.cl'
 }
 
-export function MyNameIs() {
+Cypress.TestCase('Train', 'My Name Is', MyNameIs)
+export function MyNameIs()
+{
   models.ImportModel('z-myNameIs', 'z-myNameIs.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
@@ -152,7 +160,9 @@ export function MyNameIs() {
   // Manually EXPORT this to fixtures folder and name it 'z-nameTrained.cl'
 }
 
-export function TagAndFrog() {
+Cypress.TestCase('Train', 'Tag And Frog', TagAndFrog)
+export function TagAndFrog()
+{
   // TODO: Need to add another test case or expand this one so that tagging something
   //       that was NOT tagged in another instance causes the UI to complain.
   var textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
@@ -219,7 +229,9 @@ export function TagAndFrog() {
   // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog2.cl'
 }
 
-export function BookMeAFlight() {
+Cypress.TestCase('Train', 'Book Me A Flight', BookMeAFlight)
+export function BookMeAFlight()
+{
   models.ImportModel('z-BookMeAFlight', 'z-travel.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
