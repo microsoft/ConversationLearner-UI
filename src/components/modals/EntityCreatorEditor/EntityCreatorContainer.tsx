@@ -322,7 +322,7 @@ class Container extends React.Component<Props, ComponentState> {
             isMultivalueVal,
             isNegatableVal,
             entityTypeVal,
-            entityNameVal: isPrebuilt ? Container.GetPrebuiltEntityName(obj.text) : prevState.entityNameVal,
+            entityNameVal: isPrebuilt ? Container.GetPrebuiltEntityName(obj.text) : "",
         }))
     }
     onChangedEnum = (index: number, value: string) => {
