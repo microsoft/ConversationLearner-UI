@@ -147,12 +147,9 @@ class Container extends React.Component<Props, ComponentState> {
                     }))
 
             if (nextProps.entity === null) {
-                let reserved_names: string[] = []
                 const filteredPreBuiltOptions = localePreBuiltOptions.filter(entityOption => !nextProps.entities.some(e => !e.doNotMemorize && e.entityType === entityOption.key))
                 this.entityOptions = [...this.staticEntityOptions, ...filteredPreBuiltOptions]
                 this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
-
-                filteredPreBuiltOptions.forEach(prebuilt_reserved_name => { reserved_names.push(prebuilt_reserved_name.text); })
 
                 this.setState({
                     ...initState,
@@ -161,8 +158,7 @@ class Container extends React.Component<Props, ComponentState> {
                         defaultMessage: 'Create an Entity'
                     }),
                     entityTypeVal: CLM.EntityType.LUIS,
-                    entityResolverVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS ? nextProps.entityTypeFilter : this.NONE_RESOLVER,
-                    restricted_entity_names: reserved_names
+                    entityResolverVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS ? nextProps.entityTypeFilter : this.NONE_RESOLVER
                 });
             } else {
                 this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
@@ -352,7 +348,7 @@ class Container extends React.Component<Props, ComponentState> {
             return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC)
         }
 
-        if (Object.values(this.state.restricted_entity_names).indexOf(value.toLocaleLowerCase()) >= 0) {
+        if ((value.toLocaleLowerCase().indexOf("builtin-") >= 0) && ("builtin-" === value.toLocaleLowerCase().substring(0,"builtin-".length))) {
             return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED)
         }
 
