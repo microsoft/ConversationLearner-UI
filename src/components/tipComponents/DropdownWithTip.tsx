@@ -17,7 +17,7 @@ class DropdownWithTip extends OF.BaseComponent<IDropdownWithTipProps, OF.IDropdo
 
         return (
             <div>
-                <OF.Label>{label}
+                <OF.Label className="cl-label">{label}
                     <HelpIcon tipType={tipType} />
                 </OF.Label>
                 <OF.Dropdown

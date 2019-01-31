@@ -48,8 +48,8 @@ interface ComponentState {
     selectedActivityIndex: number | null,
     // If activity was part of existing history, the actual item
     selectedHistoryActivity: Activity | null,
-    // Was last post a button sumbit
-    wasSubmitPost: boolean
+    // For handling button sumbits
+    ignoreSelectionCount: number,
     replaceActivityText: string | null
     replaceActivityIndex: number | null
 }
@@ -69,7 +69,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         nextActivityIndex: 0,
         selectedActivityIndex: null,
         selectedHistoryActivity: null,
-        wasSubmitPost: false,
+        ignoreSelectionCount: 0,
         replaceActivityText: null,
         replaceActivityIndex: null
     }
@@ -105,15 +105,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let selectedActivityIndex = this.state.selectedActivityIndex
         let selectedHistoryActivity = this.state.selectedHistoryActivity
         let initialEntities = this.state.initialEntities
-        let wasSubmitPost = this.state.wasSubmitPost
+        let ignorePostCount = this.state.ignoreSelectionCount
         let replaceActivityText = this.state.replaceActivityText
         let replaceActivityIndex = this.state.replaceActivityIndex
 
-        if (!newProps.isOpen) {
+        if (this.props.isOpen && !newProps.isOpen) {
             selectedActivityIndex = null
             selectedHistoryActivity = null
             initialEntities = null
-            wasSubmitPost = false
+            ignorePostCount = 0
             replaceActivityText = null
             replaceActivityIndex = null
         }
@@ -150,7 +150,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 nextActivityIndex,
                 selectedActivityIndex,
                 selectedHistoryActivity,
-                wasSubmitPost,
+                ignoreSelectionCount: ignorePostCount,
                 replaceActivityText,
                 replaceActivityIndex
             })
@@ -167,7 +167,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
         if (filledEntityMap && this.props.onSetInitialEntities) {
-            await this.props.onSetInitialEntities(filledEntityMap.FilledEntities())
+            await this.props.onSetInitialEntities(filledEntityMap)
         }
         this.setState({
             isInitStateOpen: false,
@@ -212,11 +212,12 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     async onWebChatSelectActivity(activity: Activity) {
 
-        // If last action was button submit, ignore the selection
-        if (this.state.wasSubmitPost) {
-            this.setState({wasSubmitPost: false})
+        // If last action was button submit will generate two calls, ignore the selection
+        if (this.state.ignoreSelectionCount > 0) {
+            this.setState({ignoreSelectionCount: this.state.ignoreSelectionCount - 1})
             return
         }
+
         // Activities from history can be looked up
         if (this.props.initialHistory.length > 0) {
             const selectedActivityIndex = this.props.initialHistory.findIndex(a => a.id === activity.id)
@@ -240,23 +241,29 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     async onWebChatPostActivity(activity: Activity) {
         if (activity.type === 'message') {
-         
             if (!this.props.teachSession.teach) {
                 throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
             }
 
             // Content could come from button submit
-            const buttonSubmit = activity.value ? activity.value['submit'] : null
-            const userInput: CLM.UserInput = { text: buttonSubmit || activity.text! }
+            const buttonSubmit = activity.channelData && activity.channelData.imback
+            const userInput: CLM.UserInput = { text: activity.text! }
 
-            // If selected was a selected, insert it
-            if (this.state.selectedActivityIndex) {
-                this.onSubmitAddUserInput(userInput.text)
-                return
-            }
-            // If no activity selected, ingore next activity selection if button click 
-            else if (buttonSubmit) {
-                await Util.setStateAsync(this, {wasSubmitPost: true})
+            if (buttonSubmit) {
+                // For now always add button response to bottom of dialog even
+                // when card is selected.  In future  want to add below the 
+                // selected card but webchat injects imback at bottom, which causes a jump
+                // Need to update webchat to change behavior when activity is selected to not send message
+                /*            
+                // If selected was a selected, insert it
+                if (this.state.selectedActivityIndex) {
+                    this.onSubmitAddUserInput(userInput.text)
+                    return
+                }
+                */
+
+                // Ignore the next to action selections
+                await Util.setStateAsync(this, {ignoreSelectionCount: 2})
 
                 // If button clicked when not waiting for user input, must insert rather than continue as not valid combination
                 if (this.props.teachSession.dialogMode !== CLM.DialogMode.Wait) {
@@ -471,8 +478,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onCloseBotAPIError(): void {
-        // Delete the most recent turn with the error
-        this.props.onEditTeach(this.state.nextActivityIndex - 1, null, this.props.onDeleteTurn)
+        // If first turn close the train dialog
+        if (this.state.nextActivityIndex === 1) {
+            this.props.onClose(false)
+        }
+        else {
+            // Otherwise delete the most recent turn with the error
+            this.props.onEditTeach(this.state.nextActivityIndex - 1, null, this.props.onDeleteTurn)
+        }
     }
 
     @OF.autobind
@@ -863,7 +876,7 @@ export interface ReceivedProps {
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onEndSessionActivity: () => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any
-    onSetInitialEntities: ((initialFilledEntities: CLM.FilledEntity[]) => void) | null
+    onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => void) | null
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string

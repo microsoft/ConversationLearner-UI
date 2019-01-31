@@ -24,6 +24,7 @@ package
 .env.test.local
 .env.production.local
 ~*.xlsx
+server.js
 
 npm-debug.log*
 yarn-debug.log*

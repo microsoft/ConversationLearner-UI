@@ -212,7 +212,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                 const builtInEntityId = builtInEntity.data.option.id
                 const builtInEntityDef = this.props.entities.find(e => e.entityId === builtInEntityId)
                 if (builtInEntityDef) {
-                    builtInTypeFilter = builtInEntityDef.entityType
+                    builtInTypeFilter = builtInEntityDef.entityType  
                 }
             }
         }
@@ -270,7 +270,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         // User clicked next to a single character.  Go ahead and autoselect it
         if (tokenNodes.size === 0 && operationsJs.length === 1) {
-            console.log("SELECT CHAR")
             this.onSelectChar()
             return
         }

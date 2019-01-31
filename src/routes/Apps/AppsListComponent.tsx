@@ -28,7 +28,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             maxWidth: 200,
             isResizable: true,
             getSortValue: app => app.appName,
-            render: (app, props) => <span className={OF.FontClassNames.mediumPlus}><OF.Link onClick={() => props.onClickApp(app)} data-testid="model-list-model-name" data-model-id={app.appId}>{app.appName}</OF.Link></span>
+            render: (app, props) => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-model-name" data-model-id={app.appId}>{app.appName}</span>
         },
         {
             key: 'isEditing',
@@ -198,7 +198,7 @@ export class Component extends React.Component<Props, ComponentState> {
         const apps = this.getSortedApplications(this.state.sortColumn, props.apps);
 
         return <div className="cl-page">
-            <span className={OF.FontClassNames.mediumPlus}>
+            <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-title">
                 <FormattedMessageId id={FM.APPSLIST_SUBTITLE} />
             </span>
             <div className="cl-buttons-row">
@@ -230,6 +230,7 @@ export class Component extends React.Component<Props, ComponentState> {
                 checkboxVisibility={OF.CheckboxVisibility.hidden}
                 onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
                 onColumnHeaderClick={this.onClickColumnHeader}
+                onActiveItemChanged={app => this.props.onClickApp(app)}
             />
             <AppCreatorModal
                 open={props.isAppCreateModalOpen}
