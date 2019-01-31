@@ -2,17 +2,17 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { State } from '../../types'
 import actions from '../../actions'
 import * as CLM from '@conversationlearner/models'
 import { EditDialogType } from '../../components/modals'
-import ActionScorer from './ActionScorer';
-import EntityExtractor from './EntityExtractor';
-import MemoryTable from './MemoryTable';
+import ActionScorer from './ActionScorer'
+import EntityExtractor from './EntityExtractor'
+import MemoryTable from './MemoryTable'
 import { FM } from '../../react-intl-messages'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import { TeachSessionState } from '../../types/StateTypes'
@@ -118,7 +118,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             let turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.nextActivityIndex - 1 : this.state.turnLookupOffset
 
             turnLookup.push({ textVariations, memories: [...this.props.teachSession.memories] })
-            turnLookup.push({ uiScoreResponse, memories: [...this.props.teachSession.memories]  })
+            turnLookup.push({ uiScoreResponse, memories: [...this.props.teachSession.memories] })
             this.setState({
                 isScoresRefreshVisible: true,
                 turnLookup,

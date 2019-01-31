@@ -20,7 +20,7 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action: ActionO
         case AT.CLEAR_ERROR_DISPLAY:
             return { ...initialState }
         case AT.SET_ERROR_DISPLAY:
-            return { 
+            return {
                 ...state,
                 type: action.errorType,
                 title: action.title,
@@ -28,7 +28,7 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action: ActionO
                 actionType: action.actionType,
             }
         case AT.SET_ERROR_DISMISS_CALLBACK:
-            return {...state, closeCallback: action.closeCallback}
+            return { ...state, closeCallback: action.closeCallback }
         case AT.FETCH_BOTINFO_FULFILLED:
             if (action.botInfo.validationError) {
                 return {

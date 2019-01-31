@@ -2,15 +2,15 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { returntypeof } from 'react-redux-typescript';
+import * as React from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { returntypeof } from 'react-redux-typescript'
 import { State } from '../../types'
 import * as CLM from '@conversationlearner/models'
 import { createActionThunkAsync } from '../../actions/actionActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
@@ -591,7 +591,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     />
                 )
             } else {
-                return '';
+                return ''
             }
         }
         // Handle deleted actions
@@ -612,7 +612,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 return column.render(action as CLM.ScoredBase, this, index)
             }
             else {
-                return '';
+                return ''
             }
         }
 

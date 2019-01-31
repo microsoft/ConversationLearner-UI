@@ -2,9 +2,9 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { connect } from 'react-redux';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { connect } from 'react-redux'
 import { State } from '../../../types'
 import { AppBase, AppDefinition } from '@conversationlearner/models'
 import FormattedMessageId from '../../../components/FormattedMessageId'

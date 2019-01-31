@@ -191,6 +191,7 @@
         "strict-boolean-expressions": false,
         "no-unsafe-any": false,
         "no-void-expression": ["ignore-arrow-function-shorthand"],
-        "react-this-binding-issue": false
+        "react-this-binding-issue": false,
+        "match-default-export-name": false
     }
 }

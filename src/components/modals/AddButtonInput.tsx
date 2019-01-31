@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { TooltipHost, DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
+import { TooltipHost, DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip'
 import { FM } from '../../react-intl-messages'
 import FormattedMessageId from '../FormattedMessageId'
 import { EditDialogType } from '.'
