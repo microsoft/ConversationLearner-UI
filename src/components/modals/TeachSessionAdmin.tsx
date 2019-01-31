@@ -208,27 +208,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         }
     }
 
-    onClickRefreshScores = (event: React.MouseEvent<HTMLButtonElement>) => {
-        // TODO: This is coupling knowledge about reducers populating this field after runScorer fulfilled
-        if (!this.props.teachSession.scoreInput) {
-            throw new Error(`You attempted to refresh scores but there was no previous score input to re-use.  This is likely a problem with the code. Please open an issue.`)
-        }
-
-        if (!this.props.teachSession.teach) {
-            throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
-        }
-
-        this.props.getScoresThunkAsync(
-            this.props.user.id,
-            this.props.app.appId,
-            this.props.teachSession.teach.teachId,
-            this.props.teachSession.scoreInput)
-
-        this.setState({
-            isScoresRefreshVisible: false
-        })
-    }
-
     // Calculate round index from selectedActivityIndex
     roundIndex(activityIndex: number): number {
         let roundIndex = -1
@@ -419,34 +398,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 data-testid="teach-session-admin-action"
                                 id={FM.TEACHSESSIONADMIN_ACTION_TITLE}
                             />
-                            {/* Consider making this a component although it's display is very custom to the location it's used in the header */}
-                            <span className="cl-training-status-inline">
-                                {this.props.app.trainingStatus === CLM.TrainingStatusCode.Completed
-                                    ? <span data-testid="teach-session-admin-train-status">
-                                        <FormattedMessageId id={FM.TEACHSESSIONADMIN_TRAINSTATUS_COMPLETED} /> &nbsp;
-                                        {this.state.isScoresRefreshVisible
-                                            && <span data-testid="teach-session-admin-train-status-new-scores">
-                                                <FormattedMessageId id={FM.TEACHSESSIONADMIN_TRAINSTATUS_NEWSCORES} /> (
-                                                <button
-                                                    type="button"
-                                                    data-testid="teach-session-admin-refresh-score-button"
-                                                    className={`cl-training-status-inline__button ${OF.FontClassNames.large}`}
-                                                    onClick={this.onClickRefreshScores}
-                                                >
-                                                    <FormattedMessageId id={FM.TEACHSESSIONADMIN_TRAINSTATUS_REFRESH} />
-                                                </button>
-                                                )
-                                            </span>}
-                                    </span>
-                                    : (this.props.app.trainingStatus === CLM.TrainingStatusCode.Failed
-                                        ? <span data-testid="teach-session-admin-train-status">
-                                            <FormattedMessageId id={FM.TEACHSESSIONADMIN_TRAINSTATUS_FAILED} />
-                                        </span>
-                                        : <span data-testid="teach-session-admin-train-status">
-                                            <FormattedMessageId id={FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING} />
-                                        </span>
-                                    )}
-                            </span>
                         </div>
 
                         {renderData.scoreResponse && renderData.scoreInput && (renderData.dialogMode === CLM.DialogMode.Scorer || autoTeachWithRound)
