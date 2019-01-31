@@ -52,14 +52,14 @@ export default class Component extends React.Component<Props, State> {
                     <div className="cl-api-payload__signature">logic(memoryManager{pairedLogicArguments.argumentPairs.length !== 0 && `, ${pairedLogicArguments.argumentPairs.map(a => a.original.parameter).join(', ')}`})</div>
                     <div className="cl-api-payload__arguments ms-ListItem-primaryText">
                         {pairedLogicArguments.argumentPairs.length !== 0
-                        && pairedLogicArguments.argumentPairs.map((argument, i) =>
-                            <React.Fragment key={i}>
-                                <div>{argument.original.parameter}:</div>
-                                <div>"{`${(this.props.substitutedLogicArguments === null || this.state.isOriginalVisible)
-                                    ? argument.original.value
-                                    : argument.substituted.value}`
-                                }"</div>
-                            </React.Fragment>)}
+                            && pairedLogicArguments.argumentPairs.map((argument, i) =>
+                                <React.Fragment key={i}>
+                                    <div>{argument.original.parameter}:</div>
+                                    <div>"{`${(this.props.substitutedLogicArguments === null || this.state.isOriginalVisible)
+                                        ? argument.original.value
+                                        : argument.substituted.value}`
+                                    }"</div>
+                                </React.Fragment>)}
                     </div>
                 </div>
 
@@ -67,14 +67,14 @@ export default class Component extends React.Component<Props, State> {
                     <div className="cl-api-payload__signature">render(result, memoryManager{pairedRenderArguments.argumentPairs.length !== 0 && `, ${pairedRenderArguments.argumentPairs.map(a => a.original.parameter).join(', ')}`})</div>
                     <div className="cl-api-payload__arguments ms-ListItem-primaryText">
                         {pairedRenderArguments.argumentPairs.length !== 0
-                        && pairedRenderArguments.argumentPairs.map((argument, i) =>
-                            <React.Fragment key={i}>
-                                <div>{argument.original.parameter}:</div>
-                                <div>"{`${(this.props.substitutedLogicArguments === null || this.state.isOriginalVisible)
-                                    ? argument.original.value
-                                    : argument.substituted.value}`
-                                }"</div>
-                            </React.Fragment>)}
+                            && pairedRenderArguments.argumentPairs.map((argument, i) =>
+                                <React.Fragment key={i}>
+                                    <div>{argument.original.parameter}:</div>
+                                    <div>"{`${(this.props.substitutedLogicArguments === null || this.state.isOriginalVisible)
+                                        ? argument.original.value
+                                        : argument.substituted.value}`
+                                    }"</div>
+                                </React.Fragment>)}
                     </div>
                 </div>
             </div>
@@ -88,7 +88,7 @@ export default class Component extends React.Component<Props, State> {
         </div>
     }
 
-    private getCombinedArguments (originalArguments: RenderedActionArgument[], substitutedArguments: RenderedActionArgument[] | null): ICombinedActionArguments {
+    private getCombinedArguments(originalArguments: RenderedActionArgument[], substitutedArguments: RenderedActionArgument[] | null): ICombinedActionArguments {
         return substitutedArguments === null
             ? {
                 argumentPairs: originalArguments.map(oa => ({
@@ -104,7 +104,7 @@ export default class Component extends React.Component<Props, State> {
                         original: originalArgument,
                         substituted: matchingSubstitutedArgument
                     })
-                    
+
                     // If any of the arguments are different, set to true
                     combined.argumentsDiffer = combined.argumentsDiffer || (originalArgument.value !== matchingSubstitutedArgument.value)
                 }

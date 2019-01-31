@@ -27,7 +27,7 @@ describe('Poller', () => {
 
         expect(onExpiredMock.mock.calls.length).toBe(1)
         expect(onUpdateMock.mock.calls.length).toBeGreaterThanOrEqual(3)
-    }) 
+    })
 
     test('poll should invoke request, isResolved, and onUpdate for each interval', async () => {
         const requestMock = jest.fn(async () => {
@@ -83,8 +83,8 @@ describe('Poller', () => {
                 return 0
             },
             isResolved: n => false,
-            onExpired: () => {},
-            onUpdate: () => {}
+            onExpired: () => { },
+            onUpdate: () => { }
         }
 
         const pollConfig2: poller.IPollConfig<number> = {
@@ -94,8 +94,8 @@ describe('Poller', () => {
                 return 0
             },
             isResolved: n => false,
-            onExpired: () => {},
-            onUpdate: () => {}
+            onExpired: () => { },
+            onUpdate: () => { }
         }
 
         const now = new Date().getTime()
@@ -106,7 +106,7 @@ describe('Poller', () => {
         // Will expire after 600ms (delay of 200ms and added new poll with same id to extend expiration time by another 400)
         await p1
         const after = new Date().getTime()
-        
+
         // 200 + 400
         expect(after - now).toBeGreaterThanOrEqual(600)
     })
@@ -119,8 +119,8 @@ describe('Poller', () => {
                 return 0
             },
             isResolved: n => false,
-            onExpired: () => {},
-            onUpdate: () => {}
+            onExpired: () => { },
+            onUpdate: () => { }
         }
 
         const pollConfig2: poller.IPollConfig<number> = {
@@ -130,8 +130,8 @@ describe('Poller', () => {
                 return 0
             },
             isResolved: n => false,
-            onExpired: () => {},
-            onUpdate: () => {}
+            onExpired: () => { },
+            onUpdate: () => { }
         }
 
         const poller1 = new poller.Poller({ interval: 100 })
@@ -143,7 +143,7 @@ describe('Poller', () => {
 
         await p1 // Will still resolve after 400 expiration
         const after = new Date().getTime()
-        
+
         expect(after - now).toBeLessThanOrEqual(500)
     })
 

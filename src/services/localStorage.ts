@@ -10,7 +10,7 @@ export const load = <T>(): T | undefined => {
         if (serializedState === null) {
             return undefined
         }
-        
+
         return JSON.parse(serializedState) as T
     }
     catch (error) {

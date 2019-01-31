@@ -2,14 +2,14 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import * as OF from 'office-ui-fabric-react';
+import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
 import FormattedMessageId from '../FormattedMessageId'
 import { FM } from '../../react-intl-messages'
 import { MemoryValue } from '@conversationlearner/models'
 import HelpLink from '../HelpLink'
 import './ToolTips.css'
-import { renderAPIPage1, renderAPIPage2, renderAPIPage3 } from './ToolTipAPI';
+import { renderAPIPage1, renderAPIPage2, renderAPIPage3 } from './ToolTipAPI'
 
 export enum TipType {
     NONE = 'NONE',

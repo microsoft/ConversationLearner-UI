@@ -64,7 +64,8 @@ interface StatusUI {
     dataTestId: string
 }
 
-export interface Props {
+// Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
+export interface ReceivedProps {
     didPollingExpire: boolean
     status: InternalTrainingStatus
     failureMessage: string | null
@@ -72,7 +73,9 @@ export interface Props {
     onClickRefresh: () => void
 }
 
-const Component: React.SFC<Props> = (props: Props) => {
+type Props = ReceivedProps
+
+const Component: React.SFC<Props> = (props) => {
     const uiState = internalStatusToUiStateMap.get(props.status)!
     return (
         <div className={`cl-training-status ${FontClassNames.mediumPlus}`} data-testid="training-status-status-group">

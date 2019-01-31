@@ -33,10 +33,10 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             return { ...state, teach: action.teachSession, dialogMode: DialogMode.Wait, memories: action.memories }
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
             return {
-                ...initialState, 
+                ...initialState,
                 teach: action.teachWithHistory.teach,
-                dialogMode: action.teachWithHistory.dialogMode, 
-                memories: action.teachWithHistory.memories, 
+                dialogMode: action.teachWithHistory.dialogMode,
+                memories: action.teachWithHistory.memories,
                 prevMemories: action.teachWithHistory.prevMemories,
                 scoreResponse: action.teachWithHistory.scoreResponse,
                 scoreInput: action.teachWithHistory.scoreInput,
@@ -47,7 +47,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
             if (state.teach && state.teach.teachId !== action.teachSessionGUID) {
                 console.warn("Deleting Teach session that isn't the active one")
             }
-            return {...initialState }
+            return { ...initialState }
         case AT.CLEAR_TEACH_SESSION:
             return { ...initialState }
         case AT.DELETE_MEMORY_FULFILLED:
@@ -79,42 +79,44 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
         case AT.RUN_SCORER_ASYNC:
             return { ...state, uiScoreInput: action.uiScoreInput }
         case AT.GET_SCORES_FULFILLED:
-            return { ...state, 
+            return {
+                ...state,
                 dialogMode: DialogMode.Scorer,
-                memories: action.uiScoreResponse.memories!, 
-                prevMemories: state.memories, 
-                scoreInput: action.uiScoreResponse!.scoreInput, 
-                scoreResponse: action.uiScoreResponse!.scoreResponse 
+                memories: action.uiScoreResponse.memories!,
+                prevMemories: state.memories,
+                scoreInput: action.uiScoreResponse!.scoreInput,
+                scoreResponse: action.uiScoreResponse!.scoreResponse
             }
         case AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED:
             if (action.extractResponse) {
-                return {...state, extractConflict: action.extractResponse}
+                return { ...state, extractConflict: action.extractResponse }
             }
             else {
-                return {...state, extractConflict: null}
+                return { ...state, extractConflict: null }
             }
         case AT.SET_TEXTVARIATION_CONFLICT:
-            return {...state, extractConflict: action.extractResponse}
+            return { ...state, extractConflict: action.extractResponse }
         case AT.RUN_SCORER_FULFILLED:
             if (action.uiScoreResponse.extractConflict) {
-                return { ...state, extractConflict: action.uiScoreResponse.extractConflict}
+                return { ...state, extractConflict: action.uiScoreResponse.extractConflict }
             }
             else if (action.uiScoreResponse.botAPIError) {
-                return { ...state, botAPIError: action.uiScoreResponse.botAPIError}
+                return { ...state, botAPIError: action.uiScoreResponse.botAPIError }
             }
             else {
-                return { ...state, 
+                return {
+                    ...state,
                     dialogMode: DialogMode.Scorer,
-                    memories: action.uiScoreResponse.memories!, 
-                    prevMemories: state.memories, 
-                    scoreInput: action.uiScoreResponse.scoreInput, 
+                    memories: action.uiScoreResponse.memories!,
+                    prevMemories: state.memories,
+                    scoreInput: action.uiScoreResponse.scoreInput,
                     scoreResponse: action.uiScoreResponse.scoreResponse,
                     extractConflict: null,
                     botAPIError: null
                 }
             }
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
-            return { ...state, dialogMode: action.dialogMode, memories: action.uiPostScoreResponse.memories, extractResponses: []  };
+            return { ...state, dialogMode: action.dialogMode, memories: action.uiPostScoreResponse.memories, extractResponses: [] };
         case AT.TOGGLE_AUTO_TEACH:
             return { ...state, autoTeach: action.autoTeach }
         case AT.CREATE_ACTION_FULFILLED:
