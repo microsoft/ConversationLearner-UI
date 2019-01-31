@@ -8,7 +8,7 @@ import { AppDefinitionChange, AppDefinition } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
-import { AxiosError } from 'axios';
+import { AxiosError } from 'axios'
 
 export const setUpdatedAppDefinition = (appId: string, appDefinitionChange: AppDefinitionChange): ActionObject =>
     ({

@@ -12,7 +12,7 @@ export interface ICheckboxWithTipProps extends OF.ICheckboxProps {
     tipType: TipType
 }
 
-export default function component (props: ICheckboxWithTipProps) {
+export default function component(props: ICheckboxWithTipProps) {
     const { tipType, className, ...rest } = props
     return (
         <div data-testid={props['data-testid']}>

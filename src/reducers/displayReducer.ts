@@ -30,8 +30,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
     switch (action.type) {
         case AT.USER_LOGOUT:
             return { ...initialState };
-        case AT.CLEAR_BANNER: 
-            return {...state, clearedBanner: action.clearedBanner}
+        case AT.CLEAR_BANNER:
+            return { ...state, clearedBanner: action.clearedBanner }
         case AT.SET_TIP_TYPE:
             return { ...state, tipType: action.tipType };
         case AT.CREATE_APPLICATION_FULFILLED:
@@ -51,13 +51,13 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
                     return { ...state, displaySpinner: [] }
             }
         case AT.SET_WEBCHAT_SCROLL_POSITION:
-            return {...state, webchatScrollPosition: action.position}
+            return { ...state, webchatScrollPosition: action.position }
         case AT.CLEAR_WEBCHAT_SCROLL_POSITION:
-            return {...state, webchatScrollPosition: undefined}
+            return { ...state, webchatScrollPosition: undefined }
         case AT.SET_CURRENT_APP_ASYNC:
 
         case AT.CREATE_ACTION_ASYNC:
-        case AT.CREATE_APP_TAG_ASYNC: 
+        case AT.CREATE_APP_TAG_ASYNC:
         case AT.CREATE_APPLICATION_ASYNC:
         case AT.CREATE_TEACH_SESSION_ASYNC:
         case AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC:
@@ -79,9 +79,9 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.EDIT_ENTITY_ASYNC:
         case AT.EDIT_APP_LIVE_TAG_ASYNC:
         case AT.EDIT_APP_EDITING_TAG_ASYNC:
-        
+
         // case AT.EXPIRE_CHAT_SESSION_AYSNC: Don't block
-        
+
         case AT.FETCH_APPSOURCE_ASYNC:
         case AT.FETCH_ACTIONS_ASYNC:
         case AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC:
@@ -110,7 +110,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
             return { ...state, displaySpinner: addSpinner(state.displaySpinner, action.type) }
 
         case AT.CREATE_ACTION_FULFILLED:
-        case AT.CREATE_APP_TAG_FULFILLED: 
+        case AT.CREATE_APP_TAG_FULFILLED:
         //case AT.CREATE_APPLICATION_FULFILLED: Handled above
         case AT.CREATE_CHAT_SESSION_REJECTED:
         case AT.CREATE_CHAT_SESSION_FULFILLED:
@@ -155,7 +155,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doeesn't block
         // case AT.FETCH_TRAIN_DIALOGS_FULFILLED: Doesn't block
         case AT.FETCH_TUTORIALS_FULFILLED:
-    
+
         case AT.COPY_APPLICATION_FULFILLED:
         case AT.RUN_EXTRACTOR_FULFILLED:
         case AT.GET_SCORES_FULFILLED:

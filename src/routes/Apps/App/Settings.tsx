@@ -2,14 +2,14 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import actions from '../../../actions';
-import { bindActionCreators } from 'redux';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import actions from '../../../actions'
+import { bindActionCreators } from 'redux'
 import PackageTable from '../../../components/modals/PackageTable'
-import { connect } from 'react-redux';
-import { State, AppCreatorType } from '../../../types';
-import * as OF from 'office-ui-fabric-react';
+import { connect } from 'react-redux'
+import { State, AppCreatorType } from '../../../types'
+import * as OF from 'office-ui-fabric-react'
 import { Expando, AppCreator } from '../../../components/modals'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import { saveAs } from 'file-saver'
@@ -18,7 +18,7 @@ import './Settings.css'
 import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import * as TC from '../../../components/tipComponents'
 import * as ToolTip from '../../../components/ToolTips/ToolTips'
 import HelpIcon from '../../../components/HelpIcon'

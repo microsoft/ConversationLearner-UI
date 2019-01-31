@@ -2,13 +2,13 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import actions from '../../../actions'
 import ActionDetailsList from '../../../components/ActionDetailsList'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import * as Utils from '../../../Utils/util'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import { AppBase, ActionBase } from '@conversationlearner/models'

@@ -13,7 +13,7 @@ import { State } from '../types'
 import AppsIndex from './Apps/AppsIndex'
 import Settings from './Settings'
 import NoMatch from './NoMatch'
-import { Banner } from '@conversationlearner/models';
+import { Banner } from '@conversationlearner/models'
 import HelpPanel from '../components/HelpPanel'
 import * as OF from 'office-ui-fabric-react'
 import { SpinnerWindow, ErrorPanel } from '../components/modals'
