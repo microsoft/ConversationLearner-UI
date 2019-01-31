@@ -233,6 +233,7 @@ export function InsertUserInputAfter(existingMessage, newMessage) {
 export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
   cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `Start`)
   SelectChatTurn(existingMessage, index).then(indexOfSelectedChatTurn => {
+    helpers.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `indexOfSelectedChatTurn: ${indexOfSelectedChatTurn}`);
     cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })
     if (newMessage) {
       cy.WaitForStableDOM()
