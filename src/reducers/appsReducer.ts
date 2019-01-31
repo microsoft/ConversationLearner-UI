@@ -46,7 +46,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
                 didPollingExpire: true
             }
 
-            return { ...state, all: replace(state.all, newApp, a => a.appId)}
+            return { ...state, all: replace(state.all, newApp, a => a.appId) }
         }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED: {
             const app = state.all.find(a => a.appId === action.appId)
@@ -66,7 +66,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
                     : null
             }
 
-            return { ...state, all: replace(state.all, newApp, a => a.appId)}
+            return { ...state, all: replace(state.all, newApp, a => a.appId) }
         }
         case AT.CREATE_APPLICATION_FULFILLED:
             return { ...state, all: [...state.all, action.app], selectedAppId: action.app.appId }

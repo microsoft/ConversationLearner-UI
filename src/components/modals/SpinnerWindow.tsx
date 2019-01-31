@@ -2,11 +2,11 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { connect } from 'react-redux';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { connect } from 'react-redux'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
+import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner'
 import { State } from '../../types'
 
 // Enable to see what API calls I'm waiting for

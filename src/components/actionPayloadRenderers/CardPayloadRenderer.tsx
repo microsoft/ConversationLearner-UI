@@ -74,14 +74,14 @@ export default class Component extends React.Component<Props, State> {
                 <div className={OF.FontClassNames.mediumPlus}>{this.props.name}</div>
                 <div className="cl-card-payload__arguments ms-ListItem-primaryText">
                     {pairedArguments.argumentPairs.length !== 0
-                    && pairedArguments.argumentPairs.map((argument, i) =>
-                        <React.Fragment key={i}>
-                            <div>{argument.original.parameter}:</div>
-                            <div>{`${(this.props.substitutedArguments === null || this.state.isOriginalVisible)
-                                ? argument.original.value
-                                : argument.substituted.value}`
-                            }</div>
-                        </React.Fragment>)}
+                        && pairedArguments.argumentPairs.map((argument, i) =>
+                            <React.Fragment key={i}>
+                                <div>{argument.original.parameter}:</div>
+                                <div>{`${(this.props.substitutedArguments === null || this.state.isOriginalVisible)
+                                    ? argument.original.value
+                                    : argument.substituted.value}`
+                                }</div>
+                            </React.Fragment>)}
                 </div>
             </div>
             <div>

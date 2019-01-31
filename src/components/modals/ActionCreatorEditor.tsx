@@ -19,7 +19,7 @@ import * as ActionPayloadEditor from './ActionPayloadEditor'
 import { State } from '../../types'
 import * as ToolTip from '../ToolTips/ToolTips'
 import * as TC from '../tipComponents'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
 import CLTagPicker from '../CLTagPicker'
 import './ActionCreatorEditor.css'
@@ -29,7 +29,7 @@ import { RouteComponentProps } from 'react-router'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 
-const TEXT_SLOT = '#TEXT_SLOT#';
+const TEXT_SLOT = '#TEXT_SLOT#'
 
 const convertEntityToOption = (entity: CLM.EntityBase): ActionPayloadEditor.IOption =>
     ({

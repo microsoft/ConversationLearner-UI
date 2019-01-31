@@ -270,7 +270,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         // Will go away once Edit/Teach dialogs are merged
         if (newProps.teachSession && newProps.teachSession.teach && newProps.teachSession !== this.props.teachSession) {
             this.setState({
-                lastTeachSession: {...this.props.teachSession } 
+                lastTeachSession: { ...this.props.teachSession }
             })
         }
         if (newProps.filteredAction && this.props.filteredAction !== newProps.filteredAction) {
@@ -383,7 +383,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         if (this.props.teachSession.teach) {
 
             await Util.setStateAsync(this, {
-                lastTeachSession: {...this.props.teachSession }
+                lastTeachSession: { ...this.props.teachSession }
             })
 
             await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
@@ -511,7 +511,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
             // End sesion call only allowed on last turn if one doesn't exist already
             const canEndSession = isLastActivity && !DialogUtils.hasEndSession(trainDialog, this.props.actions)
-             
+
             // Find top scoring Action
             let insertedAction = DialogUtils.getBestAction(uiScoreResponse.scoreResponse, this.props.actions, canEndSession)
 
@@ -543,7 +543,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // Or insert
             else if (scoreIndex === null) {
                 curRound.scorerSteps = [scorerStep, ...curRound.scorerSteps]
-            } 
+            }
             else {
                 curRound.scorerSteps.splice(scoreIndex + 1, 0, scorerStep)
             }
@@ -838,9 +838,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         void this.onCloseEditDialogModal();
     }
 
-     // End Session activity selected.  Switch from Teach to Edit
-     @OF.autobind
-     async onEndSessionActivity() {
+    // End Session activity selected.  Switch from Teach to Edit
+    @OF.autobind
+    async onEndSessionActivity() {
 
         try {
             if (this.props.teachSession.teach) {
@@ -856,7 +856,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 await ((this.props.clearTeachSession() as any) as Promise<CLM.TrainDialog>)
 
                 // Generate history
-                await this.onUpdateHistory(trainDialog, null, SelectionType.NONE, EditDialogType.NEW)  
+                await this.onUpdateHistory(trainDialog, null, SelectionType.NONE, EditDialogType.NEW)
             }
         }
         catch (error) {
@@ -1142,8 +1142,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 : EditState.CAN_EDIT
 
         // LastTeachSession used to prevent screen flash when moving between Edit and Teach pages
-        const teachSession = (this.props.teachSession && this.props.teachSession.teach) 
-            ? this.props.teachSession 
+        const teachSession = (this.props.teachSession && this.props.teachSession.teach)
+            ? this.props.teachSession
             : this.state.lastTeachSession
 
         return (
