@@ -51,7 +51,6 @@ const zTemp = require('../tests/zTemp')
 // ----------------------------------------------------------------------
 
 function TestCase(testGroupName, testDescription, testFunction) {
-  throw 'Intentionally breaking all test cases'
   // These lines of code converts the testFunction from a callable
   // function to a string containing the name of this function. It works
   // like this:
