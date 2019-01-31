@@ -2,11 +2,11 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
+import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import { FM } from '../react-intl-messages'
 import HelpIcon from '../components/HelpIcon'
-import { TipType } from '../components/ToolTips/ToolTips';
+import { TipType } from '../components/ToolTips/ToolTips'
 import FormattedMessageId from '../components/FormattedMessageId'
 import * as CLM from '@conversationlearner/models'
 

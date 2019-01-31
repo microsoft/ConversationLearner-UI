@@ -6,7 +6,7 @@ import { AT } from '../types/ActionTypes'
 
 export class ErrorInjector {
     private static disabledActions: string[] = [];
-    
+
     public static SetError(actionType: string, enabled: boolean) {
         if (enabled) {
             ErrorInjector.disabledActions.push(actionType);

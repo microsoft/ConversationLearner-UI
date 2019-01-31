@@ -25,20 +25,21 @@ class ErrorInjectionEditor extends React.Component<Props, {}> {
                     isBlocking: false
                 }}
             >
-            {Object.keys(AT).filter(key => key.includes("ASYNC")).map(key => {
-                return ( 
-                    <Checkbox
-                        key={key}
-                        label={key}
-                        onChange={(ev, isChecked) => this.onCheckboxChange(ev!, isChecked!, key)}
-                        defaultChecked={ErrorInjector.ShouldError(AT[key])}
-                    />
-                    )})
-            }
+                {Object.keys(AT).filter(key => key.includes("ASYNC")).map(key => {
+                    return (
+                        <Checkbox
+                            key={key}
+                            label={key}
+                            onChange={(ev, isChecked) => this.onCheckboxChange(ev!, isChecked!, key)}
+                            defaultChecked={ErrorInjector.ShouldError(AT[key])}
+                        />
+                    )
+                })
+                }
             </Dialog>
         )
     }
-   
+
     private onCheckboxChange(ev: React.FormEvent<HTMLElement>, isChecked: boolean, actionType: string) {
         ErrorInjector.SetError(actionType, isChecked);
     }
