@@ -7,7 +7,7 @@ import { AT } from '../types/ActionTypes'
 import { EntityBase, isPrebuilt } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
-import * as ClientFactory from '../services/clientFactory' 
+import * as ClientFactory from '../services/clientFactory'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { AxiosError } from 'axios'
 import { fetchAllActionsThunkAsync } from './actionActions';
@@ -48,11 +48,10 @@ export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
 
             // If created entity has resolver, we fetch all entities to make sure 
             // that definition of prebuilt entity is in the memory
-            if (typeof entity.resolverType !== 'undefined' && entity.resolverType !== null)
-            {
+            if (typeof entity.resolverType !== 'undefined' && entity.resolverType !== null) {
                 dispatch(fetchAllEntitiesThunkAsync(appId));
             }
-            
+
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
         } catch (e) {
             const error = e as AxiosError
@@ -107,8 +106,7 @@ export const editEntityThunkAsync = (appId: string, entity: EntityBase, prevEnti
 
             // If updated entity has a different resolver, we fetch all entities to make sure 
             // that definition of prebuilt entity is in the memory
-            if (entity.resolverType !== prevEntity.resolverType)
-            {
+            if (entity.resolverType !== prevEntity.resolverType) {
                 dispatch(fetchAllEntitiesThunkAsync(appId));
             }
 
@@ -160,13 +158,13 @@ export const deleteEntityThunkAsync = (appId: string, entity: EntityBase) => {
                 const negativeEntityId = entity.negativeId!
                 dispatch(deleteEntityFulfilled(negativeEntityId))
             }
-            
+
             // If deleted entity is prebuilt entity, we fetch all entities to make sure 
             // that entities in the memory are all up to date
             if (isPrebuilt(entity)) {
                 dispatch(fetchAllEntitiesThunkAsync(appId));
             }
-            
+
             // If any actions were modified, reload them
             if (deleteEditResponse.actionIds && deleteEditResponse.actionIds.length > 0) {
                 dispatch(fetchAllActionsThunkAsync(appId))

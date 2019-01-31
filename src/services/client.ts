@@ -71,7 +71,7 @@ export default class ClClient {
 
         finalConfig.headers[CLM.MEMORY_KEY_HEADER_NAME] = clientHeaders.memoryKey
         finalConfig.headers[CLM.BOT_CHECKSUM_HEADER_NAME] = clientHeaders.botChecksum
-        
+
         return Axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
@@ -134,7 +134,7 @@ export default class ClClient {
         return this.send<string>({
             method: 'post',
             url: `${this.baseUrl}/apps/copy?srcUserId=${srcUserId}&destUserId=${destUserId}&appId=${appId}`
-        }).then(response => {})
+        }).then(response => { })
     }
 
     appsDelete(appId: string): Promise<void> {
@@ -311,7 +311,7 @@ export default class ClClient {
         })
             .then(response => response.data)
     }
-      
+
     //AT.EDIT_TRAINDIALOG_ASYNC
     trainDialogEdit(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainResponse> {
         return this.send<CLM.TrainResponse>({
@@ -340,10 +340,10 @@ export default class ClClient {
             url: `${this.baseUrl}/app/${appId}/traindialog`,
             data: trainDialog
         })
-        .then(response => {
-            trainDialog.trainDialogId = response.data.trainDialogId 
-            return trainDialog
-        })
+            .then(response => {
+                trainDialog.trainDialogId = response.data.trainDialogId
+                return trainDialog
+            })
     }
 
     trainDialogsDelete(appId: string, trainDialogId: string): Promise<void> {
@@ -368,7 +368,7 @@ export default class ClClient {
         return this.send<CLM.ExtractResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/extractfromhistory`,
-            data: {trainDialog, userInput }
+            data: { trainDialog, userInput }
         }).then(response => response.data)
     }
 
@@ -569,7 +569,7 @@ export default class ClClient {
             url: `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`,
             data: {
                 trainDialog,
-                userInput 
+                userInput
             }
         }).then(response => response.data)
     }
@@ -580,6 +580,6 @@ export default class ClClient {
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/botmemory`
         })
-        .then(response => { })
+            .then(response => { })
     }
 }

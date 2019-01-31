@@ -23,6 +23,7 @@ class HelpIcon extends React.Component<Props, {}> {
         )
     }
 }
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setTipType

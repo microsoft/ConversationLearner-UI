@@ -7,7 +7,7 @@ import { AT } from '../types/ActionTypes'
 import { ActionBase } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
-import * as ClientFactory from '../services/clientFactory' 
+import * as ClientFactory from '../services/clientFactory'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { fetchAllTrainDialogsThunkAsync } from './trainActions'
 import { AxiosError } from 'axios';
@@ -73,7 +73,7 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
             if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
                 dispatch(fetchAllTrainDialogsThunkAsync(appId))
             }
-            
+
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId)).catch()
             return action
         }

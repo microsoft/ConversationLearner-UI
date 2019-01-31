@@ -37,7 +37,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(newProps: Props) {
         if (this.props.open && !newProps.open) {
             // Reset
-            this.setState({hasChatActivity: false})
+            this.setState({ hasChatActivity: false })
         }
     }
     @OF.autobind
@@ -99,9 +99,9 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 isOpen={this.props.open && this.props.error == null}
                                 app={this.props.app}
                                 history={[]}
-                                onPostActivity={() => { 
+                                onPostActivity={() => {
                                     if (!this.state.hasChatActivity) {
-                                      this.setState({ hasChatActivity: true })
+                                        this.setState({ hasChatActivity: true })
                                     }
                                 }}
                                 onSelectActivity={() => { }}

@@ -214,7 +214,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         // If last action was button submit will generate two calls, ignore the selection
         if (this.state.ignoreSelectionCount > 0) {
-            this.setState({ignoreSelectionCount: this.state.ignoreSelectionCount - 1})
+            this.setState({ ignoreSelectionCount: this.state.ignoreSelectionCount - 1 })
             return
         }
 
@@ -263,11 +263,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 */
 
                 // Ignore the next to action selections
-                await Util.setStateAsync(this, {ignoreSelectionCount: 2})
+                await Util.setStateAsync(this, { ignoreSelectionCount: 2 })
 
                 // If button clicked when not waiting for user input, must insert rather than continue as not valid combination
                 if (this.props.teachSession.dialogMode !== CLM.DialogMode.Wait) {
-                    await Util.setStateAsync(this, {selectedActivityIndex: this.state.nextActivityIndex - 1})
+                    await Util.setStateAsync(this, { selectedActivityIndex: this.state.nextActivityIndex - 1 })
                     this.onSubmitAddUserInput(userInput.text)
                     return
                 }
@@ -543,7 +543,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         // Can't delete first user input
         const canDeleteRound = this.state.selectedActivityIndex !== 0
-        const isEndSession = this.props.teachSession.dialogMode === CLM.DialogMode.EndSession 
+        const isEndSession = this.props.teachSession.dialogMode === CLM.DialogMode.EndSession
             && activity.channelData.clData
             && this.state.nextActivityIndex === activity.channelData.clData.activityIndex + 1
 
@@ -704,9 +704,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
         const waitingForScore = this.state.selectedActivityIndex === null && this.props.teachSession.dialogMode === CLM.DialogMode.Scorer
         const waitingForExtract = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
         let chatDisable = (waitingForScore || waitingForExtract) ? <div className="cl-overlay" /> : null;
-        let saveDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor 
-                            || this.props.teachSession.botAPIError !== null 
-                            || this.state.isInitAvailable  // Empty TD
+        let saveDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
+            || this.props.teachSession.botAPIError !== null
+            || this.state.isInitAvailable  // Empty TD
         const isLastActivitySelected = this.state.selectedActivityIndex ? this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1) : false
         return (
             <div>
@@ -753,7 +753,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         isLastActivitySelected={isLastActivitySelected}
                                         historyRenderData={this.state.selectedHistoryActivity ? this.historyRender : null}
                                         onScoredAction={this.onScoredAction}
-                                        onReplaceActivityText={(userText, index) => {   
+                                        onReplaceActivityText={(userText, index) => {
                                             this.setState({
                                                 replaceActivityIndex: index,
                                                 replaceActivityText: userText

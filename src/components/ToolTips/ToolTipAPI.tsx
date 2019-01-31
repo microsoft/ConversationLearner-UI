@@ -75,7 +75,7 @@ const apiWrong =
         }
     })`;
 
-    const resultAsEntity =
+const resultAsEntity =
     `cl.AddCallback({
         name: "ResultAsEntity",
         logic: async (memoryManager : ClientMemoryManager) => {
@@ -89,7 +89,7 @@ const apiWrong =
         }
     })`;
 
-    const resultPassed =
+const resultPassed =
     `cl.AddCallback({
         name: "ResultAsLogicResult",
         logic: async (memoryManager : ClientMemoryManager) => {
@@ -101,20 +101,20 @@ const apiWrong =
             return logicResult.body
         }
     })`;
-    
+
 export function renderAPIPage1(): JSX.Element {
     return (
         <div>
             <div>API Callback can be used to impliment business logic in your Bot</div>
             <div><br /><b>API callbacks are divided into two parts:</b></div>
             <ol>
-            <li>A 'logic' callback in which Entity values can be set and external APIs can be called</li>
-            <li>A 'render' callback which generates Bot output, and can only read Entity values</li>
+                <li>A 'logic' callback in which Entity values can be set and external APIs can be called</li>
+                <li>A 'render' callback which generates Bot output, and can only read Entity values</li>
             </ol>
             <ul>
-            <li>API callback can contain a 'logic' callback, a 'render' callback or both</li>
-            <li>When displaying an existing Dialog, in the CL editor, only the 'render' callback will be called using saved values from the 'logic' callback.</li>
-            <li>When editing an existing Dialog, the 'logic' callback will be invoked</li>
+                <li>API callback can contain a 'logic' callback, a 'render' callback or both</li>
+                <li>When displaying an existing Dialog, in the CL editor, only the 'render' callback will be called using saved values from the 'logic' callback.</li>
+                <li>When editing an existing Dialog, the 'logic' callback will be invoked</li>
             </ul>
             <b>Example that has only a 'render' callback that takes two arguments and displays text to user</b>
             <pre>{renderOnlyText}</pre>
@@ -156,7 +156,7 @@ export function renderAPIPage3(): JSX.Element {
     return (
         <div>
             <div><b>Making external API calls</b></div>
-            <div><br/>CL expects the 'logic' callbacks to await any asynchronous results<br/></div>
+            <div><br />CL expects the 'logic' callbacks to await any asynchronous results<br /></div>
             <b>CORRECT way to do a request</b>
             <pre>{apiCorrect}</pre>
             <b>!!WRONG!! way to do an request</b>

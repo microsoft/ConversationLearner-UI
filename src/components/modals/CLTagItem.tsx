@@ -11,6 +11,7 @@ export interface ICLPickerItemProps<T> extends IPickerItemProps<T> {
     highlight: boolean;
     children: string;
 }
+
 export const CLTagItem = (props: ICLPickerItemProps<ITag>) => (
     <div
         className={`ms-TagItem ${props.highlight ? 'ms-TagItem-text--highlight' : ''}`}

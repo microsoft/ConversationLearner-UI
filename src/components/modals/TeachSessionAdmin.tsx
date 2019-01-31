@@ -118,7 +118,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             let turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.nextActivityIndex - 1 : this.state.turnLookupOffset
 
             turnLookup.push({ textVariations, memories: [...this.props.teachSession.memories] })
-            turnLookup.push({ uiScoreResponse, memories: [...this.props.teachSession.memories]  })
+            turnLookup.push({ uiScoreResponse, memories: [...this.props.teachSession.memories] })
             this.setState({
                 isScoresRefreshVisible: true,
                 turnLookup,

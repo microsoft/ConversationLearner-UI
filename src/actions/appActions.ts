@@ -9,9 +9,9 @@ import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
 import { AxiosError } from 'axios';
-import { Poller, IPollConfig } from '../services/poller';
-import { delay } from '../Utils/util';
-import { setUpdatedAppDefinition } from './sourceActions';
+import { Poller, IPollConfig } from '../services/poller'
+import { delay } from '../Utils/util'
+import { setUpdatedAppDefinition } from './sourceActions'
 
 export const createApplicationThunkAsync = (userId: string, application: AppBase, source: AppDefinition | null = null) => {
     return async (dispatch: Dispatch<any>) => {
@@ -90,7 +90,7 @@ export const editAppLiveTagThunkAsync = (app: AppBase, tagId: string) => {
 
         try {
             await clClient.appSetLiveTag(app.appId, tagId)
-            let newApp = {...app, livePackageId: tagId}
+            let newApp = { ...app, livePackageId: tagId }
             dispatch(editAppLiveTagFulfilled(newApp))
             return newApp
         }

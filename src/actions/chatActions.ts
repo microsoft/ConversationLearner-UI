@@ -7,7 +7,7 @@ import { AT } from '../types/ActionTypes'
 import { Session, AppBase, FilledEntity } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
-import * as ClientFactory from '../services/clientFactory' 
+import * as ClientFactory from '../services/clientFactory'
 import { AxiosError } from 'axios'
 import { fetchAllLogDialogsThunkAsync } from './logActions'
 

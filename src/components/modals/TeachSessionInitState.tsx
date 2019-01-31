@@ -29,7 +29,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     componentWillReceiveProps(newProps: Props) {
         if (this.props.isOpen !== newProps.isOpen) {
-            this.setState({filledEntityMap: new FilledEntityMap()})
+            this.setState({ filledEntityMap: new FilledEntityMap() })
         }
     }
 
@@ -63,15 +63,15 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         let map = this.state.filledEntityMap.map
 
         if (!map[entity.entityName]) {
-            map[entity.entityName] = { 
+            map[entity.entityName] = {
                 entityId: entity.entityId,
                 values: [memoryValue]
-            } 
+            }
         }
         else {
             map[entity.entityName].values.push(memoryValue);
         }
-        this.setState({filledEntityMap: this.state.filledEntityMap})
+        this.setState({ filledEntityMap: this.state.filledEntityMap })
     }
 
     @autobind
@@ -81,12 +81,12 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         if (map[entity.entityName].values.length === 0) {
             delete map[entity.entityName]
         }
-        this.setState({filledEntityMap: this.state.filledEntityMap})
+        this.setState({ filledEntityMap: this.state.filledEntityMap })
     }
 
-    onChanged(index: number, text: string, entity: EntityBase) {  
+    onChanged(index: number, text: string, entity: EntityBase) {
         this.state.filledEntityMap.map[entity.entityName].values[index].userText = text
-        this.setState({filledEntityMap: this.state.filledEntityMap})
+        this.setState({ filledEntityMap: this.state.filledEntityMap })
     }
 
     render() {
@@ -101,8 +101,8 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                 <div className="cl-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>
                         <FormattedMessageId id={FM.TEACHSESSIONINIT_TITLE} />
-                        </span>
-                    </div>
+                    </span>
+                </div>
                 <div>
                     {
                         this.props.entities
@@ -123,32 +123,32 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                             this.state.filledEntityMap.map[entity.entityName].values.map((memoryValue, index) => {
                                                 let key = `${entity.entityId}+${index}`
                                                 return (
-                                                <div key={key}>
-                                                    <OF.IconButton
-                                                        data-testid="teach-session-delete-button"
-                                                        onClick={() => this.onClickRemove(index, entity)}
-                                                        ariaDescription="Remove Value"
-                                                        iconProps={{ iconName: 'Delete' }}
-                                                    />
-                                                    <OF.TextField
-                                                        data-testid="teach-session-initial-value"
-                                                        className="cl-textfield--inline"
-                                                        key={key}
-                                                        onChanged={text => this.onChanged(index, text, entity)}
-                                                        placeholder={intl.formatMessage({
-                                                            id: FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER,
-                                                            defaultMessage: "Initial Value..."
-                                                        })}
-                                                        value={memoryValue.userText || ''}
-                                                    />
-                                                </div>
+                                                    <div key={key}>
+                                                        <OF.IconButton
+                                                            data-testid="teach-session-delete-button"
+                                                            onClick={() => this.onClickRemove(index, entity)}
+                                                            ariaDescription="Remove Value"
+                                                            iconProps={{ iconName: 'Delete' }}
+                                                        />
+                                                        <OF.TextField
+                                                            data-testid="teach-session-initial-value"
+                                                            className="cl-textfield--inline"
+                                                            key={key}
+                                                            onChanged={text => this.onChanged(index, text, entity)}
+                                                            placeholder={intl.formatMessage({
+                                                                id: FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER,
+                                                                defaultMessage: "Initial Value..."
+                                                            })}
+                                                            value={memoryValue.userText || ''}
+                                                        />
+                                                    </div>
                                                 )
                                             })
                                         }
                                     </div>
                                 )
                             }
-                        )
+                            )
                     }
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">

@@ -59,7 +59,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 })
                 return
             }
-            
+
             // If no scorer steps
             if (clData.scoreIndex === null) {
                 this.setState({
@@ -248,10 +248,10 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         }
                     }
 
-                    let filledEntities =  scorerStep.logicResult
+                    let filledEntities = scorerStep.logicResult
                         ? [...scorerStep.input.filledEntities, ...scorerStep.logicResult.changedFilledEntities]
                         : [...scorerStep.input.filledEntities]
-                    
+
                     memories = filledEntities.map<CLM.Memory>((fe) => {
                         let entity = this.props.entities.find(e => e.entityId === fe.entityId);
                         let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
@@ -288,7 +288,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     isTerminal: action.isTerminal,
                                     reason: CLM.ScoreReason.NotCalculated,
                                     actionType: action.actionType
-                            }));
+                                }));
 
                         scoreResponse = {
                             metrics: {
