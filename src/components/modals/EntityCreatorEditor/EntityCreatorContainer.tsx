@@ -25,7 +25,8 @@ const initState: ComponentState = {
     isPrebuilt: false,
     isMultivalueVal: false,
     isNegatableVal: false,
-    isEditing: false,
+    isEditing: false,  
+    enumValues: [undefined, undefined, undefined, undefined, undefined],
     title: '',
     hasPendingChanges: false,
     isConfirmEditModalOpen: false,
@@ -45,6 +46,7 @@ interface ComponentState {
     isMultivalueVal: boolean
     isNegatableVal: boolean
     isEditing: boolean
+    enumValues: (string | undefined)[]
     title: string
     hasPendingChanges: boolean
     isConfirmEditModalOpen: boolean,
@@ -87,14 +89,12 @@ class Container extends React.Component<Props, ComponentState> {
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             },
-            /* 
             {
                 key: CLM.EntityType.ENUM,
                 text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM),
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             },
-            */
             {
                 key: 'divider',
                 text: '-',
@@ -321,10 +321,17 @@ class Container extends React.Component<Props, ComponentState> {
             entityNameVal: isPrebuilt ? Container.GetPrebuiltEntityName(obj.text) : "",
         }))
     }
+    onChangedEnum = (index: number, value: string) => {
+        let enumValues = [...this.state.enumValues]
+        enumValues[index] = value.toUpperCase()
+        this.setState({
+            enumValues
+        }) 
+    }
     onChangeResolverType = (obj: CLDropdownOption) => {
-        this.setState(prevState => ({
+        this.setState({
             entityResolverVal: obj.text
-        }))
+        })
     }
     onChangeMultivalue = () => {
         this.setState(prevState => ({
@@ -364,7 +371,28 @@ class Container extends React.Component<Props, ComponentState> {
                 return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT)
             }
         }
-        return '';
+        return ''
+    }
+
+    onGetEnumErrorMessage = (value: string): string => {
+        const { intl } = this.props
+
+        if (value.length === 0) {
+            return ''
+        }
+
+        if (!/^[a-zA-Z0-9-]+$/.test(value)) {
+            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC)
+        }
+
+        return ''
+    } 
+
+    isEnumDuplicate = (value: string): boolean => {
+        if (!value) {
+            return false
+        }
+        return (this.state.enumValues.filter(v => v === value).length > 1)
     }
 
     onKeyDownName = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -532,6 +560,21 @@ class Container extends React.Component<Props, ComponentState> {
         history.push(`/home/${this.props.app.appId}/trainDialogs`, { app: this.props.app, entityFilter: this.props.entity })
     }
 
+    isSaveDisabled() {
+        if (this.state.entityTypeVal === CLM.EntityType.ENUM) {
+            // Enum must have at least 2 values
+            let values = this.state.enumValues.filter(v => v)
+            if (values.length < 2) {
+                return true
+            }
+            let invalid = this.state.enumValues.filter(v => v && (this.onGetEnumErrorMessage(v) || this.isEnumDuplicate(v)))
+            if (invalid.length > 0) {
+                return true
+            }
+        }
+        return (this.onGetNameErrorMessage(this.state.entityNameVal) !== '')
+    }
+
     render() {
         const { intl } = this.props
         // const isEntityInUse = this.state.isEditing && this.isInUse()
@@ -544,7 +587,7 @@ class Container extends React.Component<Props, ComponentState> {
             ? Container.GetPrebuiltEntityName(this.state.entityTypeVal)
             : this.state.entityNameVal
 
-        const isSaveButtonDisabled = (this.onGetNameErrorMessage(this.state.entityNameVal) !== '')
+        const isSaveButtonDisabled = this.isSaveDisabled()
             || (!!this.props.entity && !this.state.hasPendingChanges)
 
         return <Component
@@ -600,6 +643,11 @@ class Container extends React.Component<Props, ComponentState> {
             selectedResolverKey={this.state.entityResolverVal}
             resolverOptions={this.resolverOptions}
             onResolverChanged={this.onChangeResolverType}
+
+            enumValues={this.state.enumValues}
+            onChangedEnum={this.onChangedEnum}
+            onGetEnumErrorMessage={this.onGetEnumErrorMessage}
+            isEnumDuplicate={this.isEnumDuplicate}
         />
     }
 }

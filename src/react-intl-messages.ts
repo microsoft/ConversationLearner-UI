@@ -191,6 +191,7 @@ export enum FM {
     ENTITYCREATOREDITOR_ENTITY_RESOLVEROPTION_NONE = 'EntityCreatorEditor.entity.resolverOption.none',
     ENTITYCREATOREDITOR_TITLE_CREATE = 'EntityCreatorEditor.title.create',
     ENTITYCREATOREDITOR_TITLE_EDIT = 'EntityCreatorEditor.title.edit',
+    ENTITYCREATOREDITOR_FIELDS_ENUM_LABEL = 'EntityCreatorEditor.fields.enum.label',
     ENTITYCREATOREDITOR_FIELDS_NAME_LABEL = 'EntityCreatorEditor.fields.name.label',
     ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER = 'EntityCreatorEditor.fields.name.placeholder',
     ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL = 'EntityCreatorEditor.fields.type.label',
@@ -877,7 +878,7 @@ export default {
 
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
-        [FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC]: 'Entity name may only contain alphanumeric characters with no spaces.',
+        [FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC]: 'May only contain alphanumeric characters with no spaces.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED]: 'Name is reserved.',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM]: 'Enum',
@@ -886,6 +887,7 @@ export default {
         [FM.ENTITYCREATOREDITOR_ENTITY_RESOLVEROPTION_NONE]: 'none',
         [FM.ENTITYCREATOREDITOR_TITLE_CREATE]: 'Create an Entity',
         [FM.ENTITYCREATOREDITOR_TITLE_EDIT]: 'Edit Entity',
+        [FM.ENTITYCREATOREDITOR_FIELDS_ENUM_LABEL]: 'Enum Values:',
         [FM.ENTITYCREATOREDITOR_FIELDS_NAME_LABEL]: 'Entity Name',
         [FM.ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER]: 'Name...',
         [FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL]: 'Entity Type',
