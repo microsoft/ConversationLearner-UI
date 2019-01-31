@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import { State } from '../types'
 import * as BotChat from '@conversationlearner/webchat'
 import * as CLM from '@conversationlearner/models'
-import { BehaviorSubject, Observable } from 'rxjs'
+import { BehaviorSubject, Observable, Subscription } from 'rxjs'
 import { Activity, Message } from 'botframework-directlinejs'
 import { EditDialogType } from './modals/.'
 import actions from '../actions'
@@ -111,12 +111,13 @@ class Webchat extends React.Component<Props, {}> {
         focusInput: false
     }
 
-    private behaviorSubject: BehaviorSubject<any> | null = null;
-    private chatProps: BotChat.ChatProps | null = null;
-    private dl: BotChat.DirectLine | null = null;
+    private behaviorSubject: BehaviorSubject<any> | null = null
+    private subscription: Subscription | null = null
+    private chatProps: BotChat.ChatProps | null = null
+    private dl: BotChat.DirectLine | null = null
 
     constructor(p: any) {
-        super(p);
+        super(p)
         this.selectedActivity$ = this.selectedActivity$.bind(this)
     }
 
@@ -124,8 +125,9 @@ class Webchat extends React.Component<Props, {}> {
         if (this.dl) {
             this.dl.end();
         }
-        if (this.behaviorSubject) {
-            this.behaviorSubject.unsubscribe()
+        if (this.subscription) {
+            this.subscription.unsubscribe()
+            this.subscription = null
         }
     }
 
@@ -133,8 +135,9 @@ class Webchat extends React.Component<Props, {}> {
         if (this.props.history !== nextProps.history) {
             if (this.props.history.length > 0 || nextProps.history.length > 0) {
                 this.chatProps = null;
-                if (this.behaviorSubject) {
-                    this.behaviorSubject.unsubscribe()
+                if (this.subscription) {
+                    this.subscription.unsubscribe()
+                    this.subscription = null
                 }
             }
         } 
@@ -143,7 +146,7 @@ class Webchat extends React.Component<Props, {}> {
     selectedActivity$(): BehaviorSubject<any> {
         if (!this.behaviorSubject) {
             this.behaviorSubject = new BehaviorSubject<any>({});
-            this.behaviorSubject.subscribe((value) => {
+            this.subscription = this.behaviorSubject.subscribe((value) => {
                 if (value.activity) {
                     this.props.onSelectActivity(value.activity as Activity)
                 }

@@ -80,7 +80,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // If I'm switching my round or have added/removed text variations
         if (this.props.teachId !== newProps.teachId ||
             this.props.roundIndex !== newProps.roundIndex ||
-            this.props.originalTextVariations.length !== newProps.originalTextVariations.length) {
+            JSON.stringify(this.props.originalTextVariations) !== JSON.stringify(newProps.originalTextVariations)) {
 
             let nextState: Pick<ComponentState, any> = {
                 newTextVariations: [...newProps.originalTextVariations],
@@ -105,6 +105,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.setState({
             isPendingSubmit: true
         })
+        if (this.props.onPendingStatusChanged) {
+            this.props.onPendingStatusChanged(true)
+        }
         this.props.clearExtractConflict()
     }
 
@@ -403,7 +406,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
         return (
             <div className="entity-extractor">
-                <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus}`}>
+                <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus} cl-label`}>
                     {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_HELP)}
                     <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_HELP} />
                 </OF.Label>

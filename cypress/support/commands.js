@@ -37,15 +37,12 @@ const train = require('../support/Train')
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-Cypress.Commands.add("ConLog", (funcName, message) => {helpers.ConLog(funcName, message)})
+Cypress.Commands.add("ConLog", (funcName, message) => { helpers.ConLog(funcName, message) })
 
 // fileName must exist with cypress\fixtures folder
-Cypress.Commands.add('UploadFile', (fileName, selector) => 
-{
-  cy.get(selector).then(elements => 
-  {
-    cy.fixture(fileName).then((content) => 
-    {
+Cypress.Commands.add('UploadFile', (fileName, selector) => {
+  cy.get(selector).then(elements => {
+    cy.fixture(fileName).then((content) => {
       const element = elements[0]
       const testFile = new File([content], fileName)
       const dataTransfer = new DataTransfer()
@@ -58,34 +55,38 @@ Cypress.Commands.add('UploadFile', (fileName, selector) =>
 
 // This function operates similar to the "cy.contains" command except that it expects
 // the text content of the elements to contain an EXACT MATCH to the expected text.
-Cypress.Commands.add('ExactMatch', { prevSubject: 'element'}, (elements, expectedText) => 
-{   
+Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expectedText) => {
   helpers.ConLog(`ExactMatch('${expectedText}')`, `Start`)
-  for(var i = 0; i < elements.length; i++) 
-  {
+  for (var i = 0; i < elements.length; i++) {
     helpers.ConLog(`ExactMatch('${expectedText}')`, `elements[${i}].innerText: '${elements[i].innerText}'`)
-    if(elements[i].innerText == expectedText) return elements[i]
+    if (elements[i].innerText == expectedText) return elements[i]
   }
   throw `Exact Match '${expectedText}' NOT Found`
 })
 
-Cypress.Commands.add('ExactMatches', { prevSubject: 'element'}, (elements, expectedText) => 
-{ 
+Cypress.Commands.add('ExactMatchComplexHTML', { prevSubject: 'element' }, (elements, expectedText) => {
+  // helpers.ConLog(`ExactMatchComplexHTML('${expectedText}')`, `Start`)
+  for (var i = 0; i < elements.length; i++) {
+    //helpers.ConLog(`ExactMatchComplexHTML('${expectedText}')`, `With Markup: ${Cypress.$(elements[i]).parent().html()} -- Without Markup: '${helpers.RemoveMarkup(Cypress.$(elements[i]).parent().html())}'`)
+    if (helpers.RemoveMarkup(Cypress.$(elements[i]).parent().html()) == expectedText) return elements[i]
+  }
+  throw `ExactMatchComplexHTML '${expectedText}' NOT Found`
+})
+
+Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expectedText) => {
   helpers.ConLog(`ExactMatches('${expectedText}')`, `Start`)
-  var returnElements = new Array()  
-  for(var i = 0; i < elements.length; i++) 
-  {
+  var returnElements = new Array()
+  for (var i = 0; i < elements.length; i++) {
     helpers.ConLog(`ExactMatches('${expectedText}')`, `elements[${i}].innerText: '${elements[i].innerText}'`)
-    if(elements[i].innerText == expectedText) returnElements.push(elements[i])
+    if (elements[i].innerText == expectedText) returnElements.push(elements[i])
   }
   return returnElements
 })
 
-Cypress.Commands.add("WaitForTrainingStatusCompleted", () => 
-{ 
+Cypress.Commands.add("WaitForTrainingStatusCompleted", () => {
   // The cy.get call made within modelPage.WaitForTrainingStatusCompleted() needs
   // the document object which is why we need to wrap it.
-  cy.wrap(cy.document, {timeout: 120000}).should(() => {return modelPage.WaitForTrainingStatusCompleted()})
+  cy.wrap(cy.document, { timeout: 120000 }).should(() => { return modelPage.WaitForTrainingStatusCompleted() })
 })
 
 Cypress.Commands.add("Alert", message => { alert(message) })
