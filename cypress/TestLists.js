@@ -19,9 +19,6 @@ export const testList = [
 // This is the list of tests that will be executed when '(Regression)'
 // is selected from the Cypress Test GUI.
 export const regressionTestList = [
-  'EditAndBranching.WaitNonWaitErrorHandling',
-];
-/*
   'CreateModels.AllEntityTypes',
   'CreateModels.DisqualifyingEntities',
   'CreateModels.WaitVsNoWaitActions',
@@ -42,7 +39,6 @@ export const regressionTestList = [
 //  'Train.BookMeAFlight',
   'Tools.DeleteAllTestGeneratedModels',
 ];
-*/
 
 // ************ Generated Code Beyond this Point *************************
 // Do NOT manually alter this file from this point onwards.

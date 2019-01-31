@@ -236,7 +236,6 @@ export function InsertUserInputAfter(existingMessage, newMessage) {
 export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
   cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `Start`)
   cy.Enqueue(() => { return SelectChatTurn(existingMessage, index); }).then(indexOfSelectedChatTurn => {
-  //SelectChatTurn(existingMessage, index).then(indexOfSelectedChatTurn => {
     helpers.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `indexOfSelectedChatTurn: ${indexOfSelectedChatTurn}`);
     
     // This ODD way of clicking is to avoid the "Illegal Invocation" error that
