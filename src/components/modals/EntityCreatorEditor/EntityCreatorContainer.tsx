@@ -34,8 +34,7 @@ const initState: ComponentState = {
     needPrebuiltWarning: null,
     isDeleteErrorModalOpen: false,
     showValidationWarning: false,
-    newOrEditedEntity: null,
-    restricted_entity_names: []
+    newOrEditedEntity: null
 }
 
 interface ComponentState {
@@ -54,8 +53,7 @@ interface ComponentState {
     needPrebuiltWarning: string | null,
     isDeleteErrorModalOpen: boolean,
     showValidationWarning: boolean,
-    newOrEditedEntity: CLM.EntityBase | null,
-    restricted_entity_names: string[]
+    newOrEditedEntity: CLM.EntityBase | null
 }
 
 class Container extends React.Component<Props, ComponentState> {
@@ -147,12 +145,9 @@ class Container extends React.Component<Props, ComponentState> {
                     }))
 
             if (nextProps.entity === null) {
-                let reserved_names: string[] = []
                 const filteredPreBuiltOptions = localePreBuiltOptions.filter(entityOption => !nextProps.entities.some(e => !e.doNotMemorize && e.entityType === entityOption.key))
                 this.entityOptions = [...this.staticEntityOptions, ...filteredPreBuiltOptions]
                 this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
-
-                filteredPreBuiltOptions.forEach(prebuilt_reserved_name => { reserved_names.push(prebuilt_reserved_name.text); })
 
                 this.setState({
                     ...initState,
@@ -161,8 +156,7 @@ class Container extends React.Component<Props, ComponentState> {
                         defaultMessage: 'Create an Entity'
                     }),
                     entityTypeVal: CLM.EntityType.LUIS,
-                    entityResolverVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS ? nextProps.entityTypeFilter : this.NONE_RESOLVER,
-                    restricted_entity_names: reserved_names
+                    entityResolverVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS ? nextProps.entityTypeFilter : this.NONE_RESOLVER
                 });
             } else {
                 this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
@@ -351,6 +345,8 @@ class Container extends React.Component<Props, ComponentState> {
     onGetNameErrorMessage = (value: string): string => {
         const { intl } = this.props
 
+        const isNameUnrestricted = this.state.entityTypeVal !== CLM.EntityType.LUIS && this.state.entityTypeVal !== CLM.EntityType.LOCAL && this.state.entityTypeVal !== CLM.EntityType.ENUM
+
         if (value.length === 0) {
             return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE)
         }
@@ -359,8 +355,10 @@ class Container extends React.Component<Props, ComponentState> {
             return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC)
         }
 
-        if (Object.values(this.state.restricted_entity_names).indexOf(value.toLocaleLowerCase()) >= 0) {
-            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED)
+        if (!isNameUnrestricted) {
+            if ("builtin-" === value.toLocaleLowerCase().substring(0,"builtin-".length))  {
+                return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED)
+            }
         }
 
         // Check that name isn't in use
