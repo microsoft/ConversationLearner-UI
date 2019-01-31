@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
+import * as React from 'react'
 import './AutocompleteListItem.css'
 import { FontClassNames } from 'office-ui-fabric-react'
 

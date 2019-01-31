@@ -8,9 +8,9 @@ import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import * as CLM from '@conversationlearner/models'
-import { AxiosError } from 'axios';
+import { AxiosError } from 'axios'
 import { deleteTrainDialogThunkAsync, fetchAllTrainDialogsThunkAsync } from './trainActions'
-import { fetchApplicationTrainingStatusThunkAsync } from './appActions';
+import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 
 // --------------------------
 // createTeachSession

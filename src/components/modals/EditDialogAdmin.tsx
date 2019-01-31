@@ -2,18 +2,18 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
+import * as React from 'react'
 import "./TeachSessionModal.css"
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { State } from '../../types'
 import actions from '../../actions'
-import EntityExtractor from './EntityExtractor';
-import ActionScorer from './ActionScorer';
-import MemoryTable from './MemoryTable';
+import EntityExtractor from './EntityExtractor'
+import ActionScorer from './ActionScorer'
+import MemoryTable from './MemoryTable'
 import { Activity } from 'botframework-directlinejs'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import * as DialogUtils from '../../Utils/dialogUtils'
@@ -203,7 +203,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
 
         return filledEntities.map<CLM.Memory>((fe) => {
             let entity = this.props.entities.find(e => e.entityId === fe.entityId);
-            let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
+            let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
             return {
                 entityName: entityName,
                 entityValues: fe.values
@@ -254,7 +254,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
 
                     memories = filledEntities.map<CLM.Memory>((fe) => {
                         let entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                        let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
+                        let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
                         return {
                             entityName: entityName,
                             entityValues: fe.values
@@ -304,7 +304,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                     scorerStep = round.scorerSteps[0];
                     memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
                         let entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                        let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
+                        let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
                         return {
                             entityName: entityName,
                             entityValues: fe.values

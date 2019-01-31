@@ -2,19 +2,19 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import './TeachSessionModal.css';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import * as React from 'react'
+import './TeachSessionModal.css'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { ErrorHandler } from '../../Utils/ErrorHandler'
 import { AT } from '../../types/ActionTypes'
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as BotChat from '@conversationlearner/webchat'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
-import { State, TeachSessionState } from '../../types';
+import { State, TeachSessionState } from '../../types'
 import Webchat, { renderActivity } from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
@@ -30,8 +30,8 @@ import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
 import { SelectionType } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { EditDialogType } from '.';
-import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs';
+import { EditDialogType } from '.'
+import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs'
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
@@ -391,7 +391,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
                 memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
                     let entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                    let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
+                    let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
                     return {
                         entityName: entityName,
                         entityValues: fe.values

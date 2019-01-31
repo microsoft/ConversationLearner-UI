@@ -8,7 +8,7 @@ import { AppBase, AppDefinition, UIAppList, TrainingStatus, TrainingStatusCode }
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
-import { AxiosError } from 'axios';
+import { AxiosError } from 'axios'
 import { Poller, IPollConfig } from '../services/poller'
 import { delay } from '../Utils/util'
 import { setUpdatedAppDefinition } from './sourceActions'

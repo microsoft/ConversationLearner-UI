@@ -10,8 +10,8 @@ import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { AxiosError } from 'axios'
-import { fetchAllActionsThunkAsync } from './actionActions';
-import { fetchAllTrainDialogsThunkAsync } from './trainActions';
+import { fetchAllActionsThunkAsync } from './actionActions'
+import { fetchAllTrainDialogsThunkAsync } from './trainActions'
 
 //-------------------------------------
 // createEntity

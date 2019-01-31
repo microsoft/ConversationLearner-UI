@@ -2,19 +2,19 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { State } from '../../types';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { State } from '../../types'
 import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import { FilledEntityMap, EntityBase, MemoryValue } from '@conversationlearner/models'
-import './TeachSessionInitState.css';
+import './TeachSessionInitState.css'
 
 interface ComponentState {
     filledEntityMap: FilledEntityMap

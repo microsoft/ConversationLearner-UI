@@ -4,7 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
-import { AppInput } from '../types/models';
+import { AppInput } from '../types/models'
 
 export interface ClientHeaders {
     botChecksum: string

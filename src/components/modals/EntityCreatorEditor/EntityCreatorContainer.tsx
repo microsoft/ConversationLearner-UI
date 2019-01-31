@@ -374,7 +374,7 @@ class Container extends React.Component<Props, ComponentState> {
                 return intl.formatMessage(messages.fieldErrorDistinct)
             }
         }
-        return '';
+        return ''
     }
 
     onKeyDownName = (event: React.KeyboardEvent<HTMLInputElement>) => {

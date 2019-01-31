@@ -4,7 +4,7 @@
  */
 import ClClient, { ClientHeaders } from './client'
 import { AT } from '../types/ActionTypes'
-import { ErrorInjector } from '../Utils/ErrorInjector';
+import { ErrorInjector } from '../Utils/ErrorInjector'
 //import DebugErrors from '../components/modals/DebugErrors'
 
 let sdkPort = 3978
