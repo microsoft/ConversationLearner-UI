@@ -129,10 +129,33 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage) {
   cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]', '+')
 }
 
-export function LabelTextAsEntity(text, entity) {
-  cy.Get('body').trigger('Test_SelectWord', { detail: text })
-  cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
+export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
+  function LabelIt() {
+    // This actually works if text is a word or a phrase.
+    cy.Get('body').trigger('Test_SelectWord', { detail: text });
+    cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`);
+  }
+
+  if (itMustNotBeLabeledYet) LabelIt()
+  else {
+    // First make sure it is not already labeled before trying to label it.
+    cy.WaitForStableDOM()
+    cy.Enqueue(() => {
+      var found = false;
+      var elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span');
+
+      // If you need to find a phrase, this part of the code will fail, 
+      // you will need to upgrade this code in that case.
+      var element = elements.find(element => element.innerText === text)
+      if (element) {
+        found = Cypress.$(element).parents('.cl-entity-node--custom').find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`).length == 0;
+      }
+      if (!found) LabelIt();
+    });
+  }
 }
+
+
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
 // word = a word within the utterance that should already be labeled
@@ -158,7 +181,6 @@ export function RemoveEntityLabel(word, entity, index = 0) {
 }
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
-// textEntityPairs object contains these two variables, it can be either an array or single instance:
 //  word = a word within the utterance that should already be labeled
 //  entity = name of entity the word should be labeled with
 // *** This does NOT work for multiple words. ***
@@ -166,7 +188,7 @@ export function VerifyEntityLabel(word, entity) {
   cy.Get('[data-testid="token-node-entity-value"] > span > span')
     .ExactMatch(word)
     .parents('.cl-entity-node--custom')
-    .find('[data-testid="custom-entity-nam+e-button"]')
+    .find('[data-testid="custom-entity-name-button"]')
     .contains(entity)
 }
 
