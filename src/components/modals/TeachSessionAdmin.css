@@ -1,16 +1,1 @@
-.cl-training-status-inline {
-    margin-left: 2em;
-    color: var(--color-neutralTertiary);
-}
-.cl-training-status-inline__button {
-    color: var(--color-themePrimary);
-    border: none;
-    background: none;
-    padding: 0;
-    margin: 0;
-    font-weight: bold;
-    cursor: pointer;
-}
-.cl-training-status-inline__button:hover {
-    text-decoration: underline;
-}
+
