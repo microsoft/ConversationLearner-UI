@@ -69,6 +69,11 @@ interface Props extends InjectedIntlProps {
     selectedResolverKey: string
     resolverOptions: OF.IDropdownOption[]
     onResolverChanged: (option: OF.IDropdownOption) => void
+
+    enumValues: (string | undefined)[]
+    onChangedEnum: (index: number, value: string) => void
+    onGetEnumErrorMessage: (value: string) => string
+    isEnumDuplicate: (value: string | undefined) => boolean
 }
 
 const EditComponent: React.SFC<Props> = (props: Props) => {
@@ -115,6 +120,23 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
                 selectedKey={props.selectedResolverKey}
                 tipType={ToolTip.TipType.ENTITY_RESOLVER}
             />
+        }
+        {props.entityTypeKey === CLM.EntityType.ENUM &&
+            
+            props.enumValues.map((value, index) => {
+                return (
+                    <OF.TextField
+                        key={index}
+                        className={OF.FontClassNames.mediumPlus}
+                        onChanged={(text) => props.onChangedEnum(index, text)}
+                        label={index === 0 ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_ENUM_LABEL) : ""}
+                        onGetErrorMessage={props.onGetEnumErrorMessage}
+                        errorMessage={props.isEnumDuplicate(value) ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT) : ''}
+                        value={value}
+                    />
+                )
+            })
+
         }
         <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
             {props.entityTypeKey !== CLM.EntityType.ENUM &&            
