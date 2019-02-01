@@ -18,6 +18,8 @@ import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import Component from './EntityCreatorComponent'
 
+const prebuiltPrefix = 'builtin-'
+
 const initState: ComponentState = {
     entityNameVal: '',
     entityTypeVal: '',
@@ -344,7 +346,6 @@ class Container extends React.Component<Props, ComponentState> {
 
     onGetNameErrorMessage = (value: string): string => {
         const { intl } = this.props
-
         const isNameUnrestricted = this.state.entityTypeVal !== CLM.EntityType.LUIS && this.state.entityTypeVal !== CLM.EntityType.LOCAL && this.state.entityTypeVal !== CLM.EntityType.ENUM
 
         if (value.length === 0) {
@@ -356,7 +357,7 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         if (!isNameUnrestricted) {
-            if ("builtin-" === value.toLocaleLowerCase().substring(0,"builtin-".length))  {
+            if (prebuiltPrefix === value.toLocaleLowerCase().substring(0,prebuiltPrefix.length))  {
                 return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED)
             }
         }
