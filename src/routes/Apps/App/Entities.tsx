@@ -2,14 +2,14 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import * as OF from 'office-ui-fabric-react';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import * as OF from 'office-ui-fabric-react'
 import { EntityCreatorEditor } from '../../../components/modals'
 import actions from '../../../actions'
-import { State } from '../../../types';
+import { State } from '../../../types'
 import { onRenderDetailsHeader } from '../../../components/ToolTips/ToolTips'
 import { AppBase, EntityBase, EntityType } from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'

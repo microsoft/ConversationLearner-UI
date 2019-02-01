@@ -2,14 +2,14 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { State } from '../types';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { State } from '../types'
 import { setTipType } from '../actions/displayActions'
-import { TipType } from './ToolTips/ToolTips';
-import { IconButton } from 'office-ui-fabric-react';
+import { TipType } from './ToolTips/ToolTips'
+import { IconButton } from 'office-ui-fabric-react'
 
 class HelpIcon extends React.Component<Props, {}> {
     render() {
@@ -23,6 +23,7 @@ class HelpIcon extends React.Component<Props, {}> {
         )
     }
 }
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setTipType

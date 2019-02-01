@@ -2,11 +2,11 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import * as OF from 'office-ui-fabric-react';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import * as OF from 'office-ui-fabric-react'
 import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../Utils/util'
@@ -17,7 +17,7 @@ import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, E
 import actions from '../../../actions'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
-import { Activity } from 'botframework-directlinejs';
+import { Activity } from 'botframework-directlinejs'
 import { EditHandlerArgs, cleanTrainDialog } from './TrainDialogs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import * as moment from 'moment'
@@ -43,11 +43,11 @@ const returnErrorStringWhenError = returnStringWhenError("ERR")
 function getTagName(logDialog: CLM.LogDialog, component: LogDialogs): string {
     // Only show tag column on Master branch it's the only one containing multiple tag types
     if (component.props.editingPackageId !== component.props.app.devPackageId) {
-        return '';
+        return ''
     }
     let tagName = `UNKNOWN`; // Cover bug case of missing package
     if (logDialog.packageId === component.props.app.devPackageId) {
-        tagName = 'Master';
+        tagName = 'Master'
     }
     else {
         let packageVersion = component.props.app.packageVersions.find((pv: any) => pv.packageId === logDialog.packageId);

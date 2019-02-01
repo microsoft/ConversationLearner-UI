@@ -2,12 +2,12 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
 import { getLuisApplicationCultures } from '../../epics/apiHelpers'
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as OF from 'office-ui-fabric-react'
 import { State, ErrorType, AppCreatorType } from '../../types'
 import { FM } from '../../react-intl-messages'
@@ -16,9 +16,9 @@ import { FilePicker } from 'react-file-picker'
 import { setErrorDisplay } from '../../actions/displayActions'
 import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { AppInput } from '../../types/models';
-import { AppDefinition } from '@conversationlearner/models';
-import * as Utils from '../../Utils/util';
+import { AppInput } from '../../types/models'
+import { AppDefinition } from '@conversationlearner/models'
+import * as Utils from '../../Utils/util'
 
 interface ComponentState {
     appNameVal: string
