@@ -4,13 +4,13 @@
  */
 import * as React from 'react'
 import { AppCreator as AppCreatorModal, TutorialImporterModal } from '../../components/modals'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import { AppBase, AppDefinition } from '@conversationlearner/models'
 import FormattedMessageId from '../../components/FormattedMessageId'
 import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import * as Util from '../../Utils/util'
-import { User, AppCreatorType } from '../../types';
+import { User, AppCreatorType } from '../../types'
 import * as moment from 'moment'
 
 export interface ISortableRenderableColumn extends OF.IColumn {

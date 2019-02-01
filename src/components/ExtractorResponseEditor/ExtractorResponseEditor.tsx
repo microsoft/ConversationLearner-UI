@@ -13,7 +13,7 @@ import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
 import './ExtractorResponseEditor.css'
 import TokenNode from './TokenNode'
-import { EntityType, EntityBase } from '@conversationlearner/models';
+import { EntityType, EntityBase } from '@conversationlearner/models'
 import { Expando } from '../modals'
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type

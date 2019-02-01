@@ -48,31 +48,30 @@ export function AbandonBranchChanges() {
 // Once clicked, more UI elements will become visible & enabled.
 // OPTIONAL index parameter lets you select other than the 1st 
 // instance of a message.
-// RETURNS: A Promise containing the index of the selected turn.
+// RETURNS: The index of the selected turn.
 export function SelectChatTurn(message, index = 0) {
   var funcName = `SelectChatTurn(${message}, ${index})`
-  cy.ConLog(`SelectChatTurn(${message}, ${index})`, `Start`)
-  return new Promise(resolve => {
-    cy.WaitForStableDOM()
-    cy.Enqueue(() => {
-      message = message.replace(/'/g, "’")
-      var elements = Cypress.$(AllChatMessagesSelector)
-      helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
-      for (var i = 0; i < elements.length; i++) {
-        helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
-        if (helpers.RemoveMarkup(elements[i].innerHTML) == message) {
-          if (index > 0) index--
-          else {
-            helpers.ConLog(funcName, `FOUND!`)
-            cy.wrap(elements[i]).Click().then(() => { resolve(i) })
-            return
-          }
+  cy.ConLog(funcName, `Start`)
+
+  cy.WaitForStableDOM()
+  cy.Enqueue(() => {
+    message = message.replace(/'/g, "’")
+    var elements = Cypress.$(AllChatMessagesSelector)
+    helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
+    for (var i = 0; i < elements.length; i++) {
+      helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
+      if (helpers.RemoveMarkup(elements[i].innerHTML) == message) {
+        if (index > 0) index--
+        else {
+          helpers.ConLog(funcName, `FOUND!`)
+          elements[i].click();
+          return i;
         }
-        else helpers.ConLog(funcName, `NOT A MATCH`)
-        helpers.ConLog(funcName, `NEXT`)
       }
-      throw `${funcName} - Failed to find the message in chat utterances`
-    })
+      else helpers.ConLog(funcName, `NOT A MATCH`)
+      helpers.ConLog(funcName, `NEXT`)
+    }
+    throw `${funcName} - Failed to find the message in chat utterances`
   })
 }
 
@@ -129,10 +128,33 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage) {
   cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]', '+')
 }
 
-export function LabelTextAsEntity(text, entity) {
-  cy.Get('body').trigger('Test_SelectWord', { detail: text })
-  cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
+export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
+  function LabelIt() {
+    // This actually works if text is a word or a phrase.
+    cy.Get('body').trigger('Test_SelectWord', { detail: text });
+    cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`);
+  }
+
+  if (itMustNotBeLabeledYet) LabelIt()
+  else {
+    // First make sure it is not already labeled before trying to label it.
+    cy.WaitForStableDOM()
+    cy.Enqueue(() => {
+      var found = false;
+      var elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span');
+
+      // If you need to find a phrase, this part of the code will fail, 
+      // you will need to upgrade this code in that case.
+      var element = elements.find(element => element.innerText === text)
+      if (element) {
+        found = Cypress.$(element).parents('.cl-entity-node--custom').find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`).length == 0;
+      }
+      if (!found) LabelIt();
+    });
+  }
 }
+
+
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
 // word = a word within the utterance that should already be labeled
@@ -158,7 +180,6 @@ export function RemoveEntityLabel(word, entity, index = 0) {
 }
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
-// textEntityPairs object contains these two variables, it can be either an array or single instance:
 //  word = a word within the utterance that should already be labeled
 //  entity = name of entity the word should be labeled with
 // *** This does NOT work for multiple words. ***
@@ -202,7 +223,11 @@ export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index) {
 
 export function InsertUserInputAfter(existingMessage, newMessage) {
   SelectChatTurn(existingMessage)
+
+  // This ODD way of clicking is to avoid the "Illegal Invocation" error that
+  // happens with this specific UI element.
   cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-user-input-button"]')[0].click() })
+
   cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
 }
 
@@ -210,18 +235,28 @@ export function InsertUserInputAfter(existingMessage, newMessage) {
 // instance of a message as the point of insertion.
 export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
   cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `Start`)
-  SelectChatTurn(existingMessage, index).then(indexOfSelectedChatTurn => {
+  cy.Enqueue(() => { return SelectChatTurn(existingMessage, index); }).then(indexOfSelectedChatTurn => {
+    helpers.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `indexOfSelectedChatTurn: ${indexOfSelectedChatTurn}`);
+    
+    // This ODD way of clicking is to avoid the "Illegal Invocation" error that
+    // happens with this specific UI element.
     cy.RunAndExpectDomChange(() => { Cypress.$('[data-testid="chat-edit-add-bot-response-button"]')[0].click() })
+    
     if (newMessage) {
       cy.WaitForStableDOM()
-      cy.wait(1000) // TODO: Remove this after fixing Bug 1855: More Odd Rendering in Train Dialog Chat Pane
-      cy.Enqueue(() => { // Sometimes the UI has already automaticly selected the Bot response we want
+      
+      // TODO: Temporarily commented this out to see if tests start failing on this bug again.
+      //cy.wait(1000) // TODO: Remove this after fixing Bug 1855: More Odd Rendering in Train Dialog Chat Pane
+      
+      cy.Enqueue(() => { 
+        // Sometimes the UI has already automaticly selected the Bot response we want
         // so we need to confirm that we actually need to click on the action, 
         // otherwise an unnecessary message box pops up that we don't want to deal with.
 
         var chatMessages = helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)
+        var indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1;
         if (chatMessages[indexOfInsertedBotResponse] != newMessage)
-          scorerModal.ClickAction(newMessage)
+          scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
       })
     }
     cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `End`)

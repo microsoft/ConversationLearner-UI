@@ -10,7 +10,7 @@ import { State } from '../types'
 import { AppBase, TrainingStatusCode } from '@conversationlearner/models'
 import { fetchApplicationTrainingStatusThunkAsync } from '../actions/appActions'
 import { InternalTrainingStatus, default as TrainingStatus } from './TrainingStatus'
-import { App } from '../types/models';
+import { App } from '../types/models'
 
 const externalStatusToInternalStatusMap = new Map<TrainingStatusCode, InternalTrainingStatus>([
     [TrainingStatusCode.Queued, InternalTrainingStatus.Queued],

@@ -11,8 +11,8 @@ export interface DialogRenderData {
     prevMemories: CLM.Memory[]
     textVariations: CLM.TextVariation[]
     roundIndex: number | null
-    scoreResponse?: CLM.ScoreResponse 
-    scoreInput?: CLM.ScoreInput 
+    scoreResponse?: CLM.ScoreResponse
+    scoreInput?: CLM.ScoreInput
     selectedActionId?: string
     extractResponses?: CLM.ExtractResponse[]
 }
@@ -49,12 +49,12 @@ export function matchedActivityIndex(selectedActivity: Activity, activities: Act
     else {
         let clDataSelected: CLM.CLChannelData = selectedActivity.channelData.clData
         let index = activities.findIndex(a => {
-                let clData: CLM.CLChannelData = a.channelData.clData
-                return (
-                    clData.senderType === clDataSelected.senderType &&
-                    clData.roundIndex === clDataSelected.roundIndex &&
-                    clData.scoreIndex === clDataSelected.scoreIndex)
-            }
+            let clData: CLM.CLChannelData = a.channelData.clData
+            return (
+                clData.senderType === clDataSelected.senderType &&
+                clData.roundIndex === clDataSelected.roundIndex &&
+                clData.scoreIndex === clDataSelected.scoreIndex)
+        }
         )
         if (index < 0) {
             console.log('Failed to find selected activity')

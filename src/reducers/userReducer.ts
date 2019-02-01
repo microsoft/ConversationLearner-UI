@@ -13,8 +13,8 @@ const initialState: UserState = {
 
 const intializeClientFactory = (memoryKey: string, botChecksum: string) => {
     // Update the Client configuration to access token and user id for memory for all future requests
-    ClientFactory.setHeaders(() => { 
-        return {memoryKey, botChecksum} 
+    ClientFactory.setHeaders(() => {
+        return { memoryKey, botChecksum }
     })
 }
 

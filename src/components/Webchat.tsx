@@ -15,23 +15,23 @@ import { EditDialogType } from './modals/.'
 import actions from '../actions'
 
 export function renderActivity(
-    activityProps: BotChat.WrappedActivityProps, 
-    children: React.ReactNode, 
+    activityProps: BotChat.WrappedActivityProps,
+    children: React.ReactNode,
     setRef: (div: HTMLDivElement | null) => void,
     renderSelected: ((activity: Activity) => JSX.Element | null) | null,
     editType: EditDialogType,
     shouldRenderHighlight: boolean,
-    ): JSX.Element {
-        
+): JSX.Element {
+
     let timeLine = <span> {activityProps.fromMe ? "User" : "Bot"}</span>;
 
     const isLogDialog = editType === EditDialogType.LOG_ORIGINAL || editType === EditDialogType.LOG_EDITED
     const who = activityProps.fromMe ? 'me' : 'bot'
 
-    let wrapperClassName = 
+    let wrapperClassName =
         ['wc-message-wrapper',
-        (activityProps.activity as Message).attachmentLayout || 'list',
-        activityProps.onClickActivity && 'clickable'].filter(Boolean).join(' ')
+            (activityProps.activity as Message).attachmentLayout || 'list',
+            activityProps.onClickActivity && 'clickable'].filter(Boolean).join(' ')
 
     let contentClassName = 'wc-message-content'
     const clData: CLM.CLChannelData | null = activityProps.activity.channelData ? activityProps.activity.channelData.clData : null
@@ -43,31 +43,31 @@ export function renderActivity(
         if (clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
                 wrapperClassName += ` wc-border-warning-from-${who}`;
-            } 
+            }
             else { // ERROR or BLOCKING
                 wrapperClassName += ` wc-border-error-from-${who}`;
             }
             if (clData.replayError.type === CLM.ReplayErrorType.Exception) {
                 messageColor = `wc-message-color-exception`
                 messageFillColor = `wc-message-fillcolor-exception`
-            
+
             }
         }
     }
-    
+
     if (activityProps.selected && shouldRenderHighlight) {
         wrapperClassName += ` wc-message-selected`
     }
 
     return (
-        <div 
-            data-activity-id={activityProps.activity.id} 
-            className={wrapperClassName} 
+        <div
+            data-activity-id={activityProps.activity.id}
+            className={wrapperClassName}
             onClick={activityProps.onClickActivity}
             role="button"
-        > 
-            <div 
-                className={`wc-message wc-message-from-${who} ${messageColor}`} 
+        >
+            <div
+                className={`wc-message wc-message-from-${who} ${messageColor}`}
                 ref={div => setRef(div)}
                 data-testid="web-chat-utterances"
             >
@@ -80,12 +80,12 @@ export function renderActivity(
                 </div>
             </div>
             {activityProps.selected && renderSelected && renderSelected(activityProps.activity)}
-            {clData && clData.validWaitAction !== undefined ? 
+            {clData && clData.validWaitAction !== undefined ?
                 (
                     <svg className="wc-message-downarrow">
-                        <polygon 
-                            className={clData.validWaitAction 
-                                ? "wc-message-downarrow-points" 
+                        <polygon
+                            className={clData.validWaitAction
+                                ? "wc-message-downarrow-points"
                                 : "wc-message-downarrow-points-red"}
                             points="0,0 50,0 25,15"
                         />
@@ -140,7 +140,7 @@ class Webchat extends React.Component<Props, {}> {
                     this.subscription = null
                 }
             }
-        } 
+        }
     }
 
     selectedActivity$(): BehaviorSubject<any> {
@@ -164,7 +164,7 @@ class Webchat extends React.Component<Props, {}> {
                 console.warn(`You attempted to set the conversation with out a valid user. name: ${user.name} id: ${user.id}`)
                 return
             }
-            
+
             this.props.setConversationIdThunkAsync(user.name, user.id, conversationId)
         }
     }
@@ -177,7 +177,7 @@ class Webchat extends React.Component<Props, {}> {
                 webSocket: false // defaults to true,
             })
 
-            const botConnection = {         
+            const botConnection = {
                 ...dl,
                 postActivity: (activity: any) => {
                     this.props.onPostActivity(activity)

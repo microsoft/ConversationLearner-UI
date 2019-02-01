@@ -40,7 +40,6 @@ export const regressionTestList = [
   'Tools.DeleteAllTestGeneratedModels',
 ];
 
-
 // ************ Generated Code Beyond this Point *************************
 // Do NOT manually alter this file from this point onwards.
 // Any changes you make will be overridden at runtime.

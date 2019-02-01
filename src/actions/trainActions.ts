@@ -7,9 +7,9 @@ import { AT } from '../types/ActionTypes'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
 import { TrainDialog, AppBase, TeachWithHistory, UIScoreResponse, ExtractResponse, UserInput, TextVariation } from '@conversationlearner/models'
-import { fetchApplicationTrainingStatusThunkAsync } from './appActions';
-import { AxiosError } from 'axios';
-import { setErrorDisplay } from './displayActions';
+import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
+import { AxiosError } from 'axios'
+import { setErrorDisplay } from './displayActions'
 
 // --------------------------
 // CreateTrainDialog

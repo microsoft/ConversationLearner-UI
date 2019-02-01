@@ -2,16 +2,16 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { State } from '../../types'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import { AppBase, PackageReference } from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { createAppTagThunkAsync } from '../../actions/appActions'
-import PackageCreator from './PackageCreator';
+import PackageCreator from './PackageCreator'
 import * as util from '../../Utils/util'
 
 interface IRenderableColumn extends OF.IColumn {

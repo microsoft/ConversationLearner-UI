@@ -8,6 +8,7 @@ import { FM } from '../../react-intl-messages'
 import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
+// Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
 interface ReceivedProps {
     onConfirm?: Function | null
     onCancel?: Function | null

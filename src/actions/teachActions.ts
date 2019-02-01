@@ -8,9 +8,9 @@ import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import * as CLM from '@conversationlearner/models'
-import { AxiosError } from 'axios';
+import { AxiosError } from 'axios'
 import { deleteTrainDialogThunkAsync, fetchAllTrainDialogsThunkAsync } from './trainActions'
-import { fetchApplicationTrainingStatusThunkAsync } from './appActions';
+import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 
 // --------------------------
 // createTeachSession
@@ -145,7 +145,7 @@ export const deleteTeachSessionThunkAsync = (
                 if (sourceTrainDialogId) {
                     await dispatch(deleteTrainDialogThunkAsync(key, app, sourceTrainDialogId));
                 }
-                
+
                 // If we're adding a new train dialog as consequence of the session save, refetch train dialogs and start poll for train status
                 dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
                 dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
@@ -224,27 +224,27 @@ export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogTyp
         dispatch(runExtractorAsync(appId, extractType, sessionId, turnIndex, userInput))
 
         try {
-            let uiExtractResponse: CLM.UIExtractResponse | null = null 
+            let uiExtractResponse: CLM.UIExtractResponse | null = null
 
             switch (extractType) {
                 case CLM.DialogType.TEACH:
                     uiExtractResponse = await clClient.teachSessionAddExtractStep(appId, sessionId, userInput, filteredDialog)
-                  break;
+                    break;
                 case CLM.DialogType.TRAINDIALOG:
                     if (turnIndex === null) {
                         throw new Error(`Run extractor was called for a train dialog, but turnIndex was null. This should not be possible. Please open an issue.`)
                     }
                     uiExtractResponse = await clClient.trainDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
-                  break;
+                    break;
                 case CLM.DialogType.LOGDIALOG:
                     if (turnIndex === null) {
                         throw new Error(`Run extractor was called for a log dialog, but turnIndex was null. This should not be possible. Please open an issue.`)
                     }
                     uiExtractResponse = await clClient.logDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
-                  break;
+                    break;
                 default:
-                  throw new Error(`Could not handle unknown extract type: ${extractType}`)
-              }
+                    throw new Error(`Could not handle unknown extract type: ${extractType}`)
+            }
 
             dispatch(runExtractorFulfilled(appId, sessionId, uiExtractResponse))
             return uiExtractResponse
@@ -353,7 +353,7 @@ export const runScorerThunkAsync = (key: string, appId: string, teachId: string,
         dispatch(runScorerAsync(key, appId, teachId, uiScoreInput))
 
         try {
-            let uiScoreResponse =  await clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
+            let uiScoreResponse = await clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
             dispatch(runScorerFulfilled(key, appId, teachId, uiScoreResponse))
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return uiScoreResponse
@@ -362,7 +362,7 @@ export const runScorerThunkAsync = (key: string, appId: string, teachId: string,
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.RUN_SCORER_ASYNC))
             throw error
-         }
+        }
     }
 }
 
@@ -405,8 +405,8 @@ export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId
             if (!waitForUser) {
                 // Don't re-send predicted entities on subsequent score call
                 uiScoreInput.extractResponse.predictedEntities = [];
-               //LARS todo -  force end task to always be wait
-                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, CLM.DialogMode.Scorer, uiPostScoreResponse, uiScoreInput))     
+                // TODO: Force end task to always be wait
+                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, CLM.DialogMode.Scorer, uiPostScoreResponse, uiScoreInput))
             }
             else {
                 let dialogMode = uiPostScoreResponse.isEndTask ? CLM.DialogMode.EndSession : CLM.DialogMode.Wait

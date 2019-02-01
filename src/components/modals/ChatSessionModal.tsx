@@ -2,16 +2,16 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { EditDialogType } from '.'
 import ConfirmCancelModal from './ConfirmCancelModal'
-import { FontClassNames, Icon } from 'office-ui-fabric-react';
-import * as OF from 'office-ui-fabric-react';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { State } from '../../types';
+import { FontClassNames, Icon } from 'office-ui-fabric-react'
+import * as OF from 'office-ui-fabric-react'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
+import { State } from '../../types'
 import Webchat, { renderActivity } from '../Webchat'
 import { AppBase } from '@conversationlearner/models'
 import actions from '../../actions'
@@ -37,7 +37,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(newProps: Props) {
         if (this.props.open && !newProps.open) {
             // Reset
-            this.setState({hasChatActivity: false})
+            this.setState({ hasChatActivity: false })
         }
     }
     @OF.autobind
@@ -99,9 +99,9 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 isOpen={this.props.open && this.props.error == null}
                                 app={this.props.app}
                                 history={[]}
-                                onPostActivity={() => { 
+                                onPostActivity={() => {
                                     if (!this.state.hasChatActivity) {
-                                      this.setState({ hasChatActivity: true })
+                                        this.setState({ hasChatActivity: true })
                                     }
                                 }}
                                 onSelectActivity={() => { }}
