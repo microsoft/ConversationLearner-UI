@@ -266,7 +266,7 @@ class Index extends React.Component<Props, ComponentState> {
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-log-dialogs" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
                                 <OF.Icon iconName="List" /><span>Log Dialogs</span>
-                                <span className="count">{this.state.modelLoaded && (this.props.logDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : this.props.logDialogs.length}</span>
+                                <span className="count">{this.state.modelLoaded && ((this.props.logDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : this.props.logDialogs.length)}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-settings" to={{ pathname: `${match.url}/settings`, state: { app } }}>
                                 <OF.Icon iconName="Settings" /><span>Settings</span>
