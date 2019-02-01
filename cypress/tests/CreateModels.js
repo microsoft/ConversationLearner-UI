@@ -99,9 +99,27 @@ export function TagAndFrog()
   cy.WaitForTrainingStatusCompleted()
   train.CreateNewTrainDialog()
 
+  // ------------------------------------------------------------------------
+  // This block of code should be removed once we determine and fix the cause
+  // of: Bug 1901-Automatic Entity Labeling Is NOT Consistent
+  // ------------------------------------------------------------------------
+
   train.TypeYourMessage('This is Tag.')
   editDialogModal.LabelTextAsEntity('Tag', 'multi')
   editDialogModal.ClickScoreActionsButton()
+  train.SelectAction('Hello')
+
+  train.Save()
+
+  cy.WaitForTrainingStatusCompleted()
+  train.CreateNewTrainDialog()
+
+  // ------------------------------------------------------------------------
+
+  train.TypeYourMessage('This is Tag.')
+  editDialogModal.LabelTextAsEntity('Tag', 'multi', false)
+  editDialogModal.ClickScoreActionsButton()
+  // TODO: Verify that the entity was labeled and now in memory.
   train.SelectAction('Hello')
   cy.WaitForTrainingStatusCompleted()
 
