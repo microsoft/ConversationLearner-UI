@@ -4,7 +4,7 @@
  */
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import { EntityBase, isPrebuilt } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory' 
@@ -16,7 +16,7 @@ import { fetchAllTrainDialogsThunkAsync } from './trainActions';
 //-------------------------------------
 // createEntity
 //-------------------------------------
-const createEntityAsync = (appId: string, entity: EntityBase): ActionObject => {
+const createEntityAsync = (appId: string, entity: CLM.EntityBase): ActionObject => {
     return {
         type: AT.CREATE_ENTITY_ASYNC,
         entity: entity,
@@ -24,20 +24,29 @@ const createEntityAsync = (appId: string, entity: EntityBase): ActionObject => {
     }
 }
 
-const createEntityFulfilled = (entity: EntityBase): ActionObject => {
+const createEntityFulfilled = (entity: CLM.EntityBase): ActionObject => {
     return {
         type: AT.CREATE_ENTITY_FULFILLED,
         entity: entity
     }
 }
 
-export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
+export const createEntityThunkAsync = (appId: string, entity: CLM.EntityBase) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(createEntityAsync(appId, entity))
         const clClient = ClientFactory.getInstance(AT.CREATE_ENTITY_ASYNC)
 
         try {
-            const posEntity = await clClient.entitiesCreate(appId, entity);
+            
+            // LARS TEMP - to test w/o server
+            let temp = {...entity, entityType: entity.entityType === CLM.EntityType.ENUM ? CLM.EntityType.LOCAL : entity.entityType}
+        
+            const posEntity = await clClient.entitiesCreate(appId, temp);
+
+            // LARS TEMP
+            if (entity.entityType === CLM.EntityType.ENUM) {
+                posEntity.entityType = CLM.EntityType.ENUM
+            }
             dispatch(createEntityFulfilled(posEntity));
 
             if (posEntity.negativeId) {
@@ -50,7 +59,7 @@ export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
             // that definition of prebuilt entity is in the memory
             if (typeof entity.resolverType !== 'undefined' && entity.resolverType !== null)
             {
-                dispatch(fetchAllEntitiesThunkAsync(appId));
+                //LARS TEMP dispatch(fetchAllEntitiesThunkAsync(appId));
             }
             
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
@@ -64,7 +73,7 @@ export const createEntityThunkAsync = (appId: string, entity: EntityBase) => {
 //-------------------------------------
 // editEntity
 //-------------------------------------
-const editEntityAsync = (appId: string, entity: EntityBase): ActionObject => {
+const editEntityAsync = (appId: string, entity: CLM.EntityBase): ActionObject => {
     return {
         type: AT.EDIT_ENTITY_ASYNC,
         appId,
@@ -72,14 +81,14 @@ const editEntityAsync = (appId: string, entity: EntityBase): ActionObject => {
     }
 }
 
-const editEntityFulfilled = (entity: EntityBase): ActionObject => {
+const editEntityFulfilled = (entity: CLM.EntityBase): ActionObject => {
     return {
         type: AT.EDIT_ENTITY_FULFILLED,
         entity: entity
     }
 }
 
-export const editEntityThunkAsync = (appId: string, entity: EntityBase, prevEntity: EntityBase) => {
+export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prevEntity: CLM.EntityBase) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_ENTITY_ASYNC)
         dispatch(editEntityAsync(appId, entity))
@@ -146,7 +155,7 @@ const deleteEntityFulfilled = (entityId: string): ActionObject => {
     }
 }
 
-export const deleteEntityThunkAsync = (appId: string, entity: EntityBase) => {
+export const deleteEntityThunkAsync = (appId: string, entity: CLM.EntityBase) => {
     return async (dispatch: Dispatch<any>) => {
         const entityId = entity.entityId
         dispatch(deleteEntityAsync(appId, entityId))
@@ -163,7 +172,7 @@ export const deleteEntityThunkAsync = (appId: string, entity: EntityBase) => {
             
             // If deleted entity is prebuilt entity, we fetch all entities to make sure 
             // that entities in the memory are all up to date
-            if (isPrebuilt(entity)) {
+            if (CLM.isPrebuilt(entity)) {
                 dispatch(fetchAllEntitiesThunkAsync(appId));
             }
             
@@ -197,7 +206,7 @@ const fetchAllEntitiesAsync = (appId: string): ActionObject => {
     }
 }
 
-const fetchAllEntitiesFulfilled = (entities: EntityBase[]): ActionObject => {
+const fetchAllEntitiesFulfilled = (entities: CLM.EntityBase[]): ActionObject => {
     return {
         type: AT.FETCH_ENTITIES_FULFILLED,
         allEntities: entities
@@ -259,7 +268,7 @@ export const fetchEntityDeleteValidationThunkAsync = (appId: string, packageId: 
 //-------------------------------------
 // fetchEntityEditValidation
 //-------------------------------------
-const fetchEntityEditValidationAsync = (appId: string, packageId: string, entity: EntityBase): ActionObject => {
+const fetchEntityEditValidationAsync = (appId: string, packageId: string, entity: CLM.EntityBase): ActionObject => {
     return {
         type: AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC,
         appId: appId,
@@ -274,7 +283,7 @@ const fetchEntityEditValidationFulfilled = (): ActionObject => {
     }
 }
 
-export const fetchEntityEditValidationThunkAsync = (appId: string, packageId: string, entity: EntityBase) => {
+export const fetchEntityEditValidationThunkAsync = (appId: string, packageId: string, entity: CLM.EntityBase) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC)
         dispatch(fetchEntityEditValidationAsync(appId, packageId, entity))

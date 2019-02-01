@@ -58,15 +58,15 @@ interface ComponentState {
     restricted_entity_names: string[]
 }
 
+export const getPrebuiltEntityName = (preBuiltType: string): string => {
+    return `builtin-${preBuiltType.toLowerCase()}`
+}
+
 class Container extends React.Component<Props, ComponentState> {
     staticEntityOptions: CLDropdownOption[]
     staticResolverOptions: CLDropdownOption[]
     entityOptions: CLDropdownOption[]
     resolverOptions: CLDropdownOption[]
-
-    static GetPrebuiltEntityName(preBuiltType: string): string {
-        return `builtin-${preBuiltType.toLowerCase()}`
-    }
 
     constructor(props: Props) {
         super(props)
@@ -207,15 +207,23 @@ class Container extends React.Component<Props, ComponentState> {
         }
     }
 
+    existingEnumId(value: string): string | undefined {
+        if (!this.props.entity || !this.props.entity.enumValues) {
+            return undefined
+        }
+        let enumEntity = this.props.entity.enumValues.find(e => e && e.enumValue === value)
+        return enumEntity ? enumEntity.enumId : undefined
+    }
+
     convertStateToEntity(state: ComponentState): CLM.EntityBase {
         let entityName = this.state.entityNameVal
         let entityType = this.state.entityTypeVal
         let resolverType = this.state.entityResolverVal
         if (this.state.isPrebuilt) {
-            entityName = Container.GetPrebuiltEntityName(entityType)
+            entityName = getPrebuiltEntityName(entityType)
         }
 
-        const newOrEditedEntity = {
+        const newOrEditedEntity: CLM.EntityBase = {
             entityId: undefined!,
             entityName,
             resolverType: resolverType,
@@ -230,8 +238,16 @@ class Container extends React.Component<Props, ComponentState> {
             packageCreationId: null,
             packageDeletionId: null,
             doNotMemorize: this.state.isPrebuilt
-        } as CLM.EntityBase
+        }
 
+        if (entityType === CLM.EntityType.ENUM) {
+            const values: string[] = this.state.enumValues.filter(v => v !== undefined) as string[]
+            const enumValues: CLM.EnumValue[] = values.map(enumValue => {
+                let enumId = this.existingEnumId(enumValue)
+                return enumId ? { enumValue, enumId } : { enumValue, enumId: CLM.ModelUtils.generateGUID()/*LARS*/ }
+            })
+            newOrEditedEntity.enumValues = enumValues
+        }
         // Set entity id if we're editing existing id.
         if (this.state.isEditing && this.props.entity) {
             newOrEditedEntity.entityId = this.props.entity.entityId
@@ -322,7 +338,7 @@ class Container extends React.Component<Props, ComponentState> {
             isMultivalueVal,
             isNegatableVal,
             entityTypeVal,
-            entityNameVal: isPrebuilt ? Container.GetPrebuiltEntityName(obj.text) : prevState.entityNameVal,
+            entityNameVal: isPrebuilt ? getPrebuiltEntityName(obj.text) : prevState.entityNameVal,
         }))
     }
     onChangedEnum = (index: number, value: string) => {
@@ -407,17 +423,17 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     getDisqualifiedActions(): CLM.ActionBase[] {
-        const { actions, entity } = this.props
+        const { actions: allActions, entity } = this.props
         return !entity
             ? []
-            : actions.filter(a => a.negativeEntities.some(id => id === entity.entityId))
+            : allActions.filter(a => a.negativeEntities.some(id => id === entity.entityId))
     }
 
     getRequiredActions(): CLM.ActionBase[] {
-        const { actions, entity } = this.props
+        const { actions: allActions, entity } = this.props
         return !entity
             ? []
-            : actions.filter(a => a.requiredEntities.find(id => id === entity.entityId))
+            : allActions.filter(a => a.requiredEntities.find(id => id === entity.entityId))
     }
 
     onRenderOption = (option: CLDropdownOption): JSX.Element => {
@@ -433,17 +449,17 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     isRequiredForActions(): boolean {
-        const { actions, entity } = this.props
+        const { actions: allActions, entity } = this.props
         return !entity
             ? false
-            : actions.some(a => [...a.requiredEntitiesFromPayload, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(entity.entityId))
+            : allActions.some(a => [...a.requiredEntitiesFromPayload, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(entity.entityId))
     }
 
     isUsedByActions(): boolean {
-        const { actions, entity } = this.props
+        const { actions: allActions, entity } = this.props
         return !entity
             ? false
-            : actions.some(a => [...a.negativeEntities, ...a.requiredEntities, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(entity.entityId))
+            : allActions.some(a => [...a.negativeEntities, ...a.requiredEntities, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(entity.entityId))
     }
 
     isUsedByTrainingDialogs(): boolean {
@@ -588,7 +604,7 @@ class Container extends React.Component<Props, ComponentState> {
             : this.state.title
 
         const name = this.state.isPrebuilt
-            ? Container.GetPrebuiltEntityName(this.state.entityTypeVal)
+            ? getPrebuiltEntityName(this.state.entityTypeVal)
             : this.state.entityNameVal
 
         const isSaveButtonDisabled = this.isSaveDisabled()
@@ -688,6 +704,3 @@ const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
 export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(Container)))
-export const getPrebuiltEntityName = (entityType: string): string => {
-    return Container.GetPrebuiltEntityName(entityType)
-}
