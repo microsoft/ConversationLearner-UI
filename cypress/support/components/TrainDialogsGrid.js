@@ -14,7 +14,7 @@ export function ActionDropDownFilter() { cy.Get('[data-testid="dropdown-filter-b
 export function ClickTraining(row) { cy.Get('[data-testid="train-dialogs-first-input"]').then(elements => { cy.wrap(elements[row]).Click() }) }
 
 export function WaitForGridReadyThen(expectedRowCount, functionToRunAfterGridIsReady) {
-    cy.Get('[data-testid="train-dialogs-turns"]')
+    cy.Get('[data-testid="train-dialogs-turns"]', { timeout: 10000 })
         .should(elements => { expect(elements).to.have.length(expectedRowCount) })
         .then(() => { functionToRunAfterGridIsReady() })
 }
