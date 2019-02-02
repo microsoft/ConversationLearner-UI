@@ -2,22 +2,22 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import { returntypeof } from 'react-redux-typescript'
-import { State } from '../../types'
+import * as React from 'react';
+import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react';
+import * as Util from '../../Utils/util'
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { returntypeof } from 'react-redux-typescript';
+import { State } from '../../types'
 import { createActionThunkAsync } from '../../actions/actionActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
-import * as OF from 'office-ui-fabric-react'
 import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import * as Util from '../../Utils/util'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
-import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 import ConfirmCancelModal from './ConfirmCancelModal'
 
 const ACTION_BUTTON = 'action_button'
@@ -460,6 +460,22 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.props.onActionSelected(trainScorerStep);
     }
 
+    isConditionMet(condition: CLM.Condition): { match: boolean, name: string } {
+        let entity = this.props.entities.filter(e => e.entityId === condition.entityId)[0];
+
+        // If entity is null - there's a bug somewhere
+        if (!entity) {
+            return { match: false, name: 'ERROR' };
+        }
+
+        let enumValue = entity.enumValues && entity.enumValues.find(ev => ev.enumValueId === condition.valueId)
+        let memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
+        let match = memory !== undefined 
+            && memory.entityValues[0]
+            && memory.entityValues[0].enumValueId === condition.valueId 
+        return { match, name: `${entity.entityName} = ${enumValue ? enumValue.enumValue : "NOT FOUND"}` };
+    }
+
     // Check if entity is in memory and return it's name 
     entityInMemory(entityId: string): { match: boolean, name: string } {
         let entity = this.props.entities.filter(e => e.entityId === entityId)[0];
@@ -470,7 +486,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
 
         let memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
-        return { match: (memory != null), name: entity.entityName };
+        return { match: (memory !== undefined), name: entity.entityName };
     }
 
     renderEntityRequirements(actionId: string) {
@@ -478,12 +494,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         // If action is null - there's a bug somewhere
         if (!action) {
-            return <div>ERROR: Missing Action</div>;
+            return <div>ERROR: Missing Action</div>
         }
 
         let items = [];
         for (let entityId of action.requiredEntities) {
-            let found = this.entityInMemory(entityId);
+            let found = this.entityInMemory(entityId)
             items.push({
                 name: found.name,
                 neg: false,
@@ -493,7 +509,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             });
         }
         for (let entityId of action.negativeEntities) {
-            let found = this.entityInMemory(entityId);
+            let found = this.entityInMemory(entityId)
             items.push({
                 name: found.name,
                 neg: true,
@@ -501,6 +517,30 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     ? 'cl-entity cl-entity--mismatch'
                     : 'cl-entity cl-entity--match',
             });
+        }
+        if (action.requiredConditions) {
+            for (let condition of action.requiredConditions) {
+                let result = this.isConditionMet(condition)
+                items.push({
+                    name: result.name,
+                    neg: false,
+                    type: result.match
+                        ? 'cl-entity cl-entity--match'
+                        : 'cl-entity cl-entity--mismatch',
+                });
+            }
+        }
+        if (action.negativeConditions) {
+            for (let condition of action.negativeConditions) {
+                let result = this.isConditionMet(condition)
+                items.push({
+                    name: result.name,
+                    neg: true,
+                    type: result.match
+                        ? 'cl-entity cl-entity--mismatch'
+                        : 'cl-entity cl-entity--match',
+                });
+            }
         }
         return (
             <OF.List
@@ -537,15 +577,31 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     isAvailable(action: CLM.ActionBase): boolean {
 
         for (let entityId of action.requiredEntities) {
-            let found = this.entityInMemory(entityId);
+            let found = this.entityInMemory(entityId)
             if (!found.match) {
-                return false;
+                return false
             }
         }
         for (let entityId of action.negativeEntities) {
-            let found = this.entityInMemory(entityId);
+            let found = this.entityInMemory(entityId)
             if (found.match) {
-                return false;
+                return false
+            }
+        }
+        if (action.requiredConditions) {
+            for (let condition of action.requiredConditions) {
+                let result = this.isConditionMet(condition)
+                if (!result.match) {
+                    return false
+                }
+            }
+        }
+        if (action.negativeConditions) {
+            for (let condition of action.negativeConditions) {
+                let result = this.isConditionMet(condition)
+                if (result.match) {
+                    return false
+                }
             }
         }
         return true;
