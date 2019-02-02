@@ -97,7 +97,7 @@ export function AddToCypressTestList(testList) {
       while (test != undefined && test.group == currentGroupName)
       {
         helpers.ConLog(funcName, `Adding Test Case: ${test.name}`);
-        Cypress.RegisterTestCase(test.group, test.name);
+        Cypress.PersistentLogs.RegisterTestCase(test.group, test.name);
         it(test.description, test.func) 
         test = testListIterator.next;
       }

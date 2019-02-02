@@ -18,7 +18,8 @@ console.log = function (message) {
 
 // This will be called by the test list manager to register each test case
 // in the order the tests will be run in.
-Cypress.RegisterTestCase = (testGroupName, testName) => {
+Cypress.PersistentLogs = {};
+Cypress.PersistentLogs.RegisterTestCase = (testGroupName, testName) => {
   testCaseRegistry.push(`${testGroupName}/${testName}`);
 }
 
@@ -28,10 +29,3 @@ afterEach(() => {
   cy.writeFile(logFileName, logEntries);  
   logEntries = '';
 });
-
-function GetTestCaseName()
-{
-  // Cypress.spec.name looks something like this: "Tools\VisitHomePage.js"
-  var jsExtensionLength = '.js'.length;
-  return Cypress.spec.name.substring(0, Cypress.spec.name.length - jsExtensionLength);
-}
