@@ -212,7 +212,7 @@ class Container extends React.Component<Props, ComponentState> {
             return undefined
         }
         let enumEntity = this.props.entity.enumValues.find(e => e && e.enumValue === value)
-        return enumEntity ? enumEntity.enumId : undefined
+        return enumEntity ? enumEntity.enumValueId : undefined
     }
 
     convertStateToEntity(state: ComponentState): CLM.EntityBase {
@@ -243,8 +243,8 @@ class Container extends React.Component<Props, ComponentState> {
         if (entityType === CLM.EntityType.ENUM) {
             const values: string[] = this.state.enumValues.filter(v => v !== undefined) as string[]
             const enumValues: CLM.EnumValue[] = values.map(enumValue => {
-                let enumId = this.existingEnumId(enumValue)
-                return enumId ? { enumValue, enumId } : { enumValue, enumId: CLM.ModelUtils.generateGUID()/*LARS*/ }
+                let enumValueId = this.existingEnumId(enumValue)
+                return enumValueId ? { enumValue, enumValueId } : { enumValue }
             })
             newOrEditedEntity.enumValues = enumValues
         }

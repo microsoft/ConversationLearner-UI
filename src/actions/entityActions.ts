@@ -36,17 +36,8 @@ export const createEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
         dispatch(createEntityAsync(appId, entity))
         const clClient = ClientFactory.getInstance(AT.CREATE_ENTITY_ASYNC)
 
-        try {
-            
-            // LARS TEMP - to test w/o server
-            let temp = {...entity, entityType: entity.entityType === CLM.EntityType.ENUM ? CLM.EntityType.LOCAL : entity.entityType}
-        
-            const posEntity = await clClient.entitiesCreate(appId, temp);
-
-            // LARS TEMP
-            if (entity.entityType === CLM.EntityType.ENUM) {
-                posEntity.entityType = CLM.EntityType.ENUM
-            }
+        try {     
+            const posEntity = await clClient.entitiesCreate(appId, entity);
             dispatch(createEntityFulfilled(posEntity));
 
             if (posEntity.negativeId) {
@@ -59,7 +50,7 @@ export const createEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
             // that definition of prebuilt entity is in the memory
             if (typeof entity.resolverType !== 'undefined' && entity.resolverType !== null)
             {
-                //LARS TEMP dispatch(fetchAllEntitiesThunkAsync(appId));
+                dispatch(fetchAllEntitiesThunkAsync(appId));
             }
             
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId));

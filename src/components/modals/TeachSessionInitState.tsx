@@ -3,6 +3,8 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react';
+import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react';
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -11,25 +13,23 @@ import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
-import * as OF from 'office-ui-fabric-react';
 import { FM } from '../../react-intl-messages'
-import { FilledEntityMap, EntityBase, MemoryValue } from '@conversationlearner/models'
 import './TeachSessionInitState.css';
 
 interface ComponentState {
-    filledEntityMap: FilledEntityMap
+    filledEntityMap: CLM.FilledEntityMap
 }
 
 class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        this.state = { filledEntityMap: new FilledEntityMap() }
+        this.state = { filledEntityMap: new CLM.FilledEntityMap() }
     }
 
     componentWillReceiveProps(newProps: Props) {
         if (this.props.isOpen !== newProps.isOpen) {
-            this.setState({filledEntityMap: new FilledEntityMap()})
+            this.setState({filledEntityMap: new CLM.FilledEntityMap()})
         }
     }
 
@@ -43,7 +43,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         // Remove any empty items
         for (let entityName of Object.keys(this.state.filledEntityMap.map)) {
             let filledEntity = this.state.filledEntityMap.map[entityName]
-            filledEntity.values = filledEntity.values.filter(entityValue => entityValue.userText !== '')
+            filledEntity.values = filledEntity.values.filter(entityValue => entityValue.userText !== '' || entityValue.enumValueId)
             if (filledEntity.values.length === 0) {
                 delete this.state.filledEntityMap.map[entityName]
             }
@@ -53,8 +53,8 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickAdd(entity: EntityBase) {
-        let memoryValue: MemoryValue = {
+    onClickAdd(entity: CLM.EntityBase) {
+        let memoryValue: CLM.MemoryValue = {
             userText: '',
             displayText: null,
             builtinType: null,
@@ -75,7 +75,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickRemove(index: number, entity: EntityBase) {
+    onClickRemove(index: number, entity: CLM.EntityBase) {
         let map = this.state.filledEntityMap.map
         map[entity.entityName].values.splice(index, 1)
         if (map[entity.entityName].values.length === 0) {
@@ -83,8 +83,15 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         }
         this.setState({filledEntityMap: this.state.filledEntityMap})
     }
+ 
+    onEnumChanged(item: OF.IDropdownOption, entity: CLM.EntityBase) {
+        this.state.filledEntityMap.map[entity.entityName].values[0].displayText = item.text
+        this.state.filledEntityMap.map[entity.entityName].values[0].userText = item.text
+        this.state.filledEntityMap.map[entity.entityName].values[0].enumValueId = item.key as string
+        this.setState({filledEntityMap: this.state.filledEntityMap})
+    }
 
-    onChanged(index: number, text: string, entity: EntityBase) {  
+    onChanged(index: number, text: string, entity: CLM.EntityBase) {  
         this.state.filledEntityMap.map[entity.entityName].values[index].userText = text
         this.setState({filledEntityMap: this.state.filledEntityMap})
     }
@@ -107,16 +114,17 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                     {
                         this.props.entities
                             // Filter out negative entities and entities that should not be memorized                            
-                            .filter(entity => entity.positiveId === undefined && !entity.doNotMemorize)
+                            .filter(entity => !entity.positiveId && !entity.doNotMemorize)
                             .map(entity => {
                                 return (
                                     <div className="teachInitBlock" key={entity.entityId}>
                                         <OF.IconButton
+                                            className="cl-icon-plain"
                                             data-testid="teach-session-add-initial-value"
                                             disabled={!entity.isMultivalue && this.state.filledEntityMap.map[entity.entityName] !== undefined}
                                             onClick={() => this.onClickAdd(entity)}
                                             ariaDescription="Add Initial Value"
-                                            iconProps={{ iconName: 'CirclePlus' }}
+                                            iconProps={{ iconName: 'AddTo' }}
                                         />
                                         <OF.Label className="cl-label cl-font--emphasis" data-testid="teach-session-entity-name">{entity.entityName}</OF.Label>
                                         {this.state.filledEntityMap.map[entity.entityName] &&
@@ -125,22 +133,37 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                                 return (
                                                 <div key={key}>
                                                     <OF.IconButton
+                                                        className="cl-float-left"
                                                         data-testid="teach-session-delete-button"
                                                         onClick={() => this.onClickRemove(index, entity)}
                                                         ariaDescription="Remove Value"
                                                         iconProps={{ iconName: 'Delete' }}
                                                     />
-                                                    <OF.TextField
-                                                        data-testid="teach-session-initial-value"
-                                                        className="cl-textfield--inline"
-                                                        key={key}
-                                                        onChanged={text => this.onChanged(index, text, entity)}
-                                                        placeholder={intl.formatMessage({
-                                                            id: FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER,
-                                                            defaultMessage: "Initial Value..."
-                                                        })}
-                                                        value={memoryValue.userText || ''}
-                                                    />
+                                                    {entity.entityType === CLM.EntityType.ENUM ?
+                                                        <OF.Dropdown
+                                                            className="cl-input--inline"
+                                                            selectedKey={memoryValue.enumValueId || undefined}
+                                                            onChanged={item => this.onEnumChanged(item, entity)}
+                                                            options={entity.enumValues!.map<OF.IDropdownOption>(ev => {
+                                                                return {
+                                                                    key: ev.enumValueId!,
+                                                                    text: ev.enumValue!
+                                                                }
+                                                            })}
+                                                        />
+                                                    :
+                                                        <OF.TextField
+                                                            data-testid="teach-session-initial-value"
+                                                            className="cl-input--inline"
+                                                            key={key}
+                                                            onChanged={text => this.onChanged(index, text, entity)}
+                                                            placeholder={intl.formatMessage({
+                                                                id: FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER,
+                                                                defaultMessage: "Initial Value..."
+                                                            })}
+                                                            value={memoryValue.userText || ''}
+                                                        />
+                                                    }
                                                 </div>
                                                 )
                                             })
@@ -198,7 +221,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     isOpen: boolean,
-    handleClose: (filledEntityMap?: FilledEntityMap) => void
+    handleClose: (filledEntityMap?: CLM.FilledEntityMap) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

@@ -78,11 +78,11 @@ const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] =>
         if (e.entityType === CLM.EntityType.ENUM && e.enumValues) {
             for (let enumValue of e.enumValues) {
                 tags.push({
-                    key: enumValue.enumId!,
+                    key: enumValue.enumValueId!,
                     name: `${e.entityName} = ${enumValue.enumValue}`,
                     condition: {
                         entityId: e.entityId,
-                        valueId: enumValue.enumId!,
+                        valueId: enumValue.enumValueId!,
                         condition: CLM.ConditionType.EQUAL
                     }
                 })
@@ -123,19 +123,15 @@ const isConditionMutuallyExclusive = (tag1: OF.ITag, tag2: OF.ITag): boolean => 
     return false;
 }
 
-const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude: OF.ITag[], uniqueEnums: boolean = false): OF.ITag[] => {
+const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude: OF.ITag[], mutuallyExclusive: OF.ITag[] = []): OF.ITag[] => {
     let fText = (filterText.startsWith(ActionPayloadEditor.triggerCharacter) ? filterText.substring(1) : filterText).trim()
 
-    const availableTags = allTags
-        .filter(tag => !tagsToExclude.some(t => {
-                if (!uniqueEnums) {
-                    return t.key === tag.key
-                } 
-                else {
-                    return !isConditionMutuallyExclusive(t, tag)
-                }
-            }
-        ))
+    let availableTags = allTags
+        .filter(tag => !tagsToExclude.some(t => t.key === tag.key))
+
+    // Check for mutually exclusive conditions and remove them 
+    availableTags = availableTags
+        .filter(tag => !mutuallyExclusive.some(t => isConditionMutuallyExclusive(t, tag)))
 
     if (fText.length === 0) {
         return availableTags
@@ -882,7 +878,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             filterText,
             this.state.conditionalTags,
             [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags, ...this.state.expectedEntityTags],
-            true
+            this.state.requiredEntityTags
         )
     }
 

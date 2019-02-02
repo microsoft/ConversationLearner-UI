@@ -47,8 +47,9 @@ html {
   display: block;
 }
 
-.cl-textfield--inline {
+.cl-input--inline {
   display: inline-block;
+  width: 300px;
 }
 
 .cl-wc-disabled {
@@ -224,6 +225,10 @@ html {
   background-color: transparent !important;
 }
 
+.ms-Button--icon.cl-icon-plain {
+  background-color: transparent !important;
+}
+
 .ms-Button-icon[data-icon-name="Delete"]:not(:disabled) {
   color: var(--color-red);
 }
@@ -247,6 +252,11 @@ html {
 }
 
 .ms-Button-icon[data-icon-name="MessageFill"]:not(:disabled):hover {
+  color: var(--color-red) !important;
+  background: transparent !important
+}
+
+.ms-Button-icon[data-icon-name="AddTo"]:not(:disabled):hover {
   color: var(--color-red) !important;
   background: transparent !important
 }
@@ -377,6 +387,16 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   bottom: -8px;
   z-index: 1000;
   right: 166px;
+}
+
+.cl-icon-plain {
+  border: none !important;
+  background-color: transparent !important;
+  color: var(--color-themePrimary);
+}
+
+.cl-icon-plain:hover {
+  color: var(--color-red);
 }
 
 /* botframework-webchat component override */
@@ -735,7 +755,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   outline: rgb(102, 102, 102) solid 1px;
 }
 
-.ms-Button--transparent {
+.parms-Button--transent {
   background-color: transparent !important;
   color: var(--color-themePrimary) !important;
 }
@@ -879,13 +899,10 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 
 .cl-ux-opaque {
-
   background-color:#ffffff;
 
 }
-
 .cl-ux-shadowed {
-  
   box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3) !important;
   border: 1px solid #aaaaaa !important;
 
@@ -910,4 +927,8 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .cl-ux-msg-cautionary {
   color: var(--color-alert) !important;
   font-weight: 900;
+}
+
+.cl-float-left {
+  float: left;
 }
