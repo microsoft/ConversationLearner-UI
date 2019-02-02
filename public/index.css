@@ -755,7 +755,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   outline: rgb(102, 102, 102) solid 1px;
 }
 
-.parms-Button--transent {
+.ms-Button--transparent {
   background-color: transparent !important;
   color: var(--color-themePrimary) !important;
 }
