@@ -4,7 +4,7 @@
  */
 import * as React from 'react'
 import './CustomEntity.css'
-import { IconButton } from 'office-ui-fabric-react';
+import { IconButton } from 'office-ui-fabric-react'
 
 // Simulate entity component props which have children
 interface EntityComponentProps {

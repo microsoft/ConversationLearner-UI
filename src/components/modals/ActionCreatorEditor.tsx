@@ -29,7 +29,7 @@ import { RouteComponentProps } from 'react-router'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 
-const TEXT_SLOT = '#TEXT_SLOT#';
+const TEXT_SLOT = '#TEXT_SLOT#'
 
 const convertEntityToOption = (entity: CLM.EntityBase): ActionPayloadEditor.IOption =>
     ({

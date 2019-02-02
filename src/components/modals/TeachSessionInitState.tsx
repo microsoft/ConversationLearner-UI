@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import { State } from '../../types';
 import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import { FM } from '../../react-intl-messages'
 import './TeachSessionInitState.css';
@@ -63,15 +63,15 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         let map = this.state.filledEntityMap.map
 
         if (!map[entity.entityName]) {
-            map[entity.entityName] = { 
+            map[entity.entityName] = {
                 entityId: entity.entityId,
                 values: [memoryValue]
-            } 
+            }
         }
         else {
             map[entity.entityName].values.push(memoryValue);
         }
-        this.setState({filledEntityMap: this.state.filledEntityMap})
+        this.setState({ filledEntityMap: this.state.filledEntityMap })
     }
 
     @autobind
@@ -81,7 +81,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         if (map[entity.entityName].values.length === 0) {
             delete map[entity.entityName]
         }
-        this.setState({filledEntityMap: this.state.filledEntityMap})
+        this.setState({ filledEntityMap: this.state.filledEntityMap })
     }
  
     onEnumChanged(item: OF.IDropdownOption, entity: CLM.EntityBase) {
@@ -93,7 +93,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     onChanged(index: number, text: string, entity: CLM.EntityBase) {  
         this.state.filledEntityMap.map[entity.entityName].values[index].userText = text
-        this.setState({filledEntityMap: this.state.filledEntityMap})
+        this.setState({ filledEntityMap: this.state.filledEntityMap })
     }
 
     render() {
@@ -108,8 +108,8 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                 <div className="cl-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>
                         <FormattedMessageId id={FM.TEACHSESSIONINIT_TITLE} />
-                        </span>
-                    </div>
+                    </span>
+                </div>
                 <div>
                     {
                         this.props.entities
@@ -171,7 +171,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                     </div>
                                 )
                             }
-                        )
+                            )
                     }
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">

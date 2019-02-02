@@ -2,19 +2,19 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import './TeachSessionModal.css';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import * as React from 'react'
+import './TeachSessionModal.css'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { ErrorHandler } from '../../Utils/ErrorHandler'
 import { AT } from '../../types/ActionTypes'
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as BotChat from '@conversationlearner/webchat'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
-import { State, TeachSessionState } from '../../types';
+import { State, TeachSessionState } from '../../types'
 import Webchat, { renderActivity } from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
@@ -30,8 +30,8 @@ import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
 import { SelectionType } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { EditDialogType } from '.';
-import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs';
+import { EditDialogType } from '.'
+import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs'
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
@@ -214,7 +214,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         // If last action was button submit will generate two calls, ignore the selection
         if (this.state.ignoreSelectionCount > 0) {
-            this.setState({ignoreSelectionCount: this.state.ignoreSelectionCount - 1})
+            this.setState({ ignoreSelectionCount: this.state.ignoreSelectionCount - 1 })
             return
         }
 
@@ -263,11 +263,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 */
 
                 // Ignore the next to action selections
-                await Util.setStateAsync(this, {ignoreSelectionCount: 2})
+                await Util.setStateAsync(this, { ignoreSelectionCount: 2 })
 
                 // If button clicked when not waiting for user input, must insert rather than continue as not valid combination
                 if (this.props.teachSession.dialogMode !== CLM.DialogMode.Wait) {
-                    await Util.setStateAsync(this, {selectedActivityIndex: this.state.nextActivityIndex - 1})
+                    await Util.setStateAsync(this, { selectedActivityIndex: this.state.nextActivityIndex - 1 })
                     this.onSubmitAddUserInput(userInput.text)
                     return
                 }
@@ -393,7 +393,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
                 memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
                     let entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                    let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY';
+                    let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
                     return {
                         entityName: entityName,
                         entityValues: fe.values
@@ -545,7 +545,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
         // Can't delete first user input
         const canDeleteRound = this.state.selectedActivityIndex !== 0
-        const isEndSession = this.props.teachSession.dialogMode === CLM.DialogMode.EndSession 
+        const isEndSession = this.props.teachSession.dialogMode === CLM.DialogMode.EndSession
             && activity.channelData.clData
             && this.state.nextActivityIndex === activity.channelData.clData.activityIndex + 1
 
@@ -706,9 +706,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
         const waitingForScore = this.state.selectedActivityIndex === null && this.props.teachSession.dialogMode === CLM.DialogMode.Scorer
         const waitingForExtract = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
         let chatDisable = (waitingForScore || waitingForExtract) ? <div className="cl-overlay" /> : null;
-        let saveDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor 
-                            || this.props.teachSession.botAPIError !== null 
-                            || this.state.isInitAvailable  // Empty TD
+        let saveDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
+            || this.props.teachSession.botAPIError !== null
+            || this.state.isInitAvailable  // Empty TD
         const isLastActivitySelected = this.state.selectedActivityIndex ? this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1) : false
         return (
             <div>
@@ -755,7 +755,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         isLastActivitySelected={isLastActivitySelected}
                                         historyRenderData={this.state.selectedHistoryActivity ? this.historyRender : null}
                                         onScoredAction={this.onScoredAction}
-                                        onReplaceActivityText={(userText, index) => {   
+                                        onReplaceActivityText={(userText, index) => {
                                             this.setState({
                                                 replaceActivityIndex: index,
                                                 replaceActivityText: userText

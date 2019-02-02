@@ -10,6 +10,7 @@ import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
+// Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
 interface ReceivedProps {
     onClose: Function
     onAccept: Function
@@ -21,7 +22,7 @@ interface ReceivedProps {
 
 type Props = ReceivedProps & InjectedIntlProps
 
-const ExtractConflictModal: React.SFC<Props> = (props: Props) => {
+const ExtractConflictModal: React.SFC<Props> = (props) => {
     const { intl } = props
     return (
         <OF.Dialog

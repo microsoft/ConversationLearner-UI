@@ -7,7 +7,7 @@ import { Dispatch } from 'redux'
 import { AppBase, LogDialog } from '@conversationlearner/models'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
-import { AxiosError } from 'axios';
+import { AxiosError } from 'axios'
 
 //-------------------------------------
 // deleteLogDialog

@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
+import * as React from 'react'
 import {
     NavLink,
     Route,
@@ -16,7 +16,7 @@ import * as ValidityUtils from '../../../Utils/validityUtils'
 import * as CLM from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
-import { State } from '../../../types';
+import { State } from '../../../types'
 import * as OF from 'office-ui-fabric-react'
 import Entities from './Entities'
 import TrainDialogs from './TrainDialogs'
@@ -24,7 +24,7 @@ import Actions from './Actions'
 import Dashboard from './Dashboard'
 import Settings from './Settings'
 import LogDialogs from './LogDialogs'
-import { TooltipHost } from 'office-ui-fabric-react/lib/Tooltip';
+import { TooltipHost } from 'office-ui-fabric-react/lib/Tooltip'
 import TrainingStatus from '../../../components/TrainingStatusContainer'
 import actions from '../../../actions'
 import './Index.css'
@@ -266,7 +266,7 @@ class Index extends React.Component<Props, ComponentState> {
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-log-dialogs" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
                                 <OF.Icon iconName="List" /><span>Log Dialogs</span>
-                                <span className="count">{this.state.modelLoaded && (this.props.logDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : this.props.logDialogs.length}</span>
+                                <span className="count">{this.state.modelLoaded && ((this.props.logDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : this.props.logDialogs.length)}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-settings" to={{ pathname: `${match.url}/settings`, state: { app } }}>
                                 <OF.Icon iconName="Settings" /><span>Settings</span>

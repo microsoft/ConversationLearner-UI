@@ -647,7 +647,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     />
                 )
             } else {
-                return '';
+                return ''
             }
         }
         // Handle deleted actions
@@ -668,7 +668,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 return column.render(action as CLM.ScoredBase, this, index)
             }
             else {
-                return '';
+                return ''
             }
         }
 

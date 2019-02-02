@@ -382,38 +382,38 @@ export type DeleteAction = {
     | DeleteLogDialogFulfilledAction
     | DeleteLogDialogRejectedAction
     | {
-    type: AT.DELETE_CHAT_SESSION_ASYNC,
-    key: string,
-    session: CLM.Session,
-    appId: string,
-    packageId: string
-} | {
-    type: AT.DELETE_CHAT_SESSION_FULFILLED,
-    sessionId: string,
-} | {
-    type: AT.DELETE_TEACH_SESSION_ASYNC,
-    key: string,
-    teachSession: CLM.Teach,
-    appId: string,
-    save: boolean
-} | {
-    type: AT.DELETE_TEACH_SESSION_FULFILLED,
-    teachSessionGUID: string,
-    sourceLogDialogId: string | null,
-    trainDialogId: string,
-    key: string,
-    appId: string,
-} | {
-    type: AT.CLEAR_TEACH_SESSION
-} | {
-    type: AT.DELETE_MEMORY_ASYNC,
-    key: string,
-    appId: string
-} | {
-    type: AT.DELETE_MEMORY_FULFILLED
-} | {
-    type: AT.DELETE_OPERATION_FULFILLED
-}
+        type: AT.DELETE_CHAT_SESSION_ASYNC,
+        key: string,
+        session: CLM.Session,
+        appId: string,
+        packageId: string
+    } | {
+        type: AT.DELETE_CHAT_SESSION_FULFILLED,
+        sessionId: string,
+    } | {
+        type: AT.DELETE_TEACH_SESSION_ASYNC,
+        key: string,
+        teachSession: CLM.Teach,
+        appId: string,
+        save: boolean
+    } | {
+        type: AT.DELETE_TEACH_SESSION_FULFILLED,
+        teachSessionGUID: string,
+        sourceLogDialogId: string | null,
+        trainDialogId: string,
+        key: string,
+        appId: string,
+    } | {
+        type: AT.CLEAR_TEACH_SESSION
+    } | {
+        type: AT.DELETE_MEMORY_ASYNC,
+        key: string,
+        appId: string
+    } | {
+        type: AT.DELETE_MEMORY_FULFILLED
+    } | {
+        type: AT.DELETE_OPERATION_FULFILLED
+    }
 
 export type DeleteLogDialogAsyncAction = {
     type: AT.DELETE_LOG_DIALOG_ASYNC,

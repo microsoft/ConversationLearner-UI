@@ -2,12 +2,12 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
+import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import * as OF from 'office-ui-fabric-react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { State } from '../../types'
 import { onRenderDetailsHeader, prebuilt, entityObject } from '../ToolTips/ToolTips'
 import { FM } from '../../react-intl-messages'
@@ -76,7 +76,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             renderedValue = prebuilt(value.memoryValue, renderedValue)
                         }
 
-                        return <span className={`${OF.FontClassNames.mediumPlus} cl-font--preserve`} key={i} onMouseDown={component._onItemInvoked}>{renderedValue}</span>
+                        return <span className={`${OF.FontClassNames.mediumPlus} cl-font--preserve`} key={i}>{renderedValue}</span>
                     })}
                 </React.Fragment>)
             },
@@ -166,23 +166,6 @@ class MemoryTable extends React.Component<Props, ComponentState> {
 
         this.onColumnClick = this.onColumnClick.bind(this)
         this.renderItemColumn = this.renderItemColumn.bind(this)
-        this.onCopyTextToClipboard = this.onCopyTextToClipboard.bind(this)
-    }
-
-    _onItemInvoked = (event: React.MouseEvent<HTMLSpanElement>) => {
-
-        let text_for_clipboard = ""
-
-        try { text_for_clipboard = (event as any).nativeEvent.target.innerText; } catch (exception) { }
-
-        this.onCopyTextToClipboard(text_for_clipboard)
-
-        return true;
-
-    };
-
-    onCopyTextToClipboard(text_for_clipboard: string) {
-        try { (navigator as any).clipboard.writeText(text_for_clipboard); } catch (exception) { }
     }
 
     onColumnClick(event: any, column: IRenderableColumn) {

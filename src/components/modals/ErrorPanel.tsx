@@ -122,7 +122,7 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
 
     renderErrorCode(errorCode: ErrorCode, errorBody: string): React.ReactNode {
         switch (errorCode) {
-            case ErrorCode.INVALID_LUIS_AUTHORING_KEY: 
+            case ErrorCode.INVALID_LUIS_AUTHORING_KEY:
                 return (
                     <div className="cl-errorpanel">
                         <div>
@@ -131,7 +131,7 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 )
-            case ErrorCode.INVALID_BOT_CHECKSUM: 
+            case ErrorCode.INVALID_BOT_CHECKSUM:
                 return (
                     <div>
                         <div>Detected changes in running Bot that require a refresh</div>
