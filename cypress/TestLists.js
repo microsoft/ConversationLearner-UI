@@ -11,8 +11,8 @@
 // This is the list of tests that will be executed when '(RunTestsFromList)'
 // is selected from the Cypress Test GUI.
 export const testList = [
-  'EditAndBranching.TagAndFrog',
-  'Train.WhatsYourName',
+  'Tools.VisitHomePage',
+  'Tools.CreateModel',  
 ];
 
 // ************ MODIFY THIS LIST *****************************************

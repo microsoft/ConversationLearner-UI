@@ -71,7 +71,7 @@ function TestCase(testGroupName, testDescription, testFunction) {
     testGroups.push(testGroup);
   }
 
-  var test = { name: testDescription, func: testFunction };
+  var test = { name: testFunctionName, description: testDescription, func: testFunction };
   testGroup.tests.push(test);
 
   var testSpecification = `${testGroupName}.${testFunctionName}`;
@@ -97,7 +97,8 @@ export function AddToCypressTestList(testList) {
       while (test != undefined && test.group == currentGroupName)
       {
         helpers.ConLog(funcName, `Adding Test Case: ${test.name}`);
-        it(test.name, test.func);
+        Cypress.RegisterTestCase(test.group, test.name);
+        it(test.description, test.func) 
         test = testListIterator.next;
       }
     })
@@ -110,6 +111,9 @@ class TestListIterator {
     this.index = 0;
     this.currentGroup = {name: ''};
   }
+
+  // TODO: This class needs to be brought up to standard - here is an example:
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator/next
 
   // groupName.testName - 'testName' from 'groupName'
   // TODO: Add support for these wild card versions
@@ -133,7 +137,12 @@ class TestListIterator {
     if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`;
 
     this.index++;
-    return {group: this.currentGroup.name, name: test.name, func: test.func};
+    return {
+      group: this.currentGroup.name, 
+      name: test.name, 
+      description: test.description, 
+      func: test.func
+    };
   }
 }
 
@@ -142,5 +151,5 @@ function GetTestGroup(name) {
 }
 
 function GetTest(testGroup, testNameToFind) {
-  return testGroup.tests.find(test => test.func.toString().substring(9).startsWith(testNameToFind));
+  return testGroup.tests.find(test => test.name == testNameToFind);
 }
