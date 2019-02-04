@@ -58,7 +58,7 @@ function main() {
 
     // Get the test list file that we MIGHT need to modify.
     const pathToTestList = './cypress/TestLists.js';
-    var testList_jsContents = fs.readFileSync(pathToTestList, 'ascii');
+    var testList_jsContents = fs.readFileSync(pathToTestList, 'utf8');
     // console.log(testList_jsContents)
     // console.log()
 
@@ -71,20 +71,23 @@ function main() {
     testFileDirectory.forEach(fileName => { ParseTestJsFile(fileName); });
 
     // Finalize our findings by re-writing out the TestList.js file ONLY if it has changed.
-    var index = testList_jsContents.indexOf('// ************ Generated Code Beyond this Point *************************');
-    var newFileContents = 
-`// ************ Generated Code Beyond this Point *************************
-// Do NOT manually alter this file from this point onwards.
-// Any changes you make will be overridden at runtime.
-export const masterListOfAllTestCases = [
-`;
+    const generatedCode = '// ************ Generated Code Beyond this Point *************************';
+    var index = testList_jsContents.indexOf(generatedCode);
+    
+    // NOTE: We are not using the `special back-tick quote syntax` because it does not put 
+    //       \r (carriage return) in the string yet we need to have them.
+    var newFileContents = generatedCode + '\r\n' +
+      '// Do NOT manually alter this file from this point onwards.\r\n' +
+      '// Any changes you make will be overridden at runtime.\r\n' +
+      'export const masterListOfAllTestCases = [\r\n';
+
     fullTestList.forEach(testSpecification => { newFileContents += `  '${testSpecification}',\r\n` });
     newFileContents += '];\r\n';
-
+    
     // Only write the file out if something has changed.
     if (!testList_jsContents.endsWith(newFileContents)) {
       newFileContents = testList_jsContents.substring(0, index) + newFileContents;
-      fs.writeFileSync(pathToTestList, newFileContents);
+      fs.writeFileSync(pathToTestList, newFileContents, 'utf8');
       console.log(`TestList.js has been re-generated`);
       RemoveUnusedSpecFiles();
     }
@@ -96,7 +99,7 @@ export const masterListOfAllTestCases = [
 // ----------------------------------------------------------------------
 
 function ParseTestJsFile(fileName) {
-  var fileContents = fs.readFileSync(`${pathToTestFiles}/${fileName}`, 'ascii')
+  var fileContents = fs.readFileSync(`${pathToTestFiles}/${fileName}`, 'utf8')
   //console.log(`File ${fileName}:\r\n${fileContents}`)
   
   var fileLines = fileContents.split('\n')
