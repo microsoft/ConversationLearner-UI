@@ -19,6 +19,10 @@ export function replace<T>(xs: T[], updatedX: T, getId: (x: T) => object | numbe
     return [...xs.slice(0, index), updatedX, ...xs.slice(index + 1)]
 }
 
+export function isNullOrUndefined(object: any) {
+    return object === null || object === undefined
+    
+}
 export function isNullOrWhiteSpace(str: string | null): boolean {
     return (!str || str.length === 0 || /^\s*$/.test(str))
 }
