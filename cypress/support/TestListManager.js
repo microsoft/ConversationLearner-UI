@@ -88,7 +88,7 @@ export function AddToCypressTestList(testList) {
   
   var testListIterator = new TestListIterator(testList);
   
-  var test = testListIterator.next;
+  var test = testListIterator.next();
   while (test != undefined)
   {
     helpers.ConLog(funcName, `Adding Group: ${test.group}`);
@@ -98,7 +98,7 @@ export function AddToCypressTestList(testList) {
       {
         helpers.ConLog(funcName, `Adding Test Case: ${test.name}`);
         it(test.name, test.func);
-        test = testListIterator.next;
+        test = testListIterator.next();
       }
     })
   }
@@ -116,7 +116,7 @@ class TestListIterator {
   // *.*                - All Groups, All Tests
   // *.testName         - All tests with all groups matching 'testName'
   // groupName.*        - All tests from 'groupName'
-  get next() {
+  next() {
     if (this.index >= this.testList.length) return undefined;
 
     var x = this.testList[this.index].split('.');
