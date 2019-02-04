@@ -23,7 +23,7 @@ export const regressionTestList = [
   'CreateModels.DisqualifyingEntities',
   'CreateModels.WaitVsNoWaitActions',
   'CreateModels.WhatsYourName',
-  'CreateModels.TagAndFrog',
+//  'CreateModels.TagAndFrog',
   'CreateModels.Travel',
   'EditAndBranching.VerifyEditTrainingControlsAndLabels',
   'EditAndBranching.Branching',
@@ -35,7 +35,7 @@ export const regressionTestList = [
   'Train.WaitVsNoWaitActions',
   'Train.WhatsYourName',
   'Train.MyNameIs',
-  'Train.TagAndFrog',
+//  'Train.TagAndFrog',
 //  'Train.BookMeAFlight',
   'Tools.DeleteAllTestGeneratedModels',
 ];
