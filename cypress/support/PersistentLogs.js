@@ -8,7 +8,7 @@ var indexRegistry = 0;
 var logEntries = '';
 
 // Override the original console.log() function
-var originalConsolLog = console.log;
+const originalConsolLog = console.log;
 
 // This becomes the effective console.log() function.
 console.log = function (message) {
@@ -26,6 +26,5 @@ Cypress.PersistentLogs.RegisterTestCase = (testGroupName, testName) => {
 // After each test case ends...
 afterEach(() => {
   var logFileName = `./results/cypress/${testCaseRegistry[indexRegistry++]}.${Cypress.moment().format("YY.MM.DD.HH.mm.ss..SSS")}.log`;
-  cy.writeFile(logFileName, logEntries);  
-  logEntries = '';
+  cy.writeFile(logFileName, logEntries).then(() => logEntries = '')
 });
