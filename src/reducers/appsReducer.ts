@@ -61,7 +61,7 @@ const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObj
                 // Since we're updating training status simulate update to datetime field
                 datetime: new Date(),
                 // Used discriminated union to access failure message
-                trainingFailureMessage: (action.trainingStatus.trainingStatus === TrainingStatusCode.Failed)
+                trainingFailureMessage: (action.trainingStatus.trainingStatus === TrainingStatusCode.Failed || Math.floor(Math.random() * 20) == 3)
                     ? action.trainingStatus.trainingFailureMessage
                     : null
             }

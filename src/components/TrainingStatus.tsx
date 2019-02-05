@@ -86,7 +86,7 @@ const Component: React.SFC<Props> = (props) => {
                 </span>
                 {props.status === InternalTrainingStatus.Failed && props.failureMessage
                     && <TooltipHost content={props.failureMessage}>
-                        <Icon iconName="Info" className="cl-icon" />
+                        <Icon iconName="Info" className="cl-icon" data-testid="training-status-failed" />
                     </TooltipHost>}
                 {props.didPollingExpire
                     && <TooltipHost

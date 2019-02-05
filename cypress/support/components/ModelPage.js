@@ -31,18 +31,22 @@ var canRefreshTrainingStatusTime = 0
 export function WaitForTrainingStatusCompleted() {
   var currentHtml = Cypress.$('html')[0].outerHTML
   var currentTime = new Date().getTime()
-  if (currentHtml.includes('data-testid="training-status-polling-stopped-warning"') &&
-    (currentTime > canRefreshTrainingStatusTime)) {
+  if ((currentHtml.includes('data-testid="training-status-polling-stopped-warning"') ||
+      currentHtml.includes('data-testid="training-status-failed"')) &&
+      (currentTime > canRefreshTrainingStatusTime)) {
     canRefreshTrainingStatusTime = currentTime + (2 * 1000)
 
     // When we get here it is possible there are two refresh buttons on the page, one that
     // is covered up by a popup dialog. Unfortunately the .click() function can take only
     // one element to click on, so this code is an attempt to deal with that issue.
-    cy.get('[data-testid="training-status-refresh-button"]').then((elements) => { cy.wrap(elements[elements.length - 1]).click() })
+    //cy.get('[data-testid="training-status-refresh-button"]').then((elements) => { cy.wrap(elements[elements.length - 1]).click() })
+    var elements = Cypress.$('[data-testid="training-status-refresh-button"]');
+    Cypress.$(elements[elements.length - 1]).click();
 
     // The reason we need to call this method once again using cy.WaitForTrainingStatusCompleted()
-    // is because the .click() function causes the time out to change to a default of 4 seconds
-    cy.WaitForTrainingStatusCompleted()
+    // is because the .click() function causes the time out to change to the default of 4 seconds.
+    //cy.WaitForTrainingStatusCompleted()
+    //setTimeout(WaitForTrainingStatusCompleted, 50)
   }
   expect(currentHtml.includes('data-testid="training-status-completed"')).to.equal(true)
 }
