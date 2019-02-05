@@ -88,7 +88,7 @@ export function AddToCypressTestList(testList) {
   
   var testListIterator = new TestListIterator(testList);
   
-  var test = testListIterator.next;
+  var test = testListIterator.next();
   while (test != undefined)
   {
     helpers.ConLog(funcName, `Adding Group: ${test.group}`);
@@ -99,7 +99,7 @@ export function AddToCypressTestList(testList) {
         helpers.ConLog(funcName, `Adding Test Case: ${test.name}`);
         Cypress.PersistentLogs.RegisterTestCase(test.group, test.name);
         it(test.description, test.func) 
-        test = testListIterator.next;
+        test = testListIterator.next();
       }
     })
   }
@@ -112,15 +112,7 @@ class TestListIterator {
     this.currentGroup = {name: ''};
   }
 
-  // TODO: This class needs to be brought up to standard - here is an example:
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator/next
-
-  // groupName.testName - 'testName' from 'groupName'
-  // TODO: Add support for these wild card versions
-  // *.*                - All Groups, All Tests
-  // *.testName         - All tests with all groups matching 'testName'
-  // groupName.*        - All tests from 'groupName'
-  get next() {
+  next() {
     if (this.index >= this.testList.length) return undefined;
 
     var x = this.testList[this.index].split('.');
