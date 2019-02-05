@@ -64,7 +64,7 @@ function TestCase(testGroupName, testDescription, testFunction) {
   var testFunctionName = testFunctionAsString.substring(functionPrefixLength, testFunctionAsString.indexOf('(', functionPrefixLength));
   helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunctionName})`);
   
-  var testGroup = GetTestGroup(testGroupName);
+  var testGroup = FindTestGroup(testGroupName);
   if (!testGroup)
   {
     testGroup = { name: testGroupName, tests: new Array() };
@@ -121,11 +121,11 @@ class TestListIterator {
     var testName = x[1];
 
     if (this.currentGroup.name != groupName) {
-      this.currentGroup = GetTestGroup(groupName);
+      this.currentGroup = FindTestGroup(groupName);
       if (this.currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`;
     }
     
-    var test = GetTest(this.currentGroup, testName);
+    var test = FindTest(this.currentGroup, testName);
     if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`;
 
     this.index++;
@@ -138,10 +138,10 @@ class TestListIterator {
   }
 }
 
-function GetTestGroup(name) {
+function FindTestGroup(name) {
   return testGroups.find(testGroup => testGroup.name === name);
 }
 
-function GetTest(testGroup, testNameToFind) {
+function FindTest(testGroup, testNameToFind) {
   return testGroup.tests.find(test => test.name == testNameToFind);
 }
