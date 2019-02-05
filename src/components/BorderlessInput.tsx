@@ -18,22 +18,19 @@ class component extends React.Component<Props> {
     }
 
     onFocusInput = () => {
-        console.log(`onClickInput`)
         this.setState({
             active: true
         })
     }
 
     onBlurInput = () => {
-        console.log(`onBlur`)
         this.setState({
             active: false
         })
     }
 
     onChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const inputValue = event.target.value
-        this.props.onChange(inputValue)
+        this.props.onChange(event.target.value)
     }
     
     render () {
