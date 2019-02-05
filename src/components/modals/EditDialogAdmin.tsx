@@ -21,7 +21,7 @@ import { EditDialogType, EditState } from '.'
 import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import TrainingStatusContainer from '../TrainingStatusContainer'
-import TagsInput from '../Tags'
+import TagsInput from '../TagsInput'
 import BorderlessInput from '../BorderlessInput'
 import './EditDialogAdmin.css'
 

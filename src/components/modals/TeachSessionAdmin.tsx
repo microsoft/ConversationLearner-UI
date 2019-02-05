@@ -20,7 +20,7 @@ import TrainingStatusContainer from '../TrainingStatusContainer'
 import * as OF from 'office-ui-fabric-react'
 import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import TagsInput from '../Tags'
+import TagsInput from '../TagsInput'
 import BorderlessInput from '../BorderlessInput'
 
 import './TeachSessionAdmin.css'

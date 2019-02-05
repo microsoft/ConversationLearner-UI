@@ -19,7 +19,7 @@ import FormattedMessageId from '../../../components/FormattedMessageId'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
-import TagsDisplay from '../../../components/TagsDisplay'
+import TagsReadOnly from '../../../components/TagsReadOnly'
 import * as moment from 'moment'
 
 export interface EditHandlerArgs {
@@ -97,7 +97,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: equalizeColumnWidth,
             isResizable: true,
             isSortedDescending: true,
-            render: trainDialog => <TagsDisplay className={textClassName(trainDialog)} tags={trainDialog.tags} />,
+            render: trainDialog => <TagsReadOnly className={textClassName(trainDialog)} tags={trainDialog.tags} />,
             getSortValue: trainDialog => trainDialog.tags.join(' ')
         },
         {

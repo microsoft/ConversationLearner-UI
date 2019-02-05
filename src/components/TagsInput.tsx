@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
-import './Tags.css'
+import './TagsInput.css'
 
 interface Props extends React.HTMLProps<HTMLDivElement> {
     tags: string[]
