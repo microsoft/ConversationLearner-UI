@@ -1,0 +1,14 @@
+.cl-tags-display {
+    clear: both;
+}
+
+.cl-tags-display__tag {
+    float: left;
+    margin-right: 0.5em;
+    padding: 0 0.5em;
+    background-color: var(--color-themeLight);
+}
+
+.cl-tags-display__clearfix {
+    clear: both;
+}

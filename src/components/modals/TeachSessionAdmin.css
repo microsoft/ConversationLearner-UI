@@ -1,1 +1,9 @@
+.cl-field {
+    display: grid;
+    grid-template: auto / max-content 1fr;
+    grid-gap: 0.5rem;
+}
 
+.cl-field label[for="description"] {
+    padding: 0.225em 0;
+}

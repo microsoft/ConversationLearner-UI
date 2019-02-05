@@ -20,6 +20,9 @@ import TrainingStatusContainer from '../TrainingStatusContainer'
 import * as OF from 'office-ui-fabric-react'
 import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import TagsInput from '../Tags'
+import BorderlessInput from '../BorderlessInput'
+
 import './TeachSessionAdmin.css'
 
 interface RoundLookup {
@@ -296,23 +299,37 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const isEndSessionAvailable = !this.props.selectedActivityIndex || this.props.isLastActivitySelected
 
         return (
-            <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
-                <div className="cl-ux-flexpanel">
-                    <div className="cl-ux-flexpanel--primary">
-                        <div className="cl-ux-flexpanel--left" style={{ width: '65%' }}>
-                            <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
-                                <OF.Icon
-                                    iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
-                                />
-                                {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
-                            </div>
+            <div className={`cl-dialog-admin`}>
+                <div className="cl-dialog-admin__header">
+                    <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.xxLarge}`}>
+                        <OF.Icon
+                            iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
+                        />
+                        {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                    </div>
+                    <div className={`cl-dialog-tags ${OF.FontClassNames.mediumPlus}`}>
+                        <div className="cl-field">
+                            <label htmlFor="tags">Tags:</label>
+                            <TagsInput
+                                id="tags"
+                                tags={this.props.tags}
+                                onAdd={this.props.onAddTag}
+                                onRemove={this.props.onRemoveTag}
+                            />
                         </div>
-                        <div className="cl-ux-flexpanel--right" style={{ width: '35%', marginRight: '3em' }}>
-                            <TrainingStatusContainer
-                                app={this.props.app}
+                        <div className="cl-field">
+                            <label htmlFor="description">Description:</label>
+                            <BorderlessInput
+                                id="description"
+                                placeholder="Click on to add description"
+                                value={this.props.description}
+                                onChange={this.props.onChangeDescription}
                             />
                         </div>
                     </div>
+                    <TrainingStatusContainer
+                        app={this.props.app}
+                    />
                 </div>
                 {(renderData.dialogMode === CLM.DialogMode.Extractor || renderData.dialogMode === CLM.DialogMode.Wait) &&
                     (
@@ -465,6 +482,13 @@ export interface ReceivedProps {
     selectedActivityIndex: number | null
     isLastActivitySelected: boolean,
     historyRenderData: (() => DialogUtils.DialogRenderData) | null
+
+    tags: string[]
+    onAddTag: (tag: string) => void
+    onRemoveTag: (tag: string) => void
+
+    description: string
+    onChangeDescription: (description: string) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

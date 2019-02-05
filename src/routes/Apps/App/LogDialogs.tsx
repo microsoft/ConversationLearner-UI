@@ -806,6 +806,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
         let trainDialogWithDefinitions: CLM.TrainDialog = {
+            ...trainDialog,
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
             trainDialogId: undefined!,
@@ -819,7 +820,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 actions: this.props.actions,
                 entities: this.props.entities,
                 trainDialogs: []
-            },
+            }
         };
 
         ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)

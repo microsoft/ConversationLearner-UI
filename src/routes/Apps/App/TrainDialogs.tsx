@@ -10,7 +10,6 @@ import * as OF from 'office-ui-fabric-react'
 import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../Utils/util'
-import * as ValidityUtils from '../../../Utils/validityUtils'
 import * as DialogUtils from '../../../Utils/dialogUtils'
 import { SelectionType } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState } from '../../../components/modals'
@@ -20,6 +19,7 @@ import FormattedMessageId from '../../../components/FormattedMessageId'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
+import TagsDisplay from '../../../components/TagsDisplay'
 import * as moment from 'moment'
 
 export interface EditHandlerArgs {
@@ -71,18 +71,6 @@ function textClassName(trainDialog: CLM.TrainDialog): string {
     return OF.FontClassNames.mediumPlus!;
 }
 
-function getFirstInput(trainDialog: CLM.TrainDialog): string | void {
-    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
-        return trainDialog.rounds[0].extractorStep.textVariations[0].text
-    }
-}
-
-function getLastInput(trainDialog: CLM.TrainDialog): string | void {
-    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
-        return trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
-    }
-}
-
 function getLastResponse(trainDialog: CLM.TrainDialog, component: TrainDialogs): string | void {
     // Find last action of last scorer step of last round
     // If found, return payload, otherwise return not found icon
@@ -102,51 +90,25 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     let equalizeColumnWidth = window.innerWidth / 6
     return [
         {
-            key: 'firstInput',
-            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_FIRSTINPUT),
-            fieldName: 'firstInput',
+            key: `tags`,
+            name: `Tags`,
+            fieldName: `Tags`,
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
             isResizable: true,
             isSortedDescending: true,
-            render: trainDialog => {
-                let firstInput = getFirstInput(trainDialog);
-                if (firstInput) {
-                    return (<span className={textClassName(trainDialog)} data-testid="train-dialogs-first-input">
-                        {trainDialog.validity && trainDialog.validity !== CLM.Validity.VALID &&
-                            <OF.Icon
-                                className={`cl-icon ${ValidityUtils.validityColorClassName(trainDialog.validity)}`}
-                                iconName="IncidentTriangle"
-                            />
-                        }
-                        {firstInput}
-                    </span>)
-                }
-                return <OF.Icon iconName="Remove" className="notFoundIcon" />
-            },
-            getSortValue: trainDialog => {
-                let firstInput = getFirstInput(trainDialog)
-                return firstInput ? firstInput.toLowerCase() : ''
-            }
+            render: trainDialog => <TagsDisplay className={textClassName(trainDialog)} tags={trainDialog.tags} />,
+            getSortValue: trainDialog => trainDialog.tags.join(' ')
         },
         {
-            key: 'lastInput',
-            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_LASTINPUT),
-            fieldName: 'lastInput',
+            key: `description`,
+            name: `Description`,
+            fieldName: 'description',
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
             isResizable: true,
-            render: trainDialog => {
-                let lastInput = getLastInput(trainDialog)
-                if (lastInput) {
-                    return <span className={textClassName(trainDialog)} data-testid="train-dialogs-last-input">{lastInput}</span>
-                }
-                return <OF.Icon iconName="Remove" className="notFoundIcon" />
-            },
-            getSortValue: trainDialog => {
-                let lastInput = getLastInput(trainDialog)
-                return lastInput ? lastInput.toLowerCase() : ''
-            }
+            render: trainDialog => <span className={textClassName(trainDialog)}>{trainDialog.description || `Open dialog to add description`}</span>,
+            getSortValue: trainDialog => trainDialog.description
         },
         {
             key: 'lastResponse',
@@ -408,8 +370,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onCloseTeachSession(save: boolean) {
-
+    onCloseTeachSession(save: boolean, tags: string[] = [], description: string = '') {
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session unless it was already closed with and EndSessionAction
             if (this.props.teachSession.dialogMode !== CLM.DialogMode.EndSession) {
@@ -417,7 +378,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     // If source was a trainDialog, delete the original
                     let sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
                         ? this.state.currentTrainDialog.trainDialogId : null;
-                    this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, null)
+                    this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, null, tags, description)
                 }
                 else {
                     this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
@@ -985,6 +946,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
         this.props.clearWebchatScrollPosition()
         let trainDialogWithDefinitions: CLM.TrainDialog = {
+            ...trainDialog,
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
             trainDialogId: undefined!,

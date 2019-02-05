@@ -504,10 +504,14 @@ export default class ClClient {
     }
 
     // DELETE_TEACH_SESSION_ASYNC
-    teachSessionDelete(appId: string, teachSession: CLM.Teach, save: boolean): Promise<void> {
+    teachSessionDelete(appId: string, teachSession: CLM.Teach, save: boolean, tags: string[], description: string): Promise<void> {
         return this.send({
-            method: 'delete',
-            url: `${this.baseUrl}/app/${appId}/teach/${teachSession.teachId}?save=${save}`
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/teach/${teachSession.teachId}/delete?save=${save}`,
+            data: {
+                tags,
+                description
+            }
         })
             .then(response => { })
     }

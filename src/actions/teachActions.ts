@@ -130,13 +130,16 @@ export const deleteTeachSessionThunkAsync = (
     packageId: string,
     save: boolean,
     sourceTrainDialogId: string | null,
-    sourceLogDialogId: string | null) => {
+    sourceLogDialogId: string | null,
+    tags: string[] = [],
+    description: string = ''
+) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTeachSessionAsync(key, teachSession, app.appId, save))
         const clClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
 
         try {
-            await clClient.teachSessionDelete(app.appId, teachSession, save);
+            await clClient.teachSessionDelete(app.appId, teachSession, save, tags, description);
             dispatch(deleteTeachSessionFulfilled(key, teachSession, sourceLogDialogId, app.appId));
 
             // If saving to a TrainDialog

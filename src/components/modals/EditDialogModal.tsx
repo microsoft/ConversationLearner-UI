@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as OF from 'office-ui-fabric-react'
 import * as DialogUtils from '../../Utils/dialogUtils'
-import { formatMessageId } from '../../Utils/util'
+import { formatMessageId, equal } from '../../Utils/util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import actions from '../../actions'
@@ -41,7 +41,9 @@ interface ComponentState {
     webchatKey: number
     hasEndSession: boolean
     currentTrainDialog: CLM.TrainDialog | null
-    pendingExtractionChanges: boolean,
+    pendingExtractionChanges: boolean
+    tags: string[]
+    description: string
 }
 
 const initialState: ComponentState = {
@@ -54,7 +56,9 @@ const initialState: ComponentState = {
     webchatKey: 0,
     hasEndSession: false,
     currentTrainDialog: null,
-    pendingExtractionChanges: false
+    pendingExtractionChanges: false,
+    tags: [],
+    description: '',
 }
 
 class EditDialogModal extends React.Component<Props, ComponentState> {
@@ -69,7 +73,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.open === false && nextProps.open === true) {
-            this.setState(initialState);
+            this.setState({
+                ...initialState,
+                tags: [...nextProps.trainDialog.tags],
+                description: nextProps.trainDialog.description
+            });
         }
         if (this.state.currentTrainDialog !== nextProps.trainDialog) {
 
@@ -552,35 +560,84 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return this.props.trainDialog.validity
     }
 
+    isDialogChanged() {
+        // Only occurs before dialog is open and doesn't have props setup
+        if (!this.props.trainDialog) {
+            return false
+        }
+
+        return this.state.description !== this.props.trainDialog.description
+            || !equal(this.state.tags, this.props.trainDialog.tags)
+    }
+
     @OF.autobind
     onClickConvert() {
         if (this.props.editType !== EditDialogType.LOG_ORIGINAL) {
             throw Error("Invalid Edit Type for onClickConvert")
         }
-        this.props.onSaveDialog(this.props.trainDialog, this.trainDialogValidity())
+
+        const trainDialog: CLM.TrainDialog = {
+            ...this.props.trainDialog,
+            tags: this.state.tags,
+            description: this.state.description
+        }
+        this.props.onSaveDialog(trainDialog, this.trainDialogValidity())
     }
 
     @OF.autobind
     onClickSave() {
+        const trainDialog: CLM.TrainDialog = {
+            ...this.props.trainDialog,
+            tags: this.state.tags,
+            description: this.state.description
+        }
+
+        const dialogChanged = this.isDialogChanged()
+        if (dialogChanged) {
+            this.props.onSaveDialog(trainDialog, this.trainDialogValidity())
+            return
+        }
+
         switch (this.props.editType) {
             case EditDialogType.NEW:
             case EditDialogType.BRANCH:
-                this.props.onCreateDialog(this.props.trainDialog, this.trainDialogValidity())
+                this.props.onCreateDialog(trainDialog, this.trainDialogValidity())
                 break;
             case EditDialogType.LOG_EDITED:
-                this.props.onSaveDialog(this.props.trainDialog, this.trainDialogValidity())
+                this.props.onSaveDialog(trainDialog, this.trainDialogValidity())
                 break;
             case EditDialogType.LOG_ORIGINAL:
                 this.props.onCloseModal(false)  // false - No need to reload original
                 break;
             case EditDialogType.TRAIN_EDITED:
-                this.props.onSaveDialog(this.props.trainDialog, this.trainDialogValidity())
+                this.props.onSaveDialog(trainDialog, this.trainDialogValidity())
                 break;
             case EditDialogType.TRAIN_ORIGINAL:
                 this.props.onCloseModal(false)  // false - No need to reload original
                 break;
             default:
         }
+    }
+
+    @OF.autobind
+    onAddTag(tag: string) {
+        this.setState(prevState => ({
+            tags: [...prevState.tags, tag]
+        }))
+    }
+
+    @OF.autobind
+    onRemoveTag(tag: string) {
+        this.setState(prevState => ({
+            tags: prevState.tags.filter(t => t !== tag)
+        }))
+    }
+
+    @OF.autobind
+    onChangeDescription(description: string) {
+        this.setState({
+            description
+        })
     }
 
     isCloseOrSaveBlocked(hasBlockingError: boolean): boolean {
@@ -601,6 +658,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     renderCloseOrSaveText(intl: ReactIntl.InjectedIntl) {
+        const dialogChanged = this.isDialogChanged()
+        if (dialogChanged) {
+            return formatMessageId(intl, FM.BUTTON_SAVE_EDIT)
+        }
+
         switch (this.props.editType) {
             case EditDialogType.NEW:
                 return formatMessageId(intl, FM.BUTTON_SAVE)
@@ -822,6 +884,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onChangeAction={(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
+
+                                    tags={this.state.tags}
+                                    onAddTag={this.onAddTag}
+                                    onRemoveTag={this.onRemoveTag}
+
+                                    description={this.state.description}
+                                    onChangeDescription={this.onChangeDescription}
                                 />
                             </div>
                             {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay" />}

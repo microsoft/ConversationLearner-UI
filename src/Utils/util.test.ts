@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { replace } from './util'
+import { replace, equal } from './util'
 
 describe('util', () => {
     describe('replace', () => {
@@ -18,6 +18,56 @@ describe('util', () => {
             // Assert
             expect(actual).not.toBe(expected)
             expect(actual).toEqual(expected)
+        })
+    })
+
+    describe('equal', () => {
+        test('given arrays of different length return false', () => {
+            // Arrange
+            const as = [1,2,3]
+            const bs = [1,2]
+
+            // Act
+            const actual = equal(as, bs)
+
+            // Assert
+            expect(actual).toBe(false)
+        })
+
+        test('given arrays of same length but different items return false', () => {
+            // Arrange
+            const as = [1,2,3]
+            const bs = [1,2,4]
+
+            // Act
+            const actual = equal(as, bs)
+
+            // Assert
+            expect(actual).toBe(false)
+        })
+
+        test('given arrays of same length and values but different order return false', () => {
+            // Arrange
+            const as = [1,2,3]
+            const bs = [1,3,2]
+
+            // Act
+            const actual = equal(as, bs)
+
+            // Assert
+            expect(actual).toBe(false)
+        })
+
+        test('given two arrays with same values return true', () => {
+            // Arrange
+            const as = [1,2,3]
+            const bs = [1,2,3]
+
+            // Act
+            const actual = equal(as, bs)
+
+            // Assert
+            expect(actual).toBe(true)
         })
     })
 })
