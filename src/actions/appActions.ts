@@ -311,7 +311,7 @@ export const fetchApplicationsThunkAsync = (userId: string) => {
     }
 }
 
-const poller = new Poller({ interval: 400 })
+const poller = new Poller({ interval: 2000 })
 
 export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
     return async (dispatch: Dispatch<any>) => {
@@ -322,7 +322,7 @@ export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC)
         const pollConfig: IPollConfig<TrainingStatus> = {
             id: appId,
-            maxDuration: 8000,
+            maxDuration: 30000,
             request: async () => {
                 const trainingStatus = await clClient.appGetTrainingStatus(appId)
                 console.debug(`${new Date().getTime()} Poll app: ${appId}: `, trainingStatus.trainingStatus)
