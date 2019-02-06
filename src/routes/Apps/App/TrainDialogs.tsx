@@ -1022,18 +1022,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     getFilteredAndSortedDialogs(): CLM.TrainDialog[] {
         let filteredTrainDialogs: CLM.TrainDialog[] = []
 
-        if (!this.state.searchValue && !this.state.entityFilter && !this.state.actionFilter) {
+        if (!this.state.searchValue && !this.state.entityFilter && !this.state.actionFilter && !this.state.tagsFilter) {
             filteredTrainDialogs = this.props.trainDialogs;
         } else {
             // TODO: Consider caching as not very efficient
             filteredTrainDialogs = this.props.trainDialogs.filter((t: CLM.TrainDialog) => {
                 const entitiesInTD: CLM.EntityBase[] = []
                 const actionsInTD: CLM.ActionBase[] = []
-                const variationText: string[] = []
+                const textVariations: string[] = []
 
                 for (let round of t.rounds) {
                     for (let variation of round.extractorStep.textVariations) {
-                        variationText.push(variation.text);
+                        textVariations.push(variation.text);
                         for (let le of variation.labelEntities) {
                             // Include pos and neg examples of entity if reversable
                             const entity = this.props.entities.find(e => e.entityId === le.entityId)
@@ -1082,8 +1082,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     return false
                 }
 
-                let entityNames = entitiesInTD.map(e => e.entityName)
-                let actionPayloads = actionsInTD.map(a => {
+                const tagFilter = this.state.tagsFilter
+                if (tagFilter && tagFilter.key
+                    && !t.tags.map(t => t.toLowerCase()).includes(tagFilter.text.toLowerCase())) {
+                    return false
+                }
+
+                const entityNames = entitiesInTD.map(e => e.entityName)
+                const actionPayloads = actionsInTD.map(a => {
                     try {
                         return CLM.ActionBase.GetPayload(a, Util.getDefaultEntityMap(this.props.entities))
                     }
@@ -1094,7 +1100,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 })
 
                 // Then check search terms
-                let searchString = variationText.concat(actionPayloads).concat(entityNames).join(' ').toLowerCase()
+                const searchString = [
+                    ...textVariations,
+                    ...actionPayloads,
+                    ...entityNames,
+                    ...t.tags,
+                    t.description
+                ].join(' ').toLowerCase()
                 return searchString.indexOf(this.state.searchValue) > -1
             })
         }
@@ -1176,11 +1188,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
                                 label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
                                 selectedKey={(this.state.tagsFilter ? this.state.tagsFilter.key : -1)}
-                                onChanged={this.onSelectActionFilter}
+                                onChanged={this.onSelectTagsFilter}
                                 placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
-                                options={this.props.actions
-                                    .map(a => this.toActionFilter(a, this.props.entities))
-                                    .filter(s => s !== null)
+                                options={this.props.tags
+                                    .map<OF.IDropdownOption>((tag, i) => ({
+                                        key: i,
+                                        text: tag
+                                    }))
                                     .concat({ key: -1, text: Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
                                 }
                             />
@@ -1311,7 +1325,7 @@ const mapStateToProps = (state: State) => {
         entities: state.entities,
         trainDialogs: state.trainDialogs,
         teachSession: state.teachSession,
-        tags: [...new Set(state.trainDialogs.reduce((tags, trainDialog) => [...tags, ...trainDialog.tags], []))].map(t => ({ lowerCase: t.toLowerCase(), original: t }))
+        tags: [...new Set(state.trainDialogs.reduce((tags, trainDialog) => [...tags, ...trainDialog.tags], []))]
     }
 }
 
