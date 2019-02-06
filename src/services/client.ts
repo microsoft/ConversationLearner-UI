@@ -504,16 +504,15 @@ export default class ClClient {
     }
 
     // DELETE_TEACH_SESSION_ASYNC
-    teachSessionDelete(appId: string, teachSession: CLM.Teach, save: boolean, tags: string[], description: string): Promise<void> {
+    teachSessionDelete(appId: string, teachSession: CLM.Teach, save: boolean): Promise<string> {
         return this.send({
-            method: 'post',
-            url: `${this.baseUrl}/app/${appId}/teach/${teachSession.teachId}/delete?save=${save}`,
-            data: {
-                tags,
-                description
-            }
+            method: 'delete',
+            url: `${this.baseUrl}/app/${appId}/teach/${teachSession.teachId}?save=${save}`
         })
-            .then(response => { })
+            .then(response => {
+                console.log({ delete: response.data })
+                return response.data.trainDialogId
+            })
     }
 
     // filteredDialog = dialog to ignore when checking for conflicting labels

@@ -9,7 +9,7 @@ import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import * as CLM from '@conversationlearner/models'
 import { AxiosError } from 'axios'
-import { deleteTrainDialogThunkAsync, fetchAllTrainDialogsThunkAsync } from './trainActions'
+import { deleteTrainDialogThunkAsync, fetchTrainDialogThunkAsync, fetchAllTrainDialogsThunkAsync, editTrainDialogThunkAsync } from './trainActions'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 
 // --------------------------
@@ -139,7 +139,7 @@ export const deleteTeachSessionThunkAsync = (
         const clClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
 
         try {
-            await clClient.teachSessionDelete(app.appId, teachSession, save, tags, description);
+            const trainDialogId = await clClient.teachSessionDelete(app.appId, teachSession, save);
             dispatch(deleteTeachSessionFulfilled(key, teachSession, sourceLogDialogId, app.appId));
 
             // If saving to a TrainDialog
@@ -151,6 +151,17 @@ export const deleteTeachSessionThunkAsync = (
 
                 // If we're adding a new train dialog as consequence of the session save, refetch train dialogs and start poll for train status
                 dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
+
+                // The replace method inside train reducer relies on existence of item. It's not in the array we haven't fetched dialogs.
+                if (trainDialogId) {
+                    const trainDialog = await dispatch(fetchTrainDialogThunkAsync(app.appId, trainDialogId, false))
+                    if (trainDialog) {
+                        trainDialog.tags = tags
+                        trainDialog.description = description
+                        await dispatch(editTrainDialogThunkAsync(app.appId, trainDialog))
+                    }
+                }
+
                 dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
             }
 

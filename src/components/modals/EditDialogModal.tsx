@@ -593,27 +593,26 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         const dialogChanged = this.isDialogChanged()
-        if (dialogChanged) {
-            this.props.onSaveDialog(trainDialog, this.trainDialogValidity())
-            return
-        }
+        const trainDialogValidity = this.trainDialogValidity()
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
             case EditDialogType.BRANCH:
-                this.props.onCreateDialog(trainDialog, this.trainDialogValidity())
+                this.props.onCreateDialog(trainDialog, trainDialogValidity)
                 break;
             case EditDialogType.LOG_EDITED:
-                this.props.onSaveDialog(trainDialog, this.trainDialogValidity())
+                this.props.onSaveDialog(trainDialog, trainDialogValidity)
                 break;
             case EditDialogType.LOG_ORIGINAL:
                 this.props.onCloseModal(false)  // false - No need to reload original
                 break;
             case EditDialogType.TRAIN_EDITED:
-                this.props.onSaveDialog(trainDialog, this.trainDialogValidity())
+                this.props.onSaveDialog(trainDialog, trainDialogValidity)
                 break;
             case EditDialogType.TRAIN_ORIGINAL:
-                this.props.onCloseModal(false)  // false - No need to reload original
+                dialogChanged
+                    ? this.props.onSaveDialog(trainDialog, trainDialogValidity)
+                    : this.props.onCloseModal(false)  // false - No need to reload original
                 break;
             default:
         }

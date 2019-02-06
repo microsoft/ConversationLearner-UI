@@ -180,6 +180,7 @@ interface ComponentState {
     editType: EditDialogType
     searchValue: string,
     dialogKey: number,
+    tagsFilter: OF.IDropdownOption | null
     entityFilter: OF.IDropdownOption | null
     actionFilter: OF.IDropdownOption | null
     // Used to prevent screen from flashing when transition to Edit Page
@@ -206,6 +207,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             editType: EditDialogType.TRAIN_ORIGINAL,
             searchValue: '',
             dialogKey: 0,
+            tagsFilter: null,
             entityFilter: null,
             actionFilter: null,
             lastTeachSession: null
@@ -323,6 +325,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             text: entity.entityName,
             data: entity.negativeId
         }
+    }
+
+    @OF.autobind
+    onSelectTagsFilter(item: OF.IDropdownOption) {
+        this.setState({
+            tagsFilter: (item.key !== -1) ? item : null
+        })
     }
 
     @OF.autobind
@@ -910,7 +919,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             newTrainDialog.trainDialogId = this.state.originalTrainDialogId || newTrainDialog.trainDialogId
             newTrainDialog.definitions = null
 
-            await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TeachWithHistory>);
+            await this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog)
         }
         catch (error) {
             console.warn(`Error when attempting to replace an edited train dialog: `, error)
@@ -1163,6 +1172,20 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-list-filters">
                             <OF.Dropdown
+                                data-testid="dropdown-filter-by-tag"
+                                ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
+                                label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
+                                selectedKey={(this.state.tagsFilter ? this.state.tagsFilter.key : -1)}
+                                onChanged={this.onSelectActionFilter}
+                                placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
+                                options={this.props.actions
+                                    .map(a => this.toActionFilter(a, this.props.entities))
+                                    .filter(s => s !== null)
+                                    .concat({ key: -1, text: Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
+                                }
+                            />
+
+                            <OF.Dropdown
                                 data-testid="dropdown-filter-by-entity"
                                 ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
                                 label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
@@ -1191,18 +1214,20 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 }
                             />
                         </div>
-                        <OF.DetailsList
-                            data-testid="detail-list"
-                            key={this.state.dialogKey}
-                            className={OF.FontClassNames.mediumPlus}
-                            items={computedTrainDialogs}
-                            layoutMode={OF.DetailsListLayoutMode.justified}
-                            columns={this.state.columns}
-                            checkboxVisibility={OF.CheckboxVisibility.hidden}
-                            onColumnHeaderClick={this.onClickColumnHeader}
-                            onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
-                            onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
-                        />
+                        {computedTrainDialogs.length === 0
+                            ? <div><OF.Icon iconName="Warning" className="cl-icon" /> No dialogs match the search criteria</div>
+                            : <OF.DetailsList
+                                data-testid="detail-list"
+                                key={this.state.dialogKey}
+                                className={OF.FontClassNames.mediumPlus}
+                                items={computedTrainDialogs}
+                                layoutMode={OF.DetailsListLayoutMode.justified}
+                                columns={this.state.columns}
+                                checkboxVisibility={OF.CheckboxVisibility.hidden}
+                                onColumnHeaderClick={this.onClickColumnHeader}
+                                onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
+                                onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
+                            />}
                     </React.Fragment>}
                 {teachSession && teachSession.teach &&
                     <TeachSessionModal
@@ -1285,7 +1310,8 @@ const mapStateToProps = (state: State) => {
         actions: state.actions,
         entities: state.entities,
         trainDialogs: state.trainDialogs,
-        teachSession: state.teachSession
+        teachSession: state.teachSession,
+        tags: [...new Set(state.trainDialogs.reduce((tags, trainDialog) => [...tags, ...trainDialog.tags], []))].map(t => ({ lowerCase: t.toLowerCase(), original: t }))
     }
 }
 
