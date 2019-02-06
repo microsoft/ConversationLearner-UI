@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 
+import './PersistentLogs'
 import './MonitorDocumentChanges.js'
 import './commands.js'
 import './Train.js'
