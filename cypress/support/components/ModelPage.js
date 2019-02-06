@@ -38,7 +38,7 @@ export function WaitForTrainingStatusCompleted() {
       currentHtml.includes('data-testid="training-status-failed"')) &&
       (currentTime > canRefreshTrainingStatusTime)) {
         
-        // TODO: Remove after we have proof this is working.
+        // TODO: Remove after we have proof this function is working.
         if (currentHtml.includes('data-testid="training-status-failed"')) {
           helpers.ConLog('WaitForTrainingStatusCompleted', 'detected data-testid="training-status-failed"');
         }

@@ -24,6 +24,7 @@ var testLists = require('../TestLists');
 const helpers = require('./Helpers');
 
 Cypress.TestCase = TestCase;
+Cypress.loopCount = testLists.loopCount;
 Cypress.testList = testLists.testList;
 Cypress.regressionTestList = testLists.regressionTestList;
 Cypress.masterListOfAllTestCases = testLists.masterListOfAllTestCases;
