@@ -11,13 +11,12 @@ class component extends React.Component<Props> {
         return (
             <div className={`cl-tags-readonly ${this.props.className}`}>
                 {tags.length === 0
-                    ? `0 tags`
+                    ? <div className="cl-tags-readonly__empty">No tags</div>
                     : tags.map((tag, i) =>
                     <div className="cl-tags-readonly__tag" key={i}>
                         {tag}
                     </div>
                 )}
-                <span className="cl-tags-readonly__clearfix"></span>
             </div>
         )
     }

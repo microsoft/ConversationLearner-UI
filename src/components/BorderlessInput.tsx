@@ -43,6 +43,7 @@ class component extends React.Component<Props> {
                 onChange={this.onChangeInput}
                 onFocus={this.onFocusInput}
                 onBlur={this.onBlurInput}
+                autoComplete="off"
             />
         )
     }

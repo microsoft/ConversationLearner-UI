@@ -38,7 +38,15 @@ class component extends React.Component<Props, State> {
     }
 
     onBlurInput = () => {
+        const tag = this.state.inputValue
+
+        // If user accidentally clicked away before submission still save tag
+        if (tag.length > 0) {
+            this.props.onAdd(tag)
+        }
+
         this.setState({
+            inputValue: '',
             showForm: false
         })
     }
@@ -77,6 +85,7 @@ class component extends React.Component<Props, State> {
                         value={this.state.inputValue}
                         onChange={this.onChangeInput}
                         onBlur={this.onBlurInput}
+                        autoComplete="off"
                     />
                 </form>
                 }
