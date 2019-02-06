@@ -64,14 +64,14 @@ function TestCase(testGroupName, testDescription, testFunction) {
   var testFunctionName = testFunctionAsString.substring(functionPrefixLength, testFunctionAsString.indexOf('(', functionPrefixLength));
   helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunctionName})`);
   
-  var testGroup = GetTestGroup(testGroupName);
+  var testGroup = FindTestGroup(testGroupName);
   if (!testGroup)
   {
     testGroup = { name: testGroupName, tests: new Array() };
     testGroups.push(testGroup);
   }
 
-  var test = { name: testDescription, func: testFunction };
+  var test = { name: testFunctionName, description: testDescription, func: testFunction };
   testGroup.tests.push(test);
 
   var testSpecification = `${testGroupName}.${testFunctionName}`;
@@ -97,7 +97,8 @@ export function AddToCypressTestList(testList) {
       while (test != undefined && test.group == currentGroupName)
       {
         helpers.ConLog(funcName, `Adding Test Case: ${test.name}`);
-        it(test.name, test.func);
+        Cypress.PersistentLogs.RegisterTestCase(test.group, test.name);
+        it(test.description, test.func) 
         test = testListIterator.next();
       }
     })
@@ -111,11 +112,6 @@ class TestListIterator {
     this.currentGroup = {name: ''};
   }
 
-  // groupName.testName - 'testName' from 'groupName'
-  // TODO: Add support for these wild card versions
-  // *.*                - All Groups, All Tests
-  // *.testName         - All tests with all groups matching 'testName'
-  // groupName.*        - All tests from 'groupName'
   next() {
     if (this.index >= this.testList.length) return undefined;
 
@@ -125,22 +121,27 @@ class TestListIterator {
     var testName = x[1];
 
     if (this.currentGroup.name != groupName) {
-      this.currentGroup = GetTestGroup(groupName);
+      this.currentGroup = FindTestGroup(groupName);
       if (this.currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`;
     }
     
-    var test = GetTest(this.currentGroup, testName);
+    var test = FindTest(this.currentGroup, testName);
     if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`;
 
     this.index++;
-    return {group: this.currentGroup.name, name: test.name, func: test.func};
+    return {
+      group: this.currentGroup.name, 
+      name: test.name, 
+      description: test.description, 
+      func: test.func
+    };
   }
 }
 
-function GetTestGroup(name) {
+function FindTestGroup(name) {
   return testGroups.find(testGroup => testGroup.name === name);
 }
 
-function GetTest(testGroup, testNameToFind) {
-  return testGroup.tests.find(test => test.func.toString().substring(9).startsWith(testNameToFind));
+function FindTest(testGroup, testNameToFind) {
+  return testGroup.tests.find(test => test.name == testNameToFind);
 }

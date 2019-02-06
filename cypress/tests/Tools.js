@@ -14,7 +14,7 @@ export function VisitHomePage()
   homePage.GetModelListRowCount()
 }
 
-Cypress.TestCase('Tools', 'CreateModel', CreateModel)
+Cypress.TestCase('Tools', 'Create Model', CreateModel)
 export function CreateModel(name = 'z-model')
 {
   models.CreateNewModel(name)
