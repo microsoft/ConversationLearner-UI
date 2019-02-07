@@ -149,7 +149,7 @@ var MonitorDocumentChanges = (function () {
     helpers.ConLog(`MonitorDocumentChanges.initialize()`, `Running`)
   }
 
-  var dumpSpinner = false
+  var dumpSpinner = true;
   function LookForChange(loop) {
     var thisFuncName = `MonitorDocumentChanges.LookForChange()`
 

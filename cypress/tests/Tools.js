@@ -35,24 +35,24 @@ export function DeleteAllTestGeneratedModels()
 
 function DeleteAllTestGeneratedModelRows() 
 {
-  var thisFuncName = `DeleteAllTestGeneratedModelRows`
-  var modelNameIdList = homePage.GetModelNameIdList()
-
-  modelNameIdList.forEach(modelNameId => 
-  {
-    if (modelNameId.name.startsWith('z-')) 
+  let thisFuncName = `DeleteAllTestGeneratedModelRows`;
+  cy.Enqueue(() => { return homePage.GetModelNameIdList(); } ).then(modelNameIdList => {
+    modelNameIdList.forEach(modelNameId => 
     {
-      helpers.ConLog(thisFuncName, `Sending Request to Delete Model: ${modelNameId.name}`)
-      cy.request(
-      { 
-        url: `http://localhost:3978/sdk/app/${modelNameId.id}`, 
-        method: "DELETE", 
-        headers: { 'x-conversationlearner-memory-key': 'x' } 
-      }).then(resp => 
-      { 
-        helpers.ConLog(thisFuncName, `Response Status: ${resp.status} - Model: ${modelNameId.name}`); 
-        expect(resp.status).to.eq(200)
-      })
-    }
+      if (modelNameId.name.startsWith('z-')) 
+      {
+        helpers.ConLog(thisFuncName, `Sending Request to Delete Model: ${modelNameId.name}`)
+        cy.request(
+        { 
+          url: `http://localhost:3978/sdk/app/${modelNameId.id}`, 
+          method: "DELETE", 
+          headers: { 'x-conversationlearner-memory-key': 'x' } 
+        }).then(resp => 
+        { 
+          helpers.ConLog(thisFuncName, `Response Status: ${resp.status} - Model: ${modelNameId.name}`); 
+          expect(resp.status).to.eq(200)
+        })
+      }
+    })
   })
 }
