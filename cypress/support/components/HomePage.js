@@ -27,6 +27,7 @@ export function GetModelListRowCount() {
 
 export function GetModelNameIdList() {
   // Scroll to the bottom of the screen so all models loads.
+  // However, it appear
   cy.scrollTo('bottomLeft', { duration: 5000, easing: 'linear' });
   cy.WaitForStableDOM();
   cy.wait(2000);

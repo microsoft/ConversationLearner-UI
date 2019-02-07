@@ -36,7 +36,7 @@ export function StringArrayFromElementText(selector, retainMarkup = false) {
 export function NumericArrayFromElementText(selector) {
   var elements = Cypress.$(selector)
   var returnValues = new Array()
-  for (var i = 0; i < elements.length; i++) { returnValues.push(Number(elements[i].innerText)) }
+  for (var i = 0; i < elements.length; i++) { returnValues.push(parseInt(elements[i].innerText)) }
   return returnValues
 }
 
