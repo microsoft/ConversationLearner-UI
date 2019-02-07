@@ -50,5 +50,5 @@ export function WaitForTrainingStatusCompleted() {
     var elements = Cypress.$('[data-testid="training-status-refresh-button"]');
     Cypress.$(elements[elements.length - 1]).click();
   }
-  expect(currentHtml.includes('data-testid="training-status-completed"')).to.equal(true);
+  expect(currentHtml.includes('data-testid="training-status-completed"')).to.be.true;
 }

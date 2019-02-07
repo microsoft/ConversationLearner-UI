@@ -33,6 +33,7 @@ export const regressionTestList = [
   'EditAndBranching.TagAndFrog',
   'EditAndBranching.TwoConsecutiveUserInputErrorHandling',
   'EditAndBranching.WaitNonWaitErrorHandling',
+  'EditAndBranching.AddEndSessionAction',
   'Log.WhatsYourName',
   'Train.DisqualifyingEntities',
   'Train.WaitVsNoWaitActions',
@@ -41,6 +42,7 @@ export const regressionTestList = [
 //  'Train.TagAndFrog',
 //  'Train.BookMeAFlight',
   'Tools.DeleteAllTestGeneratedModels',
+  'UX.BotModelMismatch',
 ];
 
 // ************ Generated Code Beyond this Point *************************
