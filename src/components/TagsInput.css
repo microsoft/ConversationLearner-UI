@@ -1,8 +1,7 @@
 .cl-tags {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: max-content;
-    grid-gap: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    margin: -5px 0 0 -5px;
 }
 
 .cl-tags i,
@@ -19,6 +18,8 @@
 }
 
 .cl-tags__tag {
+    margin-top: 5px;
+    margin-left: 5px;
     background-color: var(--color-themeLight);
     display: grid;
     grid-template: auto / auto min-content;
@@ -29,6 +30,7 @@
 .cl-tags__tag button {
     background-color: inherit;
     padding: 0 0.25em;
+    cursor: pointer;
 }
 .cl-tags__tag button:hover,
 .cl-tags .cl-tags__button-add:hover {
@@ -39,4 +41,11 @@
     padding: 0 0.25rem;
     background-color: var(--color-themeLight);
     cursor: pointer;
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.cl-tags__form {
+    margin-top: 5px;
+    margin-left: 5px;
 }

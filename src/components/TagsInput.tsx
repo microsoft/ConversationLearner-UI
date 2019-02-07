@@ -78,7 +78,7 @@ class component extends React.Component<Props, State> {
                         ? 'Add Tag'
                         : <OF.Icon iconName="Add" />}
                     </button>
-                    : <form onSubmit={this.onSubmit}>
+                    : <form onSubmit={this.onSubmit} className="cl-tags__form">
                     <input type="text"
                         ref={this.inputRef}
                         id={this.props.id}

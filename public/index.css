@@ -824,7 +824,7 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 }
 .cl-dialog-admin__header {
   display: grid;
-  grid-template: auto / max-content minmax(max-content, 1fr) minmax(214px, max-content);
+  grid-template: auto / max-content minmax(min-content, 1fr) minmax(214px, max-content);
   grid-gap: 1rem;
 }
 .cl-dialog-admin__content {
