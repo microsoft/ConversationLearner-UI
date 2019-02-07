@@ -21,31 +21,22 @@ export function RemoveDuplicates(inputArray) {
   return uniqueOutputArray
 }
 
-export function RemoveMarkup(stringWithHtml) {
-  var tempDocument = document.createElement("div")
-  tempDocument.innerHTML = stringWithHtml
-  var stringToReturn = tempDocument.textContent || tempDocument.innerText || ''
-  stringToReturn.replace('\u200B', '') // zero width space
-  stringToReturn = stringToReturn.trim()
-  return stringToReturn
-}
-
-export function StringArrayFromInnerHtml(selector, removeMarkup = true) {
+export function StringArrayFromElementText(selector, retainMarkup = false) {
   var elements = Cypress.$(selector)
-  ConLog(`StringArrayFromInnerHtml(${selector})`, elements.length)
+  ConLog(`StringArrayFromElementText(${selector})`, elements.length)
   var returnValues = new Array()
   for (var i = 0; i < elements.length; i++) {
-    if (removeMarkup) returnValues.push(RemoveMarkup(elements[i].innerHTML))
-    else returnValues.push(elements[i].innerHTML)
-    ConLog(`StringArrayFromInnerHtml(${selector})`, returnValues[i])
+    if (retainMarkup) returnValues.push(elements[i].innerHTML)
+    else returnValues.push(elements[i].innerText)
+    ConLog(`StringArrayFromElementText(${selector})`, returnValues[i])
   }
   return returnValues
 }
 
-export function NumericArrayFromInnerHtml(selector) {
+export function NumericArrayFromElementText(selector) {
   var elements = Cypress.$(selector)
   var returnValues = new Array()
-  for (var i = 0; i < elements.length; i++) { returnValues.push(Number(elements[i].innerHTML)) }
+  for (var i = 0; i < elements.length; i++) { returnValues.push(Number(elements[i].innerText)) }
   return returnValues
 }
 

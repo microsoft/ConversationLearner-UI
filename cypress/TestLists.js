@@ -59,6 +59,7 @@ export const masterListOfAllTestCases = [
   'EditAndBranching.TagAndFrog',
   'EditAndBranching.TwoConsecutiveUserInputErrorHandling',
   'EditAndBranching.WaitNonWaitErrorHandling',
+  'EditAndBranching.AddEndSessionAction',
   'Log.WhatsYourName',
   'Log.EndlessLoop',
   'Log.EndlessLoopX',

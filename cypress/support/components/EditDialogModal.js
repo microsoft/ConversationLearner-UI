@@ -18,7 +18,7 @@ export function EntitySearch() { cy.Get('[data-testid="entity-picker-entity-sear
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
-export function GetAllChatMessages() { return helpers.StringArrayFromInnerHtml(AllChatMessagesSelector) }
+export function GetAllChatMessages() { return helpers.StringArrayFromElementText(AllChatMessagesSelector) }
 export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error > div > span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error > div > span') }
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="edit-dialog-modal-delete-turn-button"]').Click() }
@@ -60,7 +60,7 @@ export function SelectChatTurn(message, index = 0) {
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (var i = 0; i < elements.length; i++) {
       helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
-      if (helpers.RemoveMarkup(elements[i].innerHTML) == message) {
+      if (elements[i].innerText == message) {
         if (index > 0) index--
         else {
           helpers.ConLog(funcName, `FOUND!`)
@@ -253,7 +253,7 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
         // so we need to confirm that we actually need to click on the action, 
         // otherwise an unnecessary message box pops up that we don't want to deal with.
 
-        var chatMessages = helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)
+        var chatMessages = helpers.StringArrayFromElementText(AllChatMessagesSelector)
         var indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1;
         if (chatMessages[indexOfInsertedBotResponse] != newMessage)
           scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)

@@ -61,15 +61,6 @@ Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expect
   throw `Exact Match '${expectedText}' NOT Found`
 })
 
-Cypress.Commands.add('ExactMatchComplexHTML', { prevSubject: 'element' }, (elements, expectedText) => {
-  // helpers.ConLog(`ExactMatchComplexHTML('${expectedText}')`, `Start`)
-  for (var i = 0; i < elements.length; i++) {
-    //helpers.ConLog(`ExactMatchComplexHTML('${expectedText}')`, `With Markup: ${Cypress.$(elements[i]).parent().html()} -- Without Markup: '${helpers.RemoveMarkup(Cypress.$(elements[i]).parent().html())}'`)
-    if (helpers.RemoveMarkup(Cypress.$(elements[i]).parent().html()) == expectedText) return elements[i]
-  }
-  throw `ExactMatchComplexHTML '${expectedText}' NOT Found`
-})
-
 Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expectedText) => {
   helpers.ConLog(`ExactMatches('${expectedText}')`, `Start`)
   var returnElements = new Array()

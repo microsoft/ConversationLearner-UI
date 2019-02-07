@@ -162,8 +162,7 @@ var MonitorDocumentChanges = (function () {
     var currentHtml = Cypress.$('html')[0].outerHTML
     if (currentHtml != lastHtml) {
       helpers.ConLog(thisFuncName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
-      if (dumpHtml || expectingSpinner)
-        helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
+      if (dumpHtml) { helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`); }
 
       lastChangeTime = currentTime
       lastHtml = currentHtml
@@ -189,7 +188,7 @@ var MonitorDocumentChanges = (function () {
         SetExpectingSpinner(false)
 
         if (spinnerTexts[i] != currentSpinnerText) {
-          helpers.ConLog(thisFuncName, `Start - ${spinnerTexts[i]} - current HTML:\n${lastHtml}`)
+          if (dumpHtml) { helpers.ConLog(thisFuncName, `Start - ${spinnerTexts[i]} - current HTML:\n${lastHtml}`); }
           currentSpinnerText = spinnerTexts[i]
         }
         return

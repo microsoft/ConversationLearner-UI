@@ -19,11 +19,16 @@ export function ClickAction(expectedResponse, expectedIndexForActionPlacement) {
   VerifyChatMessage(expectedResponse, expectedIndexForActionPlacement)
 }
 
-export function ClickEndSessionAction(action_selector, expected_rendered, expectedIndexForActionPlacement) {
-  cy.Get('[data-testid="action-scorer-session-response"]').ExactMatchComplexHTML(action_selector)
-    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
+export function ClickEndSessionAction(expectedData, expectedIndexForActionPlacement) {
+  cy.Get('[data-testid="action-scorer-session-response"]')
+    .ExactMatch('EndSession')
+    .siblings('[data-testid="action-scorer-session-response-user"]')
+    .ExactMatch(expectedData)
+    .parents('div.ms-DetailsRow-fields')
+    .find('[data-testid="action-scorer-button-clickable"]')
     .Click()
-  VerifyEndSessionChatMessage(expected_rendered, expectedIndexForActionPlacement)
+
+  VerifyEndSessionChatMessage(expectedData, expectedIndexForActionPlacement)
 }
 
 // To verify the last chat utterance leave expectedIndexOfMessage undefined
@@ -37,13 +42,12 @@ export function VerifyChatMessage(expectedMessage, expectedIndexOfMessage) {
   })
 }
 
-export function VerifyEndSessionChatMessage(expected_rendered, expectedIndexOfMessage) {
-  var expectedUtterance = expected_rendered.replace(/'/g, "’")
+export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage) {
+  var expectedUtterance = 'EndSession: ' + expectedData.replace(/'/g, "’");
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
-    if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
-    cy.wrap(elements[expectedIndexOfMessage]).within(element => {
-      assert(helpers.RemoveMarkup(element.html()) === expected_rendered, "Invalid end session action chat message")
-    })
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1;
+    let element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0];
+    expect(element.innerText).to.equal(expectedUtterance);
   })
 }
 
