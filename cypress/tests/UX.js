@@ -9,5 +9,5 @@ const helpers = require('../support/Helpers')
 Cypress.TestCase('UX', 'Bot Model Mismatch', BotModelMismatch)
 export function BotModelMismatch() {
   models.ImportModel('BotModelMismatch', 'z-botmodelmismatch.cl')
-  assert(Cypress.$(".cl-errorpanel").length < 1, "Bot/Model mismatch should display error msg!")
+  cy.Get('div.cl-errorpanel > div').ExactMatch('Please check that the correct version of your Bot is running.')
 }
