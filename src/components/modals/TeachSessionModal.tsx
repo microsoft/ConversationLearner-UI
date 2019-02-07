@@ -87,6 +87,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 { actionType: AT.RUN_SCORER_ASYNC, callback: this.onDismissError },
             ]
         );
+
+        if (this.props.sourceTrainDialog) {
+            const { tags, description } = this.props.sourceTrainDialog
+            this.setState({
+                tags,
+                description
+            })
+        }
     };
 
     componentWillUnmount() {
@@ -163,6 +171,16 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 ignoreSelectionCount: ignorePostCount,
                 replaceActivityText,
                 replaceActivityIndex
+            })
+        }
+
+        // If we just added a sourceTrainDialog it's because we continued from an existing Train Dialog
+        // Copy over the tags and description from it
+        if (!this.props.sourceTrainDialog && newProps.sourceTrainDialog) {
+            const { tags, description } = newProps.sourceTrainDialog
+            this.setState({
+                tags,
+                description
             })
         }
     }
@@ -539,7 +557,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             this.props.onEditTeach(this.state.selectedActivityIndex, { trainScorerStep }, this.props.onChangeAction)
         }
     }
-    
+
     @OF.autobind
     onAddTag(tag: string) {
         this.setState(prevState => ({
