@@ -38,24 +38,17 @@ export function WaitForTrainingStatusCompleted() {
       currentHtml.includes('data-testid="training-status-failed"')) &&
       (currentTime > canRefreshTrainingStatusTime)) {
         
-        // TODO: Remove after we have proof this function is working.
-        if (currentHtml.includes('data-testid="training-status-failed"')) {
-          helpers.ConLog('WaitForTrainingStatusCompleted', 'detected data-testid="training-status-failed"');
-        }
+    // TODO: Remove this block of code after we have proof this function is working.
+    if (currentHtml.includes('data-testid="training-status-failed"')) {
+      helpers.ConLog('WaitForTrainingStatusCompleted', 'detected data-testid="training-status-failed"');
+    }
 
-        canRefreshTrainingStatusTime = currentTime + (2 * 1000)
+    canRefreshTrainingStatusTime = currentTime + (2 * 1000);
 
-        // When we get here it is possible there are two refresh buttons on the page, one that
-        // is covered up by a popup dialog. Unfortunately the .click() function can take only
-        // one element to click on, so this code is an attempt to deal with that issue.
-        //cy.get('[data-testid="training-status-refresh-button"]').then((elements) => { cy.wrap(elements[elements.length - 1]).click() })
-        var elements = Cypress.$('[data-testid="training-status-refresh-button"]');
-        Cypress.$(elements[elements.length - 1]).click();
-
-        // The reason we need to call this method once again using cy.WaitForTrainingStatusCompleted()
-        // is because the .click() function causes the time out to change to the default of 4 seconds.
-        //cy.WaitForTrainingStatusCompleted()
-        //setTimeout(WaitForTrainingStatusCompleted, 50)
-      }
-  expect(currentHtml.includes('data-testid="training-status-completed"')).to.equal(true)
+    // When we get here it is possible there are two refresh buttons on the page, one that
+    // is covered up by a popup dialog, so we need to click on the last one found.
+    var elements = Cypress.$('[data-testid="training-status-refresh-button"]');
+    Cypress.$(elements[elements.length - 1]).click();
+  }
+  expect(currentHtml.includes('data-testid="training-status-completed"')).to.equal(true);
 }

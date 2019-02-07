@@ -14,8 +14,8 @@ export const loopCount = 20;
 // This is the list of tests that will be executed when '(RunTestsFromList)'
 // is selected from the Cypress Test GUI.
 export const testList = [
-  'CreateModels.TagAndFrog',
-  'EditAndBranching.TagAndFrog',
+  'Tools.VisitHomePage',
+  'Tools.CreateModel',  
 ];
 
 // ************ MODIFY THIS LIST *****************************************
