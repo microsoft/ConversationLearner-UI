@@ -223,6 +223,7 @@ export function WaitNonWaitErrorHandling()
   modelPage.VerifyNoErrorIconOnPage()
 }
 
+Cypress.TestCase('EditAndBranching', 'Add End Session Action', AddEndSessionAction)
 export function AddEndSessionAction() {
   models.ImportModel('z-sydney-flight', 'z-sydney-flight.cl')
 
@@ -233,7 +234,7 @@ export function AddEndSessionAction() {
   train.EditTraining('fly to sydney', 'coach', "enjoy your trip. you are booked on Qantas")
   editDialogModal.ClickScoreActionsButton()
   editDialogModal.SelectChatTurn('enjoy your trip. you are booked on Qantas', 1)
-  train.SelectEndSessionAction('EndSession0', 'EndSession: 0')
+  train.SelectEndSessionAction('0')
 
-  editDialogModal.AbandonBranchChanges()
+  editDialogModal.ClickSaveCloseButton()
 }

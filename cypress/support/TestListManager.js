@@ -24,6 +24,7 @@ var testLists = require('../TestLists');
 const helpers = require('./Helpers');
 
 Cypress.TestCase = TestCase;
+Cypress.loopCount = testLists.loopCount;
 Cypress.testList = testLists.testList;
 Cypress.regressionTestList = testLists.regressionTestList;
 Cypress.masterListOfAllTestCases = testLists.masterListOfAllTestCases;
@@ -41,6 +42,7 @@ const createModels = require('../tests/CreateModels');
 const editAndBranching = require('../tests/EditAndBranching');
 const log = require('../tests/Log');
 const train = require('../tests/Train');
+const ux = require('../tests/UX');
 const tools = require('../tests/Tools');
 const zTemp = require('../tests/zTemp')
 

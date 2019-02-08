@@ -112,12 +112,12 @@ export function SelectAction(expectedResponse, lastResponse) {
   })
 }
 
-export function SelectEndSessionAction(action_selector, expected_rendered, lastResponse) {
-  scorerModal.ClickEndSessionAction(action_selector, expected_rendered)
+export function SelectEndSessionAction(expectedData, lastResponse) {
+  scorerModal.ClickEndSessionAction(expectedData);
   cy.Enqueue(() => {
-    if (lastResponse) window.currentTrainingSummary.LastResponse = lastResponse
-    else window.currentTrainingSummary.LastResponse = expected_rendered
-  })
+    if (lastResponse) window.currentTrainingSummary.LastResponse = lastResponse;
+    else window.currentTrainingSummary.LastResponse = 'EndSession: ' + expectedData;
+  });
 }
 
 // This method is used to score AND AUTO-SELECT the action after branching.
