@@ -1264,6 +1264,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         editType={this.state.editType}
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
+                        tags={this.props.tags}
                     />
                 }
                 <EditDialogModal
@@ -1290,6 +1291,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onSaveDialog={(editedTrainDialog, validity) => this.onReplaceTrainDialog(editedTrainDialog, validity)}
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={(newTrainDialog, validity) => this.onCreateTrainDialog(newTrainDialog, validity)}
+                    tags={this.props.tags}
                 />
             </div>
         );

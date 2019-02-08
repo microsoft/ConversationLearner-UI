@@ -392,6 +392,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                             <TagsInput
                                 id="tags"
                                 tags={this.props.tags}
+                                suggestedTags={this.props.suggestedTags}
                                 onAdd={this.props.onAddTag}
                                 onRemove={this.props.onRemoveTag}
                             />
@@ -559,6 +560,7 @@ export interface ReceivedProps {
     onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
     onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void
     onPendingStatusChanged: (changed: boolean) => void
+    suggestedTags: string[]
 
     tags: string[]
     onAddTag: (tag: string) => void

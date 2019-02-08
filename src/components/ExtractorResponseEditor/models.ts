@@ -76,7 +76,7 @@ export interface FuseResult<T> {
 
 export interface FuseMatch {
     indices: [number, number][]
-    key: string
+    value: string
 }
 
 export interface MatchedOption<T> {

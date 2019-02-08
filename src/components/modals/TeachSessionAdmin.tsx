@@ -312,6 +312,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                             <label htmlFor="tags">Tags:</label>
                             <TagsInput
                                 id="tags"
+                                suggestedTags={this.props.suggestedTags}
                                 tags={this.props.tags}
                                 onAdd={this.props.onAddTag}
                                 onRemove={this.props.onRemoveTag}
@@ -482,7 +483,8 @@ export interface ReceivedProps {
     selectedActivityIndex: number | null
     isLastActivitySelected: boolean,
     historyRenderData: (() => DialogUtils.DialogRenderData) | null
-
+    suggestedTags: string[]
+    
     tags: string[]
     onAddTag: (tag: string) => void
     onRemoveTag: (tag: string) => void

@@ -12,9 +12,12 @@
 }
 
 .cl-tags input {
-    padding: 0;
+    padding: 0 0.125em;
+    /* Nudge to keep inline with other tags */
+    padding-top: 1px;
     margin: 0;
     outline: none;
+    border: 1px solid var(--color-neutralTertiary);
 }
 
 .cl-tags__tag {
@@ -48,4 +51,33 @@
 .cl-tags__form {
     margin-top: 5px;
     margin-left: 5px;
+}
+
+.cl-tags__suggested-tags-container {
+    position: relative;
+}
+.cl-tags__suggested-tags {
+    position: absolute;
+    width: 100%;
+    border: 1px solid var(--color-neutralTertiary);
+    /* Force borders to overlap */
+    margin-top: -1px;
+}
+
+.cl-tags__suggested-tags__button {
+    display: block;
+    background: white;
+    padding: 0.25em;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.cl-tags__suggested-tags__button--highlight {
+    background-color: var(--color-themeLight);
+}
+
+.cl-tags__suggested-tags__button:hover {
+    background-color: var(--color-themeLight);
 }

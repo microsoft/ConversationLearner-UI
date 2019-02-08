@@ -574,6 +574,10 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   background-color: #000000;
 }
 
+.cl-dialog-title {
+  margin-right: 1em;
+}
+
 .cl-dialog-title i[role="presentation"] {
   margin: -0.4em 0.5em -0.4em 0;
   padding: 0.4em 0.3em 0.4em 0.5em;
