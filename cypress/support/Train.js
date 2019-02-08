@@ -22,9 +22,9 @@ export function CreateNewTrainDialog() {
         LastInput: undefined,
         LastResponse: undefined,
         Turns: 0,
-        // FUDGING on the time - subtract 10 seconds because the time is set by the server
+        // FUDGING on the time - subtract 25 seconds because the time is set by the server
         // which is not exactly the same as our test machine.
-        MomentTrainingStarted: Cypress.moment().subtract(10, 'seconds'),
+        MomentTrainingStarted: Cypress.moment().subtract(25, 'seconds'),
         MomentTrainingEnded: undefined,
         LastModifiedDate: undefined,
         CreatedDate: undefined,
@@ -54,9 +54,9 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
             LastInput: lastInputs[i],
             LastResponse: lastResponses[i],
             Turns: turns[i],
-            // FUDGING on the time - subtract 10 seconds because the time is set by the server
+            // FUDGING on the time - subtract 25 seconds because the time is set by the server
             // which is not exactly the same as our test machine.
-            MomentTrainingStarted: Cypress.moment().subtract(10, 'seconds'),
+            MomentTrainingStarted: Cypress.moment().subtract(25, 'seconds'),
             MomentTrainingEnded: undefined,
             LastModifiedDate: lastModifiedDates[i],
             CreatedDate: createdDates[i],
@@ -132,9 +132,9 @@ export function Save() {
   editDialogModal.ClickSaveCloseButton()
   trainDialogsGrid.VerifyPageTitle()
   cy.Enqueue(() => {
-    // FUDGING on the time - adding 10 seconds because the time is set by the server
+    // FUDGING on the time - adding 25 seconds because the time is set by the server
     // which is not exactly the same as our test machine.
-    window.currentTrainingSummary.MomentTrainingEnded = Cypress.moment().add(10, 'seconds')
+    window.currentTrainingSummary.MomentTrainingEnded = Cypress.moment().add(25, 'seconds')
 
     if (window.isBranched) VerifyTrainingSummaryIsInGrid(window.originalTrainingSummary)
 
@@ -145,10 +145,10 @@ export function Save() {
 function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   trainDialogsGrid.WaitForGridReadyThen(trainingSummary.TrainGridRowCount, () => {
     // Keep these lines of logging code in this method, they come in handy when things go bad.
-    // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDate: ${trainingSummary.CreatedDate}`)
-    // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDate: ${trainingSummary.LastModifiedDate}`)
-    // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
-    // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDate: ${trainingSummary.CreatedDate}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDate: ${trainingSummary.LastModifiedDate}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
 
     var turns = trainDialogsGrid.GetTurns()
     var firstInputs = trainDialogsGrid.GetFirstInputs()
@@ -158,9 +158,10 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
     var createdDates = trainDialogsGrid.GetCreatedDates()
 
     for (var i = 0; i < trainingSummary.TrainGridRowCount; i++) {
-      // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDates[${i}]: ${createdDates[i]} --- ${helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
-      // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDates[${i}]: ${lastModifiedDates[i]} --- ${helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
-      // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `Turns: ${turns[i]}`)
+      // Keep these lines of logging code in this method, they come in handy when things go bad.
+      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDates[${i}]: ${createdDates[i]} --- ${helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
+      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDates[${i}]: ${lastModifiedDates[i]} --- ${helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
+      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `Turns[${i}]: ${turns[i]}`)
 
       if (((trainingSummary.LastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
         helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
@@ -170,7 +171,7 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
         firstInputs[i] == trainingSummary.FirstInput &&
         lastInputs[i] == trainingSummary.LastInput &&
         lastResponses[i] == trainingSummary.LastResponse)
-        return
+        return; // Because all of it is as expected.
     }
     throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`
   })
