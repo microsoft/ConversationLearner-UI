@@ -171,7 +171,7 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
         firstInputs[i] == trainingSummary.FirstInput &&
         lastInputs[i] == trainingSummary.LastInput &&
         lastResponses[i] == trainingSummary.LastResponse)
-        return; // Because all of it is as expected.
+        return; // We found what we expected.
     }
     throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`
   })
