@@ -104,57 +104,63 @@ class component extends React.Component<Props, State> {
 
     onKeyDownInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
         console.log(`onKeyDownInput: `, event.key)
-
-        switch (event.key) {
-            case 'ArrowUp':
-                // Move highlight up unless it's already at top then move to bottom
-                this.setState(prevState => ({
-                    highlightIndex: prevState.highlightIndex <= 0
-                        ? prevState.filteredSuggestedTags.length - 1
-                        : prevState.highlightIndex - 1
-                }))
-                break
-            case 'ArrowDown':
-                // Move highlight down unless it's already at bottom then move to top
-                this.setState(prevState => ({
-                    highlightIndex: prevState.highlightIndex >= prevState.filteredSuggestedTags.length - 1
-                        ? 0
-                        : prevState.highlightIndex + 1
-                }))
-                break
-            case 'Enter':
-            case 'Tab':
-                // Don't do anything is shift is pressed or nothing is highlighted
-                if (event.shiftKey
-                    || this.state.highlightIndex === -1) {
-                    return
-                }
-
-                const highlightedTag = this.state.filteredSuggestedTags[this.state.highlightIndex]
-                // Should never happen but if for some reason index is out of bounds return
-                if (!highlightedTag) {
-                    return
-                }
-
-                this.props.onAdd(highlightedTag)
-                this.setState({
-                    inputValue: '',
-                    highlightIndex: -1,
-                })
-                event.stopPropagation()
-                event.preventDefault()
-                break
-            case 'Escape':
-                this.resetForm()
-                break
-            default:
-            // Do nothing
+        const fn = this[`on${event.key}`]
+        if (typeof fn === "function") {
+            return fn.call(this, event)
         }
+    }
+
+
+    onArrowUp() {
+        // Move highlight up unless it's already at top then move to bottom
+        this.setState(prevState => ({
+            highlightIndex: prevState.highlightIndex <= 0
+                ? prevState.filteredSuggestedTags.length - 1
+                : prevState.highlightIndex - 1
+        }))
+    }
+
+    onArrowDown() {
+        // Move highlight down unless it's already at bottom then move to top
+        this.setState(prevState => ({
+            highlightIndex: prevState.highlightIndex >= prevState.filteredSuggestedTags.length - 1
+                ? 0
+                : prevState.highlightIndex + 1
+        }))
+    }
+
+    onEnter(event: React.KeyboardEvent<HTMLInputElement>) {
+        if (event.shiftKey
+            || this.state.highlightIndex === -1) {
+            return
+        }
+
+        const highlightedTag = this.state.filteredSuggestedTags[this.state.highlightIndex]
+        // Should never happen but if for some reason index is out of bounds return
+        if (!highlightedTag) {
+            return
+        }
+
+        this.props.onAdd(highlightedTag)
+        this.setState({
+            inputValue: '',
+            highlightIndex: -1,
+        })
+        event.stopPropagation()
+        event.preventDefault()
+    }
+
+    onTab(event: React.KeyboardEvent<HTMLInputElement>) {
+        this.onEnter(event)
+    }
+
+    onEscape() {
+        this.resetForm()
     }
 
     onBlurInput = () => {
         const tag = this.state.inputValue
-        
+
         // If user accidentally clicked away before submission still save tag
         // They can always delete if unintended
         if (tag.length > 0) {
@@ -164,10 +170,10 @@ class component extends React.Component<Props, State> {
         this.resetForm()
     }
 
-    onShowForm = () => {
-        this.setState(prevState => ({
-            showForm: !prevState.showForm
-        }), () => {
+    onClickAdd = () => {
+        this.setState({
+            showForm: true
+        }, () => {
             if (this.inputRef.current) {
                 this.inputRef.current.focus()
             }
@@ -175,7 +181,6 @@ class component extends React.Component<Props, State> {
     }
 
     onMouseDownSuggestedTag = (event: React.MouseEvent<HTMLDivElement>, tag: string) => {
-        console.log(`onClickSuggestedTag: `, tag)
         this.props.onAdd(tag)
         this.setState({
             inputValue: '',
@@ -215,7 +220,7 @@ class component extends React.Component<Props, State> {
                     </div>
                 )}
                 {!showForm
-                    ? <button className="cl-tags__button-add" id={this.props.id} onClick={() => this.onShowForm()} >
+                    ? <button className="cl-tags__button-add" id={this.props.id} onClick={() => this.onClickAdd()} >
                         {this.props.tags.length === 0
                             ? 'Add Tag'
                             : <OF.Icon iconName="Add" />}
