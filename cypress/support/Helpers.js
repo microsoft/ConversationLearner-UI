@@ -24,34 +24,18 @@ export function RemoveDuplicates(inputArray) {
 export function StringArrayFromElementText(selector, retainMarkup = false) {
   var elements = Cypress.$(selector)
   ConLog(`StringArrayFromElementText(${selector})`, elements.length)
-  var returnValues = new Array()
-  for (var i = 0; i < elements.length; i++) {
-    if (retainMarkup) returnValues.push(elements[i].innerHTML)
-    else returnValues.push(elements[i].innerText)
-    ConLog(`StringArrayFromElementText(${selector})`, returnValues[i])
+  var returnValues = []
+  for (var i = 0; i < elements.length; i++)  {
+    let text = retainMarkup ? elements[i].innerHTML : elements[i].innerText
+    returnValues.push(text)
+    ConLog(`StringArrayFromElementText(${selector})`, text)
   }
   return returnValues
 }
 
-// TODO: Verify this works and if it does replace the above method with it.
-export function stringArrayFromElementText(selector, retainMarkup = false) {
-  const elements = Cypress.$(selector)
-  ConLog(`stringArrayFromElementText(${selector})`, elements.length)
-
-  return elements.map(element => {
-    const text = retainMarkup
-      ? element.innerHTML
-      : element.innerText
-
-    ConLog(`stringArrayFromElementText(${selector})`, text)
-
-    return text
-  })
-}
-
 export function NumericArrayFromElementText(selector) {
   var elements = Cypress.$(selector)
-  var returnValues = new Array()
+  var returnValues = []
   for (var i = 0; i < elements.length; i++) { returnValues.push(parseInt(elements[i].innerText)) }
   return returnValues
 }
