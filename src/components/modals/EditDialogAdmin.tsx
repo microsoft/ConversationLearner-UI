@@ -392,7 +392,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                             <TagsInput
                                 id="tags"
                                 tags={this.props.tags}
-                                suggestedTags={this.props.suggestedTags}
+                                suggestedTags={this.props.suggestedTags.map(t => ({ tag: t }))}
                                 onAdd={this.props.onAddTag}
                                 onRemove={this.props.onRemoveTag}
                             />

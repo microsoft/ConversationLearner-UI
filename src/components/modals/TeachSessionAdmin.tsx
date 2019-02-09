@@ -312,7 +312,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                             <label htmlFor="tags">Tags:</label>
                             <TagsInput
                                 id="tags"
-                                suggestedTags={this.props.suggestedTags}
+                                suggestedTags={this.props.suggestedTags.map(t => ({ tag: t }))}
                                 tags={this.props.tags}
                                 onAdd={this.props.onAddTag}
                                 onRemove={this.props.onRemoveTag}
