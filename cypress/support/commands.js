@@ -54,7 +54,7 @@ Cypress.Commands.add('UploadFile', (fileName, selector) => {
 // the text content of the elements to contain an EXACT MATCH to the expected text.
 Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expectedText) => {
   helpers.ConLog(`ExactMatch('${expectedText}')`, `Start`)
-  for (var i = 0; i < elements.length; i++) {
+  for (let i = 0; i < elements.length; i++) {
     helpers.ConLog(`ExactMatch('${expectedText}')`, `elements[${i}].innerText: '${elements[i].innerText}'`)
     if (elements[i].innerText == expectedText) return elements[i]
   }
@@ -63,8 +63,8 @@ Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expect
 
 Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expectedText) => {
   helpers.ConLog(`ExactMatches('${expectedText}')`, `Start`)
-  var returnElements = new Array()
-  for (var i = 0; i < elements.length; i++) {
+  let returnElements = []
+  for (let i = 0; i < elements.length; i++) {
     helpers.ConLog(`ExactMatches('${expectedText}')`, `elements[${i}].innerText: '${elements[i].innerText}'`)
     if (elements[i].innerText == expectedText) returnElements.push(elements[i])
   }

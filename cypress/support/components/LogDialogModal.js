@@ -14,10 +14,10 @@ export function TypeYourMessageValidateResponse(message, expectedResponse) {
   // Verify both the input message is reflected back and the response is what we are expecting.
   // This also has the useful side effect of blocking this function from returning until after
   // the response has been returned.
-  var messageCount = 0
-  var expectedUtterance = message.replace(/'/g, "’")
+  let messageCount = 0
+  let expectedUtterance = message.replace(/'/g, "’")
   cy.Get('.wc-message-content').then(elements => {
-    messageCount = elements.length;
+    messageCount = elements.length
     cy.wrap(elements[elements.length - 1]).contains(expectedUtterance)
   }).then(() => {
     if (expectedResponse) {

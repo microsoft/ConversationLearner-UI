@@ -7,14 +7,14 @@
 export function ConLog(funcName, message) { console.log(`-+- ${Cypress.moment().format("HH:mm:ss..SSS")} - ${funcName} - ${message}`) }
 
 export function Dump(funcName, object) {
-  var propertyList = ''
-  for (var property in object) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${object[property]}`
+  let propertyList = ''
+  for (let property in object) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${object[property]}`
   ConLog(funcName, propertyList)
 }
 
 export function RemoveDuplicates(inputArray) {
-  var uniqueOutputArray = []
-  for (var i = 0; i < inputArray.length; i++)
+  let uniqueOutputArray = []
+  for (let i = 0; i < inputArray.length; i++)
     if (uniqueOutputArray.indexOf(inputArray[i]) == -1)
       uniqueOutputArray.push(inputArray[i])
 
@@ -25,7 +25,7 @@ export function StringArrayFromElementText(selector, retainMarkup = false) {
   let elements = Cypress.$(selector)
   ConLog(`StringArrayFromElementText(${selector})`, elements.length)
   let returnValues = []
-  for (var i = 0; i < elements.length; i++)  {
+  for (let i = 0; i < elements.length; i++)  {
     let text = retainMarkup ? elements[i].innerHTML : elements[i].innerText
     returnValues.push(text)
     ConLog(`StringArrayFromElementText(${selector})`, text)
@@ -36,7 +36,7 @@ export function StringArrayFromElementText(selector, retainMarkup = false) {
 export function NumericArrayFromElementText(selector) {
   let elements = Cypress.$(selector)
   let returnValues = []
-  for (var i = 0; i < elements.length; i++) { returnValues.push(parseInt(elements[i].innerText)) }
+  for (let i = 0; i < elements.length; i++) { returnValues.push(parseInt(elements[i].innerText)) }
   return returnValues
 }
 

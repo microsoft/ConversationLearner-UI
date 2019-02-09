@@ -1,5 +1,3 @@
-import { addEmitHelpers } from 'typescript';
-
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
@@ -10,7 +8,7 @@ const actionsGrid = require('../../support/components/ActionsGrid')
 const trainDialogsGrid = require('./TrainDialogsGrid')
 const logDialogsGrid = require('../../support/components/LogDialogsGrid')
 const settings = require('../../support/components/Settings')
-const helpers = require('../Helpers');
+const helpers = require('../Helpers')
 
 export function VerifyModelName(name) { cy.Get('[data-testid="app-index-model-name"]').should(el => { expect(el).to.contain(name) }) }
 export function VerifyPageTitle() { cy.Get('[data-testid="dashboard-title"]').contains('Log Dialogs').should('be.visible') }
@@ -30,25 +28,25 @@ export function VerifyErrorIconForTrainDialogs() { cy.Get('[data-testid="app-ind
 //   fetchApplicationTrainingStatusThunkAsync
 //   interval:
 //   maxDuration:
-var canRefreshTrainingStatusTime = 0
+let canRefreshTrainingStatusTime = 0
 export function WaitForTrainingStatusCompleted() {
-  var currentHtml = Cypress.$('html')[0].outerHTML
-  var currentTime = new Date().getTime()
+  let currentHtml = Cypress.$('html')[0].outerHTML
+  let currentTime = new Date().getTime()
   if ((currentHtml.includes('data-testid="training-status-polling-stopped-warning"') ||
       currentHtml.includes('data-testid="training-status-failed"')) &&
       (currentTime > canRefreshTrainingStatusTime)) {
         
     // TODO: Remove this block of code after we have proof this function is working.
     if (currentHtml.includes('data-testid="training-status-failed"')) {
-      helpers.ConLog('WaitForTrainingStatusCompleted', 'detected data-testid="training-status-failed"');
+      helpers.ConLog('WaitForTrainingStatusCompleted', 'detected data-testid="training-status-failed"')
     }
 
-    canRefreshTrainingStatusTime = currentTime + (2 * 1000);
+    canRefreshTrainingStatusTime = currentTime + (2 * 1000)
 
     // When we get here it is possible there are two refresh buttons on the page, one that
     // is covered up by a popup dialog, so we need to click on the last one found.
-    var elements = Cypress.$('[data-testid="training-status-refresh-button"]');
-    Cypress.$(elements[elements.length - 1]).click();
+    let elements = Cypress.$('[data-testid="training-status-refresh-button"]')
+    Cypress.$(elements[elements.length - 1]).click()
   }
-  expect(currentHtml.includes('data-testid="training-status-completed"')).to.be.true;
+  expect(currentHtml.includes('data-testid="training-status-completed"')).to.be.true
 }
