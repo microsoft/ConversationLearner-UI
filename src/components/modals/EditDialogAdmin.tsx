@@ -22,7 +22,7 @@ import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import TrainingStatusContainer from '../TrainingStatusContainer'
 import TagsInput from '../TagsInput'
-import BorderlessInput from '../BorderlessInput'
+import BorderlessTextInput from '../BorderlessTextInput'
 import './EditDialogAdmin.css'
 
 class EditDialogAdmin extends React.Component<Props, ComponentState> {
@@ -387,19 +387,20 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
                     </div>
                     <div className={`cl-dialog-tags ${OF.FontClassNames.mediumPlus}`}>
-                        <div className="cl-field">
+                        <div className="cl-dialog-field">
                             <label htmlFor="tags">Tags:</label>
                             <TagsInput
                                 id="tags"
+                                // Map to objects because odd Fuse.js behavior on string[]
+                                allUniqueTags={this.props.allUniqueTags.map(t => ({ text: t }))}
                                 tags={this.props.tags}
-                                suggestedTags={this.props.suggestedTags.map(t => ({ tag: t }))}
                                 onAdd={this.props.onAddTag}
                                 onRemove={this.props.onRemoveTag}
                             />
                         </div>
-                        <div className="cl-field">
+                        <div className="cl-dialog-field">
                             <label htmlFor="description">Description:</label>
-                            <BorderlessInput
+                            <BorderlessTextInput
                                 id="description"
                                 placeholder="Click on to add description"
                                 value={this.props.description}
@@ -560,7 +561,7 @@ export interface ReceivedProps {
     onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
     onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void
     onPendingStatusChanged: (changed: boolean) => void
-    suggestedTags: string[]
+    allUniqueTags: string[]
 
     tags: string[]
     onAddTag: (tag: string) => void

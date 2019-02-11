@@ -149,10 +149,10 @@ export const deleteTeachSessionThunkAsync = (
                     await dispatch(deleteTrainDialogThunkAsync(key, app, sourceTrainDialogId));
                 }
 
-                // If we're adding a new train dialog as consequence of the session save, refetch train dialogs and start poll for train status
+                // If we're adding a new train dialog as consequence of the session save, re-fetch train dialogs and start poll for train status
                 dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
 
-                // The replace method inside train reducer relies on existence of item. It's not in the array we haven't fetched dialogs.
+                // The replace method inside train reducer relies on existence of item. 
                 if (trainDialogId) {
                     const trainDialog = await dispatch(fetchTrainDialogThunkAsync(app.appId, trainDialogId, false))
                     if (trainDialog) {

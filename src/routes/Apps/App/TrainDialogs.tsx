@@ -1190,7 +1190,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 selectedKey={(this.state.tagsFilter ? this.state.tagsFilter.key : -1)}
                                 onChanged={this.onSelectTagsFilter}
                                 placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
-                                options={this.props.tags
+                                options={this.props.allUniqueTags
                                     .map<OF.IDropdownOption>((tag, i) => ({
                                         key: i,
                                         text: tag
@@ -1264,7 +1264,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         editType={this.state.editType}
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
-                        tags={this.props.tags}
+                        allUniqueTags={this.props.allUniqueTags}
                     />
                 }
                 <EditDialogModal
@@ -1291,7 +1291,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onSaveDialog={(editedTrainDialog, validity) => this.onReplaceTrainDialog(editedTrainDialog, validity)}
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={(newTrainDialog, validity) => this.onCreateTrainDialog(newTrainDialog, validity)}
-                    tags={this.props.tags}
+                    allUniqueTags={this.props.allUniqueTags}
                 />
             </div>
         );
@@ -1327,7 +1327,8 @@ const mapStateToProps = (state: State) => {
         entities: state.entities,
         trainDialogs: state.trainDialogs,
         teachSession: state.teachSession,
-        tags: [...new Set(state.trainDialogs.reduce((tags, trainDialog) => [...tags, ...trainDialog.tags], []))]
+        // Get all tags from all train dialogs then put in Set to get unique tags
+        allUniqueTags: [...new Set(state.trainDialogs.reduce((tags, trainDialog) => [...tags, ...trainDialog.tags], []))]
     }
 }
 

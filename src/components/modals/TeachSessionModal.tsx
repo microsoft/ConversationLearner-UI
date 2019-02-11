@@ -813,8 +813,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
                                         onEditExtraction={this.onEditExtraction}
                                         onEditAction={this.onEditScore}
-                                        suggestedTags={this.props.tags}
-                                        
+
+                                        allUniqueTags={this.props.allUniqueTags}
                                         tags={this.state.tags}
                                         onAddTag={this.onAddTag}
                                         onRemoveTag={this.onRemoveTag}
@@ -948,7 +948,7 @@ export interface ReceivedProps {
     // When editing, the intial history before teach starts
     initialHistory: Activity[]
     lastAction: CLM.ActionBase | null
-    tags: string[]
+    allUniqueTags: string[]
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

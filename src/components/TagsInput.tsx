@@ -7,11 +7,11 @@ import { convertMatchedTextIntoMatchedOption } from './ExtractorResponseEditor/u
 import './TagsInput.css'
 
 interface ITag {
-    tag: string
+    text: string
 }
 interface Props extends React.HTMLProps<HTMLDivElement> {
+    allUniqueTags: ITag[]
     tags: string[]
-    suggestedTags: ITag[]
     onAdd: (tag: string) => void
     onRemove: (tag: string) => void
 }
@@ -32,7 +32,7 @@ const fuseOptions: Fuse.FuseOptions = {
     maxPatternLength: 32,
     minMatchCharLength: 1,
     keys: [
-        "tag"
+        "text"
     ]
 }
 
@@ -50,40 +50,27 @@ class component extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props)
 
-        this.fuse = new Fuse(this.props.suggestedTags, fuseOptions)
+        this.fuse = new Fuse(this.props.allUniqueTags, fuseOptions)
     }
 
     componentDidMount() {
+        const matchedOptions = this.getSuggestedTags(this.props.allUniqueTags, this.props.tags)
         this.setState({
-            matchedOptions: this.props.suggestedTags
-                .filter(st => !this.props.tags.some(t => t === st.tag))
-                .map<MatchedOption<ITag>>((tag, i) => ({
-                    highlighted: false, // Won't affect rendering for this component
-                    matchedStrings: [{ text: tag.tag, matched: false }],
-                    original: tag
-                }))
-                .sort((a, b) => a.original.tag.localeCompare(b.original.tag))
+            matchedOptions
         })
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        // If either the tags or suggestedTags change recompute the filteredTags
         if (this.props.tags.length !== nextProps.tags.length
-            || this.props.suggestedTags.length !== nextProps.suggestedTags.length) {
-            console.log(`props changed`)
+            || this.props.allUniqueTags.length !== nextProps.allUniqueTags.length) {
+
+            const matchedOptions = this.getSuggestedTags(nextProps.allUniqueTags, nextProps.tags)
             this.setState({
-                matchedOptions: nextProps.suggestedTags
-                    .filter(st => !this.props.tags.some(t => t === st.tag))
-                    .map<MatchedOption<ITag>>((tag, i) => ({
-                        highlighted: false, // Won't affect rendering for this component
-                        matchedStrings: [{ text: tag.tag, matched: false }],
-                        original: tag
-                    }))
-                    .sort((a, b) => a.original.tag.localeCompare(b.original.tag))
+                matchedOptions
             })
 
-            if (this.props.suggestedTags.length !== nextProps.suggestedTags.length) {
-                this.fuse = new Fuse(this.props.suggestedTags, fuseOptions)
+            if (this.props.allUniqueTags.length !== nextProps.allUniqueTags.length) {
+                this.fuse = new Fuse(this.props.allUniqueTags, fuseOptions)
             }
         }
     }
@@ -109,22 +96,12 @@ class component extends React.Component<Props, State> {
 
         const searchText = inputValue.trim()
         const matchedOptions: MatchedOption<ITag>[] = (searchText.length === 0)
-            ? this.props.suggestedTags
-                .filter(st => !this.props.tags.some(t => t === st.tag))
-                .map<MatchedOption<ITag>>((tag, i) => ({
-                    highlighted: false, // Won't affect rendering for this component
-                    matchedStrings: [{ text: tag.tag, matched: false }],
-                    original: tag
-                }))
-                .sort((a, b) => a.original.tag.localeCompare(b.original.tag))
+            ? this.getSuggestedTags(this.props.allUniqueTags, this.props.tags)
             : this.fuse.search<FuseResult<ITag>>(searchText)
-                .map(result => convertMatchedTextIntoMatchedOption(result.item.tag, result.matches[0].indices, result.item))
+                .map(result => convertMatchedTextIntoMatchedOption(result.item.text, result.matches[0].indices, result.item))
 
         console.log(`Search Text: `, { searchText })
         console.log(`matchedOptions: `, { matchedOptions })
-
-        const filteredSuggestedTags = this.props.suggestedTags.filter(t => t.tag.toLowerCase().startsWith(searchText.toLowerCase()))
-        console.log(`filteredSuggestedTags: `, { filteredSuggestedTags })
 
         this.setState({
             inputValue,
@@ -171,7 +148,7 @@ class component extends React.Component<Props, State> {
             return
         }
 
-        this.props.onAdd(highlightedTag.original.tag)
+        this.props.onAdd(highlightedTag.original.text)
         this.setState({
             inputValue: '',
             highlightIndex: -1,
@@ -212,7 +189,7 @@ class component extends React.Component<Props, State> {
         })
     }
 
-    /** Use mouseDown instead of click in order to fire before blur which removes element from DOM */
+    /** Use mouseDown instead of click in order to fire event before blur which removes element from DOM */
     onMouseDownSuggestedTag = (event: React.MouseEvent<HTMLDivElement>, tag: string) => {
         this.props.onAdd(tag)
         this.setState({
@@ -232,11 +209,21 @@ class component extends React.Component<Props, State> {
         })
     }
 
+    // Only used when input is empty and can't use fuse.js
+    private getSuggestedTags(allUniqueTags: ITag[], currentTags: string[]) {
+        return allUniqueTags
+            .filter(st => !currentTags.some(t => t === st.text))
+            .sort((a, b) => a.text.localeCompare(b.text))
+            .map<MatchedOption<ITag>>((tag, i) => ({
+                highlighted: false, // Won't affect rendering for this component
+                matchedStrings: [{ text: tag.text, matched: false }],
+                original: tag
+            }))
+    }
+
     render() {
         const { matchedOptions, highlightIndex } = this.state
         const { showForm } = this.state
-        console.log({ suggestedTags: this.props.suggestedTags })
-        console.log({ highlightIndex, filteredSuggestedTags: matchedOptions })
 
         return (
             <div className="cl-tags">
@@ -271,7 +258,7 @@ class component extends React.Component<Props, State> {
                                         <div
                                             key={i}
                                             className={`cl-tags__suggested-tags__button ${highlightIndex === i ? 'cl-tags__suggested-tags__button--highlight' : ''}`}
-                                            onMouseDown={event => this.onMouseDownSuggestedTag(event, matchedOption.original.tag)}
+                                            onMouseDown={event => this.onMouseDownSuggestedTag(event, matchedOption.original.text)}
                                         >
                                             <FuseMatch matches={matchedOption.matchedStrings} />
                                         </div>

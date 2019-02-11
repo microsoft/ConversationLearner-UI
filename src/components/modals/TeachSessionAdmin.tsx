@@ -21,7 +21,7 @@ import * as OF from 'office-ui-fabric-react'
 import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import TagsInput from '../TagsInput'
-import BorderlessInput from '../BorderlessInput'
+import BorderlessTextInput from '../BorderlessTextInput'
 
 import './TeachSessionAdmin.css'
 
@@ -60,7 +60,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         // Check the changed ones for conflicts
 
-        // First check for internal conflics
+        // First check for internal conflicts
         if (this.props.sourceTrainDialog) {
             for (let changedTextVariation of changedTextVariations) {
                 let extractConflict = DialogUtils.internalConflict(changedTextVariation, this.props.sourceTrainDialog, renderData.roundIndex)
@@ -308,19 +308,20 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
                     </div>
                     <div className={`cl-dialog-tags ${OF.FontClassNames.mediumPlus}`}>
-                        <div className="cl-field">
+                        <div className="cl-dialog-field">
                             <label htmlFor="tags">Tags:</label>
                             <TagsInput
                                 id="tags"
-                                suggestedTags={this.props.suggestedTags.map(t => ({ tag: t }))}
+                                // Map to objects because odd Fuse.js behavior on string[]
+                                allUniqueTags={this.props.allUniqueTags.map(t => ({ text: t }))}
                                 tags={this.props.tags}
                                 onAdd={this.props.onAddTag}
                                 onRemove={this.props.onRemoveTag}
                             />
                         </div>
-                        <div className="cl-field">
+                        <div className="cl-dialog-field">
                             <label htmlFor="description">Description:</label>
-                            <BorderlessInput
+                            <BorderlessTextInput
                                 id="description"
                                 placeholder="Click on to add description"
                                 value={this.props.description}
@@ -483,7 +484,7 @@ export interface ReceivedProps {
     selectedActivityIndex: number | null
     isLastActivitySelected: boolean,
     historyRenderData: (() => DialogUtils.DialogRenderData) | null
-    suggestedTags: string[]
+    allUniqueTags: string[]
     
     tags: string[]
     onAddTag: (tag: string) => void

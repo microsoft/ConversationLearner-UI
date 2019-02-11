@@ -1,4 +1,4 @@
-.cl-borderless-input {
+.cl-borderless-text-input {
     display: block;
     font-size: inherit;
     border: 1px solid transparent;
@@ -6,10 +6,10 @@
     outline: none;
 }
 
-.cl-borderless-input:hover:not(.cl-borderless-input--active) {
+.cl-borderless-text-input:hover:not(.cl-borderless-text-input--active) {
     border-color: var(--color-neutralQuaternary);
 }
 
-.cl-borderless-input--active {
+.cl-borderless-text-input--active {
     border-color: var(--color-themeSecondary);
 }

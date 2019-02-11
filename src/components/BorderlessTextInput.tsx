@@ -1,5 +1,5 @@
 import * as React from 'react'
-import './BorderlessInput.css'
+import './BorderlessTextInput.css'
 
 interface Props {
     id: string
@@ -35,7 +35,7 @@ class component extends React.Component<Props> {
     
     render () {
         return (
-            <input className={`cl-borderless-input ${this.state.active ? 'cl-borderless-input--active' : ''}`}
+            <input className={`cl-borderless-text-input ${this.state.active ? 'cl-borderless-text-input--active' : ''}`}
                 type="text"
                 id={this.props.id}
                 value={this.props.value}

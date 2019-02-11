@@ -1064,7 +1064,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         initialHistory={this.state.history}
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
-                        tags={[]}
+                        allUniqueTags={[]}
                     />
                 }
                 <EditDialogModal
@@ -1091,7 +1091,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onSaveDialog={(editedTrainDialog, validity) => this.onSaveTrainDialog(editedTrainDialog, validity)}
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={() => { }}
-                    tags={[]}
+                    allUniqueTags={[]}
                 />
             </div>
         );
