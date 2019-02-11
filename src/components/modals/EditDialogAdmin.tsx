@@ -368,15 +368,15 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         }
     }
     render() {
-
         if (!this.props.trainDialog) {
             return null;
         }
+
         const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL)
         const editTypeClass = isLogDialog ? 'log' : 'train'
         const hasEndSession = DialogUtils.hasEndSession(this.props.trainDialog, this.props.actions)
+        const renderData = this.getRenderData()
 
-        let renderData = this.getRenderData();
         return (
             <div className={`cl-dialog-admin`}>
                 <div className="cl-dialog-admin__header">
@@ -386,28 +386,30 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         />
                         {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
                     </div>
-                    <div className={`cl-dialog-tags ${OF.FontClassNames.mediumPlus}`}>
-                        <div className="cl-dialog-field">
-                            <label htmlFor="tags">Tags:</label>
-                            <TagsInput
-                                id="tags"
-                                // Map to objects because odd Fuse.js behavior on string[]
-                                allUniqueTags={this.props.allUniqueTags.map(t => ({ text: t }))}
-                                tags={this.props.tags}
-                                onAdd={this.props.onAddTag}
-                                onRemove={this.props.onRemoveTag}
-                            />
-                        </div>
-                        <div className="cl-dialog-field">
-                            <label htmlFor="description">Description:</label>
-                            <BorderlessTextInput
-                                id="description"
-                                placeholder="Click on to add description"
-                                value={this.props.description}
-                                onChange={this.props.onChangeDescription}
-                            />
-                        </div>
-                    </div>
+                    {isLogDialog
+                        ? <div>{/* placeholder for grid */}</div>
+                        : <div className={`cl-dialog-tags ${OF.FontClassNames.mediumPlus}`}>
+                            <div className="cl-dialog-field">
+                                <label htmlFor="tags">Tags:</label>
+                                <TagsInput
+                                    id="tags"
+                                    // Map to objects because odd Fuse.js behavior on string[]
+                                    allUniqueTags={this.props.allUniqueTags.map(t => ({ text: t }))}
+                                    tags={this.props.tags}
+                                    onAdd={this.props.onAddTag}
+                                    onRemove={this.props.onRemoveTag}
+                                />
+                            </div>
+                            <div className="cl-dialog-field">
+                                <label htmlFor="description">Description:</label>
+                                <BorderlessTextInput
+                                    id="description"
+                                    placeholder="Click on to add description"
+                                    value={this.props.description}
+                                    onChange={this.props.onChangeDescription}
+                                />
+                            </div>
+                        </div>}
                     <TrainingStatusContainer
                         app={this.props.app}
                     />
