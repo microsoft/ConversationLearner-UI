@@ -22,20 +22,20 @@ export function RemoveDuplicates(inputArray) {
 }
 
 export function StringArrayFromElementText(selector, retainMarkup = false) {
-  var elements = Cypress.$(selector)
+  let elements = Cypress.$(selector)
   ConLog(`StringArrayFromElementText(${selector})`, elements.length)
-  var returnValues = new Array()
-  for (var i = 0; i < elements.length; i++) {
-    if (retainMarkup) returnValues.push(elements[i].innerHTML)
-    else returnValues.push(elements[i].innerText)
-    ConLog(`StringArrayFromElementText(${selector})`, returnValues[i])
+  let returnValues = []
+  for (var i = 0; i < elements.length; i++)  {
+    let text = retainMarkup ? elements[i].innerHTML : elements[i].innerText
+    returnValues.push(text)
+    ConLog(`StringArrayFromElementText(${selector})`, text)
   }
   return returnValues
 }
 
 export function NumericArrayFromElementText(selector) {
-  var elements = Cypress.$(selector)
-  var returnValues = new Array()
+  let elements = Cypress.$(selector)
+  let returnValues = []
   for (var i = 0; i < elements.length; i++) { returnValues.push(parseInt(elements[i].innerText)) }
   return returnValues
 }

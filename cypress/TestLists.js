@@ -8,13 +8,12 @@
 
 // This constant determines how many times the list of tests in 'testList'
 // will loop when '(LoopRunTestList)' is selected from the Cypress Test GUI.
-export const loopCount = 20;
+export const loopCount = 100;
 
 // ************ MODIFY THIS LIST *****************************************
 // This is the list of tests that will be executed when '(RunTestsFromList)'
 // is selected from the Cypress Test GUI.
 export const testList = [
-  'Tools.VisitHomePage',
   'Tools.CreateModel',  
 ];
 
