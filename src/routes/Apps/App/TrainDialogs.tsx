@@ -900,7 +900,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isEditDialogModalOpen: false,
             selectedActivityIndex: null,
             isTeachDialogModalOpen: true,
-            editType
+            editType,
+            currentTrainDialog: newTrainDialog
         })
     }
 
@@ -1107,7 +1108,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     ...t.tags,
                     t.description
                 ].join(' ').toLowerCase()
-                return searchString.indexOf(this.state.searchValue) > -1
+
+                return searchString.includes(this.state.searchValue)
             })
         }
 

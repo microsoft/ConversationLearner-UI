@@ -93,7 +93,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 selectedActivity,
                 hasEndSession: this.hasSessionEnded(nextProps.trainDialog)
             })
-
         }
     }
 
@@ -240,13 +239,16 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         if (activity.type === 'message') {
 
-            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog))
-            const definitions = {
-                entities: this.props.entities,
-                actions: this.props.actions,
-                trainDialogs: []
+            const newTrainDialog: CLM.TrainDialog = {
+                ...JSON.parse(JSON.stringify(this.props.trainDialog)),
+                tags: this.state.tags,
+                description: this.state.description,
+                definitions: {
+                    entities: this.props.entities,
+                    actions: this.props.actions,
+                    trainDialogs: []
+                }
             }
-            newTrainDialog.definitions = definitions
 
             // Content could come from button submit
             const userInput: CLM.UserInput = { text: activity.text! }

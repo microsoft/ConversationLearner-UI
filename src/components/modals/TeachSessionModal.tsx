@@ -175,8 +175,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
 
         // If we just added a sourceTrainDialog it's because we continued from an existing Train Dialog
+        // Or if the tags or description were changed before continuing
         // Copy over the tags and description from it
-        if (!this.props.sourceTrainDialog && newProps.sourceTrainDialog) {
+        if (!this.props.sourceTrainDialog && newProps.sourceTrainDialog
+            || (this.props.sourceTrainDialog
+                && newProps.sourceTrainDialog
+                && (this.props.sourceTrainDialog.tags.length !== newProps.sourceTrainDialog.tags.length
+                    || this.props.sourceTrainDialog.description !== newProps.sourceTrainDialog.description)
+                )) {
             const { tags, description } = newProps.sourceTrainDialog
             this.setState({
                 tags,
@@ -945,7 +951,7 @@ export interface ReceivedProps {
     sourceTrainDialog: CLM.TrainDialog | null
     // Train Dialog that this edit originally came from (not same as sourceTrainDialog)
     originalTrainDialogId: string | null,
-    // When editing, the intial history before teach starts
+    // When editing, the initial history before teach starts
     initialHistory: Activity[]
     lastAction: CLM.ActionBase | null
     allUniqueTags: string[]
