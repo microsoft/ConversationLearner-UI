@@ -122,6 +122,7 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage) {
   cy.Get('.wc-message-from-bot').contains(botMessage)
 
   // These do the actual validation this function is intended to validate.
+  // We expect NO Chat Edit Controls at all on this page.
   cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
   cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+')
   cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')

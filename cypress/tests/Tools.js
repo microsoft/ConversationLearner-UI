@@ -6,6 +6,9 @@
 const models = require('../support/Models')
 const homePage = require('../support/components/HomePage')
 const helpers = require('../support/Helpers')
+const modelPage = require('../support/components/ModelPage')
+const train = require('../support/Train')
+const editDialogModal = require('../support/components/EditDialogModal')
 
 Cypress.TestCase('Tools', 'Visit Home Page', VisitHomePage)
 export function VisitHomePage()
@@ -19,6 +22,24 @@ export function CreateModel(name = 'z-model')
 {
   models.CreateNewModel(name)
   VisitHomePage()
+}
+
+Cypress.TestCase('Tools', 'Verify Test Failure Expect Fail', VerifyTestFailure)
+export function VerifyTestFailure()
+{
+  models.ImportModel('z-editContols', 'z-nameTrained.cl')
+  modelPage.NavigateToTrainDialogs()
+
+  train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
+  train.CaptureOriginalChatMessages()
+
+  // This will verify that the last chat turn exists and has the expected controls.
+  editDialogModal.SelectChatTurn('My name is Susan.')
+  
+  cy.log('EXPECTED FAILURE')
+  cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+')
+
+  //editDialogModal.VerifyThereAreNoChatEditControls('My name is David.', 'Hello Susan')
 }
 
 Cypress.TestCase('Tools', 'Delete All Test Generated Models', DeleteAllTestGeneratedModels)
