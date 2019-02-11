@@ -58,10 +58,14 @@
 }
 .cl-tags__suggested-tags {
     position: absolute;
+    z-index: 2;
     width: 100%;
+    background: white;
     border: 1px solid var(--color-neutralTertiary);
     /* Force borders to overlap */
     margin-top: -1px;
+    max-height: 14.2em;
+    overflow-y: auto;
 }
 
 .cl-tags__suggested-tags__button {

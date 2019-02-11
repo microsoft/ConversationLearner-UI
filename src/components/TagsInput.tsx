@@ -38,6 +38,7 @@ const fuseOptions: Fuse.FuseOptions = {
 
 class component extends React.Component<Props, State> {
     inputRef = React.createRef<HTMLInputElement>()
+    suggestedTagsRef = React.createRef<HTMLDivElement>()
     fuse: Fuse
 
     state: Readonly<State> = {
@@ -75,6 +76,12 @@ class component extends React.Component<Props, State> {
         }
     }
 
+    componentDidUpdate(prevProps: Props, prevState: State) {
+        if (this.state.highlightIndex !== prevState.highlightIndex && this.suggestedTagsRef.current) {
+            this.scrollHighlightedElementIntoView(this.suggestedTagsRef.current)
+        }
+    }
+
     onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const tag = this.state.inputValue.trim()
@@ -100,9 +107,6 @@ class component extends React.Component<Props, State> {
             : this.fuse.search<FuseResult<ITag>>(searchText)
                 .map(result => convertMatchedTextIntoMatchedOption(result.item.text, result.matches[0].indices, result.item))
 
-        console.log(`Search Text: `, { searchText })
-        console.log(`matchedOptions: `, { matchedOptions })
-
         this.setState({
             inputValue,
             matchedOptions
@@ -110,13 +114,11 @@ class component extends React.Component<Props, State> {
     }
 
     onKeyDownInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        console.log(`onKeyDownInput: `, event.key)
         const fn = this[`on${event.key}`]
         if (typeof fn === "function") {
             return fn.call(this, event)
         }
     }
-
 
     onArrowUp() {
         // Move highlight up unless it's already at top then move to bottom
@@ -201,6 +203,18 @@ class component extends React.Component<Props, State> {
         event.preventDefault()
     }
 
+    private scrollHighlightedElementIntoView(resultsElement: HTMLDivElement) {
+        const selectedElement = resultsElement.querySelector('.cl-tags__suggested-tags__button--highlight') as HTMLUListElement
+        if (selectedElement) {
+            setTimeout(() => {
+                selectedElement.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest"
+                })
+            }, 0)
+        }
+    }
+
     private resetForm() {
         this.setState({
             inputValue: '',
@@ -253,7 +267,7 @@ class component extends React.Component<Props, State> {
                         />
                         <div className="cl-tags__suggested-tags-container">
                             {matchedOptions.length !== 0
-                                && <div className="cl-tags__suggested-tags">
+                                && <div className="cl-tags__suggested-tags" ref={this.suggestedTagsRef}>
                                     {matchedOptions.map((matchedOption, i) =>
                                         <div
                                             key={i}
