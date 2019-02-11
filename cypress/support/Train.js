@@ -22,9 +22,9 @@ export function CreateNewTrainDialog() {
         LastInput: undefined,
         LastResponse: undefined,
         Turns: 0,
-        // FUDGING on the time - subtract 10 seconds because the time is set by the server
+        // FUDGING on the time - subtract 25 seconds because the time is set by the server
         // which is not exactly the same as our test machine.
-        MomentTrainingStarted: Cypress.moment().subtract(10, 'seconds'),
+        MomentTrainingStarted: Cypress.moment().subtract(25, 'seconds'),
         MomentTrainingEnded: undefined,
         LastModifiedDate: undefined,
         CreatedDate: undefined,
@@ -54,9 +54,9 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
             LastInput: lastInputs[i],
             LastResponse: lastResponses[i],
             Turns: turns[i],
-            // FUDGING on the time - subtract 10 seconds because the time is set by the server
+            // FUDGING on the time - subtract 25 seconds because the time is set by the server
             // which is not exactly the same as our test machine.
-            MomentTrainingStarted: Cypress.moment().subtract(10, 'seconds'),
+            MomentTrainingStarted: Cypress.moment().subtract(25, 'seconds'),
             MomentTrainingEnded: undefined,
             LastModifiedDate: lastModifiedDates[i],
             CreatedDate: createdDates[i],
@@ -112,12 +112,12 @@ export function SelectAction(expectedResponse, lastResponse) {
   })
 }
 
-export function SelectEndSessionAction(action_selector, expected_rendered, lastResponse) {
-  scorerModal.ClickEndSessionAction(action_selector, expected_rendered)
+export function SelectEndSessionAction(expectedData, lastResponse) {
+  scorerModal.ClickEndSessionAction(expectedData);
   cy.Enqueue(() => {
-    if (lastResponse) window.currentTrainingSummary.LastResponse = lastResponse
-    else window.currentTrainingSummary.LastResponse = expected_rendered
-  })
+    if (lastResponse) window.currentTrainingSummary.LastResponse = lastResponse;
+    else window.currentTrainingSummary.LastResponse = 'EndSession: ' + expectedData;
+  });
 }
 
 // This method is used to score AND AUTO-SELECT the action after branching.
@@ -132,9 +132,9 @@ export function Save() {
   editDialogModal.ClickSaveCloseButton()
   trainDialogsGrid.VerifyPageTitle()
   cy.Enqueue(() => {
-    // FUDGING on the time - adding 10 seconds because the time is set by the server
+    // FUDGING on the time - adding 25 seconds because the time is set by the server
     // which is not exactly the same as our test machine.
-    window.currentTrainingSummary.MomentTrainingEnded = Cypress.moment().add(10, 'seconds')
+    window.currentTrainingSummary.MomentTrainingEnded = Cypress.moment().add(25, 'seconds')
 
     if (window.isBranched) VerifyTrainingSummaryIsInGrid(window.originalTrainingSummary)
 
@@ -158,9 +158,10 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
     var createdDates = trainDialogsGrid.GetCreatedDates()
 
     for (var i = 0; i < trainingSummary.TrainGridRowCount; i++) {
+      // Keep these lines of logging code in this method, they come in handy when things go bad.
       // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDates[${i}]: ${createdDates[i]} --- ${helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
       // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDates[${i}]: ${lastModifiedDates[i]} --- ${helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
-      // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `Turns: ${turns[i]}`)
+      // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `Turns[${i}]: ${turns[i]}`)
 
       if (((trainingSummary.LastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
         helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
@@ -170,7 +171,7 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
         firstInputs[i] == trainingSummary.FirstInput &&
         lastInputs[i] == trainingSummary.LastInput &&
         lastResponses[i] == trainingSummary.LastResponse)
-        return
+        return; // We found what we expected.
     }
     throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`
   })

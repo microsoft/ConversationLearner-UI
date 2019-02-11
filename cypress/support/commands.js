@@ -1,8 +1,5 @@
-import { createPartiallyEmittedExpression } from "typescript";
-import './Helpers'
 const helpers = require('./Helpers.js')
 const modelPage = require('./components/ModelPage')
-const train = require('../support/Train')
 
 // **********************************************************************************************
 // OTHER cy.* COMMANDS are defined in MonitorDocumentChanges.js
@@ -57,26 +54,17 @@ Cypress.Commands.add('UploadFile', (fileName, selector) => {
 // the text content of the elements to contain an EXACT MATCH to the expected text.
 Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expectedText) => {
   helpers.ConLog(`ExactMatch('${expectedText}')`, `Start`)
-  for (var i = 0; i < elements.length; i++) {
+  for (let i = 0; i < elements.length; i++) {
     helpers.ConLog(`ExactMatch('${expectedText}')`, `elements[${i}].innerText: '${elements[i].innerText}'`)
     if (elements[i].innerText == expectedText) return elements[i]
   }
   throw `Exact Match '${expectedText}' NOT Found`
 })
 
-Cypress.Commands.add('ExactMatchComplexHTML', { prevSubject: 'element' }, (elements, expectedText) => {
-  // helpers.ConLog(`ExactMatchComplexHTML('${expectedText}')`, `Start`)
-  for (var i = 0; i < elements.length; i++) {
-    //helpers.ConLog(`ExactMatchComplexHTML('${expectedText}')`, `With Markup: ${Cypress.$(elements[i]).parent().html()} -- Without Markup: '${helpers.RemoveMarkup(Cypress.$(elements[i]).parent().html())}'`)
-    if (helpers.RemoveMarkup(Cypress.$(elements[i]).parent().html()) == expectedText) return elements[i]
-  }
-  throw `ExactMatchComplexHTML '${expectedText}' NOT Found`
-})
-
 Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expectedText) => {
   helpers.ConLog(`ExactMatches('${expectedText}')`, `Start`)
-  var returnElements = new Array()
-  for (var i = 0; i < elements.length; i++) {
+  let returnElements = []
+  for (let i = 0; i < elements.length; i++) {
     helpers.ConLog(`ExactMatches('${expectedText}')`, `elements[${i}].innerText: '${elements[i].innerText}'`)
     if (elements[i].innerText == expectedText) returnElements.push(elements[i])
   }

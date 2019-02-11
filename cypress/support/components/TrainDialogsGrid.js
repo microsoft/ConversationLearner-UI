@@ -20,11 +20,11 @@ export function WaitForGridReadyThen(expectedRowCount, functionToRunAfterGridIsR
 }
 
 // These functions circumvent the Cypress retry logic by using jQuery
-export function GetFirstInputs() { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-first-input"]') }
-export function GetLastInputs() { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-last-input"]') }
-export function GetLastResponses() { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-last-response"]') }
-export function GetTurns() { return helpers.NumericArrayFromInnerHtml('[data-testid="train-dialogs-turns"]') }
-export function GetLastModifiedDates() { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-last-modified"]') }
-export function GetCreatedDates() { return helpers.StringArrayFromInnerHtml('[data-testid="train-dialogs-created"]') }
+export function GetFirstInputs() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-first-input"]') }
+export function GetLastInputs() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-last-input"]') }
+export function GetLastResponses() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-last-response"]') }
+export function GetTurns() { return helpers.NumericArrayFromElementText('[data-testid="train-dialogs-turns"]') }
+export function GetLastModifiedDates() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-last-modified"]') }
+export function GetCreatedDates() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-created"]') }
 
 export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).find('i[data-icon-name="IncidentTriangle"].cl-color-error') }

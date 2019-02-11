@@ -20,15 +20,16 @@
 //     (It is intended that this be automated, but at the moment it is not.)
 // ----------------------------------------------------------------------
 
-var testLists = require('../TestLists');
-const helpers = require('./Helpers');
+const testLists = require('../TestLists')
+const helpers = require('./Helpers')
 
-Cypress.TestCase = TestCase;
-Cypress.testList = testLists.testList;
-Cypress.regressionTestList = testLists.regressionTestList;
-Cypress.masterListOfAllTestCases = testLists.masterListOfAllTestCases;
+Cypress.TestCase = TestCase
+Cypress.loopCount = testLists.loopCount
+Cypress.testList = testLists.testList
+Cypress.regressionTestList = testLists.regressionTestList
+Cypress.masterListOfAllTestCases = testLists.masterListOfAllTestCases
 
-var testGroups = new Array();
+const testGroups = []
 
 // ----------------------------------------------------------------------
 // NOTE: Placement of these "require" statements is important in this file.
@@ -37,11 +38,12 @@ var testGroups = new Array();
 // found in this file.
 // ----------------------------------------------------------------------
 
-const createModels = require('../tests/CreateModels');
-const editAndBranching = require('../tests/EditAndBranching');
-const log = require('../tests/Log');
-const train = require('../tests/Train');
-const tools = require('../tests/Tools');
+const createModels = require('../tests/CreateModels')
+const editAndBranching = require('../tests/EditAndBranching')
+const log = require('../tests/Log')
+const train = require('../tests/Train')
+const ux = require('../tests/UX')
+const tools = require('../tests/Tools')
 const zTemp = require('../tests/zTemp')
 
 // ----------------------------------------------------------------------
@@ -59,46 +61,47 @@ function TestCase(testGroupName, testDescription, testFunction) {
   //        "function TheTestFunctionToRun(param1, param2) {...}"
   //   2) The magic number 9 here is skipping past the string "function "
   //      and grabbing just the name of the function.
-  var functionPrefixLength = 'function '.length
-  var testFunctionAsString = testFunction.toString();
-  var testFunctionName = testFunctionAsString.substring(functionPrefixLength, testFunctionAsString.indexOf('(', functionPrefixLength));
-  helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunctionName})`);
+  let functionPrefixLength = 'function '.length
+  let testFunctionAsString = testFunction.toString()
+  let testFunctionName = testFunctionAsString.substring(functionPrefixLength, testFunctionAsString.indexOf('(', functionPrefixLength))
+  helpers.ConLog('TestListManager', `TestCase(${testGroupName}, ${testDescription}, ${testFunctionName})`)
   
-  var testGroup = GetTestGroup(testGroupName);
+  let testGroup = FindTestGroup(testGroupName)
   if (!testGroup)
   {
-    testGroup = { name: testGroupName, tests: new Array() };
-    testGroups.push(testGroup);
+    testGroup = { name: testGroupName, tests: [] }
+    testGroups.push(testGroup)
   }
 
-  var test = { name: testDescription, func: testFunction };
-  testGroup.tests.push(test);
+  let test = { name: testFunctionName, description: testDescription, func: testFunction }
+  testGroup.tests.push(test)
 
-  var testSpecification = `${testGroupName}.${testFunctionName}`;
+  let testSpecification = `${testGroupName}.${testFunctionName}`
   if (-1 == testLists.masterListOfAllTestCases.indexOf(testSpecification)) {
     throw `There is a syncronization error between our master test list and a TestCase specification for: '${testSpecification}'` }
 }
 
 
 export function AddToCypressTestList(testList) {
-  var funcName = `AddToCypressTestList()`;
-  helpers.ConLog(funcName, `List of Tests: ${testList}`);
+  let funcName = `AddToCypressTestList()`
+  helpers.ConLog(funcName, `List of Tests: ${testList}`)
   
-  if (!Array.isArray(testList)) testList = [testList];
+  if (!Array.isArray(testList)) testList = [testList]
   
-  var testListIterator = new TestListIterator(testList);
+  let testListIterator = new TestListIterator(testList)
   
-  var test = testListIterator.next();
+  let test = testListIterator.next()
   while (test != undefined)
   {
-    helpers.ConLog(funcName, `Adding Group: ${test.group}`);
+    helpers.ConLog(funcName, `Adding Group: ${test.group}`)
     describe(test.group, () => {
-      var currentGroupName = test.group;
+      let currentGroupName = test.group
       while (test != undefined && test.group == currentGroupName)
       {
-        helpers.ConLog(funcName, `Adding Test Case: ${test.name}`);
-        it(test.name, test.func);
-        test = testListIterator.next();
+        helpers.ConLog(funcName, `Adding Test Case: ${test.name}`)
+        Cypress.PersistentLogs.RegisterTestCase(test.group, test.name)
+        it(test.description, test.func) 
+        test = testListIterator.next()
       }
     })
   }
@@ -106,41 +109,41 @@ export function AddToCypressTestList(testList) {
 
 class TestListIterator {
   constructor(testList) {
-    this.testList = testList;
-    this.index = 0;
-    this.currentGroup = {name: ''};
+    this.testList = testList
+    this.index = 0
+    this.currentGroup = {name: ''}
   }
 
-  // groupName.testName - 'testName' from 'groupName'
-  // TODO: Add support for these wild card versions
-  // *.*                - All Groups, All Tests
-  // *.testName         - All tests with all groups matching 'testName'
-  // groupName.*        - All tests from 'groupName'
   next() {
-    if (this.index >= this.testList.length) return undefined;
+    if (this.index >= this.testList.length) return undefined
 
-    var x = this.testList[this.index].split('.');
-    if (x.length != 2) throw `Invalid item in testList[${this.index}]: "${this.testList[this.index]}" - 'group DOT testName' format is expected`;
-    var groupName = x[0];
-    var testName = x[1];
+    let x = this.testList[this.index].split('.')
+    if (x.length != 2) throw `Invalid item in testList[${this.index}]: "${this.testList[this.index]}" - 'group DOT testName' format is expected`
+    let groupName = x[0]
+    let testName = x[1]
 
     if (this.currentGroup.name != groupName) {
-      this.currentGroup = GetTestGroup(groupName);
-      if (this.currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`;
+      this.currentGroup = FindTestGroup(groupName)
+      if (this.currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`
     }
     
-    var test = GetTest(this.currentGroup, testName);
-    if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`;
+    let test = FindTest(this.currentGroup, testName)
+    if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`
 
-    this.index++;
-    return {group: this.currentGroup.name, name: test.name, func: test.func};
+    this.index++
+    return {
+      group: this.currentGroup.name, 
+      name: test.name, 
+      description: test.description, 
+      func: test.func
+    }
   }
 }
 
-function GetTestGroup(name) {
-  return testGroups.find(testGroup => testGroup.name === name);
+function FindTestGroup(name) {
+  return testGroups.find(testGroup => testGroup.name === name)
 }
 
-function GetTest(testGroup, testNameToFind) {
-  return testGroup.tests.find(test => test.func.toString().substring(9).startsWith(testNameToFind));
+function FindTest(testGroup, testNameToFind) {
+  return testGroup.tests.find(test => test.name == testNameToFind)
 }

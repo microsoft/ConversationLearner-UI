@@ -20,7 +20,7 @@ const whichAnimalWouldYouLike = 'Which animal would you like?'
 Cypress.TestCase('EditAndBranching', 'Verify Edit Training Controls And Labels', VerifyEditTrainingControlsAndLabels)
 export function VerifyEditTrainingControlsAndLabels()
 {
-  var modelName = models.ImportModel('z-editContols', 'z-nameTrained.cl')
+  let modelName = models.ImportModel('z-editContols', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
 
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
@@ -46,7 +46,7 @@ export function VerifyEditTrainingControlsAndLabels()
 Cypress.TestCase('EditAndBranching', 'Branching', Branching)
 export function Branching()
 {
-  var modelName = models.ImportModel('z-branching', 'z-nameTrained.cl')
+  let modelName = models.ImportModel('z-branching', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
 
@@ -73,7 +73,7 @@ export function Branching()
 Cypress.TestCase('EditAndBranching', 'Tag And Frog', TagAndFrog)
 export function TagAndFrog()
 {
-  var textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
+  let textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
 
   models.ImportModel('z-tagAndFrog2', 'z-tagAndFrog2.cl')
   modelPage.NavigateToTrainDialogs()
@@ -223,6 +223,7 @@ export function WaitNonWaitErrorHandling()
   modelPage.VerifyNoErrorIconOnPage()
 }
 
+Cypress.TestCase('EditAndBranching', 'Add End Session Action', AddEndSessionAction)
 export function AddEndSessionAction() {
   models.ImportModel('z-sydney-flight', 'z-sydney-flight.cl')
 
@@ -233,7 +234,7 @@ export function AddEndSessionAction() {
   train.EditTraining('fly to sydney', 'coach', "enjoy your trip. you are booked on Qantas")
   editDialogModal.ClickScoreActionsButton()
   editDialogModal.SelectChatTurn('enjoy your trip. you are booked on Qantas', 1)
-  train.SelectEndSessionAction('EndSession0', 'EndSession: 0')
+  train.SelectEndSessionAction('0')
 
-  editDialogModal.AbandonBranchChanges()
+  editDialogModal.ClickSaveCloseButton()
 }
