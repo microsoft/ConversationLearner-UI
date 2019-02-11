@@ -24,7 +24,7 @@ export function CreateNewAction({ response, expectedEntities, requiredEntities, 
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
   actionModal.ClickCreateButton()
 
-  var requiredEntitiesFromResponse = ExtractEntities(response)
+  let requiredEntitiesFromResponse = ExtractEntities(response)
   response = response.replace(/{enter}/g, '')
 
   // Get the row that we are going to validate and assign a Cypress Alias to it.
@@ -40,18 +40,18 @@ export function CreateNewAction({ response, expectedEntities, requiredEntities, 
 // Returns an array containing entities like this: ['name', 'want']
 // ...OR...Returns an empty array if there are no entities in the response string.
 function ExtractEntities(response) {
-  var entitiesToReturn = new Array()
-  var iCurrent = 0
+  let entitiesToReturn = []
+  let iCurrent = 0
 
   while (iCurrent < response.length) {
-    var iStart = response.indexOf('$', iCurrent)
-    if (iStart < 0) break;
+    let iStart = response.indexOf('$', iCurrent)
+    if (iStart < 0) break
     iStart++
 
-    var iEnd = response.indexOf('{enter}', iStart)
-    if (iEnd < 0) break;
+    let iEnd = response.indexOf('{enter}', iStart)
+    if (iEnd < 0) break
 
-    var entityName = response.substring(iStart, iEnd)
+    let entityName = response.substring(iStart, iEnd)
 
     if (!IsAlphaNumeric(entityName)) iCurrent = iStart
     else {
@@ -64,8 +64,8 @@ function ExtractEntities(response) {
 }
 
 function IsAlphaNumeric(string) {
-  for (var i = 0; i < string.length; i++) {
-    var charCode = string.charCodeAt(i)
+  for (let i = 0; i < string.length; i++) {
+    let charCode = string.charCodeAt(i)
     if (!(charCode > 47 && charCode < 58) &&  // numeric (0-9)
       !(charCode > 64 && charCode < 91) &&  // upper alpha (A-Z)
       !(charCode > 96 && charCode < 123))   // lower alpha (a-z)

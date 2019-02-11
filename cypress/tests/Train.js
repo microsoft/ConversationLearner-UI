@@ -165,7 +165,7 @@ export function TagAndFrog()
 {
   // TODO: Need to add another test case or expand this one so that tagging something
   //       that was NOT tagged in another instance causes the UI to complain.
-  var textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
+  let textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
 
   models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
   modelPage.NavigateToTrainDialogs()
@@ -244,9 +244,9 @@ export function BookMeAFlight()
   scorerModal.VerifyContainsEnabledAction('When are you planning to travel?')
   train.SelectAction('When are you planning to travel?')
 
-  var today = Cypress.moment()
-  var tomorrow = today.add(1, 'days').format("YYYY-MM-DD")
-  var sundayNextWeek = today.add(today.day() == 0 ? 7 : 14 - today.day(), 'days').format("YYYY-MM-DD")
+  let today = Cypress.moment()
+  let tomorrow = today.add(1, 'days').format("YYYY-MM-DD")
+  let sundayNextWeek = today.add(today.day() == 0 ? 7 : 14 - today.day(), 'days').format("YYYY-MM-DD")
   train.TypeYourMessage('Leaving tomorrow and returning Sunday next week.')
   editDialogModal.LabelTextAsEntity('tomorrow', 'departure')
   editDialogModal.LabelTextAsEntity('Sunday next week', 'return')
@@ -254,7 +254,7 @@ export function BookMeAFlight()
   memoryTableComponent.VerifyEntityInMemory('departure', 'tomorrow')
   memoryTableComponent.VerifyEntityInMemory('return', 'Sunday next week')
   scorerModal.VerifyContainsDisabledAction('When are you planning to travel?')
-  var botResponse = `You are leaving on ${tomorrow} and returning on ${sundayNextWeek}`
+  let botResponse = `You are leaving on ${tomorrow} and returning on ${sundayNextWeek}`
   scorerModal.VerifyContainsEnabledAction(botResponse)
   train.SelectAction(botResponse, 'You are leaving on $departure and returning on $return')
 

@@ -30,7 +30,7 @@ function ValidateEntitiesIsEmpty(selector) { cy.Get('@responseDetailsRow').find(
 function ValidateEntities(selector, emptySelector, entities1, entities2) {
   if (!entities1 && !entities2) return ValidateEntitiesIsEmpty(emptySelector)
 
-  var entities = new Array()
+  let entities = []
   if (entities1) {
     if (!Array.isArray(entities1)) entities1 = [entities1]
     entities = entities1

@@ -1,5 +1,3 @@
-import { assertNever } from 'office-ui-fabric-react';
-
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
@@ -33,7 +31,7 @@ export function ClickEndSessionAction(expectedData, expectedIndexForActionPlacem
 
 // To verify the last chat utterance leave expectedIndexOfMessage undefined
 export function VerifyChatMessage(expectedMessage, expectedIndexOfMessage) {
-  var expectedUtterance = expectedMessage.replace(/'/g, "’")
+  let expectedUtterance = expectedMessage.replace(/'/g, "’")
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
     cy.wrap(elements[expectedIndexOfMessage]).within(e => {
@@ -43,11 +41,11 @@ export function VerifyChatMessage(expectedMessage, expectedIndexOfMessage) {
 }
 
 export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage) {
-  var expectedUtterance = 'EndSession: ' + expectedData.replace(/'/g, "’");
+  let expectedUtterance = 'EndSession: ' + expectedData.replace(/'/g, "’")
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
-    if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1;
-    let element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0];
-    expect(element.innerText).to.equal(expectedUtterance);
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
+    let element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
+    expect(element.innerText).to.equal(expectedUtterance)
   })
 }
 
