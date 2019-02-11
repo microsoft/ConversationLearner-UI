@@ -509,10 +509,7 @@ export default class ClClient {
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/teach/${teachSession.teachId}?save=${save}`
         })
-            .then(response => {
-                console.log({ delete: response.data })
-                return response.data.trainDialogId
-            })
+            .then(response => response.data.trainDialogId)
     }
 
     // filteredDialog = dialog to ignore when checking for conflicting labels

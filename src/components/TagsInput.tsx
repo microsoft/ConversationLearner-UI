@@ -100,7 +100,6 @@ class component extends React.Component<Props, State> {
 
     onChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value
-
         const searchText = inputValue.trim()
         const matchedOptions: MatchedOption<ITag>[] = (searchText.length === 0)
             ? this.getSuggestedTags(this.props.allUniqueTags, this.props.tags)
@@ -173,7 +172,7 @@ class component extends React.Component<Props, State> {
         const tag = this.state.inputValue
 
         // If user accidentally clicked away before submission still save tag
-        // They can always delete if unintended
+        // They can delete if unintended
         if (tag.length > 0) {
             this.props.onAdd(tag)
         }
@@ -223,7 +222,7 @@ class component extends React.Component<Props, State> {
         })
     }
 
-    // Only used when input is empty and can't use fuse.js
+    // Only used when input is empty and can't use fuse.js but still need list of matchedOptions
     private getSuggestedTags(allUniqueTags: ITag[], currentTags: string[]) {
         return allUniqueTags
             .filter(st => !currentTags.some(t => t === st.text))
