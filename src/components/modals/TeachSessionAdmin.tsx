@@ -315,6 +315,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 <TagsInput
                                     id="tags"
                                     // Map to objects because odd Fuse.js behavior on string[]
+                                    // See: https://github.com/krisk/Fuse/issues/287
                                     allUniqueTags={this.props.allUniqueTags.map(t => ({ text: t }))}
                                     tags={this.props.tags}
                                     onAdd={this.props.onAddTag}
