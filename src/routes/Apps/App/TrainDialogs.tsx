@@ -71,6 +71,18 @@ function textClassName(trainDialog: CLM.TrainDialog): string {
     return OF.FontClassNames.mediumPlus!;
 }
 
+function getFirstInput(trainDialog: CLM.TrainDialog): string | void {
+    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+        return trainDialog.rounds[0].extractorStep.textVariations[0].text
+    }
+}
+
+function getLastInput(trainDialog: CLM.TrainDialog): string | void {
+    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+        return trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
+    }
+}
+
 function getLastResponse(trainDialog: CLM.TrainDialog, component: TrainDialogs): string | void {
     // Find last action of last scorer step of last round
     // If found, return payload, otherwise return not found icon
@@ -97,7 +109,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: equalizeColumnWidth,
             isResizable: true,
             isSortedDescending: true,
-            render: trainDialog => <TagsReadOnly className={textClassName(trainDialog)} tags={trainDialog.tags} />,
+            render: trainDialog => <TagsReadOnly data-testid="train-dialogs-tags" className={textClassName(trainDialog)} tags={trainDialog.tags} />,
             getSortValue: trainDialog => trainDialog.tags.join(' ')
         },
         {
@@ -107,7 +119,16 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
             isResizable: true,
-            render: trainDialog => <span className={textClassName(trainDialog)}>{trainDialog.description || `Open dialog to add description`}</span>,
+            render: trainDialog => {
+                const firstInput = getFirstInput(trainDialog)
+                const lastInput = getLastInput(trainDialog)
+                return <>
+                    <span data-testid="train-dialogs-description" className={textClassName(trainDialog)}>{trainDialog.description || `Open dialog to add description`}</span>
+                    {/* Keep firstInput and lastInput here until tests are upgraded */}
+                    <span style={{ visibility: "hidden", position: "absolute" }} data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
+                    <span style={{ visibility: "hidden", position: "absolute" }} data-testid="train-dialogs-last-input">{lastInput ? lastInput : ''}</span>
+                </>
+            },
             getSortValue: trainDialog => trainDialog.description
         },
         {
