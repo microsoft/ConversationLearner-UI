@@ -85,7 +85,7 @@ var MonitorDocumentChanges = (function () {
 
         helpers.ConLog(functionSignature, `Found ${elements.length} for selector: ${selector}`)
 
-        if (elements.length > 0 && textItShouldNotContain) {
+        if ((elements.length > 0) && textItShouldNotContain) {
           elements = Cypress.$(elements).find(`:contains(${textItShouldNotContain})`)
           helpers.ConLog(functionSignature, `Found ${elements.length} containing text: ${textItShouldNotContain}`)
         }
