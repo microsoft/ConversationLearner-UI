@@ -178,9 +178,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
         // Or if the tags or description were changed before continuing
         // Copy over the tags and description from it
         if (!this.props.sourceTrainDialog && newProps.sourceTrainDialog
-            || (this.props.sourceTrainDialog
-                && newProps.sourceTrainDialog
-                && (this.props.sourceTrainDialog.tags.length !== newProps.sourceTrainDialog.tags.length
+            || ((this.props.sourceTrainDialog && newProps.sourceTrainDialog)
+                && (!Util.equal(this.props.sourceTrainDialog.tags, newProps.sourceTrainDialog.tags)
                     || this.props.sourceTrainDialog.description !== newProps.sourceTrainDialog.description)
                 )) {
             const { tags, description } = newProps.sourceTrainDialog
