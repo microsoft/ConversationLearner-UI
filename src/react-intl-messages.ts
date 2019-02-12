@@ -334,6 +334,13 @@ export enum FM {
     SETTINGS_LOGGINGON_LABEL = 'Settings.loggingon',
     SETINGS_DELETEISPERMANENT = 'Settings.deleteIsPermanent',
 
+    // Tags and Description
+    TAGS_INPUT_LABEL = 'Tags.label',
+    TAGS_INPUT_ADD = 'TagsInput.add',
+    TAGS_READONLY_EMPTY = 'TagsReadOnly.empty',
+    DESCRIPTION_LABEL = 'Description.label',
+    DESCRIPTION_PLACEHOLDER = 'Description.placeholder',
+
     // TeachSessionAdmin
     TEACHSESSIONADMIN_DIALOGMODE_USER = 'TeachSessionAdmin.dialogMode.user',
     TEACHSESSIONADMIN_DIALOGMODE_BOT = 'TeachSessionAdmin.dialogMode.bot',
@@ -953,6 +960,13 @@ export default {
         [FM.PACKAGECREATOR_CREATEBUTTON_TEXT]: 'Create',
         [FM.PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.PACKAGECREATOR_CANCELBUTTON_TEXT]: 'Cancel',
+
+        // Tags and Description
+        [FM.TAGS_INPUT_LABEL]: 'Tags',
+        [FM.TAGS_INPUT_ADD]: 'Add Tag',
+        [FM.TAGS_READONLY_EMPTY]: 'No Tags',
+        [FM.DESCRIPTION_LABEL]: 'Description',
+        [FM.DESCRIPTION_PLACEHOLDER]: 'Click on to add description',
 
         // TeachSessionAdmin
         [FM.TEACHSESSIONADMIN_DIALOGMODE_USER]: 'User Input',

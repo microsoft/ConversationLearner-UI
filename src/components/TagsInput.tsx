@@ -1,6 +1,8 @@
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Fuse from 'fuse.js'
+import { FM } from '../react-intl-messages'
+import FormattedMessageId from './FormattedMessageId'
 import FuseMatch from './ExtractorResponseEditor/FuseMatch'
 import { FuseResult, MatchedOption } from './ExtractorResponseEditor/models'
 import { convertMatchedTextIntoMatchedOption } from './ExtractorResponseEditor/utilities'
@@ -265,7 +267,7 @@ class component extends React.Component<Props, State> {
                 {!hasMaxTags && !showForm
                     ? <button className="cl-tags__button-add" id={this.props.id} onClick={() => this.onClickAdd()} >
                         {this.props.tags.length === 0
-                            ? 'Add Tag'
+                            ? <FormattedMessageId id={FM.TAGS_INPUT_ADD} />
                             : <OF.Icon iconName="Add" />}
                     </button>
                     : <form onSubmit={this.onSubmit} className="cl-tags__form">

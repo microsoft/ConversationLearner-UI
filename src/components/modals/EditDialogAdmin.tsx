@@ -16,6 +16,7 @@ import { Activity } from 'botframework-directlinejs'
 import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
+import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import { EditDialogType, EditState } from '.'
 import FormattedMessageId from '../FormattedMessageId'
@@ -376,7 +377,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         const editTypeClass = isLogDialog ? 'log' : 'train'
         const hasEndSession = DialogUtils.hasEndSession(this.props.trainDialog, this.props.actions)
         const renderData = this.getRenderData()
-
+        const { intl } = this.props
+        
         return (
             <div className={`cl-dialog-admin`}>
                 <div className="cl-dialog-admin__header">
@@ -390,7 +392,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         ? <div>{/* placeholder for grid */}</div>
                         : <div className={`cl-dialog-tags ${OF.FontClassNames.mediumPlus}`}>
                             <div className="cl-dialog-field">
-                                <label htmlFor="tags">Tags:</label>
+                                <label htmlFor="tags"><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</label>
                                 <TagsInput
                                     id="tags"
                                     // Map to objects because odd Fuse.js behavior on string[]
@@ -402,10 +404,10 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 />
                             </div>
                             <div className="cl-dialog-field">
-                                <label htmlFor="description">Description:</label>
+                                <label htmlFor="description"><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</label>
                                 <BorderlessTextInput
                                     id="description"
-                                    placeholder="Click on to add description"
+                                    placeholder={Util.formatMessageId(intl, FM.DESCRIPTION_PLACEHOLDER)}
                                     value={this.props.description}
                                     onChange={this.props.onChangeDescription}
                                 />

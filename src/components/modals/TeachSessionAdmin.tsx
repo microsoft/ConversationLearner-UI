@@ -14,6 +14,7 @@ import ActionScorer from './ActionScorer'
 import EntityExtractor from './EntityExtractor'
 import MemoryTable from './MemoryTable'
 import { FM } from '../../react-intl-messages'
+import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import { TeachSessionState } from '../../types/StateTypes'
 import TrainingStatusContainer from '../TrainingStatusContainer'
@@ -22,7 +23,6 @@ import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import TagsInput from '../TagsInput'
 import BorderlessTextInput from '../BorderlessTextInput'
-
 import './TeachSessionAdmin.css'
 
 interface RoundLookup {
@@ -292,6 +292,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             return null;
         }
 
+        const { intl } = this.props
         const renderData = this.getRenderData()
         const autoTeachWithRound = this.props.teachSession.autoTeach
         const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL)
@@ -311,7 +312,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         ? <div>{/* placeholder for grid */}</div>
                         : <div className={`cl-dialog-tags ${OF.FontClassNames.mediumPlus}`}>
                             <div className="cl-dialog-field">
-                                <label htmlFor="tags">Tags:</label>
+                                <label htmlFor="tags"><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</label>
                                 <TagsInput
                                     id="tags"
                                     // Map to objects because odd Fuse.js behavior on string[]
@@ -323,10 +324,10 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 />
                             </div>
                             <div className="cl-dialog-field">
-                                <label htmlFor="description">Description:</label>
+                                <label htmlFor="description"><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</label>
                                 <BorderlessTextInput
                                     id="description"
-                                    placeholder="Click on to add description"
+                                    placeholder={Util.formatMessageId(intl, FM.DESCRIPTION_PLACEHOLDER)}
                                     value={this.props.description}
                                     onChange={this.props.onChangeDescription}
                                 />
