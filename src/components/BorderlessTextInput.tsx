@@ -2,26 +2,33 @@ import * as React from 'react'
 import './BorderlessTextInput.css'
 
 // Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
-interface ReceivedProps {
+interface Props {
     id: string
     placeholder: string
     value: string
     onChange: (value: string) => void
+    maxLength: number
 }
 
-type Props = ReceivedProps
+class component extends React.Component<Props> {
+    static defaultProps = {
+        id: "defaultBorderlessInputId",
+        maxLength: 200
+    }
 
-const component: React.SFC<Props> = (props) => {
-    return (
-        <input className="cl-borderless-text-input"
-            type="text"
-            id={props.id}
-            value={props.value}
-            placeholder={props.placeholder}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => void props.onChange(event.target.value)}
-            autoComplete="off"
-        />
-    )
+    render() {
+        return (
+            <input className="cl-borderless-text-input"
+                type="text"
+                id={this.props.id}
+                value={this.props.value}
+                placeholder={this.props.placeholder}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => void this.props.onChange(event.target.value)}
+                autoComplete="off"
+                maxLength={this.props.maxLength}
+            />
+        )
+    }
 }
 
 export default component

@@ -14,9 +14,12 @@ interface Props extends React.HTMLProps<HTMLDivElement> {
     tags: string[]
     onAdd: (tag: string) => void
     onRemove: (tag: string) => void
+    maxTags: number
+    magTagLength: number
 }
 
 interface State {
+    hasMaxTags: boolean
     inputValue: string
     showForm: boolean
     matchedOptions: MatchedOption<ITag>[]
@@ -41,7 +44,13 @@ class component extends React.Component<Props, State> {
     suggestedTagsRef = React.createRef<HTMLDivElement>()
     fuse: Fuse
 
+    static defaultProps = {
+        maxTags: 20,
+        magTagLength: 100
+    }
+
     state: Readonly<State> = {
+        hasMaxTags: false,
         inputValue: '',
         showForm: false,
         matchedOptions: [],
@@ -55,8 +64,11 @@ class component extends React.Component<Props, State> {
     }
 
     componentDidMount() {
+        const hasMaxTags = this.props.tags.length > this.props.maxTags
         const matchedOptions = this.getSuggestedTags(this.props.allUniqueTags, this.props.tags)
+
         this.setState({
+            hasMaxTags,
             matchedOptions
         })
     }
@@ -64,9 +76,11 @@ class component extends React.Component<Props, State> {
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.tags.length !== nextProps.tags.length
             || this.props.allUniqueTags.length !== nextProps.allUniqueTags.length) {
-
+                
+            const hasMaxTags = this.props.tags.length > this.props.maxTags
             const matchedOptions = this.getSuggestedTags(nextProps.allUniqueTags, nextProps.tags)
             this.setState({
+                hasMaxTags,
                 matchedOptions
             })
 
@@ -236,7 +250,7 @@ class component extends React.Component<Props, State> {
 
     render() {
         const { matchedOptions, highlightIndex } = this.state
-        const { showForm } = this.state
+        const { hasMaxTags, showForm } = this.state
 
         return (
             <div className="cl-tags">
@@ -248,7 +262,7 @@ class component extends React.Component<Props, State> {
                         </button>
                     </div>
                 )}
-                {!showForm
+                {!hasMaxTags && !showForm
                     ? <button className="cl-tags__button-add" id={this.props.id} onClick={() => this.onClickAdd()} >
                         {this.props.tags.length === 0
                             ? 'Add Tag'
@@ -263,6 +277,7 @@ class component extends React.Component<Props, State> {
                             onKeyDown={this.onKeyDownInput}
                             onBlur={this.onBlurInput}
                             autoComplete="off"
+                            maxLength={this.props.magTagLength}
                         />
                         <div className="cl-tags__suggested-tags-container">
                             {matchedOptions.length !== 0

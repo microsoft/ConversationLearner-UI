@@ -7,9 +7,9 @@ interface Props extends React.HTMLProps<HTMLDivElement> {
 
 class component extends React.Component<Props> {
     render() {
-        const { tags } = this.props
+        const { tags, className } = this.props
         return (
-            <div className={`cl-tags-readonly ${this.props.className}`}>
+            <div className={`cl-tags-readonly ${className}`}>
                 {tags.length === 0
                     ? <div className="cl-tags-readonly__empty">No tags</div>
                     : tags.map((tag, i) =>
