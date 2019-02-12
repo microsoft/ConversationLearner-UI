@@ -66,7 +66,7 @@ export const masterListOfAllTestCases = [
   'Log.EndlessLoopX',
   'Tools.VisitHomePage',
   'Tools.CreateModel',
-  'Tools.VerifyTestFailure',
+  'Tools.VerifyDoesNotContainTestMethod',
   'Tools.DeleteAllTestGeneratedModels',
   'Train.DisqualifyingEntities',
   'Train.WaitVsNoWaitActions',

@@ -68,7 +68,7 @@ var MonitorDocumentChanges = (function () {
       })
     })
 
-    Cypress.Commands.add('DoesNotContain', { prevSubject: 'optional' }, (subject, selector, textItShouldNotContain) => {
+    Cypress.Commands.add('DoesNotContain', { prevSubject: 'optional' }, (subject, selector, textItShouldNotContain, expectFailure = false) => {
       let functionSignature = `cy.DoesNotContain(${subject}, ${selector}, ${textItShouldNotContain})`
       helpers.ConLog(functionSignature, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       cy.wrap(700, { timeout: 60000 }).should('lte', 'MillisecondsSinceLastChange').then(() => {
@@ -86,9 +86,11 @@ var MonitorDocumentChanges = (function () {
         }
 
         if (elements.length > 0) {
+          if (expectFailure) return true;
           throw `selector: "${selector}" & textItShouldNotContain: "${textItShouldNotContain}" was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`
         }
         helpers.ConLog(functionSignature, `PASSED - Selector was NOT Found as Expected`)
+        if (expectFailure) return false;
       })
     })
 

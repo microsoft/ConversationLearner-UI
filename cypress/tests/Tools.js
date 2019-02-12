@@ -24,8 +24,12 @@ export function CreateModel(name = 'z-model')
   VisitHomePage()
 }
 
-Cypress.TestCase('Tools', 'Verify Test Failure Expect Fail', VerifyTestFailure)
-export function VerifyTestFailure()
+// This is a test case to test one of our test methods, cy.DoesNotContain.
+// The problem with that method is that if it has a bug and does not find
+// the element we were expecting to not be on the page it passes, so this
+// will verify that our method is working as we expect.
+Cypress.TestCase('Tools', 'Verify the "DoesNotContain" Test Method', VerifyDoesNotContainTestMethod)
+export function VerifyDoesNotContainTestMethod()
 {
   models.ImportModel('z-editContols', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
@@ -33,13 +37,10 @@ export function VerifyTestFailure()
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
   train.CaptureOriginalChatMessages()
 
-  // This will verify that the last chat turn exists and has the expected controls.
   editDialogModal.SelectChatTurn('My name is Susan.')
-  
-  cy.log('EXPECTED FAILURE')
-  cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+')
+  editDialogModal.VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector()
 
-  //editDialogModal.VerifyThereAreNoChatEditControls('My name is David.', 'Hello Susan')
+  editDialogModal.ClickSaveCloseButton()
 }
 
 Cypress.TestCase('Tools', 'Delete All Test Generated Models', DeleteAllTestGeneratedModels)
