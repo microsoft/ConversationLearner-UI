@@ -68,6 +68,11 @@ var MonitorDocumentChanges = (function () {
       })
     })
 
+    // The last "expectFailure" parameter is used only for testing that this function works.
+    // To use it set up the conditions where the selector (and optional text if appropriate)
+    // does exist on the page and call this with "expectFailure" set to true. If this finds
+    // the selector then this method will return true, otherwise false.
+    // Without setting "expectFailure" this method will throw an exception on failure.
     Cypress.Commands.add('DoesNotContain', { prevSubject: 'optional' }, (subject, selector, textItShouldNotContain, expectFailure = false) => {
       let functionSignature = `cy.DoesNotContain(${subject}, ${selector}, ${textItShouldNotContain})`
       helpers.ConLog(functionSignature, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
