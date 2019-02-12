@@ -48,5 +48,13 @@ function ValidateEntities(selector, emptySelector, entities1, entities2) {
   cy.Get('@entitiesList').should('have.length', entities.length)
 }
 
+export function ValidateEndSessionWaitCheckMark(response) {
+  cy.Get('[data-testid="action-scorer-session-response"]')
+    .ExactMatch('EndSession')
+    .siblings('[data-testid="action-scorer-session-response-user"]')
+    .ExactMatch(response)
+    .parents('div.ms-DetailsRow-fields')
+    .find('[data-icon-name="CheckMark"][data-testid="action-details-wait"]')
+}
 
 

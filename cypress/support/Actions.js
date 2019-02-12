@@ -16,12 +16,16 @@ const helpers = require('../support/Helpers')
 export function CreateNewAction({ response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' }) {
   modelPage.NavigateToActions()
   actionModal.ClickNewAction()
+
+  // We do this first since there has been a bug where it is not reset by the UI when
+  // END_SESSION type is selected.
+  if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
+
   // TODO: this is the default but we need to get this working... actionsModal.selectTypeText()
   actionModal.TypeResponse(response)
   actionModal.TypeExpectedEntity(expectedEntities)
   actionModal.TypeRequiredEntities(requiredEntities)
   actionModal.TypeDisqualifyingEntities(disqualifyingEntities)
-  if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
   actionModal.ClickCreateButton()
 
   let requiredEntitiesFromResponse = ExtractEntities(response)
