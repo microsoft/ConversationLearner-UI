@@ -124,9 +124,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 const lastInput = getLastInput(trainDialog)
                 return <>
                     <span data-testid="train-dialogs-description" className={textClassName(trainDialog)}>{trainDialog.description || `Open dialog to add description`}</span>
-                    {/* Keep firstInput and lastInput here until tests are upgraded */}
-                    <span style={{ visibility: "hidden", position: "absolute" }} data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
-                    <span style={{ visibility: "hidden", position: "absolute" }} data-testid="train-dialogs-last-input">{lastInput ? lastInput : ''}</span>
+                    {/* Keep firstInput and lastInput available in DOM until tests are upgraded */}
+                    <span style={{ display: "none" }} data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
+                    <span style={{ display: "none" }} data-testid="train-dialogs-last-input">{lastInput ? lastInput : ''}</span>
                 </>
             },
             getSortValue: trainDialog => trainDialog.description
