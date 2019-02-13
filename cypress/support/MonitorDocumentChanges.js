@@ -68,31 +68,34 @@ var MonitorDocumentChanges = (function () {
       })
     })
 
-    Cypress.Commands.add('DoesNotContain', { prevSubject: 'optional' }, (subject, arg1, arg2) => {
-      helpers.ConLog(`cy.DoesNotContain(${subject}, ${arg1}, ${arg2})`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
+    // The last "expectFailure" parameter is used only for testing that this function works.
+    // To use it set up the conditions where the selector (and optional text if appropriate)
+    // does exist on the page and call this with "expectFailure" set to true. If this finds
+    // the selector then this method will return true, otherwise false.
+    // Without setting "expectFailure" this method will throw an exception on failure.
+    Cypress.Commands.add('DoesNotContain', { prevSubject: 'optional' }, (subject, selector, textItShouldNotContain, expectFailure = false) => {
+      let functionSignature = `cy.DoesNotContain(${subject}, ${selector}, ${textItShouldNotContain})`
+      helpers.ConLog(functionSignature, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       cy.wrap(700, { timeout: 60000 }).should('lte', 'MillisecondsSinceLastChange').then(() => {
-        helpers.ConLog(`cy.DoesNotContain()`, `DOM Is Stable`)
-
-        let selector
-        if (arg2) selector = arg2
-        else selector = arg1
+        helpers.ConLog(functionSignature, `DOM Is Stable`)
 
         let elements
         if (subject) elements = Cypress.$(subject).find(selector)
         else elements = Cypress.$(selector)
 
-        helpers.ConLog(`cy.DoesNotContain()`, `Found ${elements.length} for selector: ${selector}`)
+        helpers.ConLog(functionSignature, `Found ${elements.length} for selector: ${selector}`)
+
+        if ((elements.length > 0) && textItShouldNotContain) {
+          elements = Cypress.$(elements).find(`:contains(${textItShouldNotContain})`)
+          helpers.ConLog(functionSignature, `Found ${elements.length} containing text: ${textItShouldNotContain}`)
+        }
 
         if (elements.length > 0) {
-          if (arg2) {
-            elements = Cypress.$(elements).find(`:contains(${arg2})`)
-            helpers.ConLog(`cy.DoesNotContain()`, `Found ${elements.length} containing text: ${arg2}`)
-          }
-
-          if (elements.length > 0)
-            throw `Selector "${arg1}" + "${arg2}" was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`
+          if (expectFailure) return true;
+          throw `selector: "${selector}" & textItShouldNotContain: "${textItShouldNotContain}" was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`
         }
-        helpers.ConLog(`cy.DoesNotContain()`, `PASSED - Selector: ${selector} was NOT Found as Expected`)
+        helpers.ConLog(functionSignature, `PASSED - Selector was NOT Found as Expected`)
+        if (expectFailure) return false;
       })
     })
 

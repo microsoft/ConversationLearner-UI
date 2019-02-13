@@ -122,10 +122,21 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage) {
   cy.Get('.wc-message-from-bot').contains(botMessage)
 
   // These do the actual validation this function is intended to validate.
+  // We expect NO Chat Edit Controls at all on this page.
   cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
   cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+')
   cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
   cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]', '+')
+}
+
+// This is an odd verification function in that it is validating test code that we
+// had wrong at one point. We need to do this because if the cy.DoesNotContain fails
+// to find the selector, it could mean that cy.DoesNotContain method has a bug in it.
+export function VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector(userMessage, botMessage) {
+  cy.log('EXPECTED FAILURE Comming Next')
+  cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+', true).then(expectedFailureOccurred => {
+    expect(expectedFailureOccurred).to.be.true
+  })
 }
 
 export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {

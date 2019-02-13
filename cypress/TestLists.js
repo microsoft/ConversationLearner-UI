@@ -66,6 +66,7 @@ export const masterListOfAllTestCases = [
   'Log.EndlessLoopX',
   'Tools.VisitHomePage',
   'Tools.CreateModel',
+  'Tools.VerifyDoesNotContainTestMethod',
   'Tools.DeleteAllTestGeneratedModels',
   'Train.DisqualifyingEntities',
   'Train.WaitVsNoWaitActions',
@@ -75,4 +76,4 @@ export const masterListOfAllTestCases = [
   'Train.BookMeAFlight',
   'UX.BotModelMismatch',
   'zTemp.zTemp',
-];
+]
