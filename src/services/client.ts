@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
+import { PartialTrainDialog } from '../types/models'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { AppInput } from '../types/models'
 
@@ -313,7 +314,7 @@ export default class ClClient {
     }
 
     //AT.EDIT_TRAINDIALOG_ASYNC
-    trainDialogEdit(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainResponse> {
+    trainDialogEdit(appId: string, trainDialog: PartialTrainDialog): Promise<CLM.TrainResponse> {
         return this.send<CLM.TrainResponse>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialog.trainDialogId}`,
