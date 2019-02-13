@@ -23,7 +23,7 @@ export function ClickConfirmButton() { return cy.Get('.ms-Dialog-main').contains
 export function GetModelListRowCount() {
   return cy.Get('[data-automationid="DetailsList"] > [role="grid"]')
     .then(gridElement => { 
-      let rowCount = +gridElement.attr('aria-rowcount') - 1; 
+      let rowCount = +gridElement.attr('aria-rowcount') - 1
       return rowCount 
     })
 }
