@@ -144,7 +144,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         if (this.canReplay(activity)) {
             if (activity && this.state.currentTrainDialog) {
                 const isLastActivity = activity === this.props.history[this.props.history.length - 1]
-                this.props.onInsertAction(this.state.currentTrainDialog, activity, isLastActivity, selectionType)
+                const trainDialog: CLM.TrainDialog = {
+                    ...this.state.currentTrainDialog,
+                    tags: this.state.tags,
+                    description: this.state.description
+                }
+                this.props.onInsertAction(trainDialog, activity, isLastActivity, selectionType)
             }
         }
         else {
@@ -175,21 +180,36 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
 
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
-            this.props.onInsertInput(this.state.currentTrainDialog, this.state.selectedActivity, userInput, this.state.addUserInputSelectionType)
+            const trainDialog: CLM.TrainDialog = {
+                ...this.state.currentTrainDialog,
+                tags: this.state.tags,
+                description: this.state.description
+            }
+            this.props.onInsertInput(trainDialog, this.state.selectedActivity, userInput, this.state.addUserInputSelectionType)
         }
     }
 
     @OF.autobind
     onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
-            this.props.onChangeExtraction(this.state.currentTrainDialog, this.state.selectedActivity, extractResponse, textVariations)
+            const trainDialog: CLM.TrainDialog = {
+                ...this.state.currentTrainDialog,
+                tags: this.state.tags,
+                description: this.state.description
+            }
+            this.props.onChangeExtraction(trainDialog, this.state.selectedActivity, extractResponse, textVariations)
         }
     }
 
     @OF.autobind
     onChangeAction(trainScorerStep: CLM.TrainScorerStep) {
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
-            this.props.onChangeAction(this.state.currentTrainDialog, this.state.selectedActivity, trainScorerStep)
+            const trainDialog: CLM.TrainDialog = {
+                ...this.state.currentTrainDialog,
+                tags: this.state.tags,
+                description: this.state.description
+            }
+            this.props.onChangeAction(trainDialog, this.state.selectedActivity, trainScorerStep)
         }
     }
 
@@ -221,7 +241,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
 
         if (this.state.selectedActivity && this.state.currentTrainDialog && this.props.onBranchDialog) {
-            this.props.onBranchDialog(this.state.currentTrainDialog, this.state.selectedActivity, userInput)
+            const trainDialog: CLM.TrainDialog = {
+                ...this.state.currentTrainDialog,
+                tags: this.state.tags,
+                description: this.state.description
+            }
+            this.props.onBranchDialog(trainDialog, this.state.selectedActivity, userInput)
         }
     }
 
@@ -420,7 +445,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         iconProps={{ iconName: 'Delete' }}
                         onClick={() => {
                             if (this.state.selectedActivity && this.state.currentTrainDialog) {
-                                this.props.onDeleteTurn(this.state.currentTrainDialog, activity)
+                                const trainDialog: CLM.TrainDialog = {
+                                    ...this.state.currentTrainDialog,
+                                    tags: this.state.tags,
+                                    description: this.state.description
+                                }
+                                this.props.onDeleteTurn(trainDialog, activity)
                             }
                         }}
                         ariaDescription="Delete Turn"
