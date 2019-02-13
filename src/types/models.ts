@@ -14,4 +14,4 @@ export interface AppInput {
     metadata: AppMetaData
 }
 
-export type PartialTrainDialog = Pick<TrainDialog, "trainDialogId"> & Partial<TrainDialog>
+export type PartialTrainDialog = Pick<TrainDialog, "trainDialogId" | "tags" | "description"> & Partial<TrainDialog>
