@@ -21,6 +21,11 @@ export function CreateNewAction({ response, expectedEntities, requiredEntities, 
   // END_SESSION type is selected.
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
 
+  switch(type) {
+    case "END_SESSION":
+      cy.Get('[data-testid="dropdown-action-type"]')
+  }
+  
   // TODO: this is the default but we need to get this working... actionsModal.selectTypeText()
   actionModal.TypeResponse(response)
   actionModal.TypeExpectedEntity(expectedEntities)

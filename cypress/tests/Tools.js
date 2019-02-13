@@ -14,7 +14,7 @@ Cypress.TestCase('Tools', 'Visit Home Page', VisitHomePage)
 export function VisitHomePage()
 {
   homePage.Visit()
-  homePage.GetModelListRowCount()
+  //homePage.GetModelListRowCount()
 }
 
 Cypress.TestCase('Tools', 'Create Model', CreateModel)

@@ -52,6 +52,8 @@ export function WaitVsNoWaitActions()
   actions.CreateNewAction({ response: 'Cows say moo!', uncheckWaitForResponse: true })
   actions.CreateNewAction({ response: 'Ducks say quack!', uncheckWaitForResponse: true })
   actions.CreateNewAction({ response: 'Fish just swim.', uncheckWaitForResponse: true })
+  
+  actions.CreateNewAction({ response: "That's All Folks.", uncheckWaitForResponse: true })
 
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
