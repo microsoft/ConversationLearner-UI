@@ -20,7 +20,7 @@ const whichAnimalWouldYouLike = 'Which animal would you like?'
 Cypress.TestCase('EditAndBranching', 'Verify Edit Training Controls And Labels', VerifyEditTrainingControlsAndLabels)
 export function VerifyEditTrainingControlsAndLabels()
 {
-  let modelName = models.ImportModel('z-editContols', 'z-nameTrained.cl')
+  models.ImportModel('z-editContols', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
 
   train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
@@ -46,7 +46,7 @@ export function VerifyEditTrainingControlsAndLabels()
 Cypress.TestCase('EditAndBranching', 'Branching', Branching)
 export function Branching()
 {
-  let modelName = models.ImportModel('z-branching', 'z-nameTrained.cl')
+  models.ImportModel('z-branching', 'z-nameTrained.cl')
   modelPage.NavigateToTrainDialogs()
   cy.WaitForTrainingStatusCompleted()
 
