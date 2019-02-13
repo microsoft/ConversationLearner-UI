@@ -11,7 +11,7 @@ class component extends React.Component<Props> {
     render() {
         const { tags, className } = this.props
         return (
-            <div className={`cl-tags-readonly ${className}`}>
+            <div className={`cl-tags-readonly ${className}`} data-testid="train-dialogs-tags">
                 {tags.length === 0
                     ? <div className="cl-tags-readonly__empty"><FormattedMessageId id={FM.TAGS_READONLY_EMPTY} /></div>
                     : tags.map((tag, i) =>

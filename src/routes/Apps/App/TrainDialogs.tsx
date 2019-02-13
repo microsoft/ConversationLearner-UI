@@ -109,7 +109,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: equalizeColumnWidth,
             isResizable: true,
             isSortedDescending: true,
-            render: trainDialog => <TagsReadOnly data-testid="train-dialogs-tags" className={textClassName(trainDialog)} tags={trainDialog.tags} />,
+            render: trainDialog => <TagsReadOnly className={textClassName(trainDialog)} tags={trainDialog.tags} />,
             getSortValue: trainDialog => trainDialog.tags.join(' ')
         },
         {
