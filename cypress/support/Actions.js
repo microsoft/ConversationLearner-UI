@@ -17,8 +17,8 @@ export function CreateNewAction({ response, expectedEntities, requiredEntities, 
   modelPage.NavigateToActions()
   actionModal.ClickNewAction()
 
-  // We do this first since there has been a bug where it is not reset by the UI when
-  // END_SESSION type is selected.
+  // We do this first since we had a bug (1910) where it is not reset by the UI when
+  // type END_SESSION is selected.
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
 
   actionModal.SelectType(type)
