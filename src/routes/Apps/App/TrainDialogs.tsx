@@ -103,20 +103,20 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
             key: `tags`,
-            name: `Tags`,
-            fieldName: `Tags`,
+            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_TAGS),
+            fieldName: `tags`,
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
             isResizable: true,
             render: trainDialog => trainDialog.tags.length ===0
-                ? <span className={textClassName(trainDialog)}>Open dialog to add tags</span>
+                ? <span data-testid="train-dialogs-tags" className={textClassName(trainDialog)}><FormattedMessageId id={FM.TRAINDIALOGS_TAGS_EMPTY} /></span>
                 : <TagsReadOnly className={textClassName(trainDialog)} tags={trainDialog.tags} />,
             getSortValue: trainDialog => trainDialog.tags.join(' ')
         },
         {
             key: `description`,
-            name: `Description`,
-            fieldName: 'description',
+            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_DESCRIPTION),
+            fieldName: `description`,
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
             isResizable: true,
@@ -124,7 +124,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 const firstInput = getFirstInput(trainDialog)
                 const lastInput = getLastInput(trainDialog)
                 return <>
-                    <span data-testid="train-dialogs-description" className={textClassName(trainDialog)}>{trainDialog.description || `Open dialog to add description`}</span>
+                    <span data-testid="train-dialogs-description" className={textClassName(trainDialog)}>{trainDialog.description || <FormattedMessageId id={FM.TRAINDIALOGS_DESCRIPTION_EMPTY} />}</span>
                     {/* Keep firstInput and lastInput available in DOM until tests are upgraded */}
                     <span style={{ display: "none" }} data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
                     <span style={{ display: "none" }} data-testid="train-dialogs-last-input">{lastInput ? lastInput : ''}</span>
