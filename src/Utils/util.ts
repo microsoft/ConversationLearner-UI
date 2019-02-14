@@ -94,5 +94,8 @@ export function formatMessageId(intl: ReactIntl.InjectedIntl, id: IntlMessages.F
 }
 
 export function earlierDateOrTimeToday(timestamp: string): string {
-    return moment(timestamp).format(moment().diff(moment(timestamp), "hours") < 24 ? 'LTS' : 'L')
+    const endOfYesterday = moment().endOf("day").subtract(1, "day")
+    const dialogTime = moment(timestamp)
+    const isDialogCreatedToday = dialogTime.diff(endOfYesterday) >= 0
+    return dialogTime.format(isDialogCreatedToday ? 'LTS' : 'L')
 }
