@@ -99,7 +99,7 @@ function getLastResponse(trainDialog: CLM.TrainDialog, component: TrainDialogs):
 }
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
-    let equalizeColumnWidth = window.innerWidth / 6
+    let equalizeColumnWidth = window.innerWidth / 3
     return [
         {
             key: `tags`,
@@ -120,36 +120,19 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
             isResizable: true,
-            render: trainDialog => {
+            render: (trainDialog, component) => {
                 const firstInput = getFirstInput(trainDialog)
                 const lastInput = getLastInput(trainDialog)
+                const lastResponse = getLastResponse(trainDialog, component);
                 return <>
                     <span data-testid="train-dialogs-description" className={textClassName(trainDialog)}>{trainDialog.description || <FormattedMessageId id={FM.TRAINDIALOGS_DESCRIPTION_EMPTY} />}</span>
                     {/* Keep firstInput and lastInput available in DOM until tests are upgraded */}
                     <span style={{ display: "none" }} data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
                     <span style={{ display: "none" }} data-testid="train-dialogs-last-input">{lastInput ? lastInput : ''}</span>
+                    <span style={{ display: "none" }} data-testid="train-dialogs-last-response">{lastResponse ? lastResponse : ''}</span>
                 </>
             },
             getSortValue: trainDialog => trainDialog.description
-        },
-        {
-            key: 'lastResponse',
-            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_LASTRESPONSE),
-            fieldName: 'lastResponse',
-            minWidth: 100,
-            maxWidth: equalizeColumnWidth,
-            isResizable: true,
-            render: (trainDialog, component) => {
-                let lastResponse = getLastResponse(trainDialog, component);
-                if (lastResponse) {
-                    return <span className={textClassName(trainDialog)} data-testid="train-dialogs-last-response">{lastResponse}</span>;
-                }
-                return <OF.Icon iconName="Remove" className="notFoundIcon" />;
-            },
-            getSortValue: (trainDialog, component) => {
-                let lastResponse = getLastResponse(trainDialog, component)
-                return lastResponse ? lastResponse.toLowerCase() : ''
-            }
         },
         {
             key: 'turns',
