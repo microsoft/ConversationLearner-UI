@@ -392,6 +392,15 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         ? <div>{/* placeholder for grid */}</div>
                         : <div className={`cl-dialog-tags ${OF.FontClassNames.mediumPlus}`}>
                             <div className="cl-dialog-field">
+                                <label htmlFor="description"><OF.Icon iconName="TextField" className="cl-icon" /><span><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</span></label>
+                                <BorderlessTextInput
+                                    id="description"
+                                    placeholder={Util.formatMessageId(intl, FM.DESCRIPTION_PLACEHOLDER)}
+                                    value={this.props.description}
+                                    onChange={this.props.onChangeDescription}
+                                />
+                            </div>
+                            <div className="cl-dialog-field">
                                 <label htmlFor="tags"><OF.Icon iconName="Tag" className="cl-icon" /><span><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</span></label>
                                 <TagsInput
                                     id="tags"
@@ -403,15 +412,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     onRemove={this.props.onRemoveTag}
                                 />
                             </div>
-                            <div className="cl-dialog-field">
-                                <label htmlFor="description"><OF.Icon iconName="TextField" className="cl-icon" /><span><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</span></label>
-                                <BorderlessTextInput
-                                    id="description"
-                                    placeholder={Util.formatMessageId(intl, FM.DESCRIPTION_PLACEHOLDER)}
-                                    value={this.props.description}
-                                    onChange={this.props.onChangeDescription}
-                                />
-                            </div>
+                            
                         </div>}
                     <TrainingStatusContainer
                         app={this.props.app}

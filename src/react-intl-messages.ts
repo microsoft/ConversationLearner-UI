@@ -834,8 +834,8 @@ export default {
         [FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Train Dialog',
         [FM.TRAINDIALOGS_TAGS]: 'Tags',
         [FM.TRAINDIALOGS_TAGS_EMPTY]: 'Open dialog to add tags',
-        [FM.TRAINDIALOGS_DESCRIPTION]: 'Description',
-        [FM.TRAINDIALOGS_DESCRIPTION_EMPTY]: 'Open dialog to add description',
+        [FM.TRAINDIALOGS_DESCRIPTION]: 'Scenario',
+        [FM.TRAINDIALOGS_DESCRIPTION_EMPTY]: 'Open dialog to add scenario',
         [FM.TRAINDIALOGS_TURNS]: 'Turns',
         [FM.TRAINDIALOGS_CREATED_DATE_TIME]: 'Created',
         [FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
@@ -967,8 +967,8 @@ export default {
         [FM.TAGS_INPUT_LABEL]: 'Tags',
         [FM.TAGS_INPUT_ADD]: 'Add Tag',
         [FM.TAGS_READONLY_EMPTY]: 'No Tags',
-        [FM.DESCRIPTION_LABEL]: 'Description',
-        [FM.DESCRIPTION_PLACEHOLDER]: 'Click on to add description',
+        [FM.DESCRIPTION_LABEL]: 'Scenario',
+        [FM.DESCRIPTION_PLACEHOLDER]: 'Click to add scenario',
 
         // TeachSessionAdmin
         [FM.TEACHSESSIONADMIN_DIALOGMODE_USER]: 'User Input',
