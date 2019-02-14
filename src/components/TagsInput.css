@@ -33,7 +33,7 @@
 }
 .cl-tags__tag button {
     background-color: inherit;
-    padding: 0 0.25em;
+    padding: 0.15em 0.25em 0 0.25em;
     cursor: pointer;
 }
 .cl-tags__tag button:hover,
@@ -42,7 +42,7 @@
 }
 
 .cl-tags .cl-tags__button-add {
-    padding: 0 0.25rem;
+    padding: 0.15em 0.25em 0 0.25em;
     background-color: var(--color-themeLight);
     cursor: pointer;
     margin-top: 5px;
