@@ -392,7 +392,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         ? <div>{/* placeholder for grid */}</div>
                         : <div className={`cl-dialog-tags ${OF.FontClassNames.mediumPlus}`}>
                             <div className="cl-dialog-field">
-                                <label htmlFor="tags"><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</label>
+                                <label htmlFor="tags"><OF.Icon iconName="Tag" className="cl-icon" /><span><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</span></label>
                                 <TagsInput
                                     id="tags"
                                     // Map to objects because odd Fuse.js behavior on string[]
@@ -404,7 +404,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 />
                             </div>
                             <div className="cl-dialog-field">
-                                <label htmlFor="description"><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</label>
+                                <label htmlFor="description"><OF.Icon iconName="TextField" className="cl-icon" /><span><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</span></label>
                                 <BorderlessTextInput
                                     id="description"
                                     placeholder={Util.formatMessageId(intl, FM.DESCRIPTION_PLACEHOLDER)}

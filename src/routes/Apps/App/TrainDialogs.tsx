@@ -108,8 +108,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
             isResizable: true,
-            isSortedDescending: true,
-            render: trainDialog => <TagsReadOnly className={textClassName(trainDialog)} tags={trainDialog.tags} />,
+            render: trainDialog => trainDialog.tags.length ===0
+                ? <span className={textClassName(trainDialog)}>Open dialog to add tags</span>
+                : <TagsReadOnly className={textClassName(trainDialog)} tags={trainDialog.tags} />,
             getSortValue: trainDialog => trainDialog.tags.join(' ')
         },
         {
@@ -169,6 +170,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             fieldName: 'lastModifiedDateTime',
             minWidth: 100,
             isResizable: false,
+            isSortedDescending: true,
             render: trainDialog => <span className={OF.FontClassNames.mediumPlus} data-testid="train-dialogs-last-modified">{Util.earlierDateOrTimeToday(trainDialog.lastModifiedDateTime)}</span>,
             getSortValue: trainDialog => moment(trainDialog.lastModifiedDateTime).valueOf().toString()
         },
@@ -391,7 +393,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
             this.setState({
                 isTeachDialogModalOpen: true,
-                editType: EditDialogType.NEW
+                editType: EditDialogType.NEW,
+                currentTrainDialog: null,
+                originalTrainDialogId: null
             })
         }
         catch (error) {
