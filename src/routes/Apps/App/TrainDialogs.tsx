@@ -982,7 +982,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         void this.onCloseEditDialogModal()
     }
 
-    onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
+    async onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
         this.props.clearWebchatScrollPosition()
         let trainDialogWithDefinitions: CLM.TrainDialog = {
             createdDateTime: new Date().toJSON(),
@@ -1001,22 +1001,25 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             },
         };
 
-        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            .then(teachWithHistory => {
-                const originalId = this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null
-                this.setState({
-                    history: teachWithHistory.history,
-                    lastAction: teachWithHistory.lastAction,
-                    currentTrainDialog: trainDialog,
-                    originalTrainDialogId: originalId,
-                    editType: EditDialogType.TRAIN_ORIGINAL,
-                    isEditDialogModalOpen: true,
-                    selectedActivityIndex: null
-                })
+        try {
+            const teachWithHistory = await((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            const originalId = this.state.currentTrainDialog
+                ? this.state.currentTrainDialog.trainDialogId
+                : null
+            this.setState({
+                history: teachWithHistory.history,
+                lastAction: teachWithHistory.lastAction,
+                currentTrainDialog: trainDialog,
+                originalTrainDialogId: originalId,
+                editType: EditDialogType.TRAIN_ORIGINAL,
+                isEditDialogModalOpen: true,
+                selectedActivityIndex: null
             })
-            .catch(error => {
-                console.warn(`Error when attempting to create history: `, error)
-            })
+        }
+        catch (e) {
+            const error = e as Error
+            console.warn(`Error when attempting to create history: `, error)
+        }
     }
 
     async onCloseEditDialogModal(reload: boolean = false) {
