@@ -119,11 +119,11 @@ export function TwoConsecutiveUserInputErrorHandling()
   editDialogModal.ClickSaveCloseButton()
 
   modelPage.VerifyErrorIconForTrainDialogs()
-  train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Hey`, 'world peace', "Sorry $name, I can't help you get $want")
+  train.VerifyErrorsFoundInTraining(`Hey`, 'world peace', "Sorry $name, I can't help you get $want")
 
   // - - - Open the same Train Dialog, validate and fix the errors. - - -
 
-  train.EditTraining(`${String.fromCharCode(59412)}Hey`, 'world peace', "Sorry $name, I can't help you get $want")
+  train.EditTraining(`Hey`, 'world peace', "Sorry $name, I can't help you get $want")
   editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
   editDialogModal.SelectChatTurn('Sam')
   editDialogModal.VerifyErrorMessage('Two consecutive User Inputs')
@@ -192,11 +192,11 @@ export function WaitNonWaitErrorHandling()
   editDialogModal.ClickSaveCloseButton()
 
   modelPage.VerifyErrorIconForTrainDialogs()
-  train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', fishJustSwim)
+  train.VerifyErrorsFoundInTraining(`Duck`, 'Fish', fishJustSwim)
 
   // - - - Open the same Train Dialog, validate and fix the errors. - - -
 
-  train.EditTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', fishJustSwim)
+  train.EditTraining(`Duck`, 'Fish', fishJustSwim)
   editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
 
   Validations(3)
