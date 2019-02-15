@@ -403,7 +403,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 50,
             isResizable: false,
             getSortValue: action => action.isTerminal ? 'a' : 'b',
-            render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="cl-icon" />
+            render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait"/>
         },
         {
             key: 'createdDateTime',
