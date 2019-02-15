@@ -12,6 +12,12 @@ export function TypeExpectedEntity(entityNames) { TypeMultipleEntities('.cl-acti
 export function TypeRequiredEntities(entityNames) { TypeMultipleEntities('.cl-action-creator--required-entities', entityNames) }
 export function TypeDisqualifyingEntities(entityNames) { TypeMultipleEntities('.cl-action-creator--disqualifying-entities', entityNames) }
 
+export function SelectType(type)
+{
+  cy.Get('[data-testid="dropdown-action-type"]').Click()
+  cy.Get('button.ms-Dropdown-item').ExactMatch(type).Click()
+}
+
 export function TypeResponse(textToType) {
   cy.Get('.cl-modal_body').within(() => {
     cy.Get('div[data-slate-editor="true"]')
