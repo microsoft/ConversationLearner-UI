@@ -24,4 +24,15 @@ module.exports = (on, config) => {
       return path.parse(path.normalize(filePath))
     },
   })
+  
+  // Added to overcome issue with Chrome browser. See the following for details:
+  // https://github.com/cypress-io/cypress/issues/1872#issuecomment-450807452
+  on('before:browser:launch', (browser = {}, args) => {
+    if (browser.name === 'chrome') { 
+      // ^ make sure this is your browser name, you may 
+      // be using 'canary' or 'chromium' for example, so change it to match!
+      args.push('--proxy-bypass-list=<-loopback>')
+      return args
+    }
+  })
 }
