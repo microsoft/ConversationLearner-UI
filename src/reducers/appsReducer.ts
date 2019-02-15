@@ -8,6 +8,7 @@ import { Reducer } from 'redux'
 import { replace } from '../Utils/util'
 import { TrainingStatusCode } from '@conversationlearner/models'
 import { App } from '../types/models'
+import produce from 'immer'
 
 const initialState: AppsState = {
     all: [],
@@ -15,91 +16,86 @@ const initialState: AppsState = {
     selectedAppId: undefined
 };
 
-const appsReducer: Reducer<AppsState> = (state = initialState, action: ActionObject): AppsState => {
+const appsReducer: Reducer<AppsState> = produce((state: AppsState, action: ActionObject) => {
     switch (action.type) {
         case AT.USER_LOGOUT:
-            return { ...initialState };
+            return { ...initialState }
         case AT.FETCH_APPLICATIONS_FULFILLED:
-            return { ...state, all: action.uiAppList.appList.apps, activeApps: action.uiAppList.activeApps }
+            state.all = action.uiAppList.appList.apps
+            state.activeApps = action.uiAppList.activeApps
+            return
         case AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC: {
-            const app = state.all.find(a => a.appId === action.appId)
+            const app = state.all.find(a => a.appId === action.appId) as App | undefined
             // User may have deleted the app
             if (!app) {
-                return state;
-            }
-            const newApp: App = {
-                ...app,
-                trainingStatus: TrainingStatusCode.Queued,
-                didPollingExpire: false
+                return
             }
 
-            return { ...state, all: replace(state.all, newApp, a => a.appId) }
+            app.trainingStatus = TrainingStatusCode.Queued
+            app.didPollingExpire = false
+            return
         }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED: {
-            const app = state.all.find(a => a.appId === action.appId)
+            const app = state.all.find(a => a.appId === action.appId) as App | undefined
             // User may have delete the app
             if (!app) {
-                return state;
-            }
-            const newApp: App = {
-                ...app,
-                didPollingExpire: true
+                return
             }
 
-            return { ...state, all: replace(state.all, newApp, a => a.appId) }
+            app.didPollingExpire = true
+            return
         }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED: {
-            const app = state.all.find(a => a.appId === action.appId)
+            const app = state.all.find(a => a.appId === action.appId) as App | undefined
             // User may have delete the app
             if (!app) {
-                return state;
-            }
-            const newApp: App = {
-                ...app,
-                didPollingExpire: false,
-                trainingStatus: action.trainingStatus.trainingStatus,
-                // Since we're updating training status simulate update to datetime field
-                datetime: new Date(),
-                // Used discriminated union to access failure message
-                trainingFailureMessage: (action.trainingStatus.trainingStatus === TrainingStatusCode.Failed)
-                    ? action.trainingStatus.trainingFailureMessage
-                    : null
+                return
             }
 
-            return { ...state, all: replace(state.all, newApp, a => a.appId) }
+            app.didPollingExpire = false
+            app.trainingStatus = action.trainingStatus.trainingStatus
+            // Since we're updating training status simulate update to datetime field
+            app.datetime = new Date(),
+                // Used discriminated union to access failure message
+                app.trainingFailureMessage = (action.trainingStatus.trainingStatus === TrainingStatusCode.Failed)
+                    ? action.trainingStatus.trainingFailureMessage
+                    : null
+            return
         }
         case AT.CREATE_APPLICATION_FULFILLED:
-            return { ...state, all: [...state.all, action.app], selectedAppId: action.app.appId }
+            state.all.push(action.app)
+            state.selectedAppId = action.app.appId
+            return
         case AT.SET_CURRENT_APP_FULFILLED:
-            return { ...state, selectedAppId: action.app.appId };
+            state.selectedAppId = action.app.appId
+            return
         case AT.DELETE_APPLICATION_FULFILLED:
-            return { ...state, all: state.all.filter(app => app.appId !== action.appId), selectedAppId: undefined };
+            state.all = state.all.filter(app => app.appId !== action.appId)
+            state.selectedAppId = undefined
+            return
         case AT.EDIT_APPLICATION_FULFILLED:
         case AT.CREATE_APP_TAG_FULFILLED:
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:
-            return { ...state, all: replace(state.all, action.app, app => app.appId) }
+            state.all = replace(state.all, action.app, app => app.appId)
+            return
         case AT.EDIT_APP_EDITING_TAG_FULFILLED:
-            return { ...state, activeApps: action.activeApps }
+            state.activeApps = action.activeApps
+            return
 
         // TODO: We're expecting more handlers here, as we're simply updating lastModifiedDateTime...
         case AT.EDIT_TRAINDIALOG_FULFILLED:
 
-            const app = state.all.find(a => a.appId === action.appId)
-
-            // App may have been deleted
+            const app = state.all.find(a => a.appId === action.appId) as App | undefined
+            // User may have delete the app
             if (!app) {
-                return state;
+                return
             }
 
-            const newApp: App = {
-                ...(app as App),
-                lastModifiedDateTime: `${new Date().toISOString().slice(0, 19)}+00:00`,
-            }
-
-            return { ...state, all: replace(state.all, newApp, a => a.appId) }
-
+            app.lastModifiedDateTime = `${new Date().toISOString().slice(0, 19)}+00:00`
+            return
         default:
-            return state;
+            return
     }
-}
-export default appsReducer;
+}, initialState)
+
+export default appsReducer
