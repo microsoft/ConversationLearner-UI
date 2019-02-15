@@ -10,6 +10,7 @@ import * as OF from 'office-ui-fabric-react'
 import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../Utils/util'
+import * as ValidityUtils from '../../../Utils/validityUtils'
 import * as DialogUtils from '../../../Utils/dialogUtils'
 import { SelectionType } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState } from '../../../components/modals'
@@ -108,9 +109,19 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: equalizeColumnWidth,
             isResizable: true,
-            render: trainDialog => trainDialog.tags.length ===0
-                ? <span data-testid="train-dialogs-tags" className={textClassName(trainDialog)}><FormattedMessageId id={FM.TRAINDIALOGS_TAGS_EMPTY} /></span>
-                : <TagsReadOnly className={textClassName(trainDialog)} tags={trainDialog.tags} />,
+            render: trainDialog => {
+                return <span className={textClassName(trainDialog)} data-testid="train-dialogs-tags">
+                    {trainDialog.validity && trainDialog.validity !== CLM.Validity.VALID &&
+                        <OF.Icon
+                            className={`cl-icon ${ValidityUtils.validityColorClassName(trainDialog.validity)}`}
+                            iconName="IncidentTriangle"
+                        />
+                    }
+                    {trainDialog.tags.length === 0
+                        ? <span className={textClassName(trainDialog)}><FormattedMessageId id={FM.TRAINDIALOGS_TAGS_EMPTY} /></span>
+                        : <TagsReadOnly className={textClassName(trainDialog)} tags={trainDialog.tags} />}
+                </span>
+            },
             getSortValue: trainDialog => trainDialog.tags.join(' ')
         },
         {
