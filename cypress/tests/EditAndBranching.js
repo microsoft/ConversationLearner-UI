@@ -239,5 +239,4 @@ export function AddEndSessionAction() {
   editDialogModal.VerifyScoreActionsButtonIsMissing()
   editDialogModal.VerifyTypeYourMessageIsMissing()
   editDialogModal.ClickSaveCloseButton()
- 
 }
