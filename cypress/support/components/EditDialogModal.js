@@ -48,13 +48,21 @@ export function AbandonBranchChanges() {
   homePage.ClickConfirmButton()
 }
 
+// -----------------------------------------------------------------------------
 // Selects FROM ALL chat messages, from both Bot and User.
 // Once clicked, more UI elements will become visible & enabled.
 // OPTIONAL index parameter lets you select other than the 1st 
 // instance of a message.
 // RETURNS: The index of the selected turn.
-export function SelectChatTurn(message, index = 0) {
-  var funcName = `SelectChatTurn(${message}, ${index})`
+
+export function SelectChatTurnExactMatch(message, index = 0) { 
+  return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText === transformedMessage)}
+
+export function SelectChatTurnStartsWith(message, index = 0) {
+  return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText.startsWith(transformedMessage))}
+
+function SelectChatTurnInternal(message, index, matchPredicate) {
+  var funcName = `SelectChatTurnInternal(${message}, ${index})`
   cy.ConLog(funcName, `Start`)
 
   cy.WaitForStableDOM()
@@ -64,7 +72,7 @@ export function SelectChatTurn(message, index = 0) {
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (var i = 0; i < elements.length; i++) {
       helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
-      if (elements[i].innerText == message) {
+      if (matchPredicate(elements[i].innerText, message)) {
         if (index > 0) index--
         else {
           helpers.ConLog(funcName, `FOUND!`)
@@ -78,6 +86,8 @@ export function SelectChatTurn(message, index = 0) {
     throw `${funcName} - Failed to find the message in chat utterances`
   })
 }
+
+// -----------------------------------------------------------------------------
 
 // This is meant to be called after SelectChatTurn for a user message.
 // Do NOT use this for bot messages, since they have no branching capabilities.
@@ -237,7 +247,7 @@ export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index) {
 }
 
 export function InsertUserInputAfter(existingMessage, newMessage) {
-  SelectChatTurn(existingMessage)
+  SelectChatTurnExactMatch(existingMessage)
 
   // This ODD way of clicking is to avoid the "Illegal Invocation" error that
   // happens with this specific UI element.
@@ -250,7 +260,7 @@ export function InsertUserInputAfter(existingMessage, newMessage) {
 // instance of a message as the point of insertion.
 export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
   cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `Start`)
-  cy.Enqueue(() => { return SelectChatTurn(existingMessage, index) }).then(indexOfSelectedChatTurn => {
+  cy.Enqueue(() => { return SelectChatTurnExactMatch(existingMessage, index) }).then(indexOfSelectedChatTurn => {
     helpers.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `indexOfSelectedChatTurn: ${indexOfSelectedChatTurn}`)
     
     // This ODD way of clicking is to avoid the "Illegal Invocation" error that

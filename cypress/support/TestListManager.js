@@ -40,6 +40,7 @@ const testGroups = []
 
 const createModels = require('../tests/CreateModels')
 const editAndBranching = require('../tests/EditAndBranching')
+const errorHandling = require('../tests/ErrorHandling')
 const log = require('../tests/Log')
 const train = require('../tests/Train')
 const ux = require('../tests/UX')
@@ -81,7 +82,8 @@ function TestCase(testGroupName, testDescription, testFunction) {
     throw `There is a syncronization error between our master test list and a TestCase specification for: '${testSpecification}'` }
 }
 
-
+// This is typically called by Spec Files to put 
+// it's tests into the list of test that will be run.
 export function AddToCypressTestList(testList) {
   let funcName = `AddToCypressTestList()`
   helpers.ConLog(funcName, `List of Tests: ${testList}`)
@@ -121,19 +123,33 @@ class TestListIterator {
     if (x.length != 2) throw `Invalid item in testList[${this.index}]: "${this.testList[this.index]}" - 'group DOT testName' format is expected`
     let groupName = x[0]
     let testName = x[1]
+    this.index++
 
     if (this.currentGroup.name != groupName) {
       this.currentGroup = FindTestGroup(groupName)
-      if (this.currentGroup == undefined) throw `Group '${groupName}' NOT found in testGroups`
+      if (this.currentGroup == undefined) {
+        return {
+          group: groupName,
+          name: testName,
+          description: testName,
+          func: () => {throw `Test Group '${groupName}' not found - Did you forget to REQUIRE it in TestListManager?`}
+        }
+      }
     }
     
     let test = FindTest(this.currentGroup, testName)
-    if (test == undefined) throw `Test '${testName}' NOT found in test group '${groupName}'`
+    if (test == undefined) {
+      return {
+        group: groupName,
+        name: testName,
+        description: testName,
+        func: () => {throw `Test '${testName}' NOT found in test group '${groupName}' - Did you forget to call 'Cypress.TestCase(...)' for the test?`}
+      }
+    }
 
-    this.index++
     return {
-      group: this.currentGroup.name, 
-      name: test.name, 
+      group: groupName,
+      name: testName,
       description: test.description, 
       func: test.func
     }

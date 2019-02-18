@@ -219,7 +219,7 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
   cy.Enqueue(() => {
     originalMessage = originalMessage.replace(/'/g, "’")
 
-    editDialogModal.SelectChatTurn(originalMessage, originalIndex)
+    editDialogModal.SelectChatTurnExactMatch(originalMessage, originalIndex)
 
     editDialogModal.VerifyBranchButtonIsInSameControlGroupAsMessage(originalMessage)
 

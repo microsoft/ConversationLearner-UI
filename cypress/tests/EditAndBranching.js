@@ -72,7 +72,7 @@ export function TagAndFrog()
   cy.WaitForTrainingStatusCompleted()
 
   train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
-  editDialogModal.SelectChatTurn('This is Tag.')
+  editDialogModal.SelectChatTurnExactMatch('This is Tag.')
 
   editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs[0], 0)
   editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
@@ -103,7 +103,7 @@ export function AddEndSessionAction() {
 
   train.EditTraining('fly to sydney', 'coach', "enjoy your trip. you are booked on Qantas")
   editDialogModal.ClickScoreActionsButton()
-  editDialogModal.SelectChatTurn('enjoy your trip. you are booked on Qantas', 1)
+  editDialogModal.SelectChatTurnExactMatch('enjoy your trip. you are booked on Qantas', 1)
   train.SelectEndSessionAction('0')
 
   editDialogModal.VerifyScoreActionsButtonIsMissing()
