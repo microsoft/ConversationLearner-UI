@@ -62,6 +62,7 @@ export const masterListOfAllTestCases = [
   'EditAndBranching.AddEndSessionAction',
   'ErrorHandling.TwoConsecutiveUserInputErrorHandling',
   'ErrorHandling.WaitNonWaitErrorHandling',
+  'ErrorHandling.ActionUnavailableErrorHandling',
   'Log.WhatsYourName',
   'Log.EndlessLoop',
   'Log.EndlessLoopX',

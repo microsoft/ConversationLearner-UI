@@ -132,7 +132,7 @@ class TestListIterator {
           group: groupName,
           name: testName,
           description: testName,
-          func: () => {throw `Test Group '${groupName}' not found - Did you forget to REQUIRE it in TestListManager?`}
+          func: () => {throw `Test Group '${groupName}' not found - Did you forget to REQUIRE it in TestListManager.js?`}
         }
       }
     }

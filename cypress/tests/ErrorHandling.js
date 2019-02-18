@@ -135,7 +135,7 @@ export function WaitNonWaitErrorHandling()
   modelPage.VerifyNoErrorIconOnPage()
 }
 
-//Cypress.TestCase('ErrorHandling', 'Action Unavailable Error Handling', ActionUnavailableErrorHandling)
+Cypress.TestCase('ErrorHandling', 'Action Unavailable Error Handling', ActionUnavailableErrorHandling)
 export function ActionUnavailableErrorHandling()
 {
   models.ImportModel('z-actionUnavail', 'z-whatsYourName.cl')
@@ -151,6 +151,7 @@ export function ActionUnavailableErrorHandling()
   editDialogModal.ClickScoreActionsButton()
   train.SelectAction('Hello Joe')
 
+  editDialogModal.SelectChatTurnExactMatch('Joe')
   editDialogModal.RemoveEntityLabel('Joe', 'name')
   editDialogModal.ClickSubmitChangesButton()
   editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
@@ -158,7 +159,7 @@ export function ActionUnavailableErrorHandling()
   editDialogModal.SelectChatTurnStartsWith('Hello')
   editDialogModal.VerifyErrorMessage('Action is unavailable')
 
-  train.Save()
+  editDialogModal.ClickSaveCloseButton()
   modelPage.VerifyErrorIconForTrainDialogs()
   train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Joe`, 'Joe', "Hello $name")
 
@@ -170,7 +171,7 @@ export function ActionUnavailableErrorHandling()
 
   editDialogModal.SelectChatTurnExactMatch('Joe')
   editDialogModal.LabelTextAsEntity('Joe', 'name')
-  editDialogModal.ClickScoreActionsButton()
+  editDialogModal.ClickSubmitChangesButton()
 
   editDialogModal.VerifyNoErrorMessage()
 
