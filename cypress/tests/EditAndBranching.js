@@ -225,7 +225,7 @@ export function WaitNonWaitErrorHandling()
 
 Cypress.TestCase('EditAndBranching', 'Add End Session Action', AddEndSessionAction)
 export function AddEndSessionAction() {
-  models.ImportModel('z-sydney-flight', 'z-sydney-flight.cl')
+  models.ImportModel('z-sydneyFlight', 'z-sydneyFlight.cl')
 
   modelPage.NavigateToTrainDialogs()
 
