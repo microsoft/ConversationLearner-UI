@@ -204,9 +204,9 @@ export function MissingAction()
   modelPage.NavigateToTrainDialogs()
 
   modelPage.VerifyErrorIconForTrainDialogs()
-  train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}${gonnaDeleteAnAction}`, gonnaDeleteAnAction, common.whatsYourName)
+  train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}${gonnaDeleteAnAction}`, gonnaDeleteAnAction, undefined)
 
-  train.EditTraining(`${String.fromCharCode(59412)}${gonnaDeleteAnAction}`, gonnaDeleteAnAction, common.whatsYourName)
+  train.EditTraining(`${String.fromCharCode(59412)}${gonnaDeleteAnAction}`, gonnaDeleteAnAction, undefined)
 
   editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
 
@@ -215,6 +215,7 @@ export function MissingAction()
   scorerModal.VerifyMissingActionNotice()
 
   scorerModal.ClickAddActionButton()
+  // TODO: Need a new version of this for starting from Train Dialog
   actions.CreateNewAction({ response: common.whatsYourName, expectedEntities: 'name' })
 
   editDialogModal.VerifyNoErrorMessage()

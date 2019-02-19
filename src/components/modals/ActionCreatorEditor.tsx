@@ -1359,7 +1359,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         />
 
                         <OF.DefaultButton
-                            data-testid="action-creator-delete-button"
+                            data-testid="action-creator-cancel-button"
                             onClick={this.onClickCancel}
                             ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
                             text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
@@ -1367,6 +1367,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.isEditing &&
                             <OF.DefaultButton
+                                data-testid="action-creator-delete-button"
                                 className="cl-button-delete"
                                 onClick={this.onClickDelete}
                                 ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
