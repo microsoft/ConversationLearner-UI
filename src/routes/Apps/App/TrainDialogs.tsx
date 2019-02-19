@@ -186,6 +186,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             fieldName: 'lastModifiedDateTime',
             minWidth: 100,
             isResizable: false,
+            isSortedDescending: false,
             render: trainDialog => <span className={OF.FontClassNames.mediumPlus} data-testid="train-dialogs-last-modified">{Util.earlierDateOrTimeToday(trainDialog.lastModifiedDateTime)}</span>,
             getSortValue: trainDialog => moment(trainDialog.lastModifiedDateTime).valueOf().toString()
         },
@@ -230,10 +231,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        let columns = getColumns(this.props.intl);
+        const columns = getColumns(this.props.intl)
+        const lastModifiedColumn = columns.find(c => c.key === 'lastModifiedDateTime')!
         this.state = {
             columns: columns,
-            sortColumn: columns[0],
+            sortColumn: lastModifiedColumn,
             history: [],
             lastAction: null,
             isTeachDialogModalOpen: false,
