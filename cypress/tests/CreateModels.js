@@ -7,10 +7,10 @@ const models = require('../support/Models')
 const modelPage = require('../support/components/ModelPage')
 const entities = require('../support/Entities')
 const actions = require('../support/Actions')
-const actionsGrid = require('../support/components/ActionsGrid')
 const editDialogModal = require('../support/components/EditDialogModal')
 const train = require('../support/Train')
 const memoryTableComponent = require('../support/components/MemoryTableComponent')
+const common = require('../support/Common')
 
 Cypress.TestCase('CreateModels', 'All Entity Types', AllEntityTypes)
 export function AllEntityTypes()
@@ -35,7 +35,7 @@ export function DisqualifyingEntities()
   entities.CreateNewEntity({ name: 'sweets' })
 
   // NOTE: the {enter} in these strings are necessary to triger the entity detection.
-  actions.CreateNewAction({ response: "What's your name?", expectedEntities: 'name', disqualifyingEntities: 'name' })
+  actions.CreateNewAction({ response: common.whatsYourName, expectedEntities: 'name', disqualifyingEntities: 'name' })
   actions.CreateNewAction({ response: 'Hey $name{enter}', disqualifyingEntities: ['sweets', 'want'] })
   actions.CreateNewAction({ response: 'Hey $name{enter}, what do you really want?', expectedEntities: 'want', disqualifyingEntities: ['sweets', 'want'] })
   actions.CreateNewAction({ response: "Sorry $name{enter}, I can't help you get $want{enter}" })
@@ -78,7 +78,7 @@ export function WhatsYourName()
 {
   models.CreateNewModel('z-whatsYourName')
   entities.CreateNewEntity({ name: 'name' })
-  actions.CreateNewAction({ response: "What's your name?", expectedEntities: 'name' })
+  actions.CreateNewAction({ response: common.whatsYourName, expectedEntities: 'name' })
 
   // NOTE: the {enter} in this call is necessary to triger the entity detection.
   actions.CreateNewAction({ response: 'Hello $name{enter}' })

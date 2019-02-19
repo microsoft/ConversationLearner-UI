@@ -8,10 +8,13 @@ const modelPage = require('../support/components/ModelPage')
 const train = require('../support/Train')
 const editDialogModal = require('../support/components/EditDialogModal')
 const common = require('../support/Common')
+const actions = require('../support/Actions')
+const scorerModal = require('../support/components/ScorerModal')
 
 const trainDialogHasErrorsMessage = 'This Train Dialog has errors that must be fixed before it can be used to train your model'
 const actionFollowsWaitActionErrorMessage = 'Action follows a Wait Action'
 const userInputFollowsNonWaitErrorMessage = 'User Input following a non-Wait Action'
+const gonnaDeleteAnAction = 'Gonna Delete an Action'
 
 Cypress.TestCase('ErrorHandling', 'Two Consecutive User Input Error Handling', TwoConsecutiveUserInputErrorHandling)
 export function TwoConsecutiveUserInputErrorHandling()
@@ -135,8 +138,8 @@ export function WaitNonWaitErrorHandling()
   modelPage.VerifyNoErrorIconOnPage()
 }
 
-Cypress.TestCase('ErrorHandling', 'Action Unavailable Error Handling', ActionUnavailableErrorHandling)
-export function ActionUnavailableErrorHandling()
+Cypress.TestCase('ErrorHandling', 'Action Unavailable', ActionUnavailable)
+export function ActionUnavailable()
 {
   models.ImportModel('z-actionUnavail', 'z-whatsYourName.cl')
   modelPage.NavigateToTrainDialogs()
@@ -172,6 +175,47 @@ export function ActionUnavailableErrorHandling()
   editDialogModal.SelectChatTurnExactMatch('Joe')
   editDialogModal.LabelTextAsEntity('Joe', 'name')
   editDialogModal.ClickSubmitChangesButton()
+
+  editDialogModal.VerifyNoErrorMessage()
+
+  editDialogModal.ClickSaveCloseButton()
+  modelPage.VerifyNoErrorIconOnPage()
+}
+
+Cypress.TestCase('ErrorHandling', 'Missing Action', MissingAction)
+export function MissingAction()
+{
+  models.ImportModel('z-missingAction', 'z-whatsYourName.cl')
+  modelPage.NavigateToTrainDialogs()
+  cy.WaitForTrainingStatusCompleted()
+
+  modelPage.VerifyNoErrorIconOnPage()
+
+  train.CreateNewTrainDialog()
+
+  train.TypeYourMessage(gonnaDeleteAnAction)
+  editDialogModal.ClickScoreActionsButton()
+  train.SelectAction(common.whatsYourName)
+  
+  train.Save()
+
+  modelPage.NavigateToActions()
+  actions.DeleteAction(common.whatsYourName)
+  modelPage.NavigateToTrainDialogs()
+
+  modelPage.VerifyErrorIconForTrainDialogs()
+  train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}${gonnaDeleteAnAction}`, gonnaDeleteAnAction, common.whatsYourName)
+
+  train.EditTraining(`${String.fromCharCode(59412)}${gonnaDeleteAnAction}`, gonnaDeleteAnAction, common.whatsYourName)
+
+  editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
+
+  editDialogModal.SelectChatTurnStartsWith('ERROR: Can’t find Action Id')
+  editDialogModal.VerifyErrorMessage('Action does not exist')
+  scorerModal.VerifyMissingActionNotice()
+
+  scorerModal.ClickAddActionButton()
+  actions.CreateNewAction({ response: common.whatsYourName, expectedEntities: 'name' })
 
   editDialogModal.VerifyNoErrorMessage()
 

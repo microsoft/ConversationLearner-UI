@@ -15,7 +15,7 @@ const helpers = require('../support/Helpers')
 // and this code does allow for that.
 export function CreateNewAction({ response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' }) {
   modelPage.NavigateToActions()
-  actionModal.ClickNewAction()
+  actionsGrid.ClickNewAction()
 
   // We do this first since we had a bug (1910) where it is not reset by the UI when
   // type END_SESSION is selected.
@@ -84,4 +84,10 @@ function IsAlphaNumeric(string) {
       return false
   }
   return true
+}
+
+export function DeleteAction(action) {
+  actionsGrid.Edit(action)
+  actionModal.ClickDeleteButton()
+  actionModal.ClickConfirmButtom()
 }
