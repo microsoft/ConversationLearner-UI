@@ -236,5 +236,7 @@ export function AddEndSessionAction() {
   editDialogModal.SelectChatTurn('enjoy your trip. you are booked on Qantas', 1)
   train.SelectEndSessionAction('0')
 
+  editDialogModal.VerifyScoreActionsButtonIsMissing()
+  editDialogModal.VerifyTypeYourMessageIsMissing()
   editDialogModal.ClickSaveCloseButton()
 }
