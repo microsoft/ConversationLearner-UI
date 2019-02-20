@@ -46,7 +46,7 @@ const createChatSessionFulfilled = (session: Session): ActionObject =>
 // --------------------------
 // DeleteChatSession
 // --------------------------
-export const deleteChatSessionThunkAsync = (key: string, session: Session, app: AppBase, packageId: string) => {
+export const deleteChatSessionThunkAsync = (key: string, session: Session, app: AppBase, packageId: string, save: boolean = true) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteChatSessionAsync(key, session, app.appId, packageId))
         const clClient = ClientFactory.getInstance(AT.DELETE_CHAT_SESSION_ASYNC)
@@ -54,7 +54,10 @@ export const deleteChatSessionThunkAsync = (key: string, session: Session, app: 
         try {
             await clClient.chatSessionsDelete(app.appId);
             dispatch(deleteChatSessionFulfilled(session.sessionId));
-            dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
+
+            if (save) {
+                dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
+            }
             return true;
         } catch (e) {
             const error = e as AxiosError
