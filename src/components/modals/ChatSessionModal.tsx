@@ -52,14 +52,8 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onClickAbandon() {
         if (this.props.chatSession.current !== null) {
-            const logDialogId = this.props.chatSession.current.logDialogId
-            if (logDialogId) {
-                await this.props.deleteChatSessionThunkAsync(this.props.user.id, this.props.chatSession.current, this.props.app, this.props.editingPackageId, false)
-                // Empty chats are removed automatically
-                if (this.state.hasChatActivity) {
-                    await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, logDialogId, this.props.editingPackageId)
-                }
-            }
+            const deleteAssociatedLogDialog = this.state.hasChatActivity
+            await this.props.deleteChatSessionThunkAsync(this.props.user.id, this.props.chatSession.current, this.props.app, this.props.editingPackageId, deleteAssociatedLogDialog)
         }
 
         this.props.onClose()

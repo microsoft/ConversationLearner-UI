@@ -9,7 +9,7 @@ import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import * as ClientFactory from '../services/clientFactory'
 import { AxiosError } from 'axios'
-import { fetchAllLogDialogsThunkAsync } from './logActions'
+import { fetchAllLogDialogsThunkAsync, deleteLogDialogThunkAsync } from './logActions'
 
 // --------------------------
 // CreateChatSession
@@ -46,18 +46,21 @@ const createChatSessionFulfilled = (session: Session): ActionObject =>
 // --------------------------
 // DeleteChatSession
 // --------------------------
-export const deleteChatSessionThunkAsync = (key: string, session: Session, app: AppBase, packageId: string, save: boolean = true) => {
+export const deleteChatSessionThunkAsync = (key: string, session: Session, app: AppBase, packageId: string, deleteAssociatedLogDialog: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteChatSessionAsync(key, session, app.appId, packageId))
+        const userId = key
+        dispatch(deleteChatSessionAsync(userId, session, app.appId, packageId))
         const clClient = ClientFactory.getInstance(AT.DELETE_CHAT_SESSION_ASYNC)
 
         try {
             await clClient.chatSessionsDelete(app.appId);
             dispatch(deleteChatSessionFulfilled(session.sessionId));
 
-            if (save) {
-                dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
+            if (deleteAssociatedLogDialog) {
+                await deleteLogDialogThunkAsync(userId, app, session.logDialogId, packageId)
             }
+            
+            dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
             return true;
         } catch (e) {
             const error = e as AxiosError
