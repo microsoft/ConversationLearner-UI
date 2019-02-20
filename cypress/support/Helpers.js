@@ -26,7 +26,7 @@ export function StringArrayFromElementText(selector, retainMarkup = false) {
   ConLog(`StringArrayFromElementText(${selector})`, elements.length)
   let returnValues = []
   for (let i = 0; i < elements.length; i++)  {
-    let text = retainMarkup ? elements[i].innerHTML : elements[i].innerText
+    let text = retainMarkup ? elements[i].innerHTML : ElementText(elements[i])
     returnValues.push(text)
     ConLog(`StringArrayFromElementText(${selector})`, text)
   }
@@ -36,7 +36,7 @@ export function StringArrayFromElementText(selector, retainMarkup = false) {
 export function NumericArrayFromElementText(selector) {
   let elements = Cypress.$(selector)
   let returnValues = []
-  for (let i = 0; i < elements.length; i++) { returnValues.push(parseInt(elements[i].innerText)) }
+  for (let i = 0; i < elements.length; i++) { returnValues.push(parseInt(ElementText(elements[i]))) }
   return returnValues
 }
 
@@ -49,3 +49,7 @@ export function Moment(dateTime) {
   if (dateTime.includes(':')) return Cypress.moment(dateTime, 'h:mm:ss a')
   return undefined
 }
+
+// The Electron browser is adding newline characters to innerText so
+// this function will remove them.
+export function ElementText(element) { return element.innerText.replace(/\r|\n/g,'') }
