@@ -27,6 +27,7 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
     return (
         <OF.Dialog
             hidden={!props.open}
+            className={OF.FontClassNames.mediumPlus}
             onDismiss={() => props.onClose()}
             dialogContentProps={{
                 type: OF.DialogType.normal,
