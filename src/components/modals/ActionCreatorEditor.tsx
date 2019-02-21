@@ -6,7 +6,7 @@ import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as ToolTip from '../ToolTips/ToolTips'
 import * as TC from '../tipComponents'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import * as ActionPayloadEditor from './ActionPayloadEditor'
 import { Value } from 'slate'
 import { returntypeof } from 'react-redux-typescript'
@@ -838,7 +838,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             slateValuesMap: {
                 [TEXT_SLOT]: Plain.deserialize('')
             },
-            secondarySlateValuesMap: {}
+            secondarySlateValuesMap: {},
+            expectedEntityTags: [],
+            requiredEntityTagsFromPayload: [],
+            requiredEntityTags: [],
+            negativeEntityTags: [],
         })
     }
 
