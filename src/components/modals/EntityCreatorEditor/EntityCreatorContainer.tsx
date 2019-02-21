@@ -18,6 +18,8 @@ import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import Component from './EntityCreatorComponent'
 
+const reservedNamePrefix = 'builtin-'
+
 const initState: ComponentState = {
     entityNameVal: '',
     entityTypeVal: '',
@@ -25,7 +27,7 @@ const initState: ComponentState = {
     isPrebuilt: false,
     isMultivalueVal: false,
     isNegatableVal: false,
-    isEditing: false,  
+    isEditing: false,
     enumValues: [undefined, undefined, undefined, undefined, undefined],
     title: '',
     hasPendingChanges: false,
@@ -322,7 +324,7 @@ class Container extends React.Component<Props, ComponentState> {
             isMultivalueVal,
             isNegatableVal,
             entityTypeVal,
-            entityNameVal: isPrebuilt ? Container.GetPrebuiltEntityName(obj.text) : "",
+            entityNameVal: isPrebuilt ? Container.GetPrebuiltEntityName(obj.text) : prevState.isPrebuilt ? "" : prevState.entityNameVal,
         }))
     }
     onChangedEnum = (index: number, value: string) => {
@@ -330,7 +332,7 @@ class Container extends React.Component<Props, ComponentState> {
         enumValues[index] = value.toUpperCase()
         this.setState({
             enumValues
-        }) 
+        })
     }
     onChangeResolverType = (obj: CLDropdownOption) => {
         this.setState({
@@ -375,6 +377,11 @@ class Container extends React.Component<Props, ComponentState> {
                 return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT)
             }
         }
+
+        if (!this.state.isPrebuilt && (value.substring(0, reservedNamePrefix.length) === reservedNamePrefix)) {
+            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED)
+        }
+
         return ''
     }
 
@@ -390,7 +397,7 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         return ''
-    } 
+    }
 
     isEnumDuplicate = (value: string): boolean => {
         if (!value) {
