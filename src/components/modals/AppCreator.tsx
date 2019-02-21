@@ -44,20 +44,18 @@ class AppCreator extends React.Component<Props, ComponentState> {
         this.onClickCancel = this.onClickCancel.bind(this)
     }
 
-    componentDidMount() {
-        getLuisApplicationCultures()
-            .then(cultures => {
-                const cultureOptions = cultures.map<OF.IDropdownOption>(c =>
-                    ({
-                        key: c.cultureCode,
-                        text: c.cultureCode,
-                    }))
+    async componentDidMount() {
+        const cultures = await getLuisApplicationCultures()
+        const cultureOptions = cultures.map<OF.IDropdownOption>(c =>
+            ({
+                key: c.cultureCode,
+                text: c.cultureCode,
+            }))
 
-                this.setState({
-                    localeOptions: cultureOptions,
-                    localeVal: cultureOptions[0].text
-                })
-            })
+        this.setState({
+            localeOptions: cultureOptions,
+            localeVal: cultureOptions[0].text
+        })
     }
 
     componentWillReceiveProps(nextProps: Props) {
