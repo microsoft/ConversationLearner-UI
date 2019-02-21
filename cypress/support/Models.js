@@ -21,6 +21,7 @@ export function CreateNewModel(modelNamePrefix) {
   return name
 }
 
+// The test defined prefix can be up to 17 characters.
 export function ImportModel(modelNamePrefix, fileName) {
   return new Promise((resolve) => {
     // Maximum Name Length is 30 Characters
