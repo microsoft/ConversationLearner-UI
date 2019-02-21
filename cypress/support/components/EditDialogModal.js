@@ -64,7 +64,7 @@ export function SelectChatTurn(message, index = 0) {
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (var i = 0; i < elements.length; i++) {
       helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
-      if (elements[i].innerText == message) {
+      if (elements[i].textContent === message) {
         if (index > 0) index--
         else {
           helpers.ConLog(funcName, `FOUND!`)
@@ -160,7 +160,7 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
 
       // If you need to find a phrase, this part of the code will fail, 
       // you will need to upgrade this code in that case.
-      var element = elements.find(element => element.innerText === text)
+      var element = elements.find(element => element.textContent === text)
       if (element) {
         found = Cypress.$(element).parents('.cl-entity-node--custom').find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`).length == 0
       }

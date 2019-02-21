@@ -45,7 +45,7 @@ export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
     let element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
-    expect(element.innerText).to.equal(expectedUtterance)
+    expect(helpers.ElementText(element)).to.equal(expectedUtterance)
   })
 }
 
