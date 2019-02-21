@@ -68,7 +68,7 @@ const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[]): OF.I
 }
 
 // Entities that can be chosen for required / blocking
-const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] =>  {
+const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] => {
 
     // Ignore resolvers and negative entities
     const filteredEntities = entities.filter(e => !e.doNotMemorize && !e.positiveId)
@@ -100,7 +100,7 @@ const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] =>
 }
 
 // Entities that can be picked as expected entity
-const expectedEntityTags = (entities: CLM.EntityBase[]): OF.ITag[] =>  {
+const expectedEntityTags = (entities: CLM.EntityBase[]): OF.ITag[] => {
     // Must be LUIS entity and not the negative
     return entities
         .filter(e => e.entityType === CLM.EntityType.LUIS && !e.positiveId)
@@ -340,11 +340,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         slateValuesMap[TEXT_SLOT] = Plain.deserialize(contentString)
                         entityWarning = true
                     }
-                } 
+                }
                 else if (action.actionType === CLM.ActionTypes.END_SESSION) {
                     const sessionAction = new CLM.SessionAction(action)
                     slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(CLM.ActionTypes.TEXT, TEXT_SLOT, sessionAction.value, payloadOptions)
-                } 
+                }
                 else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
                     const apiAction = new CLM.ApiAction(action)
                     selectedApiOptionKey = apiAction.name
@@ -362,7 +362,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         }
                     }
 
-                } 
+                }
                 else if (action.actionType === CLM.ActionTypes.CARD) {
                     const cardAction = new CLM.CardAction(action)
                     selectedCardOptionKey = cardAction.templateName
@@ -666,7 +666,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const requiredConditions = this.state.requiredEntityTags.filter(t => t.condition).map(t => t.condition!)
         const negativeConditions = this.state.negativeEntityTags.filter(t => t.condition).map(t => t.condition!)
 
- 
+
         // TODO: This should be new model such as ActionInput for creation only.
         const model = new CLM.ActionBase({
             actionId: null!,
@@ -676,8 +676,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             requiredEntitiesFromPayload: this.state.requiredEntityTagsFromPayload.map<string>(tag => tag.key),
             requiredEntities: [...this.state.requiredEntityTagsFromPayload, ...requiredTags].map<string>(tag => tag.key),
             negativeEntities: negativeTags.map<string>(tag => tag.key),
-            requiredConditions, 
-            negativeConditions, 
+            requiredConditions,
+            negativeConditions,
             suggestedEntity: (this.state.expectedEntityTags.length > 0) ? this.state.expectedEntityTags[0].key : null,
             version: 0,
             packageCreationId: 0,
@@ -738,29 +738,29 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickDelete() {
+    async onClickDelete() {
         if (!this.props.action) {
             return
         }
 
-        ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
-            .then(invalidTrainingDialogIds => {
+        try {
+            const invalidTrainingDialogIds = await ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
+            if (invalidTrainingDialogIds) {
+                let validationWarnings = (invalidTrainingDialogIds.length > 0)
+                    ? [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING)]
+                    : []
 
-                if (invalidTrainingDialogIds) {
-                    let validationWarnings = (invalidTrainingDialogIds.length > 0)
-                        ? [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING)]
-                        : []
-
-                    this.setState(
-                        {
-                            isConfirmDeleteModalOpen: true,
-                            validationWarnings: validationWarnings
-                        });
-                }
-            })
-            .catch(error => {
-                console.warn(`Error when attempting to validate delete: `, error)
-            })
+                this.setState(
+                    {
+                        isConfirmDeleteModalOpen: true,
+                        validationWarnings: validationWarnings
+                    });
+            }
+        }
+        catch (e) {
+            const error = e as Error
+            console.warn(`Error when attempting to validate delete: `, error)
+        }
     }
 
     @OF.autobind
@@ -1324,7 +1324,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>
-                        <div 
+                        <div
                             className="cl-error-message-label"
                             style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}>
                             {formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD)}
