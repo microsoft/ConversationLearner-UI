@@ -16,8 +16,8 @@ const actionFollowsWaitActionErrorMessage = 'Action follows a Wait Action'
 const userInputFollowsNonWaitErrorMessage = 'User Input following a non-Wait Action'
 const gonnaDeleteAnAction = 'Gonna Delete an Action'
 
-Cypress.TestCase('ErrorHandling', 'Two Consecutive User Input Error Handling', TwoConsecutiveUserInputErrorHandling)
-export function TwoConsecutiveUserInputErrorHandling()
+Cypress.TestCase('ErrorHandling', 'Two Consecutive User Input', TwoConsecutiveUserInput)
+export function TwoConsecutiveUserInput()
 {
   models.ImportModel('z-2UserInputs', 'z-disqualifyngEnt.Trained.cl')
   modelPage.NavigateToTrainDialogs()
@@ -50,8 +50,8 @@ export function TwoConsecutiveUserInputErrorHandling()
   modelPage.VerifyNoErrorIconOnPage()
 }
 
-Cypress.TestCase('ErrorHandling', 'Wait Non Wait Error Handling', WaitNonWaitErrorHandling)
-export function WaitNonWaitErrorHandling()
+Cypress.TestCase('ErrorHandling', 'Wait Non Wait', WaitNonWait)
+export function WaitNonWait()
 {
   models.ImportModel('z-errWaitNoWait', 'z-waitNoWait.cl')
   modelPage.NavigateToTrainDialogs()
