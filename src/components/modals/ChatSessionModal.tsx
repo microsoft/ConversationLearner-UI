@@ -51,19 +51,12 @@ class SessionWindow extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onClickAbandon() {
-
         if (this.props.chatSession.current !== null) {
-            let logDialogId = this.props.chatSession.current.logDialogId
-            if (this.props.chatSession.current.logDialogId) {
-                await this.props.deleteChatSessionThunkAsync(this.props.user.id, this.props.chatSession.current, this.props.app, this.props.editingPackageId)
-                // Empty chats are removed automatically
-                if (this.state.hasChatActivity) {
-                    await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, logDialogId, this.props.editingPackageId)
-                }
-            }
+            const deleteAssociatedLogDialog = this.state.hasChatActivity
+            await this.props.deleteChatSessionThunkAsync(this.props.user.id, this.props.chatSession.current, this.props.app, this.props.editingPackageId, deleteAssociatedLogDialog)
         }
 
-        this.props.onClose();
+        this.props.onClose()
     }
 
     // Force timeout of the session

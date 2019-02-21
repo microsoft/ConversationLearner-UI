@@ -186,6 +186,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             fieldName: 'lastModifiedDateTime',
             minWidth: 100,
             isResizable: false,
+            isSortedDescending: false,
             render: trainDialog => <span className={OF.FontClassNames.mediumPlus} data-testid="train-dialogs-last-modified">{Util.earlierDateOrTimeToday(trainDialog.lastModifiedDateTime)}</span>,
             getSortValue: trainDialog => moment(trainDialog.lastModifiedDateTime).valueOf().toString()
         },
@@ -230,10 +231,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        let columns = getColumns(this.props.intl);
+        const columns = getColumns(this.props.intl)
+        const lastModifiedColumn = columns.find(c => c.key === 'lastModifiedDateTime')!
         this.state = {
             columns: columns,
-            sortColumn: columns[0],
+            sortColumn: lastModifiedColumn,
             history: [],
             lastAction: null,
             isTeachDialogModalOpen: false,
@@ -982,7 +984,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         void this.onCloseEditDialogModal()
     }
 
-    onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
+    async onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
         this.props.clearWebchatScrollPosition()
         let trainDialogWithDefinitions: CLM.TrainDialog = {
             createdDateTime: new Date().toJSON(),
@@ -1001,22 +1003,25 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             },
         };
 
-        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            .then(teachWithHistory => {
-                const originalId = this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null
-                this.setState({
-                    history: teachWithHistory.history,
-                    lastAction: teachWithHistory.lastAction,
-                    currentTrainDialog: trainDialog,
-                    originalTrainDialogId: originalId,
-                    editType: EditDialogType.TRAIN_ORIGINAL,
-                    isEditDialogModalOpen: true,
-                    selectedActivityIndex: null
-                })
+        try {
+            const teachWithHistory = await((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            const originalId = this.state.currentTrainDialog
+                ? this.state.currentTrainDialog.trainDialogId
+                : null
+            this.setState({
+                history: teachWithHistory.history,
+                lastAction: teachWithHistory.lastAction,
+                currentTrainDialog: trainDialog,
+                originalTrainDialogId: originalId,
+                editType: EditDialogType.TRAIN_ORIGINAL,
+                isEditDialogModalOpen: true,
+                selectedActivityIndex: null
             })
-            .catch(error => {
-                console.warn(`Error when attempting to create history: `, error)
-            })
+        }
+        catch (e) {
+            const error = e as Error
+            console.warn(`Error when attempting to create history: `, error)
+        }
     }
 
     async onCloseEditDialogModal(reload: boolean = false) {
