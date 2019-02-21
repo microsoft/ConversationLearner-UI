@@ -18,7 +18,7 @@ import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import Component from './EntityCreatorComponent'
 
-const reservedNamePrefix = 'builtin-'
+const prebuiltPrefix = 'builtin-'
 
 const initState: ComponentState = {
     entityNameVal: '',
@@ -59,7 +59,7 @@ interface ComponentState {
 }
 
 export const getPrebuiltEntityName = (preBuiltType: string): string => {
-    return `builtin-${preBuiltType.toLowerCase()}`
+    return `${prebuiltPrefix}${preBuiltType.toLowerCase()}`
 }
 
 class Container extends React.Component<Props, ComponentState> {
@@ -384,7 +384,7 @@ class Container extends React.Component<Props, ComponentState> {
             }
         }
 
-        if (!this.state.isPrebuilt && (value.substring(0, reservedNamePrefix.length) === reservedNamePrefix)) {
+        if (!this.state.isPrebuilt && (value.toLowerCase().substring(0, prebuiltPrefix.length) === prebuiltPrefix)) {
             return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED)
         }
 
