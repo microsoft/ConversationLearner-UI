@@ -76,6 +76,7 @@ Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expe
 Cypress.Commands.add("WaitForTrainingStatusCompleted", () => {
   // The cy.get call made within modelPage.WaitForTrainingStatusCompleted() needs
   // the document object which is why we need to wrap it.
+  cy.log('WaitForTrainingStatusCompleted')
   cy.wrap(cy.document, { timeout: 120000 }).should(() => { return modelPage.WaitForTrainingStatusCompleted() })
 })
 
