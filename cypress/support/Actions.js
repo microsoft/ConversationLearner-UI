@@ -67,7 +67,8 @@ function ExtractEntities(response) {
     if (!IsAlphaNumeric(entityName)) iCurrent = iStart
     else {
       entitiesToReturn.push(entityName)
-      iCurrent = iEnd + 7 // 7 = "{enter}".length
+      let length = "{enter}".length
+      iCurrent = iEnd + length
     }
   }
 
