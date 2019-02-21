@@ -55,7 +55,7 @@ Cypress.Commands.add('UploadFile', (fileName, selector) => {
 Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expectedText) => {
   helpers.ConLog(`ExactMatch('${expectedText}')`, `Start`)
   for (let i = 0; i < elements.length; i++) {
-    let elementText = helpers.ElementText(elements[i])
+    let elementText = elements[i].textContent
     helpers.ConLog(`ExactMatch('${expectedText}')`, `elementText: '${elementText}'`)
     if (elementText === expectedText) return elements[i]
   }
@@ -66,7 +66,7 @@ Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expe
   helpers.ConLog(`ExactMatches('${expectedText}')`, `Start`)
   let returnElements = []
   for (let i = 0; i < elements.length; i++) {
-    let elementText = helpers.ElementText(elements[i])
+    let elementText = elements[i].textContent
     helpers.ConLog(`ExactMatches('${expectedText}')`, `elementText: '${elementText}'`)
     if (elementText === expectedText) returnElements.push(elements[i])
   }
