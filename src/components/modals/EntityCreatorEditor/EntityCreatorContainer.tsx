@@ -467,7 +467,7 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickDelete() {
+    async onClickDelete() {
         // Check if used by actions (ok if used by TrainDialogs)
         if (this.isRequiredForActions()) {
             this.setState({
@@ -481,17 +481,17 @@ class Container extends React.Component<Props, ComponentState> {
             return
         }
 
-        ((this.props.fetchEntityDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.entity.entityId) as any) as Promise<string[]>)
-            .then(invalidTrainingDialogIds => {
-                this.setState({
-                    isConfirmDeleteModalOpen: true,
-                    showValidationWarning: invalidTrainingDialogIds.length > 0
-                });
+        try {
+            const invalidTrainingDialogIds = await ((this.props.fetchEntityDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.entity.entityId) as any) as Promise<string[]>)
+            this.setState({
+                isConfirmDeleteModalOpen: true,
+                showValidationWarning: invalidTrainingDialogIds.length > 0
             })
-            .catch(error => {
-                console.warn(`Error when attempting to validate delete: `, error)
-            }
-            )
+        }
+        catch (e) {
+            const error = e as Error
+            console.warn(`Error when attempting to validate delete: `, error)
+        }
     }
 
     @OF.autobind

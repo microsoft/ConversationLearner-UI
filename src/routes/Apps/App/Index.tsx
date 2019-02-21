@@ -54,9 +54,8 @@ class Index extends React.Component<Props, ComponentState> {
         let thunk3 = this.props.fetchAllLogDialogsThunkAsync(app, packageId)
         let thunk4 = this.props.fetchAppSourceThunkAsync(app.appId, packageId)
 
-        Promise.all([thunk1, thunk2, thunk3, thunk4]).then(() => {
-            this.setState({ modelLoaded: true })
-        })
+        await Promise.all([thunk1, thunk2, thunk3, thunk4])
+        this.setState({ modelLoaded: true })
     }
 
     componentWillMount() {
