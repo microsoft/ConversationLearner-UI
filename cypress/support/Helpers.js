@@ -26,7 +26,7 @@ export function StringArrayFromElementText(selector, retainMarkup = false) {
   ConLog(`StringArrayFromElementText(${selector})`, elements.length)
   let returnValues = []
   for (let i = 0; i < elements.length; i++)  {
-    let text = retainMarkup ? elements[i].innerHTML : elements[i].innerText
+    let text = retainMarkup ? elements[i].innerHTML : elements[i].textContent
     returnValues.push(text)
     ConLog(`StringArrayFromElementText(${selector})`, text)
   }
@@ -36,7 +36,7 @@ export function StringArrayFromElementText(selector, retainMarkup = false) {
 export function NumericArrayFromElementText(selector) {
   let elements = Cypress.$(selector)
   let returnValues = []
-  for (let i = 0; i < elements.length; i++) { returnValues.push(parseInt(elements[i].innerText)) }
+  for (let i = 0; i < elements.length; i++) { returnValues.push(parseInt(elements[i].textContent)) }
   return returnValues
 }
 
