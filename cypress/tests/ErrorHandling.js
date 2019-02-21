@@ -215,7 +215,6 @@ export function MissingAction()
   scorerModal.VerifyMissingActionNotice()
 
   scorerModal.ClickAddActionButton()
-  // TODO: Need a new version of this for starting from Train Dialog
   actions.CreateNewAction({ response: common.whatsYourName, expectedEntities: 'name' })
 
   editDialogModal.VerifyNoErrorMessage()
