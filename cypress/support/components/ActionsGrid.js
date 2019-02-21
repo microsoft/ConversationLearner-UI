@@ -16,6 +16,8 @@ export function ValidateRequiredEntities(requiredEntitiesFromResponse, additiona
 // so the disqualifyingEntities parameter allows the caller to specify entities not found in expectedEntities.
 export function ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities) { ValidateEntities('[data-testid="action-details-disqualifying-entity"]', '[data-testid="action-details-empty-disqualifying-entities"]', expectedEntities, disqualifyingEntities) }
 
+export function ValidateWaitForResponse(checked) { cy.Get('@responseDetailsRow').find(`[data-icon-name="${checked ? 'CheckMark' : 'Remove'}"][data-testid="action-details-wait"]`) }
+
 // IMPORTANT: Call this method before calling any of the Validate* methods.
 export function GetRowToBeValidated(response) {
   cy.Get('[data-testid="action-scorer-text-response"]')
@@ -24,13 +26,22 @@ export function GetRowToBeValidated(response) {
     .as('responseDetailsRow')
 }
 
+// IMPORTANT: Call this method before calling any of the Validate* methods.
+export function GetEndSessionRowToBeValidated(response) {
+  cy.Get('[data-testid="action-scorer-session-response"]')
+    .ExactMatch('EndSession')
+    .siblings('[data-testid="action-scorer-session-response-user"]')
+    .ExactMatch(response)
+    .parents('div.ms-DetailsRow-fields')
+    .as('responseDetailsRow')
+}
 
 function ValidateEntitiesIsEmpty(selector) { cy.Get('@responseDetailsRow').find(selector) }
 
 function ValidateEntities(selector, emptySelector, entities1, entities2) {
   if (!entities1 && !entities2) return ValidateEntitiesIsEmpty(emptySelector)
 
-  var entities = new Array()
+  let entities = []
   if (entities1) {
     if (!Array.isArray(entities1)) entities1 = [entities1]
     entities = entities1
@@ -47,6 +58,3 @@ function ValidateEntities(selector, emptySelector, entities1, entities2) {
   entities.forEach(entity => cy.Get('@entitiesList').contains(entity))
   cy.Get('@entitiesList').should('have.length', entities.length)
 }
-
-
-

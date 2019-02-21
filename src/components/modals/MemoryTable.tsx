@@ -170,20 +170,20 @@ class MemoryTable extends React.Component<Props, ComponentState> {
 
     onColumnClick(event: any, column: IRenderableColumn) {
         let { columns } = this.state;
-        let isSortedDescending = column.isSortedDescending;
+        let isSortedDescending = column.isSortedDescending
 
         // If we've sorted this column, flip it.
         if (column.isSorted) {
-            isSortedDescending = !isSortedDescending;
+            isSortedDescending = !isSortedDescending
         }
 
         // Reset the items and columns to match the state.
         this.setState({
             columns: columns.map(col => {
-                col.isSorted = (col.key === column.key);
+                col.isSorted = (col.key === column.key)
 
                 if (col.isSorted) {
-                    col.isSortedDescending = isSortedDescending;
+                    col.isSortedDescending = isSortedDescending
                 }
 
                 return col;
@@ -222,23 +222,23 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         try {
             let obj = JSON.parse(entityValues);
             if (typeof obj !== 'number' && typeof obj !== 'boolean') {
-                return obj;
+                return obj
             }
-            return null;
+            return null
         } catch (err) {
-            return null;
+            return null
         }
     }
     getEntityValues(entity: CLM.EntityBase) {
         // Current entity values
-        let curMemory = this.props.memories.find(m => m.entityName === entity.entityName);
-        let curMemoryValues = curMemory ? curMemory.entityValues : [];
-        let curValues = curMemoryValues.map(cmv => cmv.userText);
+        let curMemory = this.props.memories.find(m => m.entityName === entity.entityName)
+        let curMemoryValues = curMemory ? curMemory.entityValues : []
+        let curValues = curMemoryValues.map(cmv => cmv.userText)
 
         // Corresponding old memory values
-        let prevMemory = this.props.prevMemories.find(m => m.entityName === entity.entityName);
-        let prevMemoryValues = prevMemory ? prevMemory.entityValues : [];
-        let prevValues = prevMemoryValues.map(pmv => pmv.userText);
+        let prevMemory = this.props.prevMemories.find(m => m.entityName === entity.entityName)
+        let prevMemoryValues = prevMemory ? prevMemory.entityValues : []
+        let prevValues = prevMemoryValues.map(pmv => pmv.userText)
 
         // Find union and remove duplicates
         const unionMemoryValues = [...curMemoryValues, ...prevMemoryValues.filter(pmv => !curMemoryValues.some(cmv => cmv.userText === pmv.userText))];
@@ -295,7 +295,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
                 ...this.props.prevMemories.map(m => m.entityName)
             ];
 
-        unionMemoryNames = Array.from(new Set(unionMemoryNames));
+        unionMemoryNames = Array.from(new Set(unionMemoryNames))
 
         // TODO: Refactor, this strips memories down to a entity name string to perform union
         // then re-merges back with original data.  This could be done in one pass only adding
@@ -317,9 +317,9 @@ class MemoryTable extends React.Component<Props, ComponentState> {
                 const secondValue = sortColumn.getSortValue(bEntity, this)
 
                 if (sortColumn.isSortedDescending) {
-                    return firstValue > secondValue ? -1 : 1;
+                    return firstValue > secondValue ? -1 : 1
                 } else {
-                    return firstValue > secondValue ? 1 : -1;
+                    return firstValue > secondValue ? 1 : -1
                 }
             });
         }

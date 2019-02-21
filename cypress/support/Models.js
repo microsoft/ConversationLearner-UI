@@ -21,6 +21,7 @@ export function CreateNewModel(modelNamePrefix) {
   return name
 }
 
+// The test defined prefix can be up to 17 characters.
 export function ImportModel(modelNamePrefix, fileName) {
   return new Promise((resolve) => {
     // Maximum Name Length is 30 Characters
@@ -39,8 +40,8 @@ export function ImportModel(modelNamePrefix, fileName) {
 // Get a unique time to use as a suffix for the model name.
 var lastModelNameTime
 function ModelNameTime() {
-  var modelNameMoment = Cypress.moment()
-  var modelNameTime = modelNameMoment.format("MMMDD-HHmmss")
+  let modelNameMoment = Cypress.moment()
+  let modelNameTime = modelNameMoment.format("MMMDD-HHmmss")
   if (lastModelNameTime && modelNameTime == lastModelNameTime) {
     modelNameMoment = modelNameMoment.add(1, 'seconds')
     modelNameTime = modelNameMoment.format("MMMDD-HHmmss")

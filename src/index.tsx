@@ -7,7 +7,6 @@ import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { createReduxStore } from './reduxStore'
 import App from './routes/App'
-import { unregister } from './registerServiceWorker'
 import { addLocaleData, IntlProvider } from 'react-intl'
 // TODO: It should not be wild card import but TypeScript won't allow the default import
 import * as en from 'react-intl/locale-data/en'
@@ -29,7 +28,6 @@ loadTheme({
 addLocaleData([...en, ...ko])
 
 console.log(`process.env.NODE_ENV: `, process.env.NODE_ENV)
-console.log(`process.env.REACT_APP_AAD_APP_ID: `, process.env.REACT_APP_AAD_APP_ID)
 
 const locale = (navigator.languages && navigator.languages[0])
   || navigator.language
@@ -46,5 +44,3 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root') as HTMLElement
 );
-
-unregister();

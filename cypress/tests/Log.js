@@ -63,24 +63,23 @@ export function EndlessLoopX() {
   cy.Enqueue(() =>
   {
     return new Promise((resolve) => {
-      var modelNames = new Array()
+      let modelNames = []
       //models.ImportModel('z-endlessLoop', 'z-endlessLoop.cl').then(modelName => {modelNames.push(modelName)})
       models.ImportModel('z-endlessLoop', 'z-endlessLoop.cl').then(modelName => {
         modelNames.push(modelName)
         helpers.ConLog(`EndlessLoop`, `Models: ${modelNames}`)
 
-        var messages = ['one', 'two', 'three', 'ONE', 'TWO', 'THREE']
-        //var modelIndex = 1
-        var modelIndex = 0
-        var loopIndex = 0
+        let messages = ['one', 'two', 'three', 'ONE', 'TWO', 'THREE']
+        let modelIndex = 0
+        let loopIndex = 0
         function LogDialogChat() {
           helpers.ConLog(`EndlessLoop(modelIndex: ${modelIndex}, loopIndex: ${loopIndex})`, `Start`)
           modelPage.NavigateToLogDialogs()
           cy.WaitForTrainingStatusCompleted()
           logDialogsGrid.CreateNewLogDialogButton()
 
-          for (var i = 0; i < 3; i++) {
-            var message = messages[i + (modelIndex * 3)]
+          for (let i = 0; i < 3; i++) {
+            let message = messages[i + (modelIndex * 3)]
             logDialogModal.TypeYourMessage(`${message} loopIndex: ${loopIndex}`)
             cy.ConLog(`EndlessLoop(modelIndex: ${modelIndex}, loopIndex: ${loopIndex})`, `${message} loopIndex: ${loopIndex}`)
             cy.wait(2000)
@@ -90,7 +89,7 @@ export function EndlessLoopX() {
             helpers.ConLog(`EndlessLoop(modelIndex: ${modelIndex}, loopIndex: ${loopIndex})`, `Done waiting after test end.`)
 
             loopIndex++
-            if (loopIndex >= 6) return resolve();
+            if (loopIndex >= 6) return resolve()
 
             modelIndex = (modelIndex + 1) % 2
             helpers.ConLog(`EndlessLoop(modelIndex: ${modelIndex}, loopIndex: ${loopIndex})`, `Flip Models`)

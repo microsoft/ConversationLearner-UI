@@ -22,18 +22,23 @@ export function ClickConfirmButton() { return cy.Get('.ms-Dialog-main').contains
 
 export function GetModelListRowCount() {
   return cy.Get('[data-automationid="DetailsList"] > [role="grid"]')
-    .then(gridElement => { var rowCount = +gridElement.attr('aria-rowcount') - 1; return rowCount })
+    .then(gridElement => { 
+      let rowCount = +gridElement.attr('aria-rowcount') - 1
+      return rowCount 
+    })
 }
 
 export function GetModelNameIdList() {
-  var listToReturn = new Array()
-  var elements = Cypress.$('[data-testid="model-list-model-name"]')
-  for (var i = 0; i < elements.length; i++) {
-    var modelName = elements[i].innerText
-    var modelId = elements[i].getAttribute('data-model-id');
-    listToReturn.push({ name: modelName, id: modelId })
-    helpers.ConLog('GetModelNameIdList', `modelName: ${modelName} - modelId: ${modelId}`)
-  }
-  helpers.ConLog('GetModelNameIdList', `Returning a list of ${listToReturn.length} models`)
-  return listToReturn
+  cy.Enqueue(() => {
+    let listToReturn = []
+    let elements = Cypress.$('[data-testid="model-list-model-name"]')
+    for (let i = 0; i < elements.length; i++) {
+      let modelName = elements[i].textContent
+      let modelId = elements[i].getAttribute('data-model-id')
+      listToReturn.push({ name: modelName, id: modelId })
+      helpers.ConLog('GetModelNameIdList', `modelName: ${modelName} - modelId: ${modelId}`)
+    }
+    helpers.ConLog('GetModelNameIdList', `Returning a list of ${listToReturn.length} models`)
+    return listToReturn
+  })
 }

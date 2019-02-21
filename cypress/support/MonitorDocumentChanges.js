@@ -21,17 +21,16 @@
 const helpers = require('./Helpers.js')
 
 var MonitorDocumentChanges = (function () {
-  var lastMonitorTime = 0
-  var lastChangeTime = 0
-  var canRefreshTrainingStatusTime = 0
-  var lastHtml
-  var StopLookingForChanges = false
-  var dumpHtml = false;
+  let lastMonitorTime = 0
+  let lastChangeTime = 0
+  let lastHtml
+  let StopLookingForChanges = false
+  let dumpHtml = false
 
-  var expectingSpinner
-  var currentSpinnerText = ''
+  let expectingSpinner
+  let currentSpinnerText = ''
 
-  Initialize();
+  Initialize()
 
   function MillisecondsSinceLastChange() {
     if (new Date().getTime() > lastMonitorTime + 50) LookForChange()
@@ -69,31 +68,34 @@ var MonitorDocumentChanges = (function () {
       })
     })
 
-    Cypress.Commands.add('DoesNotContain', { prevSubject: 'optional' }, (subject, arg1, arg2) => {
-      helpers.ConLog(`cy.DoesNotContain(${subject}, ${arg1}, ${arg2})`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
+    // The last "expectFailure" parameter is used only for testing that this function works.
+    // To use it set up the conditions where the selector (and optional text if appropriate)
+    // does exist on the page and call this with "expectFailure" set to true. If this finds
+    // the selector then this method will return true, otherwise false.
+    // Without setting "expectFailure" this method will throw an exception on failure.
+    Cypress.Commands.add('DoesNotContain', { prevSubject: 'optional' }, (subject, selector, textItShouldNotContain, expectFailure = false) => {
+      let functionSignature = `cy.DoesNotContain(${subject}, ${selector}, ${textItShouldNotContain})`
+      helpers.ConLog(functionSignature, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       cy.wrap(700, { timeout: 60000 }).should('lte', 'MillisecondsSinceLastChange').then(() => {
-        helpers.ConLog(`cy.DoesNotContain()`, `DOM Is Stable`)
+        helpers.ConLog(functionSignature, `DOM Is Stable`)
 
-        var selector
-        if (arg2) selector = arg2
-        else selector = arg1
-
-        var elements
+        let elements
         if (subject) elements = Cypress.$(subject).find(selector)
         else elements = Cypress.$(selector)
 
-        helpers.ConLog(`cy.DoesNotContain()`, `Found ${elements.length} for selector: ${selector}`)
+        helpers.ConLog(functionSignature, `Found ${elements.length} for selector: ${selector}`)
+
+        if ((elements.length > 0) && textItShouldNotContain) {
+          elements = Cypress.$(elements).find(`:contains(${textItShouldNotContain})`)
+          helpers.ConLog(functionSignature, `Found ${elements.length} containing text: ${textItShouldNotContain}`)
+        }
 
         if (elements.length > 0) {
-          if (arg2) {
-            elements = Cypress.$(elements).find(`:contains(${arg2})`)
-            helpers.ConLog(`cy.DoesNotContain()`, `Found ${elements.length} containing text: ${arg2}`)
-          }
-
-          if (elements.length > 0)
-            throw `Selector "${arg1}" + "${arg2}" was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`
+          if (expectFailure) return true;
+          throw `selector: "${selector}" & textItShouldNotContain: "${textItShouldNotContain}" was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`
         }
-        helpers.ConLog(`cy.DoesNotContain()`, `PASSED - Selector: ${selector} was NOT Found as Expected`)
+        helpers.ConLog(functionSignature, `PASSED - Selector was NOT Found as Expected`)
+        if (expectFailure) return false;
       })
     })
 
@@ -135,11 +137,6 @@ var MonitorDocumentChanges = (function () {
     Cypress.on('url:changed', (newUrl) => {
       helpers.ConLog(`url:changed`, `New URL ${newUrl} - MillisecondsSinceLastChange: ${MillisecondsSinceLastChange()}`)
       lastChangeTime = new Date().getTime()
-
-      // TODO: Remove this UrlNeedsSpinner() function in time if it proves that we no longer need it.
-      //       The code in MillisecondsSinceLastChange that calls LookForChange should have fixed 
-      //       the issue that the UrlNeedsSpinner() function was meant to solve.
-      //if(UrlNeedsSpinner(newUrl)) SetExpectingSpinner(true)
     })
 
     lastChangeTime = new Date().getTime()
@@ -149,21 +146,20 @@ var MonitorDocumentChanges = (function () {
     helpers.ConLog(`MonitorDocumentChanges.initialize()`, `Running`)
   }
 
-  var dumpSpinner = false
+  let dumpSpinner = false
   function LookForChange(loop) {
-    var thisFuncName = `MonitorDocumentChanges.LookForChange()`
+    let thisFuncName = `MonitorDocumentChanges.LookForChange()`
 
     if (StopLookingForChanges) {
       helpers.ConLog(thisFuncName, `DONE`)
       return
     }
 
-    var currentTime = lastMonitorTime = new Date().getTime()
-    var currentHtml = Cypress.$('html')[0].outerHTML
+    let currentTime = lastMonitorTime = new Date().getTime()
+    let currentHtml = Cypress.$('html')[0].outerHTML
     if (currentHtml != lastHtml) {
       helpers.ConLog(thisFuncName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
-      if (dumpHtml || expectingSpinner)
-        helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`)
+      if (dumpHtml) { helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`) }
 
       lastChangeTime = currentTime
       lastHtml = currentHtml
@@ -175,21 +171,21 @@ var MonitorDocumentChanges = (function () {
   }
 
   function MonitorSpinner() {
-    var thisFuncName = `MonitorDocumentChanges.MonitorSpinner()`
+    let thisFuncName = `MonitorDocumentChanges.MonitorSpinner()`
 
-    var spinnerTexts =
+    let spinnerTexts =
       [
         'data-testid="spinner"',
         '<div class="ms-Spinner-circle ms-Spinner--large circle-50">',
       ]
 
-    for (var i = 0; i < spinnerTexts.length; i++) {
+    for (let i = 0; i < spinnerTexts.length; i++) {
       if (lastHtml.includes(spinnerTexts[i])) {   // We found a spinner on the page.
         lastChangeTime = new Date().getTime()
         SetExpectingSpinner(false)
 
         if (spinnerTexts[i] != currentSpinnerText) {
-          helpers.ConLog(thisFuncName, `Start - ${spinnerTexts[i]} - current HTML:\n${lastHtml}`)
+          if (dumpHtml) { helpers.ConLog(thisFuncName, `Start - ${spinnerTexts[i]} - current HTML:\n${lastHtml}`) }
           currentSpinnerText = spinnerTexts[i]
         }
         return
@@ -209,14 +205,14 @@ var MonitorDocumentChanges = (function () {
   }
 
   function SetExpectingSpinner(value) {
-    if (expectingSpinner == value) return;
+    if (expectingSpinner == value) return
     helpers.ConLog(`MonitorDocumentChanges.SetExpectingSpinner()`, `Value Changed from ${expectingSpinner} to ${value}`)
     expectingSpinner = value
   }
 
   function UrlNeedsSpinner(url) {
     // If a URL ends with one of these we do not expect a spinner.
-    var urlEndings =
+    let urlEndings =
       [
         '/trainDialogs',
         '/entities',
@@ -225,7 +221,7 @@ var MonitorDocumentChanges = (function () {
         '/settings'
       ]
 
-    for (var i = 0; i < urlEndings.length; i++) { if (url.endsWith(urlEndings[i])) return false }
+    for (let i = 0; i < urlEndings.length; i++) { if (url.endsWith(urlEndings[i])) return false }
     return true
   }
 }())

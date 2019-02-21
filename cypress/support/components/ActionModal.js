@@ -12,6 +12,12 @@ export function TypeExpectedEntity(entityNames) { TypeMultipleEntities('.cl-acti
 export function TypeRequiredEntities(entityNames) { TypeMultipleEntities('.cl-action-creator--required-entities', entityNames) }
 export function TypeDisqualifyingEntities(entityNames) { TypeMultipleEntities('.cl-action-creator--disqualifying-entities', entityNames) }
 
+export function SelectType(type)
+{
+  cy.Get('[data-testid="dropdown-action-type"]').Click()
+  cy.Get('button.ms-Dropdown-item').ExactMatch(type).Click()
+}
+
 export function TypeResponse(textToType) {
   cy.Get('.cl-modal_body').within(() => {
     cy.Get('div[data-slate-editor="true"]')
@@ -22,33 +28,15 @@ export function TypeResponse(textToType) {
 
 // Pass in an undefined 'entityNames' to just clear the field
 function TypeMultipleEntities(selector, entityNames) {
-  if (!entityNames) entityNames = new Array()
+  if (!entityNames) entityNames = []
   else if (!Array.isArray(entityNames)) entityNames = [entityNames]
 
   cy.Get('.cl-modal_body').within(() => {
     cy.Get(selector).within(() => {
       cy.Get('.ms-BasePicker-input')
         .then((element) => {
-          for (var i = 0; i < entityNames.length; i++) { cy.wrap(element).type(`$${entityNames[i]}`).wait(1000).type('{enter}') }
+          for (let i = 0; i < entityNames.length; i++) { cy.wrap(element).type(`$${entityNames[i]}`).wait(1000).type('{enter}') }
         })
     })
-  })
-}
-
-export function SelectTypeText() {
-  cy.Get('[data-testid="dropdown-action-type"]')
-    .should("be.visible")
-    .Click()
-    .Click()
-}
-
-export function TypeLetterResponse(letter) {
-  //if (letter ==="$") letter = '{shift}4';  //TODO: cypress is not resolving shift^4 to trigger entity finder event.
-  cy.Get('.cl-modal_body').within(() => {
-    cy.Get('div[data-slate-editor="true"]')
-      //.type(letter, { release: false })   //enable if the key combination works.
-      .clear()
-      .type(letter)
-      .trigger('onChange')
   })
 }

@@ -3,23 +3,23 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as Util from '../../Utils/util'
+import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react'
+import * as ToolTips from '../ToolTips/ToolTips'
+import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import { setStateAsync, formatMessageId } from '../../Utils/util'
-import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react'
-import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import ExtractConflictModal from './ExtractConflictModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import actions from '../../actions'
-import * as ToolTips from '../ToolTips/ToolTips'
 import HelpIcon from '../HelpIcon'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.'
 import { FM } from '../../react-intl-messages'
-import * as Util from '../../Utils/util'
 import './EntityExtractor.css'
 
 interface ExtractResponseForDisplay {

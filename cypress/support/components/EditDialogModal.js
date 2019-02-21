@@ -8,20 +8,24 @@ const helpers = require('../../support/Helpers')
 const scorerModal = require('../../support/components/ScorerModal')
 
 export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p'
+export const TypeYourMessageSelector = 'input.wc-shellinput[placeholder="Type your message..."]' // data-testid NOT possible
+export const ScoreActionsButtonSelector = '[data-testid="score-actions-button"]'
 
-export function TypeYourMessage(trainMessage) { cy.Get('input.wc-shellinput').type(`${trainMessage}{enter}`) }  // data-testid NOT possible
+export function TypeYourMessage(trainMessage) { cy.Get(TypeYourMessageSelector).type(`${trainMessage}{enter}`) }
 export function TypeAlternativeInput(trainMessage) { cy.Get('[data-testid="entity-extractor-alternative-input-text"]').type(`${trainMessage}{enter}`) }
 export function ClickSetInitialStateButton() { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
-export function ClickScoreActionsButton() { cy.Get('[data-testid="score-actions-button"]').Click() }
+export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).Click() }
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function EntitySearch() { cy.Get('[data-testid="entity-picker-entity-search"]') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
-export function GetAllChatMessages() { return helpers.StringArrayFromInnerHtml(AllChatMessagesSelector) }
+export function GetAllChatMessages() { return helpers.StringArrayFromElementText(AllChatMessagesSelector) }
 export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error > div > span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error > div > span') }
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="edit-dialog-modal-delete-turn-button"]').Click() }
+export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
+export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreActionsButtonSelector) }
 
 export function ClickSaveCloseButton() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
 export function VerifyCloseButtonLabel() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Close') }
@@ -44,13 +48,21 @@ export function AbandonBranchChanges() {
   homePage.ClickConfirmButton()
 }
 
+// -----------------------------------------------------------------------------
 // Selects FROM ALL chat messages, from both Bot and User.
 // Once clicked, more UI elements will become visible & enabled.
 // OPTIONAL index parameter lets you select other than the 1st 
 // instance of a message.
 // RETURNS: The index of the selected turn.
-export function SelectChatTurn(message, index = 0) {
-  var funcName = `SelectChatTurn(${message}, ${index})`
+
+export function SelectChatTurnExactMatch(message, index = 0) { 
+  return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText === transformedMessage)}
+
+export function SelectChatTurnStartsWith(message, index = 0) {
+  return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText.startsWith(transformedMessage))}
+
+function SelectChatTurnInternal(message, index, matchPredicate) {
+  var funcName = `SelectChatTurnInternal(${message}, ${index})`
   cy.ConLog(funcName, `Start`)
 
   cy.WaitForStableDOM()
@@ -60,12 +72,12 @@ export function SelectChatTurn(message, index = 0) {
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (var i = 0; i < elements.length; i++) {
       helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
-      if (helpers.RemoveMarkup(elements[i].innerHTML) == message) {
+      if (matchPredicate(elements[i].textContent, message)) {
         if (index > 0) index--
         else {
           helpers.ConLog(funcName, `FOUND!`)
-          elements[i].click();
-          return i;
+          elements[i].click()
+          return i
         }
       }
       else helpers.ConLog(funcName, `NOT A MATCH`)
@@ -74,6 +86,8 @@ export function SelectChatTurn(message, index = 0) {
     throw `${funcName} - Failed to find the message in chat utterances`
   })
 }
+
+// -----------------------------------------------------------------------------
 
 // This is meant to be called after SelectChatTurn for a user message.
 // Do NOT use this for bot messages, since they have no branching capabilities.
@@ -122,17 +136,28 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage) {
   cy.Get('.wc-message-from-bot').contains(botMessage)
 
   // These do the actual validation this function is intended to validate.
+  // We expect NO Chat Edit Controls at all on this page.
   cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
   cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+')
   cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
   cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]', '+')
 }
 
+// This is an odd verification function in that it is validating test code that we
+// had wrong at one point. We need to do this because if the cy.DoesNotContain fails
+// to find the selector, it could mean that cy.DoesNotContain method has a bug in it.
+export function VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector(userMessage, botMessage) {
+  cy.log('EXPECTED FAILURE Comming Next')
+  cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+', true).then(expectedFailureOccurred => {
+    expect(expectedFailureOccurred).to.be.true
+  })
+}
+
 export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
   function LabelIt() {
     // This actually works if text is a word or a phrase.
-    cy.Get('body').trigger('Test_SelectWord', { detail: text });
-    cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`);
+    cy.Get('body').trigger('Test_SelectWord', { detail: text })
+    cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
   }
 
   if (itMustNotBeLabeledYet) LabelIt()
@@ -140,17 +165,17 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
     // First make sure it is not already labeled before trying to label it.
     cy.WaitForStableDOM()
     cy.Enqueue(() => {
-      var found = false;
-      var elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span');
+      var found = false
+      var elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
 
       // If you need to find a phrase, this part of the code will fail, 
       // you will need to upgrade this code in that case.
-      var element = elements.find(element => element.innerText === text)
+      var element = elements.find(element => element.textContent === text)
       if (element) {
-        found = Cypress.$(element).parents('.cl-entity-node--custom').find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`).length == 0;
+        found = Cypress.$(element).parents('.cl-entity-node--custom').find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`).length == 0
       }
-      if (!found) LabelIt();
-    });
+      if (!found) LabelIt()
+    })
   }
 }
 
@@ -222,7 +247,7 @@ export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index) {
 }
 
 export function InsertUserInputAfter(existingMessage, newMessage) {
-  SelectChatTurn(existingMessage)
+  SelectChatTurnExactMatch(existingMessage)
 
   // This ODD way of clicking is to avoid the "Illegal Invocation" error that
   // happens with this specific UI element.
@@ -235,8 +260,8 @@ export function InsertUserInputAfter(existingMessage, newMessage) {
 // instance of a message as the point of insertion.
 export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
   cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `Start`)
-  cy.Enqueue(() => { return SelectChatTurn(existingMessage, index); }).then(indexOfSelectedChatTurn => {
-    helpers.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `indexOfSelectedChatTurn: ${indexOfSelectedChatTurn}`);
+  cy.Enqueue(() => { return SelectChatTurnExactMatch(existingMessage, index) }).then(indexOfSelectedChatTurn => {
+    helpers.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `indexOfSelectedChatTurn: ${indexOfSelectedChatTurn}`)
     
     // This ODD way of clicking is to avoid the "Illegal Invocation" error that
     // happens with this specific UI element.
@@ -253,8 +278,8 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
         // so we need to confirm that we actually need to click on the action, 
         // otherwise an unnecessary message box pops up that we don't want to deal with.
 
-        var chatMessages = helpers.StringArrayFromInnerHtml(AllChatMessagesSelector)
-        var indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1;
+        var chatMessages = helpers.StringArrayFromElementText(AllChatMessagesSelector)
+        var indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
         if (chatMessages[indexOfInsertedBotResponse] != newMessage)
           scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
       })

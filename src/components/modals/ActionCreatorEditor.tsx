@@ -3,6 +3,11 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as CLM from '@conversationlearner/models'
+import * as ToolTip from '../ToolTips/ToolTips'
+import * as TC from '../tipComponents'
+import * as OF from 'office-ui-fabric-react';
+import * as ActionPayloadEditor from './ActionPayloadEditor'
 import { Value } from 'slate'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
@@ -11,15 +16,10 @@ import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
 import { formatMessageId } from '../../Utils/util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import * as CLM from '@conversationlearner/models'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
-import * as ActionPayloadEditor from './ActionPayloadEditor'
 import { State } from '../../types'
-import * as ToolTip from '../ToolTips/ToolTips'
-import * as TC from '../tipComponents'
-import * as OF from 'office-ui-fabric-react'
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
 import CLTagPicker from '../CLTagPicker'
 import './ActionCreatorEditor.css'
@@ -67,11 +67,71 @@ const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[]): OF.I
         .map<OF.ITag>(convertEntityToTag)
 }
 
-const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude: OF.ITag[]): OF.ITag[] => {
+// Entities that can be chosen for required / blocking
+const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] =>  {
+
+    // Ignore resolvers and negative entities
+    const filteredEntities = entities.filter(e => !e.doNotMemorize && !e.positiveId)
+
+    let tags: IConditionalTag[] = []
+    filteredEntities.forEach(e => {
+        if (e.entityType === CLM.EntityType.ENUM && e.enumValues) {
+            for (let enumValue of e.enumValues) {
+                tags.push({
+                    key: enumValue.enumValueId!,
+                    name: `${e.entityName} = ${enumValue.enumValue}`,
+                    condition: {
+                        entityId: e.entityId,
+                        valueId: enumValue.enumValueId!,
+                        condition: CLM.ConditionType.EQUAL
+                    }
+                })
+            }
+        }
+        else {
+            tags.push({
+                key: e.entityId,
+                name: e.entityName,
+                condition: null
+            })
+        }
+    })
+    return tags
+}
+
+// Entities that can be picked as expected entity
+const expectedEntityTags = (entities: CLM.EntityBase[]): OF.ITag[] =>  {
+    // Must be LUIS entity and not the negative
+    return entities
+        .filter(e => e.entityType === CLM.EntityType.LUIS && !e.positiveId)
+        .map<OF.ITag>(convertEntityToTag)
+
+}
+
+// Returns true if conditions can't be true at the same time
+const isConditionMutuallyExclusive = (tag1: OF.ITag, tag2: OF.ITag): boolean => {
+    const ctag1 = tag1 as IConditionalTag
+    const ctag2 = tag2 as IConditionalTag
+    if (!ctag1.condition || !ctag2.condition) {
+        return false
+    }
+
+    // Open for future condition type checks for now equal is only one
+    if (ctag1.condition.entityId === ctag2.condition.entityId) {
+        return true
+    }
+    return false;
+}
+
+const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude: OF.ITag[], mutuallyExclusive: OF.ITag[] = []): OF.ITag[] => {
     let fText = (filterText.startsWith(ActionPayloadEditor.triggerCharacter) ? filterText.substring(1) : filterText).trim()
 
-    const availableTags = allTags
+    let availableTags = allTags
         .filter(tag => !tagsToExclude.some(t => t.key === tag.key))
+
+    // Check for mutually exclusive conditions and remove them 
+    availableTags = availableTags
+        .filter(tag => !mutuallyExclusive.some(t => isConditionMutuallyExclusive(t, tag)))
 
     if (fText.length === 0) {
         return availableTags
@@ -122,6 +182,10 @@ const actionTypeOptions = Object.values(CLM.ActionTypes)
 
 type SlateValueMap = { [slot: string]: ActionPayloadEditor.SlateValue }
 
+interface IConditionalTag extends OF.ITag {
+    condition: CLM.Condition | null
+}
+
 interface ComponentState {
     apiOptions: OF.IDropdownOption[]
     renderOptions: OF.IDropdownOption[]
@@ -143,11 +207,11 @@ interface ComponentState {
     newOrEditedAction: CLM.ActionBase | null
     selectedActionTypeOptionKey: string | number
     availableExpectedEntityTags: OF.ITag[]
-    entityTags: OF.ITag[]
+    conditionalTags: OF.ITag[]
     expectedEntityTags: OF.ITag[]
     requiredEntityTagsFromPayload: OF.ITag[]
-    requiredEntityTags: OF.ITag[]
-    negativeEntityTags: OF.ITag[]
+    requiredEntityTags: IConditionalTag[]
+    negativeEntityTags: IConditionalTag[]
     slateValuesMap: SlateValueMap
     secondarySlateValuesMap: SlateValueMap
     isTerminal: boolean
@@ -174,7 +238,7 @@ const initialState: ComponentState = {
     newOrEditedAction: null,
     selectedActionTypeOptionKey: actionTypeOptions[0].key,
     availableExpectedEntityTags: [],
-    entityTags: [],
+    conditionalTags: [],
     expectedEntityTags: [],
     requiredEntityTagsFromPayload: [],
     requiredEntityTags: [],
@@ -196,18 +260,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     initProps(): ComponentState {
         const { entities, botInfo } = this.props
-        // Ignore resolvers and negative entities
-        const entityTags = entities.filter(e => !e.doNotMemorize && !e.positiveId).map<OF.ITag>(e =>
-            ({
-                key: e.entityId,
-                name: e.entityName
-            }))
-
-        const availableExpectedEntityTags = entities
-            // Must be LUIS entity and not the negative
-            .filter(e => e.entityType === CLM.EntityType.LUIS && !e.positiveId)
-            .map<OF.ITag>(convertEntityToTag)
-
         const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
         const cardOptions = botInfo.templates.map<OF.IDropdownOption>(convertTemplateToOption)
 
@@ -215,8 +267,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             ...initialState,
             apiOptions,
             cardOptions,
-            availableExpectedEntityTags,
-            entityTags,
+            availableExpectedEntityTags: expectedEntityTags(entities),
+            conditionalTags: conditionalEntityTags(entities),
             isEditing: !!this.props.action
         }
     }
@@ -236,14 +288,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     // Ignore resolvers and negative entities
                     const entityTags = nextProps.entities.filter(e => !e.doNotMemorize && !e.positiveId).map<OF.ITag>(convertEntityToTag)
 
-                    const availableExpectedEntityTags = nextProps.entities
-                        // Must be LUIS entity and not the negative
-                        .filter(e => e.entityType === CLM.EntityType.LUIS && !e.positiveId)
-                        .map<OF.ITag>(convertEntityToTag)
-
                     nextState = {
                         ...nextState,
-                        availableExpectedEntityTags,
+                        availableExpectedEntityTags: expectedEntityTags(nextProps.entities),
                         entityTags
                     }
                 }
@@ -293,10 +340,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         slateValuesMap[TEXT_SLOT] = Plain.deserialize(contentString)
                         entityWarning = true
                     }
-                } else if (action.actionType === CLM.ActionTypes.END_SESSION) {
+                } 
+                else if (action.actionType === CLM.ActionTypes.END_SESSION) {
                     const sessionAction = new CLM.SessionAction(action)
                     slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(CLM.ActionTypes.TEXT, TEXT_SLOT, sessionAction.value, payloadOptions)
-                } else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
+                } 
+                else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
                     const apiAction = new CLM.ApiAction(action)
                     selectedApiOptionKey = apiAction.name
                     const callback = this.props.botInfo.callbacks.find(t => t.name === selectedApiOptionKey)
@@ -313,7 +362,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         }
                     }
 
-                } else if (action.actionType === CLM.ActionTypes.CARD) {
+                } 
+                else if (action.actionType === CLM.ActionTypes.CARD) {
                     const cardAction = new CLM.CardAction(action)
                     selectedCardOptionKey = cardAction.templateName
                     const template = this.props.botInfo.templates.find(t => t.name === selectedCardOptionKey)
@@ -611,6 +661,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 throw new Error(`When attempting to submit action, the selected action type: ${this.state.selectedActionTypeOptionKey} did not have matching type`)
         }
 
+        const requiredTags = this.state.requiredEntityTags.filter(t => !t.condition)
+        const negativeTags = this.state.negativeEntityTags.filter(t => !t.condition)
+        const requiredConditions = this.state.requiredEntityTags.filter(t => t.condition).map(t => t.condition!)
+        const negativeConditions = this.state.negativeEntityTags.filter(t => t.condition).map(t => t.condition!)
+
+ 
         // TODO: This should be new model such as ActionInput for creation only.
         const model = new CLM.ActionBase({
             actionId: null!,
@@ -618,8 +674,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             createdDateTime: new Date().toJSON(),
             isTerminal: this.state.isTerminal,
             requiredEntitiesFromPayload: this.state.requiredEntityTagsFromPayload.map<string>(tag => tag.key),
-            requiredEntities: [...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags].map<string>(tag => tag.key),
-            negativeEntities: this.state.negativeEntityTags.map<string>(tag => tag.key),
+            requiredEntities: [...this.state.requiredEntityTagsFromPayload, ...requiredTags].map<string>(tag => tag.key),
+            negativeEntities: negativeTags.map<string>(tag => tag.key),
+            requiredConditions, 
+            negativeConditions, 
             suggestedEntity: (this.state.expectedEntityTags.length > 0) ? this.state.expectedEntityTags[0].key : null,
             version: 0,
             packageCreationId: 0,
@@ -635,7 +693,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onClickSaveCreate() {
-        let newOrEditedAction = this.convertStateToModel();
+        let newOrEditedAction = this.convertStateToModel()
         let validationWarnings: string[] = []
 
         // Otherwise need to validate changes
@@ -805,7 +863,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return <CLTagItem key={props.index} {...renderProps}>{props.item.name}</CLTagItem>
     }
 
-    onChangeExpectedEntityTags = (tags: OF.ITag[]) => {
+    onChangeExpectedEntityTags = (tags: IConditionalTag[]) => {
         const newExpectedEntityTag = tags[0]
         this.setState(prevState => ({
             expectedEntityTags: tags,
@@ -818,12 +876,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onResolveRequiredEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
         return getSuggestedTags(
             filterText,
-            this.state.entityTags,
-            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags, ...this.state.expectedEntityTags]
+            this.state.conditionalTags,
+            [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags, ...this.state.expectedEntityTags],
+            this.state.requiredEntityTags
         )
     }
 
-    onChangeRequiredEntityTags = (tags: OF.ITag[]) => {
+    onChangeRequiredEntityTags = (tags: IConditionalTag[]) => {
         this.setState({
             requiredEntityTags: tags
         })
@@ -844,12 +903,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onResolveNegativeEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
         return getSuggestedTags(
             filterText,
-            this.state.entityTags,
+            this.state.conditionalTags,
             [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags]
         )
     }
 
-    onChangeNegativeEntityTags = (tags: OF.ITag[]) => {
+    onChangeNegativeEntityTags = (tags: IConditionalTag[]) => {
         this.setState({
             negativeEntityTags: tags
         })
@@ -986,8 +1045,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             // Remove do not memorizable entities (Those prebuilt entity types with no default extractor)
             .filter(e => !e.doNotMemorize)
             .map(convertEntityToOption)
-
-
 
         const disabled = this.state.isEditing && this.isUsedByTrainingDialogs()
 
@@ -1263,7 +1320,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>
-                        <div className="cl-error-message-label"
+                        <div 
+                            className="cl-error-message-label"
                             style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}>
                             {formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD)}
                         </div>

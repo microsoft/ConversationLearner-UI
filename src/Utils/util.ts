@@ -19,6 +19,10 @@ export function replace<T>(xs: T[], updatedX: T, getId: (x: T) => object | numbe
     return [...xs.slice(0, index), updatedX, ...xs.slice(index + 1)]
 }
 
+export function isNullOrUndefined(object: any) {
+    return object === null || object === undefined
+    
+}
 export function isNullOrWhiteSpace(str: string | null): boolean {
     return (!str || str.length === 0 || /^\s*$/.test(str))
 }
@@ -85,5 +89,8 @@ export function formatMessageId(intl: ReactIntl.InjectedIntl, id: IntlMessages.F
 }
 
 export function earlierDateOrTimeToday(timestamp: string): string {
-    return moment(timestamp).format(moment().diff(moment(timestamp), "hours") < 24 ? 'LTS' : 'L')
+    const endOfYesterday = moment().endOf("day").subtract(1, "day")
+    const dialogTime = moment(timestamp)
+    const isDialogCreatedToday = dialogTime.diff(endOfYesterday) >= 0
+    return dialogTime.format(isDialogCreatedToday ? 'LTS' : 'L')
 }
