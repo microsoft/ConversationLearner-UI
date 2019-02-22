@@ -1315,7 +1315,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         <div className="cl-actioncreator-form-section">
                             <TC.Checkbox
-                                data-testid="actioncreator-checkbox-wait"
+                                data-testid="action-creator-wait-checkbox"
                                 label="Wait for Response?"
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
@@ -1351,7 +1351,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     </div>
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
-                            data-testid="actioncreator-button-create"
+                            data-testid="action-creator-create-button"
                             disabled={this.saveDisabled()}
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
@@ -1363,6 +1363,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         />
 
                         <OF.DefaultButton
+                            data-testid="action-creator-cancel-button"
                             onClick={this.onClickCancel}
                             ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
                             text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
@@ -1370,6 +1371,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.isEditing &&
                             <OF.DefaultButton
+                                data-testid="action-creator-delete-button"
                                 className="cl-button-delete"
                                 onClick={this.onClickDelete}
                                 ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
