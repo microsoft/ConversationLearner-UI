@@ -835,6 +835,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.setState({
             isPayloadMissing,
             selectedActionTypeOptionKey: actionTypeOption.key,
+            selectedApiOptionKey: undefined,
+            selectedCardOptionKey: undefined,
             slateValuesMap: {
                 [TEXT_SLOT]: Plain.deserialize('')
             },
