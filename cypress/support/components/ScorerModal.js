@@ -9,6 +9,7 @@ const helpers = require('../../support/Helpers')
 export function ClickRefreshScoreButton() { cy.Get('[data-testid="teach-session-admin-refresh-score-button"]').Click() }
 export function SelectAnAction() { cy.Get('[data-testid="action-scorer-button-clickable"]').should("be.visible").Click() }
 export function ClickAddActionButton() { cy.Get('[data-testid="action-scorer-add-action-button"]').Click() }
+export function VerifyMissingActionNotice() { cy.Get('.cl-font--warning').ExactMatch('MISSING ACTION') }
 
 export function ClickAction(expectedResponse, expectedIndexForActionPlacement) {
   cy.Get('[data-testid="action-scorer-text-response"]').ExactMatch(expectedResponse)
@@ -45,7 +46,7 @@ export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
     let element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
-    expect(element.innerText).to.equal(expectedUtterance)
+    expect(element.textContent).to.equal(expectedUtterance)
   })
 }
 

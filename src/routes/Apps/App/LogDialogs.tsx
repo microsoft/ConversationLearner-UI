@@ -303,19 +303,20 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickNewChatSession() {
-        // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
-        ((this.props.createChatSessionThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.app.metadata.isLoggingOn !== false) as any) as Promise<CLM.Session>)
-            .then(chatSession => {
-                this.setState({
-                    chatSession,
-                    isChatSessionWindowOpen: true,
-                    editType: EditDialogType.LOG_ORIGINAL
-                })
+    async onClickNewChatSession() {
+        try {
+            // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
+            const chatSession = await ((this.props.createChatSessionThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.app.metadata.isLoggingOn !== false) as any) as Promise<CLM.Session>)
+            this.setState({
+                chatSession,
+                isChatSessionWindowOpen: true,
+                editType: EditDialogType.LOG_ORIGINAL
             })
-            .catch(error => {
-                console.warn(`Error when attempting to opening chat window: `, error)
-            })
+        }
+        catch (e) {
+            const error = e as Error
+            console.warn(`Error when attempting to opening chat window: `, error)
+        }
     }
 
     @OF.autobind
@@ -804,7 +805,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
+    async onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
         let trainDialogWithDefinitions: CLM.TrainDialog = {
             ...trainDialog,
             createdDateTime: new Date().toJSON(),
@@ -823,20 +824,21 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             }
         };
 
-        ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            .then(teachWithHistory => {
-                this.setState({
-                    history: teachWithHistory.history,
-                    lastAction: teachWithHistory.lastAction,
-                    currentTrainDialog: trainDialog,
-                    isEditDialogModalOpen: true,
-                    selectedHistoryIndex: null,
-                    editType: EditDialogType.LOG_ORIGINAL
-                })
+        try {
+            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            this.setState({
+                history: teachWithHistory.history,
+                lastAction: teachWithHistory.lastAction,
+                currentTrainDialog: trainDialog,
+                isEditDialogModalOpen: true,
+                selectedHistoryIndex: null,
+                editType: EditDialogType.LOG_ORIGINAL
             })
-            .catch(error => {
-                console.warn(`Error when attempting to create history: `, error)
-            })
+        }
+        catch (e) {
+            const error = e as Error
+            console.warn(`Error when attempting to create history: `, error)
+        }
     }
 
     async onCloseEditDialogModal(reload: boolean = false) {

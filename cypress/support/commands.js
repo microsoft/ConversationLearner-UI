@@ -55,8 +55,9 @@ Cypress.Commands.add('UploadFile', (fileName, selector) => {
 Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expectedText) => {
   helpers.ConLog(`ExactMatch('${expectedText}')`, `Start`)
   for (let i = 0; i < elements.length; i++) {
-    helpers.ConLog(`ExactMatch('${expectedText}')`, `elements[${i}].innerText: '${elements[i].innerText}'`)
-    if (elements[i].innerText == expectedText) return elements[i]
+    let elementText = elements[i].textContent
+    helpers.ConLog(`ExactMatch('${expectedText}')`, `elementText: '${elementText}'`)
+    if (elementText === expectedText) return elements[i]
   }
   throw `Exact Match '${expectedText}' NOT Found`
 })
@@ -65,8 +66,9 @@ Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expe
   helpers.ConLog(`ExactMatches('${expectedText}')`, `Start`)
   let returnElements = []
   for (let i = 0; i < elements.length; i++) {
-    helpers.ConLog(`ExactMatches('${expectedText}')`, `elements[${i}].innerText: '${elements[i].innerText}'`)
-    if (elements[i].innerText == expectedText) returnElements.push(elements[i])
+    let elementText = elements[i].textContent
+    helpers.ConLog(`ExactMatches('${expectedText}')`, `elementText: '${elementText}'`)
+    if (elementText === expectedText) returnElements.push(elements[i])
   }
   return returnElements
 })
@@ -74,6 +76,7 @@ Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expe
 Cypress.Commands.add("WaitForTrainingStatusCompleted", () => {
   // The cy.get call made within modelPage.WaitForTrainingStatusCompleted() needs
   // the document object which is why we need to wrap it.
+  cy.log('WaitForTrainingStatusCompleted')
   cy.wrap(cy.document, { timeout: 120000 }).should(() => { return modelPage.WaitForTrainingStatusCompleted() })
 })
 

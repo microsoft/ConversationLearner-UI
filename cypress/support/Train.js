@@ -145,10 +145,10 @@ export function Save() {
 function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   trainDialogsGrid.WaitForGridReadyThen(trainingSummary.TrainGridRowCount, () => {
     // Keep these lines of logging code in this method, they come in handy when things go bad.
-    // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDate: ${trainingSummary.CreatedDate}`)
-    // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDate: ${trainingSummary.LastModifiedDate}`)
-    // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
-    // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDate: ${trainingSummary.CreatedDate}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDate: ${trainingSummary.LastModifiedDate}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
+    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
 
     var turns = trainDialogsGrid.GetTurns()
     var firstInputs = trainDialogsGrid.GetFirstInputs()
@@ -159,9 +159,9 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
 
     for (var i = 0; i < trainingSummary.TrainGridRowCount; i++) {
       // Keep these lines of logging code in this method, they come in handy when things go bad.
-      // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDates[${i}]: ${createdDates[i]} --- ${helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
-      // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDates[${i}]: ${lastModifiedDates[i]} --- ${helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
-      // helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `Turns[${i}]: ${turns[i]}`)
+      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDates[${i}]: ${createdDates[i]} --- ${helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
+      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDates[${i}]: ${lastModifiedDates[i]} --- ${helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
+      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `Turns[${i}]: ${turns[i]}`)
 
       if (((trainingSummary.LastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
         helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
@@ -219,7 +219,7 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
   cy.Enqueue(() => {
     originalMessage = originalMessage.replace(/'/g, "’")
 
-    editDialogModal.SelectChatTurn(originalMessage, originalIndex)
+    editDialogModal.SelectChatTurnExactMatch(originalMessage, originalIndex)
 
     editDialogModal.VerifyBranchButtonIsInSameControlGroupAsMessage(originalMessage)
 
