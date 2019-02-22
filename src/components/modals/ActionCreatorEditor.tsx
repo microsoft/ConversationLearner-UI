@@ -830,11 +830,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
-        let isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload.document.text.length === 0)
+        let isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload && textPayload.document.text.length === 0)
 
         this.setState({
             isPayloadMissing,
             selectedActionTypeOptionKey: actionTypeOption.key,
+            selectedApiOptionKey: undefined,
+            selectedCardOptionKey: undefined,
             slateValuesMap: {
                 [TEXT_SLOT]: Plain.deserialize('')
             },
