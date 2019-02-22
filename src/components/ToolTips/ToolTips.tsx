@@ -17,7 +17,6 @@ export enum TipType {
     ACTION_API1 = 'actionAPI1',
     ACTION_API2 = 'actionAPI2',
     ACTION_API3 = 'actionAPI3',
-    ACTION_RENDER = 'actionRender',
     ACTION_ARGUMENTS = 'actionArguments',
     ACTION_CARD = 'actionCard',
     ACTION_END_SESSION = 'actionEndSesion',
@@ -132,20 +131,6 @@ export function wrap(content: JSX.Element, tooltip: string, directionalHint: OF.
     );
 }
 
-const renderCodeSample =
-    `CL.AddRenderCallback("Multiply", async (memoryManager: ReadOnlyClientMemoryManager, num1string: string, num2string: string, result: string) => {
-
-        // convert base and exponent to ints
-        var num1int = parseInt(num1string);
-        var num2int = parseInt(num2string);
-    
-        // compute product
-        var result = num1int * num2int;
-    
-        // save result in entity
-        return \`\${num1String} + \${num2string} = \${result}\`
-    })`
-
 let memoryConverterSample =
     `
     AS_VALUE_LIST       returns MemoryValue[]
@@ -188,18 +173,6 @@ export function getTip(tipType: string) {
             return renderAPIPage2()
         case TipType.ACTION_API3:
             return renderAPIPage3()
-        case TipType.ACTION_RENDER:
-            return (
-                <div>
-                    {render(FM.TOOLTIP_ACTION_RENDER_TITLE, [FM.TOOLTIP_ACTION_RENDER])}
-                    <div><br />cl.AddRenderCallback("<i>[Render name]</i>", async (memoryManager, argArray) => <i>[Render body]</i>)</div>
-                    <div className="cl-tooltop-example"><FormattedMessageId id={FM.TOOLTIP_EXAMPLE} /></div>
-                    <pre>{renderCodeSample}</pre>
-                    <div className="cl-tooltop-example"><FormattedMessageId id={FM.TOOLTIP_ACTION_ARGUMENTS_TITLE} /></div>
-                    <div>$number1 $number2<br /></div>
-                    <div><br />More about the <HelpLink label="Memory Manager" tipType={TipType.MEMORY_MANAGER} /></div>
-                </div>
-            )
         case TipType.ACTION_ARGUMENTS:
             return render(FM.TOOLTIP_ACTION_ARGUMENTS_TITLE, [FM.TOOLTIP_ACTION_ARGUMENTS])
         case TipType.ACTION_CARD:
