@@ -9,8 +9,9 @@ const modelPage = require('../support/components/ModelPage')
 const logDialogsGrid = require('../support/components/LogDialogsGrid')
 const logDialogModal = require('../support/components/LogDialogModal')
 const helpers = require('../support/Helpers')
+const common = require('../support/Common')
 
-Cypress.TestCase('Log', "What's Your Name", WhatsYourName)
+Cypress.TestCase('Log', common.whatsYourName, WhatsYourName)
 export function WhatsYourName()
 {
   models.ImportModel('z-logMyName', 'z-nameTrained.cl')
@@ -19,7 +20,7 @@ export function WhatsYourName()
   cy.WaitForTrainingStatusCompleted()
   logDialogsGrid.CreateNewLogDialogButton()
 
-  logDialogModal.TypeYourMessageValidateResponse("Hello", "What's your name?")
+  logDialogModal.TypeYourMessageValidateResponse("Hello", common.whatsYourName)
 
   logDialogModal.ClickDoneTestingButton()
 }
