@@ -59,7 +59,7 @@ interface ComponentState {
 }
 
 export const getPrebuiltEntityName = (preBuiltType: string): string => {
-    return `builtin-${preBuiltType.toLowerCase()}`
+    return `${prebuiltPrefix}${preBuiltType.toLowerCase()}`
 }
 
 class Container extends React.Component<Props, ComponentState> {
@@ -334,7 +334,7 @@ class Container extends React.Component<Props, ComponentState> {
             isMultivalueVal,
             isNegatableVal,
             entityTypeVal,
-            entityNameVal: isPrebuilt ? getPrebuiltEntityName(obj.text) : prevState.entityNameVal,
+            entityNameVal: isPrebuilt ? getPrebuiltEntityName(obj.text) : prevState.isPrebuilt ? "" : prevState.entityNameVal,
         }))
     }
     onChangedEnum = (index: number, value: string) => {
@@ -362,7 +362,6 @@ class Container extends React.Component<Props, ComponentState> {
 
     onGetNameErrorMessage = (value: string): string => {
         const { intl } = this.props
-        const isNameUnrestricted = this.state.entityTypeVal !== CLM.EntityType.LUIS && this.state.entityTypeVal !== CLM.EntityType.LOCAL && this.state.entityTypeVal !== CLM.EntityType.ENUM
 
         if (value.length === 0) {
             return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE)
@@ -370,12 +369,6 @@ class Container extends React.Component<Props, ComponentState> {
 
         if (!/^[a-zA-Z0-9-]+$/.test(value)) {
             return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC)
-        }
-
-        if (!isNameUnrestricted) {
-            if (prebuiltPrefix === value.toLocaleLowerCase().substring(0, prebuiltPrefix.length)) {
-                return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED)
-            }
         }
 
         // Check that name isn't in use
@@ -390,6 +383,11 @@ class Container extends React.Component<Props, ComponentState> {
                 return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT)
             }
         }
+
+        if (!this.state.isPrebuilt && (value.toLowerCase().substring(0, prebuiltPrefix.length) === prebuiltPrefix)) {
+            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED)
+        }
+
         return ''
     }
 
