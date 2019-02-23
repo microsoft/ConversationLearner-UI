@@ -21,7 +21,7 @@ export function replace<T>(xs: T[], updatedX: T, getId: (x: T) => object | numbe
 
 export function isNullOrUndefined(object: any) {
     return object === null || object === undefined
-    
+
 }
 export function isNullOrWhiteSpace(str: string | null): boolean {
     return (!str || str.length === 0 || /^\s*$/.test(str))
@@ -93,4 +93,10 @@ export function earlierDateOrTimeToday(timestamp: string): string {
     const dialogTime = moment(timestamp)
     const isDialogCreatedToday = dialogTime.diff(endOfYesterday) >= 0
     return dialogTime.format(isDialogCreatedToday ? 'LTS' : 'L')
+}
+
+export function isNewActionUnique(new_action: CLM.ActionBase, actions: CLM.ActionBase[]): boolean {
+    const needle = { ...new_action, payload: JSON.stringify(new_action.payload) }
+    const haystack = actions.map(action => { return { ...action, payload: JSON.stringify(action.payload) } })
+    return haystack.findIndex(straw => (straw.actionType === needle.actionType) && (straw.payload === needle.payload)) < 0;
 }
