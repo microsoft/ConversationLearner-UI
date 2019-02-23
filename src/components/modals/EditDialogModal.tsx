@@ -531,6 +531,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickAbandonApprove() {
+        const dialogChanged = this.isDialogChanged()
+
         switch (this.props.editType) {
             case EditDialogType.NEW:
                 this.props.onDeleteDialog()
@@ -548,13 +550,20 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 this.props.onCloseModal(true) // true -> Reload original TrainDialog
                 break;
             case EditDialogType.TRAIN_ORIGINAL:
-                this.props.onDeleteDialog()
+                dialogChanged
+                    ? this.props.onCloseModal(true)
+                    : this.props.onDeleteDialog()
                 break;
             default:
         }
     }
 
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
+        const dialogChanged = this.isDialogChanged()
+        if (dialogChanged) {
+            return formatMessageId(intl, FM.BUTTON_ABANDON_EDIT)
+        }
+
         switch (this.props.editType) {
             case EditDialogType.NEW:
                 return formatMessageId(intl, FM.BUTTON_ABANDON)
@@ -713,6 +722,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     renderConfirmText(intl: ReactIntl.InjectedIntl) {
+        const dialogChanged = this.isDialogChanged()
+        if (dialogChanged) {
+            return formatMessageId(intl, FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE)
+        }
+
         switch (this.props.editType) {
             case EditDialogType.NEW:
             case EditDialogType.BRANCH:

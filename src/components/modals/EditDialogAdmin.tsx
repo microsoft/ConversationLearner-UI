@@ -391,7 +391,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                     {isLogDialog
                         ? <div>{/* placeholder for grid */}</div>
                         : <div className={`cl-dialog-tags ${OF.FontClassNames.mediumPlus}`}>
-                            <div className="cl-dialog-field">
+                            <div className="cl-dialog-field" data-testid="train-dialog-description">
                                 <label htmlFor="description"><OF.Icon iconName="TextField" className="cl-icon" /><span><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</span></label>
                                 <BorderlessTextInput
                                     id="description"
@@ -400,7 +400,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                     onChange={this.props.onChangeDescription}
                                 />
                             </div>
-                            <div className="cl-dialog-field">
+                            <div className="cl-dialog-field" data-testid="train-dialog-tags">
                                 <label htmlFor="tags"><OF.Icon iconName="Tag" className="cl-icon" /><span><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</span></label>
                                 <TagsInput
                                     id="tags"

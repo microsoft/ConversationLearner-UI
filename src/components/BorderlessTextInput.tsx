@@ -18,7 +18,8 @@ class component extends React.Component<Props> {
 
     render() {
         return (
-            <input className="cl-borderless-text-input"
+            <input
+                className="cl-borderless-text-input"
                 type="text"
                 id={this.props.id}
                 value={this.props.value}
