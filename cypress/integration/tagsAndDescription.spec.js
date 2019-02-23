@@ -1,3 +1,5 @@
+/// <reference types="Cypress" />
+
 import * as models from '../support/Models'
 import * as model from '../support/components/ModelPage'
 import * as actions from '../support/Actions'
