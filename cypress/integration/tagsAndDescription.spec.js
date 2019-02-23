@@ -1,11 +1,13 @@
 import * as models from '../support/Models'
-import * as modelList from '../support/components/ModelPage'
+import * as model from '../support/components/ModelPage'
 import * as actions from '../support/Actions'
 import * as actionsList from '../support/components/ActionsGrid'
 import * as actionsModal from '../support/components/ActionModal'
 import * as editDialogModal from '../support/components/EditDialogModal'
-import * as trainDialogList from '../support/components/TrainDialogsGrid'
-import * as train from '../support/Train'
+import * as trainDialogs from '../support/components/TrainDialogsGrid'
+import * as trainDialog from '../support/Train'
+import * as logDialogs from '../support/components/LogDialogsGrid'
+import * as logDialogModal from '../support/components/LogDialogModal'
 
 describe('Tags and Description', () => {
     context('Train Dialogs', () => {
@@ -20,12 +22,11 @@ describe('Tags and Description', () => {
         }
 
         before(() => {
-            // import the saved model for tags and description testing
             models.CreateNewModel('z-tagsAndDesc')
-            modelList.NavigateToActions()
+            model.NavigateToActions()
             actionsList.ClickNewAction()
             actions.CreateNewAction({ response: testData.actionResponse })
-            modelList.NavigateToTrainDialogs()
+            model.NavigateToTrainDialogs()
         })
 
         beforeEach(() => {
@@ -35,7 +36,7 @@ describe('Tags and Description', () => {
         context('Create', () => {
             it('should have no tags are description when creating new dialog', () => {
                 // Create new train dialog
-                train.CreateNewTrainDialog()
+                trainDialog.CreateNewTrainDialog()
 
                 // Verify that scenario and tags are empty
                 cy.get('[data-testid="train-dialog-description"] .cl-borderless-text-input')
@@ -58,10 +59,10 @@ describe('Tags and Description', () => {
                     .type(`${testData.tag01}{enter}`)
 
                 // Save
-                train.TypeYourMessage(testData.userInput)
+                trainDialog.TypeYourMessage(testData.userInput)
                 editDialogModal.ClickScoreActionsButton()
-                train.SelectAction(testData.actionResponse)
-                train.Save()
+                trainDialog.SelectAction(testData.actionResponse)
+                trainDialog.Save()
 
                 // Verify tags and description in list
                 cy.get('[data-testid="train-dialogs-description"]')
@@ -99,7 +100,7 @@ describe('Tags and Description', () => {
                 cy.get('[data-testid="train-dialog-description"] .cl-borderless-text-input')
                     .type('Edited Description')
 
-                train.AbandonDialog()
+                trainDialog.AbandonDialog()
 
                 // Re-open dialog
                 cy.get('[data-testid="train-dialogs-description"]')
@@ -126,7 +127,7 @@ describe('Tags and Description', () => {
                 cy.get('[data-testid="train-dialog-description"] .cl-borderless-text-input')
                     .type(testData.descriptionEdit)
 
-                train.Save()
+                trainDialog.Save()
 
                 // Implicitly closes dialog bug stays on train dialogs list/page
                 cy.reload()
@@ -167,9 +168,9 @@ describe('Tags and Description', () => {
                     .type(testData.descriptionEdit)
 
                 // Modify dialog to add user input
-                train.TypeYourMessage('Continued Dialog')
+                trainDialog.TypeYourMessage('Continued Dialog')
                 editDialogModal.ClickScoreActionsButton()
-                train.SelectAction(testData.actionResponse)
+                trainDialog.SelectAction(testData.actionResponse)
                 editDialogModal.ClickSaveCloseButton()
 
                 // TODO: Should cy.reload()
@@ -208,17 +209,45 @@ describe('Tags and Description', () => {
         })
     })
 
-    context('Log Dialogs', () => {
+    context.only('Log Dialogs', () => {
         before(() => {
-            // import model for testing tags and description on log dialogs
+            models.ImportModel('z-tagsAndDesc', 'z-travel.cl')
+            model.NavigateToLogDialogs()
         })
 
-        it('should not show tags or description fields when creating log dialogs', () => {
-            // Open log dialog
-            // Verify that the tags and description fields do not show up
-            // Enter into webchat to continue the dialog
-            // Verify that the tags and description fields still do not show up on new window
-            expect(true).to.equal(true)
+        beforeEach(() => {
+            cy.reload()
+        })
+
+        it('should not show tags or description fields when creating a log dialog', () => {
+            logDialogs.CreateNewLogDialogButton()
+
+            // Wait until chat session model is open
+            cy.get('.cl-sessionmodal')
+                .should('be.visible')
+
+            // Verify no fields for tags for description
+            cy.get('[data-testid="train-dialog-description"]')
+                .should('not.exist')
+
+            cy.get('[data-testid="train-dialog-tags"]')
+                .should('not.exist')
+        })
+
+        it('should not show tags or description fields when viewing a log dialog', () => {
+            const testData = {
+                input: 'My Log Dialog Message'
+            }
+
+            logDialogs.CreateNewLogDialogButton()
+            logDialogModal.TypeYourMessage(testData.input)
+
+            // Wait for prediction
+            cy.get('.wc-message-from-bot')
+                .should('not.have.class', 'wc-message-color-exception')
+                .should('exist')
+
+            logDialogModal.ClickDoneTestingButton()
         })
     })
 })
