@@ -1457,6 +1457,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
     return {
         entities: state.entities,
+        actions: state.actions,
         trainDialogs: state.trainDialogs,
         botInfo: state.bot.botInfo,
         browserId: state.bot.browserId

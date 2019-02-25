@@ -5,6 +5,7 @@
 import * as CLM from '@conversationlearner/models'
 import * as IntlMessages from '../react-intl-messages'
 import * as moment from 'moment'
+import * as stringify from 'fast-json-stable-stringify'
 
 export function notNullOrUndefined<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
@@ -96,7 +97,7 @@ export function earlierDateOrTimeToday(timestamp: string): string {
 }
 
 export function isNewActionUnique(new_action: CLM.ActionBase, actions: CLM.ActionBase[]): boolean {
-    const needle = { ...new_action, payload: JSON.stringify(new_action.payload) }
-    const haystack = actions.map(action => { return { ...action, payload: JSON.stringify(action.payload) } })
-    return haystack.findIndex(straw => (straw.actionType === needle.actionType) && (straw.payload === needle.payload)) < 0;
+    const needle = stringify({ ...new_action, actionId: "", createdDateTime: "" })
+    const haystack = actions.map(action => { return stringify({ ...action, actionId: "", createdDateTime: "", suggestedEntity: action.suggestedEntity || null, packageCreationId: 0, packageDeletionId: 0, version: 0 }) })
+    return haystack.findIndex(straw => straw === needle) < 0
 }
