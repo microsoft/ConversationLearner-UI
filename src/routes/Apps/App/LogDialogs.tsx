@@ -113,7 +113,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: logDialog => {
                 let firstInput = getFirstInput(logDialog);
                 if (firstInput) {
-                    return <span className={OF.FontClassNames.mediumPlus}>{firstInput}</span>;
+                    return <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-first-input">{firstInput}</span>;
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
             },
