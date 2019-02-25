@@ -96,8 +96,18 @@ export function earlierDateOrTimeToday(timestamp: string): string {
     return dialogTime.format(isDialogCreatedToday ? 'LTS' : 'L')
 }
 
-export function isNewActionUnique(new_action: CLM.ActionBase, actions: CLM.ActionBase[]): boolean {
-    const needle = stringify({ ...new_action, actionId: "", createdDateTime: "" })
-    const haystack = actions.map(action => { return stringify({ ...action, actionId: "", createdDateTime: "", suggestedEntity: action.suggestedEntity || null, packageCreationId: 0, packageDeletionId: 0, version: 0 }) })
+export function isNewActionUnique(newAction: CLM.ActionBase, actions: CLM.ActionBase[]): boolean {
+    const needle = stringify({ ...newAction, actionId: "", createdDateTime: "" })
+    const haystack = actions.map(action => {
+        return stringify({
+            ...action,
+            actionId: "",
+            createdDateTime: "",
+            suggestedEntity: action.suggestedEntity || null,
+            packageCreationId: 0,
+            packageDeletionId: 0,
+            version: 0
+        })
+    })
     return haystack.findIndex(straw => straw === needle) < 0
 }
