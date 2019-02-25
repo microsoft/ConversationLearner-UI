@@ -11,7 +11,7 @@ import * as trainDialog from '../support/Train'
 import * as logDialogs from '../support/components/LogDialogsGrid'
 import * as logDialogModal from '../support/components/LogDialogModal'
 
-describe('Tags and Description', () => {
+describe('Scenario and Tags', () => {
     context('Train Dialogs', () => {
         const testData = {
             userInput: 'First test input',

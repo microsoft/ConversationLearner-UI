@@ -103,6 +103,27 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     let equalizeColumnWidth = window.innerWidth / 3
     return [
         {
+            key: `description`,
+            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_DESCRIPTION),
+            fieldName: `description`,
+            minWidth: 100,
+            maxWidth: equalizeColumnWidth,
+            isResizable: true,
+            render: (trainDialog, component) => {
+                const firstInput = getFirstInput(trainDialog)
+                const lastInput = getLastInput(trainDialog)
+                const lastResponse = getLastResponse(trainDialog, component);
+                return <>
+                    <span data-testid="train-dialogs-description" className={textClassName(trainDialog)}>{trainDialog.description || <FormattedMessageId id={FM.TRAINDIALOGS_DESCRIPTION_EMPTY} />}</span>
+                    {/* Keep firstInput and lastInput available in DOM until tests are upgraded */}
+                    <span style={{ display: "none" }} data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
+                    <span style={{ display: "none" }} data-testid="train-dialogs-last-input">{lastInput ? lastInput : ''}</span>
+                    <span style={{ display: "none" }} data-testid="train-dialogs-last-response">{lastResponse ? lastResponse : ''}</span>
+                </>
+            },
+            getSortValue: trainDialog => trainDialog.description
+        },
+        {
             key: `tags`,
             name: Util.formatMessageId(intl, FM.TRAINDIALOGS_TAGS),
             fieldName: `tags`,
@@ -123,27 +144,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 </span>
             },
             getSortValue: trainDialog => trainDialog.tags.join(' ')
-        },
-        {
-            key: `description`,
-            name: Util.formatMessageId(intl, FM.TRAINDIALOGS_DESCRIPTION),
-            fieldName: `description`,
-            minWidth: 100,
-            maxWidth: equalizeColumnWidth,
-            isResizable: true,
-            render: (trainDialog, component) => {
-                const firstInput = getFirstInput(trainDialog)
-                const lastInput = getLastInput(trainDialog)
-                const lastResponse = getLastResponse(trainDialog, component);
-                return <>
-                    <span data-testid="train-dialogs-description" className={textClassName(trainDialog)}>{trainDialog.description || <FormattedMessageId id={FM.TRAINDIALOGS_DESCRIPTION_EMPTY} />}</span>
-                    {/* Keep firstInput and lastInput available in DOM until tests are upgraded */}
-                    <span style={{ display: "none" }} data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
-                    <span style={{ display: "none" }} data-testid="train-dialogs-last-input">{lastInput ? lastInput : ''}</span>
-                    <span style={{ display: "none" }} data-testid="train-dialogs-last-response">{lastResponse ? lastResponse : ''}</span>
-                </>
-            },
-            getSortValue: trainDialog => trainDialog.description
         },
         {
             key: 'turns',
