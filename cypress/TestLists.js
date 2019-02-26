@@ -50,10 +50,6 @@ export const regressionTestList = [
 // Do NOT manually alter this file from this point onwards.
 // Any changes you make will be overridden at runtime.
 export const masterListOfAllTestCases = [
-  'ErrorHandling.TwoConsecutiveUserInput',
-  'ErrorHandling.WaitNonWait',
-  'ErrorHandling.ActionUnavailable',
-  'ErrorHandling.MissingAction',
   'Log.WhatsYourName',
   'Log.EndlessLoop',
   'Log.EndlessLoopX',
