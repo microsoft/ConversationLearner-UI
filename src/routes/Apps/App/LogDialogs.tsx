@@ -88,9 +88,9 @@ function getLastResponse(logDialog: CLM.LogDialog, component: LogDialogs): strin
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
-            key: 'tag',
-            name: 'Tag',
-            fieldName: 'tag',
+            key: 'version',
+            name: Util.formatMessageId(intl, FM.LOGDIALOGS_MODEL_VERSION),
+            fieldName: 'version',
             minWidth: 80,
             maxWidth: 120,
             isResizable: true,
