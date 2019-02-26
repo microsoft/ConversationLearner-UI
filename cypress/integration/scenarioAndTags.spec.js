@@ -11,6 +11,19 @@ import * as trainDialog from '../support/Train'
 import * as logDialogs from '../support/components/LogDialogsGrid'
 import * as logDialogModal from '../support/components/LogDialogModal'
 
+const testSelectors = {
+    trainDialogs: {
+        scenarios: '[data-testid="train-dialogs-description"]',
+        tags: '[data-testid="train-dialogs-tags"] .cl-tags-readonly__tag'
+    },
+    dialogModal: {
+        scenarioInput: '[data-testid="train-dialog-description"] .cl-borderless-text-input',
+        tags: '[data-testid="train-dialog-tags"] .cl-tags__tag span',
+        addTagButton: '[data-testid="train-dialog-tags"] .cl-tags__button-add',
+        tagInput: '[data-testid="train-dialog-tags"] .cl-tags__form input'
+    }
+}
+
 describe('Scenario and Tags', () => {
     context('Train Dialogs', () => {
         const testData = {
@@ -26,7 +39,7 @@ describe('Scenario and Tags', () => {
         }
 
         before(() => {
-            models.CreateNewModel('z-tagsAndDesc')
+            models.CreateNewModel('z-scenarioAndTags')
             model.NavigateToActions()
             actionsList.ClickNewAction()
             actions.CreateNewAction({ response: testData.actionResponse })
@@ -43,23 +56,23 @@ describe('Scenario and Tags', () => {
                 trainDialog.CreateNewTrainDialog()
 
                 // Verify that scenario and tags are empty
-                cy.get('[data-testid="train-dialog-description"] .cl-borderless-text-input')
+                cy.get(testSelectors.dialogModal.scenarioInput)
                     .should('be.empty')
 
-                cy.get('[data-testid="train-dialog-tags"] .cl-tags__tag')
+                cy.get(testSelectors.dialogModal.tags)
                     .should('not.exist')
             })
 
             it('should save the tags and description on the new dialog', () => {
                 // Set description
-                cy.get('[data-testid="train-dialog-description"] .cl-borderless-text-input')
+                cy.get(testSelectors.dialogModal.scenarioInput)
                     .type(testData.description)
 
                 // Set tags
-                cy.get('[data-testid="train-dialog-tags"] .cl-tags__button-add')
+                cy.get(testSelectors.dialogModal.addTagButton)
                     .click()
 
-                cy.get('.cl-tags__form input')
+                cy.get(testSelectors.dialogModal.tagInput)
                     .type(`${testData.tag01}{enter}`)
 
                 // Save
@@ -69,10 +82,10 @@ describe('Scenario and Tags', () => {
                 trainDialog.Save()
 
                 // Verify tags and description in list
-                cy.get('[data-testid="train-dialogs-description"]')
+                cy.get(testSelectors.trainDialogs.scenarios)
                     .should('contain', testData.description)
 
-                cy.get('[data-testid="train-dialogs-tags"] .cl-tags-readonly__tag')
+                cy.get(testSelectors.trainDialogs.tags)
                     .should('contain', testData.tag01)
             })
         })
@@ -80,55 +93,55 @@ describe('Scenario and Tags', () => {
         context('Edit', () => {
             it('should open with the tags and description', () => {
                 // Open train dialog which has known description
-                cy.get('[data-testid="train-dialogs-description"]')
+                cy.get(testSelectors.trainDialogs.scenarios)
                     .contains(testData.description)
                     .click()
 
                 // Verify description and tags are expected in the opened dialog
-                cy.get('[data-testid="train-dialog-description"] .cl-borderless-text-input')
+                cy.get(testSelectors.dialogModal.scenarioInput)
                     .should('have.value', testData.description)
 
-                cy.get('[data-testid="train-dialog-tags"] .cl-tags__tag span')
+                cy.get(testSelectors.dialogModal.tags)
                     .should('have.text', testData.tag01)
             })
 
             it('should discard the changes made to tags and description when abandoned', () => {
                 // Added a tag
-                cy.get('[data-testid="train-dialog-tags"] .cl-tags__button-add')
+                cy.get(testSelectors.dialogModal.addTagButton)
                     .click()
 
-                cy.get('.cl-tags__form input')
-                    .type('newTag')
+                cy.get(testSelectors.dialogModal.tagInput)
+                    .type('newTag{enter}')
 
                 // Edit description
-                cy.get('[data-testid="train-dialog-description"] .cl-borderless-text-input')
+                cy.get(testSelectors.dialogModal.scenarioInput)
                     .type(' Abandon Edit')
 
                 trainDialog.AbandonDialog()
 
                 // Re-open dialog
-                cy.get('[data-testid="train-dialogs-description"]')
+                cy.get(testSelectors.trainDialogs.scenarios)
                     .contains(testData.description)
                     .click()
 
                 // Verify tags and description are unmodified
-                cy.get('[data-testid="train-dialog-description"] .cl-borderless-text-input')
+                cy.get(testSelectors.dialogModal.scenarioInput)
                     .should('have.value', testData.description)
 
-                cy.get('[data-testid="train-dialog-tags"] .cl-tags__tag span')
+                cy.get(testSelectors.dialogModal.tags)
                     .should('have.text', testData.tag01)
             })
 
             it('should save the edited tags and description', () => {
                 // Edit tags
-                cy.get('[data-testid="train-dialog-tags"] .cl-tags__button-add')
+                cy.get(testSelectors.dialogModal.addTagButton)
                     .click()
 
-                cy.get('.cl-tags__form input')
-                    .type(testData.tag02)
+                cy.get(testSelectors.dialogModal.tagInput)
+                    .type(`${testData.tag02}{enter}`)
 
                 // Edit description
-                cy.get('[data-testid="train-dialog-description"] .cl-borderless-text-input')
+                cy.get(testSelectors.dialogModal.scenarioInput)
                     .type(testData.descriptionEdit)
 
                 trainDialog.Save()
@@ -137,11 +150,11 @@ describe('Scenario and Tags', () => {
                 cy.reload()
 
                 // Verify tags on dialog
-                cy.get('[data-testid="train-dialogs-description"]')
+                cy.get(testSelectors.trainDialogs.scenarios)
                     .contains(`${testData.description}${testData.descriptionEdit}`)
 
-                // TODO: Would be better to check each tag instead of relying concatenation of test
-                cy.get('[data-testid="train-dialogs-tags"] .cl-tags-readonly__tag')
+                // TODO: Find way to test each tag
+                cy.get(testSelectors.trainDialogs.tags)
                     .should('have.text', `${testData.tag01}${testData.tag02}`)
             })
 
@@ -154,21 +167,27 @@ describe('Scenario and Tags', () => {
 
         context('Continue', () => {
             it('should preserve tags and description when continuing a dialog', () => {
+                cy.get('.cl-spinner')
+                    .should('not.exist')
+
                 // Open dialog
-                cy.get('[data-testid="train-dialogs-description"]')
+                cy.get(testSelectors.trainDialogs.scenarios)
                     .contains(`${testData.description}${testData.descriptionEdit}`)
                     .click()
-                    .wait(1000)
+
+                // TODO: Find out why we need to wait
+                // Opening the dialogs /history before showing it WebChat but seems to be unrelated
+                cy.wait(1000)
 
                 // Edit tags
-                cy.get('[data-testid="train-dialog-tags"] .cl-tags__button-add')
+                cy.get(testSelectors.dialogModal.addTagButton)
                     .click()
 
-                cy.get('.cl-tags__form input')
-                    .type(testData.tag03)
+                cy.get(testSelectors.dialogModal.tagInput)
+                    .type(`${testData.tag03}{enter}`)
 
                 // Edit description
-                cy.get('[data-testid="train-dialog-description"] .cl-borderless-text-input')
+                cy.get(testSelectors.dialogModal.scenarioInput)
                     .type(testData.descriptionEdit)
 
                 // Modify dialog to add user input
@@ -177,28 +196,32 @@ describe('Scenario and Tags', () => {
                 trainDialog.SelectAction(testData.actionResponse)
                 editDialogModal.ClickSaveCloseButton()
 
-                // TODO: Should cy.reload()
+                // TODO: Should cy.reload() to ensure data was persisted
                 // TODO: Find better alternative than waiting
                 // It seems there is be bug with dialog being removed from list then re-added instead of updated in place so we wait to make sure it's there.
                 // Think it's expected, but investigation DELETE call for temp traindialog, then PUT for modified
                 cy.server()
                 cy.route('PUT', '/sdk/app/*/traindialog/*').as('putTrainDialog')
                 cy.route('GET', '/sdk/app/*/traindialogs*').as('getTrainDialogs')
-                cy.wait(6000)
+                cy.wait(3000)
                 cy.wait(['@putTrainDialog', '@getTrainDialogs'])
 
                 // Re-open dialog
-                cy.get('[data-testid="train-dialogs-description"]')
+                cy.get(testSelectors.trainDialogs.scenarios)
                     .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}`)
                     .click()
 
                 // Verify it has all three of the tags
-                // TODO: Investigate usage of this technique
-                // https://docs.cypress.io/guides/core-concepts/introduction-to-cypress.html#Explicit-Subjects
-                cy.get('[data-testid="train-dialogs-tags"] .cl-tags__tag span')
-                    .contains(testData.tag01)
-                    .contains(testData.tag02)
-                    .contains(testData.tag03)
+                cy.get(testSelectors.dialogModal.tags)
+                    .should(($tags) => {
+                        const texts = $tags.map((i, el) => Cypress.$(el).text()).get()
+                        expect(texts).to.have.length(3)
+                        expect(texts).to.deep.eq([
+                            testData.tag01,
+                            testData.tag02,
+                            testData.tag03
+                        ])
+                    })
             })
         })
 
@@ -211,32 +234,74 @@ describe('Scenario and Tags', () => {
                 cy.wait(5000)
 
                 // Open dialog
-                cy.get('[data-testid="train-dialogs-description"]')
+                cy.get(testSelectors.trainDialogs.scenarios)
                     .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}`)
                     .click()
 
                 // Edit tags
-                cy.get('[data-testid="train-dialog-tags"] .cl-tags__button-add')
+                cy.get(testSelectors.dialogModal.addTagButton)
                     .click()
 
-                cy.get('.cl-tags__form input')
-                    .type(testData.tag04)
+                cy.get(testSelectors.dialogModal.tagInput)
+                    .type(`${testData.tag04}{enter}`)
 
                 // Edit description
-                cy.get('[data-testid="train-dialog-description"] .cl-borderless-text-input')
+                cy.get(testSelectors.dialogModal.scenarioInput)
                     .type(testData.descriptionEdit)
+                    .blur()
+
+                cy.wait(1000)
+
+                // Get the desired user input to branch on
+                cy.get('div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p')
+                    .contains(testData.continuedInput)
+                    .click()
 
                 // Click branch on one of the user inputs
-                trainDialog.BranchChatTurn(testData.continuedInput, 'New Branched Input')
+                cy.get('[data-testid="edit-dialog-modal-branch-button"')
+                    .click()
 
-                // Enter a new input
-                // (Dialog is branched after input is entered)
-                // Verify edited tags and description are preserved
-                // Save dialog
-                // Reload
+                cy.get('[data-testid="user-input-modal-new-message-input"]')
+                    .type('New Branched Input')
+
+                cy.get('[data-testid="app-create-button-submit"]')
+                    .click()
+
+                cy.get('[data-testid="score-actions-button"]')
+                    .click()
+
+                // Verify edited scenario and tags are preserved after branch
+                cy.get(testSelectors.dialogModal.scenarioInput)
+                    .should('have.value', `${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}${testData.descriptionEdit}`)
+
+                cy.get(testSelectors.dialogModal.tags)
+                    .should(($tags) => {
+                        const texts = $tags.map((i, el) => Cypress.$(el).text()).get()
+                        expect(texts).to.have.length(4)
+                        expect(texts).to.deep.eq([
+                            testData.tag01,
+                            testData.tag02,
+                            testData.tag03,
+                            testData.tag04
+                        ])
+                    })
+
+                cy.get('.cl-spinner')
+                    .should('not.exist')
+
+                cy.get('[data-testid="edit-teach-dialog-close-save-button"]')
+                    .click()
+
+                cy.reload()
+                cy.wait(5000)
+
                 // Verify old dialog with original tags and description is still in the list
+                cy.get(testSelectors.trainDialogs.scenarios)
+                    .contains(`${testData.description}${testData.descriptionEdit}`)
+
                 // Verify new dialog with edited tags and description is now in the list
-                expect(true).to.equal(true)
+                cy.get(testSelectors.trainDialogs.scenarios)
+                    .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}`)
             })
         })
     })
@@ -260,7 +325,6 @@ describe('Scenario and Tags', () => {
             cy.get('.cl-sessionmodal')
                 .should('be.visible')
 
-            // Verify no fields for tags for description
             cy.get('[data-testid="train-dialog-description"]')
                 .should('not.exist')
 
