@@ -17,10 +17,16 @@ const testSelectors = {
         tags: '[data-testid="train-dialogs-tags"] .cl-tags-readonly__tag'
     },
     dialogModal: {
+        branchButton: '[data-testid="edit-dialog-modal-branch-button"]',
+        branchInput: '[data-testid="user-input-modal-new-message-input"]',
+        branchSubmit: '[data-testid="app-create-button-submit"]',
+        closeSave: '[data-testid="edit-teach-dialog-close-save-button"]',
         scenarioInput: '[data-testid="train-dialog-description"] .cl-borderless-text-input',
+        scoreActionsButton: '[data-testid="score-actions-button"]',
         tags: '[data-testid="train-dialog-tags"] .cl-tags__tag span',
         addTagButton: '[data-testid="train-dialog-tags"] .cl-tags__button-add',
-        tagInput: '[data-testid="train-dialog-tags"] .cl-tags__form input'
+        tagInput: '[data-testid="train-dialog-tags"] .cl-tags__form input',
+        webChatUtterances: 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p',
     }
 }
 
@@ -34,6 +40,7 @@ describe('Scenario and Tags', () => {
             tag02: 'testTag02',
             tag03: 'testTag03',
             tag04: 'testTag04',
+            tag05: 'testTag05',
             description: 'Test description',
             descriptionEdit: ' EDIT',
         }
@@ -140,26 +147,48 @@ describe('Scenario and Tags', () => {
                 cy.get(testSelectors.dialogModal.tagInput)
                     .type(`${testData.tag02}{enter}`)
 
-                // Edit description
+                // Edit scenario
                 cy.get(testSelectors.dialogModal.scenarioInput)
                     .type(testData.descriptionEdit)
 
-                trainDialog.Save()
+                // Save dialog
+                cy.get(testSelectors.dialogModal.closeSave)
+                    .click()
 
-                // Implicitly closes dialog bug stays on train dialogs list/page
+                // Implicitly closes dialog, but stays on train dialogs page
+                // Ensures content is persisted to server instead of only local memory
                 cy.reload()
 
-                // Verify tags on dialog
+                // Verify scenario
                 cy.get(testSelectors.trainDialogs.scenarios)
                     .contains(`${testData.description}${testData.descriptionEdit}`)
 
-                // TODO: Find way to test each tag
+                // Verify tags
                 cy.get(testSelectors.trainDialogs.tags)
-                    .should('have.text', `${testData.tag01}${testData.tag02}`)
+                    .should(($tags) => {
+                        const texts = $tags.map((_, el) => Cypress.$(el).text()).get()
+                        expect(texts).to.have.length(2)
+                        expect(texts).to.deep.eq([
+                            testData.tag01,
+                            testData.tag02,
+                        ])
+                    })
             })
 
             it('(advanced edit) should save the edited tags, description, and rounds', () => {
-                // Deal with edits
+                // Edit tags
+                cy.get(testSelectors.dialogModal.addTagButton)
+                    .click()
+
+                cy.get(testSelectors.dialogModal.tagInput)
+                    .type(`${testData.tag05}{enter}`)
+
+                // Edit scenario
+                cy.get(testSelectors.dialogModal.scenarioInput)
+                    .type(testData.descriptionEdit)
+
+                cy.pause()
+
                 expect(true).to.equal(true)
             })
         })
@@ -203,6 +232,7 @@ describe('Scenario and Tags', () => {
                 cy.server()
                 cy.route('PUT', '/sdk/app/*/traindialog/*').as('putTrainDialog')
                 cy.route('GET', '/sdk/app/*/traindialogs*').as('getTrainDialogs')
+                // Give time for requests to be sent
                 cy.wait(3000)
                 cy.wait(['@putTrainDialog', '@getTrainDialogs'])
 
@@ -253,21 +283,21 @@ describe('Scenario and Tags', () => {
                 cy.wait(1000)
 
                 // Get the desired user input to branch on
-                cy.get('div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p')
+                cy.get(testSelectors.dialogModal.webChatUtterances)
                     .contains(testData.continuedInput)
                     .click()
 
                 // Click branch on one of the user inputs
-                cy.get('[data-testid="edit-dialog-modal-branch-button"')
+                cy.get(testSelectors.dialogModal.branchButton)
                     .click()
 
-                cy.get('[data-testid="user-input-modal-new-message-input"]')
+                cy.get(testSelectors.dialogModal.branchInput)
                     .type('New Branched Input')
 
-                cy.get('[data-testid="app-create-button-submit"]')
+                cy.get(testSelectors.dialogModal.branchSubmit)
                     .click()
 
-                cy.get('[data-testid="score-actions-button"]')
+                cy.get(testSelectors.dialogModal.scoreActionsButton)
                     .click()
 
                 // Verify edited scenario and tags are preserved after branch
@@ -289,7 +319,7 @@ describe('Scenario and Tags', () => {
                 cy.get('.cl-spinner')
                     .should('not.exist')
 
-                cy.get('[data-testid="edit-teach-dialog-close-save-button"]')
+                cy.get(testSelectors.dialogModal.closeSave)
                     .click()
 
                 cy.reload()
