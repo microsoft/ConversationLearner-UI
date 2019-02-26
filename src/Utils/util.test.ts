@@ -22,7 +22,7 @@ describe('util', () => {
         })
     })
     describe('isNewActionUniqueTEXT', () => {
-        it('', () => {
+        it('exercise TEXT action creation', () => {
             const sampleAction: CLM.ActionBase = {
                 actionId: "103726c8-2cfe-46e6-ad1e-fef8dbe4d6c3",
                 actionType: CLM.ActionTypes.TEXT,
@@ -56,12 +56,12 @@ describe('util', () => {
 
             // as a similar, but not identical into very similar set. how smart is the find operator?
             actionSet = [sampleAction]
-            similar = { ...sampleAction, negativeEntities: ["fooled-you"] }
+            similar = { ...sampleAction, requiredEntities: ["85eccbec-7d01-4aea-a704-b2fdab09cf32"] }
             expect(isNewActionUnique(similar, actionSet)).not.toBe(false)
         })
     })
     describe('isNewActionUniqueENDSESSION', () => {
-        it('', () => {
+        it('exercise ENDSESSION action creation', () => {
             const sampleAction = {
                 actionId: "c64988df-a707-46c9-873c-8de42b9a116d",
                 actionType: CLM.ActionTypes.END_SESSION,
@@ -95,12 +95,12 @@ describe('util', () => {
 
             // as a similar, but not identical into very similar set. how smart is the find operator?
             actionSet = [sampleAction]
-            similar = { ...sampleAction, negativeEntities: ["fooled-you"] }
+            similar = { ...sampleAction, requiredEntities: ["85eccbec-7d01-4aea-a704-b2fdab09cf32"] }
             expect(isNewActionUnique(similar, actionSet)).not.toBe(false)
         })
     })
     describe('isNewActionUniqueCARD', () => {
-        it('', () => {
+        it('exercise CARD action creation', () => {
             const sampleAction = {
                 actionId: "83c94294-3a42-49ae-ba84-a6f43fda2f3a",
                 actionType: CLM.ActionTypes.CARD,
@@ -134,12 +134,13 @@ describe('util', () => {
 
             // as a similar, but not identical into very similar set. how smart is the find operator?
             actionSet = [sampleAction]
-            similar = { ...sampleAction, negativeEntities: ["fooled-you"] }
+            similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
+
             expect(isNewActionUnique(similar, actionSet)).not.toBe(false)
         })
     })
     describe('isNewActionUniqueDiverseSet', () => {
-        it('exercises isNewActionUnique by adding a new action into a diverse bag of existing actions', () => {
+        it('exercises isNewActionUnique when inserting a mix of actions into a diverse bag of existing actions', () => {
             const sampleActionText: CLM.ActionBase = {
                 actionId: "103726c8-2cfe-46e6-ad1e-fef8dbe4d6c3",
                 actionType: CLM.ActionTypes.TEXT,
