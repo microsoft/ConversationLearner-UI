@@ -97,17 +97,12 @@ export function earlierDateOrTimeToday(timestamp: string): string {
 }
 
 export function isNewActionUnique(newAction: CLM.ActionBase, actions: CLM.ActionBase[]): boolean {
-    const needle = stringify({ ...newAction, actionId: "", createdDateTime: "" })
-    const haystack = actions.map(action => {
-        return stringify({
-            ...action,
-            actionId: "",
-            createdDateTime: "",
-            suggestedEntity: action.suggestedEntity || null,
-            packageCreationId: 0,
-            packageDeletionId: 0,
-            version: 0
-        })
-    })
+    const needle = normalizeActionAndStringify(newAction)
+    const haystack = actions.map(action => normalizeActionAndStringify(action))
     return haystack.findIndex(straw => straw === needle) < 0
+}
+
+function normalizeActionAndStringify(newAction: CLM.ActionBase) {
+    const { actionId, createdDateTime, packageCreationId, packageDeletionId, version, ...normalizedNewAction } = newAction
+    return stringify(normalizedNewAction)
 }
