@@ -100,7 +100,7 @@ const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] =>
 }
 
 // Entities that can be picked as expected entity
-const expectedEntityTags = (entities: CLM.EntityBase[]): OF.ITag[] =>  {
+const availableExpectedEntityTags = (entities: CLM.EntityBase[]): OF.ITag[] =>  {
     // Must be LUIS entity and not the negative
     return entities
         .filter(e => e.entityType === CLM.EntityType.LUIS && !e.positiveId)
@@ -157,6 +157,7 @@ const tryCreateSlateValue = (actionType: string, slotName: string, content: obje
 }
 
 const createSlateValue = (content: object | string, options: ActionPayloadEditor.IOption[]): ActionPayloadEditor.SlateValue => {
+    let objectContent: object | null = null
     if (typeof content === 'string') {
         // If string does not starts with { assume it's the old simple string based payload and user will have to manually load and re-save
         // Otherwise, treat as json as load the json representation of the editor which has fully saved entities and doesn't need manual reconstruction
@@ -165,10 +166,10 @@ const createSlateValue = (content: object | string, options: ActionPayloadEditor
             return Plain.deserialize(content)
         }
 
-        content = JSON.parse(content) as object
+        objectContent = JSON.parse(content) as object
     }
 
-    const updatedJson = ActionPayloadEditor.Utilities.updateOptionNames(content, options)
+    const updatedJson = ActionPayloadEditor.Utilities.updateOptionNames(objectContent || content, options)
     return Value.fromJSON(updatedJson)
 }
 
@@ -267,7 +268,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             ...initialState,
             apiOptions,
             cardOptions,
-            availableExpectedEntityTags: expectedEntityTags(entities),
+            availableExpectedEntityTags: availableExpectedEntityTags(entities),
             conditionalTags: conditionalEntityTags(entities),
             isEditing: !!this.props.action
         }
@@ -290,7 +291,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                     nextState = {
                         ...nextState,
-                        availableExpectedEntityTags: expectedEntityTags(nextProps.entities),
+                        availableExpectedEntityTags: availableExpectedEntityTags(nextProps.entities),
                         entityTags
                     }
                 }
@@ -665,7 +666,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const negativeTags = this.state.negativeEntityTags.filter(t => !t.condition)
         const requiredConditions = this.state.requiredEntityTags.filter(t => t.condition).map(t => t.condition!)
         const negativeConditions = this.state.negativeEntityTags.filter(t => t.condition).map(t => t.condition!)
-
  
         // TODO: This should be new model such as ActionInput for creation only.
         const model = new CLM.ActionBase({
@@ -1322,7 +1322,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         </div>
                         <div 
                             className="cl-error-message-label"
-                            style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}>
+                            style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}
+                        >
                             {formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD)}
                         </div>
                     </div>
