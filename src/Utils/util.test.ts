@@ -95,7 +95,7 @@ describe('util', () => {
 
             // as a similar, but not identical into very similar set. how smart is the find operator?
             actionSet = [sampleAction]
-            similar = { ...sampleAction, requiredEntities: ["85eccbec-7d01-4aea-a704-b2fdab09cf32"] }
+            similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
             expect(isNewActionUnique(similar, actionSet)).not.toBe(false)
         })
     })
