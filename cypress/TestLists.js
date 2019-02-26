@@ -50,13 +50,6 @@ export const regressionTestList = [
 // Do NOT manually alter this file from this point onwards.
 // Any changes you make will be overridden at runtime.
 export const masterListOfAllTestCases = [
-  'CreateModels.AllEntityTypes',
-  'CreateModels.DisqualifyingEntities',
-  'CreateModels.WaitVsNoWaitActions',
-  'CreateModels.WhatsYourName',
-  'CreateModels.TagAndFrog',
-  'CreateModels.EndlessLoop',
-  'CreateModels.Travel',
   'EditAndBranching.VerifyEditTrainingControlsAndLabels',
   'EditAndBranching.Branching',
   'EditAndBranching.TagAndFrog',
