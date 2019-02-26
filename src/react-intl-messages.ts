@@ -71,6 +71,8 @@ export enum FM {
     APP_HEADER_DOCS = 'App.header.docs',
     APP_HEADER_SUPPORT = 'App.header.support',
 
+    APP_VERSION = 'App.version',
+
     // TrainingStatus
     APP_TRAINING_STATUS_STATUS = 'TrainingStatus.status.label',
     APP_TRAINING_STATUS_UNKNOWN = 'TrainingStatus.status.unknown',
@@ -248,6 +250,7 @@ export enum FM {
     LOGDIALOGS_SUBTITLE = 'LogDialogs.subtitle',
     LOGDIALOGS_CREATEBUTTONTITLE = 'LogDialogs.createButtonTitle',
     LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION = 'LogDialogs.createButtonAriaDescription',
+    LOGDIALOGS_MODEL_VERSION = 'LogDialogs.modelVersion',
     LOGDIALOGS_FIRSTINPUT = 'LogDialogs.firstInput',
     LOGDIALOGS_LASTINPUT = 'LogDialogs.lastInput',
     LOGDIALOGS_LASTRESPONSE = 'LogDialogs.lastResponse',
@@ -357,8 +360,6 @@ export enum FM {
     // ToolTip
     TOOLTIP_ACTION_API = 'ToolTop.ACTION_API',
     TOOLTIP_ACTION_API_TITLE = 'ToolTop.ACTION_API_TITLE',
-    TOOLTIP_ACTION_RENDER = 'ToolTop.ACTION_RENDER',
-    TOOLTIP_ACTION_RENDER_TITLE = 'ToolTop.ACTION_RENDER_TITLE',
     TOOLTIP_ACTION_ARGUMENTS = 'ToolTip.ACTION_ARGUMENTS',
     TOOLTIP_ACTION_ARGUMENTS_TITLE = 'ToolTip.ACTION_ARGUMENTS_TITLE',
     TOOLTIP_ACTION_CARD = 'ToolTip.ACTION_CARD',
@@ -589,6 +590,9 @@ export default {
         [FM.APP_HEADER_DOCS]: 'Docs',
         [FM.APP_HEADER_SUPPORT]: 'Support',
 
+        // Model Metadata
+        [FM.APP_VERSION]: 'Version:',
+
         // TrainingStatus
         [FM.APP_TRAINING_STATUS_STATUS]: 'Training',
         [FM.APP_TRAINING_STATUS_UNKNOWN]: 'Unknown',
@@ -664,6 +668,7 @@ export default {
         [FM.LOGDIALOGS_SUBTITLE]: 'Log Dialogs are records of conversations between users and your Bot. You can make corrections to Log Dialogs to improve the Bot.',
         [FM.LOGDIALOGS_CREATEBUTTONTITLE]: 'New Log Dialog',
         [FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Log Dialog',
+        [FM.LOGDIALOGS_MODEL_VERSION]: 'Model Version',
         [FM.LOGDIALOGS_FIRSTINPUT]: 'First Input',
         [FM.LOGDIALOGS_LASTINPUT]: 'Last Input',
         [FM.LOGDIALOGS_LASTRESPONSE]: 'Last Response',
@@ -733,8 +738,6 @@ export default {
         // ToolTip
         [FM.TOOLTIP_ACTION_API]: 'APIs exposed in the running Bot of the form:',
         [FM.TOOLTIP_ACTION_API_TITLE]: 'API',
-        [FM.TOOLTIP_ACTION_RENDER]: 'Render exposed in the running Bot of the form:',
-        [FM.TOOLTIP_ACTION_RENDER_TITLE]: 'RENDER',
         [FM.TOOLTIP_ACTION_ARGUMENTS]: `When Action Type is an API call, a list of comma separated arguments passed to the API. Arguments prefixed with a $ refer to Entity values.  For example: "$city"`,
         [FM.TOOLTIP_ACTION_ARGUMENTS_TITLE]: `Arguments`,
         [FM.TOOLTIP_ACTION_CARD]: `When Action Type is a card call, a list of comma separated arguments passed to the Card. Arguments prefixed with a $ refer to Entity values.  For example: "$city"`,

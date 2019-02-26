@@ -13,7 +13,7 @@ export interface CultureObject {
   cultureName: string
 }
 
-export const getLuisApplicationCultures = (): Promise<CultureObject[]> => {
-  return axios.get(ApiConfig.CLLocaleEndpoint)
-    .then(response => response.data)
+export const getLuisApplicationCultures = async (): Promise<CultureObject[]> => {
+  const response = await axios.get(ApiConfig.CLLocaleEndpoint)
+  return response.data
 }

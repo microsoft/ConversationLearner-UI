@@ -27,6 +27,7 @@ import LogDialogs from './LogDialogs'
 import { TooltipHost } from 'office-ui-fabric-react/lib/Tooltip'
 import TrainingStatus from '../../../components/TrainingStatusContainer'
 import actions from '../../../actions'
+import FormattedMessageId from '../../../components/FormattedMessageId'
 import './Index.css'
 
 // TODO: i18n support would be much easier after proper routing is implemented
@@ -54,9 +55,8 @@ class Index extends React.Component<Props, ComponentState> {
         let thunk3 = this.props.fetchAllLogDialogsThunkAsync(app, packageId)
         let thunk4 = this.props.fetchAppSourceThunkAsync(app.appId, packageId)
 
-        Promise.all([thunk1, thunk2, thunk3, thunk4]).then(() => {
-            this.setState({ modelLoaded: true })
-        })
+        await Promise.all([thunk1, thunk2, thunk3, thunk4])
+        this.setState({ modelLoaded: true })
     }
 
     componentWillMount() {
@@ -206,7 +206,7 @@ class Index extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                     <div className={`cl-app-tag-status ${OF.FontClassNames.mediumPlus}`}>
-                        Tag: {tag}
+                        <FormattedMessageId id={FM.APP_VERSION} /> {tag}
                         {editPackageId === app.livePackageId &&
                             <span className="cl-font--warning">LIVE</span>
                         }

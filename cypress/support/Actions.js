@@ -8,15 +8,14 @@ const actionsGrid = require('../support/components/ActionsGrid')
 const modelPage = require('../support/components/ModelPage')
 const helpers = require('../support/Helpers')
 
-// The UI automatically populates the Required Entities field with entities found in the response text and
-// it also automatically populates the Disqualtifying Entities field with the expected entities,
-// so the caller only needs to specify the ones the UI does not auto populate.
-// However, there are cases where the caller may want to explicitly specify these autopopulated values anyway,
-// and this code does allow for that.
-export function CreateNewAction({ response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' }) {
-  modelPage.NavigateToActions()
-  actionModal.ClickNewAction()
+// ------------------------------------------------------------------------------------------------
+// The UI automatically populates the Required Entities field with entities found in the response 
+// text and it also automatically populates the Disqualtifying Entities field with the expected 
+// entities, so the caller only needs to specify the ones the UI does not auto populate.
+// However, there are cases where the caller may want to explicitly specify these autopopulated 
+// values anyway, and this code does allow for that.
 
+export function CreateNewAction({ response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' }) {
   // We do this first since we had a bug (1910) where it is not reset by the UI when
   // type END_SESSION is selected.
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
@@ -27,6 +26,13 @@ export function CreateNewAction({ response, expectedEntities, requiredEntities, 
   if (requiredEntities) actionModal.TypeRequiredEntities(requiredEntities)
   if (disqualifyingEntities) actionModal.TypeDisqualifyingEntities(disqualifyingEntities)
   actionModal.ClickCreateButton()
+}
+
+export function CreateNewActionThenVerifyInGrid({ response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' }) {
+  modelPage.NavigateToActions()
+  actionsGrid.ClickNewAction()
+
+  CreateNewAction(arguments[0])
 
   let requiredEntitiesFromResponse = ExtractEntities(response)
   response = response.replace(/{enter}/g, '')
@@ -46,6 +52,8 @@ export function CreateNewAction({ response, expectedEntities, requiredEntities, 
   //actionsGrid.ValidateWaitForResponse((type === 'END_SESSION') || !uncheckWaitForResponse)
   actionsGrid.ValidateWaitForResponse(!uncheckWaitForResponse)
 }
+
+// ------------------------------------------------------------------------------------------------
 
 // Input string looks something like this: "Sorry $name{enter}, I can't help you get $want{enter}"
 // Returns an array containing entities like this: ['name', 'want']
@@ -84,4 +92,10 @@ function IsAlphaNumeric(string) {
       return false
   }
   return true
+}
+
+export function DeleteAction(action) {
+  actionsGrid.Edit(action)
+  actionModal.ClickDeleteButton()
+  actionModal.ClickConfirmButtom()
 }

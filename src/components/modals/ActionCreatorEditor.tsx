@@ -6,7 +6,7 @@ import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as ToolTip from '../ToolTips/ToolTips'
 import * as TC from '../tipComponents'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import * as ActionPayloadEditor from './ActionPayloadEditor'
 import { Value } from 'slate'
 import { returntypeof } from 'react-redux-typescript'
@@ -68,7 +68,7 @@ const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[]): OF.I
 }
 
 // Entities that can be chosen for required / blocking
-const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] =>  {
+const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] => {
 
     // Ignore resolvers and negative entities
     const filteredEntities = entities.filter(e => !e.doNotMemorize && !e.positiveId)
@@ -341,11 +341,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         slateValuesMap[TEXT_SLOT] = Plain.deserialize(contentString)
                         entityWarning = true
                     }
-                } 
+                }
                 else if (action.actionType === CLM.ActionTypes.END_SESSION) {
                     const sessionAction = new CLM.SessionAction(action)
                     slateValuesMap[TEXT_SLOT] = tryCreateSlateValue(CLM.ActionTypes.TEXT, TEXT_SLOT, sessionAction.value, payloadOptions)
-                } 
+                }
                 else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
                     const apiAction = new CLM.ApiAction(action)
                     selectedApiOptionKey = apiAction.name
@@ -363,7 +363,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         }
                     }
 
-                } 
+                }
                 else if (action.actionType === CLM.ActionTypes.CARD) {
                     const cardAction = new CLM.CardAction(action)
                     selectedCardOptionKey = cardAction.templateName
@@ -676,8 +676,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             requiredEntitiesFromPayload: this.state.requiredEntityTagsFromPayload.map<string>(tag => tag.key),
             requiredEntities: [...this.state.requiredEntityTagsFromPayload, ...requiredTags].map<string>(tag => tag.key),
             negativeEntities: negativeTags.map<string>(tag => tag.key),
-            requiredConditions, 
-            negativeConditions, 
+            requiredConditions,
+            negativeConditions,
             suggestedEntity: (this.state.expectedEntityTags.length > 0) ? this.state.expectedEntityTags[0].key : null,
             version: 0,
             packageCreationId: 0,
@@ -738,29 +738,29 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickDelete() {
+    async onClickDelete() {
         if (!this.props.action) {
             return
         }
 
-        ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
-            .then(invalidTrainingDialogIds => {
+        try {
+            const invalidTrainingDialogIds = await ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
+            if (invalidTrainingDialogIds) {
+                let validationWarnings = (invalidTrainingDialogIds.length > 0)
+                    ? [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING)]
+                    : []
 
-                if (invalidTrainingDialogIds) {
-                    let validationWarnings = (invalidTrainingDialogIds.length > 0)
-                        ? [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING)]
-                        : []
-
-                    this.setState(
-                        {
-                            isConfirmDeleteModalOpen: true,
-                            validationWarnings: validationWarnings
-                        });
-                }
-            })
-            .catch(error => {
-                console.warn(`Error when attempting to validate delete: `, error)
-            })
+                this.setState(
+                    {
+                        isConfirmDeleteModalOpen: true,
+                        validationWarnings: validationWarnings
+                    });
+            }
+        }
+        catch (e) {
+            const error = e as Error
+            console.warn(`Error when attempting to validate delete: `, error)
+        }
     }
 
     @OF.autobind
@@ -830,15 +830,21 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
-        let isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload.document.text.length === 0)
+        let isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload && textPayload.document.text.length === 0)
 
         this.setState({
             isPayloadMissing,
             selectedActionTypeOptionKey: actionTypeOption.key,
+            selectedApiOptionKey: undefined,
+            selectedCardOptionKey: undefined,
             slateValuesMap: {
                 [TEXT_SLOT]: Plain.deserialize('')
             },
-            secondarySlateValuesMap: {}
+            secondarySlateValuesMap: {},
+            expectedEntityTags: [],
+            requiredEntityTagsFromPayload: [],
+            requiredEntityTags: [],
+            negativeEntityTags: [],
         })
     }
 
@@ -1311,7 +1317,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         <div className="cl-actioncreator-form-section">
                             <TC.Checkbox
-                                data-testid="actioncreator-checkbox-wait"
+                                data-testid="action-creator-wait-checkbox"
                                 label="Wait for Response?"
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
@@ -1320,7 +1326,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>
-                        <div 
+                        <div
                             className="cl-error-message-label"
                             style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}
                         >
@@ -1348,7 +1354,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     </div>
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
-                            data-testid="actioncreator-button-create"
+                            data-testid="action-creator-create-button"
                             disabled={this.saveDisabled()}
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
@@ -1360,6 +1366,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         />
 
                         <OF.DefaultButton
+                            data-testid="action-creator-cancel-button"
                             onClick={this.onClickCancel}
                             ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
                             text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
@@ -1367,6 +1374,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.isEditing &&
                             <OF.DefaultButton
+                                data-testid="action-creator-delete-button"
                                 className="cl-button-delete"
                                 onClick={this.onClickDelete}
                                 ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}

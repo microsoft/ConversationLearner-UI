@@ -126,7 +126,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         />)
                 }
                 else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
-                    // TODO: Find better way to handle this with CodeActionRenderer?
                     const apiAction = new CLM.ApiAction(action)
                     return (
                         <ActionPayloadRenderers.ApiPayloadRendererContainer

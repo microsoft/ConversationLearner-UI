@@ -7,6 +7,7 @@ const helpers = require('../../support/Helpers')
 
 export function VerifyPageTitle() { cy.Get('[data-testid="actions-title"]').contains('Actions').should('be.visible') }
 export function ValidateExpectedEntities(entities) { ValidateEntities('[data-testid="action-details-expected-entity"]', '[data-testid="action-details-empty-expected-entities"]', entities) }
+export function ClickNewAction() { cy.Get('[data-testid="actions-button-create"]').Click() }
 
 // The UI automatically populates the Required Entities field with entities found in the response text,
 // so the additionalRequiredEntities parameter allows the caller to specify entities not found in the response text.
@@ -57,4 +58,10 @@ function ValidateEntities(selector, emptySelector, entities1, entities2) {
   cy.Get('@responseDetailsRow').find(selector).as('entitiesList')
   entities.forEach(entity => cy.Get('@entitiesList').contains(entity))
   cy.Get('@entitiesList').should('have.length', entities.length)
+}
+
+export function Edit(action) {
+  cy.Get('[data-testid="action-scorer-text-response"]')
+    .contains(action)
+    .Click()
 }
