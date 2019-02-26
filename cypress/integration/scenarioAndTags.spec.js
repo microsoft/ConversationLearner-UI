@@ -12,6 +12,9 @@ import * as logDialogs from '../support/components/LogDialogsGrid'
 import * as logDialogModal from '../support/components/LogDialogModal'
 
 const testSelectors = {
+    common: {
+        spinner: '.cl-spinner'
+    },
     trainDialogs: {
         scenarios: '[data-testid="train-dialogs-description"]',
         tags: '[data-testid="train-dialogs-tags"] .cl-tags-readonly__tag'
@@ -27,6 +30,14 @@ const testSelectors = {
         addTagButton: '[data-testid="train-dialog-tags"] .cl-tags__button-add',
         tagInput: '[data-testid="train-dialog-tags"] .cl-tags__form input',
         webChatUtterances: 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p',
+    },
+    logDialogs: {
+        createButton: '[data-testid="log-dialogs-new-button"]',
+        firstInput: '[data-testid="log-dialogs-first-input"]'
+    },
+    chatModal: {
+        container: '.cl-sessionmodal',
+        doneButton: '[data-testid="chat-session-modal-done-testing-button"]'
     }
 }
 
@@ -82,8 +93,12 @@ describe('Scenario and Tags', () => {
                 cy.get(testSelectors.dialogModal.tagInput)
                     .type(`${testData.tag01}{enter}`)
 
-                // Save
                 trainDialog.TypeYourMessage(testData.userInput)
+                editDialogModal.ClickScoreActionsButton()
+
+                // Add temporary rounds to be deleted later
+                trainDialog.SelectAction(testData.actionResponse)
+                trainDialog.TypeYourMessage('Should be deleted')
                 editDialogModal.ClickScoreActionsButton()
                 trainDialog.SelectAction(testData.actionResponse)
                 trainDialog.Save()
@@ -176,6 +191,14 @@ describe('Scenario and Tags', () => {
             })
 
             it('(advanced edit) should save the edited tags, description, and rounds', () => {
+                cy.get(testSelectors.common.spinner)
+                    .should('not.exist')
+
+                // Re-open dialog
+                cy.get(testSelectors.trainDialogs.scenarios)
+                    .contains(testData.description)
+                    .click()
+
                 // Edit tags
                 cy.get(testSelectors.dialogModal.addTagButton)
                     .click()
@@ -187,18 +210,47 @@ describe('Scenario and Tags', () => {
                 cy.get(testSelectors.dialogModal.scenarioInput)
                     .type(testData.descriptionEdit)
 
-                cy.pause()
+                // Delete the last bot response and user input. Affects rounds but doesn't make it invalid
+                cy.server()
+                cy.route('POST', '/sdk/app/*/traindialogreplay').as('postDialogReplay')
+                cy.route('POST', '/sdk/app/*/history*').as('postDialogHistory')
 
-                expect(true).to.equal(true)
+                cy.get('[data-testid="web-chat-utterances"]')
+                    .last()
+                    .click()
+
+                cy.get('[data-testid="edit-dialog-modal-delete-turn-button"]')
+                    .click()
+
+                cy.wait(['@postDialogReplay', '@postDialogHistory'])
+                // TODO: Find out why wait is needed here
+                // I think other than waiting for requests there is some other internal processing
+                // such as rebuilding dialog activities we need to wait on
+                cy.wait(1000)
+
+                cy.get('[data-testid="web-chat-utterances"]')
+                    .last()
+                    .click()
+
+                cy.get('[data-testid="edit-dialog-modal-delete-turn-button"]')
+                    .click()
+
+                cy.wait(['@postDialogReplay', '@postDialogHistory'])
+
+                cy.get(testSelectors.dialogModal.closeSave)
+                    .click()
             })
         })
 
-
         context('Continue', () => {
-            it('should preserve tags and description when continuing a dialog', () => {
-                cy.get('.cl-spinner')
-                    .should('not.exist')
+            before(() => {
+                cy.reload()
 
+                cy.get(testSelectors.common.spinner)
+                    .should('not.exist')
+            })
+
+            it('should preserve tags and description when continuing a dialog', () => {
                 // Open dialog
                 cy.get(testSelectors.trainDialogs.scenarios)
                     .contains(`${testData.description}${testData.descriptionEdit}`)
@@ -257,12 +309,18 @@ describe('Scenario and Tags', () => {
 
         context('Branch', () => {
             before(() => {
+                // Reload browser to ensure memory and wait for app to load
+                cy.server()
+                cy.route('GET', '/sdk/app/*/logdialogs*').as('getAppLogDialogs')
+                cy.route('GET', '/sdk/app/*/source*').as('getAppSource')
+
                 cy.reload()
+
+                cy.wait(['@getAppLogDialogs', '@getAppSource'])
+                cy.wait(1000)
             })
 
             it('should preserve tags and description after branching', () => {
-                cy.wait(5000)
-
                 // Open dialog
                 cy.get(testSelectors.trainDialogs.scenarios)
                     .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}`)
@@ -297,8 +355,17 @@ describe('Scenario and Tags', () => {
                 cy.get(testSelectors.dialogModal.branchSubmit)
                     .click()
 
+                cy.get(testSelectors.common.spinner)
+                    .should('not.exist')
+
+                cy.server()
+                cy.route('POST', '/sdk/app/*/scorefromhistory').as('postScoreFromHistory')
+                cy.route('POST', '/sdk/app/*/history*').as('postHistory')
+
                 cy.get(testSelectors.dialogModal.scoreActionsButton)
                     .click()
+
+                cy.wait(['@postScoreFromHistory', '@postHistory'])
 
                 // Verify edited scenario and tags are preserved after branch
                 cy.get(testSelectors.dialogModal.scenarioInput)
@@ -316,14 +383,18 @@ describe('Scenario and Tags', () => {
                         ])
                     })
 
-                cy.get('.cl-spinner')
+                cy.wait(500)
+                cy.get(testSelectors.common.spinner)
                     .should('not.exist')
 
                 cy.get(testSelectors.dialogModal.closeSave)
                     .click()
 
+                cy.server()
+                cy.route('GET', '/sdk/app/*/logdialogs*').as('getAppLogDialogs')
+                cy.route('GET', '/sdk/app/*/source*').as('getAppSource')
                 cy.reload()
-                cy.wait(5000)
+                cy.wait(['@getAppLogDialogs', '@getAppSource'])
 
                 // Verify old dialog with original tags and description is still in the list
                 cy.get(testSelectors.trainDialogs.scenarios)
@@ -336,7 +407,7 @@ describe('Scenario and Tags', () => {
         })
     })
 
-    context.skip('Log Dialogs', () => {
+    context('Log Dialogs', () => {
         before(() => {
             // Need to import a small model that has a train dialog
             models.ImportModel('z-scenarioAndTags', 'z-myNameIs.cl')
@@ -346,13 +417,17 @@ describe('Scenario and Tags', () => {
 
         beforeEach(() => {
             cy.reload()
+            cy.wait(4000)
         })
 
         it('should not show tags or description fields when creating a log dialog', () => {
-            logDialogs.CreateNewLogDialogButton()
+            cy.get(testSelectors.logDialogs.createButton)
+                .click()
 
-            // Wait until chat session model is open
-            cy.get('.cl-sessionmodal')
+            cy.get(testSelectors.common.spinner)
+                .should('not.exist')
+
+            cy.get(testSelectors.chatModal.container)
                 .should('be.visible')
 
             cy.get('[data-testid="train-dialog-description"]')
@@ -367,16 +442,30 @@ describe('Scenario and Tags', () => {
                 input: 'My Log Dialog Message'
             }
 
-            logDialogs.CreateNewLogDialogButton()
+            cy.get(testSelectors.logDialogs.createButton)
+                .click()
+
+            cy.get(testSelectors.common.spinner)
+                .should('not.exist')
+
             logDialogModal.TypeYourMessage(testData.input)
 
             // Wait for prediction and ensure it isn't an error
             cy.get('.wc-message-from-bot')
                 .should('not.have.class', 'wc-message-color-exception')
 
-            logDialogModal.ClickDoneTestingButton()
+            cy.server()
+            cy.route('GET', '/sdk/app/*/logdialogs*').as('getLogDialogs')
 
-            cy.get('[data-testid="log-dialogs-first-input"]')
+            cy.get(testSelectors.chatModal.doneButton)
+                .click()
+
+            cy.wait(['@getLogDialogs'])
+            // TODO: Find out why the wait is needed
+            // Seems even after the request is completed and redux has start processing it still hasn't finished rendering
+            cy.wait(2000)
+
+            cy.get(testSelectors.logDialogs.firstInput)
                 .contains(testData.input)
                 .click()
 
