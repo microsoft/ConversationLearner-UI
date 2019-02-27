@@ -256,7 +256,7 @@ interface ComponentState {
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
-    primaryScoreButton: any = null;
+    primaryScoreButton: OF.IButton | null = null;
 
     constructor(p: Props) {
         super(p);
@@ -287,13 +287,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             })
         }
     }
-    // TODO: Why invoke autoSelect on both Update and DidUpdate?!
-    componentUpdate() {
-        this.autoSelect();
-    }
-    componentDidUpdate() {
-        this.autoSelect();
-    }
+
     componentDidMount() {
         this.autoSelect();
     }
@@ -633,7 +627,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             if (column.key === 'select') {
                 // Will focus on new action button if no scores
                 const ref = (index === 0)
-                    ? ((r: any) => { this.primaryScoreButton = r })
+                    ? (r: OF.IButton) => { this.primaryScoreButton = r }
                     : undefined;
                 return (
                     <OF.PrimaryButton
