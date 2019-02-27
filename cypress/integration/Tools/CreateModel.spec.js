@@ -8,7 +8,7 @@ const homePage = require('../../support/components/HomePage')
 
 describe('Tools', () => {
   it('Create Model', () => {
-    models.CreateNewModel(name)
+    models.CreateNewModel('z-model')
     homePage.Visit()
     homePage.GetModelListRowCount()
   })
