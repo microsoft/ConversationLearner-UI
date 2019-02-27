@@ -4,11 +4,8 @@ import * as models from '../support/Models'
 import * as model from '../support/components/ModelPage'
 import * as actions from '../support/Actions'
 import * as actionsList from '../support/components/ActionsGrid'
-import * as actionsModal from '../support/components/ActionModal'
 import * as editDialogModal from '../support/components/EditDialogModal'
-import * as trainDialogs from '../support/components/TrainDialogsGrid'
 import * as trainDialog from '../support/Train'
-import * as logDialogs from '../support/components/LogDialogsGrid'
 import * as logDialogModal from '../support/components/LogDialogModal'
 
 const testSelectors = {
@@ -182,7 +179,6 @@ describe('Scenario and Tags', () => {
                 cy.get(testSelectors.trainDialogs.tags)
                     .should(($tags) => {
                         const texts = $tags.map((_, el) => Cypress.$(el).text()).get()
-                        expect(texts).to.have.length(2)
                         expect(texts).to.deep.eq([
                             testData.tag01,
                             testData.tag02,
@@ -204,7 +200,7 @@ describe('Scenario and Tags', () => {
                     .click()
 
                 cy.get(testSelectors.dialogModal.tagInput)
-                    .type(`${testData.tag05}{enter}`)
+                    .type(`${testData.tag03}{enter}`)
 
                 // Edit scenario
                 cy.get(testSelectors.dialogModal.scenarioInput)
@@ -237,8 +233,15 @@ describe('Scenario and Tags', () => {
 
                 cy.wait(['@postDialogReplay', '@postDialogHistory'])
 
+                cy.route('PUT', '/sdk/app/*/traindialog/*').as('putTrainDialog')
+
                 cy.get(testSelectors.dialogModal.closeSave)
-                    .click()
+                    // .click()
+                // TODO: Find out what is blocking the click?
+                editDialogModal.ClickSaveCloseButton()
+
+                cy.wait(['@putTrainDialog'])
+                cy.wait(5000)
             })
         })
 
@@ -253,7 +256,7 @@ describe('Scenario and Tags', () => {
             it('should preserve tags and description when continuing a dialog', () => {
                 // Open dialog
                 cy.get(testSelectors.trainDialogs.scenarios)
-                    .contains(`${testData.description}${testData.descriptionEdit}`)
+                    .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}`)
                     .click()
 
                 // TODO: Find out why we need to wait
@@ -265,7 +268,7 @@ describe('Scenario and Tags', () => {
                     .click()
 
                 cy.get(testSelectors.dialogModal.tagInput)
-                    .type(`${testData.tag03}{enter}`)
+                    .type(`${testData.tag04}{enter}`)
 
                 // Edit description
                 cy.get(testSelectors.dialogModal.scenarioInput)
@@ -290,18 +293,18 @@ describe('Scenario and Tags', () => {
 
                 // Re-open dialog
                 cy.get(testSelectors.trainDialogs.scenarios)
-                    .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}`)
+                    .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}${testData.descriptionEdit}`)
                     .click()
 
                 // Verify it has all three of the tags
                 cy.get(testSelectors.dialogModal.tags)
                     .should(($tags) => {
                         const texts = $tags.map((i, el) => Cypress.$(el).text()).get()
-                        expect(texts).to.have.length(3)
                         expect(texts).to.deep.eq([
                             testData.tag01,
                             testData.tag02,
-                            testData.tag03
+                            testData.tag03,
+                            testData.tag04,
                         ])
                     })
             })
@@ -323,7 +326,7 @@ describe('Scenario and Tags', () => {
             it('should preserve tags and description after branching', () => {
                 // Open dialog
                 cy.get(testSelectors.trainDialogs.scenarios)
-                    .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}`)
+                    .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}${testData.descriptionEdit}`)
                     .click()
 
                 // Edit tags
@@ -331,7 +334,7 @@ describe('Scenario and Tags', () => {
                     .click()
 
                 cy.get(testSelectors.dialogModal.tagInput)
-                    .type(`${testData.tag04}{enter}`)
+                    .type(`${testData.tag05}{enter}`)
 
                 // Edit description
                 cy.get(testSelectors.dialogModal.scenarioInput)
@@ -369,17 +372,17 @@ describe('Scenario and Tags', () => {
 
                 // Verify edited scenario and tags are preserved after branch
                 cy.get(testSelectors.dialogModal.scenarioInput)
-                    .should('have.value', `${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}${testData.descriptionEdit}`)
+                    .should('have.value', `${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}${testData.descriptionEdit}${testData.descriptionEdit}`)
 
                 cy.get(testSelectors.dialogModal.tags)
                     .should(($tags) => {
                         const texts = $tags.map((i, el) => Cypress.$(el).text()).get()
-                        expect(texts).to.have.length(4)
                         expect(texts).to.deep.eq([
                             testData.tag01,
                             testData.tag02,
                             testData.tag03,
-                            testData.tag04
+                            testData.tag04,
+                            testData.tag05,
                         ])
                     })
 
@@ -421,8 +424,13 @@ describe('Scenario and Tags', () => {
         })
 
         it('should not show tags or description fields when creating a log dialog', () => {
+            cy.server()
+            cy.route('POST', '/sdk/app/*/session').as('postSession')
+
             cy.get(testSelectors.logDialogs.createButton)
                 .click()
+
+            cy.wait('@postSession')
 
             cy.get(testSelectors.common.spinner)
                 .should('not.exist')
@@ -437,10 +445,15 @@ describe('Scenario and Tags', () => {
                 .should('not.exist')
         })
 
-        it('should not show tags or description fields when viewing a log dialog', () => {
+        it.only('should not show tags or description fields when viewing a log dialog', () => {
             const testData = {
                 input: 'My Log Dialog Message'
             }
+
+            // Wait for new log dialog to be created
+            cy.server()
+            cy.route('POST', '/sdk/app/*/session').as('postSession')
+            cy.wait('@postSession')
 
             cy.get(testSelectors.logDialogs.createButton)
                 .click()
@@ -452,6 +465,7 @@ describe('Scenario and Tags', () => {
 
             // Wait for prediction and ensure it isn't an error
             cy.get('.wc-message-from-bot')
+                .should('exist')
                 .should('not.have.class', 'wc-message-color-exception')
 
             cy.server()
@@ -461,9 +475,6 @@ describe('Scenario and Tags', () => {
                 .click()
 
             cy.wait(['@getLogDialogs'])
-            // TODO: Find out why the wait is needed
-            // Seems even after the request is completed and redux has start processing it still hasn't finished rendering
-            cy.wait(2000)
 
             cy.get(testSelectors.logDialogs.firstInput)
                 .contains(testData.input)
@@ -475,6 +486,10 @@ describe('Scenario and Tags', () => {
 
             cy.get('[data-testid="train-dialog-tags"]')
                 .should('not.exist')
+
+            // Close window to prevent continued polling
+            cy.get(testSelectors.dialogModal.closeSave)
+                .click()
         })
     })
 })
