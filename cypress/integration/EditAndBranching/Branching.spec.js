@@ -3,11 +3,11 @@
  * Licensed under the MIT License.
 */
 
-const models = require('../support/Models')
-const modelPage = require('../support/components/ModelPage')
-const scorerModal = require('../support/components/ScorerModal')
-const train = require('../support/Train')
-const editDialogModal = require('../support/components/EditDialogModal')
+const models = require('../../support/Models')
+const modelPage = require('../../support/components/ModelPage')
+const scorerModal = require('../../support/components/ScorerModal')
+const train = require('../../support/Train')
+const editDialogModal = require('../../support/components/EditDialogModal')
 
 describe('EditAndBranching', () => {
   it('Branching', () => {

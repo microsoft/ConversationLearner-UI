@@ -6,7 +6,7 @@
 const models = require('../../support/Models')
 const entities = require('../../support/Entities')
 const actions = require('../../support/Actions')
-const common = require('../../upport/Common')
+const common = require('../../support/Common')
 
 describe('CreateModels', () => {
   it('Disqualifying Entities', () => {
