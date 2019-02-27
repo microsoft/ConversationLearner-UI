@@ -54,6 +54,7 @@ describe('Scenario and Tags', () => {
         }
 
         before(() => {
+            // TODO: Find way to preserve Intellisense
             models.CreateNewModel('z-scenarioAndTags')
             model.NavigateToActions()
             actionsList.ClickNewAction()
