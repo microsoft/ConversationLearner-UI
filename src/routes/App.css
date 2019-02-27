@@ -199,4 +199,8 @@
     color: var(--cl-color-error);
 }
 
+[data-slate-editor="true"] span[contenteditable="false"] {
+    float: left
+}
+
 
