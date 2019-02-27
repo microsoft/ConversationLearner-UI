@@ -445,7 +445,7 @@ describe('Scenario and Tags', () => {
                 .should('not.exist')
         })
 
-        it.only('should not show tags or description fields when viewing a log dialog', () => {
+        it('should not show tags or description fields when viewing a log dialog', () => {
             const testData = {
                 input: 'My Log Dialog Message'
             }
