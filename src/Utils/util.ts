@@ -11,7 +11,7 @@ export function notNullOrUndefined<TValue>(value: TValue | null | undefined): va
     return value !== null && value !== undefined;
 }
 
-export function equal<T extends number | string | boolean> (as: T[], bs: T[]): boolean {
+export function equal<T extends number | string | boolean>(as: T[], bs: T[]): boolean {
     return as.length === bs.length
         && as.every((a, i) => a === bs[i])
 }
@@ -101,10 +101,10 @@ export function earlierDateOrTimeToday(timestamp: string): string {
     return dialogTime.format(isDialogCreatedToday ? 'LTS' : 'L')
 }
 
-export function isNewActionUnique(newAction: CLM.ActionBase, actions: CLM.ActionBase[]): boolean {
+export function isActionUnique(newAction: CLM.ActionBase, actions: CLM.ActionBase[]): boolean {
     const needle = normalizeActionAndStringify(newAction)
     const haystack = actions.map(action => normalizeActionAndStringify(action))
-    return haystack.findIndex(straw => straw === needle) < 0
+    return haystack.some(straw => straw === needle)
 }
 
 function normalizeActionAndStringify(newAction: CLM.ActionBase) {

@@ -2,9 +2,11 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { replace, equal } from './util'
+import { replace, equal, isActionUnique } from './util'
+import * as CLM from '@conversationlearner/models'
 
 describe('util', () => {
+
     describe('replace', () => {
         it('returns new array with item replaced and preserves order', () => {
             // Arrange
@@ -16,7 +18,6 @@ describe('util', () => {
             const actual = replace(list, newItem, x => x.id)
 
             // Assert
-            expect(actual).not.toBe(expected)
             expect(actual).toEqual(expected)
         })
     })
@@ -70,4 +71,221 @@ describe('util', () => {
             expect(actual).toBe(true)
         })
     })
+
+    describe('isActionUniqueTEXT', () => {
+        it('exercise TEXT action creation', () => {
+            const sampleAction: CLM.ActionBase = {
+                actionId: "103726c8-2cfe-46e6-ad1e-fef8dbe4d6c3",
+                actionType: CLM.ActionTypes.TEXT,
+                createdDateTime: "2019-02-25T00:00:00.000Z",
+                isTerminal: true,
+                negativeConditions: [],
+                negativeEntities: [],
+                packageCreationId: 0,
+                packageDeletionId: 0,
+                payload: '{"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"hi","marks":[]}]}]}]}}}"',
+                requiredConditions: [],
+                requiredEntities: [],
+                requiredEntitiesFromPayload: [],
+                suggestedEntity: null,
+                version: 0
+            }
+
+            let actionSet: CLM.ActionBase[] = []
+
+            test('as first action created', () => {
+                expect(isActionUnique(sampleAction, actionSet)).toBe(true)
+            })
+
+            test('as absolutely identical action', () => {
+                actionSet.push(sampleAction)
+                expect(isActionUnique(sampleAction, actionSet)).toBe(false)
+            })
+
+            test('as a similar, but not identical into very similar set', () => {
+                actionSet = [{ ...sampleAction }]
+                let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
+                expect(isActionUnique(similar, actionSet)).toBe(true)
+            })
+
+            test('as a similar, but not identical into very similar set. how smart is the find operator?', () => {
+                actionSet = [sampleAction]
+                let similar = { ...sampleAction, requiredEntities: ["85eccbec-7d01-4aea-a704-b2fdab09cf32"] }
+                expect(isActionUnique(similar, actionSet)).toBe(true)
+            })
+        })
+    })
+
+    describe('isActionUniqueENDSESSION', () => {
+        it('exercise ENDSESSION action creation', () => {
+            const sampleAction = {
+                actionId: "c64988df-a707-46c9-873c-8de42b9a116d",
+                actionType: CLM.ActionTypes.END_SESSION,
+                createdDateTime: "2019-02-25T00:00:00.001Z",
+                isTerminal: true,
+                negativeConditions: [],
+                negativeEntities: [],
+                packageCreationId: 0,
+                packageDeletionId: 0,
+                payload: '"{"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"1","marks":[]}]}]}]}}}"',
+                requiredConditions: [],
+                requiredEntities: [],
+                requiredEntitiesFromPayload: [],
+                suggestedEntity: null,
+                version: 0
+            }
+
+            let actionSet: CLM.ActionBase[] = []
+
+            test('as first action created', () => {
+                expect(isActionUnique(sampleAction, actionSet)).toBe(true)
+            })
+
+            test('as absolutely identical action', () => {
+                actionSet.push(sampleAction)
+                expect(isActionUnique(sampleAction, actionSet)).toBe(false)
+            })
+
+            test('as a similar, but not identical into very similar set', () => {
+                actionSet = [{ ...sampleAction }]
+                let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
+                expect(isActionUnique(similar, actionSet)).toBe(true)
+            })
+
+            test('as a similar, but not identical into very similar set. how smart is the find operator?', () => {
+                actionSet = [sampleAction]
+                let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
+                expect(isActionUnique(similar, actionSet)).toBe(true)
+            })
+
+        })
+    })
+
+    describe('isActionUniqueCARD', () => {
+        it('exercise CARD action creation', () => {
+            const sampleAction = {
+                actionId: "83c94294-3a42-49ae-ba84-a6f43fda2f3a",
+                actionType: CLM.ActionTypes.CARD,
+                createdDateTime: "2019-02-25T23:01:35.456Z",
+                isTerminal: true,
+                negativeConditions: [],
+                negativeEntities: [],
+                packageCreationId: 0,
+                packageDeletionId: 0,
+                payload: '"{"payload":"prompt","arguments":[{"parameter":"question","value":{"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"left or right?","marks":[]}]}]}]}}}}]}"',
+                requiredConditions: [],
+                requiredEntities: [],
+                requiredEntitiesFromPayload: [],
+                suggestedEntity: null,
+                version: 0
+            }
+
+            let actionSet: CLM.ActionBase[] = []
+
+            test('as first action created', () => {
+                expect(isActionUnique(sampleAction, actionSet)).toEqual(true)
+            })
+
+            test('as absolutely identical action', () => {
+                actionSet.push(sampleAction)
+                expect(isActionUnique(sampleAction, actionSet)).toEqual(false)
+            })
+
+            test('as a similar, but not identical into very similar set', () => {
+                actionSet = [{ ...sampleAction }]
+                let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
+                expect(isActionUnique(similar, actionSet)).toEqual(true)
+            })
+
+            test('as a similar, but not identical into very similar set. how smart is the find operator?', () => {
+                actionSet = [sampleAction]
+                let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
+                expect(isActionUnique(similar, actionSet)).toEqual(true)
+            })
+        })
+
+    })
+
+    describe('isActionUniqueDiverseSet', () => {
+        it('exercises isActionUnique when inserting a mix of actions into a diverse bag of existing actions', () => {
+            const sampleActionText: CLM.ActionBase = {
+                actionId: "103726c8-2cfe-46e6-ad1e-fef8dbe4d6c3",
+                actionType: CLM.ActionTypes.TEXT,
+                createdDateTime: "2019-02-25T00:00:00.000Z",
+                isTerminal: true,
+                negativeConditions: [],
+                negativeEntities: [],
+                packageCreationId: 0,
+                packageDeletionId: 0,
+                payload: '{"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"hi","marks":[]}]}]}]}}}"',
+                requiredConditions: [],
+                requiredEntities: [],
+                requiredEntitiesFromPayload: [],
+                suggestedEntity: null,
+                version: 0
+            }
+
+            const sampleActionSession = {
+                actionId: "c64988df-a707-46c9-873c-8de42b9a116d",
+                actionType: CLM.ActionTypes.END_SESSION,
+                createdDateTime: "2019-02-25T00:00:00.001Z",
+                isTerminal: true,
+                negativeConditions: [],
+                negativeEntities: [],
+                packageCreationId: 0,
+                packageDeletionId: 0,
+                payload: '"{"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"1","marks":[]}]}]}]}}}"',
+                requiredConditions: [],
+                requiredEntities: [],
+                requiredEntitiesFromPayload: [],
+                suggestedEntity: null,
+                version: 0
+            }
+
+            const sampleActionCard = {
+                actionId: "83c94294-3a42-49ae-ba84-a6f43fda2f3a",
+                actionType: CLM.ActionTypes.CARD,
+                createdDateTime: "2019-02-25T23:01:35.456Z",
+                isTerminal: true,
+                negativeConditions: [],
+                negativeEntities: [],
+                packageCreationId: 0,
+                packageDeletionId: 0,
+                payload: '"{"payload":"prompt","arguments":[{"parameter":"question","value":{"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"left or right?","marks":[]}]}]}]}}}}]}"',
+                requiredConditions: [],
+                requiredEntities: [],
+                requiredEntitiesFromPayload: [],
+                suggestedEntity: null,
+                version: 0
+            }
+
+            const actionTypesExercised = [sampleActionText, sampleActionSession, sampleActionCard]
+
+            // Asserts
+
+            actionTypesExercised.forEach(newAction => {
+
+                let actionSet: CLM.ActionBase[] = []
+
+                test('as a duplicate in a diverse set', () => {
+                    actionSet = actionTypesExercised
+                    expect(isActionUnique(newAction, actionSet)).toEqual(false)
+                })
+
+                test('as first of its type into a diverse set', () => {
+                    actionSet = actionTypesExercised.filter(action => action.actionType !== newAction.actionType)
+                    expect(isActionUnique(newAction, actionSet)).toEqual(true)
+                })
+
+                test('as a similar, but not identical into a diverse set', () => {
+                    actionSet = actionTypesExercised
+                    const similar = { ...newAction, isTerminal: !newAction.isTerminal }
+                    expect(isActionUnique(similar, actionSet)).toEqual(true)
+                })
+
+            })
+
+        })
+    })
+
 })
