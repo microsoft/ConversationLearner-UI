@@ -3,4 +3,3 @@
  * Licensed under the MIT License.
 */
 
-require('../support/TestListManager').AddToCypressTestList(Cypress.masterListOfAllTestCases) 

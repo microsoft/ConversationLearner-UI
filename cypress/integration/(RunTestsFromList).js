@@ -3,4 +3,5 @@
  * Licensed under the MIT License.
 */
 
-require('../support/TestListManager').AddToCypressTestList(Cypress.testList) 
+require('./Tools/VisitHomePage.js')
+require('./Tools/CreateModel.js')
