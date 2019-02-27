@@ -11,29 +11,30 @@ const train = require('../../support/Train')
 const editDialogModal = require('../../support/components/EditDialogModal')
 const common = require('../../support/Common')
 
-export function WhatsYourName()
-{
-  models.ImportModel('z-whatsYourName', 'z-whatsYourName.cl')
+describe('Train', () => {
+  it('Whats Your Name', () => {
+    models.ImportModel('z-whatsYourName', 'z-whatsYourName.cl')
 
-  modelPage.NavigateToTrainDialogs()
-  cy.WaitForTrainingStatusCompleted()
-  train.CreateNewTrainDialog()
+    modelPage.NavigateToTrainDialogs()
+    cy.WaitForTrainingStatusCompleted()
+    train.CreateNewTrainDialog()
 
-  train.TypeYourMessage('Hello')
-  editDialogModal.ClickScoreActionsButton()
-  scorerModal.VerifyContainsEnabledAction(common.whatsYourName)
-  scorerModal.VerifyContainsDisabledAction('Hello $name')
-  train.SelectAction(common.whatsYourName)
+    train.TypeYourMessage('Hello')
+    editDialogModal.ClickScoreActionsButton()
+    scorerModal.VerifyContainsEnabledAction(common.whatsYourName)
+    scorerModal.VerifyContainsDisabledAction('Hello $name')
+    train.SelectAction(common.whatsYourName)
 
-  train.TypeYourMessage('David')
-  editDialogModal.VerifyEntityLabel('David', 'name')
-  editDialogModal.ClickScoreActionsButton()
-  memoryTableComponent.VerifyEntityInMemory('name', 'David')
-  scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-  scorerModal.VerifyContainsEnabledAction('Hello David')
-  train.SelectAction('Hello David', 'Hello $name')
+    train.TypeYourMessage('David')
+    editDialogModal.VerifyEntityLabel('David', 'name')
+    editDialogModal.ClickScoreActionsButton()
+    memoryTableComponent.VerifyEntityInMemory('name', 'David')
+    scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
+    scorerModal.VerifyContainsEnabledAction('Hello David')
+    train.SelectAction('Hello David', 'Hello $name')
 
-  train.Save()
+    train.Save()
 
-  // Manually EXPORT this to fixtures folder and name it 'z-myNameIs.cl'
-}
+    // Manually EXPORT this to fixtures folder and name it 'z-myNameIs.cl'
+  })
+})

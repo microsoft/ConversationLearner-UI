@@ -5,8 +5,9 @@
 
 const homePage = require('../../support/components/HomePage')
 
-export function VisitHomePage()
-{
-  homePage.Visit()
-  homePage.GetModelListRowCount()
-}
+describe('Tools', () => {
+  it('Visit Home Page', () => {
+    homePage.Visit()
+    homePage.GetModelListRowCount()
+  })
+})

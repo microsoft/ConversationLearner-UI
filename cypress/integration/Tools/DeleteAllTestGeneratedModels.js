@@ -6,15 +6,16 @@
 const homePage = require('../../support/components/HomePage')
 const helpers = require('../../support/Helpers')
 
-export function DeleteAllTestGeneratedModels() 
-{
-  homePage.Visit()
-  // We must "Enqueue" this function call so that Cypress will have one "Cypress Command" 
-  // still running when the DeleteAllRows function exits. If not for this, only one row will
-  // get deleted then test execution will stop.
-  cy.Enqueue(DeleteAllTestGeneratedModelRows).then(() => { helpers.ConLog(`Delete All Test Generated Models`, `DONE - All test generated models have been Deleted`) })
-  cy.reload()
-}
+describe('Tools', () => {
+  it('Delete All Test Generated Models', () => {
+    homePage.Visit()
+    // We must "Enqueue" this function call so that Cypress will have one "Cypress Command" 
+    // still running when the DeleteAllRows function exits. If not for this, only one row will
+    // get deleted then test execution will stop.
+    cy.Enqueue(DeleteAllTestGeneratedModelRows).then(() => { helpers.ConLog(`Delete All Test Generated Models`, `DONE - All test generated models have been Deleted`) })
+    cy.reload()
+  })
+})
 
 function DeleteAllTestGeneratedModelRows() 
 {

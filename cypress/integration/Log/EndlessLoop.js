@@ -10,29 +10,30 @@ const logDialogsGrid = require('../../support/components/LogDialogsGrid')
 const logDialogModal = require('../../support/components/LogDialogModal')
 const helpers = require('../../support/Helpers')
 
-export function EndlessLoop()
-{
-  models.ImportModel('z-endlessLoop', 'z-endlessLoop.cl')
-  modelPage.NavigateToLogDialogs()
-  cy.WaitForTrainingStatusCompleted()
-  logDialogsGrid.CreateNewLogDialogButton()
+describe('Log', () => {
+  it('Endless Loop', () => {
+    models.ImportModel('z-endlessLoop', 'z-endlessLoop.cl')
+    modelPage.NavigateToLogDialogs()
+    cy.WaitForTrainingStatusCompleted()
+    logDialogsGrid.CreateNewLogDialogButton()
 
-  logDialogModal.TypeYourMessage(`ONE loopIndex: 0`)
-  cy.wait(2000)
-  // logDialogModal.TypeYourMessage(`TWO loopIndex: 0`)
-  // cy.wait(2000)
-  // logDialogModal.TypeYourMessage(`THREE loopIndex: 0`)
-  // cy.wait(2000)
+    logDialogModal.TypeYourMessage(`ONE loopIndex: 0`)
+    cy.wait(2000)
+    // logDialogModal.TypeYourMessage(`TWO loopIndex: 0`)
+    // cy.wait(2000)
+    // logDialogModal.TypeYourMessage(`THREE loopIndex: 0`)
+    // cy.wait(2000)
 
-  logDialogModal.ClickDoneTestingButton()
-  cy.wait(30000).then(() => {
-    helpers.ConLog(`EndlessLoop()`, `Done waiting after test end.`)
+    logDialogModal.ClickDoneTestingButton()
+    cy.wait(30000).then(() => {
+      helpers.ConLog(`EndlessLoop()`, `Done waiting after test end.`)
+    })
   })
-}
+})
 
 // This version of the test does not get very far before the Bot chokes.
 // Once the Bot's errors are fixed then we can re-visit this test case.
-export function EndlessLoopX() {
+function EndlessLoopX() {
   cy.Enqueue(() =>
   {
     return new Promise((resolve) => {

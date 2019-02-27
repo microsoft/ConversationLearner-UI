@@ -11,42 +11,43 @@ const common = require('../../support/Common')
 const actions = require('../../support/Actions')
 const scorerModal = require('../../support/components/ScorerModal')
 
-export function MissingAction()
-{
-  models.ImportModel('z-missingAction', 'z-whatsYourName.cl')
-  modelPage.NavigateToTrainDialogs()
-  cy.WaitForTrainingStatusCompleted()
+describe('ErrorHandling', () => {
+  it('Missing Action', () => {
+    models.ImportModel('z-missingAction', 'z-whatsYourName.cl')
+    modelPage.NavigateToTrainDialogs()
+    cy.WaitForTrainingStatusCompleted()
 
-  modelPage.VerifyNoErrorIconOnPage()
+    modelPage.VerifyNoErrorIconOnPage()
 
-  train.CreateNewTrainDialog()
+    train.CreateNewTrainDialog()
 
-  train.TypeYourMessage(common.gonnaDeleteAnAction)
-  editDialogModal.ClickScoreActionsButton()
-  train.SelectAction(common.whatsYourName)
-  
-  train.Save()
+    train.TypeYourMessage(common.gonnaDeleteAnAction)
+    editDialogModal.ClickScoreActionsButton()
+    train.SelectAction(common.whatsYourName)
+    
+    train.Save()
 
-  modelPage.NavigateToActions()
-  actions.DeleteAction(common.whatsYourName)
-  modelPage.NavigateToTrainDialogs()
+    modelPage.NavigateToActions()
+    actions.DeleteAction(common.whatsYourName)
+    modelPage.NavigateToTrainDialogs()
 
-  modelPage.VerifyErrorIconForTrainDialogs()
-  train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}${common.gonnaDeleteAnAction}`, common.gonnaDeleteAnAction, undefined)
+    modelPage.VerifyErrorIconForTrainDialogs()
+    train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}${common.gonnaDeleteAnAction}`, common.gonnaDeleteAnAction, undefined)
 
-  train.EditTraining(`${String.fromCharCode(59412)}${common.gonnaDeleteAnAction}`, common.gonnaDeleteAnAction, undefined)
+    train.EditTraining(`${String.fromCharCode(59412)}${common.gonnaDeleteAnAction}`, common.gonnaDeleteAnAction, undefined)
 
-  editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
+    editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
 
-  editDialogModal.SelectChatTurnStartsWith('ERROR: Can’t find Action Id')
-  editDialogModal.VerifyErrorMessage('Action does not exist')
-  scorerModal.VerifyMissingActionNotice()
+    editDialogModal.SelectChatTurnStartsWith('ERROR: Can’t find Action Id')
+    editDialogModal.VerifyErrorMessage('Action does not exist')
+    scorerModal.VerifyMissingActionNotice()
 
-  scorerModal.ClickAddActionButton()
-  actions.CreateNewAction({ response: common.whatsYourName, expectedEntities: 'name' })
+    scorerModal.ClickAddActionButton()
+    actions.CreateNewAction({ response: common.whatsYourName, expectedEntities: 'name' })
 
-  editDialogModal.VerifyNoErrorMessage()
+    editDialogModal.VerifyNoErrorMessage()
 
-  editDialogModal.ClickSaveCloseButton()
-  modelPage.VerifyNoErrorIconOnPage()
-}
+    editDialogModal.ClickSaveCloseButton()
+    modelPage.VerifyNoErrorIconOnPage()
+  })
+})

@@ -6,9 +6,10 @@
 const models = require('../../support/Models')
 const homePage = require('../../support/components/HomePage')
 
-export function CreateModel(name = 'z-model')
-{
-  models.CreateNewModel(name)
-  homePage.Visit()
-  homePage.GetModelListRowCount()
-}
+describe('Tools', () => {
+  it('Create Model', () => {
+    models.CreateNewModel(name)
+    homePage.Visit()
+    homePage.GetModelListRowCount()
+  })
+})

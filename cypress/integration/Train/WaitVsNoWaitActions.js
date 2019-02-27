@@ -10,39 +10,40 @@ const train = require('../../support/Train')
 const editDialogModal = require('../../support/components/EditDialogModal')
 const common = require('../../support/Common')
 
-export function WaitVsNoWaitActions()
-{
-  models.ImportModel('z-waitNoWait', 'z-waitNoWait.cl')
+describe('Train', () => {
+  it('Wait vs Non-Wait Actions', () => {
+    models.ImportModel('z-waitNoWait', 'z-waitNoWait.cl')
 
-  modelPage.NavigateToTrainDialogs()
-  cy.WaitForTrainingStatusCompleted()
+    modelPage.NavigateToTrainDialogs()
+    cy.WaitForTrainingStatusCompleted()
 
-  train.CreateNewTrainDialog()
+    train.CreateNewTrainDialog()
 
-  train.TypeYourMessage('Hello')
-  editDialogModal.ClickScoreActionsButton()
-  scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
-  scorerModal.VerifyContainsEnabledAction('Cows say moo!')
-  scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
-  train.SelectAction('Which animal would you like?')
+    train.TypeYourMessage('Hello')
+    editDialogModal.ClickScoreActionsButton()
+    scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
+    scorerModal.VerifyContainsEnabledAction('Cows say moo!')
+    scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
+    train.SelectAction('Which animal would you like?')
 
-  train.TypeYourMessage('Cow')
-  editDialogModal.ClickScoreActionsButton()
-  scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
-  scorerModal.VerifyContainsEnabledAction('Cows say moo!')
-  scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
-  train.SelectAction('Cows say moo!')
+    train.TypeYourMessage('Cow')
+    editDialogModal.ClickScoreActionsButton()
+    scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
+    scorerModal.VerifyContainsEnabledAction('Cows say moo!')
+    scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
+    train.SelectAction('Cows say moo!')
 
-  train.SelectAction('Which animal would you like?')
+    train.SelectAction('Which animal would you like?')
 
-  train.TypeYourMessage('Duck')
-  editDialogModal.ClickScoreActionsButton()
-  scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
-  scorerModal.VerifyContainsEnabledAction('Cows say moo!')
-  scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
-  train.SelectAction(common.ducksSayQuack)
+    train.TypeYourMessage('Duck')
+    editDialogModal.ClickScoreActionsButton()
+    scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
+    scorerModal.VerifyContainsEnabledAction('Cows say moo!')
+    scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
+    train.SelectAction(common.ducksSayQuack)
 
-  train.SelectAction('Which animal would you like?')
+    train.SelectAction('Which animal would you like?')
 
-  train.Save()
-}
+    train.Save()
+  })
+})

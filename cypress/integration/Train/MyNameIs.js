@@ -11,33 +11,34 @@ const train = require('../../support/Train')
 const editDialogModal = require('../../support/components/EditDialogModal')
 const common = require('../../support/Common')
 
-export function MyNameIs()
-{
-  models.ImportModel('z-myNameIs', 'z-myNameIs.cl')
-  modelPage.NavigateToTrainDialogs()
-  cy.WaitForTrainingStatusCompleted()
+describe('Train', () => {
+  it('My Name Is', () => {
+    models.ImportModel('z-myNameIs', 'z-myNameIs.cl')
+    modelPage.NavigateToTrainDialogs()
+    cy.WaitForTrainingStatusCompleted()
 
-  train.CreateNewTrainDialog()
+    train.CreateNewTrainDialog()
 
-  train.TypeYourMessage('My name is David.')
-  editDialogModal.VerifyEntityLabel('David', 'name')
-  editDialogModal.ClickScoreActionsButton()
-  memoryTableComponent.VerifyEntityInMemory('name', 'David')
-  scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-  scorerModal.VerifyContainsEnabledAction('Hello David')
-  train.SelectAction('Hello David', 'Hello $name')
+    train.TypeYourMessage('My name is David.')
+    editDialogModal.VerifyEntityLabel('David', 'name')
+    editDialogModal.ClickScoreActionsButton()
+    memoryTableComponent.VerifyEntityInMemory('name', 'David')
+    scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
+    scorerModal.VerifyContainsEnabledAction('Hello David')
+    train.SelectAction('Hello David', 'Hello $name')
 
-  cy.WaitForTrainingStatusCompleted()
+    cy.WaitForTrainingStatusCompleted()
 
-  train.TypeYourMessage('My name is Susan.')
-  editDialogModal.VerifyEntityLabel('Susan', 'name')
-  editDialogModal.ClickScoreActionsButton()
-  memoryTableComponent.VerifyEntityInMemory('name', 'Susan', 'David')
-  scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-  scorerModal.VerifyContainsEnabledAction('Hello Susan')
-  train.SelectAction('Hello Susan', 'Hello $name')
+    train.TypeYourMessage('My name is Susan.')
+    editDialogModal.VerifyEntityLabel('Susan', 'name')
+    editDialogModal.ClickScoreActionsButton()
+    memoryTableComponent.VerifyEntityInMemory('name', 'Susan', 'David')
+    scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
+    scorerModal.VerifyContainsEnabledAction('Hello Susan')
+    train.SelectAction('Hello Susan', 'Hello $name')
 
-  train.Save()
+    train.Save()
 
-  // Manually EXPORT this to fixtures folder and name it 'z-nameTrained.cl'
-}
+    // Manually EXPORT this to fixtures folder and name it 'z-nameTrained.cl'
+  })
+})
