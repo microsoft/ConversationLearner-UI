@@ -14,7 +14,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
-import { formatMessageId, isNewActionUnique } from '../../Utils/util'
+import { formatMessageId, isActionUnique } from '../../Utils/util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
@@ -698,7 +698,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         let newOrEditedAction = this.convertStateToModel()
         let validationWarnings: string[] = []
 
-        if (!isNewActionUnique(newOrEditedAction, this.props.actions)) {
+        if (!isActionUnique(newOrEditedAction, this.props.actions)) {
             this.setState({
                 isConfirmDuplicateActionModalOpen: true,
                 validationWarnings: [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND)],
