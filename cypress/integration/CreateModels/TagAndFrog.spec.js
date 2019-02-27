@@ -3,14 +3,14 @@
  * Licensed under the MIT License.
 */
 
-const models = require('../support/Models')
-const modelPage = require('../support/components/ModelPage')
-const entities = require('../support/Entities')
-const actions = require('../support/Actions')
-const editDialogModal = require('../support/components/EditDialogModal')
-const train = require('../support/Train')
-const memoryTableComponent = require('../support/components/MemoryTableComponent')
-const common = require('../support/Common')
+const models = require('../../support/Models')
+const modelPage = require('../../support/components/ModelPage')
+const entities = require('../../support/Entities')
+const actions = require('../../support/Actions')
+const editDialogModal = require('../../support/components/EditDialogModal')
+const train = require('../../support/Train')
+const memoryTableComponent = require('../../support/components/MemoryTableComponent')
+const common = require('../../support/Common')
 
 describe('CreateModels', () => {
   it('Tag And Frog', () => {

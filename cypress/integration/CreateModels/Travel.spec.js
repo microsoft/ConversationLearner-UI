@@ -3,10 +3,10 @@
  * Licensed under the MIT License.
 */
 
-const models = require('../support/Models')
-const entities = require('../support/Entities')
-const actions = require('../support/Actions')
-const common = require('../support/Common')
+const models = require('../../support/Models')
+const entities = require('../../support/Entities')
+const actions = require('../../support/Actions')
+const common = require('../../support/Common')
 
 describe('CreateModels', () => {
   it('Travel', () => {
