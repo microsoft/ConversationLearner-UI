@@ -560,9 +560,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
         const dialogChanged = this.isDialogChanged()
-        if (dialogChanged) {
-            return formatMessageId(intl, FM.BUTTON_ABANDON_EDIT)
-        }
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
@@ -576,7 +573,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             case EditDialogType.TRAIN_EDITED:
                 return formatMessageId(intl, FM.BUTTON_ABANDON_EDIT)
             case EditDialogType.TRAIN_ORIGINAL:
-                return formatMessageId(intl, FM.BUTTON_DELETE)
+                return dialogChanged
+                    ? formatMessageId(intl, FM.BUTTON_ABANDON_EDIT)
+                    : formatMessageId(intl, FM.BUTTON_DELETE)
             default:
                 return ""
         }
@@ -699,9 +698,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     renderCloseOrSaveText(intl: ReactIntl.InjectedIntl) {
         const dialogChanged = this.isDialogChanged()
-        if (dialogChanged) {
-            return formatMessageId(intl, FM.BUTTON_SAVE_EDIT)
-        }
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
@@ -715,7 +711,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             case EditDialogType.TRAIN_EDITED:
                 return formatMessageId(intl, FM.BUTTON_SAVE_EDIT)
             case EditDialogType.TRAIN_ORIGINAL:
-                return formatMessageId(intl, FM.BUTTON_CLOSE)
+                return dialogChanged
+                    ? formatMessageId(intl, FM.BUTTON_SAVE_EDIT)
+                    : formatMessageId(intl, FM.BUTTON_CLOSE)
             default:
                 return ""
         }
