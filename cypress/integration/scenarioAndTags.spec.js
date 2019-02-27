@@ -453,11 +453,12 @@ describe('Scenario and Tags', () => {
             // Wait for new log dialog to be created
             cy.server()
             cy.route('POST', '/sdk/app/*/session').as('postSession')
-            cy.wait('@postSession')
-
+            
             cy.get(testSelectors.logDialogs.createButton)
                 .click()
 
+            cy.wait('@postSession')
+            
             cy.get(testSelectors.common.spinner)
                 .should('not.exist')
 
