@@ -11,6 +11,11 @@ export function notNullOrUndefined<TValue>(value: TValue | null | undefined): va
     return value !== null && value !== undefined;
 }
 
+export function equal<T extends number | string | boolean> (as: T[], bs: T[]): boolean {
+    return as.length === bs.length
+        && as.every((a, i) => a === bs[i])
+}
+
 export function replace<T>(xs: T[], updatedX: T, getId: (x: T) => object | number | string): T[] {
     const index = xs.findIndex(x => getId(x) === getId(updatedX))
     if (index < 0) {

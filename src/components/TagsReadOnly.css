@@ -1,0 +1,17 @@
+.cl-tags-readonly {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -5px -5px;
+}
+
+.cl-tags-readonly__tag {
+    margin-top: 5px;
+    margin-left: 5px;
+    padding: 0 0.25em;
+    background-color: var(--color-themeLight);
+}
+
+.cl-tags-readonly__empty {
+    margin-top: 5px;
+    margin-left: 5px;
+}

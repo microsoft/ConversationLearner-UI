@@ -2,8 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { replace, isNewActionUnique } from './util'
-import * as CLM from '@conversationlearner/models'
+import { replace, equal } from './util'
 
 describe('util', () => {
     describe('replace', () => {
@@ -21,201 +20,54 @@ describe('util', () => {
             expect(actual).toEqual(expected)
         })
     })
-    describe('isNewActionUniqueTEXT', () => {
-        it('exercise TEXT action creation', () => {
-            const sampleAction: CLM.ActionBase = {
-                actionId: "103726c8-2cfe-46e6-ad1e-fef8dbe4d6c3",
-                actionType: CLM.ActionTypes.TEXT,
-                createdDateTime: "2019-02-25T00:00:00.000Z",
-                isTerminal: true,
-                negativeConditions: [],
-                negativeEntities: [],
-                packageCreationId: 0,
-                packageDeletionId: 0,
-                payload: '{"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"hi","marks":[]}]}]}]}}}"',
-                requiredConditions: [],
-                requiredEntities: [],
-                requiredEntitiesFromPayload: [],
-                suggestedEntity: null,
-                version: 0
-            }
 
-            let actionSet: CLM.ActionBase[] = []
+    describe('equal', () => {
+        test('given arrays of different length return false', () => {
+            // Arrange
+            const as = [1, 2, 3]
+            const bs = [1, 2]
 
-            // as first action created
-            expect(isNewActionUnique(sampleAction, actionSet)).toEqual(true)
+            // Act
+            const actual = equal(as, bs)
 
-            // as absolutely identical action
-            actionSet.push(sampleAction)
-            expect(isNewActionUnique(sampleAction, actionSet)).not.toBe(true)
+            // Assert
+            expect(actual).toBe(false)
+        })
 
-            // as a similar, but not identical into very similar set
-            actionSet = [{ ...sampleAction }]
-            let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
-            expect(isNewActionUnique(similar, actionSet)).not.toBe(false)
+        test('given arrays of same length but different items return false', () => {
+            // Arrange
+            const as = [1, 2, 3]
+            const bs = [1, 2, 4]
 
-            // as a similar, but not identical into very similar set. how smart is the find operator?
-            actionSet = [sampleAction]
-            similar = { ...sampleAction, requiredEntities: ["85eccbec-7d01-4aea-a704-b2fdab09cf32"] }
-            expect(isNewActionUnique(similar, actionSet)).not.toBe(false)
+            // Act
+            const actual = equal(as, bs)
+
+            // Assert
+            expect(actual).toBe(false)
+        })
+
+        test('given arrays of same length and values but different order return false', () => {
+            // Arrange
+            const as = [1, 2, 3]
+            const bs = [1, 3, 2]
+
+            // Act
+            const actual = equal(as, bs)
+
+            // Assert
+            expect(actual).toBe(false)
+        })
+
+        test('given two arrays with same values return true', () => {
+            // Arrange
+            const as = [1, 2, 3]
+            const bs = [1, 2, 3]
+
+            // Act
+            const actual = equal(as, bs)
+
+            // Assert
+            expect(actual).toBe(true)
         })
     })
-    describe('isNewActionUniqueENDSESSION', () => {
-        it('exercise ENDSESSION action creation', () => {
-            const sampleAction = {
-                actionId: "c64988df-a707-46c9-873c-8de42b9a116d",
-                actionType: CLM.ActionTypes.END_SESSION,
-                createdDateTime: "2019-02-25T00:00:00.001Z",
-                isTerminal: true,
-                negativeConditions: [],
-                negativeEntities: [],
-                packageCreationId: 0,
-                packageDeletionId: 0,
-                payload: '"{"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"1","marks":[]}]}]}]}}}"',
-                requiredConditions: [],
-                requiredEntities: [],
-                requiredEntitiesFromPayload: [],
-                suggestedEntity: null,
-                version: 0
-            }
-
-            let actionSet: CLM.ActionBase[] = []
-
-            // as first action created
-            expect(isNewActionUnique(sampleAction, actionSet)).toEqual(true)
-
-            // as absolutely identical action
-            actionSet.push(sampleAction)
-            expect(isNewActionUnique(sampleAction, actionSet)).not.toBe(true)
-
-            // as a similar, but not identical into very similar set
-            actionSet = [{ ...sampleAction }]
-            let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
-            expect(isNewActionUnique(similar, actionSet)).not.toBe(false)
-
-            // as a similar, but not identical into very similar set. how smart is the find operator?
-            actionSet = [sampleAction]
-            similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
-            expect(isNewActionUnique(similar, actionSet)).not.toBe(false)
-        })
-    })
-    describe('isNewActionUniqueCARD', () => {
-        it('exercise CARD action creation', () => {
-            const sampleAction = {
-                actionId: "83c94294-3a42-49ae-ba84-a6f43fda2f3a",
-                actionType: CLM.ActionTypes.CARD,
-                createdDateTime: "2019-02-25T23:01:35.456Z",
-                isTerminal: true,
-                negativeConditions: [],
-                negativeEntities: [],
-                packageCreationId: 0,
-                packageDeletionId: 0,
-                payload: '"{"payload":"prompt","arguments":[{"parameter":"question","value":{"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"left or right?","marks":[]}]}]}]}}}}]}"',
-                requiredConditions: [],
-                requiredEntities: [],
-                requiredEntitiesFromPayload: [],
-                suggestedEntity: null,
-                version: 0
-            }
-
-            let actionSet: CLM.ActionBase[] = []
-
-            // as first action created
-            expect(isNewActionUnique(sampleAction, actionSet)).toEqual(true)
-
-            // as absolutely identical action
-            actionSet.push(sampleAction)
-            expect(isNewActionUnique(sampleAction, actionSet)).not.toBe(true)
-
-            // as a similar, but not identical into very similar set
-            actionSet = [{ ...sampleAction }]
-            let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
-            expect(isNewActionUnique(similar, actionSet)).not.toBe(false)
-
-            // as a similar, but not identical into very similar set. how smart is the find operator?
-            actionSet = [sampleAction]
-            similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
-
-            expect(isNewActionUnique(similar, actionSet)).not.toBe(false)
-        })
-    })
-    describe('isNewActionUniqueDiverseSet', () => {
-        it('exercises isNewActionUnique when inserting a mix of actions into a diverse bag of existing actions', () => {
-            const sampleActionText: CLM.ActionBase = {
-                actionId: "103726c8-2cfe-46e6-ad1e-fef8dbe4d6c3",
-                actionType: CLM.ActionTypes.TEXT,
-                createdDateTime: "2019-02-25T00:00:00.000Z",
-                isTerminal: true,
-                negativeConditions: [],
-                negativeEntities: [],
-                packageCreationId: 0,
-                packageDeletionId: 0,
-                payload: '{"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"hi","marks":[]}]}]}]}}}"',
-                requiredConditions: [],
-                requiredEntities: [],
-                requiredEntitiesFromPayload: [],
-                suggestedEntity: null,
-                version: 0
-            }
-
-            const sampleActionSession = {
-                actionId: "c64988df-a707-46c9-873c-8de42b9a116d",
-                actionType: CLM.ActionTypes.END_SESSION,
-                createdDateTime: "2019-02-25T00:00:00.001Z",
-                isTerminal: true,
-                negativeConditions: [],
-                negativeEntities: [],
-                packageCreationId: 0,
-                packageDeletionId: 0,
-                payload: '"{"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"1","marks":[]}]}]}]}}}"',
-                requiredConditions: [],
-                requiredEntities: [],
-                requiredEntitiesFromPayload: [],
-                suggestedEntity: null,
-                version: 0
-            }
-
-            const sampleActionCard = {
-                actionId: "83c94294-3a42-49ae-ba84-a6f43fda2f3a",
-                actionType: CLM.ActionTypes.CARD,
-                createdDateTime: "2019-02-25T23:01:35.456Z",
-                isTerminal: true,
-                negativeConditions: [],
-                negativeEntities: [],
-                packageCreationId: 0,
-                packageDeletionId: 0,
-                payload: '"{"payload":"prompt","arguments":[{"parameter":"question","value":{"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"left or right?","marks":[]}]}]}]}}}}]}"',
-                requiredConditions: [],
-                requiredEntities: [],
-                requiredEntitiesFromPayload: [],
-                suggestedEntity: null,
-                version: 0
-            }
-
-            const actionTypesExercised = [sampleActionText, sampleActionSession, sampleActionCard]
-
-            // Asserts
-
-            actionTypesExercised.forEach(newAction => {
-
-                let actionSet: CLM.ActionBase[] = []
-
-                // as a duplicate in a diverse set
-                actionSet = actionTypesExercised
-                expect(isNewActionUnique(newAction, actionSet)).not.toBe(true)
-
-                // as first of its type into a diverse set
-                actionSet = actionTypesExercised.filter(action => action.actionType !== newAction.actionType)
-                expect(isNewActionUnique(newAction, actionSet)).toEqual(true)
-
-                // as a similar, but not identical into a diverse set
-                actionSet = actionTypesExercised
-                const similar = { ...newAction, isTerminal: !newAction.isTerminal }
-                expect(isNewActionUnique(similar, actionSet)).toEqual(true)
-
-            })
-
-        })
-    })
-
 })
