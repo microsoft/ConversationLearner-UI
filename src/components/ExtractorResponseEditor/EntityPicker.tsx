@@ -6,6 +6,7 @@ import * as React from 'react'
 import { IOption, IPosition, MatchedOption } from './models'
 import FuseMatch from './FuseMatch'
 import './EntityPicker.css'
+import * as OF from 'office-ui-fabric-react'
 
 interface MenuProps {
     highlightIndex: number
@@ -55,7 +56,7 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
 
     render() {
         const style: any = {
-            left: this.props.isVisible ? `1em` : null,
+            left: this.props.isVisible ? `${this.props.position.left}px` : null,
             bottom: this.props.isVisible ? `${this.props.position.bottom}px` : null,
             height: !this.props.isOverlappingOtherEntities ? "14em" : "4em",
             marginBottom: !this.props.isOverlappingOtherEntities ? "0" : "1em"
@@ -72,15 +73,13 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
                 style={style}
                 role="button"
             >
-                <React.Fragment>
-                <button
-                    type="button"
+                <OF.PrimaryButton
                     tabIndex={-1}
                     onClick={() => this.props.onClickNewEntity(this.props.entityTypeFilter)}
                     className="custom-toolbar__new-entity-button"
-                >
-                    New Entity
-                </button>
+                    text="New Entity"
+                    iconProps={{ iconName: 'Add' }}
+                />
                 <div className="custom-toolbar__search">
                     <input
                         data-testid="entity-picker-entity-search"
@@ -106,7 +105,6 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
                             </div>
                         )}
                     </div>
-                </React.Fragment>
             </div>
         )
     }
