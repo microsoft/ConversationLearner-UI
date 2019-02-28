@@ -58,7 +58,7 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
         const style: any = {
             left: this.props.isVisible ? `${this.props.position.left}px` : null,
             bottom: this.props.isVisible ? `${this.props.position.bottom}px` : null,
-            height: !this.props.isOverlappingOtherEntities ? "14em" : "4em",
+            height: !this.props.isOverlappingOtherEntities ? "auto" : "4em",
             marginBottom: !this.props.isOverlappingOtherEntities ? "0" : "1em"
         }
 
@@ -67,16 +67,29 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
         }
         return (
             <div
-                className={`custom-toolbar ${this.props.isVisible ? "custom-toolbar--visible cl-ux-shadowed" : ""}`}
+                className={`custom-toolbar ${this.props.isVisible ? "custom-toolbar--visible" : ""}`}
                 onKeyDown={this.props.onKeyDown}
                 ref={this.props.menuRef}
                 style={style}
                 role="button"
             >
+                <div className="custom-toolbar__results" ref={this.state.resultsRef}>
+                    {this.props.matchedOptions.length === 0
+                        ? <div className="custom-toolbar__result">No matching entites</div>
+                        : this.props.matchedOptions.map((matchedOption, i) =>
+                            <div
+                                key={matchedOption.original.id}
+                                onClick={() => this.props.onClickOption(matchedOption.original)}
+                                className={`custom-toolbar__result ${this.props.highlightIndex === i ? 'custom-toolbar__result--highlight' : ''}`}
+                                role="button"
+                            >
+                                <FuseMatch matches={matchedOption.matchedStrings} />
+                            </div>
+                        )}
+                </div>
                 <OF.PrimaryButton
                     tabIndex={-1}
                     onClick={() => this.props.onClickNewEntity(this.props.entityTypeFilter)}
-                    className="custom-toolbar__new-entity-button"
                     text="New Entity"
                     iconProps={{ iconName: 'Add' }}
                 />
@@ -91,20 +104,6 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
                         onChange={event => this.props.onChangeSearchText(event.target.value)}
                     />
                 </div>
-                <div className="custom-toolbar__results" ref={this.state.resultsRef}>
-                    {this.props.matchedOptions.length === 0
-                        ? <div className="custom-toolbar__result">No matching entites</div>
-                        : this.props.matchedOptions.map((matchedOption, i) =>
-                            <div
-                                key={matchedOption.original.id}
-                                onClick={() => this.props.onClickOption(matchedOption.original)}
-                                className={`custom-toolbar__result ${this.props.highlightIndex === i ? 'custom-toolbar__result--highlight' : ''}`}
-                                role="button"
-                            >
-                                <FuseMatch matches={matchedOption.matchedStrings} />
-                            </div>
-                        )}
-                    </div>
             </div>
         )
     }
