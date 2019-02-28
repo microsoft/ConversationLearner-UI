@@ -588,14 +588,14 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   background-color: var(--color-magentaDark);
 }
 
-.cl-dropdownWithButton-dropdown {
+.cl-inputWithButton-input {
   display: grid;
   grid-template: auto / 1fr auto auto;
   grid-auto-columns: min-content;
   grid-gap: 0.1em;
 }
 
-.cl-dropdownWithButton-button {
+.cl-inputWithButton-button {
   width: 30px !important;
   min-width: 30px !important;
   align-self: end;

@@ -67,6 +67,37 @@ const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[]): OF.I
         .map<OF.ITag>(convertEntityToTag)
 }
 
+const toConditionName = (entity: CLM.EntityBase, enumValue: CLM.EnumValue): string => {
+    return `${entity.entityName} = ${enumValue.enumValue}`
+}
+
+const convertConditionalsToTags = (conditions: CLM.Condition[], entities: CLM.EntityBase[]): IConditionalTag[] => {
+    let tags: IConditionalTag[] = []
+    conditions.forEach(c => {
+        let entity = entities.find(e => e.entityId === c.entityId)
+        if (!entity) {
+            console.log(`ERROR: Condition refers to non-existant Entity ${c.entityId}`)
+        }
+        else if (!entity.enumValues) {
+            console.log(`ERROR: Condition refers to Entity without Enums ${entity.entityName}`)
+        }
+        else {
+            let enumValue = entity.enumValues.find(e => e.enumValueId === c.valueId)
+            if (!enumValue) {
+                console.log(`ERROR: Condition refers to non-existant EnumValue: ${c.valueId}`)
+            }
+            else {
+                tags.push({
+                    key: c.valueId,
+                    name: toConditionName(entity, enumValue),
+                    condition: c
+                })
+            }
+        }
+    })
+    return tags 
+}
+
 // Entities that can be chosen for required / blocking
 const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] => {
 
@@ -79,7 +110,7 @@ const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] =>
             for (let enumValue of e.enumValues) {
                 tags.push({
                     key: enumValue.enumValueId!,
-                    name: `${e.entityName} = ${enumValue.enumValue}`,
+                    name: toConditionName(e, enumValue),
                     condition: {
                         entityId: e.entityId,
                         valueId: enumValue.enumValueId!,
@@ -322,7 +353,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const action = nextProps.action
 
                 const payloadOptions = this.props.entities.map(convertEntityToOption)
-                const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
+                let negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
                 let selectedApiOptionKey: string | null = null
                 let selectedCardOptionKey: string | null = null
@@ -385,9 +416,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         return [...entities, ...newEntities.filter(ne => !entities.some(e => e.key === ne.key))]
                     }, [])
 
-                const requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
+                let requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
                     .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
 
+                if (action.requiredConditions) {
+                    requiredEntityTags.push(...convertConditionalsToTags(action.requiredConditions, this.props.entities))
+                }
+
+                if (action.negativeConditions) {
+                    negativeEntityTags.push(...convertConditionalsToTags(action.negativeConditions, this.props.entities))
+                }
+            
                 nextState = {
                     ...nextState,
                     isPayloadMissing: action.actionType === CLM.ActionTypes.TEXT && action.payload.length === 0,
@@ -666,7 +705,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const negativeTags = this.state.negativeEntityTags.filter(t => !t.condition)
         const requiredConditions = this.state.requiredEntityTags.filter(t => t.condition).map(t => t.condition!)
         const negativeConditions = this.state.negativeEntityTags.filter(t => t.condition).map(t => t.condition!)
- 
+
         // TODO: This should be new model such as ActionInput for creation only.
         const model = new CLM.ActionBase({
             actionId: null!,
@@ -1087,7 +1126,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
                             && <div>
-                                <div className="cl-dropdownWithButton-dropdown">
+                                <div className="cl-inputWithButton-input">
                                     <TC.Dropdown
                                         data-testid="dropdown-api-option"
                                         label="API"
@@ -1099,7 +1138,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         tipType={ToolTip.TipType.ACTION_API1}
                                     />
                                     <OF.PrimaryButton
-                                        className="cl-dropdownWithButton-button"
+                                        className="cl-inputWithButton-button"
                                         onClick={() => this.onClickSyncBotInfo()}
                                         ariaDescription="Refresh"
                                         text=""
@@ -1159,7 +1198,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD
                             && <div>
-                                <div className="cl-dropdownWithButton-dropdown">
+                                <div className="cl-inputWithButton-input">
                                     <TC.Dropdown
                                         label="Template"
                                         options={this.state.cardOptions}
@@ -1170,7 +1209,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         tipType={ToolTip.TipType.ACTION_CARD}
                                     />
                                     <OF.PrimaryButton
-                                        className="cl-dropdownWithButton-button"
+                                        className="cl-inputWithButton-button"
                                         onClick={() => this.onClickViewCard()}
                                         ariaDescription="Refresh"
                                         text=""
@@ -1178,7 +1217,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         disabled={this.state.selectedCardOptionKey == null}
                                     />
                                     <OF.PrimaryButton
-                                        className="cl-dropdownWithButton-button"
+                                        className="cl-inputWithButton-button"
                                         onClick={() => this.onClickSyncBotInfo()}
                                         ariaDescription="Refresh"
                                         text=""
