@@ -3,8 +3,11 @@
  * Licensed under the MIT License.
 */
 
-const models = require('../../support/Models')
-const homePage = require('../../support/components/HomePage')
+// -----------------------------------------------------------------------------
+// The Purpose of this Test Spec File is to test the Persistent Logging features
+// and to demonstrate how to skip dependant tests when their predicessor fails.
+// -----------------------------------------------------------------------------
+
 const helpers = require('../../support/Helpers')
 
 // The difference between the 1st and 2nd is where we place the call to SkipRemainingTestsOfSuiteIfFailed()
