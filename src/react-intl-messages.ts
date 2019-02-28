@@ -46,6 +46,8 @@ export enum FM {
     ACTIONCREATOREDITOR_WARNING_ENTITY = 'ActionCreatorEditor.warningEntity',
     ACTIONCREATOREDITOR_WARNING_PAYLOAD = 'ActionCreatorEditor.warningPayload',
     ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD = 'ActionCreatorEditor.warningNonEmptyFields',
+    ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION = 'ActionCreatorEditor.warningDuplicateAction',
+    ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND = 'ActionCreatorEditor.warningDuplicateFound',
 
     // ActionDetails
     ACTIONDETAILSLIST_COLUMNS_RESPONSE = 'ActionDetailsList.columns.response',
@@ -352,7 +354,7 @@ export enum FM {
     TEACHSESSIONADMIN_MEMORY_TITLE = 'TeachSessionAdmin.memory.title',
     TEACHSESSIONADMIN_ENTITYDETECTION_TITLE = 'TeachSessionAdmin.entityDetection.title',
     TEACHSESSIONADMIN_ACTION_TITLE = 'TeachSessionAdmin.action.title',
-    
+
     // TeachSessionInit
     TEACHSESSIONINIT_INPUT_PLACEHOLDER = 'TeachSessionInit.input.placeholder',
     TEACHSESSIONINIT_TITLE = 'TeachSessionInit.title',
@@ -547,6 +549,8 @@ export default {
         [FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD]: 'Bot Response is Required',
         [FM.ACTIONCREATOREDITOR_WARNING_ENTITY]: 'Removed reference to undefined Entity',
         [FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD]: `Non-wait Actions can't have Expected Entities`,
+        [FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION]: `Actions must be unique`,
+        [FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND]: 'The action you are creating matches an existing action. Actions must be unique. Please change the properties or close.',
 
         // ActionScorer
         [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',

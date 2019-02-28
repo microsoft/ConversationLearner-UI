@@ -45,7 +45,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 if (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected) {
                     // If no selected actionId, first item is selected one
                     if (!component.props.selectedActionId && index === 0) {
-                        selected  = true
+                        selected = true
                     }
                     else if (component.props.selectedActionId === action.actionId) {
                         selected = true
@@ -199,7 +199,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 } else {
                     let isAvailable = component.isUnscoredActionAvailable(action as CLM.UnscoredAction);
                     if (isAvailable) {
-                        fieldContent = (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected) 
+                        fieldContent = (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected)
                             ? '-' : "Training...";
                     }
                     else {
@@ -463,9 +463,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         let enumValue = entity.enumValues && entity.enumValues.find(ev => ev.enumValueId === condition.valueId)
         let memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
-        let match = memory !== undefined 
+        let match = memory !== undefined
             && memory.entityValues[0]
-            && memory.entityValues[0].enumValueId === condition.valueId 
+            && memory.entityValues[0].enumValueId === condition.valueId
         return { match, name: `${entity.entityName} = ${enumValue ? enumValue.enumValue : "NOT FOUND"}` };
     }
 
@@ -601,8 +601,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
     calculateReason(unscoredAction: CLM.UnscoredAction): CLM.ScoreReason {
 
-        if (this.props.dialogType !== CLM.DialogType.TEACH 
-            || !unscoredAction.reason 
+        if (this.props.dialogType !== CLM.DialogType.TEACH
+            || !unscoredAction.reason
             || unscoredAction.reason === CLM.ScoreReason.NotCalculated) {
 
             let action = this.props.actions.filter((a: CLM.ActionBase) => a.actionId === unscoredAction.actionId)[0];
@@ -783,6 +783,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     editingPackageId={this.props.editingPackageId}
                     open={this.state.actionModalOpen}
                     action={null}
+                    actions={this.props.actions}
                     handleClose={() => this.onClickCancelActionEditor()}
                     // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete 
                     handleDelete={action => { }}
