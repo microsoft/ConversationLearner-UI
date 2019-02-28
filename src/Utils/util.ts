@@ -5,9 +5,15 @@
 import * as CLM from '@conversationlearner/models'
 import * as IntlMessages from '../react-intl-messages'
 import * as moment from 'moment'
+import * as stringify from 'fast-json-stable-stringify'
 
 export function notNullOrUndefined<TValue>(value: TValue | null | undefined): value is TValue {
     return value !== null && value !== undefined;
+}
+
+export function equal<T extends number | string | boolean>(as: T[], bs: T[]): boolean {
+    return as.length === bs.length
+        && as.every((a, i) => a === bs[i])
 }
 
 export function replace<T>(xs: T[], updatedX: T, getId: (x: T) => object | number | string): T[] {
@@ -21,7 +27,7 @@ export function replace<T>(xs: T[], updatedX: T, getId: (x: T) => object | numbe
 
 export function isNullOrUndefined(object: any) {
     return object === null || object === undefined
-    
+
 }
 export function isNullOrWhiteSpace(str: string | null): boolean {
     return (!str || str.length === 0 || /^\s*$/.test(str))
@@ -93,4 +99,15 @@ export function earlierDateOrTimeToday(timestamp: string): string {
     const dialogTime = moment(timestamp)
     const isDialogCreatedToday = dialogTime.diff(endOfYesterday) >= 0
     return dialogTime.format(isDialogCreatedToday ? 'LTS' : 'L')
+}
+
+export function isActionUnique(newAction: CLM.ActionBase, actions: CLM.ActionBase[]): boolean {
+    const needle = normalizeActionAndStringify(newAction)
+    const haystack = actions.map(action => normalizeActionAndStringify(action))
+    return !haystack.some(straw => straw === needle)
+}
+
+function normalizeActionAndStringify(newAction: CLM.ActionBase) {
+    const { actionId, createdDateTime, packageCreationId, packageDeletionId, version, ...normalizedNewAction } = newAction
+    return stringify(normalizedNewAction)
 }

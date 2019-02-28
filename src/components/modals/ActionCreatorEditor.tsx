@@ -14,7 +14,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
-import { formatMessageId } from '../../Utils/util'
+import { formatMessageId, isActionUnique } from '../../Utils/util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
@@ -232,6 +232,7 @@ interface ComponentState {
     isCardViewerModalOpen: boolean
     isConfirmDeleteModalOpen: boolean
     isConfirmEditModalOpen: boolean
+    isConfirmDuplicateActionModalOpen: boolean
     validationWarnings: string[]
     isPayloadFocused: boolean
     isPayloadMissing: boolean
@@ -263,6 +264,7 @@ const initialState: ComponentState = {
     isCardViewerModalOpen: false,
     isConfirmDeleteModalOpen: false,
     isConfirmEditModalOpen: false,
+    isConfirmDuplicateActionModalOpen: false,
     validationWarnings: [],
     isPayloadFocused: false,
     isPayloadMissing: true,
@@ -735,6 +737,16 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         let newOrEditedAction = this.convertStateToModel()
         let validationWarnings: string[] = []
 
+        if (!isActionUnique(newOrEditedAction, this.props.actions)) {
+            this.setState({
+                isConfirmDuplicateActionModalOpen: true,
+                validationWarnings: [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND)],
+                newOrEditedAction: newOrEditedAction
+            })
+
+            return
+        }
+
         // Otherwise need to validate changes
         try {
 
@@ -813,6 +825,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onCancelEdit() {
         this.setState({
             isConfirmEditModalOpen: false,
+            newOrEditedAction: null
+        })
+    }
+
+    @OF.autobind
+    onCancelDuplicate() {
+        this.setState({
+            isConfirmDuplicateActionModalOpen: false,
             newOrEditedAction: null
         })
     }
@@ -1435,6 +1455,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE)}
                     message={this.validationWarning}
                 />
+                <ConfirmCancelModal
+                    open={this.state.isConfirmDuplicateActionModalOpen}
+                    onOk={this.onCancelDuplicate}
+                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION)}
+                    message={this.validationWarning}
+                />
                 <EntityCreatorEditor
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
@@ -1473,6 +1499,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
     return {
         entities: state.entities,
+        actions: state.actions,
         trainDialogs: state.trainDialogs,
         botInfo: state.bot.botInfo,
         browserId: state.bot.browserId
@@ -1484,6 +1511,7 @@ export interface ReceiveProps {
     editingPackageId: string
     open: boolean
     action: CLM.ActionBase | null
+    actions: CLM.ActionBase[]
     handleEdit: (action: CLM.ActionBase) => void
     handleClose: () => void
     handleDelete: (action: CLM.ActionBase) => void

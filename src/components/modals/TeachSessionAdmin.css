@@ -1,1 +1,23 @@
+.cl-dialog-tags {
+    display: grid;
+    grid-gap: 0.25em;
+}
+
+.cl-dialog-field {
+    display: grid;
+    grid-template: auto / max-content 1fr;
+    grid-gap: 0.5rem;
+}
+
+.cl-dialog-field label {
+    display: grid;
+    grid-template: auto / max-content 1fr;
+    grid-gap: 0.5rem;
+    align-items: center;
+}
+
+/* Special to align header */
+.cl-dialog-field label[for="description"] {
+    padding: 0.225em 0;
+}
 
