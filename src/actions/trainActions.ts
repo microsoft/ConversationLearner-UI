@@ -7,6 +7,7 @@ import { AT } from '../types/ActionTypes'
 import { Dispatch } from 'redux'
 import * as ClientFactory from '../services/clientFactory'
 import { TrainDialog, AppBase, TeachWithHistory, UIScoreResponse, ExtractResponse, UserInput, TextVariation } from '@conversationlearner/models'
+import { PartialTrainDialog } from '../types/models'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { AxiosError } from 'axios'
 import { setErrorDisplay } from './displayActions'
@@ -49,7 +50,7 @@ const createTrainDialogFulfilled = (trainDialog: TrainDialog): ActionObject =>
 // --------------------------
 // EditTrainDialog
 // --------------------------
-export const editTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialog) => {
+export const editTrainDialogThunkAsync = (appId: string, trainDialog: PartialTrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_ASYNC)
         trainDialog.lastModifiedDateTime = `${new Date().toISOString().slice(0, 19)}+00:00`
@@ -69,7 +70,7 @@ export const editTrainDialogThunkAsync = (appId: string, trainDialog: TrainDialo
     }
 }
 
-const editTrainDialogAsync = (appId: string, trainDialog: TrainDialog): ActionObject => {
+const editTrainDialogAsync = (appId: string, trainDialog: PartialTrainDialog): ActionObject => {
     return {
         type: AT.EDIT_TRAINDIALOG_ASYNC,
         appId: appId,
@@ -77,8 +78,7 @@ const editTrainDialogAsync = (appId: string, trainDialog: TrainDialog): ActionOb
     }
 }
 
-const editTrainDialogFulfilled = (appId: string, trainDialog: TrainDialog): ActionObject => {
-    // Needs a fulfilled version to handle response from Epic
+const editTrainDialogFulfilled = (appId: string, trainDialog: PartialTrainDialog): ActionObject => {
     return {
         type: AT.EDIT_TRAINDIALOG_FULFILLED,
         appId,

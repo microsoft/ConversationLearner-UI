@@ -113,7 +113,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: logDialog => {
                 let firstInput = getFirstInput(logDialog);
                 if (firstInput) {
-                    return <span className={OF.FontClassNames.mediumPlus}>{firstInput}</span>;
+                    return <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-first-input">{firstInput}</span>;
                 }
                 return <OF.Icon iconName="Remove" className="notFoundIcon" />
             },
@@ -807,6 +807,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     async onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
         let trainDialogWithDefinitions: CLM.TrainDialog = {
+            ...trainDialog,
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
             trainDialogId: undefined!,
@@ -820,7 +821,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 actions: this.props.actions,
                 entities: this.props.entities,
                 trainDialogs: []
-            },
+            }
         };
 
         try {
@@ -1065,6 +1066,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         initialHistory={this.state.history}
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
+                        allUniqueTags={[]}
                     />
                 }
                 <EditDialogModal
@@ -1091,6 +1093,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onSaveDialog={(editedTrainDialog, validity) => this.onSaveTrainDialog(editedTrainDialog, validity)}
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={() => { }}
+                    allUniqueTags={[]}
                 />
             </div>
         );

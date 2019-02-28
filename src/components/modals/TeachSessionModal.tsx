@@ -52,6 +52,8 @@ interface ComponentState {
     ignoreSelectionCount: number,
     replaceActivityText: string | null
     replaceActivityIndex: number | null
+    tags: string[]
+    description: string
 }
 
 class TeachModal extends React.Component<Props, ComponentState> {
@@ -71,7 +73,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
         selectedHistoryActivity: null,
         ignoreSelectionCount: 0,
         replaceActivityText: null,
-        replaceActivityIndex: null
+        replaceActivityIndex: null,
+        tags: [],
+        description: ''
     }
 
     private callbacksId: string | null = null;
@@ -83,6 +87,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 { actionType: AT.RUN_SCORER_ASYNC, callback: this.onDismissError },
             ]
         );
+
+        if (this.props.sourceTrainDialog) {
+            const { tags, description } = this.props.sourceTrainDialog
+            this.setState({
+                tags,
+                description
+            })
+        }
     };
 
     componentWillUnmount() {
@@ -109,6 +121,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let replaceActivityText = this.state.replaceActivityText
         let replaceActivityIndex = this.state.replaceActivityIndex
 
+        // Dialog will be closed, reset state
         if (this.props.isOpen && !newProps.isOpen) {
             selectedActivityIndex = null
             selectedHistoryActivity = null
@@ -116,6 +129,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
             ignorePostCount = 0
             replaceActivityText = null
             replaceActivityIndex = null
+
+            this.setState({
+                tags: [],
+                description: ''
+            })
         }
 
         if (this.props.initialHistory !== newProps.initialHistory) {
@@ -155,6 +173,21 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 replaceActivityIndex
             })
         }
+
+        // If we just added a sourceTrainDialog it's because we continued from an existing Train Dialog
+        // Or if the tags or description were changed before continuing
+        // Copy over the tags and description from it
+        if (!this.props.sourceTrainDialog && newProps.sourceTrainDialog
+            || ((this.props.sourceTrainDialog && newProps.sourceTrainDialog)
+                && (!Util.equal(this.props.sourceTrainDialog.tags, newProps.sourceTrainDialog.tags)
+                    || this.props.sourceTrainDialog.description !== newProps.sourceTrainDialog.description)
+                )) {
+            const { tags, description } = newProps.sourceTrainDialog
+            this.setState({
+                tags,
+                description
+            })
+        }
     }
 
     @OF.autobind
@@ -188,7 +221,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickSave() {
-        this.props.onClose(true)
+        this.props.onClose(true, this.state.tags, this.state.description)
     }
 
     @OF.autobind
@@ -530,6 +563,27 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    @OF.autobind
+    onAddTag(tag: string) {
+        this.setState(prevState => ({
+            tags: [...prevState.tags, tag]
+        }))
+    }
+
+    @OF.autobind
+    onRemoveTag(tag: string) {
+        this.setState(prevState => ({
+            tags: prevState.tags.filter(t => t !== tag)
+        }))
+    }
+
+    @OF.autobind
+    onChangeDescription(description: string) {
+        this.setState({
+            description
+        })
+    }
+
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
         return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType, this.state.selectedActivityIndex != null)
     }
@@ -764,6 +818,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
                                         onEditExtraction={this.onEditExtraction}
                                         onEditAction={this.onEditScore}
+
+                                        allUniqueTags={this.props.allUniqueTags}
+                                        tags={this.state.tags}
+                                        onAddTag={this.onAddTag}
+                                        onRemoveTag={this.onRemoveTag}
+
+                                        description={this.state.description}
+                                        onChangeDescription={this.onChangeDescription}
                                     />
                                 </div>
                             </div>
@@ -869,7 +931,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     isOpen: boolean
-    onClose: (save: boolean) => void
+    onClose: (save: boolean, tags?: string[], description?: string) => void
     onEditTeach: (historyIndex: number, args: EditHandlerArgs | null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any) => void
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
@@ -888,9 +950,10 @@ export interface ReceivedProps {
     sourceTrainDialog: CLM.TrainDialog | null
     // Train Dialog that this edit originally came from (not same as sourceTrainDialog)
     originalTrainDialogId: string | null,
-    // When editing, the intial history before teach starts
+    // When editing, the initial history before teach starts
     initialHistory: Activity[]
     lastAction: CLM.ActionBase | null
+    allUniqueTags: string[]
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

@@ -223,15 +223,35 @@ export class Component extends React.Component<Props, ComponentState> {
                     />
                 }
             </div>
-            <OF.DetailsList
-                className={OF.FontClassNames.mediumPlus}
-                items={apps}
-                columns={this.state.columns}
-                checkboxVisibility={OF.CheckboxVisibility.hidden}
-                onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
-                onColumnHeaderClick={this.onClickColumnHeader}
-                onActiveItemChanged={app => this.props.onClickApp(app)}
-            />
+            {apps.length === 0
+                ? <div className="cl-page-placeholder">
+                    <div className="cl-page-placeholder__content">
+                        <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>{Util.formatMessageId(props.intl, FM.APPSLIST_EMPTY_TEXT)}</div>
+                        <OF.PrimaryButton
+                            iconProps={{
+                                iconName: "Add"
+                            }}
+                            onClick={props.onClickCreateNewApp}
+                            ariaDescription={this.props.intl.formatMessage({
+                                id: FM.APPSLIST_CREATEBUTTONARIADESCRIPTION,
+                                defaultMessage: 'Create a New Model'
+                            })}
+                            text={this.props.intl.formatMessage({
+                                id: FM.APPSLIST_CREATEBUTTONTEXT,
+                                defaultMessage: 'Create a New Model'
+                            })}
+                        />
+                    </div>
+                </div>
+                : <OF.DetailsList
+                    className={OF.FontClassNames.mediumPlus}
+                    items={apps}
+                    columns={this.state.columns}
+                    checkboxVisibility={OF.CheckboxVisibility.hidden}
+                    onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
+                    onColumnHeaderClick={this.onClickColumnHeader}
+                    onActiveItemChanged={app => this.props.onClickApp(app)}
+                />}
             <AppCreatorModal
                 open={props.isAppCreateModalOpen}
                 onSubmit={props.onSubmitAppCreateModal}

@@ -13,4 +13,3 @@ describe('Create Model', () => {
     homePage.GetModelListRowCount()
   })
 })
-

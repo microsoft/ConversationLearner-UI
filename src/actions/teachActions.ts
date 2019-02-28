@@ -9,7 +9,7 @@ import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import * as CLM from '@conversationlearner/models'
 import { AxiosError } from 'axios'
-import { deleteTrainDialogThunkAsync, fetchAllTrainDialogsThunkAsync } from './trainActions'
+import { deleteTrainDialogThunkAsync, fetchAllTrainDialogsThunkAsync, editTrainDialogThunkAsync } from './trainActions'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 
 // --------------------------
@@ -130,13 +130,16 @@ export const deleteTeachSessionThunkAsync = (
     packageId: string,
     save: boolean,
     sourceTrainDialogId: string | null,
-    sourceLogDialogId: string | null) => {
+    sourceLogDialogId: string | null,
+    tags: string[] = [],
+    description: string = ''
+) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTeachSessionAsync(key, teachSession, app.appId, save))
         const clClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
 
         try {
-            await clClient.teachSessionDelete(app.appId, teachSession, save);
+            const trainDialogId = await clClient.teachSessionDelete(app.appId, teachSession, save);
             dispatch(deleteTeachSessionFulfilled(key, teachSession, sourceLogDialogId, app.appId));
 
             // If saving to a TrainDialog
@@ -146,7 +149,10 @@ export const deleteTeachSessionThunkAsync = (
                     await dispatch(deleteTrainDialogThunkAsync(key, app, sourceTrainDialogId));
                 }
 
-                // If we're adding a new train dialog as consequence of the session save, refetch train dialogs and start poll for train status
+                // Edit the associated train dialogs tag and description
+                await dispatch(editTrainDialogThunkAsync(app.appId, { trainDialogId, tags, description }))
+                
+                // If we're adding a new train dialog as consequence of the session save, re-fetch train dialogs and start poll for train status
                 dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
                 dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
             }

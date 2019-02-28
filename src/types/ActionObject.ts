@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
+import { PartialTrainDialog } from '../types/models'
 import { TipType } from '../components/ToolTips/ToolTips'
 import { ErrorType } from './const'
 import { AT } from './ActionTypes'
@@ -36,11 +37,11 @@ export type UpdateAction = {
 } | {
     type: AT.EDIT_TRAINDIALOG_ASYNC,
     appId: string,
-    trainDialog: CLM.TrainDialog
+    trainDialog: PartialTrainDialog
 } | {
     type: AT.EDIT_TRAINDIALOG_FULFILLED,
     appId: string,
-    trainDialog: CLM.TrainDialog
+    trainDialog: PartialTrainDialog
 } | {
     type: AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC,
     appId: string,

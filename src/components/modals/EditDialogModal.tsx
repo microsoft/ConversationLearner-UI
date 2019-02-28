@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as OF from 'office-ui-fabric-react'
 import * as DialogUtils from '../../Utils/dialogUtils'
-import { formatMessageId } from '../../Utils/util'
+import { formatMessageId, equal } from '../../Utils/util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import actions from '../../actions'
@@ -41,7 +41,9 @@ interface ComponentState {
     webchatKey: number
     hasEndSession: boolean
     currentTrainDialog: CLM.TrainDialog | null
-    pendingExtractionChanges: boolean,
+    pendingExtractionChanges: boolean
+    tags: string[]
+    description: string
 }
 
 const initialState: ComponentState = {
@@ -54,7 +56,9 @@ const initialState: ComponentState = {
     webchatKey: 0,
     hasEndSession: false,
     currentTrainDialog: null,
-    pendingExtractionChanges: false
+    pendingExtractionChanges: false,
+    tags: [],
+    description: '',
 }
 
 class EditDialogModal extends React.Component<Props, ComponentState> {
@@ -69,7 +73,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.open === false && nextProps.open === true) {
-            this.setState(initialState);
+            this.setState({
+                ...initialState,
+                tags: [...nextProps.trainDialog.tags],
+                description: nextProps.trainDialog.description
+            });
         }
         if (this.state.currentTrainDialog !== nextProps.trainDialog) {
 
@@ -85,7 +93,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 selectedActivity,
                 hasEndSession: this.hasSessionEnded(nextProps.trainDialog)
             })
-
         }
     }
 
@@ -137,7 +144,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         if (this.canReplay(activity)) {
             if (activity && this.state.currentTrainDialog) {
                 const isLastActivity = activity === this.props.history[this.props.history.length - 1]
-                this.props.onInsertAction(this.state.currentTrainDialog, activity, isLastActivity, selectionType)
+                const trainDialog: CLM.TrainDialog = {
+                    ...this.state.currentTrainDialog,
+                    tags: this.state.tags,
+                    description: this.state.description
+                }
+                this.props.onInsertAction(trainDialog, activity, isLastActivity, selectionType)
             }
         }
         else {
@@ -168,21 +180,36 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
 
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
-            this.props.onInsertInput(this.state.currentTrainDialog, this.state.selectedActivity, userInput, this.state.addUserInputSelectionType)
+            const trainDialog: CLM.TrainDialog = {
+                ...this.state.currentTrainDialog,
+                tags: this.state.tags,
+                description: this.state.description
+            }
+            this.props.onInsertInput(trainDialog, this.state.selectedActivity, userInput, this.state.addUserInputSelectionType)
         }
     }
 
     @OF.autobind
     onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
-            this.props.onChangeExtraction(this.state.currentTrainDialog, this.state.selectedActivity, extractResponse, textVariations)
+            const trainDialog: CLM.TrainDialog = {
+                ...this.state.currentTrainDialog,
+                tags: this.state.tags,
+                description: this.state.description
+            }
+            this.props.onChangeExtraction(trainDialog, this.state.selectedActivity, extractResponse, textVariations)
         }
     }
 
     @OF.autobind
     onChangeAction(trainScorerStep: CLM.TrainScorerStep) {
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
-            this.props.onChangeAction(this.state.currentTrainDialog, this.state.selectedActivity, trainScorerStep)
+            const trainDialog: CLM.TrainDialog = {
+                ...this.state.currentTrainDialog,
+                tags: this.state.tags,
+                description: this.state.description
+            }
+            this.props.onChangeAction(trainDialog, this.state.selectedActivity, trainScorerStep)
         }
     }
 
@@ -214,7 +241,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
 
         if (this.state.selectedActivity && this.state.currentTrainDialog && this.props.onBranchDialog) {
-            this.props.onBranchDialog(this.state.currentTrainDialog, this.state.selectedActivity, userInput)
+            const trainDialog: CLM.TrainDialog = {
+                ...this.state.currentTrainDialog,
+                tags: this.state.tags,
+                description: this.state.description
+            }
+            this.props.onBranchDialog(trainDialog, this.state.selectedActivity, userInput)
         }
     }
 
@@ -232,13 +264,16 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         if (activity.type === 'message') {
 
-            let newTrainDialog = JSON.parse(JSON.stringify(this.props.trainDialog))
-            const definitions = {
-                entities: this.props.entities,
-                actions: this.props.actions,
-                trainDialogs: []
+            const newTrainDialog: CLM.TrainDialog = {
+                ...JSON.parse(JSON.stringify(this.props.trainDialog)),
+                tags: this.state.tags,
+                description: this.state.description,
+                definitions: {
+                    entities: this.props.entities,
+                    actions: this.props.actions,
+                    trainDialogs: []
+                }
             }
-            newTrainDialog.definitions = definitions
 
             // Content could come from button submit
             const userInput: CLM.UserInput = { text: activity.text! }
@@ -410,7 +445,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         iconProps={{ iconName: 'Delete' }}
                         onClick={() => {
                             if (this.state.selectedActivity && this.state.currentTrainDialog) {
-                                this.props.onDeleteTurn(this.state.currentTrainDialog, activity)
+                                const trainDialog: CLM.TrainDialog = {
+                                    ...this.state.currentTrainDialog,
+                                    tags: this.state.tags,
+                                    description: this.state.description
+                                }
+                                this.props.onDeleteTurn(trainDialog, activity)
                             }
                         }}
                         ariaDescription="Delete Turn"
@@ -491,6 +531,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickAbandonApprove() {
+        const dialogChanged = this.isDialogChanged()
+
         switch (this.props.editType) {
             case EditDialogType.NEW:
                 this.props.onDeleteDialog()
@@ -508,13 +550,17 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 this.props.onCloseModal(true) // true -> Reload original TrainDialog
                 break;
             case EditDialogType.TRAIN_ORIGINAL:
-                this.props.onDeleteDialog()
+                dialogChanged
+                    ? this.props.onCloseModal(true)
+                    : this.props.onDeleteDialog()
                 break;
             default:
         }
     }
 
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
+        const dialogChanged = this.isDialogChanged()
+
         switch (this.props.editType) {
             case EditDialogType.NEW:
                 return formatMessageId(intl, FM.BUTTON_ABANDON)
@@ -527,7 +573,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             case EditDialogType.TRAIN_EDITED:
                 return formatMessageId(intl, FM.BUTTON_ABANDON_EDIT)
             case EditDialogType.TRAIN_ORIGINAL:
-                return formatMessageId(intl, FM.BUTTON_DELETE)
+                return dialogChanged
+                    ? formatMessageId(intl, FM.BUTTON_ABANDON_EDIT)
+                    : formatMessageId(intl, FM.BUTTON_DELETE)
             default:
                 return ""
         }
@@ -552,35 +600,83 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return this.props.trainDialog.validity
     }
 
+    isDialogChanged() {
+        // Only occurs before dialog is open and doesn't have props setup
+        if (!this.props.trainDialog) {
+            return false
+        }
+
+        return this.state.description !== this.props.trainDialog.description
+            || !equal(this.state.tags, this.props.trainDialog.tags)
+    }
+
     @OF.autobind
     onClickConvert() {
         if (this.props.editType !== EditDialogType.LOG_ORIGINAL) {
             throw Error("Invalid Edit Type for onClickConvert")
         }
-        this.props.onSaveDialog(this.props.trainDialog, this.trainDialogValidity())
+
+        const trainDialog: CLM.TrainDialog = {
+            ...this.props.trainDialog,
+            tags: this.state.tags,
+            description: this.state.description
+        }
+        this.props.onSaveDialog(trainDialog, this.trainDialogValidity())
     }
 
     @OF.autobind
     onClickSave() {
+        const trainDialog: CLM.TrainDialog = {
+            ...this.props.trainDialog,
+            tags: this.state.tags,
+            description: this.state.description
+        }
+
+        const dialogChanged = this.isDialogChanged()
+        const trainDialogValidity = this.trainDialogValidity()
+
         switch (this.props.editType) {
             case EditDialogType.NEW:
             case EditDialogType.BRANCH:
-                this.props.onCreateDialog(this.props.trainDialog, this.trainDialogValidity())
+                this.props.onCreateDialog(trainDialog, trainDialogValidity)
                 break;
             case EditDialogType.LOG_EDITED:
-                this.props.onSaveDialog(this.props.trainDialog, this.trainDialogValidity())
+                this.props.onSaveDialog(trainDialog, trainDialogValidity)
                 break;
             case EditDialogType.LOG_ORIGINAL:
                 this.props.onCloseModal(false)  // false - No need to reload original
                 break;
             case EditDialogType.TRAIN_EDITED:
-                this.props.onSaveDialog(this.props.trainDialog, this.trainDialogValidity())
+                this.props.onSaveDialog(trainDialog, trainDialogValidity)
                 break;
             case EditDialogType.TRAIN_ORIGINAL:
-                this.props.onCloseModal(false)  // false - No need to reload original
+                dialogChanged
+                    ? this.props.onSaveDialog(trainDialog, trainDialogValidity)
+                    : this.props.onCloseModal(false)  // false - No need to reload original
                 break;
             default:
         }
+    }
+
+    @OF.autobind
+    onAddTag(tag: string) {
+        this.setState(prevState => ({
+            tags: [...prevState.tags, tag]
+        }))
+    }
+
+    @OF.autobind
+    onRemoveTag(tag: string) {
+        this.setState(prevState => ({
+            tags: prevState.tags.filter(t => t !== tag)
+        }))
+    }
+
+    @OF.autobind
+    onChangeDescription(description: string) {
+        this.setState({
+            description
+        })
     }
 
     isCloseOrSaveBlocked(hasBlockingError: boolean): boolean {
@@ -601,6 +697,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     renderCloseOrSaveText(intl: ReactIntl.InjectedIntl) {
+        const dialogChanged = this.isDialogChanged()
+
         switch (this.props.editType) {
             case EditDialogType.NEW:
                 return formatMessageId(intl, FM.BUTTON_SAVE)
@@ -613,13 +711,20 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             case EditDialogType.TRAIN_EDITED:
                 return formatMessageId(intl, FM.BUTTON_SAVE_EDIT)
             case EditDialogType.TRAIN_ORIGINAL:
-                return formatMessageId(intl, FM.BUTTON_CLOSE)
+                return dialogChanged
+                    ? formatMessageId(intl, FM.BUTTON_SAVE_EDIT)
+                    : formatMessageId(intl, FM.BUTTON_CLOSE)
             default:
                 return ""
         }
     }
 
     renderConfirmText(intl: ReactIntl.InjectedIntl) {
+        const dialogChanged = this.isDialogChanged()
+        if (dialogChanged) {
+            return formatMessageId(intl, FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE)
+        }
+
         switch (this.props.editType) {
             case EditDialogType.NEW:
             case EditDialogType.BRANCH:
@@ -822,6 +927,14 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onChangeAction={(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
+
+                                    allUniqueTags={this.props.allUniqueTags}
+                                    tags={this.state.tags}
+                                    onAddTag={this.onAddTag}
+                                    onRemoveTag={this.onRemoveTag}
+
+                                    description={this.state.description}
+                                    onChangeDescription={this.onChangeDescription}
                                 />
                             </div>
                             {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay" />}
@@ -942,6 +1055,7 @@ export interface ReceivedProps {
     editType: EditDialogType
     // If starting with activity selected
     initialSelectedActivityIndex: number | null
+    allUniqueTags: string[]
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, isLastActivity: boolean, selectionType: SelectionType) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
