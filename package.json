@@ -101,7 +101,6 @@
     "cibuild": "cross-env CI=false react-scripts-ts build",
     "cypress": "cypress",
     "cypress:open": "cypress open",
-    "cypress:dev": "start node cypress\\GenerateCypressTestSpecs.js && cypress open",
     "test": "react-scripts-ts test --env=jsdom",
     "test:debug": "react-scripts-ts --inspect-brk test --runInBand --env=jsdom",
     "eject": "react-scripts-ts eject",

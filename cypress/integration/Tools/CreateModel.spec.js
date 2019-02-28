@@ -5,81 +5,12 @@
 
 const models = require('../../support/Models')
 const homePage = require('../../support/components/HomePage')
-const helpers = require('../../support/Helpers')
-const testManager = require('../../support/TestManager')
-
-afterEach(function() {
-  // helpers.Dump('afterEach', this.currentTest)
-  // helpers.Dump('*ctx*', this.currentTest.ctx)
-  // helpers.Dump('*parent*', this.currentTest.parent)
-
-  console.log(`this.currentTest.fullTitle(): '${this.currentTest.fullTitle()}'`)
-  console.log(`this.currentTest.title: '${this.currentTest.title}'`)
-  
-  function logTitles(test) {
-    console.log(test.title)
-    if (test.parent) {
-      logTitles(test.parent)
-    }
-  }
-
-  logTitles(this.currentTest)
-  // this.skip() - Will cause a test to be skipped, reported as PENDING rather than PASS or FAIL
-  // ctx??? 
-  // state: passed
-  // state: failed
-})
-
-describe('Create Model X', () => {
-  //beforeEach(testManager.SkipIfPriorTestsOfSuiteFailed)
-  afterEach(testManager.SkipRemainingTestsOfSuiteIfFailed)
-  describe('Level 2-1', () => {
-    //beforeEach(testManager.SkipIfPriorTestsOfSuiteFailed)
-    afterEach(testManager.SkipRemainingTestsOfSuiteIfFailed)
-    // afterEach(function() {
-    //   helpers.ConLog('afterEach', '###### ${this.currentTest.fullTitle()} ######## Has Completed')
-    //   testManager.SkipRemainingTestsOfSuiteIfFailed()
-    // })
-    it('The Test', () => {
-      cy.wait(100)
-      console.log('1. Why is this not in the log?')
-      helpers.ConLog('The Test', 'Started')
-      cy.wait(1000)
-      // this.currentTest.fullTitle(): 'Create Model X Level 2 The Test'
-      // models.CreateNewModel('z-modelX')
-      // homePage.Visit()
-      // homePage.GetModelListRowCount()
-    })
-
-    it('The Second Test', () => {
-      helpers.ConLog('The Second Test', 'Started')
-      expect(false).to.equal(true)
-    })
-
-    it('The THIRD Test', () => {
-      helpers.ConLog('The THIRD Test', 'Started')
-      expect(true).to.equal(true)
-    })
-  })
-
-  describe('Level 2-2', () => {
-    it('The FOURTH Test', () => {
-      helpers.ConLog('The FOURTH Test', 'Started')
-      expect(true).to.equal(true)
-    })
-  })
-})
 
 describe('Create Model', () => {
-  it('Tool', () => {
-    cy.wait(100)
-    console.log('2. Why is this not in the log?')
-    helpers.ConLog('Tool', 'Started')
-    cy.wait(1000)
-
-    // models.CreateNewModel('z-model')
-    // homePage.Visit()
-    // homePage.GetModelListRowCount()
+  it('Tools', () => {
+    models.CreateNewModel('z-model')
+    homePage.Visit()
+    homePage.GetModelListRowCount()
   })
 })
 
