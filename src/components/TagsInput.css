@@ -1,0 +1,89 @@
+.cl-tags {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -5px 0 0 -5px;
+}
+
+.cl-tags i,
+.cl-tags button {
+    border: none;
+    padding: 0;
+    margin: 0
+}
+
+.cl-tags input {
+    padding: 0 0.125em;
+    /* Nudge to keep inline with other tags */
+    padding-top: 1px;
+    margin: 0;
+    outline: none;
+    border: 1px solid var(--color-neutralTertiary);
+}
+
+.cl-tags__tag {
+    margin-top: 5px;
+    margin-left: 5px;
+    background-color: var(--color-themeLight);
+    display: grid;
+    grid-template: auto / auto min-content;
+    white-space: nowrap;
+}
+.cl-tags__tag > * {
+    padding: 0 0.25em;
+}
+.cl-tags__tag button {
+    background-color: inherit;
+    padding: 0.15em 0.25em 0 0.25em;
+    cursor: pointer;
+}
+.cl-tags__tag button:hover,
+.cl-tags .cl-tags__button-add:hover {
+    background-color: var(--color-themeTertiary);
+}
+
+.cl-tags .cl-tags__button-add {
+    padding: 0.15em 0.25em 0 0.25em;
+    background-color: var(--color-themeLight);
+    cursor: pointer;
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.cl-tags__form {
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.cl-tags__suggested-tags-container {
+    position: relative;
+}
+.cl-tags__suggested-tags {
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    background: white;
+    border: 1px solid var(--color-neutralTertiary);
+    /* Force borders to overlap */
+    margin-top: -1px;
+    max-height: 14.2em;
+    overflow-y: auto;
+}
+
+.cl-tags__suggested-tags__button {
+    display: block;
+    background: white;
+    padding: 0.25em;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.cl-tags__suggested-tags__button--highlight {
+    background-color: var(--color-themeLight);
+}
+
+.cl-tags__suggested-tags__button:hover {
+    background-color: var(--color-themeLight);
+}
+
