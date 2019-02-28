@@ -189,9 +189,12 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     initEnumValues(enumValues: CLM.EnumValue[] | undefined): (CLM.EnumValue | null)[] {
-        const fill = enumValues ? enumValues.length : 0
-        let remaining = Array(CLM.MAX_ENUM_VALUES - fill).fill(null)
-        return [...enumValues || [], ...remaining]
+        if (!enumValues) {
+            return Array(CLM.MAX_ENUM_VALUES).fill(null)
+        }
+        const enumClone: CLM.EnumValue[] = JSON.parse(JSON.stringify(enumValues))
+        const remaining = Array(CLM.MAX_ENUM_VALUES - enumValues.length ).fill(null)
+        return [...enumClone || [], ...remaining]
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
@@ -204,20 +207,31 @@ class Container extends React.Component<Props, ComponentState> {
         const isMultiValueChanged = this.state.isMultivalueVal !== entity.isMultivalue
         const isNegatableChanged = this.state.isNegatableVal !== entity.isNegatible
         const isResolverChanged = entity.entityType === CLM.EntityType.LUIS && this.state.entityResolverVal !== entity.resolverType
-        let hasEnumChanges = false
+        let hasPendingEnumChanges = false
         if (entity.entityType === CLM.EntityType.ENUM) {
-            let oldEnums = entity.enumValues ? entity.enumValues.filter(v => v !== undefined) : []
-            let newEnums = this.state.enumValues.filter(v => v !== undefined) as CLM.EnumValue[]
-            //TODO
-            hasEnumChanges = !oldEnums.every(value => newEnums.includes(value)) || !newEnums.every(value => oldEnums.includes(value))
+            let newEnums = this.state.enumValues.filter(v => v !== null) as CLM.EnumValue[]
+            let oldEnums = entity.enumValues || [] 
+            hasPendingEnumChanges = !this.areEnumsIdentical(newEnums, oldEnums)
         }
-        const hasPendingChanges = isNameChanged || isMultiValueChanged || isNegatableChanged || isResolverChanged || hasEnumChanges
+        const hasPendingChanges = isNameChanged || isMultiValueChanged || isNegatableChanged || isResolverChanged || hasPendingEnumChanges
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
             this.setState({
                 hasPendingChanges
             })
         }
+    }
+
+    areEnumsIdentical(newEnums: CLM.EnumValue[], oldEnums: CLM.EnumValue[]): boolean {
+        // If any new enums, or old ones changed or deleted
+        if (newEnums.every(ev => ev.enumValueId !== undefined) &&
+            oldEnums.every(oldEnum => {
+            let newEnum = newEnums.find(ne => ne.enumValueId === oldEnum.enumValueId)
+            return (newEnum !== undefined && newEnum.enumValue === oldEnum.enumValue)
+        })) {
+            return true
+        }
+        return false
     }
 
     existingEnumId(value: string): string | undefined {
