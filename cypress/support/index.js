@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 
+import './TestManager'
 import './PersistentLogs'
 import './MonitorDocumentChanges.js'
 import './commands.js'

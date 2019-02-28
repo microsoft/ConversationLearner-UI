@@ -7,7 +7,7 @@ const models = require('../../support/Models')
 const homePage = require('../../support/components/HomePage')
 const helpers = require('../../support/Helpers')
 
-afterEach(function(){
+afterEach(function() {
   // helpers.Dump('afterEach', this.currentTest)
   // helpers.Dump('*ctx*', this.currentTest.ctx)
   // helpers.Dump('*parent*', this.currentTest.parent)
@@ -30,18 +30,39 @@ afterEach(function(){
 })
 
 describe('Create Model X', () => {
-  describe('Level 2', () => {
+  describe('Level 2-1', () => {
+    beforeEach(() => {SkipIfPriorTestsOfSuiteFailed()})
+
+    afterEach(function() {
+      helpers.ConLog('afterEach', '###### ${this.currentTest.fullTitle()} ######## Has Completed')
+    })
     it('The Test', () => {
       cy.wait(100)
       console.log('1. Why is this not in the log?')
       helpers.ConLog('The Test', 'Started')
       cy.wait(1000)
       // this.currentTest.fullTitle(): 'Create Model X Level 2 The Test'
+      // models.CreateNewModel('z-modelX')
+      // homePage.Visit()
+      // homePage.GetModelListRowCount()
+    })
+
+    it('The Second Test', () => {
+      helpers.ConLog('The Second Test', 'Started')
       expect(false).to.equal(true)
-      models.CreateNewModel('z-modelX')
-      homePage.Visit()
-      homePage.GetModelListRowCount()
-    })  
+    })
+
+    it('The THIRD Test', () => {
+      helpers.ConLog('The THIRD Test', 'Started')
+      expect(true).to.equal(true)
+    })
+  })
+
+  describe('Level 2-2', () => {
+    it('The FOURTH Test', () => {
+      helpers.ConLog('The FOURTH Test', 'Started')
+      expect(true).to.equal(true)
+    })
   })
 })
 

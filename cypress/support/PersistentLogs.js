@@ -21,7 +21,7 @@ function trueConsolLog() {
 }
 
 // Before each test case begins...
-beforeEach(function(){
+beforeEach(function() {
   trueConsolLog('PersistentLogs.beforeEach')
   FlushLogEntries()
 
@@ -41,8 +41,11 @@ afterEach(() => {
   WriteLogEntries() })
 function WriteLogEntries() { 
   trueConsolLog(`WriteLogEntries to file: '${logFileName}' - Length Entries: ${logEntries.length}`)
-  cy.writeFile(logFileName, logEntries, {flag: 'a'}).then(() => { logEntries = ''
-  logFileName = `./results/cypress/${suiteTitle}.${Cypress.moment().format("YY.MM.DD.HH.mm.ss..SSS")}.X.log`})
+  if (logFileName) {
+    cy.writeFile(logFileName, logEntries, {flag: 'a'}).then(() => { logEntries = ''
+      //logFileName = `./results/cypress/${suiteTitle}.${Cypress.moment().format("YY.MM.DD.HH.mm.ss..SSS")}.X.log`
+    })
+  }
 } 
 
 after(() => { 
