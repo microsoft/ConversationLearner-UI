@@ -66,7 +66,7 @@
     padding-bottom: 0.25em;
     border-bottom: 2px solid lightgrey;
     overflow-y: auto;
-    max-height: 10em;
+    max-height: 8.9em;
 }
 
 .custom-toolbar__result {
