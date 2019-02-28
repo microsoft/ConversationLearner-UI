@@ -8,7 +8,8 @@ import * as CLM from '@conversationlearner/models'
 describe('util', () => {
 
     describe('replace', () => {
-        it('returns new array with item replaced and preserves order', () => {
+
+        test('returns new array with item replaced and preserves order', () => {
             // Arrange
             const list = [{ id: 1, value: 'a' }, { id: 2, value: 'b' }, { id: 3, value: 'c' }]
             const newItem = { id: 2, value: 'edited' }
@@ -20,9 +21,11 @@ describe('util', () => {
             // Assert
             expect(actual).toEqual(expected)
         })
+
     })
 
     describe('equal', () => {
+
         test('given arrays of different length return false', () => {
             // Arrange
             const as = [1, 2, 3]
@@ -72,8 +75,10 @@ describe('util', () => {
         })
     })
 
-    describe('isActionUniqueTEXT', () => {
-        it('exercise TEXT action creation', () => {
+    describe('isActionUnique', () => {
+
+        describe('TEXT actions', () => {
+
             const sampleAction: CLM.ActionBase = {
                 actionId: "103726c8-2cfe-46e6-ad1e-fef8dbe4d6c3",
                 actionType: CLM.ActionTypes.TEXT,
@@ -93,31 +98,31 @@ describe('util', () => {
 
             let actionSet: CLM.ActionBase[] = []
 
-            test('as first action created', () => {
+            test('if very first action created return true', () => {
                 expect(isActionUnique(sampleAction, actionSet)).toBe(true)
             })
 
-            test('as absolutely identical action', () => {
+            test('if identical to existing action return false', () => {
                 actionSet.push(sampleAction)
                 expect(isActionUnique(sampleAction, actionSet)).toBe(false)
             })
 
-            test('as a similar, but not identical into very similar set', () => {
-                actionSet = [{ ...sampleAction }]
+            test('if similar yet different in termination to existing actions return true', () => {
+                actionSet = [sampleAction]
                 let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
                 expect(isActionUnique(similar, actionSet)).toBe(true)
             })
 
-            test('as a similar, but not identical into very similar set. how smart is the find operator?', () => {
+            test('if similar yet different by required entities to existing actions return true', () => {
                 actionSet = [sampleAction]
                 let similar = { ...sampleAction, requiredEntities: ["85eccbec-7d01-4aea-a704-b2fdab09cf32"] }
                 expect(isActionUnique(similar, actionSet)).toBe(true)
             })
-        })
-    })
 
-    describe('isActionUniqueENDSESSION', () => {
-        it('exercise ENDSESSION action creation', () => {
+        })
+
+        describe('ENDSESSION actions', () => {
+
             const sampleAction = {
                 actionId: "c64988df-a707-46c9-873c-8de42b9a116d",
                 actionType: CLM.ActionTypes.END_SESSION,
@@ -137,32 +142,31 @@ describe('util', () => {
 
             let actionSet: CLM.ActionBase[] = []
 
-            test('as first action created', () => {
+            test('if very first action created return true', () => {
                 expect(isActionUnique(sampleAction, actionSet)).toBe(true)
             })
 
-            test('as absolutely identical action', () => {
+            test('if identical to existing action return false', () => {
                 actionSet.push(sampleAction)
                 expect(isActionUnique(sampleAction, actionSet)).toBe(false)
             })
 
-            test('as a similar, but not identical into very similar set', () => {
+            test('if similar yet different in termination to existing actions return true', () => {
                 actionSet = [{ ...sampleAction }]
                 let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
                 expect(isActionUnique(similar, actionSet)).toBe(true)
             })
 
-            test('as a similar, but not identical into very similar set. how smart is the find operator?', () => {
+            test('if similar yet different by required entities to existing actions return true', () => {
                 actionSet = [sampleAction]
                 let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
                 expect(isActionUnique(similar, actionSet)).toBe(true)
             })
 
         })
-    })
 
-    describe('isActionUniqueCARD', () => {
-        it('exercise CARD action creation', () => {
+        describe('CARD actions', () => {
+
             const sampleAction = {
                 actionId: "83c94294-3a42-49ae-ba84-a6f43fda2f3a",
                 actionType: CLM.ActionTypes.CARD,
@@ -182,32 +186,30 @@ describe('util', () => {
 
             let actionSet: CLM.ActionBase[] = []
 
-            test('as first action created', () => {
+            test('if very first action created return true', () => {
                 expect(isActionUnique(sampleAction, actionSet)).toEqual(true)
             })
 
-            test('as absolutely identical action', () => {
+            test('if identical to existing action return false', () => {
                 actionSet.push(sampleAction)
                 expect(isActionUnique(sampleAction, actionSet)).toEqual(false)
             })
 
-            test('as a similar, but not identical into very similar set', () => {
+            test('if similar yet different in termination to existing actions return true', () => {
                 actionSet = [{ ...sampleAction }]
                 let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
                 expect(isActionUnique(similar, actionSet)).toEqual(true)
             })
 
-            test('as a similar, but not identical into very similar set. how smart is the find operator?', () => {
+            test('if similar yet different by required entities to existing actions return true', () => {
                 actionSet = [sampleAction]
                 let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
                 expect(isActionUnique(similar, actionSet)).toEqual(true)
             })
         })
 
-    })
+        describe('tries adding the new actions to a diverse bag of existing actions', () => {
 
-    describe('isActionUniqueDiverseSet', () => {
-        it('exercises isActionUnique when inserting a mix of actions into a diverse bag of existing actions', () => {
             const sampleActionText: CLM.ActionBase = {
                 actionId: "103726c8-2cfe-46e6-ad1e-fef8dbe4d6c3",
                 actionType: CLM.ActionTypes.TEXT,
@@ -267,17 +269,17 @@ describe('util', () => {
 
                 let actionSet: CLM.ActionBase[] = []
 
-                test('as a duplicate in a diverse set', () => {
+                test('if duplicate in a diverse set return false', () => {
                     actionSet = actionTypesExercised
                     expect(isActionUnique(newAction, actionSet)).toEqual(false)
                 })
 
-                test('as first of its type into a diverse set', () => {
+                test('if first of its type into a diverse set return true', () => {
                     actionSet = actionTypesExercised.filter(action => action.actionType !== newAction.actionType)
                     expect(isActionUnique(newAction, actionSet)).toEqual(true)
                 })
 
-                test('as a similar, but not identical into a diverse set', () => {
+                test('if similar, but not identical into a diverse set, return true', () => {
                     actionSet = actionTypesExercised
                     const similar = { ...newAction, isTerminal: !newAction.isTerminal }
                     expect(isActionUnique(similar, actionSet)).toEqual(true)
@@ -286,6 +288,7 @@ describe('util', () => {
             })
 
         })
+
     })
 
 })

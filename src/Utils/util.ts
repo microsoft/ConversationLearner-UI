@@ -104,7 +104,7 @@ export function earlierDateOrTimeToday(timestamp: string): string {
 export function isActionUnique(newAction: CLM.ActionBase, actions: CLM.ActionBase[]): boolean {
     const needle = normalizeActionAndStringify(newAction)
     const haystack = actions.map(action => normalizeActionAndStringify(action))
-    return haystack.some(straw => straw === needle)
+    return !haystack.some(straw => straw === needle)
 }
 
 function normalizeActionAndStringify(newAction: CLM.ActionBase) {
