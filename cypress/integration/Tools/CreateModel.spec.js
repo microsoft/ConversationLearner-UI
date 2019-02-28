@@ -6,6 +6,7 @@
 const models = require('../../support/Models')
 const homePage = require('../../support/components/HomePage')
 const helpers = require('../../support/Helpers')
+const testManager = require('../../support/TestManager')
 
 afterEach(function() {
   // helpers.Dump('afterEach', this.currentTest)
@@ -30,12 +31,15 @@ afterEach(function() {
 })
 
 describe('Create Model X', () => {
+  //beforeEach(testManager.SkipIfPriorTestsOfSuiteFailed)
+  afterEach(testManager.SkipRemainingTestsOfSuiteIfFailed)
   describe('Level 2-1', () => {
-    beforeEach(() => {SkipIfPriorTestsOfSuiteFailed()})
-
-    afterEach(function() {
-      helpers.ConLog('afterEach', '###### ${this.currentTest.fullTitle()} ######## Has Completed')
-    })
+    //beforeEach(testManager.SkipIfPriorTestsOfSuiteFailed)
+    afterEach(testManager.SkipRemainingTestsOfSuiteIfFailed)
+    // afterEach(function() {
+    //   helpers.ConLog('afterEach', '###### ${this.currentTest.fullTitle()} ######## Has Completed')
+    //   testManager.SkipRemainingTestsOfSuiteIfFailed()
+    // })
     it('The Test', () => {
       cy.wait(100)
       console.log('1. Why is this not in the log?')

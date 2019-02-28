@@ -1,3 +1,5 @@
+import { func } from "prop-types";
+
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
@@ -5,9 +7,9 @@
 var suiteTitle
 var test
 
-Global.SkipIfPriorTestsOfSuiteFailed = {}
-SkipIfPriorTestsOfSuiteFailed = function () {
-//export function SkipIfPriorTestsOfSuiteFailed() {
+// global.SkipIfPriorTestsOfSuiteFailed = {}
+// SkipIfPriorTestsOfSuiteFailed = function () {
+export function SkipIfPriorTestsOfSuiteFailed() {
 //beforeEach(function() {
   console.log('$$$ SkipIfPriorTestsOfSuiteFailed -----------')
   let skipNextTest = ProcessResultsOfLastTest()
@@ -21,8 +23,12 @@ SkipIfPriorTestsOfSuiteFailed = function () {
   test = this.currentTest
   if (skipNextTest) { 
     console.log(`Skipping test case: '${test.fullTitle()}'`)
-    this.currentTest.skip() }
+    this.skip() }
 }//)
+
+export function SkipRemainingTestsOfSuiteIfFailed() {
+  if (this.currentTest.state !== 'passed') this.skip()
+}
 
 after(function() { ProcessResultsOfLastTest() })
 
