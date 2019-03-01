@@ -47,11 +47,11 @@ describe('Wait Non Wait ErrorHandling', () => {
   it('Saves the Training with Error, verifies Model page and Train Dialog grid shows an error', () => {
     editDialogModal.ClickSaveCloseButton()
     modelPage.VerifyErrorIconForTrainDialogs()
-    train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', common.fishJustSwim)
+    train.VerifyErrorsFoundInTraining(`Duck`, 'Fish', common.fishJustSwim)
   })
 
   it('Re-opens the Training and validates all error messages remain', () => {
-    train.EditTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', common.fishJustSwim)
+    train.EditTraining(`${common.errorIconCharacter}Duck`, 'Fish', common.fishJustSwim)
     editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
     Validations(3)

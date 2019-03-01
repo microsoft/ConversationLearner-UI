@@ -34,9 +34,9 @@ describe('ErrorHandling', () => {
 
     editDialogModal.ClickSaveCloseButton()
     modelPage.VerifyErrorIconForTrainDialogs()
-    train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Joe`, 'Joe', "Hello $name")
+    train.VerifyErrorsFoundInTraining(`${common.errorIconCharacter}Joe`, 'Joe', "Hello $name")
 
-    train.EditTraining(`${String.fromCharCode(59412)}Joe`, 'Joe', "Hello $name")
+    train.EditTraining(`${common.errorIconCharacter}Joe`, 'Joe', "Hello $name")
     editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
     editDialogModal.SelectChatTurnStartsWith('Hello')
