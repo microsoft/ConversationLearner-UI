@@ -1,1 +1,0 @@
-require('../../support/TestListManager').AddToCypressTestList('Tools.VisitHomePage')
