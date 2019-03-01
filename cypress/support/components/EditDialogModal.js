@@ -27,6 +27,30 @@ export function ClickDeleteChatTurn() { cy.Get('[data-testid="edit-dialog-modal-
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
 export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreActionsButtonSelector) }
 
+export function VerifyScenario(expectedScenario) { cy.Get(`input.cl-borderless-text-input#description[value="${expectedScenario}"]`) }
+export function TypeScenario(scenario) { cy.Get('input.cl-borderless-text-input#description').type(`${scenario}{enter}`) }
+export function ClickAddTagButton() { cy.Get('button.cl-tags__button-add#tags').Click() }
+export function VerifyNoTags() { cy.Get('div.cl-tags > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
+export function VerifyTags(tags) { 
+  cy.Enqueue(() => {
+    helpers.ConLog('VerifyTags', 'Start')
+    let tagsOnPage = helpers.StringArrayFromElementText('div.cl-tags > div.cl-tags__tag > span')
+    let missingTags = []
+    tags.forEach(tag => {
+      if (!tagsOnPage.find(tagOnPage => tag === tagOnPage)) missingTags.push(tag)
+    })
+    if (missingTags.length > 0) throw `Failed to find these tags: ${missingTags}`
+  })
+}
+
+export function AddTag(tag) { 
+  cy.DumpHtmlOnDomChange(true)
+  cy.Get('button.cl-tags__button-add#tags').Click()
+  cy.Get('input#tags').type(`${tag}{enter}`)
+  cy.WaitForStableDOM()
+  cy.DumpHtmlOnDomChange(false)
+}
+
 export function ClickSaveCloseButton() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
 export function VerifyCloseButtonLabel() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Close') }
 export function VerifySaveBranchButtonLabel() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Save Branch') }
