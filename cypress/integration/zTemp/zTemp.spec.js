@@ -3,12 +3,12 @@
  * Licensed under the MIT License.
 */
 
-const helpers = require('../../support/Helpers')
-const homePage = require('../../support/components/HomePage')
-const modelPage = require('../../support/components/ModelPage')
-const train = require('../../support/Train')
-const trainDialogsGrid = require('../../support/components/TrainDialogsGrid')
-const editDialogModal = require('../../support/components/EditDialogModal')
+import * as helpers from '../../support/Helpers'
+import * as homePage from '../../support/components/HomePage'
+import * as modelPage from '../../support/components/ModelPage'
+import * as train from '../../support/Train'
+import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
+import * as editDialogModal from '../../support/components/EditDialogModal'
 
 describe('zTemp', () => {
   it('Temporary Experimental Test', () => {

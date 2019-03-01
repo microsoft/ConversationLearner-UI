@@ -3,12 +3,12 @@
  * Licensed under the MIT License.
 */
 
-const homePage = require('../../support/components/HomePage')
-const models = require('../../support/Models')
-const modelPage = require('../../support/components/ModelPage')
-const logDialogsGrid = require('../../support/components/LogDialogsGrid')
-const logDialogModal = require('../../support/components/LogDialogModal')
-const helpers = require('../../support/Helpers')
+import * as homePage from '../../support/components/HomePage'
+import * as models from '../../support/Models'
+import * as modelPage from '../../support/components/ModelPage'
+import * as logDialogsGrid from '../../support/components/LogDialogsGrid'
+import * as logDialogModal from '../../support/components/LogDialogModal'
+import * as helpers from '../../support/Helpers'
 
 describe('Log', () => {
   it('Endless Loop', () => {

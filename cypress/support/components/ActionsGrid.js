@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
 */
 
-const helpers = require('../../support/Helpers')
+import * as helpers from '../../support/Helpers'
 
 export function VerifyPageTitle() { cy.Get('[data-testid="actions-title"]').contains('Actions').should('be.visible') }
 export function ValidateExpectedEntities(entities) { ValidateEntities('[data-testid="action-details-expected-entity"]', '[data-testid="action-details-empty-expected-entities"]', entities) }

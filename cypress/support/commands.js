@@ -1,5 +1,5 @@
-const helpers = require('./Helpers.js')
-const modelPage = require('./components/ModelPage')
+import * as helpers from './Helpers.js'
+import * as modelPage from './components/ModelPage'
 
 // **********************************************************************************************
 // OTHER cy.* COMMANDS are defined in MonitorDocumentChanges.js

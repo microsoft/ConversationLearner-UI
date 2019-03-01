@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-const entitiesGrid = require('../../support/components/EntitiesGrid')
+import * as entitiesGrid from '../../support/components/EntitiesGrid'
 
 export function VerifyPageTitle() { cy.Get('[data-testid="settings-title"]').contains('Settings').should('be.visible') }
 

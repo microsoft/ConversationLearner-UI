@@ -3,8 +3,8 @@
  * Licensed under the MIT License.
 */
 
-const models = require('../../support/Models')
-const helpers = require('../../support/Helpers')
+import * as models from '../../support/Models'
+import * as helpers from '../../support/Helpers'
 
 describe('UX', () => {
   it('Bot Model Mismatch', () => {
