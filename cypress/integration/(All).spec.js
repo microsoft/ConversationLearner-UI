@@ -3,32 +3,32 @@
  * Licensed under the MIT License.
 */
 
-require('./CreateModels/AllEntityTypes.spec.js')
-require('./CreateModels/DisqualifyingEntities.spec.js')
-require('./CreateModels/EndlessLoop.spec.js')
-require('./CreateModels/TagAndFrog.spec.js')
-require('./CreateModels/Travel.spec.js')
-require('./CreateModels/WaitVsNoWaitActions.spec.js')
-require('./CreateModels/WhatsYourName.spec.js')
-require('./EditAndBranching/AddEndSessionAction.spec.js')
-require('./EditAndBranching/Branching.spec.js')
-require('./EditAndBranching/TagAndFrog.spec.js')
-require('./EditAndBranching/VerifyEditTrainingControlsAndLabels.spec.js')
-require('./ErrorHandling/ActionUnavailable.spec.js')
-require('./ErrorHandling/MissingAction.spec.js')
-require('./ErrorHandling/TwoConsecutiveUserInput.spec.js')
-require('./ErrorHandling/WaitNonWait.spec.js')
-require('./Log/EndlessLoop.spec.js')
-require('./Log/WhatsYourName.spec.js')
-require('./Tools/CreateModel.spec.js')
-require('./Tools/DeleteAllTestGeneratedModels.spec.js')
-require('./Tools/VerifyDoesNotContainTestMethod.spec.js')
-require('./Tools/VisitHomePage.spec.js')
-require('./Train/BookMeAFlight.spec.js')
-require('./Train/DisqualifyingEntities.spec.js')
-require('./Train/MyNameIs.spec.js')
-require('./Train/TagAndFrog.spec.js')
-require('./Train/WaitVsNoWaitActions.spec.js')
-require('./Train/WhatsYourName.spec.js')
-require('./UX/BotModelMismatch.spec.js')
-require('./zTemp/zTemp.spec.js')
+import './CreateModels/AllEntityTypes.spec.js'
+import './CreateModels/DisqualifyingEntities.spec.js'
+import './CreateModels/EndlessLoop.spec.js'
+import './CreateModels/TagAndFrog.spec.js'
+import './CreateModels/Travel.spec.js'
+import './CreateModels/WaitVsNoWaitActions.spec.js'
+import './CreateModels/WhatsYourName.spec.js'
+import './EditAndBranching/AddEndSessionAction.spec.js'
+import './EditAndBranching/Branching.spec.js'
+import './EditAndBranching/TagAndFrog.spec.js'
+import './EditAndBranching/VerifyEditTrainingControlsAndLabels.spec.js'
+import './ErrorHandling/ActionUnavailable.spec.js'
+import './ErrorHandling/MissingAction.spec.js'
+import './ErrorHandling/TwoConsecutiveUserInput.spec.js'
+import './ErrorHandling/WaitNonWait.spec.js'
+import './Log/EndlessLoop.spec.js'
+import './Log/WhatsYourName.spec.js'
+import './Tools/CreateModel.spec.js'
+import './Tools/DeleteAllTestGeneratedModels.spec.js'
+import './Tools/VerifyDoesNotContainTestMethod.spec.js'
+import './Tools/VisitHomePage.spec.js'
+import './Train/BookMeAFlight.spec.js'
+import './Train/DisqualifyingEntities.spec.js'
+import './Train/MyNameIs.spec.js'
+import './Train/TagAndFrog.spec.js'
+import './Train/WaitVsNoWaitActions.spec.js'
+import './Train/WhatsYourName.spec.js'
+import './UX/BotModelMismatch.spec.js'
+import './zTemp/zTemp.spec.js'
