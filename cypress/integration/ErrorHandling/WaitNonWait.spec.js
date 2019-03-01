@@ -13,7 +13,7 @@ const helpers = require('../../support/Helpers')
 describe('Wait Non Wait ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
-  it('Sets the stage and verifies no errors on Model page', () => {
+  it('Imports a model to test against and verifies no errors on Model page', () => {
     models.ImportModel('z-errWaitNoWait', 'z-waitNoWait.cl')
     modelPage.NavigateToTrainDialogs()
     cy.WaitForTrainingStatusCompleted()
