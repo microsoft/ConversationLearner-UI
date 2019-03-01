@@ -261,3 +261,21 @@ export function AbandonDialog() {
   editDialogModal.ClickAbandonDeleteButton()
   editDialogModal.ClickConfirmAbandonDialogButton()
 }
+
+export function EditTrainingNEW(tags, scenario) {
+  cy.Enqueue(() => {
+    let tagsFromGrid = trainDialogsGrid.GetTags()
+    let scenarios = trainDialogsGrid.GetScenarios()
+
+    helpers.ConLog(`EditTrainingNEW(${tags}, ${scenario})`, `Row Count: ${scenarios.length}`)
+
+    for (let i = 0; i < scenarios.length; i++) {
+      if (scenarios[i] === scenario && tagsFromGrid[i] == tags) {
+        helpers.ConLog(`EditTrainingNEW(${tags}, ${scenario})`, `ClickTraining for row: ${i}`)
+        trainDialogsGrid.ClickTraining(i)
+        return
+      }
+    }
+    throw `Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: tags: ${tags} -- scenario: ${scenario}`
+  })
+}

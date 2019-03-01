@@ -7,12 +7,12 @@ const helpers = require('../../support/Helpers')
 describe('Training Scenario and Tags', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
-  context('Train Dialogs', () => {
-    it('Imports a model to test against', () => {
-      // import the saved model for tags and description testing
-      models.ImportModel('z-TagAndScenario', 'z-whatsYourName.cl')
-    })
+  it('Imports a model to test against', () => {
+    // import the saved model for tags and description testing
+    models.ImportModel('z-TagAndScenario', 'z-whatsYourName.cl')
+  })
 
+  context('Train Dialogs', () => {
     context('Create', () => {
       it('Should have no Scenario nor Tags when creating new dialog.', () => {
         // Create new train dialog
