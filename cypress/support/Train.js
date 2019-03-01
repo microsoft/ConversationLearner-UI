@@ -3,10 +3,10 @@
  * Licensed under the MIT License.
  */
 
-const scorerModal = require('./components/ScorerModal')
-const trainDialogsGrid = require('./components/TrainDialogsGrid')
-const editDialogModal = require('./components/EditDialogModal')
-const helpers = require('./Helpers')
+import * as scorerModal from './components/ScorerModal'
+import * as trainDialogsGrid from './components/TrainDialogsGrid'
+import * as editDialogModal from './components/EditDialogModal'
+import * as helpers from './Helpers'
 
 function Today() { return Cypress.moment().format("MM/DD/YYYY") }
 

@@ -3,5 +3,5 @@
  * Licensed under the MIT License.
 */
 
-require('./Tools/VisitHomePage.spec.js')
-require('./Tools/CreateModel.spec.js')
+import './Tools/VisitHomePage.spec.js'
+import './Tools/CreateModel.spec.js'

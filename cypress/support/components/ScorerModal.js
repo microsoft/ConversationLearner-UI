@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-const helpers = require('../../support/Helpers')
+import * as helpers from '../../support/Helpers'
 
 // data-testid="teach-session-admin-train-status" (Running, Completed, Failed)
 export function ClickRefreshScoreButton() { cy.Get('[data-testid="teach-session-admin-refresh-score-button"]').Click() }

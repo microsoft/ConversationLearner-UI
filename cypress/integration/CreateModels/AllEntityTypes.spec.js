@@ -3,8 +3,8 @@
  * Licensed under the MIT License.
 */
 
-const models = require('../../support/Models')
-const entities = require('../../support/Entities')
+import * as models from '../../support/Models'
+import * as entities from '../../support/Entities'
 
 describe('CreateModels', () => {
   it('All Entity Types', () => {

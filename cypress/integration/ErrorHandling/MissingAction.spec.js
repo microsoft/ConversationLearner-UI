@@ -3,13 +3,13 @@
  * Licensed under the MIT License.
 */
 
-const models = require('../../support/Models')
-const modelPage = require('../../support/components/ModelPage')
-const train = require('../../support/Train')
-const editDialogModal = require('../../support/components/EditDialogModal')
-const common = require('../../support/Common')
-const actions = require('../../support/Actions')
-const scorerModal = require('../../support/components/ScorerModal')
+import * as models from '../../support/Models'
+import * as modelPage from '../../support/components/ModelPage'
+import * as train from '../../support/Train'
+import * as editDialogModal from '../../support/components/EditDialogModal'
+import * as common from '../../support/Common'
+import * as actions from '../../support/Actions'
+import * as scorerModal from '../../support/components/ScorerModal'
 
 describe('ErrorHandling', () => {
   it('Missing Action', () => {
