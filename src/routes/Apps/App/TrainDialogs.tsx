@@ -142,9 +142,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: equalizeColumnWidth,
             isResizable: true,
             render: trainDialog => {
-                return <span className={textClassName(trainDialog)} data-testid="train-dialogs-tags">
+                return <span className={`${OF.FontClassNames.mediumPlus}`} data-testid="train-dialogs-tags">
                     {trainDialog.tags.length === 0
-                        ? <FormattedMessageId id={FM.TRAINDIALOGS_TAGS_EMPTY} />
+                        ? <span  className={textClassName(trainDialog)}><FormattedMessageId id={FM.TRAINDIALOGS_TAGS_EMPTY} /></span>
                         : <TagsReadOnly tags={trainDialog.tags} />}
                 </span>
             },
