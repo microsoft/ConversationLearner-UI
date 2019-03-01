@@ -114,7 +114,18 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 const lastInput = getLastInput(trainDialog)
                 const lastResponse = getLastResponse(trainDialog, component);
                 return <>
-                    <span data-testid="train-dialogs-description" className={textClassName(trainDialog)}>{trainDialog.description || <FormattedMessageId id={FM.TRAINDIALOGS_DESCRIPTION_EMPTY} />}</span>
+                    <span className={textClassName(trainDialog)}>
+                        {trainDialog.validity && trainDialog.validity !== CLM.Validity.VALID &&
+                            <OF.Icon
+                                className={`cl-icon ${ValidityUtils.validityColorClassName(trainDialog.validity)}`}
+                                iconName="IncidentTriangle"
+                                data-testid="train-dialogs-validity-indicator"
+                            />
+                        }
+                        <span data-testid="train-dialogs-description">
+                            {trainDialog.description || <FormattedMessageId id={FM.TRAINDIALOGS_DESCRIPTION_EMPTY} />}
+                        </span>
+                    </span>
                     {/* Keep firstInput and lastInput available in DOM until tests are upgraded */}
                     <span style={{ display: "none" }} data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
                     <span style={{ display: "none" }} data-testid="train-dialogs-last-input">{lastInput ? lastInput : ''}</span>
@@ -132,15 +143,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             render: trainDialog => {
                 return <span className={textClassName(trainDialog)} data-testid="train-dialogs-tags">
-                    {trainDialog.validity && trainDialog.validity !== CLM.Validity.VALID &&
-                        <OF.Icon
-                            className={`cl-icon ${ValidityUtils.validityColorClassName(trainDialog.validity)}`}
-                            iconName="IncidentTriangle"
-                        />
-                    }
                     {trainDialog.tags.length === 0
-                        ? <span className={textClassName(trainDialog)}><FormattedMessageId id={FM.TRAINDIALOGS_TAGS_EMPTY} /></span>
-                        : <TagsReadOnly className={textClassName(trainDialog)} tags={trainDialog.tags} />}
+                        ? <FormattedMessageId id={FM.TRAINDIALOGS_TAGS_EMPTY} />
+                        : <TagsReadOnly tags={trainDialog.tags} />}
                 </span>
             },
             getSortValue: trainDialog => trainDialog.tags.join(' ')
@@ -994,7 +999,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         };
 
         try {
-            const teachWithHistory = await((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
             const originalId = this.state.currentTrainDialog
                 ? this.state.currentTrainDialog.trainDialogId
                 : null
