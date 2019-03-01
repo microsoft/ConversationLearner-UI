@@ -14,9 +14,9 @@ import { convertMatchedTextIntoMatchedOption } from './utilities'
 const fuseOptions: Fuse.FuseOptions = {
     shouldSort: true,
     includeMatches: true,
-    threshold: 0.6,
+    threshold: 0.4,
     location: 0,
-    distance: 100,
+    distance: 10,
     maxPatternLength: 32,
     minMatchCharLength: 1,
     keys: [
