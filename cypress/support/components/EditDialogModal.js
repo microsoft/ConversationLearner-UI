@@ -44,11 +44,9 @@ export function VerifyTags(tags) {
 }
 
 export function AddTag(tag) { 
-  cy.DumpHtmlOnDomChange(true)
   cy.Get('button.cl-tags__button-add#tags').Click()
   cy.Get('input#tags').type(`${tag}{enter}`)
   cy.WaitForStableDOM()
-  cy.DumpHtmlOnDomChange(false)
 }
 
 export function ClickSaveCloseButton() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
