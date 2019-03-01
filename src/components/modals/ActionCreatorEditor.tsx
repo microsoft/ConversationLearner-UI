@@ -355,7 +355,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const action = nextProps.action
 
                 const payloadOptions = this.props.entities.map(convertEntityToOption)
-                let negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
+                const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
                 let selectedApiOptionKey: string | null = null
                 let selectedCardOptionKey: string | null = null
@@ -418,7 +418,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         return [...entities, ...newEntities.filter(ne => !entities.some(e => e.key === ne.key))]
                     }, [])
 
-                let requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
+                const requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
                     .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
 
                 if (action.requiredConditions) {

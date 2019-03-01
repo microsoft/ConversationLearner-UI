@@ -193,8 +193,8 @@ class Container extends React.Component<Props, ComponentState> {
             return Array(CLM.MAX_ENUM_VALUES).fill(null)
         }
         const enumClone: CLM.EnumValue[] = JSON.parse(JSON.stringify(enumValues))
-        const remaining = Array(CLM.MAX_ENUM_VALUES - enumValues.length ).fill(null)
-        return [...enumClone || [], ...remaining]
+        const remaining = Array(CLM.MAX_ENUM_VALUES - enumValues.length).fill(null)
+        return [...enumClone, ...remaining]
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
@@ -224,14 +224,11 @@ class Container extends React.Component<Props, ComponentState> {
 
     areEnumsIdentical(newEnums: CLM.EnumValue[], oldEnums: CLM.EnumValue[]): boolean {
         // If any new enums, or old ones changed or deleted
-        if (newEnums.every(ev => ev.enumValueId !== undefined) &&
+        return newEnums.every(ev => ev.enumValueId !== undefined) &&
             oldEnums.every(oldEnum => {
             let newEnum = newEnums.find(ne => ne.enumValueId === oldEnum.enumValueId)
             return (newEnum !== undefined && newEnum.enumValue === oldEnum.enumValue)
-        })) {
-            return true
-        }
-        return false
+        })
     }
 
     existingEnumId(value: string): string | undefined {
@@ -376,42 +373,33 @@ class Container extends React.Component<Props, ComponentState> {
         }
     }
 
-    deleteEnum(enumValue: CLM.EnumValue): void {
-        let index = this.state.enumValues.indexOf(enumValue)
-        if (index >= 0) {
-            let enumValues = [...this.state.enumValues]
-            enumValues[index] = null
-            this.setState({enumValues})
-        }
-    }
-
     onChangedEnum = (index: number, value: string) => {
-        let enumValues = [...this.state.enumValues]
+        let enumValuesObjs = [...this.state.enumValues]
         const newValue = value.toUpperCase().trim()
-        let enumValue = enumValues[index]
+        let enumValueObj = enumValuesObjs[index]
 
         if (newValue.length > 0) {    
             // Create new EnumValue if needed 
-            if (!enumValue) {
-                enumValues[index] = { enumValue: newValue }
+            if (!enumValueObj) {
+                enumValuesObjs[index] = { enumValue: newValue }
             }
             // Otherwise set
             else {
-                enumValue.enumValue = newValue
+                enumValueObj.enumValue = newValue
             }
         }
-        else if (enumValue) {
+        else if (enumValueObj) {
             // If existing enum leave blank so error shows
-            if (enumValue.enumValueId)  {
-                enumValue.enumValue = ""
+            if (enumValueObj.enumValueId)  {
+                enumValueObj.enumValue = ""
             }
             // Otherwise just remove the entry
             else {
-                enumValues[index] = null
+                enumValuesObjs[index] = null
             }
         }
         this.setState({
-            enumValues
+            enumValues: enumValuesObjs
         })
     }
     onChangeResolverType = (obj: CLDropdownOption) => {
@@ -608,10 +596,10 @@ class Container extends React.Component<Props, ComponentState> {
     onConfirmEnumDelete() {
         if (this.state.deleteEnumCheck) {
             this.deleteEnum(this.state.deleteEnumCheck)
-            this.setState({
-                deleteEnumCheck: null
-            })
         }
+        this.setState({
+            deleteEnumCheck: null
+        })
     }
 
     @OF.autobind
@@ -781,6 +769,17 @@ class Container extends React.Component<Props, ComponentState> {
             onConfirmEnumDelete={this.onConfirmEnumDelete}
             deleteEnumCheck={this.state.deleteEnumCheck}
         />
+    }
+
+    private deleteEnum(enumValue: CLM.EnumValue): void {
+        const index = this.state.enumValues.indexOf(enumValue)
+        if (index >= 0) {
+            const enumValues = [...this.state.enumValues]
+            enumValues[index] = null
+            this.setState({enumValues})
+        } else {
+            console.error(`DeleteEnum: Invalid Index`)
+        }
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
