@@ -28,7 +28,7 @@ export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMes
 export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreActionsButtonSelector) }
 
 export function VerifyScenario(expectedScenario) { cy.Get(`input.cl-borderless-text-input#description[value="${expectedScenario}"]`) }
-export function TypeScenario(scenario) { cy.Get('input.cl-borderless-text-input#description').type(`${scenario}{enter}`) }
+export function TypeScenario(scenario) { cy.Get('input.cl-borderless-text-input#description').clear().type(`${scenario}{enter}`) }
 export function ClickAddTagButton() { cy.Get('button.cl-tags__button-add#tags').Click() }
 export function VerifyNoTags() { cy.Get('div.cl-tags > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
 export function VerifyTags(tags) { 

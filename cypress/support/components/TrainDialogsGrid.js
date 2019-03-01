@@ -27,4 +27,7 @@ export function GetTurns() { return helpers.NumericArrayFromElementText('[data-t
 export function GetLastModifiedDates() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-last-modified"]') }
 export function GetCreatedDates() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-created"]') }
 
+export function GetTags() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-tags"]') }
+export function GetScenarios() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-description"]') }
+
 export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).find('i[data-icon-name="IncidentTriangle"].cl-color-error') }

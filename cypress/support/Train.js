@@ -262,7 +262,7 @@ export function AbandonDialog() {
   editDialogModal.ClickConfirmAbandonDialogButton()
 }
 
-export function EditTrainingNEW(tags, scenario) {
+export function EditTrainingNEW(scenario, tags) {
   cy.Enqueue(() => {
     let tagsFromGrid = trainDialogsGrid.GetTags()
     let scenarios = trainDialogsGrid.GetScenarios()

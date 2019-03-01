@@ -9,7 +9,7 @@ describe('Training Scenario and Tags', () => {
 
   it('Imports a model to test against', () => {
     // import the saved model for tags and description testing
-    models.ImportModel('z-TagAndScenario', 'z-whatsYourName.cl')
+    models.ImportModel('z-ScenarioAndTag', 'z-whatsYourName.cl')
   })
 
   context('Train Dialogs', () => {
@@ -49,7 +49,7 @@ describe('Training Scenario and Tags', () => {
         // Note the tags and description
         // Open it
         // Verify tags and description are the same as shown in the list
-        train.EditTrainingNEW('TagX', 'Test Scenario')
+        train.EditTrainingNEW('Test Scenario', 'TagX')
         editDialogModal.VerifyScenario('Test Scenario')
         editDialogModal.VerifyTags(['TagX'])
       })
@@ -66,7 +66,7 @@ describe('Training Scenario and Tags', () => {
         editDialogModal.AddTag('TagY')
         train.AbandonDialog()
 
-        train.EditTrainingNEW('TagX', 'Test Scenario')
+        train.EditTrainingNEW('Test Scenario', 'TagX')
         editDialogModal.VerifyScenario('Test Scenario')
         editDialogModal.VerifyTags(['TagX'])
       })
@@ -82,7 +82,7 @@ describe('Training Scenario and Tags', () => {
         editDialogModal.AddTag('TagY')
         train.Save()
 
-        train.EditTrainingNEW('TagXTagY', 'Edited Test Scenario')
+        train.EditTrainingNEW('Edited Test Scenario', 'TagXTagY')
         editDialogModal.VerifyScenario('Edited Test Scenario')
         editDialogModal.VerifyTags(['TagX', 'TagY'])
       })
@@ -97,7 +97,7 @@ describe('Training Scenario and Tags', () => {
         // Reload
         // Re-open dialog
         // Verify edited tags, description, and rounds
-        expect(true).to.equal(true)
+        expect('Continue working on this test case').to.equal('at this point')
       })
     })
 
