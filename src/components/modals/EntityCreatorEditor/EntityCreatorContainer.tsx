@@ -28,13 +28,14 @@ const initState: ComponentState = {
     isMultivalueVal: false,
     isNegatableVal: false,
     isEditing: false,
-    enumValues: [undefined, undefined, undefined, undefined, undefined],
+    enumValues: [],
     title: '',
     hasPendingChanges: false,
     isConfirmEditModalOpen: false,
     isConfirmDeleteModalOpen: false,
     needPrebuiltWarning: null,
     isDeleteErrorModalOpen: false,
+    deleteEnumCheck: null,
     showValidationWarning: false,
     newOrEditedEntity: null
 }
@@ -47,13 +48,14 @@ interface ComponentState {
     isMultivalueVal: boolean
     isNegatableVal: boolean
     isEditing: boolean
-    enumValues: (string | undefined)[]
+    enumValues: (CLM.EnumValue | null)[]
     title: string
     hasPendingChanges: boolean
     isConfirmEditModalOpen: boolean,
     isConfirmDeleteModalOpen: boolean,
     needPrebuiltWarning: string | null,
     isDeleteErrorModalOpen: boolean,
+    deleteEnumCheck: CLM.EnumValue | null,
     showValidationWarning: boolean,
     newOrEditedEntity: CLM.EntityBase | null
 }
@@ -158,7 +160,8 @@ class Container extends React.Component<Props, ComponentState> {
                         defaultMessage: 'Create an Entity'
                     }),
                     entityTypeVal: CLM.EntityType.LUIS,
-                    entityResolverVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS ? nextProps.entityTypeFilter : this.NONE_RESOLVER
+                    entityResolverVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS ? nextProps.entityTypeFilter : this.NONE_RESOLVER,
+                    enumValues: this.initEnumValues(undefined)
                 });
             } else {
                 this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
@@ -178,10 +181,20 @@ class Container extends React.Component<Props, ComponentState> {
                     title: nextProps.intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
                         defaultMessage: 'Edit Entity'
-                    })
+                    }),
+                    enumValues: this.initEnumValues(nextProps.entity.enumValues)
                 })
             }
         }
+    }
+
+    initEnumValues(enumValues: CLM.EnumValue[] | undefined): (CLM.EnumValue | null)[] {
+        if (!enumValues) {
+            return Array(CLM.MAX_ENUM_VALUES).fill(null)
+        }
+        const enumClone: CLM.EnumValue[] = JSON.parse(JSON.stringify(enumValues))
+        const remaining = Array(CLM.MAX_ENUM_VALUES - enumValues.length ).fill(null)
+        return [...enumClone || [], ...remaining]
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
@@ -194,13 +207,31 @@ class Container extends React.Component<Props, ComponentState> {
         const isMultiValueChanged = this.state.isMultivalueVal !== entity.isMultivalue
         const isNegatableChanged = this.state.isNegatableVal !== entity.isNegatible
         const isResolverChanged = entity.entityType === CLM.EntityType.LUIS && this.state.entityResolverVal !== entity.resolverType
-        const hasPendingChanges = isNameChanged || isMultiValueChanged || isNegatableChanged || isResolverChanged
+        let hasPendingEnumChanges = false
+        if (entity.entityType === CLM.EntityType.ENUM) {
+            let newEnums = this.state.enumValues.filter(v => v !== null) as CLM.EnumValue[]
+            let oldEnums = entity.enumValues || [] 
+            hasPendingEnumChanges = !this.areEnumsIdentical(newEnums, oldEnums)
+        }
+        const hasPendingChanges = isNameChanged || isMultiValueChanged || isNegatableChanged || isResolverChanged || hasPendingEnumChanges
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
             this.setState({
                 hasPendingChanges
             })
         }
+    }
+
+    areEnumsIdentical(newEnums: CLM.EnumValue[], oldEnums: CLM.EnumValue[]): boolean {
+        // If any new enums, or old ones changed or deleted
+        if (newEnums.every(ev => ev.enumValueId !== undefined) &&
+            oldEnums.every(oldEnum => {
+            let newEnum = newEnums.find(ne => ne.enumValueId === oldEnum.enumValueId)
+            return (newEnum !== undefined && newEnum.enumValue === oldEnum.enumValue)
+        })) {
+            return true
+        }
+        return false
     }
 
     existingEnumId(value: string): string | undefined {
@@ -237,12 +268,7 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         if (entityType === CLM.EntityType.ENUM) {
-            const values: string[] = this.state.enumValues.filter(v => v !== undefined) as string[]
-            const enumValues: CLM.EnumValue[] = values.map(enumValue => {
-                let enumValueId = this.existingEnumId(enumValue)
-                return enumValueId ? { enumValue, enumValueId } : { enumValue }
-            })
-            newOrEditedEntity.enumValues = enumValues
+            newOrEditedEntity.enumValues = this.state.enumValues.filter(v => v) as CLM.EnumValue[]
         }
         // Set entity id if we're editing existing id.
         if (this.state.isEditing && this.props.entity) {
@@ -337,9 +363,53 @@ class Container extends React.Component<Props, ComponentState> {
             entityNameVal: isPrebuilt ? getPrebuiltEntityName(obj.text) : prevState.isPrebuilt ? "" : prevState.entityNameVal,
         }))
     }
+
+    onDeleteEnum = (enumValue: CLM.EnumValue) => {
+        if (this.isEnumRequiredForActions(enumValue)) {
+            this.setState({
+                deleteEnumCheck: enumValue
+            })
+            return
+        }
+        else {
+            this.deleteEnum(enumValue)
+        }
+    }
+
+    deleteEnum(enumValue: CLM.EnumValue): void {
+        let index = this.state.enumValues.indexOf(enumValue)
+        if (index >= 0) {
+            let enumValues = [...this.state.enumValues]
+            enumValues[index] = null
+            this.setState({enumValues})
+        }
+    }
+
     onChangedEnum = (index: number, value: string) => {
         let enumValues = [...this.state.enumValues]
-        enumValues[index] = value.toUpperCase()
+        const newValue = value.toUpperCase().trim()
+        let enumValue = enumValues[index]
+
+        if (newValue.length > 0) {    
+            // Create new EnumValue if needed 
+            if (!enumValue) {
+                enumValues[index] = { enumValue: newValue }
+            }
+            // Otherwise set
+            else {
+                enumValue.enumValue = newValue
+            }
+        }
+        else if (enumValue) {
+            // If existing enum leave blank so error shows
+            if (enumValue.enumValueId)  {
+                enumValue.enumValue = ""
+            }
+            // Otherwise just remove the entry
+            else {
+                enumValues[index] = null
+            }
+        }
         this.setState({
             enumValues
         })
@@ -391,15 +461,25 @@ class Container extends React.Component<Props, ComponentState> {
         return ''
     }
 
-    onGetEnumErrorMessage = (value: string): string => {
-        const { intl } = this.props
+    onGetEnumErrorMessage = (enumValue: CLM.EnumValue | null): string => {
 
-        if (value.length === 0) {
+        if (!enumValue) {
             return ''
         }
 
-        if (!/^[a-zA-Z0-9-]+$/.test(value)) {
+        const { intl } = this.props
+
+        if (enumValue.enumValue.length === 0) {
+            // Existing enumvalue can't be blank
+            return enumValue.enumValueId ? Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK) : ""
+        }
+
+        if (!/^[a-zA-Z0-9-]+$/.test(enumValue.enumValue)) {
             return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC)
+        }
+
+        if (this.state.enumValues.filter(v => v && v.enumValue === enumValue.enumValueId).length > 1) {
+            Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT) 
         }
 
         return ''
@@ -409,7 +489,7 @@ class Container extends React.Component<Props, ComponentState> {
         if (!value) {
             return false
         }
-        return (this.state.enumValues.filter(v => v === value).length > 1)
+        return (this.state.enumValues.filter(v => v && v.enumValue === value).length > 1)
     }
 
     onKeyDownName = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -450,6 +530,21 @@ class Container extends React.Component<Props, ComponentState> {
         return !entity
             ? false
             : allActions.some(a => [...a.requiredEntitiesFromPayload, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(entity.entityId))
+    }
+
+    isEnumRequiredForActions(enumValue: CLM.EnumValue): boolean {
+        const { actions: allActions, entity } = this.props
+        if (!entity) {
+            return false
+        }
+
+        return allActions.some(a => {
+            return [...a.requiredConditions, ...a.negativeConditions]
+                .filter(condition => 
+                    condition.entityId === entity.entityId && 
+                    condition.valueId === enumValue.enumValueId)
+                .length > 0
+        })
     }
 
     isUsedByActions(): boolean {
@@ -500,6 +595,23 @@ class Container extends React.Component<Props, ComponentState> {
             isConfirmDeleteModalOpen: false,
             isDeleteErrorModalOpen: false
         })
+    }
+
+    @OF.autobind
+    onCancelEnumDelete() {
+        this.setState({
+            deleteEnumCheck: null
+        })
+    }
+
+    @OF.autobind
+    onConfirmEnumDelete() {
+        if (this.state.deleteEnumCheck) {
+            this.deleteEnum(this.state.deleteEnumCheck)
+            this.setState({
+                deleteEnumCheck: null
+            })
+        }
     }
 
     @OF.autobind
@@ -584,7 +696,7 @@ class Container extends React.Component<Props, ComponentState> {
             if (values.length < 2) {
                 return true
             }
-            let invalid = this.state.enumValues.filter(v => v && (this.onGetEnumErrorMessage(v) || this.isEnumDuplicate(v)))
+            let invalid = this.state.enumValues.filter(v => v && (this.onGetEnumErrorMessage(v) || this.isEnumDuplicate(v.enumValue)))
             if (invalid.length > 0) {
                 return true
             }
@@ -664,7 +776,10 @@ class Container extends React.Component<Props, ComponentState> {
             enumValues={this.state.enumValues}
             onChangedEnum={this.onChangedEnum}
             onGetEnumErrorMessage={this.onGetEnumErrorMessage}
-            isEnumDuplicate={this.isEnumDuplicate}
+            onDeleteEnum={this.onDeleteEnum}
+            onCancelEnumDelete={this.onCancelEnumDelete}
+            onConfirmEnumDelete={this.onConfirmEnumDelete}
+            deleteEnumCheck={this.state.deleteEnumCheck}
         />
     }
 }

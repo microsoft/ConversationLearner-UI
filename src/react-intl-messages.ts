@@ -186,6 +186,7 @@ export enum FM {
     ENTITIES_CONFIRMCANCELMODALTITLE = 'Entities.confirmCancelModalTitle',
 
     // EntityCreatorEditor
+    ENTITYCREATOREDITOR_FIELDERROR_NOBLANK = 'EntityCreatorEditor.fieldError.noblank',
     ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE = 'EntityCreatorEditor.fieldError.requiredValue',
     ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC = 'EntityCreatorEditor.fieldsError.alphanumerica',
     ENTITYCREATOREDITOR_FIELDERROR_DISTINCT = 'EntityCreatorEditor.fields.distinct',
@@ -230,6 +231,8 @@ export enum FM {
     ENTITYCREATOREDITOR_PREBUILT_WARNING = 'EntityCreatorEditor.confirmPrebuiltWarning',
     ENTITYCREATOREDITOR_DELETE_ERROR_TITLE = 'EntityCreatorEditor.deleteErrorTitle',
     ENTITYCREATOREDITOR_DELETE_ERROR_WARNING = 'EntityCreatorEditor.deleteErrorWarning',
+    ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_TITLE = 'EntityCreatorEditor.deleteEnumErrorTitle',
+    ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_WARNING = 'EntityCreatorEditor.deleteEnumErrorWarning',
 
     // Error
     ERROR_ERROR = 'Error.error',
@@ -894,6 +897,7 @@ export default {
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
 
         // EntityCreatorEditor
+        [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC]: 'May only contain alphanumeric characters with no spaces.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
@@ -934,6 +938,8 @@ export default {
         [FM.ENTITYCREATOREDITOR_PREBUILT_WARNING]: 'Note: You must wait for training to complete before the new pre-trained Entity will be detected',
         [FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE]: 'Unable to delete this Entity',
         [FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING]: 'It is either referenced within the payload or used as suggested entity by one or more Actions',
+        [FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_TITLE]: 'Are you sure?',
+        [FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_WARNING]: 'Enum is referenced by one or more Actions and may invalidate related Training Dialogs',
 
         // Error
         [FM.ERROR_ERROR]: 'Error',
