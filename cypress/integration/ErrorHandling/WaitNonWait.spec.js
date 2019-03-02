@@ -10,7 +10,7 @@ const editDialogModal = require('../../support/components/EditDialogModal')
 const common = require('../../support/Common')
 const helpers = require('../../support/Helpers')
 
-describe('Wait Non Wait ErrorHandling', () => {
+describe('Wait Non Wait Error Handling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   it('Imports a model to test against and verifies no errors on Model page', () => {
@@ -51,7 +51,7 @@ describe('Wait Non Wait ErrorHandling', () => {
   })
 
   it('Re-opens the Training and validates all error messages remain', () => {
-    train.EditTraining(`${common.errorIconCharacter}Duck`, 'Fish', common.fishJustSwim)
+    train.EditTraining(`Duck`, 'Fish', common.fishJustSwim)
     editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
     Validations(3)
