@@ -5,7 +5,18 @@
 
 // Use this in an `afterEach` function to cause all remaining tests of a suite to be skipped when
 // the test that just finished running failed.
-export function SkipRemainingTestsOfSuiteIfFailed() { if (this.currentTest.state === 'failed') this.skip() }
+//
+// CAUTION: This MUST NOT be called using an arrow/lambda function. Examples:
+//   WRONG: afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
+//   RIGHT: afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+//   RIGHT: afterEach(function() {
+//            helpers.SkipRemainingTestsOfSuiteIfFailed()
+//            DoSomeOtherWork()
+//          })
+export function SkipRemainingTestsOfSuiteIfFailed() { 
+  if (this.currentTest == undefined) throw 'Test Code Error: Cannot use arrow/lambda function to call the SkipRemainingTestsOfSuiteIfFailed() function.'
+  if (this.currentTest.state === 'failed') this.skip() 
+}
 
 // NOTE: the '-+-' is a signature for filtering console output
 export function ConLog(funcName, message) { console.log(`-+- ${Cypress.moment().format("HH:mm:ss..SSS")} - ${funcName} - ${message}`) }
