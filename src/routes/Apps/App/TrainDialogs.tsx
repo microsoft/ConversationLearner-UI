@@ -22,6 +22,7 @@ import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import TagsReadOnly from '../../../components/TagsReadOnly'
 import * as moment from 'moment'
+import TreeView from '../../../components/modals/TreeView'
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -187,6 +188,7 @@ interface ComponentState {
     lastAction: CLM.ActionBase | null
     isTeachDialogModalOpen: boolean
     isEditDialogModalOpen: boolean
+    isTreeViewModalOpen: boolean
     // Item selected in webchat window
     selectedActivityIndex: number | null
     // Current train dialogs being edited
@@ -219,6 +221,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             lastAction: null,
             isTeachDialogModalOpen: false,
             isEditDialogModalOpen: false,
+            isTreeViewModalOpen: false,
             selectedActivityIndex: null,
             currentTrainDialog: null,
             originalTrainDialogId: null,
@@ -813,6 +816,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
+    @OF.autobind
+    onCloseTreeView() {
+            this.setState({isTreeViewModalOpen: false})
+    }
+
+    
+    @OF.autobind
+    onOpenTreeView() {
+            this.setState({isTreeViewModalOpen: true})
+    }
+
     onDeleteTrainDialog() {
         if (!this.state.currentTrainDialog) {
             throw new Error(`You attempted to delete a train dialog, but currentTrainDialog is not defined. Please open an issue.`)
@@ -1176,6 +1190,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         text={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
                         componentRef={component => this.newTeachSessionButton = component!}
                     />
+                    <OF.PrimaryButton
+                        onClick={this.onOpenTreeView}
+                        ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
+                        text={"Tree View"}
+                    />
                 </div>
 
                 {trainDialogs.length === 0
@@ -1317,6 +1336,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={(newTrainDialog, validity) => this.onCreateTrainDialog(newTrainDialog, validity)}
                     allUniqueTags={this.props.allUniqueTags}
+                />
+                <TreeView
+                    open={(this.state.isTreeViewModalOpen)}
+                    onCancel={this.onCloseTreeView}
                 />
             </div>
         );
