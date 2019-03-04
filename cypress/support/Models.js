@@ -3,8 +3,8 @@
  * Licensed under the MIT License.
  */
 
-const homePage = require('./components/HomePage')
-const modelPage = require('./components/ModelPage')
+import * as homePage from './components/HomePage'
+import * as modelPage from './components/ModelPage'
 
 // The test defined prefix can be up to 17 characters.
 // The dash and time suffix takes 13 characters. 

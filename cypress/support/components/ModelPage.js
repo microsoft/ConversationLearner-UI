@@ -3,12 +3,12 @@
  * Licensed under the MIT License.
  */
 
-const entitiesGrid = require('../../support/components/EntitiesGrid')
-const actionsGrid = require('../../support/components/ActionsGrid')
-const trainDialogsGrid = require('./TrainDialogsGrid')
-const logDialogsGrid = require('../../support/components/LogDialogsGrid')
-const settings = require('../../support/components/Settings')
-const helpers = require('../Helpers')
+import * as entitiesGrid from '../../support/components/EntitiesGrid'
+import * as actionsGrid from '../../support/components/ActionsGrid'
+import * as trainDialogsGrid from './TrainDialogsGrid'
+import * as logDialogsGrid from '../../support/components/LogDialogsGrid'
+import * as settings from '../../support/components/Settings'
+import * as helpers from '../Helpers'
 
 export function VerifyModelName(name) { cy.Get('[data-testid="app-index-model-name"]').should(el => { expect(el).to.contain(name) }) }
 export function VerifyPageTitle() { cy.Get('[data-testid="dashboard-title"]').contains('Log Dialogs').should('be.visible') }

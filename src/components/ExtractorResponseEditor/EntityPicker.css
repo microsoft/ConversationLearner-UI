@@ -4,8 +4,9 @@
 
 .custom-toolbar {
     background: white;
+    border: 1px solid var(--color-neutralTertiary);
     border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
     min-width: 200px;
     opacity: 0;
     padding: 0.25em;
@@ -20,6 +21,7 @@
 
     display: grid;
     grid-template: min-content min-content 1fr / auto;
+    grid-gap: 0.25em;
 }
 
 .custom-toolbar--visible {
@@ -33,7 +35,7 @@
 }
 
 .custom-toolbar__search {
-    padding: 0.25em;
+    /* empty */
 }
 
 .custom-toolbar__search label {
@@ -44,10 +46,17 @@
 }
 
 .custom-toolbar__input {
-    padding: 0.25em;
-    border: 1px solid lightgrey;
+    padding: 0.25em 0.5em;
+    border: 1px solid var(--color-neutralTertiary);
     width: 100%;
     font-size: 1rem;
+    outline: none;
+}
+.custom-toolbar__input:hover:not(:focus) {
+    border-color: var(--color-neutralDark);
+}
+.custom-toolbar__input:focus {
+    border-color: var(--color-themePrimary);
 }
 
 .custom-toolbar__results {
@@ -55,8 +64,9 @@
     list-style: none;
     padding: 0;
     padding-bottom: 0.25em;
-    border-top: 2px solid lightgrey;
+    border-bottom: 2px solid lightgrey;
     overflow-y: auto;
+    max-height: 8.9em;
 }
 
 .custom-toolbar__result {
@@ -71,20 +81,4 @@
 
 .custom-toolbar__result--highlight {
     background: rgba(187, 255, 187, 1.0);
-}
-
-.custom-toolbar__new-entity-button {
-    border: none;
-    background: none;
-    cursor: pointer;
-    padding: 0.25em 0.5em;
-    display: block;
-    margin: 0;
-    width: 100%;
-    text-align: left;
-    font-size: 1rem;
-    margin-top: 0.25em;
-}
-.custom-toolbar__new-entity-button:hover {
-    background: rgba(187, 255, 187, 0.5);
 }

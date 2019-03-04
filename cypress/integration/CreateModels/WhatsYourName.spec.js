@@ -3,10 +3,10 @@
  * Licensed under the MIT License.
 */
 
-const models = require('../../support/Models')
-const entities = require('../../support/Entities')
-const actions = require('../../support/Actions')
-const common = require('../../support/Common')
+import * as models from '../../support/Models'
+import * as entities from '../../support/Entities'
+import * as actions from '../../support/Actions'
+import * as common from '../../support/Common'
 
 describe('CreateModels', () => {
   it("What's Your Name", () => {

@@ -3,9 +3,9 @@
  * Licensed under the MIT License.
  */
 
-const modelPage = require('../components/ModelPage')
-const settings = require('../components/Settings')
-const helpers = require('../Helpers')
+import * as modelPage from '../components/ModelPage'
+import * as settings from '../components/Settings'
+import * as helpers from '../Helpers'
 
 export function Visit() { return cy.visit('http://localhost:5050'); VerifyPageTitle() }
 export function VerifyPageTitle() { return cy.Get('[data-testid="model-list-title"]').contains('Create and manage your Conversation Learner models').should('be.visible') }

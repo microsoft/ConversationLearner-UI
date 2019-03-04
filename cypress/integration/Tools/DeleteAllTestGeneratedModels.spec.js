@@ -3,8 +3,8 @@
  * Licensed under the MIT License.
 */
 
-const homePage = require('../../support/components/HomePage')
-const helpers = require('../../support/Helpers')
+import * as homePage from '../../support/components/HomePage'
+import * as helpers from '../../support/Helpers'
 
 describe('Tools', () => {
   it('Delete All Test Generated Models', () => {

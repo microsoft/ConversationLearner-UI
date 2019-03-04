@@ -3,12 +3,12 @@
  * Licensed under the MIT License.
 */
 
-const models = require('../../support/Models')
-const modelPage = require('../../support/components/ModelPage')
-const scorerModal = require('../../support/components/ScorerModal')
-const train = require('../../support/Train')
-const editDialogModal = require('../../support/components/EditDialogModal')
-const common = require('../../support/Common')
+import * as models from '../../support/Models'
+import * as modelPage from '../../support/components/ModelPage'
+import * as scorerModal from '../../support/components/ScorerModal'
+import * as train from '../../support/Train'
+import * as editDialogModal from '../../support/components/EditDialogModal'
+import * as common from '../../support/Common'
 
 describe('Train', () => {
   it('Wait vs Non-Wait Actions', () => {

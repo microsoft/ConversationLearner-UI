@@ -3,11 +3,11 @@
  * Licensed under the MIT License.
 */
 
-const models = require('../../support/Models')
-const modelPage = require('../../support/components/ModelPage')
-const logDialogsGrid = require('../../support/components/LogDialogsGrid')
-const logDialogModal = require('../../support/components/LogDialogModal')
-const common = require('../../support/Common')
+import * as models from '../../support/Models'
+import * as modelPage from '../../support/components/ModelPage'
+import * as logDialogsGrid from '../../support/components/LogDialogsGrid'
+import * as logDialogModal from '../../support/components/LogDialogModal'
+import * as common from '../../support/Common'
 
 describe('Log', () => {
   it(common.whatsYourName, () => {
