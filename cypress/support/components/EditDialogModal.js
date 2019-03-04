@@ -3,9 +3,9 @@
  * Licensed under the MIT License.
  */
 
-const homePage = require('../../support/components/HomePage')
-const helpers = require('../../support/Helpers')
-const scorerModal = require('../../support/components/ScorerModal')
+import * as homePage from '../../support/components/HomePage'
+import * as helpers from '../../support/Helpers'
+import * as scorerModal from '../../support/components/ScorerModal'
 
 export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p'
 export const TypeYourMessageSelector = 'input.wc-shellinput[placeholder="Type your message..."]' // data-testid NOT possible

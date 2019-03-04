@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
 */
 
-const homePage = require('../../support/components/HomePage')
+import * as homePage from '../../support/components/HomePage'
 
 describe('Tools', () => {
   it('Visit Home Page', () => {

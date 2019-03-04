@@ -3,10 +3,11 @@
  * Licensed under the MIT License.
  */
 
-var suiteTitle
-var test
-var logFileName 
-var logEntries = ''
+(function () {
+let suiteTitle
+let test
+let logFileName 
+let logEntries = ''
 
 // -----------------------------------------------------------------------------
 // Redirecting console.log so that we can persist it to a file.
@@ -90,6 +91,10 @@ function LogTestState()
 //        npm install cypress --save-dev
 function WriteLogEntries() { 
   if (logFileName) {
+    // If this fails the likely causes are:
+    //  1. You root path to this project is too long.
+    //  2. The root test description set in the call to `describe()` is too long.
+    //  3. You don't have permision to write to the `./results/cypress/` folder
     cy.writeFile(logFileName, logEntries, {flag: 'a'})
       .then(() => { logEntries = '' })
   }
@@ -104,15 +109,16 @@ function FlushLogEntries() {
 }
 
 function GetSuiteRootTitle(test) {
-  if (!test.parent) throw new 'Did not find test.parent'
+  if (!test.parent) throw 'Did not find test.parent'
   
   if (test.parent.title === '') { return test.title }
   return GetSuiteRootTitle(test.parent)
 }
 
 function GetFullTestSuiteTitle(test) {
-  if (!test.parent) throw new 'Did not find test.parent'
+  if (!test.parent) throw 'Did not find test.parent'
   
   if (test.parent.title === '') { return test.title }
   return `${GetFullTestSuiteTitle(test.parent)} - ${test.title}`
 }
+}())

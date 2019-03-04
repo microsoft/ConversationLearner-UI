@@ -3,11 +3,11 @@
  * Licensed under the MIT License.
 */
 
-const models = require('../../support/Models')
-const modelPage = require('../../support/components/ModelPage')
-const actions = require('../../support/Actions')
-const editDialogModal = require('../../support/components/EditDialogModal')
-const train = require('../../support/Train')
+import * as models from '../../support/Models'
+import * as modelPage from '../../support/components/ModelPage'
+import * as actions from '../../support/Actions'
+import * as editDialogModal from '../../support/components/EditDialogModal'
+import * as train from '../../support/Train'
 
 describe('CreateModels', () => {
   it('Wait vs Non-Wait Actions', () => {

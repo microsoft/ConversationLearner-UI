@@ -18,7 +18,7 @@
  * within 700 milliseconds since the last change, or another one occures to reset the count.
 */
 
-const helpers = require('./Helpers.js')
+import * as helpers from './Helpers.js'
 
 var MonitorDocumentChanges = (function () {
   let lastMonitorTime = 0

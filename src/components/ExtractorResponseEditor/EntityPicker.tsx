@@ -6,6 +6,7 @@ import * as React from 'react'
 import { IOption, IPosition, MatchedOption } from './models'
 import FuseMatch from './FuseMatch'
 import './EntityPicker.css'
+import * as OF from 'office-ui-fabric-react'
 
 interface MenuProps {
     highlightIndex: number
@@ -57,7 +58,7 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
         const style: any = {
             left: this.props.isVisible ? `${this.props.position.left}px` : null,
             bottom: this.props.isVisible ? `${this.props.position.bottom}px` : null,
-            height: !this.props.isOverlappingOtherEntities ? "14em" : "4em",
+            height: !this.props.isOverlappingOtherEntities ? "auto" : "4em",
             marginBottom: !this.props.isOverlappingOtherEntities ? "0" : "1em"
         }
 
@@ -66,32 +67,12 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
         }
         return (
             <div
-                className={`custom-toolbar ${this.props.isVisible ? "custom-toolbar--visible cl-ux-shadowed" : ""}`}
+                className={`custom-toolbar ${this.props.isVisible ? "custom-toolbar--visible" : ""}`}
                 onKeyDown={this.props.onKeyDown}
                 ref={this.props.menuRef}
                 style={style}
                 role="button"
             >
-                <React.Fragment>
-                <button
-                    type="button"
-                    tabIndex={-1}
-                    onClick={() => this.props.onClickNewEntity(this.props.entityTypeFilter)}
-                    className="custom-toolbar__new-entity-button"
-                >
-                    New Entity
-                </button>
-                <div className="custom-toolbar__search">
-                    <input
-                        data-testid="entity-picker-entity-search"
-                        id="toolbar-input"
-                        type="text"
-                        placeholder="Search for entities"
-                        value={this.props.searchText}
-                        className="custom-toolbar__input"
-                        onChange={event => this.props.onChangeSearchText(event.target.value)}
-                    />
-                </div>
                 <div className="custom-toolbar__results" ref={this.state.resultsRef}>
                     {this.props.matchedOptions.length === 0
                         ? <div className="custom-toolbar__result">No matching entites</div>
@@ -105,8 +86,24 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
                                 <FuseMatch matches={matchedOption.matchedStrings} />
                             </div>
                         )}
-                    </div>
-                </React.Fragment>
+                </div>
+                <OF.PrimaryButton
+                    tabIndex={-1}
+                    onClick={() => this.props.onClickNewEntity(this.props.entityTypeFilter)}
+                    text="New Entity"
+                    iconProps={{ iconName: 'Add' }}
+                />
+                <div className="custom-toolbar__search">
+                    <input
+                        data-testid="entity-picker-entity-search"
+                        id="toolbar-input"
+                        type="text"
+                        placeholder="Search for entities"
+                        value={this.props.searchText}
+                        className="custom-toolbar__input"
+                        onChange={event => this.props.onChangeSearchText(event.target.value)}
+                    />
+                </div>
             </div>
         )
     }

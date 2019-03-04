@@ -3,8 +3,8 @@
  * Licensed under the MIT License.
 */
 
-const models = require('../../support/Models')
-const homePage = require('../../support/components/HomePage')
+import * as models from '../../support/Models'
+import * as homePage from '../../support/components/HomePage'
 
 describe('Create Model', () => {
   it('Tools', () => {
