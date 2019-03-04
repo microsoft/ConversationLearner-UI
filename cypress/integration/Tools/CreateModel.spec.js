@@ -6,8 +6,8 @@
 import * as models from '../../support/Models'
 import * as homePage from '../../support/components/HomePage'
 
-describe('Tools', () => {
-  it('Create Model', () => {
+describe('Create Model', () => {
+  it('Tools', () => {
     models.CreateNewModel('z-model')
     homePage.Visit()
     homePage.GetModelListRowCount()
