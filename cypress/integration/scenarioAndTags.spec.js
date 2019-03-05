@@ -21,7 +21,7 @@ const testSelectors = {
         branchInput: '[data-testid="user-input-modal-new-message-input"]',
         branchSubmit: '[data-testid="app-create-button-submit"]',
         closeSave: '[data-testid="edit-teach-dialog-close-save-button"]',
-        scenarioInput: '[data-testid="train-dialog-description"] .cl-borderless-text-input',
+        descriptionInput: '[data-testid="train-dialog-description"] .cl-borderless-text-input',
         scoreActionsButton: '[data-testid="score-actions-button"]',
         tags: '[data-testid="train-dialog-tags"] .cl-tags__tag span',
         addTagButton: '[data-testid="train-dialog-tags"] .cl-tags__button-add',
@@ -38,7 +38,7 @@ const testSelectors = {
     }
 }
 
-describe('Scenario and Tags', () => {
+describe('Description and Tags', () => {
     context('Train Dialogs', () => {
         const testData = {
             userInput: 'First test input',
@@ -72,7 +72,7 @@ describe('Scenario and Tags', () => {
                 trainDialog.CreateNewTrainDialog()
 
                 // Verify that scenario and tags are empty
-                cy.get(testSelectors.dialogModal.scenarioInput)
+                cy.get(testSelectors.dialogModal.descriptionInput)
                     .should('be.empty')
 
                 cy.get(testSelectors.dialogModal.tags)
@@ -81,7 +81,7 @@ describe('Scenario and Tags', () => {
 
             it('should save the tags and description on the new dialog', () => {
                 // Set description
-                cy.get(testSelectors.dialogModal.scenarioInput)
+                cy.get(testSelectors.dialogModal.descriptionInput)
                     .type(testData.description)
 
                 // Set tags
@@ -118,7 +118,7 @@ describe('Scenario and Tags', () => {
                     .click()
 
                 // Verify description and tags are expected in the opened dialog
-                cy.get(testSelectors.dialogModal.scenarioInput)
+                cy.get(testSelectors.dialogModal.descriptionInput)
                     .should('have.value', testData.description)
 
                 cy.get(testSelectors.dialogModal.tags)
@@ -134,7 +134,7 @@ describe('Scenario and Tags', () => {
                     .type('newTag{enter}')
 
                 // Edit description
-                cy.get(testSelectors.dialogModal.scenarioInput)
+                cy.get(testSelectors.dialogModal.descriptionInput)
                     .type(' Abandon Edit')
 
                 trainDialog.AbandonDialog()
@@ -145,7 +145,7 @@ describe('Scenario and Tags', () => {
                     .click()
 
                 // Verify tags and description are unmodified
-                cy.get(testSelectors.dialogModal.scenarioInput)
+                cy.get(testSelectors.dialogModal.descriptionInput)
                     .should('have.value', testData.description)
 
                 cy.get(testSelectors.dialogModal.tags)
@@ -160,8 +160,8 @@ describe('Scenario and Tags', () => {
                 cy.get(testSelectors.dialogModal.tagInput)
                     .type(`${testData.tag02}{enter}`)
 
-                // Edit scenario
-                cy.get(testSelectors.dialogModal.scenarioInput)
+                // Edit description
+                cy.get(testSelectors.dialogModal.descriptionInput)
                     .type(testData.descriptionEdit)
 
                 // Save dialog
@@ -172,7 +172,7 @@ describe('Scenario and Tags', () => {
                 // Ensures content is persisted to server instead of only local memory
                 cy.reload()
 
-                // Verify scenario
+                // Verify description
                 cy.get(testSelectors.trainDialogs.scenarios)
                     .contains(`${testData.description}${testData.descriptionEdit}`)
 
@@ -204,7 +204,7 @@ describe('Scenario and Tags', () => {
                     .type(`${testData.tag03}{enter}`)
 
                 // Edit scenario
-                cy.get(testSelectors.dialogModal.scenarioInput)
+                cy.get(testSelectors.dialogModal.descriptionInput)
                     .type(testData.descriptionEdit)
 
                 // Delete the last bot response and user input. Affects rounds but doesn't make it invalid
@@ -272,7 +272,7 @@ describe('Scenario and Tags', () => {
                     .type(`${testData.tag04}{enter}`)
 
                 // Edit description
-                cy.get(testSelectors.dialogModal.scenarioInput)
+                cy.get(testSelectors.dialogModal.descriptionInput)
                     .type(testData.descriptionEdit)
 
                 // Modify dialog to add user input
@@ -338,7 +338,7 @@ describe('Scenario and Tags', () => {
                     .type(`${testData.tag05}{enter}`)
 
                 // Edit description
-                cy.get(testSelectors.dialogModal.scenarioInput)
+                cy.get(testSelectors.dialogModal.descriptionInput)
                     .type(testData.descriptionEdit)
                     .blur()
 
@@ -372,7 +372,7 @@ describe('Scenario and Tags', () => {
                 cy.wait(['@postScoreFromHistory', '@postHistory'])
 
                 // Verify edited scenario and tags are preserved after branch
-                cy.get(testSelectors.dialogModal.scenarioInput)
+                cy.get(testSelectors.dialogModal.descriptionInput)
                     .should('have.value', `${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}${testData.descriptionEdit}${testData.descriptionEdit}`)
 
                 cy.get(testSelectors.dialogModal.tags)

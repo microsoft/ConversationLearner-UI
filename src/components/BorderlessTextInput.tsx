@@ -8,6 +8,7 @@ interface Props {
     value: string
     onChange: (value: string) => void
     maxLength: number
+    ['data-testid']: string
 }
 
 class component extends React.Component<Props> {
@@ -19,6 +20,7 @@ class component extends React.Component<Props> {
     render() {
         return (
             <input
+                data-testid={this.props['data-testid']}
                 className="cl-borderless-text-input"
                 type="text"
                 id={this.props.id}

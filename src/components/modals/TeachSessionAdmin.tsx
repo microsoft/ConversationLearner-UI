@@ -314,6 +314,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                             <div className="cl-dialog-field" data-testid="train-dialog-description">
                                 <label htmlFor="description"><OF.Icon iconName="TextField" className="cl-icon" /><span><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</span></label>
                                 <BorderlessTextInput
+                                    data-testid="train-dialog-description"
                                     id="description"
                                     placeholder={Util.formatMessageId(intl, FM.DESCRIPTION_PLACEHOLDER)}
                                     value={this.props.description}
