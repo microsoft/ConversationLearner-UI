@@ -20,68 +20,81 @@ describe('Wait Non Wait Error Handling', () => {
 
     modelPage.VerifyNoErrorIconOnPage()
   })
-
-  it('Deletes a user turn to create an error, verifies expected (and no other) error messages come up', () => {
-    train.EditTraining('Duck', 'Fish', common.fishJustSwim)
-    editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
-    editDialogModal.ClickDeleteChatTurn()
-    editDialogModal.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
-
-    Validations(1)
-  })
-
-  it('Inserts an extra Bot response, verifies new error message and other error message remain', () => {
-    editDialogModal.InsertBotResponseAfter('Duck', common.whichAnimalWouldYouLike)
-    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-
-    Validations(2)
-  })
-
-  it('Inserts another Bot response, verifies new error message and other error messages remain', () => {
-    editDialogModal.InsertBotResponseAfter('Fish', common.whichAnimalWouldYouLike)
-    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-
-    Validations(3)
-  })
   
-  it('Saves the Training with Error, verifies Model page and Train Dialog grid shows an error', () => {
-    editDialogModal.ClickSaveCloseButton()
-    modelPage.VerifyErrorIconForTrainDialogs()
-    train.VerifyErrorsFoundInTraining(`Duck`, 'Fish', common.fishJustSwim)
+  context('Create Errors', () => {
+    it('Deletes a user turn to create an error, verifies expected (and no other) error messages come up', () => {
+      train.EditTraining('Duck', 'Fish', common.fishJustSwim)
+      editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
+      editDialogModal.ClickDeleteChatTurn()
+      editDialogModal.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
+
+      Validations(1)
+    })
+
+    it('Inserts an extra Bot response, verifies new error message and other error message remain', () => {
+      editDialogModal.InsertBotResponseAfter('Duck', common.whichAnimalWouldYouLike)
+      editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+
+      Validations(2)
+    })
+
+    it('Inserts another Bot response, verifies new error message and other error messages remain', () => {
+      editDialogModal.InsertBotResponseAfter('Fish', common.whichAnimalWouldYouLike)
+      editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+
+      Validations(3)
+    })
   })
 
-  it('Re-opens the Training and validates all error messages remain', () => {
-    train.EditTraining(`Duck`, 'Fish', common.fishJustSwim)
-    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+  context(`Save & Validate Training Errors`, () => {
+    it('Saves the Training with Errors, verifies Model page and Train Dialog grid shows an error', () => {
+      editDialogModal.ClickSaveCloseButton()
+      modelPage.VerifyErrorIconForTrainDialogs()
+      train.VerifyErrorsFoundInTraining(`Duck`, 'Fish', common.fishJustSwim)
+    })
 
-    Validations(3)
+    // TODO: Previously we validated the error icon in the grid by opening the grid containing the row with 
+    //       the expected error and included the error icon in the string used to search the grid for the row.
+    //       The logic being that if the row was not found it could be due to that icon not being there.
+    //
+    //       Need to validate that the expected row has the icon in it some way and...
+    //       Need to re-think how we access these rows now that the columns in the grid have changed.
+
+    it('Re-opens the Training and validates all error messages remain', () => {
+      train.EditTraining(`Duck`, 'Fish', common.fishJustSwim)
+      editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+
+      Validations(3)
+    })
   })
 
-  it('Deletes one of the error causing turns, verifies an error went away & other error remained', () => {
-    editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike, 1)
-    editDialogModal.ClickDeleteChatTurn()
-    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+  context('Correct the Errors', () => {
+    it('Deletes one of the error causing turns, verifies an error went away & other error remained', () => {
+      editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike, 1)
+      editDialogModal.ClickDeleteChatTurn()
+      editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
-    Validations(2)
-  })
+      Validations(2)
+    })
 
-  it('Deletes another error causing turn, verifies another error went away & still one error remains', () => {
-    editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
-    editDialogModal.ClickDeleteChatTurn()
-    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+    it('Deletes another error causing turn, verifies another error went away & still one error remains', () => {
+      editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
+      editDialogModal.ClickDeleteChatTurn()
+      editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
-    Validations(1)
-  })
+      Validations(1)
+    })
 
-  it('Re-inserts the original user turn, verifies all errors are gone in dialog and on Model page', () => {
-    editDialogModal.SelectChatTurnExactMatch('Fish')
-    editDialogModal.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
+    it('Re-inserts the original user turn, verifies all errors are gone in dialog and on Model page', () => {
+      editDialogModal.SelectChatTurnExactMatch('Fish')
+      editDialogModal.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
 
-    editDialogModal.InsertBotResponseAfter(common.ducksSayQuack, common.whichAnimalWouldYouLike)
-    editDialogModal.VerifyNoErrorMessage()
+      editDialogModal.InsertBotResponseAfter(common.ducksSayQuack, common.whichAnimalWouldYouLike)
+      editDialogModal.VerifyNoErrorMessage()
 
-    editDialogModal.ClickSaveCloseButton()
-    modelPage.VerifyNoErrorIconOnPage()
+      editDialogModal.ClickSaveCloseButton()
+      modelPage.VerifyNoErrorIconOnPage()
+    })
   })
 })
 
