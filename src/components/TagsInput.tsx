@@ -265,7 +265,7 @@ class component extends React.Component<Props, State> {
                     </div>
                 )}
                 {!hasMaxTags && !showForm
-                    ? <button className="cl-tags__button-add" id={this.props.id} onClick={() => this.onClickAdd()} >
+                    ? <button className="cl-tags__button-add" id={this.props.id} onClick={() => this.onClickAdd()} data-testid="tags-input-add-tag-button" >
                         {this.props.tags.length === 0
                             ? <FormattedMessageId id={FM.TAGS_INPUT_ADD} />
                             : <OF.Icon iconName="Add" />}
@@ -280,6 +280,7 @@ class component extends React.Component<Props, State> {
                             onBlur={this.onBlurInput}
                             autoComplete="off"
                             maxLength={this.props.magTagLength}
+                            data-testid="tags-input-tag-input"
                         />
                         <div className="cl-tags__suggested-tags-container">
                             {matchedOptions.length !== 0

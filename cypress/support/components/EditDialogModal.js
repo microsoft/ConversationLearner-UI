@@ -28,7 +28,7 @@ export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreAct
 
 export function VerifyScenario(expectedScenario) { cy.Get(`input.cl-borderless-text-input#description[value="${expectedScenario}"]`) }
 export function TypeScenario(scenario) { cy.Get('input.cl-borderless-text-input#description').clear().type(`${scenario}{enter}`) }
-export function ClickAddTagButton() { cy.Get('button.cl-tags__button-add#tags').Click() }
+export function ClickAddTagButton() { cy.Get('[data-testid="tags-input-add-tag-button"]').Click() }
 export function VerifyNoTags() { cy.Get('div.cl-tags > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
 export function VerifyTags(tags) { 
   cy.Enqueue(() => {
@@ -42,9 +42,10 @@ export function VerifyTags(tags) {
   })
 }
 
-export function AddTag(tag) { 
-  cy.Get('button.cl-tags__button-add#tags').Click()
-  cy.Get('input#tags').type(`${tag}{enter}`)
+export function AddTags(tags) { 
+  ClickAddTagButton()
+  if (!Array.isArray(tags)) tags = [tags]
+  tags.forEach(tag => {cy.Get('[data-testid="tags-input-tag-input"]').type(`${tag}{enter}`)})
   cy.WaitForStableDOM()
 }
 
