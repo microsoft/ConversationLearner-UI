@@ -1,8 +1,8 @@
-const models = require('../../support/Models')
-const modelPage = require('../../support/components/ModelPage')
-const editDialogModal = require('../../support/components/EditDialogModal')
-const train = require('../../support/Train')
-const helpers = require('../../support/Helpers')
+import * as models from '../../support/Models'
+import * as modelPage from '../../support/components/ModelPage'
+import * as editDialogModal from '../../support/components/EditDialogModal'
+import * as train from '../../support/Train'
+import * as helpers from '../../support/Helpers'
 
 describe('Training Scenario and Tags', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
