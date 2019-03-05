@@ -311,28 +311,25 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     {isLogDialog
                         ? <div>{/* placeholder for grid */}</div>
                         : <div className={`cl-dialog-tags ${OF.FontClassNames.mediumPlus}`}>
-                            <div className="cl-dialog-field" data-testid="train-dialog-description">
-                                <label htmlFor="description"><OF.Icon iconName="TextField" className="cl-icon" /><span><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</span></label>
-                                <BorderlessTextInput
-                                    data-testid="train-dialog-description"
-                                    id="description"
-                                    placeholder={Util.formatMessageId(intl, FM.DESCRIPTION_PLACEHOLDER)}
-                                    value={this.props.description}
-                                    onChange={this.props.onChangeDescription}
-                                />
-                            </div>
-                            <div className="cl-dialog-field" data-testid="train-dialog-tags">
-                                <label htmlFor="tags"><OF.Icon iconName="Tag" className="cl-icon" /><span><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</span></label>
-                                <TagsInput
-                                    id="tags"
-                                    // Map to objects because odd Fuse.js behavior on string[]
-                                    // See: https://github.com/krisk/Fuse/issues/287
-                                    allUniqueTags={this.props.allUniqueTags.map(t => ({ text: t }))}
-                                    tags={this.props.tags}
-                                    onAdd={this.props.onAddTag}
-                                    onRemove={this.props.onRemoveTag}
-                                />
-                            </div>
+                            <label htmlFor="description"><OF.Icon iconName="TextField" className="cl-icon" /><span><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</span></label>
+                            <BorderlessTextInput
+                                data-testid="train-dialog-description"
+                                id="description"
+                                placeholder={Util.formatMessageId(intl, FM.DESCRIPTION_PLACEHOLDER)}
+                                value={this.props.description}
+                                onChange={this.props.onChangeDescription}
+                            />
+                            <label htmlFor="tags"><OF.Icon iconName="Tag" className="cl-icon" /><span><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</span></label>
+                            <TagsInput
+                                data-testid="train-dialog-tags"
+                                id="tags"
+                                // Map to objects because odd Fuse.js behavior on string[]
+                                // See: https://github.com/krisk/Fuse/issues/287
+                                allUniqueTags={this.props.allUniqueTags.map(t => ({ text: t }))}
+                                tags={this.props.tags}
+                                onAdd={this.props.onAddTag}
+                                onRemove={this.props.onRemoveTag}
+                            />
                         </div>}
                     <TrainingStatusContainer
                         app={this.props.app}

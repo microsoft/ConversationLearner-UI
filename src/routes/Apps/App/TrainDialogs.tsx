@@ -125,11 +125,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         <span data-testid="train-dialogs-description">
                             {trainDialog.description
                                 || <>
-                                    <span data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span><span> - </span>
+                                    <span data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
+                                    <span> - </span>
                                     <span data-testid="train-dialogs-last-input">{lastInput ? lastInput : ''}</span>
                                 </>}
                         </span>
                     </span>
+                    <span style={{ display: "none" }} data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
+                    <span style={{ display: "none" }} data-testid="train-dialogs-last-input">{lastInput ? lastInput : ''}</span>
                     <span style={{ display: "none" }} data-testid="train-dialogs-last-response">{lastResponse ? lastResponse : ''}</span>
                 </>
             },
