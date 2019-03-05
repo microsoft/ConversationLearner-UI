@@ -821,7 +821,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.setState({isTreeViewModalOpen: false})
     }
 
-    
     @OF.autobind
     onOpenTreeView() {
             this.setState({isTreeViewModalOpen: true})
@@ -987,7 +986,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         void this.onCloseEditDialogModal()
     }
 
-    async onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
+    @OF.autobind
+    async openTrainDialog(trainDialog: CLM.TrainDialog, roundIndex: number, scoreIndex: number | null) {
+        const activityIndex = DialogUtils.activityIndexFromRounnd(trainDialog, roundIndex, scoreIndex)
+        await this.onClickTrainDialogItem(trainDialog, activityIndex)
+    }
+
+    @OF.autobind
+    async onClickTrainDialogItem(trainDialog: CLM.TrainDialog, selectedActivityIndex: number | null = null) {
         this.props.clearWebchatScrollPosition()
         let trainDialogWithDefinitions: CLM.TrainDialog = {
             ...trainDialog,
@@ -1019,7 +1025,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 originalTrainDialogId: originalId,
                 editType: EditDialogType.TRAIN_ORIGINAL,
                 isEditDialogModalOpen: true,
-                selectedActivityIndex: null
+                isTreeViewModalOpen: false,
+                selectedActivityIndex
             })
         }
         catch (e) {
@@ -1340,6 +1347,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 <TreeView
                     open={(this.state.isTreeViewModalOpen)}
                     onCancel={this.onCloseTreeView}
+                    openTrainDialog={this.openTrainDialog}
                 />
             </div>
         );

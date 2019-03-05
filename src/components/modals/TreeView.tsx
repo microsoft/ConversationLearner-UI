@@ -13,25 +13,9 @@ import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import * as Util from '../../Utils/util'
-import AddButtonInput from './AddButtonInput'
-import AddScoreButton from './AddButtonScore'
 import Tree from 'react-d3-tree';
+import { TreeNodeLabel, TreeNode } from './TreeNodeLabel'
 import './TreeView.css';
-import { EditDialogType } from '.';
-
-interface TreeNode {
-    name: string
-    userInput?: string[]
-    attributes: { [key: string]: string; } | undefined
-    children: TreeNode[]
-    nodeSvgShape?: any
-    actionId?: string
-    nodeLabelComponent?: any
-    allowForeignObjects?: boolean
-    _children?: any
-    _collapsed?: any
-    id?: string
-}
 
 const userShape = {
     shape: 'circle',
@@ -51,114 +35,6 @@ const botShape = {
 
 interface ComponentState {
     tree: TreeNode | null
-}
-
-interface NodeReceivedProps {
-    nodeData?: any
-    onExpandoClick: (nodeId: string) => void 
-}
-
-class NodeLabel extends React.PureComponent<NodeReceivedProps>  {
-
-    render() {
-        const nodeData: TreeNode = this.props.nodeData
-        if (nodeData.actionId) {
-            return (
-                <div>
-                    <div className="botBox">
-                            {nodeData.name}
-                            <div className="buttonblock">
-                                {nodeData._children && 
-                                    <OF.IconButton
-                                        className={nodeData._collapsed ? `` : `flip`}
-                                        iconProps={{ iconName: 'DrillExpand' }}
-                                        onClick={() => {
-                                            this.props.onExpandoClick(nodeData.id!)
-                                            this.forceUpdate()
-                                        }}
-                                        ariaDescription="Delete Turn"
-                                    />
-                                }
-                                <AddButtonInput
-                                    className={'treeViewButton treeViewButtonPadded'}
-                                    onClick={() => {}}
-                                    editType={EditDialogType.TRAIN_ORIGINAL}
-                                />
-                                <OF.IconButton
-                                    className={`treeViewButton`}
-                                    iconProps={{ iconName: '' }}
-                                    onClick={() => {}}
-                                />
-                                <AddScoreButton
-                                    className={'treeViewButton treeViewButtonPadded'}
-                                    // Don't select an activity if on last step
-                                    onClick={() => {}}
-                                />
-                                <OF.IconButton
-                                    className={`treeViewButton`}
-                                    iconProps={{ iconName: 'Delete' }}
-                                    onClick={() => {}}
-                                    ariaDescription="Delete Turn"
-                                />
-                            </div>
-                    </div>
-                    <div className='memory'>
-                        {nodeData.attributes && Object.keys(nodeData.attributes).join(', ')}
-                    </div>
-                </div>
-            )
-        }
-        else {
-            return (
-                <div>
-                    <div className="userBox">
-                        {nodeData.userInput && nodeData.userInput.map(input =>
-                            <div
-                                key={input}
-                            >
-                                {input}
-                            </div>
-                        )}
-                        <div className="buttonblock">
-                            {nodeData._children && 
-                                <OF.IconButton
-                                    className={nodeData._collapsed ? `` : `flip`}
-                                    iconProps={{ iconName: 'DrillExpand' }}
-                                    onClick={() => this.props.onExpandoClick(nodeData.id!)}
-                                    ariaDescription="Delete Turn"
-                                />
-                            }
-                            <AddButtonInput
-                                className={'treeViewButton treeViewButtonPadded'}
-                                onClick={() => {}}
-                                editType={EditDialogType.TRAIN_ORIGINAL}
-                            />
-                            <OF.IconButton
-                                disabled={true}
-                                className={`treeViewButton`}
-                                iconProps={{ iconName: 'BranchMerge' }}
-                                onClick={() => {}}
-                            />
-                            <AddScoreButton
-                                className={'treeViewButton treeViewButtonPadded'}
-                                // Don't select an activity if on last step
-                                onClick={() => {}}
-                            />
-                            <OF.IconButton
-                                className={`treeViewButton`}
-                                iconProps={{ iconName: 'Delete' }}
-                                onClick={() => {}}
-                                ariaDescription="Delete Turn"
-                            />
-                        </div>
-                    </div>
-                    <div className='memory'>
-                        {nodeData.attributes && Object.keys(nodeData.attributes).join(', ')}
-                    </div>
-                </div>
-            )
-        }
-    }
 }
 
 class TreeView extends React.Component<Props, ComponentState> {
@@ -199,7 +75,7 @@ class TreeView extends React.Component<Props, ComponentState> {
     }
 
     makeRoot(): TreeNode {
-        return { name: "start", attributes: undefined, children: []}
+        return { name: "start", attributes: undefined, children: [], trainDialogIds: []}
     }
 
     updateTree() {
@@ -235,13 +111,15 @@ class TreeView extends React.Component<Props, ComponentState> {
         }
 
     }
-    addExtractorStep(parentNode: TreeNode, extractorStep: CLM.TrainExtractorStep): TreeNode {
+    addExtractorStep(parentNode: TreeNode, extractorStep: CLM.TrainExtractorStep, roundIndex: number, trainDialog: CLM.TrainDialog): TreeNode {
         const child: TreeNode = {
             name: "User",
             userInput: extractorStep.textVariations.map(tv => tv.text),
             attributes: undefined,
             children: [],
-            nodeSvgShape: JSON.parse(JSON.stringify(userShape))
+            nodeSvgShape: JSON.parse(JSON.stringify(userShape)),
+            trainDialogIds: [trainDialog.trainDialogId],
+            roundIndex 
         }
         parentNode.children.push(child)
         return child
@@ -262,7 +140,7 @@ class TreeView extends React.Component<Props, ComponentState> {
         return attributes
     }
 
-    addScorerStep(parentNode: TreeNode, scorerStep: CLM.TrainScorerStep): TreeNode {
+    addScorerStep(parentNode: TreeNode, scorerStep: CLM.TrainScorerStep, roundIndex: number, scoreIndex: number, trainDialog: CLM.TrainDialog): TreeNode {
         if (!scorerStep.labelAction) {
             return parentNode
         }
@@ -273,16 +151,19 @@ class TreeView extends React.Component<Props, ComponentState> {
             attributes: this.memoryAttributes(scorerStep),
             children: [],
             nodeSvgShape: botShape,
-            actionId: action ? action.actionId : "MISSING ACTION"
+            actionId: action ? action.actionId : "MISSING ACTION",
+            trainDialogIds: [trainDialog.trainDialogId],
+            roundIndex,
+            scoreIndex
         }
         parentNode.children.push(child)
         return child
     }
 
-    addScorerSteps(parentNode: TreeNode, scorerSteps: CLM.TrainScorerStep[]): TreeNode {
+    addScorerSteps(parentNode: TreeNode, scorerSteps: CLM.TrainScorerStep[], roundIndex: number, trainDialog: CLM.TrainDialog): TreeNode {
         let parent = parentNode
-        scorerSteps.forEach(ss => {
-            parent = this.addScorerStep(parent, ss)
+        scorerSteps.forEach((scorerStep, scoreIndex) => {
+            parent = this.addScorerStep(parent, scorerStep, roundIndex, scoreIndex, trainDialog)
         })
         return parent
     }
@@ -335,23 +216,23 @@ class TreeView extends React.Component<Props, ComponentState> {
         return true
     }
 
-    findMatchingRound(parent: TreeNode, round: CLM.TrainRound): TreeNode {
+    findMatchingRound(parent: TreeNode, round: CLM.TrainRound, roundIndex: number, trainDialog: CLM.TrainDialog): TreeNode {
 
         // Create new round
         let tempParent: TreeNode = this.makeRoot()
-        let child = this.addRound(tempParent, round)
+        let child = this.addRound(tempParent, round, roundIndex, trainDialog)
+        let newRound = tempParent.children[0]
 
         // Check for existing matching round
         let match = parent.children.find(r => {
             // Maching round
-            return this.doesRoundMatch(r, tempParent.children[0])
+            return this.doesRoundMatch(r, newRound)
         })
 
         // If a match, return last scorer step as parent
         if (match) { 
-            //  match.name = `${match.name}||${tempParent.children[0].name}`  LARS
-            // props.allowForeignObjects && props.nodeLabelComponent LARS
-            match.userInput = [...match.userInput, ...tempParent.children[0].userInput]
+            match.userInput = [...match.userInput, ...newRound.userInput]
+            match.trainDialogIds = [...match.trainDialogIds, ...newRound.trainDialogIds]
             match.allowForeignObjects = true
             match.nodeSvgShape.shapeProps.height += 20  
             return this.getNextRoundParent(match)
@@ -362,19 +243,33 @@ class TreeView extends React.Component<Props, ComponentState> {
         return child
     }
 
-    addRound(parentNode: TreeNode, round: CLM.TrainRound): TreeNode {
+    addRound(parentNode: TreeNode, round: CLM.TrainRound, roundIndex: number, trainDialog: CLM.TrainDialog): TreeNode {
         let parent = parentNode
-        parent = this.addExtractorStep(parent, round.extractorStep)
-        parent = this.addScorerSteps(parent, round.scorerSteps)
+        parent = this.addExtractorStep(parent, round.extractorStep, roundIndex, trainDialog)
+        parent = this.addScorerSteps(parent, round.scorerSteps, roundIndex, trainDialog)
         return parent
     }
 
     addTrainDialog(tree: TreeNode, trainDialog: CLM.TrainDialog): void {
         let parent = tree
-        trainDialog.rounds.forEach(round => {
+        trainDialog.rounds.forEach((round, roundIndex) => {
 
-            parent = this.findMatchingRound(parent, round)
+            parent = this.findMatchingRound(parent, round, roundIndex, trainDialog)
         })
+    }
+
+    @OF.autobind
+    openTreeNode(treeNode: TreeNode): void {
+        // Pick first one
+        const trainDialogId = treeNode.trainDialogIds[0]
+        if (trainDialogId) {
+            const trainDialog = this.props.trainDialogs.find(t => t.trainDialogId === trainDialogId)
+            if (trainDialog) {
+                let roundIndex = treeNode.roundIndex === undefined ? null : treeNode.roundIndex
+                let scoreIndex = treeNode.scoreIndex === undefined ? null : treeNode.scoreIndex
+                this.props.openTrainDialog(trainDialog, roundIndex, scoreIndex)
+            }
+        }
     }
 
     render() {
@@ -395,11 +290,12 @@ class TreeView extends React.Component<Props, ComponentState> {
                             orientation='vertical'
                             allowForeignObjects={true}
                             collapsible={false}
-                            onClick={(nodeObj) => { /*this.handleNodeClick(nodeObj.id, event)*/ }}
+                         //   onClick={(node: TreeNode) => { this.onOpenTrainDialog(node.trainDialogs[0]) }}
                             nodeLabelComponent={
                                 {
-                                    render: <NodeLabel
+                                    render: <TreeNodeLabel
                                         onExpandoClick={this.onClickExpando}
+                                        onOpenTrainDialog={this.openTreeNode}
                                     />,
                                     foreignObjectWrapper: {
                                     y: 4,
@@ -443,6 +339,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     open: boolean
     onCancel: () => void
+    openTrainDialog: (trainDialog: CLM.TrainDialog, roundIndex: number | null, scoreIndex: number | null) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
