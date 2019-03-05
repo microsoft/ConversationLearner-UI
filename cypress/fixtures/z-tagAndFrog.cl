@@ -1,7 +1,11 @@
 ﻿{
   "trainDialogs": [
     {
-      "trainDialogId": "518aef46-f67c-4df7-805a-da557dd2bbb2",
+      "tags": [
+        "Tag"
+      ],
+      "description": "Tag Only",
+      "trainDialogId": "688d9898-14d6-492f-a2ef-0eb732958db8",
       "rounds": [
         {
           "extractorStep": {
@@ -10,7 +14,7 @@
                 "text": "This is Tag.",
                 "labelEntities": [
                   {
-                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "entityId": "757d77de-e137-4347-8ad6-3a39bb9fd30d",
                     "startCharIndex": 8,
                     "endCharIndex": 10,
                     "entityText": "Tag",
@@ -26,7 +30,7 @@
               "input": {
                 "filledEntities": [
                   {
-                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "entityId": "757d77de-e137-4347-8ad6-3a39bb9fd30d",
                     "values": [
                       {
                         "userText": "Tag",
@@ -40,10 +44,68 @@
                 "context": {},
                 "maskedActions": []
               },
-              "labelAction": "369d7dc7-cd03-4473-90dc-a6e9abf49342",
+              "labelAction": "9d54124c-8a4f-4b31-b8d8-b6c60a366ee5",
               "metrics": {
                 "predictMetrics": {
-                  "blisTime": 0.01170969009399414,
+                  "blisTime": 0.00574040412902832,
+                  "contextDialogBlisTime": 0
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "initialFilledEntities": [],
+      "createdDateTime": "2019-03-05T03:47:23.6568651+00:00",
+      "lastModifiedDateTime": "2019-03-05T03:47:43+00:00"
+    },
+    {
+      "tags": [
+        "Tag",
+        "Frog"
+      ],
+      "description": "Both Tag & Frog",
+      "trainDialogId": "7ab3ad26-1094-4ef1-bdce-3391c5ce5af3",
+      "rounds": [
+        {
+          "extractorStep": {
+            "textVariations": [
+              {
+                "text": "This is Tag.",
+                "labelEntities": [
+                  {
+                    "entityId": "757d77de-e137-4347-8ad6-3a39bb9fd30d",
+                    "startCharIndex": 8,
+                    "endCharIndex": 10,
+                    "entityText": "Tag"
+                  }
+                ]
+              }
+            ]
+          },
+          "scorerSteps": [
+            {
+              "input": {
+                "filledEntities": [
+                  {
+                    "entityId": "757d77de-e137-4347-8ad6-3a39bb9fd30d",
+                    "values": [
+                      {
+                        "userText": "Tag",
+                        "displayText": "Tag",
+                        "builtinType": null,
+                        "resolution": null
+                      }
+                    ]
+                  }
+                ],
+                "context": {},
+                "maskedActions": []
+              },
+              "labelAction": "9d54124c-8a4f-4b31-b8d8-b6c60a366ee5",
+              "metrics": {
+                "predictMetrics": {
+                  "blisTime": 0.015116214752197265,
                   "contextDialogBlisTime": 0
                 }
               }
@@ -57,15 +119,13 @@
                 "text": "This is Frog and Tag.",
                 "labelEntities": [
                   {
-                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "entityId": "757d77de-e137-4347-8ad6-3a39bb9fd30d",
                     "startCharIndex": 8,
                     "endCharIndex": 11,
-                    "entityText": "Frog",
-                    "resolution": {},
-                    "builtinType": "LUIS"
+                    "entityText": "Frog"
                   },
                   {
-                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "entityId": "757d77de-e137-4347-8ad6-3a39bb9fd30d",
                     "startCharIndex": 17,
                     "endCharIndex": 19,
                     "entityText": "Tag"
@@ -79,19 +139,19 @@
               "input": {
                 "filledEntities": [
                   {
-                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "entityId": "757d77de-e137-4347-8ad6-3a39bb9fd30d",
                     "values": [
                       {
                         "userText": "Tag",
                         "displayText": "Tag",
-                        "builtinType": "LUIS",
-                        "resolution": {}
+                        "builtinType": null,
+                        "resolution": null
                       },
                       {
                         "userText": "Frog",
                         "displayText": "Frog",
-                        "builtinType": "LUIS",
-                        "resolution": {}
+                        "builtinType": null,
+                        "resolution": null
                       }
                     ]
                   }
@@ -99,10 +159,10 @@
                 "context": {},
                 "maskedActions": []
               },
-              "labelAction": "25711d4e-2bef-4ae6-8a1a-474e8ebcf6aa",
+              "labelAction": "822f037b-8c54-4b7f-a074-3ad1cfba5a62",
               "metrics": {
                 "predictMetrics": {
-                  "blisTime": 0.01284933090209961,
+                  "blisTime": 0.0058062076568603515,
                   "contextDialogBlisTime": 0
                 }
               }
@@ -116,13 +176,13 @@
                 "text": "This is Tag and Frog.",
                 "labelEntities": [
                   {
-                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "entityId": "757d77de-e137-4347-8ad6-3a39bb9fd30d",
                     "startCharIndex": 8,
                     "endCharIndex": 10,
                     "entityText": "Tag"
                   },
                   {
-                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "entityId": "757d77de-e137-4347-8ad6-3a39bb9fd30d",
                     "startCharIndex": 16,
                     "endCharIndex": 19,
                     "entityText": "Frog"
@@ -136,19 +196,19 @@
               "input": {
                 "filledEntities": [
                   {
-                    "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
+                    "entityId": "757d77de-e137-4347-8ad6-3a39bb9fd30d",
                     "values": [
                       {
                         "userText": "Tag",
                         "displayText": "Tag",
-                        "builtinType": "LUIS",
-                        "resolution": {}
+                        "builtinType": null,
+                        "resolution": null
                       },
                       {
                         "userText": "Frog",
                         "displayText": "Frog",
-                        "builtinType": "LUIS",
-                        "resolution": {}
+                        "builtinType": null,
+                        "resolution": null
                       }
                     ]
                   }
@@ -156,10 +216,10 @@
                 "context": {},
                 "maskedActions": []
               },
-              "labelAction": "25711d4e-2bef-4ae6-8a1a-474e8ebcf6aa",
+              "labelAction": "822f037b-8c54-4b7f-a074-3ad1cfba5a62",
               "metrics": {
                 "predictMetrics": {
-                  "blisTime": 0.010688066482543945,
+                  "blisTime": 0.012478351593017578,
                   "contextDialogBlisTime": 0
                 }
               }
@@ -168,36 +228,40 @@
         }
       ],
       "initialFilledEntities": [],
-      "createdDateTime": "2018-12-06T00:05:41.0023214+00:00",
-      "lastModifiedDateTime": "2018-12-06T00:06:51+00:00"
+      "createdDateTime": "2019-03-05T03:48:08.9561432+00:00",
+      "lastModifiedDateTime": "2019-03-05T03:49:20+00:00"
     }
   ],
   "actions": [
     {
-      "actionId": "369d7dc7-cd03-4473-90dc-a6e9abf49342",
-      "createdDateTime": "2018-11-30T20:35:32.3168571+00:00",
+      "actionId": "9d54124c-8a4f-4b31-b8d8-b6c60a366ee5",
+      "createdDateTime": "2019-03-05T03:46:43.8688957+00:00",
       "actionType": "TEXT",
       "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"Hello\",\"marks\":[]}]}]}]}}}",
       "isTerminal": true,
       "requiredEntitiesFromPayload": [],
       "requiredEntities": [],
-      "negativeEntities": []
+      "negativeEntities": [],
+      "requiredConditions": [],
+      "negativeConditions": []
     },
     {
-      "actionId": "25711d4e-2bef-4ae6-8a1a-474e8ebcf6aa",
-      "createdDateTime": "2018-11-30T20:35:38.8680782+00:00",
+      "actionId": "822f037b-8c54-4b7f-a074-3ad1cfba5a62",
+      "createdDateTime": "2019-03-05T03:46:50.9070221+00:00",
       "actionType": "TEXT",
       "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"Hi\",\"marks\":[]}]}]}]}}}",
       "isTerminal": true,
       "requiredEntitiesFromPayload": [],
       "requiredEntities": [],
-      "negativeEntities": []
+      "negativeEntities": [],
+      "requiredConditions": [],
+      "negativeConditions": []
     }
   ],
   "entities": [
     {
-      "entityId": "bae52514-d18e-4b59-be27-a042b4b6eef6",
-      "createdDateTime": "2018-11-30T20:35:25.2867171+00:00",
+      "entityId": "757d77de-e137-4347-8ad6-3a39bb9fd30d",
+      "createdDateTime": "2019-03-05T03:46:36.3827084+00:00",
       "entityName": "multi",
       "entityType": "LUIS",
       "isMultivalue": true,
@@ -205,5 +269,5 @@
       "resolverType": "none"
     }
   ],
-  "packageId": "9320f023-1dbd-4ec0-b62f-2fbc063bb06a"
+  "packageId": "34409548-69bc-4a39-b6eb-863c0a861b40"
 }
