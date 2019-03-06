@@ -6,11 +6,27 @@
 import * as homePage from './components/HomePage'
 import * as modelPage from './components/ModelPage'
 
+class UniqueModelName {
+  // Get a unique time to use as a suffix for the model name.
+  static Get(modelNamePrefix) {
+    let moment = Cypress.moment()
+    let time = moment.format("MMMDD-HHmmss")
+    if (UniqueModelName._lastTimeUsed && time == UniqueModelName._lastTimeUsed) {
+      moment = moment.add(1, 'seconds')
+      time = moment.format("MMMDD-HHmmss")
+    }
+
+    UniqueModelName._lastTimeUsed = time
+    return `${modelNamePrefix}-${time}`
+  }
+}
+
 // The test defined prefix can be up to 17 characters.
 // The dash and time suffix takes 13 characters. 
 // 30 characters is the maximum model name.
 export function CreateNewModel(modelNamePrefix) {
-  const name = `${modelNamePrefix}-${ModelNameTime()}`
+  //const name = `${modelNamePrefix}-${ModelNameTime()}`
+  const name = UniqueModelName.Get(modelNamePrefix)
 
   homePage.Visit()
   homePage.ClickNewModelButton()
@@ -25,7 +41,7 @@ export function CreateNewModel(modelNamePrefix) {
 export function ImportModel(modelNamePrefix, fileName) {
   return new Promise((resolve) => {
     // Maximum Name Length is 30 Characters
-    const name = `${modelNamePrefix}-${ModelNameTime()}`
+    const name = UniqueModelName.Get(modelNamePrefix)
 
     homePage.Visit()
     homePage.ClickImportModelButton()
@@ -37,17 +53,6 @@ export function ImportModel(modelNamePrefix, fileName) {
   })
 }
 
-// Get a unique time to use as a suffix for the model name.
-var lastModelNameTime
-function ModelNameTime() {
-  let modelNameMoment = Cypress.moment()
-  let modelNameTime = modelNameMoment.format("MMMDD-HHmmss")
-  if (lastModelNameTime && modelNameTime == lastModelNameTime) {
-    modelNameMoment = modelNameMoment.add(1, 'seconds')
-    modelNameTime = modelNameMoment.format("MMMDD-HHmmss")
-  }
-
-  lastModelNameTime = modelNameTime
-  return modelNameTime
+export function DeleteThisTemporaryFunction(modelNamePrefix) {
+  return UniqueModelName.Get(modelNamePrefix)
 }
-
