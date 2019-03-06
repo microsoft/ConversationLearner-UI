@@ -131,6 +131,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                                 </>}
                         </span>
                     </span>
+                    {/* Keep firstInput and lastInput available in DOM until tests are upgraded */}
                     <span style={{ display: "none" }} data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
                     <span style={{ display: "none" }} data-testid="train-dialogs-last-input">{lastInput ? lastInput : ''}</span>
                     <span style={{ display: "none" }} data-testid="train-dialogs-last-response">{lastResponse ? lastResponse : ''}</span>

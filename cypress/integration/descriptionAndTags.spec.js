@@ -38,6 +38,12 @@ const testSelectors = {
     }
 }
 
+const testConstants = {
+    spinner: {
+        timeout: 120000
+    }
+}
+
 describe('Description and Tags', () => {
     context('Train Dialogs', () => {
         const testData = {
@@ -188,7 +194,7 @@ describe('Description and Tags', () => {
             })
 
             it('(advanced edit) should save the edited tags, description, and rounds', () => {
-                cy.get(testSelectors.common.spinner, { timeout: 60000 })
+                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
                 // Re-open dialog
@@ -250,7 +256,7 @@ describe('Description and Tags', () => {
             before(() => {
                 cy.reload()
 
-                cy.get(testSelectors.common.spinner, { timeout: 60000 })
+                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
             })
 
@@ -359,7 +365,7 @@ describe('Description and Tags', () => {
                 cy.get(testSelectors.dialogModal.branchSubmit)
                     .click()
 
-                cy.get(testSelectors.common.spinner, { timeout: 60000 })
+                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
                 cy.server()
@@ -388,7 +394,7 @@ describe('Description and Tags', () => {
                     })
 
                 cy.wait(500)
-                cy.get(testSelectors.common.spinner, { timeout: 60000 })
+                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
                 cy.get(testSelectors.dialogModal.closeSave)
@@ -433,7 +439,7 @@ describe('Description and Tags', () => {
 
             cy.wait('@postSession')
 
-            cy.get(testSelectors.common.spinner, { timeout: 60000 })
+            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
 
             cy.get(testSelectors.chatModal.container)
@@ -460,7 +466,7 @@ describe('Description and Tags', () => {
 
             cy.wait('@postSession')
             
-            cy.get(testSelectors.common.spinner, { timeout: 60000 })
+            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
 
             logDialogModal.TypeYourMessage(testData.input)

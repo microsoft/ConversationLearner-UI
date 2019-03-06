@@ -390,7 +390,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                     </div>
                     {isLogDialog
                         ? <div>{/* placeholder for grid */}</div>
-                        : <div className={`cl-dialog-tags ${OF.FontClassNames.mediumPlus}`}>
+                        : <div className={`cl-dialog-metadata ${OF.FontClassNames.mediumPlus}`}>
                             <label htmlFor="description"><OF.Icon iconName="TextField" className="cl-icon" /><span><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</span></label>
                             <BorderlessTextInput
                                 data-testid="train-dialog-description"
