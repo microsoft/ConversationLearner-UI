@@ -277,6 +277,6 @@ export function EditTrainingNEW(scenario, tags) {
         return
       }
     }
-    throw `Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: ${scenario} -- tags: ${tags}`
+    throw `Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${scenario}' -- tags: ${tags}`
   })
 }
