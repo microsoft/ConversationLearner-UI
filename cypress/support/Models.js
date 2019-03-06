@@ -52,7 +52,3 @@ export function ImportModel(modelNamePrefix, fileName) {
     cy.WaitForStableDOM().then(() => { resolve(name) })
   })
 }
-
-export function DeleteThisTemporaryFunction(modelNamePrefix) {
-  return UniqueModelName.Get(modelNamePrefix)
-}
