@@ -32,9 +32,9 @@ describe('ErrorHandling', () => {
     modelPage.NavigateToTrainDialogs()
 
     modelPage.VerifyErrorIconForTrainDialogs()
-    train.VerifyErrorsFoundInTraining(`${common.errorIconCharacter}${common.gonnaDeleteAnAction}`, common.gonnaDeleteAnAction, undefined)
+    train.VerifyErrorsFoundInTraining(`${common.validityIcon}${common.gonnaDeleteAnAction}`, common.gonnaDeleteAnAction, undefined)
 
-    train.EditTraining(`${common.errorIconCharacter}${common.gonnaDeleteAnAction}`, common.gonnaDeleteAnAction, undefined)
+    train.EditTraining(`${common.validityIcon}${common.gonnaDeleteAnAction}`, common.gonnaDeleteAnAction, undefined)
 
     editDialogModal.VerifyErrorMessage(trainDialogHasErrorsMessage)
 
