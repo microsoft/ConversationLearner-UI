@@ -20,7 +20,7 @@
 
 import * as helpers from './Helpers.js'
 
-var MonitorDocumentChanges = (function () {
+(function () {
   let lastMonitorTime = 0
   let lastChangeTime = 0
   let lastHtml
@@ -53,7 +53,7 @@ var MonitorDocumentChanges = (function () {
     })
 
     Cypress.Commands.add('Get', (selector, options) => {
-      helpers.ConLog(`cy.Get(${selector})`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector: \n${selector}`)
+      helpers.ConLog(`cy.Get(${selector})`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       cy.wrap(700, { timeout: 60000 }).should('lte', 'MillisecondsSinceLastChange').then(() => {
         helpers.ConLog(`cy.Get(${selector})`, `DOM Is Stable`)
         cy.get(selector, options)
@@ -61,7 +61,7 @@ var MonitorDocumentChanges = (function () {
     })
 
     Cypress.Commands.add('Contains', (selector, content, options) => {
-      helpers.ConLog(`cy.Contains()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago - Selector -- Content: \n${selector} -- ${content}`)
+      helpers.ConLog(`cy.Contains()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago\nSelector: ${selector} -- Content: ${content}`)
       cy.wrap(700, { timeout: 60000 }).should('lte', 'MillisecondsSinceLastChange').then(() => {
         helpers.ConLog(`cy.Contains()`, `DOM Is Stable`)
         cy.contains(selector, content, options)
