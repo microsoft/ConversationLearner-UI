@@ -8,91 +8,121 @@ import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
 import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as common from '../../support/Common'
+import * as helpers from '../../support/Helpers'
 
-describe('ErrorHandling', () => {
-  it('Wait Non Wait', () => {
+describe('Wait Non Wait Error Handling', () => {
+  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  
+  it('Imports a model to test against and verifies no errors on Model page', () => {
     models.ImportModel('z-errWaitNoWait', 'z-waitNoWait.cl')
     modelPage.NavigateToTrainDialogs()
     cy.WaitForTrainingStatusCompleted()
 
     modelPage.VerifyNoErrorIconOnPage()
+  })
+  
+  context('Create Errors', () => {
+    it('Deletes a user turn to create an error, verifies expected (and no other) error messages come up', () => {
+      train.EditTraining('Duck', 'Fish', common.fishJustSwim)
+      editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
+      editDialogModal.ClickDeleteChatTurn()
+      editDialogModal.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
 
-    train.EditTraining('Duck', 'Fish', common.fishJustSwim)
-    editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
-    editDialogModal.ClickDeleteChatTurn()
-    editDialogModal.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
+      Validations(1)
+    })
 
-    function Validations(errCount) {
-      cy.ConLog(`Validations(${errCount})`, `Start`)
-      editDialogModal.SelectChatTurnExactMatch('Duck')
+    it('Inserts an extra Bot response, verifies new error message and other error message remain', () => {
+      editDialogModal.InsertBotResponseAfter('Duck', common.whichAnimalWouldYouLike)
       editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
-      if (errCount > 1) {
-        editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
-        editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-      }
+      Validations(2)
+    })
 
-      editDialogModal.SelectChatTurnExactMatch(common.ducksSayQuack)
-      if (errCount == 1) editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-      else editDialogModal.VerifyErrorMessage(common.actionFollowsWaitActionErrorMessage)
+    it('Inserts another Bot response, verifies new error message and other error messages remain', () => {
+      editDialogModal.InsertBotResponseAfter('Fish', common.whichAnimalWouldYouLike)
+      editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
+      Validations(3)
+    })
+  })
+
+  context(`Save & Validate Training Errors`, () => {
+    it('Saves the Training with Errors, verifies Model page and Train Dialog grid shows an error', () => {
+      editDialogModal.ClickSaveCloseButton()
+      modelPage.VerifyErrorIconForTrainDialogs()
+      train.VerifyErrorsFoundInTraining(`Duck`, 'Fish', common.fishJustSwim)
+    })
+
+    // TODO: Previously we validated the error icon in the grid by opening the grid containing the row with 
+    //       the expected error and included the error icon in the string used to search the grid for the row.
+    //       The logic being that if the row was not found it could be due to that icon not being there.
+    //
+    //       Need to validate that the expected row has the icon in it some way and...
+    //       Need to re-think how we access these rows now that the columns in the grid have changed.
+
+    it('Re-opens the Training and validates all error messages remain', () => {
+      train.EditTraining(`Duck`, 'Fish', common.fishJustSwim)
+      editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+
+      Validations(3)
+    })
+  })
+
+  context('Correct the Errors', () => {
+    it('Deletes one of the error causing turns, verifies an error went away & other error remained', () => {
+      editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike, 1)
+      editDialogModal.ClickDeleteChatTurn()
+      editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+
+      Validations(2)
+    })
+
+    it('Deletes another error causing turn, verifies another error went away & still one error remains', () => {
+      editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
+      editDialogModal.ClickDeleteChatTurn()
+      editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+
+      Validations(1)
+    })
+
+    it('Re-inserts the original user turn, verifies all errors are gone in dialog and on Model page', () => {
       editDialogModal.SelectChatTurnExactMatch('Fish')
       editDialogModal.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
 
-      if (errCount > 2) {
-        editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike, 1)
-        editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-      }
+      editDialogModal.InsertBotResponseAfter(common.ducksSayQuack, common.whichAnimalWouldYouLike)
+      editDialogModal.VerifyNoErrorMessage()
 
-      editDialogModal.SelectChatTurnExactMatch(common.fishJustSwim)
-      if (errCount < 3) editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-      else editDialogModal.VerifyErrorMessage(common.actionFollowsWaitActionErrorMessage)
-
-      cy.ConLog(`Validations(${errCount})`, `End`)
-    }
-    Validations(1)
-
-    editDialogModal.InsertBotResponseAfter('Duck', common.whichAnimalWouldYouLike)
-    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-
-    Validations(2)
-
-    editDialogModal.InsertBotResponseAfter('Fish', common.whichAnimalWouldYouLike)
-    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-
-    Validations(3)
-
-    editDialogModal.ClickSaveCloseButton()
-
-    modelPage.VerifyErrorIconForTrainDialogs()
-    train.VerifyErrorsFoundInTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', common.fishJustSwim)
-
-    // - - - Open the same Train Dialog, validate and fix the errors. - - -
-
-    train.EditTraining(`${String.fromCharCode(59412)}Duck`, 'Fish', common.fishJustSwim)
-    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-
-    Validations(3)
-
-    editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike, 1)
-    editDialogModal.ClickDeleteChatTurn()
-    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-
-    Validations(2)
-
-    editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
-    editDialogModal.ClickDeleteChatTurn()
-    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
-
-    Validations(1)
-
-    editDialogModal.SelectChatTurnExactMatch('Fish')
-    editDialogModal.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
-
-    editDialogModal.InsertBotResponseAfter(common.ducksSayQuack, common.whichAnimalWouldYouLike)
-    editDialogModal.VerifyNoErrorMessage()
-
-    editDialogModal.ClickSaveCloseButton()
-    modelPage.VerifyNoErrorIconOnPage()
+      editDialogModal.ClickSaveCloseButton()
+      modelPage.VerifyNoErrorIconOnPage()
+    })
   })
 })
+
+function Validations(errCount) {
+  cy.ConLog(`Validations(${errCount})`, `Start`)
+  editDialogModal.SelectChatTurnExactMatch('Duck')
+  editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+
+  if (errCount > 1) {
+    editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike)
+    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+  }
+
+  editDialogModal.SelectChatTurnExactMatch(common.ducksSayQuack)
+  if (errCount == 1) editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+  else editDialogModal.VerifyErrorMessage(common.actionFollowsWaitActionErrorMessage)
+
+  editDialogModal.SelectChatTurnExactMatch('Fish')
+  editDialogModal.VerifyErrorMessage(common.userInputFollowsNonWaitErrorMessage)
+
+  if (errCount > 2) {
+    editDialogModal.SelectChatTurnExactMatch(common.whichAnimalWouldYouLike, 1)
+    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+  }
+
+  editDialogModal.SelectChatTurnExactMatch(common.fishJustSwim)
+  if (errCount < 3) editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+  else editDialogModal.VerifyErrorMessage(common.actionFollowsWaitActionErrorMessage)
+
+  cy.ConLog(`Validations(${errCount})`, `End`)
+}

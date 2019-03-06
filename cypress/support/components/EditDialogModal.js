@@ -16,7 +16,6 @@ export function TypeAlternativeInput(trainMessage) { cy.Get('[data-testid="entit
 export function ClickSetInitialStateButton() { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
 export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).Click() }
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
-export function EntitySearch() { cy.Get('[data-testid="entity-picker-entity-search"]') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
@@ -26,6 +25,28 @@ export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-er
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="edit-dialog-modal-delete-turn-button"]').Click() }
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
 export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreActionsButtonSelector) }
+
+export function VerifyScenario(expectedScenario) { cy.Get(`input.cl-borderless-text-input#description[value="${expectedScenario}"]`) }
+export function TypeScenario(scenario) { cy.Get('input.cl-borderless-text-input#description').clear().type(`${scenario}{enter}`) }
+export function ClickAddTagButton() { cy.Get('button.cl-tags__button-add#tags').Click() }
+export function VerifyNoTags() { cy.Get('div.cl-tags > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
+export function VerifyTags(tags) { 
+  cy.Enqueue(() => {
+    helpers.ConLog('VerifyTags', 'Start')
+    let tagsOnPage = helpers.StringArrayFromElementText('div.cl-tags > div.cl-tags__tag > span')
+    let missingTags = []
+    tags.forEach(tag => {
+      if (!tagsOnPage.find(tagOnPage => tag === tagOnPage)) missingTags.push(tag)
+    })
+    if (missingTags.length > 0) throw `Failed to find these tags: ${missingTags}`
+  })
+}
+
+export function AddTag(tag) { 
+  cy.Get('button.cl-tags__button-add#tags').Click()
+  cy.Get('input#tags').type(`${tag}{enter}`)
+  cy.WaitForStableDOM()
+}
 
 export function ClickSaveCloseButton() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
 export function VerifyCloseButtonLabel() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Close') }
