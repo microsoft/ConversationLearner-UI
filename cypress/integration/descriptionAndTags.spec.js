@@ -41,6 +41,9 @@ const testSelectors = {
 const testConstants = {
     spinner: {
         timeout: 120000
+    },
+    prediction: {
+        timeout: 60000
     }
 }
 
@@ -472,7 +475,7 @@ describe('Description and Tags', () => {
             logDialogModal.TypeYourMessage(testData.input)
 
             // Wait for prediction and ensure it isn't an error
-            cy.get('.wc-message-from-bot')
+            cy.get('.wc-message-from-bot', { timeout: testConstants.prediction.timeout })
                 .should('exist')
                 .should('not.have.class', 'wc-message-color-exception')
 
