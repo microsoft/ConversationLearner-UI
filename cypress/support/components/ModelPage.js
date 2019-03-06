@@ -30,8 +30,8 @@ export function VerifyErrorIconForTrainDialogs() { cy.Get('[data-testid="app-ind
 //   maxDuration:
 let canRefreshTrainingStatusTime = 0
 export function WaitForTrainingStatusCompleted() {
-  let currentHtml = Cypress.$('html')[0].outerHTML
-  let currentTime = new Date().getTime()
+  const currentHtml = Cypress.$('html')[0].outerHTML
+  const currentTime = new Date().getTime()
   if ((currentHtml.includes('data-testid="training-status-polling-stopped-warning"') ||
       currentHtml.includes('data-testid="training-status-failed"')) &&
       (currentTime > canRefreshTrainingStatusTime)) {
@@ -45,7 +45,7 @@ export function WaitForTrainingStatusCompleted() {
 
     // When we get here it is possible there are two refresh buttons on the page, one that
     // is covered up by a popup dialog, so we need to click on the last one found.
-    let elements = Cypress.$('[data-testid="training-status-refresh-button"]')
+    const elements = Cypress.$('[data-testid="training-status-refresh-button"]')
     Cypress.$(elements[elements.length - 1]).click()
   }
   expect(currentHtml.includes('data-testid="training-status-completed"')).to.be.true

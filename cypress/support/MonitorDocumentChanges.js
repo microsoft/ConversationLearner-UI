@@ -74,7 +74,7 @@ import * as helpers from './Helpers.js'
     // the selector then this method will return true, otherwise false.
     // Without setting "expectFailure" this method will throw an exception on failure.
     Cypress.Commands.add('DoesNotContain', { prevSubject: 'optional' }, (subject, selector, textItShouldNotContain, expectFailure = false) => {
-      let functionSignature = `cy.DoesNotContain(${subject}, ${selector}, ${textItShouldNotContain})`
+      const functionSignature = `cy.DoesNotContain(${subject}, ${selector}, ${textItShouldNotContain})`
       helpers.ConLog(functionSignature, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       cy.wrap(700, { timeout: 60000 }).should('lte', 'MillisecondsSinceLastChange').then(() => {
         helpers.ConLog(functionSignature, `DOM Is Stable`)
@@ -148,15 +148,15 @@ import * as helpers from './Helpers.js'
 
   let dumpSpinner = false
   function LookForChange(loop) {
-    let thisFuncName = `MonitorDocumentChanges.LookForChange()`
+    const thisFuncName = `MonitorDocumentChanges.LookForChange()`
 
     if (StopLookingForChanges) {
       helpers.ConLog(thisFuncName, `DONE`)
       return
     }
 
-    let currentTime = lastMonitorTime = new Date().getTime()
-    let currentHtml = Cypress.$('html')[0].outerHTML
+    const currentTime = lastMonitorTime = new Date().getTime()
+    const currentHtml = Cypress.$('html')[0].outerHTML
     if (currentHtml != lastHtml) {
       helpers.ConLog(thisFuncName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
       if (dumpHtml) { helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`) }
@@ -171,9 +171,9 @@ import * as helpers from './Helpers.js'
   }
 
   function MonitorSpinner() {
-    let thisFuncName = `MonitorDocumentChanges.MonitorSpinner()`
+    const thisFuncName = `MonitorDocumentChanges.MonitorSpinner()`
 
-    let spinnerTexts =
+    const spinnerTexts =
       [
         'data-testid="spinner"',
         '<div class="ms-Spinner-circle ms-Spinner--large circle-50">',
@@ -212,7 +212,7 @@ import * as helpers from './Helpers.js'
 
   function UrlNeedsSpinner(url) {
     // If a URL ends with one of these we do not expect a spinner.
-    let urlEndings =
+    const urlEndings =
       [
         '/trainDialogs',
         '/entities',

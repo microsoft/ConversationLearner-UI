@@ -19,7 +19,7 @@ describe('Tools', () => {
 
 function DeleteAllTestGeneratedModelRows() 
 {
-  let thisFuncName = `DeleteAllTestGeneratedModelRows`
+  const thisFuncName = `DeleteAllTestGeneratedModelRows`
   
   cy.WaitForStableDOM()
   cy.Enqueue(() => { return homePage.GetModelNameIdList() } ).then(modelNameIdList => {

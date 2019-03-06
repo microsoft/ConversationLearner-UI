@@ -13,7 +13,7 @@ describe('Train', () => {
   it('Tag And Frog', () => {
     // TODO: Need to add another test case or expand this one so that tagging something
     //       that was NOT tagged in another instance causes the UI to complain.
-    let textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
+    const textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
 
     models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
     modelPage.NavigateToTrainDialogs()
