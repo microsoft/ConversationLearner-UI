@@ -84,15 +84,15 @@ export function SelectChatTurnStartsWith(message, index = 0) {
   return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText.startsWith(transformedMessage))}
 
 function SelectChatTurnInternal(message, index, matchPredicate) {
-  var funcName = `SelectChatTurnInternal(${message}, ${index})`
+  let funcName = `SelectChatTurnInternal(${message}, ${index})`
   cy.ConLog(funcName, `Start`)
 
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
     message = message.replace(/'/g, "’")
-    var elements = Cypress.$(AllChatMessagesSelector)
+    let elements = Cypress.$(AllChatMessagesSelector)
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
       helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
       if (matchPredicate(elements[i].textContent, message)) {
         if (index > 0) index--
@@ -132,7 +132,7 @@ export function GetAllChatTurns() {
 }
 
 export function VerifyChatTurnControls(element, index) {
-  var userMessage
+  let userMessage
   if (element.classList.contains('wc-message-from-me')) userMessage = true
   else if (element.classList.contains('wc-message-from-bot')) userMessage = false
   else {
@@ -187,12 +187,12 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
     // First make sure it is not already labeled before trying to label it.
     cy.WaitForStableDOM()
     cy.Enqueue(() => {
-      var found = false
-      var elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
+      let found = false
+      let elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
 
       // If you need to find a phrase, this part of the code will fail, 
       // you will need to upgrade this code in that case.
-      var element = elements.find(element => element.textContent === text)
+      let element = elements.find(element => element.textContent === text)
       if (element) {
         found = Cypress.$(element).parents('.cl-entity-node--custom').find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`).length == 0
       }
@@ -250,7 +250,7 @@ function VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, button
     .parents('.ms-Dialog-main') // Back to the single parent object
     .within(() => {
       if (!Array.isArray(textEntityPairs)) textEntityPairs = [textEntityPairs]
-      for (var i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
+      for (let i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
 
       // TODO: Wanted to use 'ExactMatch' instead of 'contains', but there is a weird problem...
       //       for some reson the first two button texts on this popup all end with a newline.
@@ -263,7 +263,7 @@ export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index) {
     expect(elements.length).to.be.at.least(index - 1)
     cy.wrap(elements[index]).within(() => {
       if (!Array.isArray(textEntityPairs)) textEntityPairs = [textEntityPairs]
-      for (var i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
+      for (let i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
     })
   })
 }
@@ -300,8 +300,8 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
         // so we need to confirm that we actually need to click on the action, 
         // otherwise an unnecessary message box pops up that we don't want to deal with.
 
-        var chatMessages = helpers.StringArrayFromElementText(AllChatMessagesSelector)
-        var indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
+        let chatMessages = helpers.StringArrayFromElementText(AllChatMessagesSelector)
+        let indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
         if (chatMessages[indexOfInsertedBotResponse] != newMessage)
           scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
       })
