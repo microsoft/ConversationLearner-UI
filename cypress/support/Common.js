@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
 */
 
-export const errorIconCharacter = String.fromCharCode(59412)
+export const validityIcon = String.fromCharCode(59412)
 
 export const ducksSayQuack = 'Ducks say quack!'
 export const fishJustSwim = 'Fish just swim.'

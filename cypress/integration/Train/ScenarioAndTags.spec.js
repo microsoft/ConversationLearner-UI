@@ -4,7 +4,7 @@ import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as train from '../../support/Train'
 import * as helpers from '../../support/Helpers'
 
-describe('Training Scenario and Tags', () => {
+describe('Scenario and Tags - Train Dialog', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   it('Imports a model to test against', () => {

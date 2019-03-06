@@ -20,7 +20,7 @@
 
 import * as helpers from './Helpers.js'
 
-var MonitorDocumentChanges = (function () {
+(function () {
   let lastMonitorTime = 0
   let lastChangeTime = 0
   let lastHtml
