@@ -79,7 +79,7 @@ class component extends React.Component<Props, State> {
         if (this.props.tags.length !== nextProps.tags.length
             || this.props.allUniqueTags.length !== nextProps.allUniqueTags.length) {
                 
-            const hasMaxTags = this.props.tags.length > this.props.maxTags
+            const hasMaxTags = nextProps.tags.length >= nextProps.maxTags
             const matchedOptions = this.getSuggestedTags(nextProps.allUniqueTags, nextProps.tags)
             this.setState({
                 hasMaxTags,
@@ -265,7 +265,7 @@ class component extends React.Component<Props, State> {
                         </button>
                     </div>
                 )}
-                {!hasMaxTags && !showForm
+                {!hasMaxTags && (!showForm
                     ? <button className="cl-tags__button-add" id={this.props.id} onClick={() => this.onClickAdd()} >
                         {this.props.tags.length === 0
                             ? <FormattedMessageId id={FM.TAGS_INPUT_ADD} />
@@ -297,7 +297,7 @@ class component extends React.Component<Props, State> {
                                 </div>
                             }
                         </div>
-                    </form>
+                    </form>)
                 }
             </div>
         )
