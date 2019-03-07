@@ -8,9 +8,15 @@
 export function VerifyEntityInMemory(entityName, entityValues, displacedValue) {
   cy.Get('[data-testid="entity-memory-name"]').contains(entityName)
 
-  if (!Array.isArray(entityValues)) entityValues = [entityValues]
-  for (let i = 0; i < entityValues.length; i++)
-    cy.Get('.cl-font--emphasis,[data-testid="entity-memory-value"]').contains(entityValues[i])
+  let entityValueArray
+  if (!Array.isArray(entityValues)) entityValueArray = [entityValues]
+  else entityValueArray = entityValues
+
+  cy.Get('.cl-font--emphasis,[data-testid="entity-memory-value"]').then(elements => {
+    entityValueArray.forEach(entityValue => {
+      cy.wrap(elements).contains(entityValue)
+    })
+  })
 
   if (displacedValue) cy.Get('.cl-font--deleted,[data-testid="entity-memory-value"]').contains(displacedValue)
 }

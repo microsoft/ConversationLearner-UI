@@ -28,14 +28,16 @@ export function TypeResponse(textToType) {
 
 // Pass in an undefined 'entityNames' to just clear the field
 function TypeMultipleEntities(selector, entityNames) {
-  if (!entityNames) entityNames = []
-  else if (!Array.isArray(entityNames)) entityNames = [entityNames]
+  let entityNameArray
+  if (!entityNames) entityNameArray = []
+  else if (!Array.isArray(entityNames)) entityNameArray = [entityNames]
+  else entityNameArray = entityNames
 
   cy.Get('.cl-modal_body').within(() => {
     cy.Get(selector).within(() => {
       cy.Get('.ms-BasePicker-input')
         .then((element) => {
-          for (let i = 0; i < entityNames.length; i++) { cy.wrap(element).type(`$${entityNames[i]}`).wait(1000).type('{enter}') }
+          entityNameArray.forEach(entityName => cy.wrap(element).type(`$${entityName}`).wait(1000).type('{enter}'))
         })
     })
   })

@@ -44,12 +44,12 @@ function ValidateEntities(selector, emptySelector, entities1, entities2) {
 
   let entities = []
   if (entities1) {
-    if (!Array.isArray(entities1)) entities1 = [entities1]
-    entities = entities1
+    if (!Array.isArray(entities1)) entities = [entities1]
+    else entities = entities1
   }
   if (entities2) {
-    if (!Array.isArray(entities2)) entities2 = [entities2]
-    entities = [...entities, ...entities2]
+    if (!Array.isArray(entities2)) entities = [...entities, entities2]
+    else entities = [...entities, ...entities2]
   }
   entities = helpers.RemoveDuplicates(entities)
 

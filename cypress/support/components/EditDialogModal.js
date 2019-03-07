@@ -253,8 +253,8 @@ function VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, button
     .contains('Entity is labelled differently in another user utterance') // Narrows it down to 1
     .parents('.ms-Dialog-main') // Back to the single parent object
     .within(() => {
-      if (!Array.isArray(textEntityPairs)) textEntityPairs = [textEntityPairs]
-      for (let i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
+      if (!Array.isArray(textEntityPairs)) VerifyEntityLabel(textEntityPairs.text, textEntityPairs.entity)
+      else textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity))
 
       // TODO: Wanted to use 'ExactMatch' instead of 'contains', but there is a weird problem...
       //       for some reson the first two button texts on this popup all end with a newline.
@@ -266,8 +266,8 @@ export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index) {
   cy.Get('div.slate-editor').then(elements => {
     expect(elements.length).to.be.at.least(index - 1)
     cy.wrap(elements[index]).within(() => {
-      if (!Array.isArray(textEntityPairs)) textEntityPairs = [textEntityPairs]
-      for (let i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
+      if (!Array.isArray(textEntityPairs)) VerifyEntityLabel(textEntityPairs.text, textEntityPairs.entity)
+      else textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity))
     })
   })
 }
