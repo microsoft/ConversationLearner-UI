@@ -124,7 +124,12 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             />
                         }
                         <span data-testid="train-dialogs-description">
-                            {trainDialog.description || <FormattedMessageId id={FM.TRAINDIALOGS_DESCRIPTION_EMPTY} />}
+                            {trainDialog.description
+                                || <>
+                                    <span data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
+                                    <span> - </span>
+                                    <span data-testid="train-dialogs-last-input">{lastInput ? lastInput : ''}</span>
+                                </>}
                         </span>
                     </span>
                     {/* Keep firstInput and lastInput available in DOM until tests are upgraded */}
@@ -145,7 +150,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: trainDialog => {
                 return <span className={`${OF.FontClassNames.mediumPlus}`} data-testid="train-dialogs-tags">
                     {trainDialog.tags.length === 0
-                        ? <span  className={textClassName(trainDialog)}><FormattedMessageId id={FM.TRAINDIALOGS_TAGS_EMPTY} /></span>
+                        ? <OF.Icon iconName="Remove" className="cl-icon" />
                         : <TagsReadOnly tags={trainDialog.tags} />}
                 </span>
             },
