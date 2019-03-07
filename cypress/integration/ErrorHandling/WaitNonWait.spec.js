@@ -53,13 +53,6 @@ describe('Wait Non Wait Error Handling', () => {
       train.VerifyErrorsFoundInTraining(`Duck`, 'Fish', common.fishJustSwim)
     })
 
-    // TODO: Previously we validated the error icon in the grid by opening the grid containing the row with 
-    //       the expected error and included the error icon in the string used to search the grid for the row.
-    //       The logic being that if the row was not found it could be due to that icon not being there.
-    //
-    //       Need to validate that the expected row has the icon in it some way and...
-    //       Need to re-think how we access these rows now that the columns in the grid have changed.
-
     it('Re-opens the Training and validates all error messages remain', () => {
       train.EditTraining(`Duck`, 'Fish', common.fishJustSwim)
       editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)

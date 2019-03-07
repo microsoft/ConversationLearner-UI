@@ -32,6 +32,9 @@ function DeleteAllTestGeneratedModelRows()
         helpers.ConLog(funcName, `Sending Request to Delete Model: ${modelNameId.name}`)
         cy.request(
         { 
+          // BUGBUG - This URL Needs to come from the configuration
+          //          Also need to figure out how to confirm these are deleted, 
+          //          by now there could be thousands of models.
           url: `http://localhost:3978/sdk/app/${modelNameId.id}`, 
           method: "DELETE", 
           headers: { 'x-conversationlearner-memory-key': 'x' } 
