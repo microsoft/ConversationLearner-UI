@@ -346,6 +346,7 @@ export enum FM {
     // Tags and Description
     TAGS_INPUT_LABEL = 'Tags.label',
     TAGS_INPUT_ADD = 'TagsInput.add',
+    TAGS_INPUT_ERROR_DUPLICATE = 'TagsInput.error.duplicate',
     TAGS_READONLY_EMPTY = 'TagsReadOnly.empty',
     DESCRIPTION_LABEL = 'Description.label',
     DESCRIPTION_PLACEHOLDER = 'Description.placeholder',
@@ -977,6 +978,7 @@ export default {
         // Tags and Description
         [FM.TAGS_INPUT_LABEL]: 'Tags',
         [FM.TAGS_INPUT_ADD]: 'Add Tag',
+        [FM.TAGS_INPUT_ERROR_DUPLICATE]: 'The new tag is a duplicate of an existing tag.',
         [FM.TAGS_READONLY_EMPTY]: 'No Tags',
         [FM.DESCRIPTION_LABEL]: 'Description',
         [FM.DESCRIPTION_PLACEHOLDER]: 'Click to add description',
