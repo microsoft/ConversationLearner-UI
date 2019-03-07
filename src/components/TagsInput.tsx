@@ -253,9 +253,10 @@ class component extends React.Component<Props, State> {
     render() {
         const { matchedOptions, highlightIndex } = this.state
         const { hasMaxTags, showForm } = this.state
-
+        const dataTestId = this.props['data-testid']
+        
         return (
-            <div className="cl-tags">
+            <div className="cl-tags" data-testid={dataTestId} >
                 {this.props.tags.map((tag, i) =>
                     <div className="cl-tags__tag" key={i}>
                         <span>{tag}</span>

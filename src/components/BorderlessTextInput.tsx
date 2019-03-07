@@ -1,13 +1,14 @@
 import * as React from 'react'
 import './BorderlessTextInput.css'
 
-// Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
+const testIdAttribute = 'data-testid'
 interface Props {
     id: string
     placeholder: string
     value: string
     onChange: (value: string) => void
     maxLength: number
+    [testIdAttribute]: string
 }
 
 class component extends React.Component<Props> {
@@ -19,6 +20,7 @@ class component extends React.Component<Props> {
     render() {
         return (
             <input
+                data-testid={this.props[testIdAttribute]}
                 className="cl-borderless-text-input"
                 type="text"
                 id={this.props.id}
