@@ -9,7 +9,7 @@ import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
 import * as CLM from '@conversationlearner/models'
 import { AxiosError } from 'axios'
-import { deleteTrainDialogThunkAsync, fetchAllTrainDialogsThunkAsync, editTrainDialogThunkAsync } from './trainActions'
+import { fetchAllTrainDialogsThunkAsync } from './trainActions'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 
 // --------------------------
@@ -139,19 +139,31 @@ export const deleteTeachSessionThunkAsync = (
         const clClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
 
         try {
-            const trainDialogId = await clClient.teachSessionDelete(app.appId, teachSession, save);
+            await clClient.teachSessionDelete(app.appId, teachSession, save);
             dispatch(deleteTeachSessionFulfilled(key, teachSession, sourceLogDialogId, app.appId));
 
             // If saving to a TrainDialog
             if (save) {
-                // If source train dialog exists for new dialog delete it (LogDialogs not deleted)
+                // If source train dialog exists update it with data from new dialog and then delete the new dialog
+                // The new dialog was only created as side effect of new teach session. It was intermediate/temporary and can be discarded.
                 if (sourceTrainDialogId) {
-                    await dispatch(deleteTrainDialogThunkAsync(key, app, sourceTrainDialogId));
+                    const newTrainDialog = await clClient.trainDialog(app.appId, teachSession.trainDialogId)
+                    // Created updated source dialog from new dialogs rounds
+                    const updatedSourceDialog: CLM.TrainDialog = {
+                        ...newTrainDialog,
+                        trainDialogId: sourceTrainDialogId,
+                        tags,
+                        description
+                    }
+                    const deletePromise = clClient.trainDialogsDelete(app.appId, teachSession.trainDialogId)
+                    const editPromise =  clClient.trainDialogEdit(app.appId, updatedSourceDialog)
+                    await Promise.all([deletePromise, editPromise])
+                }
+                else {
+                    // Edit the associated train dialogs tag and description
+                    await clClient.trainDialogEdit(app.appId, { trainDialogId: teachSession.trainDialogId, tags, description })
                 }
 
-                // Edit the associated train dialogs tag and description
-                await dispatch(editTrainDialogThunkAsync(app.appId, { trainDialogId, tags, description }))
-                
                 // If we're adding a new train dialog as consequence of the session save, re-fetch train dialogs and start poll for train status
                 dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
                 dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
