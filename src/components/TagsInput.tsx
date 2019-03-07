@@ -290,6 +290,7 @@ class component extends React.Component<Props, State> {
                                 onKeyDown={this.onKeyDownInput}
                                 onBlur={this.onBlurInput}
                                 autoComplete="off"
+                                spellCheck={false}
                                 maxLength={this.props.magTagLength}
                             />
                             <div className="cl-tags__suggested-tags-container">
