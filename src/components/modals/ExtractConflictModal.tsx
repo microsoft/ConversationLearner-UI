@@ -38,48 +38,48 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
                 <OF.Icon iconName="Warning" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_TITLE)}
                 {typeof props.message === 'function' && props.message()}
             </div>
-                <div>
-                    <p>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_SUBTITLE)}</p>
-                    <div>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_REVIEW)}</div>
+            <div>
+                <p>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_SUBTITLE)}</p>
+                <div>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_REVIEW)}</div>
 
-                    <div className="cl-inconsistent-entity-modal-header cl-text--error"><OF.Icon iconName="ChromeClose" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS)}</div>
-                    <ExtractorResponseEditor.EditorWrapper
-                        render={(editorProps, onChangeCustomEntities) =>
-                            <ExtractorResponseEditor.Editor
-                                readOnly={true}
-                                isValid={true}
-                                entities={props.entities}
-                                {...editorProps}
+                <div className="cl-inconsistent-entity-modal-header cl-text--error"><OF.Icon iconName="ChromeClose" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS)}</div>
+                <ExtractorResponseEditor.EditorWrapper
+                    render={(editorProps, onChangeCustomEntities) =>
+                        <ExtractorResponseEditor.Editor
+                            readOnly={true}
+                            isValid={true}
+                            entities={props.entities}
+                            {...editorProps}
 
-                                onChangeCustomEntities={onChangeCustomEntities}
-                                onClickNewEntity={() => { }}
-                            />
-                        }
-                        entities={props.entities}
-                        extractorResponse={props.attemptedExtractResponse}
-                        onChange={() => { }}
-                    />
+                            onChangeCustomEntities={onChangeCustomEntities}
+                            onClickNewEntity={() => { }}
+                        />
+                    }
+                    entities={props.entities}
+                    extractorResponse={props.attemptedExtractResponse}
+                    onChange={() => { }}
+                />
 
-                    <div className="cl-inconsistent-entity-modal-header cl-text--success"><OF.Icon iconName="Accept" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS)}</div>
-                    <ExtractorResponseEditor.EditorWrapper
-                        render={(editorProps, onChangeCustomEntities) =>
-                            <ExtractorResponseEditor.Editor
-                                readOnly={true}
-                                isValid={true}
-                                entities={props.entities}
-                                {...editorProps}
+                <div className="cl-inconsistent-entity-modal-header cl-text--success"><OF.Icon iconName="Accept" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS)}</div>
+                <ExtractorResponseEditor.EditorWrapper
+                    render={(editorProps, onChangeCustomEntities) =>
+                        <ExtractorResponseEditor.Editor
+                            readOnly={true}
+                            isValid={true}
+                            entities={props.entities}
+                            {...editorProps}
 
-                                onChangeCustomEntities={onChangeCustomEntities}
-                                onClickNewEntity={() => { }}
-                            />
-                        }
-                        entities={props.entities}
-                        extractorResponse={props.extractResponse}
-                        onChange={() => { }}
-                    />
+                            onChangeCustomEntities={onChangeCustomEntities}
+                            onClickNewEntity={() => { }}
+                        />
+                    }
+                    entities={props.entities}
+                    extractorResponse={props.extractResponse}
+                    onChange={() => { }}
+                />
 
-                    <p>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CALLTOACTION)}</p>
-                </div>
+                <p>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CALLTOACTION)}</p>
+            </div>
             <div className="cl-modal_footer cl-modal-buttons">
                 <div className="cl-modal-buttons_secondary"></div>
                 <div className="cl-modal-buttons_primary">
