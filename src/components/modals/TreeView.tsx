@@ -82,10 +82,19 @@ class TreeView extends React.Component<Props, ComponentState> {
         return { name: "start", attributes: undefined, children: [], trainDialogIds: []}
     }
 
-    updateTree() {
+    updateTree(filter?: TreeNode) {
         let tree = this.makeRoot()
         if (this.props.trainDialogs.length > 0) {
-          this.props.trainDialogs.forEach(td => this.addTrainDialog(tree, td))
+            if (filter) {
+                let selected = this.props.trainDialogs.filter(td => filter.trainDialogIds.includes(td.trainDialogId))
+                selected.forEach(td => this.addTrainDialog(tree, td))
+
+                let excluded = this.props.trainDialogs.filter(td => !filter.trainDialogIds.includes(td.trainDialogId))
+                excluded.forEach(td => this.addTrainDialog(tree, td, filter.roundIndex))
+            }
+            else {
+                this.props.trainDialogs.forEach(td => this.addTrainDialog(tree, td))
+            }
         }
         this.setState({tree})
     }
@@ -220,7 +229,7 @@ class TreeView extends React.Component<Props, ComponentState> {
         return true
     }
 
-    findMatchingRound(parent: TreeNode, round: CLM.TrainRound, roundIndex: number, trainDialog: CLM.TrainDialog): TreeNode {
+    findMatchingRound(parent: TreeNode, round: CLM.TrainRound, roundIndex: number, trainDialog: CLM.TrainDialog, filter: boolean): TreeNode | null {
 
         // Create new round
         let tempParent: TreeNode = this.makeRoot()
@@ -242,6 +251,10 @@ class TreeView extends React.Component<Props, ComponentState> {
             return this.getNextRoundParent(match)
         }
 
+        if (filter) {
+            return null
+        }
+
         // Otherwise add as new child
         parent.children.push(tempParent.children[0])
         return child
@@ -254,19 +267,28 @@ class TreeView extends React.Component<Props, ComponentState> {
         return parent
     }
 
-    addTrainDialog(tree: TreeNode, trainDialog: CLM.TrainDialog): void {
-        let parent = tree
-        trainDialog.rounds.forEach((round, roundIndex) => {
-
-            parent = this.findMatchingRound(parent, round, roundIndex, trainDialog)
-        })
+    addTrainDialog(tree: TreeNode, trainDialog: CLM.TrainDialog, filterRound?: number): void {
+        let parent: TreeNode | null = tree
+        for (let [roundIndex, round] of trainDialog.rounds.entries()) {
+            if (filterRound !== undefined && roundIndex <= filterRound) {
+                parent = this.findMatchingRound(parent, round, roundIndex, trainDialog, true)    
+            }
+            else {
+                parent = this.findMatchingRound(parent, round, roundIndex, trainDialog, false)    
+            }
+            if (!parent) {
+                return
+            }
+        }
     }
 
     @OF.autobind
     openTreeNode(treeNode: TreeNode): void {
-        // Pick first one
+        this.updateTree(treeNode)
+   /*     // Pick first one
         const trainDialogId = treeNode.trainDialogIds[0]
         if (trainDialogId) {
+            
             const trainDialog = this.props.trainDialogs.find(t => t.trainDialogId === trainDialogId)
             if (trainDialog) {
                 this.setState({trainDialog})
@@ -275,8 +297,14 @@ class TreeView extends React.Component<Props, ComponentState> {
                 let scoreIndex = treeNode.scoreIndex === undefined ? null : treeNode.scoreIndex
                 this.props.openTrainDialog(trainDialog, roundIndex, scoreIndex)
             
+                this.updateTree(trainDialog)
+                
+                let roundIndex = treeNode.roundIndex === undefined ? null : treeNode.roundIndex
+                let scoreIndex = treeNode.scoreIndex === undefined ? null : treeNode.scoreIndex
+                this.props.openTrainDialog(trainDialog, roundIndex, scoreIndex)
+                
             }
-        }
+}*/
     }
 
     render() {

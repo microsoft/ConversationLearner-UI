@@ -893,6 +893,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         this.setState({
             isPayloadMissing,
+            isTerminal: actionTypeOption.key === CLM.ActionTypes.END_SESSION
+                ? true
+                : this.state.isTerminal,
             selectedActionTypeOptionKey: actionTypeOption.key,
             selectedApiOptionKey: undefined,
             selectedCardOptionKey: undefined,
