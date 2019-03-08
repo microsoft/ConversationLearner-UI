@@ -87,3 +87,13 @@
     background-color: var(--color-themeLight);
 }
 
+.cl-tags-error {
+    margin-top: 5px;
+    margin-left: 5px;
+    color: var(--color-error);
+}
+
+.cl-tags-error [data-icon-name="Warning"] {
+    transform: translateY(2px);
+}
+

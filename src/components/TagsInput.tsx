@@ -26,6 +26,7 @@ interface State {
     showForm: boolean
     matchedOptions: MatchedOption<ITag>[]
     highlightIndex: number
+    pendingTagIsDuplicate: boolean
 }
 
 const fuseOptions: Fuse.FuseOptions = {
@@ -56,7 +57,8 @@ class component extends React.Component<Props, State> {
         inputValue: '',
         showForm: false,
         matchedOptions: [],
-        highlightIndex: -1
+        highlightIndex: -1,
+        pendingTagIsDuplicate: false
     }
 
     constructor(props: Props) {
@@ -78,8 +80,8 @@ class component extends React.Component<Props, State> {
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.tags.length !== nextProps.tags.length
             || this.props.allUniqueTags.length !== nextProps.allUniqueTags.length) {
-                
-            const hasMaxTags = this.props.tags.length > this.props.maxTags
+
+            const hasMaxTags = nextProps.tags.length >= nextProps.maxTags
             const matchedOptions = this.getSuggestedTags(nextProps.allUniqueTags, nextProps.tags)
             this.setState({
                 hasMaxTags,
@@ -103,7 +105,8 @@ class component extends React.Component<Props, State> {
         const tag = this.state.inputValue.trim()
 
         // Prevent submitting empty tags
-        if (tag.length === 0) {
+        if (tag.length === 0
+            || this.state.pendingTagIsDuplicate) {
             return
         }
 
@@ -116,14 +119,18 @@ class component extends React.Component<Props, State> {
 
     onChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value
+        const pendingTagIsDuplicate = this.props.tags.some(t => t === inputValue)
         const searchText = inputValue.trim()
         const matchedOptions: MatchedOption<ITag>[] = (searchText.length === 0)
             ? this.getSuggestedTags(this.props.allUniqueTags, this.props.tags)
             : this.fuse.search<FuseResult<ITag>>(searchText)
                 .map(result => convertMatchedTextIntoMatchedOption(result.item.text, result.matches[0].indices, result.item))
+                // Remove matches for tags that are already added
+                .filter(option => !this.props.tags.some(t => t === option.original.text))
 
         this.setState({
             inputValue,
+            pendingTagIsDuplicate,
             matchedOptions
         })
     }
@@ -155,7 +162,8 @@ class component extends React.Component<Props, State> {
 
     onEnter(event: React.KeyboardEvent<HTMLInputElement>) {
         if (event.shiftKey
-            || this.state.highlightIndex === -1) {
+            || this.state.highlightIndex === -1
+            || this.state.pendingTagIsDuplicate) {
             return
         }
 
@@ -185,11 +193,12 @@ class component extends React.Component<Props, State> {
     }
 
     onBlurInput = () => {
-        const tag = this.state.inputValue
+        const tag = this.state.inputValue.trim()
 
         // If user accidentally clicked away before submission still save tag
         // They can delete if unintended
-        if (tag.length > 0) {
+        if (tag.length > 0
+            && !this.state.pendingTagIsDuplicate) {
             this.props.onAdd(tag)
         }
 
@@ -235,6 +244,7 @@ class component extends React.Component<Props, State> {
             inputValue: '',
             showForm: false,
             highlightIndex: -1,
+            pendingTagIsDuplicate: false
         })
     }
 
@@ -251,10 +261,9 @@ class component extends React.Component<Props, State> {
     }
 
     render() {
-        const { matchedOptions, highlightIndex } = this.state
-        const { hasMaxTags, showForm } = this.state
+        const { matchedOptions, highlightIndex, hasMaxTags, showForm, pendingTagIsDuplicate } = this.state
         const dataTestId = this.props['data-testid']
-        
+
         return (
             <div className="cl-tags" data-testid={dataTestId} >
                 {this.props.tags.map((tag, i) =>
@@ -265,39 +274,43 @@ class component extends React.Component<Props, State> {
                         </button>
                     </div>
                 )}
-                {!hasMaxTags && !showForm
+                {!hasMaxTags && (!showForm
                     ? <button className="cl-tags__button-add" id={this.props.id} onClick={() => this.onClickAdd()} >
                         {this.props.tags.length === 0
                             ? <FormattedMessageId id={FM.TAGS_INPUT_ADD} />
                             : <OF.Icon iconName="Add" />}
                     </button>
-                    : <form onSubmit={this.onSubmit} className="cl-tags__form">
-                        <input type="text"
-                            ref={this.inputRef}
-                            id={this.props.id}
-                            value={this.state.inputValue}
-                            onChange={this.onChangeInput}
-                            onKeyDown={this.onKeyDownInput}
-                            onBlur={this.onBlurInput}
-                            autoComplete="off"
-                            maxLength={this.props.magTagLength}
-                        />
-                        <div className="cl-tags__suggested-tags-container">
-                            {matchedOptions.length !== 0
-                                && <div className="cl-tags__suggested-tags" ref={this.suggestedTagsRef}>
-                                    {matchedOptions.map((matchedOption, i) =>
-                                        <div
-                                            key={i}
-                                            className={`cl-tags__suggested-tags__button ${highlightIndex === i ? 'cl-tags__suggested-tags__button--highlight' : ''}`}
-                                            onMouseDown={event => this.onMouseDownSuggestedTag(event, matchedOption.original.text)}
-                                        >
-                                            <FuseMatch matches={matchedOption.matchedStrings} />
-                                        </div>
-                                    )}
-                                </div>
-                            }
-                        </div>
-                    </form>
+                    : <>
+                        <form onSubmit={this.onSubmit} className="cl-tags__form">
+                            <input type="text"
+                                ref={this.inputRef}
+                                id={this.props.id}
+                                value={this.state.inputValue}
+                                onChange={this.onChangeInput}
+                                onKeyDown={this.onKeyDownInput}
+                                onBlur={this.onBlurInput}
+                                autoComplete="off"
+                                spellCheck={false}
+                                maxLength={this.props.magTagLength}
+                            />
+                            <div className="cl-tags__suggested-tags-container">
+                                {matchedOptions.length !== 0
+                                    && <div className="cl-tags__suggested-tags" ref={this.suggestedTagsRef}>
+                                        {matchedOptions.map((matchedOption, i) =>
+                                            <div
+                                                key={i}
+                                                className={`cl-tags__suggested-tags__button ${highlightIndex === i ? 'cl-tags__suggested-tags__button--highlight' : ''}`}
+                                                onMouseDown={event => this.onMouseDownSuggestedTag(event, matchedOption.original.text)}
+                                            >
+                                                <FuseMatch matches={matchedOption.matchedStrings} />
+                                            </div>
+                                        )}
+                                    </div>
+                                }
+                            </div>
+                        </form>
+                        {pendingTagIsDuplicate && <div className="cl-tags-error"><OF.Icon iconName="Warning" /> <FormattedMessageId id={FM.TAGS_INPUT_ERROR_DUPLICATE} /></div>}
+                    </>)
                 }
             </div>
         )

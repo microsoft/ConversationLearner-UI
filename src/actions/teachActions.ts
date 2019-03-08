@@ -173,7 +173,7 @@ export const deleteTeachSessionThunkAsync = (
         } catch (e) {
             const error = e as AxiosError
             dispatch(clearTeachSession())
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_TRAIN_DIALOG_REJECTED))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TRAIN_DIALOG_ASYNC))
             dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
             return false;
         }
