@@ -952,7 +952,7 @@ export default {
 
         // ExtractConflictModal
         [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Inconsistent Entity Labels',
-        [FM.EXTRACTCONFLICTMODAL_SUBTITLE]: 'You attempted to submit an input with entities labelled differently than another input in the current or a previous train dialog. The input must be labelled consistently to ensure the bot will predict them correctly.',
+        [FM.EXTRACTCONFLICTMODAL_SUBTITLE]: 'You attempted to submit an input with entities labelled differently than another input in the current or a previous train dialog. Input labels must be consistent to ensure the Bot processes them correctly.',
         [FM.EXTRACTCONFLICTMODAL_REVIEW]: 'Please review the labels below:',
         [FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS]: 'Conflicting Labels',
         [FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS]: 'Previously Submitted Labels',
