@@ -8,12 +8,8 @@
 export function VerifyEntityInMemory(entityName, entityValues, displacedValue) {
   cy.Get('[data-testid="entity-memory-name"]').contains(entityName)
 
-  let entityValueArray
-  if (!Array.isArray(entityValues)) entityValueArray = [entityValues]
-  else entityValueArray = entityValues
-
   cy.Get('.cl-font--emphasis,[data-testid="entity-memory-value"]').then(elements => {
-    entityValueArray.forEach(entityValue => {
+    entityValues.forEach(entityValue => {
       cy.wrap(elements).contains(entityValue)
     })
   })

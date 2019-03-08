@@ -74,10 +74,11 @@ describe('Tag And Frog - Create Model', () => {
     
     it('Label multiple words as the same entity.', () => {
       train.TypeYourMessage('This is Frog and Tag.')
-      memoryTableComponent.VerifyEntityInMemory('multi', 'Tag')
+      memoryTableComponent.VerifyEntityInMemory('multi', ['Tag'])
       editDialogModal.VerifyEntityLabel('Tag', 'multi')
       editDialogModal.LabelTextAsEntity('Frog', 'multi', false)
       editDialogModal.ClickScoreActionsButton()
+      memoryTableComponent.VerifyEntityInMemory('multi', ['Tag', 'Frog'])
       train.SelectAction('Hi')
       cy.WaitForTrainingStatusCompleted()
     })
