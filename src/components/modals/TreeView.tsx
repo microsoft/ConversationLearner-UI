@@ -16,6 +16,8 @@ import * as Util from '../../Utils/util'
 import Tree from 'react-d3-tree';
 import { TreeNodeLabel, TreeNode } from './TreeNodeLabel'
 import './TreeView.css';
+import { EditDialogType, EditState } from '.'
+import EditDialogAdmin from './EditDialogAdmin';
 
 const userShape = {
     shape: 'circle',
@@ -35,11 +37,13 @@ const botShape = {
 
 interface ComponentState {
     tree: TreeNode | null
+    trainDialog: CLM.TrainDialog | null
 }
 
 class TreeView extends React.Component<Props, ComponentState> {
     state: ComponentState = {
-        tree: null
+        tree: null,
+        trainDialog: null
     }
 
     @OF.autobind
@@ -265,9 +269,12 @@ class TreeView extends React.Component<Props, ComponentState> {
         if (trainDialogId) {
             const trainDialog = this.props.trainDialogs.find(t => t.trainDialogId === trainDialogId)
             if (trainDialog) {
+                this.setState({trainDialog})
+            
                 let roundIndex = treeNode.roundIndex === undefined ? null : treeNode.roundIndex
                 let scoreIndex = treeNode.scoreIndex === undefined ? null : treeNode.scoreIndex
                 this.props.openTrainDialog(trainDialog, roundIndex, scoreIndex)
+            
             }
         }
     }
@@ -303,9 +310,34 @@ class TreeView extends React.Component<Props, ComponentState> {
                                 }
                             }}
                             separation={{siblings: 2, nonSiblings: 2}}
-                        />          
+                        /> 
                     </div>
                 </div>
+                {this.state.trainDialog &&
+                    <EditDialogAdmin
+                        data-testid="chatmodal-editdialogadmin"
+                        app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
+                        editingLogDialogId={null}//this.props.editingLogDialogId}
+                        originalTrainDialogId={this.props.originalTrainDialogId}
+                        editType={this.props.editType}
+                        editState={this.props.editState}
+                        trainDialog={this.state.trainDialog}//this.props.trainDialog}
+                        selectedActivity={null}//this.state.selectedActivity}
+                        isLastActivitySelected={false}//isLastActivitySelected}
+                        onChangeAction={()=>{}}//(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
+                        onSubmitExtraction={()=>{}}//(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
+                        onPendingStatusChanged={()=>{}}//(changed: boolean) => this.onPendingStatusChanged(changed)}
+
+                        allUniqueTags={[]}//this.props.allUniqueTags}
+                        tags={[]}//this.state.tags}
+                        onAddTag={()=>{}}//this.onAddTag}
+                        onRemoveTag={()=>{}}//this.onRemoveTag}
+
+                        description={""}//this.state.description}
+                        onChangeDescription={()=>{}}//this.onChangeDescription}
+                    />    
+                }  
             </div>
                 <div className='cl-modal_footer'>
                     <div className="cl-modal-buttons">
@@ -332,12 +364,23 @@ const mapStateToProps = (state: State) => {
     return {
         trainDialogs: state.trainDialogs,
         actions: state.actions,
-        entities: state.entities
+        entities: state.entities,
+        teachSession: state.teachSession
     }
 }
 
 export interface ReceivedProps {
     open: boolean
+    app: CLM.AppBase,
+    editingPackageId: string,
+    editState: EditState,
+     // Is it new, from a TrainDialog or LogDialog
+     editType: EditDialogType,
+     // When editing and existing log or train dialog
+     sourceTrainDialog: CLM.TrainDialog | null
+    // Train Dialog that this edit originally came from (not same as sourceTrainDialog)
+    originalTrainDialogId: string | null,
+                    
     onCancel: () => void
     openTrainDialog: (trainDialog: CLM.TrainDialog, roundIndex: number | null, scoreIndex: number | null) => void
 }

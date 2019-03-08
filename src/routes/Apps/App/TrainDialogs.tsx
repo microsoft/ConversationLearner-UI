@@ -993,8 +993,49 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async openTrainDialog(trainDialog: CLM.TrainDialog, roundIndex: number, scoreIndex: number | null) {
-        const activityIndex = DialogUtils.activityIndexFromRounnd(trainDialog, roundIndex, scoreIndex)
-        await this.onClickTrainDialogItem(trainDialog, activityIndex)
+        const selectedActivityIndex = DialogUtils.activityIndexFromRounnd(trainDialog, roundIndex, scoreIndex) || null
+
+        // LARS: duplicate code with below clean up on both opens
+        let trainDialogWithDefinitions: CLM.TrainDialog = {
+            ...trainDialog,
+            createdDateTime: new Date().toJSON(),
+            lastModifiedDateTime: new Date().toJSON(),
+            trainDialogId: undefined!,
+            sourceLogDialogId: trainDialog.sourceLogDialogId,
+            version: undefined!,
+            packageCreationId: undefined!,
+            packageDeletionId: undefined!,
+            rounds: trainDialog.rounds,
+            initialFilledEntities: trainDialog.initialFilledEntities,
+            definitions: {
+                actions: this.props.actions,
+                entities: this.props.entities,
+                trainDialogs: []
+            },
+        };
+
+        try {
+            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            const originalId = this.state.currentTrainDialog
+                ? this.state.currentTrainDialog.trainDialogId
+                : null
+            this.setState({
+                history: teachWithHistory.history,
+                lastAction: teachWithHistory.lastAction,
+                currentTrainDialog: trainDialog,
+                originalTrainDialogId: originalId,
+                editType: EditDialogType.TRAIN_ORIGINAL,
+                isEditDialogModalOpen: false,
+                isTreeViewModalOpen: true,
+                selectedActivityIndex
+            })
+        }
+        catch (e) {
+            const error = e as Error
+            console.warn(`Error when attempting to create history: `, error)
+        }
+
+        //LARS await this.onClickTrainDialogItem(trainDialog, activityIndex)
     }
 
     @OF.autobind
@@ -1351,6 +1392,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 />
                 <TreeView
                     open={(this.state.isTreeViewModalOpen)}
+                    app={this.props.app}
+                    originalTrainDialogId={this.state.originalTrainDialogId}
+                    sourceTrainDialog={this.state.currentTrainDialog}
+                    editType={this.state.editType}    
+                    editState={editState}
+                    editingPackageId={this.props.editingPackageId}
                     onCancel={this.onCloseTreeView}
                     openTrainDialog={this.openTrainDialog}
                 />

@@ -94,9 +94,9 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                         role="button"
                         onClick={() => this.props.onOpenTrainDialog(this.props.nodeData)}
                     >
-                        {nodeData.userInput && nodeData.userInput.map(input =>
+                        {nodeData.userInput && nodeData.userInput.map((input, index) =>
                             <div
-                                key={input}
+                                key={`${nodeData.id}${index}`}
                             >
                                 {input}
                             </div>
