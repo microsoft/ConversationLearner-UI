@@ -69,6 +69,10 @@ html {
   color: var(--color-alert);
 }
 
+.cl-text--success {
+  color: var(--color-success);
+}
+
 .cl-action {
   border: none;
   background: none;
@@ -145,6 +149,7 @@ html {
   color: green;
   font-size: 20px;
 }
+
 .cl-icon[data-icon-name="CommentAdd"]{
   color: lightgrey;
   font-size: 18px
