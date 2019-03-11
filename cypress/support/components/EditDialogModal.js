@@ -3,9 +3,9 @@
  * Licensed under the MIT License.
  */
 
-const homePage = require('../../support/components/HomePage')
-const helpers = require('../../support/Helpers')
-const scorerModal = require('../../support/components/ScorerModal')
+import * as homePage from '../../support/components/HomePage'
+import * as helpers from '../../support/Helpers'
+import * as scorerModal from '../../support/components/ScorerModal'
 
 export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p'
 export const TypeYourMessageSelector = 'input.wc-shellinput[placeholder="Type your message..."]' // data-testid NOT possible
@@ -16,7 +16,6 @@ export function TypeAlternativeInput(trainMessage) { cy.Get('[data-testid="entit
 export function ClickSetInitialStateButton() { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
 export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).Click() }
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
-export function EntitySearch() { cy.Get('[data-testid="entity-picker-entity-search"]') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
@@ -26,6 +25,28 @@ export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-er
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="edit-dialog-modal-delete-turn-button"]').Click() }
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
 export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreActionsButtonSelector) }
+
+export function VerifyScenario(expectedScenario) { cy.Get(`input.cl-borderless-text-input#description[value="${expectedScenario}"]`) }
+export function TypeScenario(scenario) { cy.Get('input.cl-borderless-text-input#description').clear().type(`${scenario}{enter}`) }
+export function ClickAddTagButton() { cy.Get('button.cl-tags__button-add#tags').Click() }
+export function VerifyNoTags() { cy.Get('div.cl-tags > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
+export function VerifyTags(tags) { 
+  cy.Enqueue(() => {
+    helpers.ConLog('VerifyTags', 'Start')
+    let tagsOnPage = helpers.StringArrayFromElementText('div.cl-tags > div.cl-tags__tag > span')
+    let missingTags = []
+    tags.forEach(tag => {
+      if (!tagsOnPage.find(tagOnPage => tag === tagOnPage)) missingTags.push(tag)
+    })
+    if (missingTags.length > 0) throw `Failed to find these tags: ${missingTags}`
+  })
+}
+
+export function AddTag(tag) { 
+  cy.Get('button.cl-tags__button-add#tags').Click()
+  cy.Get('input#tags').type(`${tag}{enter}`)
+  cy.WaitForStableDOM()
+}
 
 export function ClickSaveCloseButton() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
 export function VerifyCloseButtonLabel() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Close') }
@@ -62,15 +83,15 @@ export function SelectChatTurnStartsWith(message, index = 0) {
   return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText.startsWith(transformedMessage))}
 
 function SelectChatTurnInternal(message, index, matchPredicate) {
-  var funcName = `SelectChatTurnInternal(${message}, ${index})`
+  let funcName = `SelectChatTurnInternal(${message}, ${index})`
   cy.ConLog(funcName, `Start`)
 
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
     message = message.replace(/'/g, "’")
-    var elements = Cypress.$(AllChatMessagesSelector)
+    let elements = Cypress.$(AllChatMessagesSelector)
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
-    for (var i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
       helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
       if (matchPredicate(elements[i].textContent, message)) {
         if (index > 0) index--
@@ -110,7 +131,7 @@ export function GetAllChatTurns() {
 }
 
 export function VerifyChatTurnControls(element, index) {
-  var userMessage
+  let userMessage
   if (element.classList.contains('wc-message-from-me')) userMessage = true
   else if (element.classList.contains('wc-message-from-bot')) userMessage = false
   else {
@@ -165,12 +186,12 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
     // First make sure it is not already labeled before trying to label it.
     cy.WaitForStableDOM()
     cy.Enqueue(() => {
-      var found = false
-      var elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
+      let found = false
+      let elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
 
       // If you need to find a phrase, this part of the code will fail, 
       // you will need to upgrade this code in that case.
-      var element = elements.find(element => element.textContent === text)
+      let element = elements.find(element => element.textContent === text)
       if (element) {
         found = Cypress.$(element).parents('.cl-entity-node--custom').find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`).length == 0
       }
@@ -228,7 +249,7 @@ function VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, button
     .parents('.ms-Dialog-main') // Back to the single parent object
     .within(() => {
       if (!Array.isArray(textEntityPairs)) textEntityPairs = [textEntityPairs]
-      for (var i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
+      for (let i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
 
       // TODO: Wanted to use 'ExactMatch' instead of 'contains', but there is a weird problem...
       //       for some reson the first two button texts on this popup all end with a newline.
@@ -241,7 +262,7 @@ export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index) {
     expect(elements.length).to.be.at.least(index - 1)
     cy.wrap(elements[index]).within(() => {
       if (!Array.isArray(textEntityPairs)) textEntityPairs = [textEntityPairs]
-      for (var i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
+      for (let i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
     })
   })
 }
@@ -278,8 +299,8 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
         // so we need to confirm that we actually need to click on the action, 
         // otherwise an unnecessary message box pops up that we don't want to deal with.
 
-        var chatMessages = helpers.StringArrayFromElementText(AllChatMessagesSelector)
-        var indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
+        let chatMessages = helpers.StringArrayFromElementText(AllChatMessagesSelector)
+        let indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
         if (chatMessages[indexOfInsertedBotResponse] != newMessage)
           scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
       })

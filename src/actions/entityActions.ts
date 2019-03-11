@@ -12,6 +12,7 @@ import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { AxiosError } from 'axios'
 import { fetchAllActionsThunkAsync } from './actionActions'
 import { fetchAllTrainDialogsThunkAsync } from './trainActions'
+import { EntityType } from '@conversationlearner/models';
 
 //-------------------------------------
 // createEntity
@@ -108,6 +109,12 @@ export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prev
             // that definition of prebuilt entity is in the memory
             if (entity.resolverType !== prevEntity.resolverType) {
                 dispatch(fetchAllEntitiesThunkAsync(appId));
+            }
+            // If an enum entity, new EnumValuesIds have been set and actions may have been invalidated
+            else if (entity.entityType === EntityType.ENUM) {
+                const updatedEntity = await clClient.entitiesGetById(appId, entity.entityId)
+                dispatch(editEntityFulfilled(updatedEntity))
+                dispatch(fetchAllActionsThunkAsync(appId))
             }
 
             // If any train dialogs were modified fetch train dialogs 

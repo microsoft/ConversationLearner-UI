@@ -3,10 +3,10 @@
  * Licensed under the MIT License.
  */
 
-const scorerModal = require('./components/ScorerModal')
-const trainDialogsGrid = require('./components/TrainDialogsGrid')
-const editDialogModal = require('./components/EditDialogModal')
-const helpers = require('./Helpers')
+import * as scorerModal from './components/ScorerModal'
+import * as trainDialogsGrid from './components/TrainDialogsGrid'
+import * as editDialogModal from './components/EditDialogModal'
+import * as helpers from './Helpers'
 
 function Today() { return Cypress.moment().format("MM/DD/YYYY") }
 
@@ -15,7 +15,7 @@ window.currentTrainingSummary = undefined
 
 export function CreateNewTrainDialog() {
   cy.Enqueue(() => {
-    var turns = trainDialogsGrid.GetTurns()
+    let turns = trainDialogsGrid.GetTurns()
     window.currentTrainingSummary =
       {
         FirstInput: undefined,
@@ -37,16 +37,16 @@ export function CreateNewTrainDialog() {
 
 export function EditTraining(firstInput, lastInput, lastResponse) {
   cy.Enqueue(() => {
-    var turns = trainDialogsGrid.GetTurns()
-    var firstInputs = trainDialogsGrid.GetFirstInputs()
-    var lastInputs = trainDialogsGrid.GetLastInputs()
-    var lastResponses = trainDialogsGrid.GetLastResponses()
-    var lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
-    var createdDates = trainDialogsGrid.GetCreatedDates()
+    let turns = trainDialogsGrid.GetTurns()
+    let firstInputs = trainDialogsGrid.GetFirstInputs()
+    let lastInputs = trainDialogsGrid.GetLastInputs()
+    let lastResponses = trainDialogsGrid.GetLastResponses()
+    let lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
+    let createdDates = trainDialogsGrid.GetCreatedDates()
 
     helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `${turns.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
 
-    for (var i = 0; i < firstInputs.length; i++) {
+    for (let i = 0; i < firstInputs.length; i++) {
       if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse) {
         window.currentTrainingSummary =
           {
@@ -76,13 +76,13 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
 
 export function VerifyErrorsFoundInTraining(firstInput, lastInput, lastResponse) {
   cy.Enqueue(() => {
-    var firstInputs = trainDialogsGrid.GetFirstInputs()
-    var lastInputs = trainDialogsGrid.GetLastInputs()
-    var lastResponses = trainDialogsGrid.GetLastResponses()
+    let firstInputs = trainDialogsGrid.GetFirstInputs()
+    let lastInputs = trainDialogsGrid.GetLastInputs()
+    let lastResponses = trainDialogsGrid.GetLastResponses()
 
     helpers.ConLog(`VerifyErrorsFoundInTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `Before Loop of ${firstInputs.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
 
-    for (var i = 0; i < firstInputs.length; i++) {
+    for (let i = 0; i < firstInputs.length; i++) {
       if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse) {
         helpers.ConLog(`VerifyErrorsFoundInTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `Found it at Index: ${i} - ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
         trainDialogsGrid.VerifyErrorIconForTrainGridRow(i)
@@ -150,14 +150,14 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
     helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
     helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
 
-    var turns = trainDialogsGrid.GetTurns()
-    var firstInputs = trainDialogsGrid.GetFirstInputs()
-    var lastInputs = trainDialogsGrid.GetLastInputs()
-    var lastResponses = trainDialogsGrid.GetLastResponses()
-    var lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
-    var createdDates = trainDialogsGrid.GetCreatedDates()
+    let turns = trainDialogsGrid.GetTurns()
+    let firstInputs = trainDialogsGrid.GetFirstInputs()
+    let lastInputs = trainDialogsGrid.GetLastInputs()
+    let lastResponses = trainDialogsGrid.GetLastResponses()
+    let lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
+    let createdDates = trainDialogsGrid.GetCreatedDates()
 
-    for (var i = 0; i < trainingSummary.TrainGridRowCount; i++) {
+    for (let i = 0; i < trainingSummary.TrainGridRowCount; i++) {
       // Keep these lines of logging code in this method, they come in handy when things go bad.
       helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDates[${i}]: ${createdDates[i]} --- ${helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
       helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDates[${i}]: ${lastModifiedDates[i]} --- ${helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
@@ -195,15 +195,15 @@ export function VerifyEditedChatMessages() {
 
 function VerifyAllChatMessages(functionGetChatMessagesToBeVerified) {
   cy.WaitForStableDOM().then(() => {
-    var errorMessage = ''
-    var chatMessagesToBeVerified = functionGetChatMessagesToBeVerified()
-    var allChatMessages = editDialogModal.GetAllChatMessages()
+    let errorMessage = ''
+    let chatMessagesToBeVerified = functionGetChatMessagesToBeVerified()
+    let allChatMessages = editDialogModal.GetAllChatMessages()
 
     if (allChatMessages.length != chatMessagesToBeVerified.length)
       errorMessage += `Original chat message count was ${chatMessagesToBeVerified.length}, current chat message count is ${allChatMessages.length}.`
 
-    var length = Math.max(allChatMessages.length, chatMessagesToBeVerified.length)
-    for (var i = 0; i < length; i++) {
+    let length = Math.max(allChatMessages.length, chatMessagesToBeVerified.length)
+    for (let i = 0; i < length; i++) {
       if (i >= allChatMessages.length)
         errorMessage += `-- [${i}] - Original: '${chatMessagesToBeVerified[i]}' is extra'`
       else if (i >= chatMessagesToBeVerified.length)
@@ -225,10 +225,10 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
 
     // Capture the list of messages currently in the chat, truncate it at the point of branching, then add the new message to it.
     // This array will be used later to validate that the changed chat is persisted.
-    var branchedChatMessages
+    let branchedChatMessages
     cy.WaitForStableDOM().then(() => {
       branchedChatMessages = editDialogModal.GetAllChatMessages()
-      for (var i = 0; i < branchedChatMessages.length; i++) {
+      for (let i = 0; i < branchedChatMessages.length; i++) {
         if (branchedChatMessages[i] == originalMessage) {
           branchedChatMessages.length = i + 1
           branchedChatMessages[i] = newMessage
@@ -260,4 +260,23 @@ export function SelectAndVerifyEachChatTurn(index = 0) {
 export function AbandonDialog() {
   editDialogModal.ClickAbandonDeleteButton()
   editDialogModal.ClickConfirmAbandonDialogButton()
+}
+
+export function EditTrainingNEW(scenario, tags) {
+  let funcName = `EditTrainingNEW(${scenario}, ${tags})`
+  cy.Enqueue(() => {
+    let tagsFromGrid = trainDialogsGrid.GetTags()
+    let scenarios = trainDialogsGrid.GetScenarios()
+
+    helpers.ConLog(funcName, `Row Count: ${scenarios.length}`)
+
+    for (let i = 0; i < scenarios.length; i++) {
+      if (scenarios[i] === scenario && tagsFromGrid[i] == tags) {
+        helpers.ConLog(funcName, `ClickTraining for row: ${i}`)
+        trainDialogsGrid.ClickTraining(i)
+        return
+      }
+    }
+    throw `Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: ${scenario} -- tags: ${tags}`
+  })
 }

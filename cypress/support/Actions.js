@@ -3,10 +3,10 @@
  * Licensed under the MIT License.
  */
 
-const actionModal = require('../support/components/ActionModal')
-const actionsGrid = require('../support/components/ActionsGrid')
-const modelPage = require('../support/components/ModelPage')
-const helpers = require('../support/Helpers')
+import * as actionModal from '../support/components/ActionModal'
+import * as actionsGrid from '../support/components/ActionsGrid'
+import * as modelPage from '../support/components/ModelPage'
+import * as helpers from '../support/Helpers'
 
 // ------------------------------------------------------------------------------------------------
 // The UI automatically populates the Required Entities field with entities found in the response 

@@ -3,9 +3,9 @@
  * Licensed under the MIT License.
  */
 
-const modelPage = require('../support/components/ModelPage')
-const entitiesGrid = require('./components/EntitiesGrid')
-const entityModal = require('../support/components/EntityModal')
+import * as modelPage from '../support/components/ModelPage'
+import * as entitiesGrid from './components/EntitiesGrid'
+import * as entityModal from '../support/components/EntityModal'
 
 export function CreateNewEntity({ name, multiValued, negatable, resolverType, type = 'Custom Trained', expectPopup = false }) {
   modelPage.NavigateToEntities()

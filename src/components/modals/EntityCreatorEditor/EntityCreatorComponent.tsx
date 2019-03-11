@@ -71,10 +71,13 @@ interface ReceivedProps {
     resolverOptions: OF.IDropdownOption[]
     onResolverChanged: (option: OF.IDropdownOption) => void
 
-    enumValues: (string | undefined)[]
+    enumValues: (CLM.EnumValue | null)[]
     onChangedEnum: (index: number, value: string) => void
-    onGetEnumErrorMessage: (value: string) => string
-    isEnumDuplicate: (value: string | undefined) => boolean
+    onDeleteEnum: (enumValue: CLM.EnumValue) => void
+    onGetEnumErrorMessage: (enumValue: CLM.EnumValue | null) => string
+    onCancelEnumDelete: () => void
+    onConfirmEnumDelete: () => void
+    deleteEnumCheck: CLM.EnumValue | null
 }
 
 type Props = ReceivedProps & InjectedIntlProps
@@ -128,15 +131,27 @@ const EditComponent: React.SFC<Props> = (props) => {
             
             props.enumValues.map((value, index) => {
                 return (
-                    <OF.TextField
+                    <div 
+                        className="cl-inputWithButton-input"
                         key={index}
-                        className={OF.FontClassNames.mediumPlus}
-                        onChanged={(text) => props.onChangedEnum(index, text)}
-                        label={index === 0 ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_ENUM_LABEL) : ""}
-                        onGetErrorMessage={props.onGetEnumErrorMessage}
-                        errorMessage={props.isEnumDuplicate(value) ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT) : ''}
-                        value={value}
-                    />
+                    >
+                        <OF.TextField
+                            key={index}
+                            className={OF.FontClassNames.mediumPlus}
+                            onChanged={(text) => props.onChangedEnum(index, text)}
+                            label={index === 0 ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_ENUM_LABEL) : ""}
+                            errorMessage={props.onGetEnumErrorMessage(value)}
+                            value={value ? value.enumValue : ""}
+                        />
+                        {value && value.enumValueId &&
+                            <OF.IconButton
+                                className={`cl-inputWithButton-button`}
+                                iconProps={{ iconName: 'Delete' }}
+                                onClick={() => props.onDeleteEnum(value)}
+                                ariaDescription="Delete Turn"
+                            />
+                        }
+                    </div>
                 )
             })
 
@@ -290,6 +305,16 @@ const Component: React.SFC<Props> = (props) => {
             message={() => <div className={`${OF.FontClassNames.medium} cl-text--error`}>
                 <OF.Icon iconName="Error" className="cl-icon" /> Error:&nbsp;
                 <FormattedMessageId id={FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING} />
+            </div>}
+        />
+        <ConfirmCancelModal
+            open={props.deleteEnumCheck != null}
+            onCancel={props.onCancelEnumDelete}
+            onConfirm={props.onConfirmEnumDelete}
+            title={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_TITLE)}
+            message={() => <div className={`${OF.FontClassNames.medium} cl-text--error`}>
+                <OF.Icon iconName="Warning" className="cl-icon" />
+                <FormattedMessageId id={FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_WARNING} />
             </div>}
         />
     </Modal >

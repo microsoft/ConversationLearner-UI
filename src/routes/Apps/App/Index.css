@@ -11,6 +11,10 @@
     padding: 0.125em 0 0.5em;
 }
 
+.cl-app-page .cl-training-status {
+    margin-bottom: 1em;
+}
+
 .cl-page {
     display: grid;
     grid-gap: 1rem;

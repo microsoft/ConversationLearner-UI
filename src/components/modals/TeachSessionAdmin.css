@@ -1,1 +1,19 @@
+.cl-dialog-metadata {
+    display: grid;
+    grid-template: auto / max-content 1fr;
+    grid-gap: 0.25em 0.5em;
+    align-items: start;
+}
+
+.cl-dialog-metadata label {
+    display: grid;
+    grid-template: auto / max-content 1fr;
+    grid-gap: 0.5rem;
+    align-items: center;
+}
+
+/* Special to align header, don't repeat this */
+.cl-dialog-metadata label[for="description"] {
+    padding: 3px 0;
+}
 

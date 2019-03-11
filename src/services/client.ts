@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
+import { PartialTrainDialog } from '../types/models'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { AppInput } from '../types/models'
 
@@ -314,7 +315,7 @@ export default class ClClient {
     }
 
     //AT.EDIT_TRAINDIALOG_ASYNC
-    async trainDialogEdit(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainResponse> {
+    async trainDialogEdit(appId: string, trainDialog: PartialTrainDialog): Promise<CLM.TrainResponse> {
         const response = await this.send<CLM.TrainResponse>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialog.trainDialogId}`,
@@ -507,11 +508,13 @@ export default class ClClient {
     }
 
     // DELETE_TEACH_SESSION_ASYNC
-    async teachSessionDelete(appId: string, teachSession: CLM.Teach, save: boolean): Promise<void> {
-        await this.send({
+    async teachSessionDelete(appId: string, teachSession: CLM.Teach, save: boolean): Promise<string> {
+        const response = await this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/teach/${teachSession.teachId}?save=${save}`
         })
+        
+        return response.data.trainDialogId
     }
 
     // filteredDialog = dialog to ignore when checking for conflicting labels

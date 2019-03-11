@@ -46,6 +46,8 @@ export enum FM {
     ACTIONCREATOREDITOR_WARNING_ENTITY = 'ActionCreatorEditor.warningEntity',
     ACTIONCREATOREDITOR_WARNING_PAYLOAD = 'ActionCreatorEditor.warningPayload',
     ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD = 'ActionCreatorEditor.warningNonEmptyFields',
+    ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION = 'ActionCreatorEditor.warningDuplicateAction',
+    ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND = 'ActionCreatorEditor.warningDuplicateFound',
 
     // ActionDetails
     ACTIONDETAILSLIST_COLUMNS_RESPONSE = 'ActionDetailsList.columns.response',
@@ -70,6 +72,8 @@ export enum FM {
     APP_HEADER_ABOUT = 'App.header.about',
     APP_HEADER_DOCS = 'App.header.docs',
     APP_HEADER_SUPPORT = 'App.header.support',
+
+    APP_VERSION = 'App.version',
 
     // TrainingStatus
     APP_TRAINING_STATUS_STATUS = 'TrainingStatus.status.label',
@@ -109,6 +113,7 @@ export enum FM {
     APPSLIST_SUBTITLE = 'AppsList.subtitle',
     APPSLIST_CREATEBUTTONARIADESCRIPTION = 'AppsList.createButtonAriaDescription',
     APPSLIST_CREATEBUTTONTEXT = 'AppsList.createButtonText',
+    APPSLIST_EMPTY_TEXT = 'AppsList.emptyText',
     APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION = 'AppsList.importappButtonAriaDescription',
     APPSLIST_IMPORTAPP_BUTTONTEXT = 'AppsList.importappButtonText',
     APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION = 'AppsList.importtutorialsButtonAriaDescription',
@@ -181,6 +186,7 @@ export enum FM {
     ENTITIES_CONFIRMCANCELMODALTITLE = 'Entities.confirmCancelModalTitle',
 
     // EntityCreatorEditor
+    ENTITYCREATOREDITOR_FIELDERROR_NOBLANK = 'EntityCreatorEditor.fieldError.noblank',
     ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE = 'EntityCreatorEditor.fieldError.requiredValue',
     ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC = 'EntityCreatorEditor.fieldsError.alphanumerica',
     ENTITYCREATOREDITOR_FIELDERROR_DISTINCT = 'EntityCreatorEditor.fields.distinct',
@@ -225,6 +231,8 @@ export enum FM {
     ENTITYCREATOREDITOR_PREBUILT_WARNING = 'EntityCreatorEditor.confirmPrebuiltWarning',
     ENTITYCREATOREDITOR_DELETE_ERROR_TITLE = 'EntityCreatorEditor.deleteErrorTitle',
     ENTITYCREATOREDITOR_DELETE_ERROR_WARNING = 'EntityCreatorEditor.deleteErrorWarning',
+    ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_TITLE = 'EntityCreatorEditor.deleteEnumErrorTitle',
+    ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_WARNING = 'EntityCreatorEditor.deleteEnumErrorWarning',
 
     // Error
     ERROR_ERROR = 'Error.error',
@@ -235,6 +243,11 @@ export enum FM {
 
     // ExtractConflictModal
     EXTRACTCONFLICTMODAL_TITLE = 'ExtractConflictModal.title',
+    EXTRACTCONFLICTMODAL_SUBTITLE = 'ExtractConflictModal.subtitle',
+    EXTRACTCONFLICTMODAL_REVIEW = 'ExtractConflictModal.preview',
+    EXTRACTCONFLICTMODAL_CORRECT_LABELS = 'ExtractConflictModal.existing',
+    EXTRACTCONFLICTMODAL_CONFLICTING_LABELS = 'ExtractConflictModal.conflictingLabels',
+    EXTRACTCONFLICTMODAL_CALLTOACTION = 'ExtractConflictModal.callaction',
 
     // LogDialogModal
     LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'LogDialogModal.defaultButton.ariaDescription',
@@ -248,6 +261,7 @@ export enum FM {
     LOGDIALOGS_SUBTITLE = 'LogDialogs.subtitle',
     LOGDIALOGS_CREATEBUTTONTITLE = 'LogDialogs.createButtonTitle',
     LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION = 'LogDialogs.createButtonAriaDescription',
+    LOGDIALOGS_MODEL_VERSION = 'LogDialogs.modelVersion',
     LOGDIALOGS_FIRSTINPUT = 'LogDialogs.firstInput',
     LOGDIALOGS_LASTINPUT = 'LogDialogs.lastInput',
     LOGDIALOGS_LASTRESPONSE = 'LogDialogs.lastResponse',
@@ -334,6 +348,14 @@ export enum FM {
     SETTINGS_LOGGINGON_LABEL = 'Settings.loggingon',
     SETINGS_DELETEISPERMANENT = 'Settings.deleteIsPermanent',
 
+    // Tags and Description
+    TAGS_INPUT_LABEL = 'Tags.label',
+    TAGS_INPUT_ADD = 'TagsInput.add',
+    TAGS_INPUT_ERROR_DUPLICATE = 'TagsInput.error.duplicate',
+    TAGS_READONLY_EMPTY = 'TagsReadOnly.empty',
+    DESCRIPTION_LABEL = 'Description.label',
+    DESCRIPTION_PLACEHOLDER = 'Description.placeholder',
+
     // TeachSessionAdmin
     TEACHSESSIONADMIN_DIALOGMODE_USER = 'TeachSessionAdmin.dialogMode.user',
     TEACHSESSIONADMIN_DIALOGMODE_BOT = 'TeachSessionAdmin.dialogMode.bot',
@@ -341,7 +363,7 @@ export enum FM {
     TEACHSESSIONADMIN_MEMORY_TITLE = 'TeachSessionAdmin.memory.title',
     TEACHSESSIONADMIN_ENTITYDETECTION_TITLE = 'TeachSessionAdmin.entityDetection.title',
     TEACHSESSIONADMIN_ACTION_TITLE = 'TeachSessionAdmin.action.title',
-    
+
     // TeachSessionInit
     TEACHSESSIONINIT_INPUT_PLACEHOLDER = 'TeachSessionInit.input.placeholder',
     TEACHSESSIONINIT_TITLE = 'TeachSessionInit.title',
@@ -470,12 +492,13 @@ export enum FM {
     TRAINDIALOGS_SUBTITLE = 'TrainDialogs.subtitle',
     TRAINDIALOGS_CREATEBUTTONTITLE = 'TrainDialogs.createButtonTitle',
     TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION = 'TrainDialogs.createButtonAriaDescription',
-    TRAINDIALOGS_FIRSTINPUT = 'TrainDialogs.firstInput',
-    TRAINDIALOGS_LASTINPUT = 'TrainDialogs.lastInput',
-    TRAINDIALOGS_LASTRESPONSE = 'TrainDialogs.lastResponse',
+    TRAINDIALOGS_TAGS = 'TrainDialogs.tags',
+    TRAINDIALOGS_DESCRIPTION = 'TrainDialogs.description',
     TRAINDIALOGS_TURNS = 'TrainDialogs.turns',
     TRAINDIALOGS_CREATED_DATE_TIME = 'TrainDialogs.createdDateTime',
     TRAINDIALOGS_LAST_MODIFIED_DATE_TIME = 'TrainDialogs.lastModifiedDateTime',
+    TRAINDIALOGS_FILTERING_TAGS_LABEL = 'TrainDialogs.FilteringTags.Label',
+    TRAINDIALOGS_FILTERING_TAGS = 'TrainDialogs.FilteringTags',
     TRAINDIALOGS_FILTERING_ENTITIES_LABEL = 'TrainDialogs.FilteringEntities.Label',
     TRAINDIALOGS_FILTERING_ENTITIES = 'TrainDialogs.FilteringEntities',
     TRAINDIALOGS_FILTERING_ACTIONS_LABEL = 'TrainDialogs.FilteringActions.Label',
@@ -533,6 +556,8 @@ export default {
         [FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD]: 'Bot Response is Required',
         [FM.ACTIONCREATOREDITOR_WARNING_ENTITY]: 'Removed reference to undefined Entity',
         [FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD]: `Non-wait Actions can't have Expected Entities`,
+        [FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION]: `Actions must be unique`,
+        [FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND]: 'The action you are creating matches an existing action. Actions must be unique. Please change the properties or close.',
 
         // ActionScorer
         [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
@@ -587,6 +612,9 @@ export default {
         [FM.APP_HEADER_DOCS]: 'Docs',
         [FM.APP_HEADER_SUPPORT]: 'Support',
 
+        // Model Metadata
+        [FM.APP_VERSION]: 'Version:',
+
         // TrainingStatus
         [FM.APP_TRAINING_STATUS_STATUS]: 'Training',
         [FM.APP_TRAINING_STATUS_UNKNOWN]: 'Unknown',
@@ -602,6 +630,7 @@ export default {
         [FM.APPSLIST_SUBTITLE]: 'Create and manage your Conversation Learner models',
         [FM.APPSLIST_CREATEBUTTONARIADESCRIPTION]: 'Create a New Model',
         [FM.APPSLIST_CREATEBUTTONTEXT]: 'New Model',
+        [FM.APPSLIST_EMPTY_TEXT]: 'Create a New Model',
         [FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION]: 'Import Model',
         [FM.APPSLIST_IMPORTAPP_BUTTONTEXT]: 'Import Model',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION]: 'Import Tutorials Models',
@@ -662,6 +691,7 @@ export default {
         [FM.LOGDIALOGS_SUBTITLE]: 'Log Dialogs are records of conversations between users and your Bot. You can make corrections to Log Dialogs to improve the Bot.',
         [FM.LOGDIALOGS_CREATEBUTTONTITLE]: 'New Log Dialog',
         [FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Log Dialog',
+        [FM.LOGDIALOGS_MODEL_VERSION]: 'Model Version',
         [FM.LOGDIALOGS_FIRSTINPUT]: 'First Input',
         [FM.LOGDIALOGS_LASTINPUT]: 'Last Input',
         [FM.LOGDIALOGS_LASTRESPONSE]: 'Last Response',
@@ -818,12 +848,13 @@ export default {
         [FM.TRAINDIALOGS_SUBTITLE]: 'Train Dialogs are example conversations you want your Bot to imitate',
         [FM.TRAINDIALOGS_CREATEBUTTONTITLE]: 'New Train Dialog',
         [FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Train Dialog',
-        [FM.TRAINDIALOGS_FIRSTINPUT]: 'First Input',
-        [FM.TRAINDIALOGS_LASTINPUT]: 'Last Input',
-        [FM.TRAINDIALOGS_LASTRESPONSE]: 'Last Response',
+        [FM.TRAINDIALOGS_TAGS]: 'Tags',
+        [FM.TRAINDIALOGS_DESCRIPTION]: 'Description',
         [FM.TRAINDIALOGS_TURNS]: 'Turns',
         [FM.TRAINDIALOGS_CREATED_DATE_TIME]: 'Created',
         [FM.TRAINDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
+        [FM.TRAINDIALOGS_FILTERING_TAGS_LABEL]: 'Filter by Tag:',
+        [FM.TRAINDIALOGS_FILTERING_TAGS]: 'All tags',
         [FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL]: 'Filter by Entity:',
         [FM.TRAINDIALOGS_FILTERING_ENTITIES]: 'All entities',
         [FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL]: 'Filter by Actions:',
@@ -868,6 +899,7 @@ export default {
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
 
         // EntityCreatorEditor
+        [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC]: 'May only contain alphanumeric characters with no spaces.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
@@ -908,6 +940,8 @@ export default {
         [FM.ENTITYCREATOREDITOR_PREBUILT_WARNING]: 'Note: You must wait for training to complete before the new pre-trained Entity will be detected',
         [FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE]: 'Unable to delete this Entity',
         [FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING]: 'It is either referenced within the payload or used as suggested entity by one or more Actions',
+        [FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_TITLE]: 'Are you sure?',
+        [FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_WARNING]: 'Enum is referenced by one or more Actions and may invalidate related Training Dialogs',
 
         // Error
         [FM.ERROR_ERROR]: 'Error',
@@ -917,7 +951,12 @@ export default {
         [FM.ERROR_TOOMANYCHARACTERS]: 'Current value exceeds maximum supported length.',
 
         // ExtractConflictModal
-        [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Entity is labelled differently in another user utterance',
+        [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Inconsistent Entity Labels',
+        [FM.EXTRACTCONFLICTMODAL_SUBTITLE]: 'You attempted to submit an input with entities labelled differently than another input in the current or a previous train dialog. Input labels must be consistent to ensure the Bot processes them correctly.',
+        [FM.EXTRACTCONFLICTMODAL_REVIEW]: 'Please review the labels below:',
+        [FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS]: 'Conflicting Labels',
+        [FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS]: 'Previously Submitted Labels',
+        [FM.EXTRACTCONFLICTMODAL_CALLTOACTION]: `Clicking 'Accept' will replace the conflicting labels with the previously submitted labels.`,
 
         // LogDialogModal
         [FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
@@ -945,6 +984,14 @@ export default {
         [FM.PACKAGECREATOR_CREATEBUTTON_TEXT]: 'Create',
         [FM.PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.PACKAGECREATOR_CANCELBUTTON_TEXT]: 'Cancel',
+
+        // Tags and Description
+        [FM.TAGS_INPUT_LABEL]: 'Tags',
+        [FM.TAGS_INPUT_ADD]: 'Add Tag',
+        [FM.TAGS_INPUT_ERROR_DUPLICATE]: 'The new tag is a duplicate of an existing tag.',
+        [FM.TAGS_READONLY_EMPTY]: 'No Tags',
+        [FM.DESCRIPTION_LABEL]: 'Description',
+        [FM.DESCRIPTION_PLACEHOLDER]: 'Click to add description',
 
         // TeachSessionAdmin
         [FM.TEACHSESSIONADMIN_DIALOGMODE_USER]: 'User Input',

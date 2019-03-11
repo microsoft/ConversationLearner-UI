@@ -14,12 +14,15 @@ import ActionScorer from './ActionScorer'
 import EntityExtractor from './EntityExtractor'
 import MemoryTable from './MemoryTable'
 import { FM } from '../../react-intl-messages'
+import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import { TeachSessionState } from '../../types/StateTypes'
 import TrainingStatusContainer from '../TrainingStatusContainer'
 import * as OF from 'office-ui-fabric-react'
 import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import TagsInput from '../TagsInput'
+import BorderlessTextInput from '../BorderlessTextInput'
 import './TeachSessionAdmin.css'
 
 interface RoundLookup {
@@ -57,7 +60,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         // Check the changed ones for conflicts
 
-        // First check for internal conflics
+        // First check for internal conflicts
         if (this.props.sourceTrainDialog) {
             for (let changedTextVariation of changedTextVariations) {
                 let extractConflict = DialogUtils.internalConflict(changedTextVariation, this.props.sourceTrainDialog, renderData.roundIndex)
@@ -289,6 +292,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             return null;
         }
 
+        const { intl } = this.props
         const renderData = this.getRenderData()
         const autoTeachWithRound = this.props.teachSession.autoTeach
         const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL)
@@ -296,23 +300,40 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const isEndSessionAvailable = !this.props.selectedActivityIndex || this.props.isLastActivitySelected
 
         return (
-            <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
-                <div className="cl-ux-flexpanel">
-                    <div className="cl-ux-flexpanel--primary">
-                        <div className="cl-ux-flexpanel--left" style={{ width: '65%' }}>
-                            <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
-                                <OF.Icon
-                                    iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
-                                />
-                                {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
-                            </div>
-                        </div>
-                        <div className="cl-ux-flexpanel--right" style={{ width: '35%', marginRight: '3em' }}>
-                            <TrainingStatusContainer
-                                app={this.props.app}
-                            />
-                        </div>
+            <div className={`cl-dialog-admin`}>
+                <div className="cl-dialog-admin__header">
+                    <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.xxLarge}`}>
+                        <OF.Icon
+                            iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
+                        />
+                        {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
                     </div>
+                    {isLogDialog
+                        ? <div>{/* placeholder for grid */}</div>
+                        : <div className={`cl-dialog-metadata ${OF.FontClassNames.mediumPlus}`}>
+                            <label htmlFor="description"><OF.Icon iconName="TextField" className="cl-icon" /><span><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</span></label>
+                            <BorderlessTextInput
+                                data-testid="train-dialog-description"
+                                id="description"
+                                placeholder={Util.formatMessageId(intl, FM.DESCRIPTION_PLACEHOLDER)}
+                                value={this.props.description}
+                                onChange={this.props.onChangeDescription}
+                            />
+                            <label htmlFor="tags"><OF.Icon iconName="Tag" className="cl-icon" /><span><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</span></label>
+                            <TagsInput
+                                data-testid="train-dialog-tags"
+                                id="tags"
+                                // Map to objects because odd Fuse.js behavior on string[]
+                                // See: https://github.com/krisk/Fuse/issues/287
+                                allUniqueTags={this.props.allUniqueTags.map(t => ({ text: t }))}
+                                tags={this.props.tags}
+                                onAdd={this.props.onAddTag}
+                                onRemove={this.props.onRemoveTag}
+                            />
+                        </div>}
+                    <TrainingStatusContainer
+                        app={this.props.app}
+                    />
                 </div>
                 {(renderData.dialogMode === CLM.DialogMode.Extractor || renderData.dialogMode === CLM.DialogMode.Wait) &&
                     (
@@ -465,6 +486,14 @@ export interface ReceivedProps {
     selectedActivityIndex: number | null
     isLastActivitySelected: boolean,
     historyRenderData: (() => DialogUtils.DialogRenderData) | null
+    allUniqueTags: string[]
+
+    tags: string[]
+    onAddTag: (tag: string) => void
+    onRemoveTag: (tag: string) => void
+
+    description: string
+    onChangeDescription: (description: string) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

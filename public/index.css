@@ -69,6 +69,10 @@ html {
   color: var(--color-alert);
 }
 
+.cl-text--success {
+  color: var(--color-success);
+}
+
 .cl-action {
   border: none;
   background: none;
@@ -145,6 +149,7 @@ html {
   color: green;
   font-size: 20px;
 }
+
 .cl-icon[data-icon-name="CommentAdd"]{
   color: lightgrey;
   font-size: 18px
@@ -574,6 +579,10 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   background-color: #000000;
 }
 
+.cl-dialog-title {
+  margin-right: 1em;
+}
+
 .cl-dialog-title i[role="presentation"] {
   margin: -0.4em 0.5em -0.4em 0;
   padding: 0.4em 0.3em 0.4em 0.5em;
@@ -588,14 +597,14 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   background-color: var(--color-magentaDark);
 }
 
-.cl-dropdownWithButton-dropdown {
+.cl-inputWithButton-input {
   display: grid;
   grid-template: auto / 1fr auto auto;
   grid-auto-columns: min-content;
   grid-gap: 0.1em;
 }
 
-.cl-dropdownWithButton-button {
+.cl-inputWithButton-button {
   width: 30px !important;
   min-width: 30px !important;
   align-self: end;
@@ -821,6 +830,11 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
 .cl-dialog-admin {
   display: grid;
   grid-gap: 0.8em;
+}
+.cl-dialog-admin__header {
+  display: grid;
+  grid-template: auto / max-content minmax(min-content, 1fr) minmax(214px, max-content);
+  grid-gap: 1rem;
 }
 .cl-dialog-admin__content {
   display: grid;

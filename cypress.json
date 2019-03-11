@@ -7,6 +7,5 @@
   "viewportWidth": 1450,
   "reporterOptions": {
     "configFile": "config-mocha-reporter.json"
-  },
-  "XnumTestsKeptInMemory": 0
+  }
 }
