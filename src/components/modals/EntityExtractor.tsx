@@ -404,6 +404,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 }))
         const allExtractResponsesValid = extractResponsesForDisplay.every(e => e.isValid)
 
+        // Need to save this to separate variable for typescript control flow
+        const extractConflict = this.props.extractConflict
+        const attemptedExtractResponse = extractConflict && this.props.extractResponses.find(e => e.text.toLowerCase() === extractConflict.text.toLowerCase())
+        
         return (
             <div className="entity-extractor">
                 <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus} cl-label`}>
@@ -537,10 +541,11 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton onClick={() => this.onClickSaveCheckNo()} text='No' />
                         </OF.DialogFooter>
                     </OF.Dialog>
-                    {this.props.extractConflict &&
-                        <ExtractConflictModal
+                    {(this.props.extractConflict && attemptedExtractResponse)
+                        && <ExtractConflictModal
                             open={true}
                             entities={this.props.entities}
+                            attemptedExtractResponse={attemptedExtractResponse}
                             extractResponse={this.props.extractConflict}
                             onClose={this.onEntityConflictModalAbandon}
                             onAccept={this.onEntityConflictModalAccept}
