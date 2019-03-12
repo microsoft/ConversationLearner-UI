@@ -33,6 +33,7 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
             className={OF.FontClassNames.mediumPlus}
             containerClassName="cl-modal cl-modal--small"
             onDismiss={() => props.onClose()}
+            data-testid="entity-labels-conflict-modal"
         >
             <div className={`cl-modal_header cl-text--error ${OF.FontClassNames.xLarge} `}>
                 <OF.Icon iconName="Warning" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_TITLE)}
@@ -42,7 +43,7 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
                 <p>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_SUBTITLE)}</p>
                 <div>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_REVIEW)}</div>
 
-                <div className="cl-inconsistent-entity-modal-header cl-text--error"><OF.Icon iconName="ChromeClose" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS)}</div>
+                <div className="cl-inconsistent-entity-modal-header cl-text--error" data-testid="entity-labels-conflict-submitted"><OF.Icon iconName="ChromeClose" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS)}</div>
                 <ExtractorResponseEditor.EditorWrapper
                     render={(editorProps, onChangeCustomEntities) =>
                         <ExtractorResponseEditor.Editor
@@ -60,7 +61,7 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
                     onChange={() => { }}
                 />
 
-                <div className="cl-inconsistent-entity-modal-header cl-text--success"><OF.Icon iconName="Accept" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS)}</div>
+                <div className="cl-inconsistent-entity-modal-header cl-text--success" data-testid="entity-labels-conflict-existing"><OF.Icon iconName="Accept" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS)}</div>
                 <ExtractorResponseEditor.EditorWrapper
                     render={(editorProps, onChangeCustomEntities) =>
                         <ExtractorResponseEditor.Editor
@@ -86,10 +87,12 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
                     <OF.PrimaryButton
                         onClick={() => props.onAccept()}
                         text={formatMessageId(intl, FM.BUTTON_ACCEPT)}
+                        data-testid="entity-labels-conflict-apply"
                     />
                     <OF.DefaultButton
                         onClick={() => props.onClose()}
                         text={formatMessageId(intl, FM.BUTTON_CLOSE)}
+                        data-testid="entity-labels-conflict-cancel"
                     />
                 </div>
             </div>
