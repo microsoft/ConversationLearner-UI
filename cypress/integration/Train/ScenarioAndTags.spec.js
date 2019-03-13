@@ -32,7 +32,7 @@ describe('Scenario and Tags - Train Dialog', () => {
         // Verify tags and description in list
         
         editDialogModal.TypeScenario('Test Scenario')
-        editDialogModal.AddTags('TagX')
+        editDialogModal.AddTags(['TagX'])
 
         // Must have done some training in order to save the dialog.
         train.TypeYourMessage('Hello')
@@ -63,7 +63,7 @@ describe('Scenario and Tags - Train Dialog', () => {
         // Re-open dialog
         // Verify tags and description are unmodified
         editDialogModal.TypeScenario('Changed Test Scenario')
-        editDialogModal.AddTags('TagY')
+        editDialogModal.AddTags(['TagY'])
         train.AbandonDialog()
 
         train.EditTrainingNEW('Test Scenario', 'TagX')
@@ -79,7 +79,7 @@ describe('Scenario and Tags - Train Dialog', () => {
         // reload
         // Verify edited tags and description are still on dialog
         editDialogModal.TypeScenario('Edited Test Scenario')
-        editDialogModal.AddTags('TagY')
+        editDialogModal.AddTags(['TagY'])
         train.Save()
 
         train.EditTrainingNEW('Edited Test Scenario', 'TagXTagY')

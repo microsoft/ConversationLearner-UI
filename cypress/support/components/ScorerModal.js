@@ -62,8 +62,3 @@ export function VerifyContainsDisabledAction(expectedResponse) {
     .should('be.disabled')
 }
 
-export function VerifyEntityInMemory(entityName, entityValue) {
-  cy.Get('[data-testid="entity-memory-name"]').contains(entityName)
-  cy.Get('[data-testid="entity-memory-value"]').contains(entityValue)
-}
-
