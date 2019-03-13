@@ -949,7 +949,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        const { logDialogs } = this.props
         const computedLogDialogs = this.getFilteredAndSortedDialogs()
         const editState = (this.props.editingPackageId !== this.props.app.devPackageId)
             ? EditState.INVALID_PACKAGE
@@ -996,7 +995,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 {
-                    logDialogs.length === 0
+                    computedLogDialogs.length === 0
                         ? <div className="cl-page-placeholder">
                             <div className="cl-page-placeholder__content">
                                 <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
