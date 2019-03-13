@@ -33,7 +33,7 @@ export function VerifyNoTags() { cy.Get('div.cl-tags > div.cl-tags__tag > button
 export function VerifyTags(tags) { 
   cy.Enqueue(() => {
     helpers.ConLog('VerifyTags', 'Start')
-    let tagsOnPage = helpers.StringArrayFromElementText('div.cl-tags > div.cl-tags__tag > span')
+    const tagsOnPage = helpers.StringArrayFromElementText('div.cl-tags > div.cl-tags__tag > span')
     let missingTags = []
     tags.forEach(tag => {
       if (!tagsOnPage.find(tagOnPage => tag === tagOnPage)) missingTags.push(tag)
@@ -87,13 +87,13 @@ export function SelectChatTurnStartsWith(message, index = 0) {
   return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText.startsWith(transformedMessage))}
 
 function SelectChatTurnInternal(message, index, matchPredicate) {
-  let funcName = `SelectChatTurnInternal(${message}, ${index})`
+  const funcName = `SelectChatTurnInternal(${message}, ${index})`
   cy.ConLog(funcName, `Start`)
 
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
     message = message.replace(/'/g, "’")
-    let elements = Cypress.$(AllChatMessagesSelector)
+    const elements = Cypress.$(AllChatMessagesSelector)
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (let i = 0; i < elements.length; i++) {
       helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
@@ -135,9 +135,9 @@ export function GetAllChatTurns() {
 }
 
 export function VerifyChatTurnControls(element, index) {
-  let userMessage
-  if (element.classList.contains('wc-message-from-me')) userMessage = true
-  else if (element.classList.contains('wc-message-from-bot')) userMessage = false
+  let turnIsUserTurn
+  if (element.classList.contains('wc-message-from-me')) turnIsUserTurn = true
+  else if (element.classList.contains('wc-message-from-bot')) turnIsUserTurn = false
   else {
     helpers.Dump(`VerifyChatTurnControls()`, element)
     throw 'Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)'
@@ -148,7 +148,7 @@ export function VerifyChatTurnControls(element, index) {
 
   cy.Contains('[data-testid="chat-edit-add-bot-response-button"]', '+')
 
-  if (userMessage) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`VerifyChatTurnControls()`, 'Branch Found')
+  if (turnIsUserTurn) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`VerifyChatTurnControls()`, 'Branch Found')
   else cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
 
   cy.Contains('[data-testid="chat-edit-add-user-input-button"]', '+')
@@ -191,11 +191,11 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
     cy.WaitForStableDOM()
     cy.Enqueue(() => {
       let found = false
-      let elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
+      const elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
 
       // If you need to find a phrase, this part of the code will fail, 
       // you will need to upgrade this code in that case.
-      let element = elements.find(element => element.textContent === text)
+      const element = elements.find(element => element.textContent === text)
       if (element) {
         found = Cypress.$(element).parents('.cl-entity-node--custom').find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`).length == 0
       }
@@ -301,8 +301,8 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
         // so we need to confirm that we actually need to click on the action, 
         // otherwise an unnecessary message box pops up that we don't want to deal with.
 
-        let chatMessages = helpers.StringArrayFromElementText(AllChatMessagesSelector)
-        let indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
+        const chatMessages = helpers.StringArrayFromElementText(AllChatMessagesSelector)
+        const indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
         if (chatMessages[indexOfInsertedBotResponse] != newMessage)
           scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
       })

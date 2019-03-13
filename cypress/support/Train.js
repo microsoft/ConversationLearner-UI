@@ -15,7 +15,7 @@ window.currentTrainingSummary = undefined
 
 export function CreateNewTrainDialog() {
   cy.Enqueue(() => {
-    let turns = trainDialogsGrid.GetTurns()
+    const turns = trainDialogsGrid.GetTurns()
     window.currentTrainingSummary =
       {
         FirstInput: undefined,
@@ -37,12 +37,12 @@ export function CreateNewTrainDialog() {
 
 export function EditTraining(firstInput, lastInput, lastResponse) {
   cy.Enqueue(() => {
-    let turns = trainDialogsGrid.GetTurns()
-    let firstInputs = trainDialogsGrid.GetFirstInputs()
-    let lastInputs = trainDialogsGrid.GetLastInputs()
-    let lastResponses = trainDialogsGrid.GetLastResponses()
-    let lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
-    let createdDates = trainDialogsGrid.GetCreatedDates()
+    const turns = trainDialogsGrid.GetTurns()
+    const firstInputs = trainDialogsGrid.GetFirstInputs()
+    const lastInputs = trainDialogsGrid.GetLastInputs()
+    const lastResponses = trainDialogsGrid.GetLastResponses()
+    const lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
+    const createdDates = trainDialogsGrid.GetCreatedDates()
 
     helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `${turns.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
 
@@ -76,9 +76,9 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
 
 export function VerifyErrorsFoundInTraining(firstInput, lastInput, lastResponse) {
   cy.Enqueue(() => {
-    let firstInputs = trainDialogsGrid.GetFirstInputs()
-    let lastInputs = trainDialogsGrid.GetLastInputs()
-    let lastResponses = trainDialogsGrid.GetLastResponses()
+    const firstInputs = trainDialogsGrid.GetFirstInputs()
+    const lastInputs = trainDialogsGrid.GetLastInputs()
+    const lastResponses = trainDialogsGrid.GetLastResponses()
 
     helpers.ConLog(`VerifyErrorsFoundInTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `Before Loop of ${firstInputs.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
 
@@ -150,12 +150,12 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
     helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
     helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
 
-    let turns = trainDialogsGrid.GetTurns()
-    let firstInputs = trainDialogsGrid.GetFirstInputs()
-    let lastInputs = trainDialogsGrid.GetLastInputs()
-    let lastResponses = trainDialogsGrid.GetLastResponses()
-    let lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
-    let createdDates = trainDialogsGrid.GetCreatedDates()
+    const turns = trainDialogsGrid.GetTurns()
+    const firstInputs = trainDialogsGrid.GetFirstInputs()
+    const lastInputs = trainDialogsGrid.GetLastInputs()
+    const lastResponses = trainDialogsGrid.GetLastResponses()
+    const lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
+    const createdDates = trainDialogsGrid.GetCreatedDates()
 
     for (let i = 0; i < trainingSummary.TrainGridRowCount; i++) {
       // Keep these lines of logging code in this method, they come in handy when things go bad.
@@ -196,13 +196,13 @@ export function VerifyEditedChatMessages() {
 function VerifyAllChatMessages(functionGetChatMessagesToBeVerified) {
   cy.WaitForStableDOM().then(() => {
     let errorMessage = ''
-    let chatMessagesToBeVerified = functionGetChatMessagesToBeVerified()
-    let allChatMessages = editDialogModal.GetAllChatMessages()
+    const chatMessagesToBeVerified = functionGetChatMessagesToBeVerified()
+    const allChatMessages = editDialogModal.GetAllChatMessages()
 
     if (allChatMessages.length != chatMessagesToBeVerified.length)
       errorMessage += `Original chat message count was ${chatMessagesToBeVerified.length}, current chat message count is ${allChatMessages.length}.`
 
-    let length = Math.max(allChatMessages.length, chatMessagesToBeVerified.length)
+    const length = Math.max(allChatMessages.length, chatMessagesToBeVerified.length)
     for (let i = 0; i < length; i++) {
       if (i >= allChatMessages.length)
         errorMessage += `-- [${i}] - Original: '${chatMessagesToBeVerified[i]}' is extra'`
@@ -263,10 +263,10 @@ export function AbandonDialog() {
 }
 
 export function EditTrainingNEW(scenario, tags) {
-  let funcName = `EditTrainingNEW(${scenario}, ${tags})`
+  const funcName = `EditTrainingNEW(${scenario}, ${tags})`
   cy.Enqueue(() => {
-    let tagsFromGrid = trainDialogsGrid.GetTags()
-    let scenarios = trainDialogsGrid.GetScenarios()
+    const tagsFromGrid = trainDialogsGrid.GetTags()
+    const scenarios = trainDialogsGrid.GetScenarios()
 
     helpers.ConLog(funcName, `Row Count: ${scenarios.length}`)
 
