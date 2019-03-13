@@ -42,14 +42,13 @@ export function VerifyTags(tags) {
   })
 }
 
-// Pass in either an array of tag strings or a single tag string.
+// Pass in an array of tag strings.
 // If you try to call this twice in a row, it will fail to find the "Add Tag Button"
 // so don't do it, this was designed to take multiple tags.
 export function AddTags(tags) { 
   ClickAddTagButton()
   let tagList = ''
-  if (!Array.isArray(tags)) { tagList = `${tags}{enter}` }
-  else { tags.forEach(tag => { tagList += `${tag}{enter}` })}
+  tags.forEach(tag => { tagList += `${tag}{enter}` })
   cy.Get('[data-testid="tags-input-tag-input"]').type(tagList)
 }
 

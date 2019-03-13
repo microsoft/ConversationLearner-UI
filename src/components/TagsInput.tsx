@@ -292,6 +292,7 @@ class component extends React.Component<Props, State> {
                                 autoComplete="off"
                                 spellCheck={false}
                                 maxLength={this.props.magTagLength}
+                                data-testid="tags-input-tag-input"
                             />
                             <div className="cl-tags__suggested-tags-container">
                                 {matchedOptions.length !== 0
