@@ -31,7 +31,7 @@ describe('Train', () => {
     train.TypeYourMessage('Sam')
     editDialogModal.VerifyEntityLabel('Sam', 'name')
     editDialogModal.ClickScoreActionsButton()
-    memoryTableComponent.VerifyEntityInMemory('name', 'Sam')
+    memoryTableComponent.VerifyEntityInMemory('name', ['Sam'])
     scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
     scorerModal.VerifyContainsEnabledAction('Hey Sam')
     scorerModal.VerifyContainsEnabledAction('Hey Sam, what do you really want?')
@@ -40,7 +40,7 @@ describe('Train', () => {
 
     train.TypeYourMessage('Hey')
     editDialogModal.ClickScoreActionsButton()
-    memoryTableComponent.VerifyEntityInMemory('name', 'Sam')
+    memoryTableComponent.VerifyEntityInMemory('name', ['Sam'])
     scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
     scorerModal.VerifyContainsEnabledAction('Hey Sam')
     scorerModal.VerifyContainsEnabledAction('Hey Sam, what do you really want?')
@@ -49,8 +49,8 @@ describe('Train', () => {
 
     train.TypeYourMessage('world peace')
     editDialogModal.ClickScoreActionsButton()
-    memoryTableComponent.VerifyEntityInMemory('name', 'Sam')
-    memoryTableComponent.VerifyEntityInMemory('want', 'world peace')
+    memoryTableComponent.VerifyEntityInMemory('name', ['Sam'])
+    memoryTableComponent.VerifyEntityInMemory('want', ['world peace'])
     scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
     scorerModal.VerifyContainsDisabledAction('Hey Sam')
     scorerModal.VerifyContainsDisabledAction('Hey Sam, what do you really want?')

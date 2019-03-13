@@ -32,8 +32,8 @@ describe('Train', () => {
     editDialogModal.LabelTextAsEntity('tomorrow', 'departure')
     editDialogModal.LabelTextAsEntity('Sunday next week', 'return')
     editDialogModal.ClickScoreActionsButton()
-    memoryTableComponent.VerifyEntityInMemory('departure', 'tomorrow')
-    memoryTableComponent.VerifyEntityInMemory('return', 'Sunday next week')
+    memoryTableComponent.VerifyEntityInMemory('departure', ['tomorrow'])
+    memoryTableComponent.VerifyEntityInMemory('return', ['Sunday next week'])
     scorerModal.VerifyContainsDisabledAction('When are you planning to travel?')
     let botResponse = `You are leaving on ${tomorrow} and returning on ${sundayNextWeek}`
     scorerModal.VerifyContainsEnabledAction(botResponse)

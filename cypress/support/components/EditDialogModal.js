@@ -28,7 +28,7 @@ export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreAct
 
 export function VerifyScenario(expectedScenario) { cy.Get(`input.cl-borderless-text-input#description[value="${expectedScenario}"]`) }
 export function TypeScenario(scenario) { cy.Get('input.cl-borderless-text-input#description').clear().type(`${scenario}{enter}`) }
-export function ClickAddTagButton() { cy.Get('button.cl-tags__button-add#tags').Click() }
+export function ClickAddTagButton() { cy.Get('[data-testid="tags-input-add-tag-button"]').Click() }
 export function VerifyNoTags() { cy.Get('div.cl-tags > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
 export function VerifyTags(tags) { 
   cy.Enqueue(() => {
@@ -42,10 +42,14 @@ export function VerifyTags(tags) {
   })
 }
 
-export function AddTag(tag) { 
-  cy.Get('button.cl-tags__button-add#tags').Click()
-  cy.Get('input#tags').type(`${tag}{enter}`)
-  cy.WaitForStableDOM()
+// Pass in an array of tag strings.
+// If you try to call this twice in a row, it will fail to find the "Add Tag Button"
+// so don't do it, this was designed to take multiple tags.
+export function AddTags(tags) { 
+  ClickAddTagButton()
+  let tagList = ''
+  tags.forEach(tag => { tagList += `${tag}{enter}` })
+  cy.Get('[data-testid="tags-input-tag-input"]').type(tagList)
 }
 
 export function ClickSaveCloseButton() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
@@ -237,7 +241,7 @@ export function VerifyEntityLabel(word, entity) {
     .contains(entity)
 }
 
-// textEntityPairs object contains these two variables, it can be either an array or single instance:
+// textEntityPairs is an array of objects contains these two variables:
 //  text = a word within the utterance that should already be labeled
 //  entity = name of entity to label the word with
 export function VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs) { VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, 'Close') }
@@ -248,8 +252,7 @@ function VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, button
     .contains('Entity is labelled differently in another user utterance') // Narrows it down to 1
     .parents('.ms-Dialog-main') // Back to the single parent object
     .within(() => {
-      if (!Array.isArray(textEntityPairs)) textEntityPairs = [textEntityPairs]
-      for (let i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
+      textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity))
 
       // TODO: Wanted to use 'ExactMatch' instead of 'contains', but there is a weird problem...
       //       for some reson the first two button texts on this popup all end with a newline.
@@ -261,8 +264,7 @@ export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index) {
   cy.Get('div.slate-editor').then(elements => {
     expect(elements.length).to.be.at.least(index - 1)
     cy.wrap(elements[index]).within(() => {
-      if (!Array.isArray(textEntityPairs)) textEntityPairs = [textEntityPairs]
-      for (let i = 0; i < textEntityPairs.length; i++) VerifyEntityLabel(textEntityPairs[i].text, textEntityPairs[i].entity)
+      textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity))
     })
   })
 }

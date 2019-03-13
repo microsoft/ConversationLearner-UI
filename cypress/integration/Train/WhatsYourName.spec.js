@@ -28,7 +28,7 @@ describe('Train', () => {
     train.TypeYourMessage('David')
     editDialogModal.VerifyEntityLabel('David', 'name')
     editDialogModal.ClickScoreActionsButton()
-    memoryTableComponent.VerifyEntityInMemory('name', 'David')
+    memoryTableComponent.VerifyEntityInMemory('name', ['David'])
     scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
     scorerModal.VerifyContainsEnabledAction('Hello David')
     train.SelectAction('Hello David', 'Hello $name')
