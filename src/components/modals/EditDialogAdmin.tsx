@@ -39,7 +39,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
     componentWillReceiveProps(newProps: Props) {
 
         if (newProps.selectedActivity && newProps.trainDialog) {
-            let clData: CLM.CLChannelData = newProps.selectedActivity.channelData.clData
+            const clData: CLM.CLChannelData = newProps.selectedActivity.channelData.clData
             // If rounds were trimmed, selectedActivity could have been in deleted rounds
 
             if (clData.roundIndex === null) {
@@ -105,7 +105,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         // Generate list of textVariations that have changed
         const renderData = this.getRenderData()
         const originalTextVariations = renderData.textVariations
-        let changedTextVariations: CLM.TextVariation[] = []
+        const changedTextVariations: CLM.TextVariation[] = []
         textVariations.map(tv => {
             const found = originalTextVariations.find(otv => CLM.ModelUtils.areEqualTextVariations(tv, otv))
             if (!found) {
@@ -116,18 +116,18 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         // Check the changed ones for conflicts
 
         // First check for internal conflics
-        for (let changedTextVariation of changedTextVariations) {
-            let extractConflict = DialogUtils.internalConflict(changedTextVariation, this.props.trainDialog, renderData.roundIndex)
+        for (const changedTextVariation of changedTextVariations) {
+            const extractConflict = DialogUtils.internalConflict(changedTextVariation, this.props.trainDialog, renderData.roundIndex)
             if (extractConflict) {
                 this.props.setTextVariationConflict(extractConflict)
                 return true
             }
         }
 
-        let dialogId = this.props.editingLogDialogId || this.props.trainDialog.trainDialogId
+        const dialogId = this.props.editingLogDialogId || this.props.trainDialog.trainDialogId
         // Next against other TrainDialogs
-        for (let changedTextVariation of changedTextVariations) {
-            let conflict = await this.props.fetchTextVariationConflictThunkAsync(
+        for (const changedTextVariation of changedTextVariations) {
+            const conflict = await this.props.fetchTextVariationConflictThunkAsync(
                 this.props.app.appId,
                 dialogId,
                 changedTextVariation,
@@ -159,11 +159,11 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         }
 
         let memories: CLM.Memory[] = [];
-        let prevIndex = this.state.roundIndex - 1;
+        const prevIndex = this.state.roundIndex - 1;
         if (prevIndex >= 0) {
-            let round = this.props.trainDialog.rounds[prevIndex];
+            const round = this.props.trainDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
-                let scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
+                const scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
                 memories = scorerStep.input.filledEntities.map<CLM.Memory>(fe => {
                     const entity = this.props.entities.find(e => e.entityId === fe.entityId)
                     if (!entity) {
@@ -205,8 +205,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         }
 
         return filledEntities.map<CLM.Memory>((fe) => {
-            let entity = this.props.entities.find(e => e.entityId === fe.entityId);
-            let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
+            const entity = this.props.entities.find(e => e.entityId === fe.entityId);
+            const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
             return {
                 entityName: entityName,
                 entityValues: fe.values
@@ -253,13 +253,13 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         }
                     }
 
-                    let filledEntities = scorerStep.logicResult
+                    const filledEntities = scorerStep.logicResult
                         ? [...scorerStep.input.filledEntities, ...scorerStep.logicResult.changedFilledEntities]
                         : [...scorerStep.input.filledEntities]
 
                     memories = filledEntities.map<CLM.Memory>((fe) => {
-                        let entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                        let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
+                        const entity = this.props.entities.find(e => e.entityId === fe.entityId);
+                        const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
                         return {
                             entityName: entityName,
                             entityValues: fe.values
@@ -275,7 +275,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                     }
                     // Otherwise generate it
                     else {
-                        let scoredAction: CLM.ScoredAction = {
+                        const scoredAction: CLM.ScoredAction = {
                             actionId: selectedAction.actionId,
                             payload: selectedAction.payload,
                             isTerminal: selectedAction.isTerminal,
@@ -284,7 +284,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         }
 
                         // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
-                        let unscoredActions = this.props.actions
+                        const unscoredActions = this.props.actions
                             .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
                             .map<CLM.UnscoredAction>(action =>
                                 ({
@@ -308,8 +308,8 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 else {
                     scorerStep = round.scorerSteps[0];
                     memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
-                        let entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                        let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
+                        const entity = this.props.entities.find(e => e.entityId === fe.entityId);
+                        const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
                         return {
                             entityName: entityName,
                             entityValues: fe.values

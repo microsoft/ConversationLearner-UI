@@ -92,7 +92,7 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
         if (error.message) {
             try {
                 // Try to parse as JSON
-                let errorObj = JSON.parse(error.message)
+                const errorObj = JSON.parse(error.message)
                 if (errorObj.data) {
                     return JSON.stringify(errorObj.data)
                 }

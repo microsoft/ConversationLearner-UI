@@ -41,8 +41,8 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
     @autobind
     onClickSubmit() {
         // Remove any empty items
-        for (let entityName of Object.keys(this.state.filledEntityMap.map)) {
-            let filledEntity = this.state.filledEntityMap.map[entityName]
+        for (const entityName of Object.keys(this.state.filledEntityMap.map)) {
+            const filledEntity = this.state.filledEntityMap.map[entityName]
             filledEntity.values = filledEntity.values.filter(entityValue => entityValue.userText !== '' || entityValue.enumValueId)
             if (filledEntity.values.length === 0) {
                 delete this.state.filledEntityMap.map[entityName]
@@ -54,13 +54,13 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickAdd(entity: CLM.EntityBase) {
-        let memoryValue: CLM.MemoryValue = {
+        const memoryValue: CLM.MemoryValue = {
             userText: '',
             displayText: null,
             builtinType: null,
             resolution: {}
         }
-        let map = this.state.filledEntityMap.map
+        const map = this.state.filledEntityMap.map
 
         if (!map[entity.entityName]) {
             map[entity.entityName] = {
@@ -76,7 +76,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickRemove(index: number, entity: CLM.EntityBase) {
-        let map = this.state.filledEntityMap.map
+        const map = this.state.filledEntityMap.map
         map[entity.entityName].values.splice(index, 1)
         if (map[entity.entityName].values.length === 0) {
             delete map[entity.entityName]
@@ -129,7 +129,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                         <OF.Label className="cl-label cl-font--emphasis" data-testid="teach-session-entity-name">{entity.entityName}</OF.Label>
                                         {this.state.filledEntityMap.map[entity.entityName] &&
                                             this.state.filledEntityMap.map[entity.entityName].values.map((memoryValue, index) => {
-                                                let key = `${entity.entityId}+${index}`
+                                                const key = `${entity.entityId}+${index}`
                                                 return (
                                                 <div key={key}>
                                                     <OF.IconButton

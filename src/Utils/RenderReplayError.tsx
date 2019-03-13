@@ -132,7 +132,7 @@ export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
             )
         /* Currently not used, but may when check for API changes
         case CLM.ReplayErrorType.EntityDiscrepancy:
-            let entityDiscrepancy = replayError as CLM.ReplayErrorEntityDiscrepancy;
+            const entityDiscrepancy = replayError as CLM.ReplayErrorEntityDiscrepancy;
             return (
                     <OF.TooltipHost  
                         id='myID' 

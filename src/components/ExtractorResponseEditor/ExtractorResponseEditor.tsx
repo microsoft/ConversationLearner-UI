@@ -229,7 +229,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     // selection to pick the charater
     onSelectChar = () => {
         // Make selection
-        let selection = window.getSelection();
+        const selection = window.getSelection();
         const parentNode = selection 
             && selection.anchorNode 
             && selection.anchorNode.parentElement 
@@ -240,7 +240,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
             if (sibling && sibling.firstChild && sibling.firstChild.firstChild && sibling.firstChild.firstChild.firstChild) {
                 const newSelection = sibling.firstChild.firstChild.firstChild
-                let range = document.createRange();
+                const range = document.createRange();
                 range.selectNode(newSelection)
                 selection.removeAllRanges();
                 selection.addRange(range)
@@ -255,7 +255,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         // console.log(`operationsJs: `, operationsJs.map((o:any) => o.type))
         // console.log(`disallowedOperations: `, disallowedOperations)
 
-        let ignoreOperations = [...disallowedOperations]
+        const ignoreOperations = [...disallowedOperations]
 
         // If delete button is up, disallow any new selection
         if (this.state.isDeleteButtonVisible) {
@@ -362,7 +362,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             case NodeType.TokenNodeType: 
                 return <TokenNode {...props} />
             case NodeType.CustomEntityNodeType: 
-                let cenProps = {...props, onDeleteButtonVisible: this.onDeleteButtonVisible}
+                const cenProps = {...props, onDeleteButtonVisible: this.onDeleteButtonVisible}
                 return <CustomEntityNode {...cenProps} />
             case NodeType.PreBuiltEntityNodeType:   
                 return <PreBuiltEntityNode {...props} />
@@ -411,19 +411,19 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     @OF.autobind
     onTestSelectWord(val: any) {
 
-        let words = val.detail.split(" ")
+        const words = val.detail.split(" ")
 
         // Get start div
-        let arr = Array.from(document.querySelectorAll(".cl-token-node"))
+        const arr = Array.from(document.querySelectorAll(".cl-token-node"))
 
-        let firstDiv = arr.filter(element => element.children[0].textContent === words[0])[0].children[0].children[0]
-        let lastDiv = arr.filter(element => element.children[0].textContent === words[words.length - 1])[0].children[0].children[0]
+        const firstDiv = arr.filter(element => element.children[0].textContent === words[0])[0].children[0].children[0]
+        const lastDiv = arr.filter(element => element.children[0].textContent === words[words.length - 1])[0].children[0].children[0]
 
-        let slateEditor = firstDiv!.parentElement!.parentElement!.parentElement!.parentElement
+        const slateEditor = firstDiv!.parentElement!.parentElement!.parentElement!.parentElement
 
         // Events are special, can't use spread or Object.keys
-        let selectEvent: any = {}
-        for (let key in val) { 
+        const selectEvent: any = {}
+        for (const key in val) { 
             if (key === 'currentTarget') {
                 
                 selectEvent['currentTarget'] = slateEditor
@@ -437,8 +437,8 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
   
         // Make selection
-        let selection = window.getSelection();        
-        let range = document.createRange();
+        const selection = window.getSelection();        
+        const range = document.createRange();
 
         range.setStartBefore(firstDiv)
         range.setEndAfter(lastDiv)
@@ -479,7 +479,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             isOverlappingOtherEntities={this.state.isSelectionOverlappingOtherEntities}
                             isVisible={this.state.isMenuVisible}
                             options={this.props.options.filter(option => option.type === EntityType.LUIS).sort((a, b) => {
-                                let nameCompare = (x: IOption, y: IOption) => x.name > y.name ? 1 : (x.name < y.name ? -1 : 0)
+                                const nameCompare = (x: IOption, y: IOption) => x.name > y.name ? 1 : (x.name < y.name ? -1 : 0)
                                 if (a.resolverType === this.state.builtInTypeFilter) {
                                     if (b.resolverType === this.state.builtInTypeFilter) {
                                         return nameCompare(a, b)
