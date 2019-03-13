@@ -26,7 +26,7 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
         let templateString = template.body || ''
 
         // Substitute argument values
-        for (let actionArgument of this.props.actionArguments) {
+        for (const actionArgument of this.props.actionArguments) {
             if (actionArgument && actionArgument.value) {
                 templateString = templateString.replace(new RegExp(`{{${actionArgument.parameter}}}`, 'g'), actionArgument.value)
             }
@@ -37,7 +37,7 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
             templateString = templateString.replace(/{{\s*[\w\.]+\s*}}/g, '');
         } else {
             // Now replace any images that haven't been substituted with a dummy image
-            for (let templateVar of template.variables) {
+            for (const templateVar of template.variables) {
                 if (templateVar.type === 'Image') {
                     templateString = templateString.replace(new RegExp(`{{${templateVar.key}}}`, 'g'), 'https://c1.staticflickr.com/9/8287/29517736620_3184b66ec8.jpg');
                 }

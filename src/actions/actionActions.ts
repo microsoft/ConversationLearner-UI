@@ -66,7 +66,7 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
         dispatch(editActionAsync(appId, action))
 
         try {
-            let deleteEditResponse = await clClient.actionsUpdate(appId, action)
+            const deleteEditResponse = await clClient.actionsUpdate(appId, action)
             dispatch(editActionFulfilled(action))
 
             // Fetch train dialogs if any train dialogs were impacted

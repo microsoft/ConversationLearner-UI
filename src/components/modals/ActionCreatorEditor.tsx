@@ -72,9 +72,9 @@ const toConditionName = (entity: CLM.EntityBase, enumValue: CLM.EnumValue): stri
 }
 
 const convertConditionalsToTags = (conditions: CLM.Condition[], entities: CLM.EntityBase[]): IConditionalTag[] => {
-    let tags: IConditionalTag[] = []
+    const tags: IConditionalTag[] = []
     conditions.forEach(c => {
-        let entity = entities.find(e => e.entityId === c.entityId)
+        const entity = entities.find(e => e.entityId === c.entityId)
         if (!entity) {
             console.log(`ERROR: Condition refers to non-existant Entity ${c.entityId}`)
         }
@@ -82,7 +82,7 @@ const convertConditionalsToTags = (conditions: CLM.Condition[], entities: CLM.En
             console.log(`ERROR: Condition refers to Entity without Enums ${entity.entityName}`)
         }
         else {
-            let enumValue = entity.enumValues.find(e => e.enumValueId === c.valueId)
+            const enumValue = entity.enumValues.find(e => e.enumValueId === c.valueId)
             if (!enumValue) {
                 console.log(`ERROR: Condition refers to non-existant EnumValue: ${c.valueId}`)
             }
@@ -104,10 +104,10 @@ const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] =>
     // Ignore resolvers and negative entities
     const filteredEntities = entities.filter(e => !e.doNotMemorize && !e.positiveId)
 
-    let tags: IConditionalTag[] = []
+    const tags: IConditionalTag[] = []
     filteredEntities.forEach(e => {
         if (e.entityType === CLM.EntityType.ENUM && e.enumValues) {
-            for (let enumValue of e.enumValues) {
+            for (const enumValue of e.enumValues) {
                 tags.push({
                     key: enumValue.enumValueId!,
                     name: toConditionName(e, enumValue),
@@ -155,7 +155,7 @@ const isConditionMutuallyExclusive = (tag1: OF.ITag, tag2: OF.ITag): boolean => 
 }
 
 const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude: OF.ITag[], mutuallyExclusive: OF.ITag[] = []): OF.ITag[] => {
-    let fText = (filterText.startsWith(ActionPayloadEditor.triggerCharacter) ? filterText.substring(1) : filterText).trim()
+    const fText = (filterText.startsWith(ActionPayloadEditor.triggerCharacter) ? filterText.substring(1) : filterText).trim()
 
     let availableTags = allTags
         .filter(tag => !tagsToExclude.some(t => t.key === tag.key))
@@ -370,7 +370,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     }
                     catch {
                         // Default to raw value
-                        let contentString: string = JSON.parse(textAction.payload).text
+                        const contentString: string = JSON.parse(textAction.payload).text
                         slateValuesMap[TEXT_SLOT] = Plain.deserialize(contentString)
                         entityWarning = true
                     }
@@ -384,12 +384,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     selectedApiOptionKey = apiAction.name
                     const callback = this.props.botInfo.callbacks.find(t => t.name === selectedApiOptionKey)
                     if (callback) {
-                        for (let actionArgumentName of callback.logicArguments) {
+                        for (const actionArgumentName of callback.logicArguments) {
                             const argument = apiAction.logicArguments.find(a => a.parameter === actionArgumentName)
                             const initialValue = argument ? argument.value : ''
                             slateValuesMap[actionArgumentName] = tryCreateSlateValue(CLM.ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
                         }
-                        for (let actionArgumentName of callback.renderArguments) {
+                        for (const actionArgumentName of callback.renderArguments) {
                             const argument = apiAction.renderArguments.find(a => a.parameter === actionArgumentName)
                             const initialValue = argument ? argument.value : ''
                             secondarySlateValuesMap[actionArgumentName] = tryCreateSlateValue(CLM.ActionTypes.API_LOCAL, actionArgumentName, initialValue, payloadOptions)
@@ -403,7 +403,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     const template = this.props.botInfo.templates.find(t => t.name === selectedCardOptionKey)
                     if (template) {
                         // For each template variable initialize to the associated argument value or default to empty string
-                        for (let cardTemplateVariable of template.variables) {
+                        for (const cardTemplateVariable of template.variables) {
                             const argument = cardAction.arguments.find(a => a.parameter === cardTemplateVariable.key)
                             const initialValue = argument ? argument.value : ''
                             slateValuesMap[cardTemplateVariable.key] = tryCreateSlateValue(CLM.ActionTypes.CARD, cardTemplateVariable.key, initialValue, payloadOptions)
@@ -495,11 +495,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const primaryEntries = Object.entries(this.state.slateValuesMap)
         const secondaryEntries = Object.entries(this.state.secondarySlateValuesMap)
 
-        let unattachedEntities: string[] = []
+        const unattachedEntities: string[] = []
         primaryEntries.forEach(([k, v]) => {
-            let text: string = v.document.text
-            let tags = text.split(/[^0-9A-Za-z$-]/).filter(t => t.startsWith("$"))
-            let entities = ActionPayloadEditor.Utilities.getAllEntitiesFromValue(v)
+            const text: string = v.document.text
+            const tags = text.split(/[^0-9A-Za-z$-]/).filter(t => t.startsWith("$"))
+            const entities = ActionPayloadEditor.Utilities.getAllEntitiesFromValue(v)
                 .map(e => `$${e.name}`)
             tags.forEach(tag => {
                 if (!entities.find(e => e === tag)) {
@@ -509,9 +509,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
 
         secondaryEntries.forEach(([k, v]) => {
-            let text: string = v.document.text
-            let tags = text.split(" ").filter(t => t.startsWith("$"))
-            let entities = ActionPayloadEditor.Utilities.getAllEntitiesFromValue(v)
+            const text: string = v.document.text
+            const tags = text.split(" ").filter(t => t.startsWith("$"))
+            const entities = ActionPayloadEditor.Utilities.getAllEntitiesFromValue(v)
                 .map(e => `$${e.name}`)
             tags.forEach(tag => {
                 if (!entities.find(e => e === tag)) {
@@ -734,8 +734,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onClickSaveCreate() {
-        let newOrEditedAction = this.convertStateToModel()
-        let validationWarnings: string[] = []
+        const newOrEditedAction = this.convertStateToModel()
+        const validationWarnings: string[] = []
 
         if (!isActionUnique(newOrEditedAction, this.props.actions)) {
             this.setState({
@@ -761,7 +761,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }
 
             // Note any untagged entities
-            let untaggedEntities = this.untaggedEntities()
+            const untaggedEntities = this.untaggedEntities()
             untaggedEntities.forEach(e =>
                 validationWarnings.push(`"${e}" ${formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_MISSINGLABEL_WARNING)}`)
             )
@@ -797,7 +797,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         try {
             const invalidTrainingDialogIds = await ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
             if (invalidTrainingDialogIds) {
-                let validationWarnings = (invalidTrainingDialogIds.length > 0)
+                const validationWarnings = (invalidTrainingDialogIds.length > 0)
                     ? [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING)]
                     : []
 
@@ -844,7 +844,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             return
         }
 
-        let validationWarnings = [...this.state.validationWarnings]
+        const validationWarnings = [...this.state.validationWarnings]
         validationWarnings.pop()
         // Move to next validation warning if there is one
         if (validationWarnings.length > 0) {
@@ -889,7 +889,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
-        let isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload && textPayload.document.text.length === 0)
+        const isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload && textPayload.document.text.length === 0)
 
         this.setState({
             isPayloadMissing,
@@ -1024,7 +1024,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         // If we added entity to a payload which was already in the list of required entities remove it to avoid duplicates.
         const requiredEntityTags = this.state.requiredEntityTags.filter(tag => !requiredEntityTagsFromPayload.some(t => t.key === tag.key))
 
-        let isPayloadMissing = (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.TEXT && value.document.text.length === 0)
+        const isPayloadMissing = (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.TEXT && value.document.text.length === 0)
 
         const nextState: Partial<ComponentState> = {
             entityWarning: false,
@@ -1072,7 +1072,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (!this.props.action) {
             return false
         }
-        let tdString = JSON.stringify(this.props.trainDialogs)
+        const tdString = JSON.stringify(this.props.trainDialogs)
         return tdString.indexOf(this.props.action.actionId) > -1
     }
 

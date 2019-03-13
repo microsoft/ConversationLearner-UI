@@ -16,7 +16,7 @@ const initialState: DisplayState = {
 };
 
 const spinnerName = (spinner: string): string => {
-    let cut = spinner.lastIndexOf("_");
+    const cut = spinner.lastIndexOf("_");
     return spinner.slice(0, cut);
 }
 

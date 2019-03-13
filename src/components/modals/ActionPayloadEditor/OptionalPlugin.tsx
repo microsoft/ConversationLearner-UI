@@ -17,7 +17,7 @@ const defaultOptions: IOptions = {
 }
 
 export default function optionalPlugin(inputOptions: Partial<IOptions> = {}) {
-    let options: IOptions = { ...defaultOptions, ...inputOptions }
+    const options: IOptions = { ...defaultOptions, ...inputOptions }
 
     return {
         onKeyDown(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {

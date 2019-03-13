@@ -15,7 +15,7 @@ export class ErrorHandler {
     private static callbacks: ErrorCallback[] = [];
 
     public static registerCallbacks(callbacks: ErrorCallback[]): string {
-        let guid = CLM.ModelUtils.generateGUID();
+        const guid = CLM.ModelUtils.generateGUID();
 
         callbacks.forEach(cb => {
             cb.guid = guid;
@@ -30,7 +30,7 @@ export class ErrorHandler {
     }
 
     public static handleError(actionType: AT) {
-        let callbacks = this.callbacks.filter(cb => cb.actionType === actionType);
+        const callbacks = this.callbacks.filter(cb => cb.actionType === actionType);
         callbacks.forEach(cb => cb.callback(actionType));
     }
 }

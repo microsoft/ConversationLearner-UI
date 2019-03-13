@@ -72,7 +72,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
         }
 
         // Check that name isn't in use
-        let foundName = this.props.packageReferences.find(pr => pr.packageVersion === value)
+        const foundName = this.props.packageReferences.find(pr => pr.packageVersion === value)
         if (foundName) {
             return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
         }

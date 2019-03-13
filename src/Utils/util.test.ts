@@ -109,13 +109,13 @@ describe('util', () => {
 
             test('if similar yet different in termination to existing actions return true', () => {
                 actionSet = [sampleAction]
-                let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
+                const similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
                 expect(isActionUnique(similar, actionSet)).toBe(true)
             })
 
             test('if similar yet different by required entities to existing actions return true', () => {
                 actionSet = [sampleAction]
-                let similar = { ...sampleAction, requiredEntities: ["85eccbec-7d01-4aea-a704-b2fdab09cf32"] }
+                const similar = { ...sampleAction, requiredEntities: ["85eccbec-7d01-4aea-a704-b2fdab09cf32"] }
                 expect(isActionUnique(similar, actionSet)).toBe(true)
             })
 
@@ -153,13 +153,13 @@ describe('util', () => {
 
             test('if similar yet different in termination to existing actions return true', () => {
                 actionSet = [{ ...sampleAction }]
-                let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
+                const similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
                 expect(isActionUnique(similar, actionSet)).toBe(true)
             })
 
             test('if similar yet different by required entities to existing actions return true', () => {
                 actionSet = [sampleAction]
-                let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
+                const similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
                 expect(isActionUnique(similar, actionSet)).toBe(true)
             })
 
@@ -197,13 +197,13 @@ describe('util', () => {
 
             test('if similar yet different in termination to existing actions return true', () => {
                 actionSet = [{ ...sampleAction }]
-                let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
+                const similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
                 expect(isActionUnique(similar, actionSet)).toEqual(true)
             })
 
             test('if similar yet different by required entities to existing actions return true', () => {
                 actionSet = [sampleAction]
-                let similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
+                const similar = { ...sampleAction, isTerminal: !sampleAction.isTerminal }
                 expect(isActionUnique(similar, actionSet)).toEqual(true)
             })
         })

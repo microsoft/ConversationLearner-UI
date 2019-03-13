@@ -50,7 +50,7 @@ const apiCorrect =
     
             // CORRECT
             // Set called before APICallback has returned
-            let response = await requestpromise(options)
+            const response = await requestpromise(options)
             memoryManager.Set("RandomMessage", response.body);
         },
         render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
@@ -80,11 +80,11 @@ const resultAsEntity =
         name: "ResultAsEntity",
         logic: async (memoryManager : ClientMemoryManager) => {
             var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
-            let response = await requestpromise(options)
+            const response = await requestpromise(options)
             memoryManager.Set("RandomMessage", response.body);
         },
         render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
-            let value = memoryManager.Get("RandomMessage", ClientMemoryManager.AS_STRING)
+            const value = memoryManager.Get("RandomMessage", ClientMemoryManager.AS_STRING)
             return value || ""
         }
     })`;
@@ -94,7 +94,7 @@ const resultPassed =
         name: "ResultAsLogicResult",
         logic: async (memoryManager : ClientMemoryManager) => {
             var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
-            let response = await requestpromise(options)
+            const response = await requestpromise(options)
             memoryManager.Set("RandomMessage", response.body);
         },
         render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {

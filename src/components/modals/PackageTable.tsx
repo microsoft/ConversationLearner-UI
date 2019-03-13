@@ -91,7 +91,7 @@ class PackageTable extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        let packageReferences = util.packageReferences(this.props.app);
+        const packageReferences = util.packageReferences(this.props.app);
         return (
             <div>
                 <OF.PrimaryButton

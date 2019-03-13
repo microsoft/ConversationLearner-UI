@@ -82,10 +82,10 @@ export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps
                     ...detailsHeaderProps,
                     onRenderColumnHeaderTooltip: (tooltipHostProps: OF.ITooltipHostProps) => {
 
-                        let id = tooltipHostProps.id ? tooltipHostProps.id.split('-')[1] : 'unknown-tip-id'
-                        let tip = getTip(id);
+                        const id = tooltipHostProps.id ? tooltipHostProps.id.split('-')[1] : 'unknown-tip-id'
+                        const tip = getTip(id);
                         if (tip) {
-                            let ttHP = {
+                            const ttHP = {
                                 ...tooltipHostProps,
                                 directionalHint: OF.DirectionalHint.topLeftEdge
                             };
@@ -131,7 +131,7 @@ export function wrap(content: JSX.Element, tooltip: string, directionalHint: OF.
     );
 }
 
-let memoryConverterSample =
+const memoryConverterSample =
     `
     AS_VALUE_LIST       returns MemoryValue[]
     AS_STRING           returns string
@@ -141,7 +141,7 @@ let memoryConverterSample =
     AS_BOOLEAN          returns boolean
     AS_BOOLEAN_LIST     returns boolean[]`
 
-let memoryManagerSample =
+const memoryManagerSample =
     `
     // GET - Values currently in bot memory
     memoryManager.Get(entityName: string, converter: (memoryValues: MemoryValue[])
