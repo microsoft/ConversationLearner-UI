@@ -6,26 +6,28 @@ import { ActionObject, TrainDialogState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import { replace } from '../Utils/util'
+import produce from 'immer'
 
 const initialState: TrainDialogState = [];
 
-const trainDialogsReducer: Reducer<TrainDialogState> = (state = initialState, action: ActionObject): TrainDialogState => {
+const trainDialogsReducer: Reducer<TrainDialogState> = produce((state: TrainDialogState, action: ActionObject) => {
     switch (action.type) {
         case AT.USER_LOGOUT:
             return [...initialState]
         case AT.FETCH_TRAIN_DIALOGS_FULFILLED:
-            return action.allTrainDialogs;
+            return action.allTrainDialogs
         case AT.FETCH_APPSOURCE_FULFILLED:
-            return action.appDefinition.trainDialogs;
+            return action.appDefinition.trainDialogs
         case AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION:
             return action.updatedAppDefinition.trainDialogs
         case AT.CREATE_APPLICATION_FULFILLED:
             return [...initialState]
         case AT.CREATE_TRAIN_DIALOG_FULFILLED:
-            return [...state, action.trainDialog];
+            state.push(action.trainDialog)
+            return
         case AT.DELETE_TRAIN_DIALOG_ASYNC:
             // Delete train dialog optimistically to update UI.  Will reload train dialogs on failure
-            return state.filter(dialog => dialog.trainDialogId !== action.trainDialogId);
+            return state.filter(dialog => dialog.trainDialogId !== action.trainDialogId)
         case AT.EDIT_TRAINDIALOG_FULFILLED: {
             const trainDialogIndex = state.findIndex(td => td.trainDialogId === action.trainDialog.trainDialogId)
             // If no index was found and train dialog is not in the list do nothing and return original list
@@ -40,13 +42,14 @@ const trainDialogsReducer: Reducer<TrainDialogState> = (state = initialState, ac
         }
         case AT.FETCH_TRAIN_DIALOG_FULFILLED:
             if (action.replaceLocal) {
-                return replace(state, action.trainDialog, a => a.trainDialogId);
+                return replace(state, action.trainDialog, a => a.trainDialogId)
             }
             else {
-                return state
+                return
             }
         default:
-            return state;
+            return
     }
-}
-export default trainDialogsReducer;
+}, initialState)
+
+export default trainDialogsReducer

@@ -6,6 +6,7 @@ import { ActionObject, TeachSessionState } from '../types'
 import { Reducer } from 'redux'
 import { UnscoredAction, ScoreReason, DialogMode } from '@conversationlearner/models'
 import { AT } from '../types/ActionTypes'
+import produce from 'immer'
 
 const initialState: TeachSessionState = {
     teach: undefined,
@@ -22,15 +23,18 @@ const initialState: TeachSessionState = {
     autoTeach: false
 };
 
-const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, action: ActionObject): TeachSessionState => {
+const teachSessionReducer: Reducer<TeachSessionState> = produce((state: TeachSessionState, action: ActionObject) => {
     switch (action.type) {
         case AT.USER_LOGOUT:
-            return { ...initialState };
+            return { ...initialState }
         case AT.CREATE_TEACH_SESSION_ASYNC:
             // Start with a clean slate
-            return { ...initialState };
+            return { ...initialState }
         case AT.CREATE_TEACH_SESSION_FULFILLED:
-            return { ...state, teach: action.teachSession, dialogMode: DialogMode.Wait, memories: action.memories }
+            state.teach = action.teachSession
+            state.dialogMode = DialogMode.Wait
+            state.memories = action.memories
+            return
         case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
             return {
                 ...initialState,
@@ -51,93 +55,105 @@ const teachSessionReducer: Reducer<TeachSessionState> = (state = initialState, a
         case AT.CLEAR_TEACH_SESSION:
             return { ...initialState }
         case AT.DELETE_MEMORY_FULFILLED:
-            return { ...state, memories: [] }
+            state.memories = []
+            return
         case AT.RUN_EXTRACTOR_FULFILLED:
             // Replace existing extract response (if any) with new one
             const extractResponses = state.extractResponses.filter(e => e.text !== action.uiExtractResponse.extractResponse.text);
             extractResponses.push(action.uiExtractResponse.extractResponse);
-            return { ...state, dialogMode: DialogMode.Extractor, memories: action.uiExtractResponse.memories, prevMemories: action.uiExtractResponse.memories, extractResponses: extractResponses };
+            
+            state.extractResponses = extractResponses
+            state.dialogMode = DialogMode.Extractor
+            state.memories = action.uiExtractResponse.memories
+            state.prevMemories = action.uiExtractResponse.memories
+            return
         case AT.UPDATE_EXTRACT_RESPONSE:
             // Replace existing extract response (if any) with new one and maintain ordering
-            let index = state.extractResponses.findIndex(e => e.text === action.extractResponse.text);
+            const index = state.extractResponses.findIndex(e => e.text === action.extractResponse.text);
             // Should never happen, but protect just in case
             if (index < 0) {
-                return { ...state }
+                return
             }
-            let editedResponses = state.extractResponses.slice();
-            editedResponses[index] = action.extractResponse;
-            return { ...state, dialogMode: DialogMode.Extractor, extractResponses: editedResponses };
+            
+            state.extractResponses[index] = action.extractResponse
+            state.dialogMode = DialogMode.Extractor
+            return
         case AT.REMOVE_EXTRACT_RESPONSE:
             // Remove existing extract response
-            let remainingResponses = state.extractResponses.filter(e => e.text !== action.extractResponse.text);
-            return { ...state, dialogMode: DialogMode.Extractor, extractResponses: remainingResponses };
+            state.dialogMode = DialogMode.Extractor
+            state.extractResponses = state.extractResponses.filter(e => e.text !== action.extractResponse.text)
+            return
         case AT.CLEAR_EXTRACT_RESPONSES:
             // Remove existing extract responses
-            return { ...state, extractResponses: [] };
+            state.extractResponses = []
+            return
         case AT.CLEAR_EXTRACT_CONFLICT:
-            return { ...state, extractConflict: null };
+            state.extractConflict = null
+            return
         case AT.RUN_SCORER_ASYNC:
-            return { ...state, uiScoreInput: action.uiScoreInput }
+            state.uiScoreInput = action.uiScoreInput
+            return
         case AT.GET_SCORES_FULFILLED:
-            return {
-                ...state,
-                dialogMode: DialogMode.Scorer,
-                memories: action.uiScoreResponse.memories!,
-                prevMemories: state.memories,
-                scoreInput: action.uiScoreResponse!.scoreInput,
-                scoreResponse: action.uiScoreResponse!.scoreResponse
-            }
+            state.dialogMode =  DialogMode.Scorer,
+            state.memories =  action.uiScoreResponse.memories!,
+            state.prevMemories = state.memories,
+            state.scoreInput =  action.uiScoreResponse!.scoreInput,
+            state.scoreResponse =  action.uiScoreResponse!.scoreResponse
+            return
         case AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED:
             if (action.extractResponse) {
-                return { ...state, extractConflict: action.extractResponse }
+                state.extractConflict = action.extractResponse
             }
             else {
-                return { ...state, extractConflict: null }
+                state.extractConflict = null
             }
+            return
         case AT.SET_TEXTVARIATION_CONFLICT:
-            return { ...state, extractConflict: action.extractResponse }
+            state.extractConflict = action.extractResponse
+            return
         case AT.RUN_SCORER_FULFILLED:
             if (action.uiScoreResponse.extractConflict) {
-                return { ...state, extractConflict: action.uiScoreResponse.extractConflict }
+                state.extractConflict = action.uiScoreResponse.extractConflict
             }
             else if (action.uiScoreResponse.botAPIError) {
-                return { ...state, botAPIError: action.uiScoreResponse.botAPIError }
+                state.botAPIError = action.uiScoreResponse.botAPIError
             }
             else {
-                return {
-                    ...state,
-                    dialogMode: DialogMode.Scorer,
-                    memories: action.uiScoreResponse.memories!,
-                    prevMemories: state.memories,
-                    scoreInput: action.uiScoreResponse.scoreInput,
-                    scoreResponse: action.uiScoreResponse.scoreResponse,
-                    extractConflict: null,
-                    botAPIError: null
-                }
+                state.dialogMode = DialogMode.Scorer
+                state.memories = action.uiScoreResponse.memories!
+                state.prevMemories = state.memories
+                state.scoreInput = action.uiScoreResponse.scoreInput
+                state.scoreResponse = action.uiScoreResponse.scoreResponse
+                state.extractConflict = null
+                state.botAPIError = null
             }
+            return
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
-            return { ...state, dialogMode: action.dialogMode, memories: action.uiPostScoreResponse.memories, extractResponses: [] };
+            state.dialogMode = action.dialogMode
+            state.memories = action.uiPostScoreResponse.memories
+            state.extractResponses = []
+            return
         case AT.TOGGLE_AUTO_TEACH:
-            return { ...state, autoTeach: action.autoTeach }
+            state.autoTeach = action.autoTeach
+            return
         case AT.CREATE_ACTION_FULFILLED:
             // If action was created during scoring update available actions
             if (state.scoreResponse) {
-                let unscoredAction: UnscoredAction = {
+                const unscoredAction: UnscoredAction = {
                     actionId: action.action.actionId,
                     payload: action.action.payload,
                     isTerminal: action.action.isTerminal,
                     actionType: action.action.actionType,
                     reason: ScoreReason.NotCalculated
                 }
-                let unscoredActions = [...state.scoreResponse.unscoredActions, unscoredAction];
-                let scoreResponse = { ...state.scoreResponse, unscoredActions: unscoredActions };
-                return { ...state, scoreResponse: scoreResponse };
-            } else {
-                return state;
+                state.scoreResponse.unscoredActions.push(unscoredAction)
+                return
             }
-        default:
-            return state;
-    }
-}
 
-export default teachSessionReducer;
+            return
+        default:
+            return
+    }
+}, initialState)
+
+export default teachSessionReducer

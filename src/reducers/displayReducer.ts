@@ -6,6 +6,7 @@ import { ActionObject, DisplayState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import { TipType } from '../components/ToolTips/ToolTips'
+import produce from 'immer'
 
 const initialState: DisplayState = {
     displaySpinner: [],
@@ -18,26 +19,27 @@ const spinnerName = (spinner: string): string => {
     let cut = spinner.lastIndexOf("_");
     return spinner.slice(0, cut);
 }
-const addSpinner = (spinners: string[], newSpinner: string): string[] => {
-    return spinners.concat(spinnerName(newSpinner));
-}
 
 const removeSpinner = (spinners: string[], oldSpinner: string): string[] => {
     return spinners.filter(o => o !== spinnerName(oldSpinner));
 }
 
-const displayReducer: Reducer<DisplayState> = (state = initialState, action: ActionObject): DisplayState => {
+const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, action: ActionObject) => {
     switch (action.type) {
         case AT.USER_LOGOUT:
             return { ...initialState };
         case AT.CLEAR_BANNER:
-            return { ...state, clearedBanner: action.clearedBanner }
+            state.clearedBanner = action.clearedBanner
+            return
         case AT.SET_TIP_TYPE:
-            return { ...state, tipType: action.tipType };
+            state.tipType = action.tipType
+            return
         case AT.CREATE_APPLICATION_FULFILLED:
-            return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
+            state.displaySpinner = removeSpinner(state.displaySpinner, action.type)
+            return
         case AT.SET_CURRENT_APP_FULFILLED:
-            return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
+            state.displaySpinner = removeSpinner(state.displaySpinner, action.type)
+            return
         case AT.SET_ERROR_DISPLAY:
             // If I fail to load critical data, return to home page
             switch (action.actionType) {
@@ -48,12 +50,15 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
                 case AT.FETCH_ACTIONS_ASYNC:
                     return { ...initialState, displaySpinner: [] };
                 default:
-                    return { ...state, displaySpinner: [] }
+                    state.displaySpinner = []
+                    return
             }
         case AT.SET_WEBCHAT_SCROLL_POSITION:
-            return { ...state, webchatScrollPosition: action.position }
+            state.webchatScrollPosition = action.position
+            return
         case AT.CLEAR_WEBCHAT_SCROLL_POSITION:
-            return { ...state, webchatScrollPosition: undefined }
+            state.webchatScrollPosition = undefined
+            return
         case AT.SET_CURRENT_APP_ASYNC:
 
         case AT.CREATE_ACTION_ASYNC:
@@ -107,8 +112,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.GET_SCORES_ASYNC:
         case AT.RUN_SCORER_ASYNC:
         case AT.POST_SCORE_FEEDBACK_ASYNC:
-            return { ...state, displaySpinner: addSpinner(state.displaySpinner, action.type) }
-
+            state.displaySpinner.push(spinnerName(action.type))
+            return
         case AT.CREATE_ACTION_FULFILLED:
         case AT.CREATE_APP_TAG_FULFILLED:
         //case AT.CREATE_APPLICATION_FULFILLED: Handled above
@@ -161,9 +166,11 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.GET_SCORES_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
-            return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
+            state.displaySpinner = removeSpinner(state.displaySpinner, action.type)
+            return
         default:
-            return state;
+            return
     }
-}
+}, initialState)
+
 export default displayReducer;
