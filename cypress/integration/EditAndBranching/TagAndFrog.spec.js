@@ -20,7 +20,7 @@ describe('EditAndBranching', () => {
     train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
     editDialogModal.SelectChatTurnExactMatch('This is Tag.')
 
-    editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs[0], 0)
+    editDialogModal.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
     editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
     editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
 

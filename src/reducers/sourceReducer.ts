@@ -5,27 +5,21 @@
 import { ActionObject, SourceState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
+import produce from 'immer'
 
 const initialState: SourceState = {}
 
-const sourceReducer: Reducer<SourceState> = (state = initialState, action: ActionObject): SourceState => {
+const sourceReducer: Reducer<SourceState> = produce((state: SourceState, action: ActionObject) => {
     switch (action.type) {
         case AT.SOURCE_SET_UPDATED_APP_DEFINITION:
-            return {
-                ...state,
-                [action.appId]: action.appDefinitionChange
-            }
+            state[action.appId] = action.appDefinitionChange
+            return
         case AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION:
-            const newState = {
-                ...state
-            }
-
-            delete newState[action.appId]
-
-            return newState
+            delete state[action.appId]
+            return
         default:
-            return state
+            return
     }
-}
+}, initialState)
 
 export default sourceReducer

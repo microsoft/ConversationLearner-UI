@@ -17,9 +17,9 @@ describe('CreateModels', () => {
     entities.CreateNewEntity({ name: 'sweets' })
 
     // NOTE: the {enter} in these strings are necessary to triger the entity detection.
-    actions.CreateNewActionThenVerifyInGrid({ response: common.whatsYourName, expectedEntities: 'name', disqualifyingEntities: 'name' })
+    actions.CreateNewActionThenVerifyInGrid({ response: common.whatsYourName, expectedEntities: ['name'], disqualifyingEntities: ['name'] })
     actions.CreateNewActionThenVerifyInGrid({ response: 'Hey $name{enter}', disqualifyingEntities: ['sweets', 'want'] })
-    actions.CreateNewActionThenVerifyInGrid({ response: 'Hey $name{enter}, what do you really want?', expectedEntities: 'want', disqualifyingEntities: ['sweets', 'want'] })
+    actions.CreateNewActionThenVerifyInGrid({ response: 'Hey $name{enter}, what do you really want?', expectedEntities: ['want'], disqualifyingEntities: ['sweets', 'want'] })
     actions.CreateNewActionThenVerifyInGrid({ response: "Sorry $name{enter}, I can't help you get $want{enter}" })
 
     // Manually EXPORT this to fixtures folder and name it 'z-disqualifyngEnt'
