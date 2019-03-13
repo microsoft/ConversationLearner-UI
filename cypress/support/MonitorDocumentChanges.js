@@ -74,27 +74,27 @@ import * as helpers from './Helpers.js'
     // the selector then this method will return true, otherwise false.
     // Without setting "expectFailure" this method will throw an exception on failure.
     Cypress.Commands.add('DoesNotContain', { prevSubject: 'optional' }, (subject, selector, textItShouldNotContain, expectFailure = false) => {
-      let functionSignature = `cy.DoesNotContain(${subject}, ${selector}, ${textItShouldNotContain})`
-      helpers.ConLog(functionSignature, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
+      const funcName = `cy.DoesNotContain(${subject}, ${selector}, ${textItShouldNotContain})`
+      helpers.ConLog(funcName, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       cy.wrap(700, { timeout: 60000 }).should('lte', 'MillisecondsSinceLastChange').then(() => {
-        helpers.ConLog(functionSignature, `DOM Is Stable`)
+        helpers.ConLog(funcName, `DOM Is Stable`)
 
         let elements
         if (subject) elements = Cypress.$(subject).find(selector)
         else elements = Cypress.$(selector)
 
-        helpers.ConLog(functionSignature, `Found ${elements.length} for selector: ${selector}`)
+        helpers.ConLog(funcName, `Found ${elements.length} for selector: ${selector}`)
 
         if ((elements.length > 0) && textItShouldNotContain) {
           elements = Cypress.$(elements).find(`:contains(${textItShouldNotContain})`)
-          helpers.ConLog(functionSignature, `Found ${elements.length} containing text: ${textItShouldNotContain}`)
+          helpers.ConLog(funcName, `Found ${elements.length} containing text: ${textItShouldNotContain}`)
         }
 
         if (elements.length > 0) {
           if (expectFailure) return true;
           throw `selector: "${selector}" & textItShouldNotContain: "${textItShouldNotContain}" was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`
         }
-        helpers.ConLog(functionSignature, `PASSED - Selector was NOT Found as Expected`)
+        helpers.ConLog(funcName, `PASSED - Selector was NOT Found as Expected`)
         if (expectFailure) return false;
       })
     })
@@ -148,18 +148,18 @@ import * as helpers from './Helpers.js'
 
   let dumpSpinner = false
   function LookForChange(loop) {
-    let thisFuncName = `MonitorDocumentChanges.LookForChange()`
+    const funcName = `MonitorDocumentChanges.LookForChange(${loop})`
 
     if (StopLookingForChanges) {
-      helpers.ConLog(thisFuncName, `DONE`)
+      helpers.ConLog(funcName, `DONE`)
       return
     }
 
-    let currentTime = lastMonitorTime = new Date().getTime()
-    let currentHtml = Cypress.$('html')[0].outerHTML
+    const currentTime = lastMonitorTime = new Date().getTime()
+    const currentHtml = Cypress.$('html')[0].outerHTML
     if (currentHtml != lastHtml) {
-      helpers.ConLog(thisFuncName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
-      if (dumpHtml) { helpers.ConLog(thisFuncName, `Current HTML:\n${currentHtml}`) }
+      helpers.ConLog(funcName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
+      if (dumpHtml) { helpers.ConLog(funcName, `Current HTML:\n${currentHtml}`) }
 
       lastChangeTime = currentTime
       lastHtml = currentHtml
@@ -171,9 +171,9 @@ import * as helpers from './Helpers.js'
   }
 
   function MonitorSpinner() {
-    let thisFuncName = `MonitorDocumentChanges.MonitorSpinner()`
+    const funcName = `MonitorDocumentChanges.MonitorSpinner()`
 
-    let spinnerTexts =
+    const spinnerTexts =
       [
         'data-testid="spinner"',
         '<div class="ms-Spinner-circle ms-Spinner--large circle-50">',
@@ -185,7 +185,7 @@ import * as helpers from './Helpers.js'
         SetExpectingSpinner(false)
 
         if (spinnerTexts[i] != currentSpinnerText) {
-          if (dumpHtml) { helpers.ConLog(thisFuncName, `Start - ${spinnerTexts[i]} - current HTML:\n${lastHtml}`) }
+          if (dumpHtml) { helpers.ConLog(funcName, `Start - ${spinnerTexts[i]} - current HTML:\n${lastHtml}`) }
           currentSpinnerText = spinnerTexts[i]
         }
         return
@@ -194,12 +194,12 @@ import * as helpers from './Helpers.js'
 
     // Spinner NOT found on the page.
     if (currentSpinnerText != '') {
-      helpers.ConLog(thisFuncName, `Stop - ${currentSpinnerText}`)
+      helpers.ConLog(funcName, `Stop - ${currentSpinnerText}`)
       currentSpinnerText = ''
     }
 
     if (expectingSpinner) {
-      helpers.ConLog(thisFuncName, `Expecting Spinner to show up`)
+      helpers.ConLog(funcName, `Expecting Spinner to show up`)
       lastChangeTime = new Date().getTime()
     }
   }
@@ -208,20 +208,5 @@ import * as helpers from './Helpers.js'
     if (expectingSpinner == value) return
     helpers.ConLog(`MonitorDocumentChanges.SetExpectingSpinner()`, `Value Changed from ${expectingSpinner} to ${value}`)
     expectingSpinner = value
-  }
-
-  function UrlNeedsSpinner(url) {
-    // If a URL ends with one of these we do not expect a spinner.
-    let urlEndings =
-      [
-        '/trainDialogs',
-        '/entities',
-        '/actions',
-        '/logDialogs',
-        '/settings'
-      ]
-
-    for (let i = 0; i < urlEndings.length; i++) { if (url.endsWith(urlEndings[i])) return false }
-    return true
   }
 }())

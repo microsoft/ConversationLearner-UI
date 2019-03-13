@@ -25,9 +25,9 @@ describe('Train', () => {
     scorerModal.VerifyContainsEnabledAction('When are you planning to travel?')
     train.SelectAction('When are you planning to travel?')
 
-    let today = Cypress.moment()
-    let tomorrow = today.add(1, 'days').format("YYYY-MM-DD")
-    let sundayNextWeek = today.add(today.day() == 0 ? 7 : 14 - today.day(), 'days').format("YYYY-MM-DD")
+    const today = Cypress.moment()
+    const tomorrow = today.add(1, 'days').format("YYYY-MM-DD")
+    const sundayNextWeek = today.add(today.day() == 0 ? 7 : 14 - today.day(), 'days').format("YYYY-MM-DD")
     train.TypeYourMessage('Leaving tomorrow and returning Sunday next week.')
     editDialogModal.LabelTextAsEntity('tomorrow', 'departure')
     editDialogModal.LabelTextAsEntity('Sunday next week', 'return')
@@ -35,7 +35,7 @@ describe('Train', () => {
     memoryTableComponent.VerifyEntityInMemory('departure', ['tomorrow'])
     memoryTableComponent.VerifyEntityInMemory('return', ['Sunday next week'])
     scorerModal.VerifyContainsDisabledAction('When are you planning to travel?')
-    let botResponse = `You are leaving on ${tomorrow} and returning on ${sundayNextWeek}`
+    const botResponse = `You are leaving on ${tomorrow} and returning on ${sundayNextWeek}`
     scorerModal.VerifyContainsEnabledAction(botResponse)
     train.SelectAction(botResponse, 'You are leaving on $departure and returning on $return')
 

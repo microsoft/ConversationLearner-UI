@@ -11,7 +11,7 @@ import * as editDialogModal from '../../support/components/EditDialogModal'
 
 describe('EditAndBranching', () => {
   it('Tag And Frog', () => {
-    let textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
+    const textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
 
     models.ImportModel('z-tagAndFrog2', 'z-tagAndFrog2.cl')
     modelPage.NavigateToTrainDialogs()

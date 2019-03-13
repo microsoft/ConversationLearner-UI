@@ -32,7 +32,7 @@ export function ClickEndSessionAction(expectedData, expectedIndexForActionPlacem
 
 // To verify the last chat utterance leave expectedIndexOfMessage undefined
 export function VerifyChatMessage(expectedMessage, expectedIndexOfMessage) {
-  let expectedUtterance = expectedMessage.replace(/'/g, "’")
+  const expectedUtterance = expectedMessage.replace(/'/g, "’")
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
     cy.wrap(elements[expectedIndexOfMessage]).within(e => {
@@ -42,10 +42,10 @@ export function VerifyChatMessage(expectedMessage, expectedIndexOfMessage) {
 }
 
 export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage) {
-  let expectedUtterance = 'EndSession: ' + expectedData.replace(/'/g, "’")
+  const expectedUtterance = 'EndSession: ' + expectedData.replace(/'/g, "’")
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
-    let element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
+    const element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
     expect(element.textContent).to.equal(expectedUtterance)
   })
 }
