@@ -4,7 +4,6 @@
 */
 
 import './Tools/CreateModel.spec'
-import './Tools/ShowHomePage.spec'
 import './Tools/DeleteAllTestGeneratedModels.spec'
 import './Tools/ShowHomePage.spec'
 
