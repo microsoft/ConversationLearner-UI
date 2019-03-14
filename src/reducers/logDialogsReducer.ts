@@ -12,11 +12,11 @@ const initialState: LogDialogState = [];
 const logDialogsReducer: Reducer<LogDialogState> = produce((state: LogDialogState, action: ActionObject) => {
     switch (action.type) {
         case AT.USER_LOGOUT:
-            return { ...initialState }
+            return [...initialState]
         case AT.FETCH_LOG_DIALOGS_FULFILLED:
             return action.allLogDialogs
         case AT.CREATE_APPLICATION_FULFILLED:
-            return { ...initialState }
+            return [...initialState]
         case AT.CREATE_LOG_DIALOG:
             state.push(action.logDialog)
             return
