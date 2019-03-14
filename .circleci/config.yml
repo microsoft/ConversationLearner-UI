@@ -28,6 +28,7 @@ jobs:
 
       # Randomly pick 1 out of 5 LUIS Authoring Keys and set the BASH_ENV with it.
       - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
+      - run: node .circleci/RevealAuthoringKeys.js
 
       - run: npm run test
       - run: npm run cibuild
@@ -51,7 +52,7 @@ jobs:
 
       # Run UI e2e tests
       #- run: npm run cypress -- run --browser chrome --spec "cypress/integration/(Regression).js" --record --key $CYPRESS_RECORD_KEY
-      - run: npm run cypress -- run --spec "cypress/integration/(Regression).spec.js" --record --key $CYPRESS_RECORD_KEY
+      - run: npm run cypress -- run --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js" --record --key $CYPRESS_RECORD_KEY
 
       - store_artifacts:
           path: results
