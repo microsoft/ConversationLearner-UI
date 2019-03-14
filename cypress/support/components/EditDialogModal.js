@@ -249,10 +249,12 @@ export function VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs) { Ve
 
 function VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, buttonLabel) {
   cy.Get('.ms-Dialog-main')     // This returns multiple parent objects
-    .contains('Entity is labelled differently in another user utterance') // Narrows it down to 1
-    .parents('.ms-Dialog-main') // Back to the single parent object
+    .contains('Inconsistent Entity Labels') // Narrows it down to the one we want
+    .parents('.ms-Dialog-main') // Now we have the single parent object
     .within(() => {
-      textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity))
+      cy.get('[data-testid="extract-conflict-modal-previously-submitted-labels"]')
+        .next('div.entity-labeler')
+        .within(() => { textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
 
       // TODO: Wanted to use 'ExactMatch' instead of 'contains', but there is a weird problem...
       //       for some reson the first two button texts on this popup all end with a newline.
