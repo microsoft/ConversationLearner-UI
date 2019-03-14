@@ -26,7 +26,7 @@ function DeleteAllTestGeneratedModelRows()
     let thereCouldBeMoreModelsToDelete = false
     modelNameIdList.forEach(modelNameId => 
     {
-      if (modelNameId.name.startsWith('z-')) 
+      if (true) //(modelNameId.name.startsWith('z-')) 
       {
         thereCouldBeMoreModelsToDelete = true
         helpers.ConLog(funcName, `Sending Request to Delete Model: ${modelNameId.name}`)
