@@ -8,7 +8,9 @@ import * as homePage from '../../support/components/HomePage'
 describe('Tools', () => {
   it('Visit Home Page', () => {
     homePage.Visit()
-    homePage.GetModelListRowCount()
-    throw new Error('This is NOT an Error, however, to get a snapshot of the home screen we must throw an error.')
+    cy.WaitForStableDOM()
+    cy.wait(5000).then(() => {
+      throw new Error('This is NOT an Error, however, to get a snapshot of the home screen and recording of run we must throw an error.')
+    })
   })
 })
