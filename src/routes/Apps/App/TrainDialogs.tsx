@@ -998,8 +998,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async openTrainDialog(trainDialog: CLM.TrainDialog, roundIndex: number, scoreIndex: number | null) {
+        
         const selectedActivityIndex = DialogUtils.activityIndexFromRounnd(trainDialog, roundIndex, scoreIndex) || null
+        this.onClickTrainDialogItem(trainDialog, selectedActivityIndex)
 
+        /* TODO: Show editing view
         // LARS: duplicate code with below clean up on both opens
         let trainDialogWithDefinitions: CLM.TrainDialog = {
             ...trainDialog,
@@ -1039,8 +1042,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             const error = e as Error
             console.warn(`Error when attempting to create history: `, error)
         }
-
-        //LARS await this.onClickTrainDialogItem(trainDialog, activityIndex)
+        */
+       
     }
 
     @OF.autobind
@@ -1239,7 +1242,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     :
                     <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }
-                <div>
+                <div className="cl-modal-buttons_primary">
                     <OF.PrimaryButton
                         data-testid="button-new-train-dialog"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
@@ -1248,7 +1251,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         text={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
                         componentRef={component => this.newTeachSessionButton = component!}
                     />
-                    <OF.PrimaryButton
+                    <OF.DefaultButton
                         onClick={this.onOpenTreeView}
                         ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={"Tree View"}

@@ -14,10 +14,9 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import * as Util from '../../Utils/util'
 import Tree from 'react-d3-tree';
-import { TreeNodeLabel, TreeNode } from './TreeNodeLabel'
+import { TreeNodeLabel, TreeNode, TreeScorerStep } from './TreeNodeLabel'
 import './TreeView.css';
 import { EditDialogType, EditState } from '.'
-import EditDialogAdmin from './EditDialogAdmin';
 
 const userShape = {
     shape: 'circle',
@@ -37,13 +36,51 @@ const botShape = {
 
 interface ComponentState {
     tree: TreeNode | null
-    trainDialog: CLM.TrainDialog | null
+    trainDialog: CLM.TrainDialog | null // LARS maybe goes away
+    selectedNode: TreeNode | null
+    expandedNode: TreeNode | null
+    extended: boolean,
+    translateX: number | null,
+    treeContainer: any,
+    treeElement: any
 }
 
 class TreeView extends React.Component<Props, ComponentState> {
+
     state: ComponentState = {
         tree: null,
-        trainDialog: null
+        trainDialog: null,
+        selectedNode: null,
+        expandedNode: null,
+        extended: false,
+        translateX: null,
+        treeContainer: null,
+        treeElement: null
+    }
+
+
+    componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+        if (this.props.open && !prevProps.open) {
+            this.updateTree()
+        }
+        if (!this.state.translateX && this.state.treeContainer) {
+            const dimensions = this.state.treeContainer.getBoundingClientRect();
+            this.setState({
+                translateX: dimensions.width / 2.5,
+            })
+        }
+    }
+
+    @OF.autobind 
+    onNodeDetail(nodeId: string): void {
+        const matches = this.state.treeElement.findNodesById(nodeId, this.state.treeElement.state.data, []);
+        const expandedNode = matches[0];
+        this.setState({expandedNode})
+    }
+
+    @OF.autobind 
+    onCloseExpando(): void {
+        this.setState({expandedNode: null})
     }
 
     @OF.autobind
@@ -68,24 +105,15 @@ class TreeView extends React.Component<Props, ComponentState> {
         this.props.onCancel()
     }
 
-    componentDidMount() {
-        this.updateTree()
-    }
-
-    componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        if (prevProps.trainDialogs !== this.props.trainDialogs) {
-            this.updateTree()
-        }
-    }
-
     makeRoot(): TreeNode {
         return { name: "start", attributes: undefined, children: [], trainDialogIds: []}
     }
 
-    updateTree(filter?: TreeNode) {
+    updateTree() {
         let tree = this.makeRoot()
         if (this.props.trainDialogs.length > 0) {
-            if (filter) {
+            if (this.state.selectedNode) {
+                let filter = this.state.selectedNode
                 let selected = this.props.trainDialogs.filter(td => filter.trainDialogIds.includes(td.trainDialogId))
                 selected.forEach(td => this.addTrainDialog(tree, td))
 
@@ -107,27 +135,26 @@ class TreeView extends React.Component<Props, ComponentState> {
             return textAction.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
         }
         else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
-            const apiAction = new CLM.ApiAction(action)
-            return apiAction.name
+            const apiAction = new CLM.ApiAction(action) 
+            return `API: ${apiAction.name}`
         }
         else if (action.actionType === CLM.ActionTypes.CARD) {
             const cardAction = new CLM.CardAction(action)
-            return cardAction.templateName
+            return `CARD: ${cardAction.templateName}`
         }
         else if (action.actionType === CLM.ActionTypes.END_SESSION) {
             //const sessionAction = new CLM.SessionAction(action)
-            return "End Session"
+            return "API: End Session"
         }
         else {
-            // LARS handle missing action
-            return action.actionId
+            return "UNKNOWN ACTION TYPE"
         }
 
     }
     addExtractorStep(parentNode: TreeNode, extractorStep: CLM.TrainExtractorStep, roundIndex: number, trainDialog: CLM.TrainDialog): TreeNode {
         const child: TreeNode = {
             name: "User",
-            userInput: extractorStep.textVariations.map(tv => tv.text),
+            userInput: extractorStep.textVariations.map(tv => { return {content: tv.text, trainDialogId: trainDialog.trainDialogId}}),
             attributes: undefined,
             children: [],
             nodeSvgShape: JSON.parse(JSON.stringify(userShape)),
@@ -138,6 +165,26 @@ class TreeView extends React.Component<Props, ComponentState> {
         return child
     }
 
+    toTreeScorerStep(scorerStep: CLM.TrainScorerStep): TreeScorerStep {
+        let entities: string[] = []
+        if (scorerStep.input.filledEntities && scorerStep.input.filledEntities.length > 0) {
+            scorerStep.input.filledEntities.forEach(fe => {
+                let entity = this.props.entities.find(e => e.entityId === fe.entityId)
+                if (entity) {
+                    entities.push(entity.entityName)
+                }
+                else {
+                    entities.push("UNKNOWN ENTITY")
+                }
+            })
+        }
+        return {
+            actionId: scorerStep.labelAction || "UNKNOWN ACTION",
+            memory: entities
+        }
+    }
+    
+    // LARS goes away
     memoryAttributes(scorerStep: CLM.TrainScorerStep): { [key: string]: string; } | undefined {
         if (!scorerStep.input.filledEntities || scorerStep.input.filledEntities.length === 0) {
             return undefined
@@ -153,24 +200,44 @@ class TreeView extends React.Component<Props, ComponentState> {
         return attributes
     }
 
+    @OF.autobind
+    generateActionDescriptions(treeScorerStep: TreeScorerStep[]): void {
+        treeScorerStep.forEach(tss => {
+            let action = this.props.actions.find(a => a.actionId === tss.actionId)
+            return action ? tss.description = this.simpleActionRenderer(action) : "- MISSING ACTION -"
+        })
+    }
+
     addScorerStep(parentNode: TreeNode, scorerStep: CLM.TrainScorerStep, roundIndex: number, scoreIndex: number, trainDialog: CLM.TrainDialog): TreeNode {
         if (!scorerStep.labelAction) {
             return parentNode
         }
-        let action = this.props.actions.find(a => a.actionId === scorerStep.labelAction)
-        let name = action ? this.simpleActionRenderer(action) : "- MISSING ACTION -"
-        const child: TreeNode = {
-            name: name,
-            attributes: this.memoryAttributes(scorerStep),
-            children: [],
-            nodeSvgShape: botShape,
-            actionId: action ? action.actionId : "MISSING ACTION",
-            trainDialogIds: [trainDialog.trainDialogId],
-            roundIndex,
-            scoreIndex
+
+        // If in extended mode, add scorer steps as children
+        if (this.state.extended) {
+            let action = this.props.actions.find(a => a.actionId === scorerStep.labelAction)
+            let name = action ? this.simpleActionRenderer(action) : "- MISSING ACTION -"
+            const child: TreeNode = {
+                name: name,
+                attributes: this.memoryAttributes(scorerStep),
+                children: [],
+                nodeSvgShape: botShape,
+                actionId: action ? action.actionId : "MISSING ACTION",
+                trainDialogIds: [trainDialog.trainDialogId],
+                roundIndex,
+                scoreIndex
+            }
+            parentNode.children.push(child)
+            return child
         }
-        parentNode.children.push(child)
-        return child
+        // Otherwise just annotate the extractor step
+        else {
+            if (!parentNode.scorerSteps) {
+                parentNode.scorerSteps = []
+            }
+            parentNode.scorerSteps.push(this.toTreeScorerStep(scorerStep))
+            return parentNode
+        }
     }
 
     addScorerSteps(parentNode: TreeNode, scorerSteps: CLM.TrainScorerStep[], roundIndex: number, trainDialog: CLM.TrainDialog): TreeNode {
@@ -183,17 +250,20 @@ class TreeView extends React.Component<Props, ComponentState> {
 
     // Get next child that it the parent for a round
     getNextRoundParent(parent: TreeNode): TreeNode {
-        // Get first scorer step
-        let node = parent.children[0]
-        // Loop until next extractor step
-        while (node && node.actionId) {
-            if (!node.children[0] || !node.children[0].actionId) {
-                return node
+        if (this.state.extended) {
+            // Get first scorer step
+            let node = parent.children[0]
+            // Loop until next extractor step
+            while (node && node.actionId) {
+                if (!node.children[0] || !node.children[0].actionId) {
+                    return node
+                }
+                // Scorer steps always have one chile
+                node = node.children[0]
             }
-            // Scorer steps always have one chile
-            node = node.children[0]
+            return node
         }
-        return node
+        return parent
     }
 
     doesMemoryMatch(node1: TreeNode, node2: TreeNode): boolean {
@@ -208,25 +278,42 @@ class TreeView extends React.Component<Props, ComponentState> {
         if (round1.actionId || round2.actionId) {
             return false
         }
-        let node1 = round1.children[0]
-        let node2 = round2.children[0]
 
-        if (!node1 || !node2) {
-            return false
-        }
-        // Loop until next extractor step
-        while (node1 && node1.actionId) {
-            if (node1.actionId !== node2.actionId) {
+        // If extended view, check scorer steps in children
+        if (this.state.extended) {
+            let node1 = round1.children[0]
+            let node2 = round2.children[0]
+
+            if (!node1 || !node2) {
                 return false
             }
-            if (!this.doesMemoryMatch(node1, node2)) {
-                return false
+            // Loop until next extractor step
+            while (node1 && node1.actionId) {
+                if (node1.actionId !== node2.actionId) {
+                    return false
+                }
+                if (!this.doesMemoryMatch(node1, node2)) {
+                    return false
+                }
+                // Scorer steps always have one child 
+                node1 = node1.children[0]
+                node2 = node2.children[0]
             }
-            // Scorer steps always have one child 
-            node1 = node1.children[0]
-            node2 = node2.children[0]
+            return true
         }
-        return true
+        // Otherwise check scorer steps array
+        else {
+            if (round1.scorerSteps && !round2.scorerSteps ||
+                !round1.scorerSteps && round2.scorerSteps) {
+                    return false
+                }
+            else if (!round1.scorerSteps && !round2.scorerSteps) {
+                return true
+            }
+            else {
+                return JSON.stringify(round1.scorerSteps) === JSON.stringify(round2.scorerSteps)
+            }
+        }
     }
 
     findMatchingRound(parent: TreeNode, round: CLM.TrainRound, roundIndex: number, trainDialog: CLM.TrainDialog, filter: boolean): TreeNode | null {
@@ -283,101 +370,147 @@ class TreeView extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    openTreeNode(treeNode: TreeNode): void {
-        this.updateTree(treeNode)
-   /*     // Pick first one
-        const trainDialogId = treeNode.trainDialogIds[0]
-        if (trainDialogId) {
-            
+    async openTrainDialog(selectedNode: TreeNode, trainDialogId: string): Promise<void> {
+        if (trainDialogId) {    
+            this.setState({expandedNode: null})
             const trainDialog = this.props.trainDialogs.find(t => t.trainDialogId === trainDialogId)
             if (trainDialog) {
-                this.setState({trainDialog})
-            
-                let roundIndex = treeNode.roundIndex === undefined ? null : treeNode.roundIndex
-                let scoreIndex = treeNode.scoreIndex === undefined ? null : treeNode.scoreIndex
-                this.props.openTrainDialog(trainDialog, roundIndex, scoreIndex)
-            
-                this.updateTree(trainDialog)
-                
-                let roundIndex = treeNode.roundIndex === undefined ? null : treeNode.roundIndex
-                let scoreIndex = treeNode.scoreIndex === undefined ? null : treeNode.scoreIndex
-                this.props.openTrainDialog(trainDialog, roundIndex, scoreIndex)
-                
+                let roundIndex = selectedNode.roundIndex === undefined ? null : selectedNode.roundIndex
+                let scoreIndex = selectedNode.scoreIndex === undefined ? null : selectedNode.scoreIndex
+                this.props.openTrainDialog(trainDialog, roundIndex, scoreIndex)   
             }
-}*/
+        }
+    }
+
+    @OF.autobind
+    async pinToNode(selectedNode: TreeNode): Promise<void> {
+        if (this.state.selectedNode && this.state.selectedNode.depth === 1) {
+            await Util.setStateAsync(this, {selectedNode: null})
+        }
+        else {
+            await Util.setStateAsync(this, {selectedNode})
+        }
+        this.updateTree()
+    }
+
+    @OF.autobind
+    setTreeRef(treeElement: any): void {
+        this.setState({treeElement})
+    }
+
+    @OF.autobind
+    setContainerRef(treeContainer: any): void {
+        this.setState({treeContainer})
     }
 
     render() {
         const { intl } = this.props
         return (
             <Modal
-                isOpen={this.props.open && this.state.tree != null}
+                isOpen={this.props.open}
                 onDismiss={() => this.onClickCancel()}
                 isBlocking={false}
                 containerClassName='cl-modal fullscreen'
             >
-            <div className="demo-container">
-                <div className="column-right">
-                    <div className="tree-container">
-                        <Tree 
-                            data={this.state.tree!}
-                            ref="myRef"//LARS TODO use prop
-                            orientation='vertical'
-                            allowForeignObjects={true}
-                            collapsible={false}
-                         //   onClick={(node: TreeNode) => { this.onOpenTrainDialog(node.trainDialogs[0]) }}
-                            nodeLabelComponent={
-                                {
-                                    render: <TreeNodeLabel
-                                        onExpandoClick={this.onClickExpando}
-                                        onOpenTrainDialog={this.openTreeNode}
-                                    />,
-                                    foreignObjectWrapper: {
-                                    y: 4,
-                                    width: 250
-                                }
-                            }}
-                            separation={{siblings: 2, nonSiblings: 2}}
-                        /> 
-                    </div>
-                </div>
-                {this.state.trainDialog &&
-                    <EditDialogAdmin
-                        data-testid="chatmodal-editdialogadmin"
-                        app={this.props.app}
-                        editingPackageId={this.props.editingPackageId}
-                        editingLogDialogId={null}//this.props.editingLogDialogId}
-                        originalTrainDialogId={this.props.originalTrainDialogId}
-                        editType={this.props.editType}
-                        editState={this.props.editState}
-                        trainDialog={this.state.trainDialog}//this.props.trainDialog}
-                        selectedActivity={null}//this.state.selectedActivity}
-                        isLastActivitySelected={false}//isLastActivitySelected}
-                        onChangeAction={()=>{}}//(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
-                        onSubmitExtraction={()=>{}}//(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
-                        onPendingStatusChanged={()=>{}}//(changed: boolean) => this.onPendingStatusChanged(changed)}
-
-                        allUniqueTags={[]}//this.props.allUniqueTags}
-                        tags={[]}//this.state.tags}
-                        onAddTag={()=>{}}//this.onAddTag}
-                        onRemoveTag={()=>{}}//this.onRemoveTag}
-
-                        description={""}//this.state.description}
-                        onChangeDescription={()=>{}}//this.onChangeDescription}
-                    />    
-                }  
-            </div>
-                <div className='cl-modal_footer'>
-                    <div className="cl-modal-buttons">
-                        <div className="cl-modal-buttons_secondary" />
-                        <div className="cl-modal-buttons_primary">
-                            <OF.DefaultButton
-                                onClick={this.onClickCancel}
-                                ariaDescription={Util.formatMessageId(intl, FM.BUTTON_CLOSE)}
-                                text={Util.formatMessageId(intl, FM.BUTTON_CLOSE)}
-                            />
+                <div className="demoContainer">
+                    <div className="columnRight">
+                        <div 
+                            className="treeContainer"
+                            ref={this.setContainerRef}
+                        >
+                            {this.state.tree && this.state.treeContainer &&
+                                <Tree 
+                                    data={this.state.tree!}
+                                    ref={this.setTreeRef}
+                                    orientation='vertical'
+                                    allowForeignObjects={true}
+                                    collapsible={false}
+                                    nodeLabelComponent={
+                                        {
+                                            render: <TreeNodeLabel
+                                                canEdit={false}
+                                                selectedNode={this.state.selectedNode}
+                                                generateActionDescriptions={this.generateActionDescriptions}
+                                                onExpandoClick={this.onClickExpando}
+                                                onDetailClick={this.onNodeDetail}
+                                                onPinClick={this.pinToNode}
+                                                onOpenTrainDialog={this.openTrainDialog}
+                                            />,
+                                            foreignObjectWrapper: {
+                                            y: 4,
+                                            x: -125,
+                                            width: 250, 
+                                            height: 135
+                                        }
+                                    }}
+                                    separation={{siblings: 2, nonSiblings: 2}}
+                                    translate={{x: this.state.translateX || 50, y: 20}}
+                                /> 
+                            }
                         </div>
                     </div>
+                    {this.state.expandedNode &&
+                        <Modal
+                            isOpen={true}
+                            containerClassName='cl-modal'
+                        >
+                            <div className="expandedContainer">
+                                <TreeNodeLabel
+                                    nodeData={this.state.expandedNode}
+                                    expanded={true}
+                                    canEdit={false}
+                                    selectedNode={this.state.selectedNode}
+                                    generateActionDescriptions={this.generateActionDescriptions}
+                                    onExpandoClick={()=>{}}
+                                    onOpenTrainDialog={this.openTrainDialog}
+                                />
+                                <div className='cl-modal_footer cl-modal-buttons'>
+                                    <div className="cl-modal-buttons_primary">
+                                        <OF.DefaultButton
+                                            onClick={this.onCloseExpando}
+                                            ariaDescription={Util.formatMessageId(intl, FM.BUTTON_CLOSE)}
+                                            text={Util.formatMessageId(intl, FM.BUTTON_CLOSE)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </Modal>
+                    }
+                    {
+                    /*
+                    TODO: Display editing dialog in view
+                    this.state.trainDialog &&
+                        <EditDialogAdmin
+                            data-testid="chatmodal-editdialogadmin"
+                            app={this.props.app}
+                            editingPackageId={this.props.editingPackageId}
+                            editingLogDialogId={null}//this.props.editingLogDialogId}
+                            originalTrainDialogId={this.props.originalTrainDialogId}
+                            editType={this.props.editType}
+                            editState={this.props.editState}
+                            trainDialog={this.state.trainDialog}//this.props.trainDialog}
+                            selectedActivity={null}//this.state.selectedActivity}
+                            isLastActivitySelected={false}//isLastActivitySelected}
+                            onChangeAction={()=>{}}//(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
+                            onSubmitExtraction={()=>{}}//(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
+                            onPendingStatusChanged={()=>{}}//(changed: boolean) => this.onPendingStatusChanged(changed)}
+
+                            allUniqueTags={[]}//this.props.allUniqueTags}
+                            tags={[]}//this.state.tags}
+                            onAddTag={()=>{}}//this.onAddTag}
+                            onRemoveTag={()=>{}}//this.onRemoveTag}
+
+                            description={""}//this.state.description}
+                            onChangeDescription={()=>{}}//this.onChangeDescription}
+                    />*/    
+                    }  
+                </div>
+                <div className='closeButton'>
+                    <OF.DefaultButton
+                        onClick={this.onClickCancel}
+                        ariaDescription={Util.formatMessageId(intl, FM.BUTTON_CLOSE)}
+                        text={Util.formatMessageId(intl, FM.BUTTON_CLOSE)}
+                    />
                 </div>
             </Modal>
         )

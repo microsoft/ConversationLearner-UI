@@ -1,8 +1,15 @@
-.tree-container {
+.treeContainer {
     height: 100%;
+    background: #999999;
 }
 
-.demo-container {
+.expandedContainer {
+  padding: 10px;
+  background: #999999;
+  width: 300px;
+}
+
+.demoContainer {
     position: fixed;
     display: flex;
     flex-direction: row;
@@ -10,7 +17,7 @@
     width: 100%;
   }
 
-.column-right {
+.columnRight {
     height: 100%;
     width: 100%;
 }
@@ -18,17 +25,106 @@
 .botBox {
   background-color: var(--cl-color-botchat-grey);
   color: black;
-  width: 300px;
+  width: 500px;
   padding: 5px 5px 0px 5px;
   font-size: 12px;
+}
+
+.closeButton {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+}
+
+.botBoxSelected {
+  border-color: #ffff00;
+  border-width: 5px;
+  border-style: solid;
+}
+
+.userInput {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ellipse {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.memoryBox {
+  background-color: #DECFDE;
+  color: #888888;
+  font-size: 12px;
+  font-style: italic;
+  padding-left: 15px;
+  padding-right: 5px;
+  border-bottom-width: 0.5px;
+  border-color: black;
+  border-bottom-style: solid;
+}
+
+.footerButton {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  height: 10px;
+  width: 20px;
+  color: #ffffff;
+}
+
+.moreButton-bottom {
+  right: 0px;
+  bottom: unset;
+  height: 12px;
+  color: #ffffff;
+  background-color: var(--cl-color-user-train);
+}
+
+.moreButton-scorer {
+  color: #000000
+}
+
+.footerButton-pin {
+  left: 0px;
+  bottom: unset;
+  height: 12px;
+  color: #ffffff;
+  background-color: var(--cl-color-user-train);
+}
+
+.userInput:hover {
+  text-decoration: underline
+}
+
+.scorerBox {
+  position: relative;
+}
+
+.scorerStep {
+  display: block;
+  font-size: 12px;
+  background-color: #f4f4f4;
+  border-bottom-style: solid;
+  border-color: black;
+  border-width: 1px;
+  color: #000000;
+  padding-left: 5px;
 }
 
 .userBox {
     background-color: var(--cl-color-user-train);
     color: white;
-    width: 300px;
-    padding: 5px 5px 0px 5px;
+    padding: 5px;
     font-size: 12px;
+    position: relative;
+}
+
+.endConversation {
+  background-color: var(--cl-color-user-train);
+  height: 5px;
 }
 
 .flip {
