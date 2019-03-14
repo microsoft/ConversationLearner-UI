@@ -181,7 +181,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     if (scoredBase['reason'] === CLM.ScoreReason.NotAvailable) {
                         return -100;
                     } else {
-                        let isAvailable = component.isUnscoredActionAvailable(scoredBase as CLM.UnscoredAction);
+                        const isAvailable = component.isUnscoredActionAvailable(scoredBase as CLM.UnscoredAction);
                         return isAvailable
                             ? -1
                             : -10
@@ -197,7 +197,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 } else if (component.isMasked(action.actionId)) {
                     fieldContent = "Masked"
                 } else {
-                    let isAvailable = component.isUnscoredActionAvailable(action as CLM.UnscoredAction);
+                    const isAvailable = component.isUnscoredActionAvailable(action as CLM.UnscoredAction);
                     if (isAvailable) {
                         fieldContent = (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected)
                             ? '-' : "Training...";
@@ -346,11 +346,11 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     async onClickSubmitActionEditor(action: CLM.ActionBase) {
         await Util.setStateAsync(this, { actionModalOpen: false })
 
-        let newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
+        const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
 
         if (newAction) {
             // See if new action is available, then take it
-            let isAvailable = this.isAvailable(newAction);
+            const isAvailable = this.isAvailable(newAction);
             if (isAvailable) {
                 this.handleActionSelection(newAction.actionId);
             }
@@ -363,7 +363,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         })
     }
     onColumnClick(event: any, column: any) {
-        let { columns } = this.state;
+        const { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
         // If we've sorted this column, flip it.
@@ -393,7 +393,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         if (scoreResponse.scoredActions && scoreResponse.scoredActions.length > 0) {
             actionId = scoreResponse.scoredActions[0].actionId;
         } else if (scoreResponse.unscoredActions) {
-            for (let unscoredAction of scoreResponse.unscoredActions) {
+            for (const unscoredAction of scoreResponse.unscoredActions) {
                 if (unscoredAction.reason === CLM.ScoreReason.NotScorable) {
                     actionId = unscoredAction.actionId;
                     break;
@@ -408,7 +408,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         const { scoredActions, unscoredActions } = this.props.scoreResponse
         let scoredAction = scoredActions.find(a => a.actionId === actionId);
         if (!scoredAction) {
-            let unscoredAction = unscoredActions.find(a => a.actionId === actionId);
+            const unscoredAction = unscoredActions.find(a => a.actionId === actionId);
             if (unscoredAction) {
                 const { reason, ...scoredBase } = unscoredAction
                 // This is hack to create scored action without a real score
@@ -442,7 +442,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             throw new Error(`Scored action could not be found in list of available actions`)
         }
 
-        let trainScorerStep: CLM.TrainScorerStep = {
+        const trainScorerStep: CLM.TrainScorerStep = {
             input: this.props.scoreInput,
             labelAction: actionId,
             logicResult: undefined,
@@ -454,16 +454,16 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     isConditionMet(condition: CLM.Condition): { match: boolean, name: string } {
-        let entity = this.props.entities.filter(e => e.entityId === condition.entityId)[0];
+        const entity = this.props.entities.filter(e => e.entityId === condition.entityId)[0];
 
         // If entity is null - there's a bug somewhere
         if (!entity) {
             return { match: false, name: 'ERROR' };
         }
 
-        let enumValue = entity.enumValues && entity.enumValues.find(ev => ev.enumValueId === condition.valueId)
-        let memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
-        let match = memory !== undefined
+        const enumValue = entity.enumValues && entity.enumValues.find(ev => ev.enumValueId === condition.valueId)
+        const memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
+        const match = memory !== undefined
             && memory.entityValues[0]
             && memory.entityValues[0].enumValueId === condition.valueId
         return { match, name: `${entity.entityName} = ${enumValue ? enumValue.enumValue : "NOT FOUND"}` };
@@ -471,28 +471,28 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     // Check if entity is in memory and return it's name 
     entityInMemory(entityId: string): { match: boolean, name: string } {
-        let entity = this.props.entities.filter(e => e.entityId === entityId)[0];
+        const entity = this.props.entities.filter(e => e.entityId === entityId)[0];
 
         // If entity is null - there's a bug somewhere
         if (!entity) {
             return { match: false, name: 'ERROR' };
         }
 
-        let memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
+        const memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
         return { match: (memory !== undefined), name: entity.entityName };
     }
 
     renderEntityRequirements(actionId: string) {
-        let action = this.props.actions.filter(a => a.actionId === actionId)[0];
+        const action = this.props.actions.filter(a => a.actionId === actionId)[0];
 
         // If action is null - there's a bug somewhere
         if (!action) {
             return <div>ERROR: Missing Action</div>
         }
 
-        let items = [];
-        for (let entityId of action.requiredEntities) {
-            let found = this.entityInMemory(entityId)
+        const items = [];
+        for (const entityId of action.requiredEntities) {
+            const found = this.entityInMemory(entityId)
             items.push({
                 name: found.name,
                 neg: false,
@@ -501,8 +501,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     : 'cl-entity cl-entity--mismatch',
             });
         }
-        for (let entityId of action.negativeEntities) {
-            let found = this.entityInMemory(entityId)
+        for (const entityId of action.negativeEntities) {
+            const found = this.entityInMemory(entityId)
             items.push({
                 name: found.name,
                 neg: true,
@@ -512,8 +512,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             });
         }
         if (action.requiredConditions) {
-            for (let condition of action.requiredConditions) {
-                let result = this.isConditionMet(condition)
+            for (const condition of action.requiredConditions) {
+                const result = this.isConditionMet(condition)
                 items.push({
                     name: result.name,
                     neg: false,
@@ -524,8 +524,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             }
         }
         if (action.negativeConditions) {
-            for (let condition of action.negativeConditions) {
-                let result = this.isConditionMet(condition)
+            for (const condition of action.negativeConditions) {
+                const result = this.isConditionMet(condition)
                 items.push({
                     name: result.name,
                     neg: true,
@@ -559,7 +559,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     // Returns true if ActionId is available in actions
     isActionIdAvailable(actionId: string): boolean {
-        let action = this.props.actions.find(a => a.actionId === actionId);
+        const action = this.props.actions.find(a => a.actionId === actionId);
         if (!action) {
             return false;
         }
@@ -569,29 +569,29 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     // Returns true if Action is available given Entities in Memory
     isAvailable(action: CLM.ActionBase): boolean {
 
-        for (let entityId of action.requiredEntities) {
-            let found = this.entityInMemory(entityId)
+        for (const entityId of action.requiredEntities) {
+            const found = this.entityInMemory(entityId)
             if (!found.match) {
                 return false
             }
         }
-        for (let entityId of action.negativeEntities) {
-            let found = this.entityInMemory(entityId)
+        for (const entityId of action.negativeEntities) {
+            const found = this.entityInMemory(entityId)
             if (found.match) {
                 return false
             }
         }
         if (action.requiredConditions) {
-            for (let condition of action.requiredConditions) {
-                let result = this.isConditionMet(condition)
+            for (const condition of action.requiredConditions) {
+                const result = this.isConditionMet(condition)
                 if (!result.match) {
                     return false
                 }
             }
         }
         if (action.negativeConditions) {
-            for (let condition of action.negativeConditions) {
-                let result = this.isConditionMet(condition)
+            for (const condition of action.negativeConditions) {
+                const result = this.isConditionMet(condition)
                 if (result.match) {
                     return false
                 }
@@ -605,14 +605,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             || !unscoredAction.reason
             || unscoredAction.reason === CLM.ScoreReason.NotCalculated) {
 
-            let action = this.props.actions.filter((a: CLM.ActionBase) => a.actionId === unscoredAction.actionId)[0];
+            const action = this.props.actions.filter((a: CLM.ActionBase) => a.actionId === unscoredAction.actionId)[0];
 
             // If action is null - there's a bug somewhere
             if (!action) {
                 return CLM.ScoreReason.NotAvailable;
             }
 
-            let isAvailable = this.isAvailable(action);
+            const isAvailable = this.isAvailable(action);
             return isAvailable ? CLM.ScoreReason.NotScorable : CLM.ScoreReason.NotAvailable;
         }
         return unscoredAction.reason as CLM.ScoreReason;
@@ -646,7 +646,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Handle deleted actions
         else if (action.actionId === MISSING_ACTION) {
             if (column.key === 'select') {
-                let buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && index === 0) ? "Selected" : "Select";
+                const buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && index === 0) ? "Selected" : "Select";
                 return (
                     <OF.PrimaryButton
                         disabled={true}
@@ -688,9 +688,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         // Need to reassemble to scored item has full action info and reason
         scoredItems = scoredItems.map(e => {
-            let action = this.props.actions.find(ee => ee.actionId === e.actionId);
-            let score = (e as CLM.ScoredAction).score;
-            let reason = score ? null : this.calculateReason(e as CLM.UnscoredAction);
+            const action = this.props.actions.find(ee => ee.actionId === e.actionId);
+            const score = (e as CLM.ScoredAction).score;
+            const reason = score ? null : this.calculateReason(e as CLM.UnscoredAction);
             if (action) {
                 return { ...action, reason: reason, score: score }
             }

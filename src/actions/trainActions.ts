@@ -21,7 +21,7 @@ export const createTrainDialogThunkAsync = (appId: string, trainDialog: TrainDia
         dispatch(createTrainDialogAsync(appId, trainDialog))
 
         try {
-            let createdTrainDialog = await clClient.trainDialogsCreate(appId, trainDialog)
+            const createdTrainDialog = await clClient.trainDialogsCreate(appId, trainDialog)
             dispatch(createTrainDialogFulfilled(createdTrainDialog))
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return createdTrainDialog
@@ -131,7 +131,7 @@ export const scoreFromHistoryThunkAsync = (appId: string, trainDialog: TrainDial
         dispatch(scoreFromHistoryAsync(appId, trainDialog))
 
         try {
-            let uiScoreResponse = await clClient.trainDialogScoreFromHistory(appId, trainDialog)
+            const uiScoreResponse = await clClient.trainDialogScoreFromHistory(appId, trainDialog)
             dispatch(scoreFromHistoryFulfilled(uiScoreResponse))
             return uiScoreResponse
         }
@@ -167,7 +167,7 @@ export const extractFromHistoryThunkAsync = (appId: string, trainDialog: TrainDi
         dispatch(extractFromHistoryAsync(appId, trainDialog, userInput))
 
         try {
-            let extractResponse = await clClient.trainDialogExtractFromHistory(appId, trainDialog, userInput)
+            const extractResponse = await clClient.trainDialogExtractFromHistory(appId, trainDialog, userInput)
             dispatch(extractFromHistoryFulfilled(extractResponse))
             return extractResponse
         }
@@ -204,7 +204,7 @@ export const trainDialogReplayThunkAsync = (appId: string, trainDialog: TrainDia
         dispatch(trainDialogReplayAsync(appId, trainDialog))
 
         try {
-            let updatedTrainDialog = await clClient.trainDialogReplay(appId, trainDialog)
+            const updatedTrainDialog = await clClient.trainDialogReplay(appId, trainDialog)
             dispatch(trainDialogReplayFulfilled(updatedTrainDialog))
             return updatedTrainDialog
         }
@@ -240,7 +240,7 @@ export const fetchTextVariationConflictThunkAsync = (appId: string, trainDialogI
         dispatch(fetchTextVariationConflictAsync(appId, trainDialogId, textVariation))
 
         try {
-            let conflict = await clClient.fetchTextVariationConflict(appId, trainDialogId, textVariation, filteredDialogId)
+            const conflict = await clClient.fetchTextVariationConflict(appId, trainDialogId, textVariation, filteredDialogId)
             dispatch(fetchTextVariationConflictFulfilled(conflict))
             return conflict
         }

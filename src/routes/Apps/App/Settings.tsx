@@ -88,7 +88,7 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate() {
-        let app = this.props.app
+        const app = this.props.app
         if (this.state.edited === false && (this.state.localeVal !== app.locale ||
             this.state.appIdVal !== app.appId ||
             this.state.appNameVal !== app.appName ||
@@ -134,7 +134,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickAddBot() {
-        let newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
+        const newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
         this.setState({
             botFrameworkAppsVal: newBotApps,
             newBotVal: ''
@@ -182,7 +182,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickDiscard() {
-        let app = this.props.app
+        const app = this.props.app
         this.setState({
             localeVal: app.locale,
             appIdVal: app.appId,
@@ -198,8 +198,8 @@ class Settings extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickSave() {
-        let app = this.props.app
-        let modifiedApp: AppBase = {
+        const app = this.props.app
+        const modifiedApp: AppBase = {
             ...app,
             appName: this.state.appNameVal,
             metadata: {
@@ -238,7 +238,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }
 
         // Check that name isn't in use
-        let foundApp = this.props.apps.find(a => (a.appName === value && a.appId !== this.props.app.appId));
+        const foundApp = this.props.apps.find(a => (a.appName === value && a.appId !== this.props.app.appId));
         if (foundApp) {
             return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_DISTINCT)
         }
@@ -318,7 +318,7 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     packageOptions() {
-        let packageReferences = Util.packageReferences(this.props.app);
+        const packageReferences = Util.packageReferences(this.props.app);
 
         return Object.values(packageReferences)
             .map<OF.IDropdownOption>(pr => {
@@ -331,11 +331,11 @@ class Settings extends React.Component<Props, ComponentState> {
 
     render() {
         const { intl } = this.props
-        let options = [{
+        const options = [{
             key: this.state.localeVal,
             text: this.state.localeVal,
         }]
-        let packageOptions = this.packageOptions();
+        const packageOptions = this.packageOptions();
         return (
             <div className="cl-page">
                 <span data-testid="settings-title" className={OF.FontClassNames.xxLarge}>

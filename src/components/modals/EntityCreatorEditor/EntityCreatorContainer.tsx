@@ -166,9 +166,9 @@ class Container extends React.Component<Props, ComponentState> {
             } else {
                 this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
                 this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
-                let entityType = nextProps.entity.entityType
-                let isPrebuilt = CLM.isPrebuilt(nextProps.entity)
-                let resolverType = nextProps.entity.resolverType === null ? this.NONE_RESOLVER : nextProps.entity.resolverType
+                const entityType = nextProps.entity.entityType
+                const isPrebuilt = CLM.isPrebuilt(nextProps.entity)
+                const resolverType = nextProps.entity.resolverType === null ? this.NONE_RESOLVER : nextProps.entity.resolverType
 
                 this.setState({
                     entityNameVal: nextProps.entity.entityName,
@@ -209,8 +209,8 @@ class Container extends React.Component<Props, ComponentState> {
         const isResolverChanged = entity.entityType === CLM.EntityType.LUIS && this.state.entityResolverVal !== entity.resolverType
         let hasPendingEnumChanges = false
         if (entity.entityType === CLM.EntityType.ENUM) {
-            let newEnums = this.state.enumValues.filter(v => v !== null) as CLM.EnumValue[]
-            let oldEnums = entity.enumValues || [] 
+            const newEnums = this.state.enumValues.filter(v => v !== null) as CLM.EnumValue[]
+            const oldEnums = entity.enumValues || [] 
             hasPendingEnumChanges = !this.areEnumsIdentical(newEnums, oldEnums)
         }
         const hasPendingChanges = isNameChanged || isMultiValueChanged || isNegatableChanged || isResolverChanged || hasPendingEnumChanges
@@ -226,7 +226,7 @@ class Container extends React.Component<Props, ComponentState> {
         // If any new enums, or old ones changed or deleted
         return newEnums.every(ev => ev.enumValueId !== undefined) &&
             oldEnums.every(oldEnum => {
-            let newEnum = newEnums.find(ne => ne.enumValueId === oldEnum.enumValueId)
+            const newEnum = newEnums.find(ne => ne.enumValueId === oldEnum.enumValueId)
             return (newEnum !== undefined && newEnum.enumValue === oldEnum.enumValue)
         })
     }
@@ -235,14 +235,14 @@ class Container extends React.Component<Props, ComponentState> {
         if (!this.props.entity || !this.props.entity.enumValues) {
             return undefined
         }
-        let enumEntity = this.props.entity.enumValues.find(e => e && e.enumValue === value)
+        const enumEntity = this.props.entity.enumValues.find(e => e && e.enumValue === value)
         return enumEntity ? enumEntity.enumValueId : undefined
     }
 
     convertStateToEntity(state: ComponentState): CLM.EntityBase {
         let entityName = this.state.entityNameVal
-        let entityType = this.state.entityTypeVal
-        let resolverType = this.state.entityResolverVal
+        const entityType = this.state.entityTypeVal
+        const resolverType = this.state.entityResolverVal
         if (this.state.isPrebuilt) {
             entityName = getPrebuiltEntityName(entityType)
         }
@@ -284,7 +284,7 @@ class Container extends React.Component<Props, ComponentState> {
     async onClickSaveCreate() {
         const newOrEditedEntity = this.convertStateToEntity(this.state)
 
-        let needPrebuildWarning = this.newPrebuilt(newOrEditedEntity)
+        const needPrebuildWarning = this.newPrebuilt(newOrEditedEntity)
         let needValidationWarning = false
 
         // If editing check for validation errors
@@ -374,9 +374,9 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     onChangedEnum = (index: number, value: string) => {
-        let enumValuesObjs = [...this.state.enumValues]
+        const enumValuesObjs = [...this.state.enumValues]
         const newValue = value.toUpperCase().trim()
-        let enumValueObj = enumValuesObjs[index]
+        const enumValueObj = enumValuesObjs[index]
 
         if (newValue.length > 0) {    
             // Create new EnumValue if needed 
@@ -431,7 +431,7 @@ class Container extends React.Component<Props, ComponentState> {
 
         // Check that name isn't in use
         if (!this.state.isEditing) {
-            let foundEntity = this.props.entities.find(e => e.entityName === this.state.entityNameVal);
+            const foundEntity = this.props.entities.find(e => e.entityName === this.state.entityNameVal);
             if (foundEntity) {
                 if (CLM.isPrebuilt(foundEntity)
                     && typeof foundEntity.doNotMemorize !== 'undefined'
@@ -629,8 +629,8 @@ class Container extends React.Component<Props, ComponentState> {
         // Check resolvers
         if (newOrEditedEntity.resolverType && newOrEditedEntity.resolverType !== "none") {
 
-            let resolverType = newOrEditedEntity.resolverType
-            let existingBuiltIn = this.props.entities.find(e =>
+            const resolverType = newOrEditedEntity.resolverType
+            const existingBuiltIn = this.props.entities.find(e =>
                 e.resolverType === resolverType ||
                 e.entityType === resolverType)
 
@@ -643,7 +643,7 @@ class Container extends React.Component<Props, ComponentState> {
         if (this.state.isPrebuilt) {
 
             // If a prebuilt - entity name is prebuilt name
-            let existingBuiltIn = this.props.entities.find(e =>
+            const existingBuiltIn = this.props.entities.find(e =>
                 e.resolverType === newOrEditedEntity.entityType ||
                 e.entityType === newOrEditedEntity.entityType)
 
@@ -680,11 +680,11 @@ class Container extends React.Component<Props, ComponentState> {
     isSaveDisabled() {
         if (this.state.entityTypeVal === CLM.EntityType.ENUM) {
             // Enum must have at least 2 values
-            let values = this.state.enumValues.filter(v => v)
+            const values = this.state.enumValues.filter(v => v)
             if (values.length < 2) {
                 return true
             }
-            let invalid = this.state.enumValues.filter(v => v && (this.onGetEnumErrorMessage(v) || this.isEnumDuplicate(v.enumValue)))
+            const invalid = this.state.enumValues.filter(v => v && (this.onGetEnumErrorMessage(v) || this.isEnumDuplicate(v.enumValue)))
             if (invalid.length > 0) {
                 return true
             }

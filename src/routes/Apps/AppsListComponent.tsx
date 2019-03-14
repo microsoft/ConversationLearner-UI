@@ -179,7 +179,7 @@ export class Component extends React.Component<Props, ComponentState> {
     }
 
     onClickColumnHeader = (event: any, column: ISortableRenderableColumn) => {
-        let { columns } = this.state;
+        const { columns } = this.state;
         this.setState({
             columns: columns.map(col => {
                 col.isSorted = false;

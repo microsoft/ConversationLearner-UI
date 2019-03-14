@@ -90,7 +90,7 @@ export const editAppLiveTagThunkAsync = (app: AppBase, tagId: string) => {
 
         try {
             await clClient.appSetLiveTag(app.appId, tagId)
-            let newApp = { ...app, livePackageId: tagId }
+            const newApp = { ...app, livePackageId: tagId }
             dispatch(editAppLiveTagFulfilled(newApp))
             return newApp
         }

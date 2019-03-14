@@ -332,7 +332,7 @@ export const getScoresThunkAsync = (key: string, appId: string, sessionId: strin
         dispatch(getScoresAsync(key, appId, sessionId, scoreInput))
 
         try {
-            let uiScoreResponse = await clClient.teachSessionRescore(appId, sessionId, scoreInput)
+            const uiScoreResponse = await clClient.teachSessionRescore(appId, sessionId, scoreInput)
             dispatch(getScoresFulfilled(key, appId, sessionId, uiScoreResponse))
             return uiScoreResponse
         }
@@ -371,7 +371,7 @@ export const runScorerThunkAsync = (key: string, appId: string, teachId: string,
         dispatch(runScorerAsync(key, appId, teachId, uiScoreInput))
 
         try {
-            let uiScoreResponse = await clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
+            const uiScoreResponse = await clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
             dispatch(runScorerFulfilled(key, appId, teachId, uiScoreResponse))
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return uiScoreResponse
@@ -418,7 +418,7 @@ export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId
         dispatch(postScorerFeedbackAsync(key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput))
 
         try {
-            let uiPostScoreResponse = await clClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
+            const uiPostScoreResponse = await clClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
 
             if (!waitForUser) {
                 // Don't re-send predicted entities on subsequent score call
@@ -427,7 +427,7 @@ export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId
                 dispatch(postScorerFeedbackFulfilled(key, appId, teachId, CLM.DialogMode.Scorer, uiPostScoreResponse, uiScoreInput))
             }
             else {
-                let dialogMode = uiPostScoreResponse.isEndTask ? CLM.DialogMode.EndSession : CLM.DialogMode.Wait
+                const dialogMode = uiPostScoreResponse.isEndTask ? CLM.DialogMode.EndSession : CLM.DialogMode.Wait
                 dispatch(postScorerFeedbackFulfilled(key, appId, teachId, dialogMode, uiPostScoreResponse, null))
             }
             return uiPostScoreResponse

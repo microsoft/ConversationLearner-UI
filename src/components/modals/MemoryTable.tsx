@@ -63,13 +63,13 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         const changeClass = memoryChangeClassMap[value.changeStatus] || ''
                         let renderedValue;
 
-                        let valuesAsObject = component.valuesAsObject(value.displayText)
+                        const valuesAsObject = component.valuesAsObject(value.displayText)
                         if (valuesAsObject && value.displayText) {
                             renderedValue = <span>{value.prefix}<span className={`${changeClass} cl-font--action`} data-testid="entity-memory-value">{value.displayText.slice(0, 20)}...</span></span>
                             renderedValue = entityObject(valuesAsObject, renderedValue)
                         }
                         else {
-                            let resolutionClass = (value.memoryValue.builtinType && Object.keys(value.memoryValue.resolution).length > 0) ? 'cl-font--action' : ''
+                            const resolutionClass = (value.memoryValue.builtinType && Object.keys(value.memoryValue.resolution).length > 0) ? 'cl-font--action' : ''
                             renderedValue = <span>{value.prefix}<span className={`${changeClass} ${resolutionClass}`} data-testid="entity-memory-value">{value.displayText}</span></span>
 
                             // Decorate with resolution if it exists
@@ -112,11 +112,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 180,
             isResizable: true,
             getSortValue: entity => {
-                let display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType;
+                const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType;
                 return display.toLowerCase();
             },
             render: entity => {
-                let display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType
+                const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType
                 if (display.toLowerCase() === "none") {
                     return (
                         <OF.Icon iconName="Remove" className="cl-icon" />
@@ -169,7 +169,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     }
 
     onColumnClick(event: any, column: IRenderableColumn) {
-        let { columns } = this.state;
+        const { columns } = this.state;
         let isSortedDescending = column.isSortedDescending
 
         // If we've sorted this column, flip it.
@@ -193,13 +193,13 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     }
 
     previousMemory(entityName: string) {
-        let prevMemories = this.props.prevMemories
+        const prevMemories = this.props.prevMemories
         return prevMemories.find(m => m.entityName === entityName);
     }
 
     getMemoryChangeStatus(entityName: string): MemoryChangeStatus {
-        let curEntity = this.props.memories.find(m => m.entityName === entityName);
-        let prevEntity = this.props.prevMemories.find(m => m.entityName === entityName);
+        const curEntity = this.props.memories.find(m => m.entityName === entityName);
+        const prevEntity = this.props.prevMemories.find(m => m.entityName === entityName);
 
         // In old but not new
         if (prevEntity && !curEntity) {
@@ -220,7 +220,7 @@ class MemoryTable extends React.Component<Props, ComponentState> {
         }
 
         try {
-            let obj = JSON.parse(entityValues);
+            const obj = JSON.parse(entityValues);
             if (typeof obj !== 'number' && typeof obj !== 'boolean') {
                 return obj
             }
@@ -231,14 +231,14 @@ class MemoryTable extends React.Component<Props, ComponentState> {
     }
     getEntityValues(entity: CLM.EntityBase) {
         // Current entity values
-        let curMemory = this.props.memories.find(m => m.entityName === entity.entityName)
-        let curMemoryValues = curMemory ? curMemory.entityValues : []
-        let curValues = curMemoryValues.map(cmv => cmv.userText)
+        const curMemory = this.props.memories.find(m => m.entityName === entity.entityName)
+        const curMemoryValues = curMemory ? curMemory.entityValues : []
+        const curValues = curMemoryValues.map(cmv => cmv.userText)
 
         // Corresponding old memory values
-        let prevMemory = this.props.prevMemories.find(m => m.entityName === entity.entityName)
-        let prevMemoryValues = prevMemory ? prevMemory.entityValues : []
-        let prevValues = prevMemoryValues.map(pmv => pmv.userText)
+        const prevMemory = this.props.prevMemories.find(m => m.entityName === entity.entityName)
+        const prevMemoryValues = prevMemory ? prevMemory.entityValues : []
+        const prevValues = prevMemoryValues.map(pmv => pmv.userText)
 
         // Find union and remove duplicates
         const unionMemoryValues = [...curMemoryValues, ...prevMemoryValues.filter(pmv => !curMemoryValues.some(cmv => cmv.userText === pmv.userText))];

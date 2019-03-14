@@ -12,11 +12,11 @@ const initialState: LogDialogState = [];
 const logDialogsReducer: Reducer<LogDialogState> = produce((state: LogDialogState, action: ActionObject) => {
     switch (action.type) {
         case AT.USER_LOGOUT:
-            return { ...initialState }
+            return [...initialState]
         case AT.FETCH_LOG_DIALOGS_FULFILLED:
             return action.allLogDialogs
         case AT.CREATE_APPLICATION_FULFILLED:
-            return { ...initialState }
+            return [...initialState]
         case AT.CREATE_LOG_DIALOG:
             state.push(action.logDialog)
             return
@@ -27,7 +27,7 @@ const logDialogsReducer: Reducer<LogDialogState> = produce((state: LogDialogStat
             // TODO: Refactor to different action instead of using null
             if (action.sourceLogDialogId) {
                 // Update log dialog this train dialog was created from
-                let source = state.filter(d => d.logDialogId === action.sourceLogDialogId);
+                const source = state.filter(d => d.logDialogId === action.sourceLogDialogId);
                 if (source[0]) {
                     source[0].targetTrainDialogIds = [action.trainDialogId]
                 }
