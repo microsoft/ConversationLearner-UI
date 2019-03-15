@@ -30,12 +30,15 @@ function DeleteAllTestGeneratedModelRows()
       {
         thereCouldBeMoreModelsToDelete = true
         helpers.ConLog(funcName, `Sending Request to Delete Model: ${modelNameId.name}`)
+        let botDomainAndPort = Cypress.env('BOT_DOMAIN_PORT')
+
+        //if (botDomainAndPort)
         cy.request(
         { 
           // BUGBUG - This URL Needs to come from the configuration
           //          Also need to figure out how to confirm these are deleted, 
           //          by now there could be thousands of models.
-          url: `http://localhost:3978/sdk/app/${modelNameId.id}`, 
+          url: `http://${Cypress.env('BOT_DOMAIN_PORT')}/sdk/app/${modelNameId.id}`, 
           method: "DELETE", 
           headers: { 'x-conversationlearner-memory-key': 'x' } 
         }).then(response => 
