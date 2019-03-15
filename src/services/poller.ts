@@ -31,6 +31,8 @@ export interface IPollerOptions {
 
 const global = window
 export class Poller {
+    // Need some random character for visual difference in logs. Could use uuid() library but don't want dependency
+    private id = Symbol(Math.floor(Math.random() * 100))
     private polls: ActivePoll[] = []
     constructor(options: IPollerOptions) {
         global.setInterval(async () => await this.poll(), options.interval)
@@ -43,14 +45,14 @@ export class Poller {
         const activeApp = this.polls.find(p => p.id === id)
 
         if (activeApp) {
-            console.log(`Existing polling found for id: ${id} increasing end from ${activeApp.end} to: ${end}`)
+            console.log(`Poller: ${this.id.toString()} - Existing polling found for id: ${id} increasing end from ${activeApp.end} to: ${end}`)
             activeApp.end = end
             return new Promise((resolve, reject) => {
                 activeApp.deferred.push({ resolve, reject, pollConfig })
             })
         }
 
-        console.log(`No polling found for id: ${id}. Starting new polling until: ${end}`)
+        console.log(`Poller: ${this.id.toString()} - No polling found for id: ${id}. Starting new polling until: ${end}`)
         return new Promise((resolve, reject) => {
             this.polls.push({
                 id,
