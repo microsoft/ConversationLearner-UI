@@ -60,7 +60,7 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
                     onChange={() => { }}
                 />
 
-                <div className="cl-inconsistent-entity-modal-header cl-text--success"><OF.Icon iconName="Accept" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS)}</div>
+                <div className="cl-inconsistent-entity-modal-header cl-text--success" data-testid="extract-conflict-modal-previously-submitted-labels"><OF.Icon iconName="Accept" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS)}</div>
                 <ExtractorResponseEditor.EditorWrapper
                     render={(editorProps, onChangeCustomEntities) =>
                         <ExtractorResponseEditor.Editor
