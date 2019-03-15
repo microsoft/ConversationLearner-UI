@@ -188,6 +188,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                     id: FM.BUTTON_OK,
                                     defaultMessage: 'Ok'
                                 })}
+                                iconProps={{ iconName: 'Accept' }}
                             />
                             <OF.DefaultButton
                                 data-testid="teach-session-cancel-button"
@@ -200,6 +201,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                     id: FM.BUTTON_CANCEL,
                                     defaultMessage: 'Cancel'
                                 })}
+                                iconProps={{ iconName: 'Cancel' }}
                             />
                         </div>
                     </div>

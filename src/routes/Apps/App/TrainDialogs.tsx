@@ -1185,6 +1185,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
                         componentRef={component => this.newTeachSessionButton = component!}
+                        iconProps={{ iconName: 'Add' }}
                     />
                 </div>
 

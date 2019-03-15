@@ -1425,6 +1425,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             text={this.state.isEditing ?
                                 formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT) :
                                 formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT)}
+                            iconProps={{ iconName: 'Accept' }}
                         />
 
                         <OF.DefaultButton
@@ -1432,6 +1433,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             onClick={this.onClickCancel}
                             ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
                             text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
+                            iconProps={{ iconName: 'Cancel' }}
                         />
 
                         {this.state.isEditing &&
@@ -1441,6 +1443,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 onClick={this.onClickDelete}
                                 ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
                                 text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
+                                iconProps={{ iconName: 'Delete' }}
                             />}
                     </div>
                 </div>
