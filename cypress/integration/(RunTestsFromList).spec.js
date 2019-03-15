@@ -3,9 +3,9 @@
  * Licensed under the MIT License.
 */
 
-import './Tools/CreateModel.spec'
-import './Tools/DeleteAllTestGeneratedModels.spec'
-import './Tools/ShowHomePage.spec'
+import './zTools/CreateModel.spec'
+import './zTools/zDeleteAllTestGeneratedModels.spec'
+import './zTools/ShowHomePage.spec'
 
 // import './CreateModels/WaitVsNoWaitActions.spec.js'
 // import './EditAndBranching/Branching.spec.js'
