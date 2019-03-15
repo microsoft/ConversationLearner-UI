@@ -18,18 +18,16 @@ describe('Tag And Frog - Train', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   context('Setup', () => {
-    it('Should import a model and wait for training to complete', () => {
+    it('Should import a model, wait for training to complete and start a new Train Dialog', () => {
       models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
       modelPage.NavigateToTrainDialogs()
-
       cy.WaitForTrainingStatusCompleted()
+      train.CreateNewTrainDialog()
     })
   })
 
   context('Train - Standard Input', () => {
     it('Should get an error message after removing single entity label & prevent scoring actions till fixed', () => {
-      train.CreateNewTrainDialog()
-
       train.TypeYourMessage('This is Tag.')
       editDialogModal.RemoveEntityLabel('Tag', 'multi')
       editDialogModal.ClickScoreActionsButton()
@@ -62,9 +60,8 @@ describe('Tag And Frog - Train', () => {
   })
 
   context('Setup for next phase', () => {
-    it('Should abandon Train Dialog and start a new Train Dialog', () => {
+    it('Should abandon Train Dialog, wait for training status to complete and start a new Train Dialog', () => {
       train.AbandonDialog()
-
       cy.WaitForTrainingStatusCompleted()
       train.CreateNewTrainDialog()
     })
