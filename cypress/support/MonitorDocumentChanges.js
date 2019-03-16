@@ -125,7 +125,7 @@ import * as helpers from './Helpers.js'
         })
     })
 
-    Cypress.Commands.add('WaitTillNChangesOccur', { prevSubject: 'optional'}, (changeCount) => {
+    Cypress.Commands.add('WaitTillNChangesOccur', { prevSubject: 'optional'}, (elements, changeCount) => {
       helpers.ConLog(`cy.WaitTillNChangesOccur(${changeCount})`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       waitTillNChangesOccur = changeCount
     })
