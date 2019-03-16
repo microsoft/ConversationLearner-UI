@@ -10,7 +10,7 @@ import * as train from '../../support/Train'
 import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as helpers from '../../support/Helpers'
 
-describe('EditAndBranching', () => {
+describe('Basic Branching', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   context('Setup', () => {
