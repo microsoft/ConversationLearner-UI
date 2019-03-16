@@ -234,6 +234,7 @@ export function RemoveEntityLabel(word, entity, index = 0) {
 //  entity = name of entity the word should be labeled with
 // *** This does NOT work for multiple words. ***
 export function VerifyEntityLabel(word, entity) {
+  cy.log(`Verify that '${word}' is labeled as entity '${entity}'`)
   cy.Get('[data-testid="token-node-entity-value"] > span > span')
     .ExactMatch(word)
     .parents('.cl-entity-node--custom')

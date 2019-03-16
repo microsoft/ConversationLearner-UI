@@ -8,30 +8,41 @@ import * as modelPage from '../../support/components/ModelPage'
 import * as scorerModal from '../../support/components/ScorerModal'
 import * as train from '../../support/Train'
 import * as editDialogModal from '../../support/components/EditDialogModal'
+import * as helpers from '../../support/Helpers'
 
 describe('EditAndBranching', () => {
-  it('Branching', () => {
-    models.ImportModel('z-branching', 'z-nameTrained.cl')
-    modelPage.NavigateToTrainDialogs()
-    cy.WaitForTrainingStatusCompleted()
+  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  
+  context('Setup', () => {
+    it('Should import a model and wait for training to complete', () => {
+      models.ImportModel('z-branching', 'z-nameTrained.cl')
+      modelPage.NavigateToTrainDialogs()
+      cy.WaitForTrainingStatusCompleted()
+    })
+  })
 
-    train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-    train.CaptureOriginalChatMessages()
+  context('Branching', () => {
+    it('Should edit a specific Train Dialog, branch and save it', () => {
+      train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
+      train.CaptureOriginalChatMessages()
 
-    train.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
-    cy.wait(5000)
-    editDialogModal.ClickScoreActionsButton('Hello $name')
-    scorerModal.VerifyChatMessage('Hello Joseph')
-    train.CaptureEditedChatMessages()
-    cy.wait(30000)
-    train.Save()
+      train.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
+      editDialogModal.ClickScoreActionsButton('Hello $name')
+      scorerModal.VerifyChatMessage('Hello Joseph')
+      train.CaptureEditedChatMessages()
+      train.Save()
+    })
 
-    train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-    train.VerifyOriginalChatMessages()
-    editDialogModal.ClickSaveCloseButton()
+    it('Should edit the original Train Dialog and verify it was not changed.', () => {
+      train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
+      train.VerifyOriginalChatMessages()
+      editDialogModal.ClickSaveCloseButton()
+    })
 
-    train.EditTraining('My name is David.', 'My name is Joseph.', 'Hello $name')
-    train.VerifyEditedChatMessages()
-    editDialogModal.ClickSaveCloseButton()
+    it('Should edit the Train Dialog created by branching and verify it was persisted correctly.', () => {
+      train.EditTraining('My name is David.', 'My name is Joseph.', 'Hello $name')
+      train.VerifyEditedChatMessages()
+      editDialogModal.ClickSaveCloseButton()
+    })
   })
 })

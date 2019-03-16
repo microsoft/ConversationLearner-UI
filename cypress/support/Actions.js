@@ -47,10 +47,7 @@ export function CreateNewActionThenVerifyInGrid({ response, expectedEntities, re
   actionsGrid.ValidateExpectedEntities(expectedEntities)
   
   // Type END_SESSION must have "Wait for Response" checked even if user unchecks it.
-  // TODO: When bug 1910 is fixed tests using this function and END_SESSION will fail,
-  //       when that happens uncomment the next line and remove the following one.
-  //actionsGrid.ValidateWaitForResponse((type === 'END_SESSION') || !uncheckWaitForResponse)
-  actionsGrid.ValidateWaitForResponse(!uncheckWaitForResponse)
+  actionsGrid.ValidateWaitForResponse((type === 'END_SESSION') || !uncheckWaitForResponse)
 }
 
 // ------------------------------------------------------------------------------------------------
