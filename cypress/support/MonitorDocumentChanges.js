@@ -23,6 +23,7 @@ import * as helpers from './Helpers.js'
 (function () {
   let lastMonitorTime = 0
   let lastChangeTime = 0
+  let waitTillNChangesOccur = 0
   let lastHtml
   let StopLookingForChanges = false
   let dumpHtml = false
@@ -34,6 +35,16 @@ import * as helpers from './Helpers.js'
 
   function MillisecondsSinceLastChange() {
     if (new Date().getTime() > lastMonitorTime + 50) LookForChange()
+    
+    // Some operations are known to take a long time without rendering, so while this count
+    // is greater than zero, we will reset our lastChangeTime and return zero which will
+    // effectively cause a wait until the specified number of changes pass and then resume
+    // our normal monitoring for stable DOM.
+    if (waitTillNChangesOccur > 0) { 
+      lastChangeTime = new Date().getTime()
+      return 0 
+    }
+
     return (new Date().getTime() - lastChangeTime)
   }
 
@@ -114,6 +125,11 @@ import * as helpers from './Helpers.js'
         })
     })
 
+    Cypress.Commands.add('WaitTillNChangesOccur', { prevSubject: 'optional'}, (changeCount) => {
+      helpers.ConLog(`cy.WaitTillNChangesOccur(${changeCount})`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
+      waitTillNChangesOccur = changeCount
+    })
+
     Cypress.Commands.add('RunAndExpectDomChange', (func) => {
       helpers.ConLog(`cy.RunAndExpectDomChange()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       lastChangeTime = new Date().getTime()
@@ -158,6 +174,7 @@ import * as helpers from './Helpers.js'
     const currentTime = lastMonitorTime = new Date().getTime()
     const currentHtml = Cypress.$('html')[0].outerHTML
     if (currentHtml != lastHtml) {
+      if (waitTillNChangesOccur > 0) { waitTillNChangesOccur-- }
       helpers.ConLog(funcName, `Change Found - Milliseconds since last change: ${(currentTime - lastChangeTime)}`)
       if (dumpHtml) { helpers.ConLog(funcName, `Current HTML:\n${currentHtml}`) }
 
