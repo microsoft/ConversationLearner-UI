@@ -125,6 +125,14 @@ import * as helpers from './Helpers.js'
         })
     })
 
+    // This will force any of our code that waits for stable DOM to wait until 'changeCount' number of changes
+    // are detected, and then another 700 milliseconds of no changes (resuming normal operation) before the 
+    // DOM is considered stable.
+    //
+    // The use case for this is when the normal waiting fails because we are expecting a change to the DOM but 
+    // it takes too long to occur. This is typically a product bug, but if not, or to temporarily workaround the
+    // product bug you can consult the logs and see what changes come and determine the count of those changes
+    // that must occur before normal operations are to resume.
     Cypress.Commands.add('WaitTillNChangesOccur', { prevSubject: 'optional'}, (elements, changeCount) => {
       helpers.ConLog(`cy.WaitTillNChangesOccur(${changeCount})`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       waitTillNChangesOccur = changeCount
