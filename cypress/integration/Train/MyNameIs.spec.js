@@ -30,7 +30,9 @@ describe('Train', () => {
     cy.WaitForTrainingStatusCompleted()
 
     train.TypeYourMessage('My name is Susan.')
+    cy.log('Going to hit bug 1948')
     editDialogModal.VerifyEntityLabel('Susan', 'name')
+    cy.Enqueue(() => {throw new Error('When this test cases gets here, bug 1948 has been fixed...edit the test code and remove this and the c.log call above.')})
     editDialogModal.ClickScoreActionsButton()
     memoryTableComponent.VerifyEntityInMemory('name', ['Susan'], 'David')
     scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
