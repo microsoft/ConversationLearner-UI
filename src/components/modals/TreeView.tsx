@@ -180,7 +180,7 @@ class TreeView extends React.Component<Props, ComponentState> {
     }
 
     toTreeScorerStep(scorerStep: CLM.TrainScorerStep): TreeScorerStep {
-        let entities: string[] = []
+        const entities: string[] = []
         if (scorerStep.input.filledEntities && scorerStep.input.filledEntities.length > 0) {
             scorerStep.input.filledEntities.forEach(fe => {
                 let entity = this.props.entities.find(e => e.entityId === fe.entityId)
@@ -202,7 +202,7 @@ class TreeView extends React.Component<Props, ComponentState> {
         if (!scorerStep.input.filledEntities || scorerStep.input.filledEntities.length === 0) {
             return undefined
         }
-        let attributes = {}
+        const attributes = {}
         scorerStep.input.filledEntities.forEach(fe => {
             let entity = this.props.entities.find(e => e.entityId === fe.entityId)
             if (entity) {
@@ -228,8 +228,8 @@ class TreeView extends React.Component<Props, ComponentState> {
 
         // If in extended mode, add scorer steps as children
         if (this.state.extended) {
-            let action = this.props.actions.find(a => a.actionId === scorerStep.labelAction)
-            let name = action ? this.simpleActionRenderer(action) : "- MISSING ACTION -"
+            const action = this.props.actions.find(a => a.actionId === scorerStep.labelAction)
+            const name = action ? this.simpleActionRenderer(action) : "- MISSING ACTION -"
             const child: TreeNode = {
                 name: name,
                 attributes: this.memoryAttributes(scorerStep),
@@ -332,12 +332,12 @@ class TreeView extends React.Component<Props, ComponentState> {
     findMatchingRound(parent: TreeNode, round: CLM.TrainRound, roundIndex: number, trainDialog: CLM.TrainDialog, filter: boolean): TreeNode | null {
 
         // Create new round
-        let tempParent: TreeNode = this.makeRoot()
-        let child = this.addRound(tempParent, round, roundIndex, trainDialog)
-        let newRound = tempParent.children[0]
+        const tempParent: TreeNode = this.makeRoot()
+        const child = this.addRound(tempParent, round, roundIndex, trainDialog)
+        const newRound = tempParent.children[0]
 
         // Check for existing matching round
-        let match = parent.children.find(r => {
+        const match = parent.children.find(r => {
             // Maching round
             return this.doesRoundMatch(r, newRound)
         })
@@ -387,8 +387,8 @@ class TreeView extends React.Component<Props, ComponentState> {
             this.setState({expandedNode: null})
             const trainDialog = this.props.trainDialogs.find(t => t.trainDialogId === trainDialogId)
             if (trainDialog) {
-                let roundIndex = selectedNode.roundIndex === undefined ? null : selectedNode.roundIndex
-                let scoreIndex = selectedNode.scoreIndex === undefined ? null : selectedNode.scoreIndex
+                const roundIndex = selectedNode.roundIndex === undefined ? null : selectedNode.roundIndex
+                const scoreIndex = selectedNode.scoreIndex === undefined ? null : selectedNode.scoreIndex
                 this.props.openTrainDialog(trainDialog, roundIndex, scoreIndex)   
             }
         }
