@@ -1242,7 +1242,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     :
                     <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
                 }
-                <div className="cl-modal-buttons_primary">
+                <div className="cl-buttons-row">
                     <OF.PrimaryButton
                         data-testid="button-new-train-dialog"
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}

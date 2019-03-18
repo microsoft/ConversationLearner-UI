@@ -422,12 +422,12 @@ class TreeView extends React.Component<Props, ComponentState> {
                 isOpen={this.props.open}
                 onDismiss={() => this.onClickCancel()}
                 isBlocking={false}
-                containerClassName='cl-modal fullscreen'
+                containerClassName='cl-modal cl-treeview-fullscreen'
             >
-                <div className="demoContainer">
-                    <div className="columnRight">
+                <div className="cl-treeview-parentContainer">
+                    <div className="cl-treeview-columnRight">
                         <div 
-                            className="treeContainer"
+                            className="cl-treeview-container"
                             ref={this.setContainerRef}
                         >
                             {this.state.tree && this.state.treeContainer &&
@@ -462,7 +462,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                             }
                             {this.state.showBanner &&
                                 <OF.MessageBar
-                                    className="messageBar"
+                                    className="cl-treeview-messageBar"
                                     isMultiline={true}
                                     onDismiss={() => this.dismissBanner()}
                                     dismissButtonAriaLabel='Close'
@@ -482,7 +482,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                             isOpen={true}
                             containerClassName='cl-modal'
                         >
-                            <div className="expandedContainer">
+                            <div className="cl-treeview-expandedNode">
                                 <TreeNodeLabel
                                     nodeData={this.state.expandedNode}
                                     expanded={true}
@@ -533,7 +533,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                     />*/    
                     }  
                 </div>
-                <div className='closeButton'>
+                <div className='cl-treeview-closeButton'>
                     <OF.DefaultButton
                         onClick={this.onClickCancel}
                         ariaDescription={Util.formatMessageId(intl, FM.BUTTON_CLOSE)}

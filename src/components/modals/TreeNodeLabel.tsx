@@ -94,13 +94,13 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
             return (
                 <div>
                     <div 
-                        className={`botBox${this.isSelected() ? ` botBoxSelected` : ''}`}
+                        className={`cl-treeview-botBox${this.isSelected() ? ` cl-treeview-botBoxSelected` : ''}`}
                     >
                         {nodeData.name}
-                        <div className="buttonblock">
+                        <div className="cl-treeview-buttonblock">
                             {nodeData._children && 
                                 <OF.IconButton
-                                    className={nodeData._collapsed ? `` : `flip`}
+                                    className={nodeData._collapsed ? `` : `cl-treeview-flip`}
                                     iconProps={{ iconName: 'DrillExpand' }}
                                     onClick={() => {
                                         this.props.onExpandoClick(nodeData.id!)
@@ -110,29 +110,29 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                                 />
                             }
                             <AddButtonInput
-                                className={'treeViewButton treeViewButtonPadded'}
+                                className={'cl-treeview-treeViewButton cl-treeview-treeViewButtonPadded'}
                                 onClick={() => {}}
                                 editType={EditDialogType.TRAIN_ORIGINAL}
                             />
                             <OF.IconButton
-                                className={`treeViewButton`}
+                                className={`cl-treeview-treeViewButton`}
                                 iconProps={{ iconName: '' }}
                                 onClick={() => {}}
                             />
                             <AddScoreButton
-                                className={'treeViewButton treeViewButtonPadded'}
+                                className={'cl-treeview-treeViewButton cl-treeview-treeViewButtonPadded'}
                                 // Don't select an activity if on last step
                                 onClick={() => {}}
                             />
                             <OF.IconButton
-                                className={`treeViewButton`}
+                                className={`cl-treeview-treeViewButton`}
                                 iconProps={{ iconName: 'Delete' }}
                                 onClick={() => {}}
                                 ariaDescription="Delete Turn"
                             />
                         </div>
                     </div>
-                    <div className='memory'>
+                    <div className='cl-treeview-memory'>
                         {nodeData.attributes && Object.keys(nodeData.attributes).join(', ')}
                     </div>
                 </div>
@@ -183,12 +183,12 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
             return (
                 <div>
                     <div 
-                        className={`userBox${isNodeelected ? ` botBoxSelected` : ''}`}
+                        className={`cl-treeview-userBox${isNodeelected ? ` cl-treeview-botBoxSelected` : ''}`}
                     >
                         {userInputs && userInputs.map((input, index) =>
                             <div
                                 key={`${nodeData.id}${index}`}
-                                className={`userInput${this.props.expanded ? '' : ' ellipse'}`}
+                                className={`cl-treeview-userInput${this.props.expanded ? '' : ' cl-treeview-ellipse'}`}
                                 role="button"
                                 onClick={() => this.props.onOpenTrainDialog(this.props.nodeData, input.trainDialogId)}
                             >
@@ -197,25 +197,25 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                         )}
                         {userInputMore &&
                         <OF.IconButton 
-                            className="footerButton"
+                            className="cl-treeview-footerButton"
                             iconProps={{ iconName: 'More' }}
                             onClick={() => this.onClickDetail(nodeData.id!)}
                             ariaDescription="View More"
                         />}
                     </div>
-                    <div className="scorerBox">
+                    <div className="cl-treeview-scorerBox">
                         {scorerSteps.map((s, index) => 
                                 <div
                                     key={`${nodeData.id}${index}SH`} 
                                 >
                                     <div 
-                                        className={`memoryBox${this.props.expanded ? '' : ' ellipse'}`}
+                                        className={`cl-treeview-memoryBox${this.props.expanded ? '' : ' cl-treeview-ellipse'}`}
                                     >
                                         {`(${s.memory.length}) ${s.memory.join(', ') || '-'}`}
                                     </div>
                                     <div
                                         key={`${nodeData.id}${index}SS`} 
-                                        className={`scorerStep${this.props.expanded ? '' : ' ellipse'}`}
+                                        className={`cl-treeview-scorerStep${this.props.expanded ? '' : ' cl-treeview-ellipse'}`}
                                     >
                                         {s.description}
                                     </div>
@@ -223,7 +223,7 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                         )}
                         {scorerStepMore && 
                             <OF.IconButton 
-                                className="footerButton moreButton-scorer"
+                                className="cl-treeview-footerButton cl-treeview-moreButton-scorer"
                                 iconProps={{ iconName: 'More' }}
                                 onClick={() => this.onClickDetail(nodeData.id!)}
                                 ariaDescription="View More"
@@ -232,13 +232,13 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                     {!this.props.expanded &&
                         <div>
                             <OF.IconButton 
-                                className="footerButton footerButton-pin"
+                                className="cl-treeview-footerButton cl-treeview-cl-treeview-footerButton-pin"
                                 iconProps={{ iconName: isNodeelected ? 'PinnedFill' : 'Pin' }}
                                 onClick={() => this.onClickPin(nodeData)}
                                 ariaDescription="Pin Node"
                             />
                             <OF.IconButton 
-                                className="footerButton moreButton-bottom"
+                                className="cl-treeview-footerButton cl-treeview-moreButton-bottom"
                                 iconProps={{ iconName: 'More' }}
                                 onClick={() => this.onClickDetail(nodeData.id!)}
                                 ariaDescription="View More"
@@ -246,33 +246,33 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                         </div>
                     }
                     {this.props.canEdit &&
-                        <div className="buttonblock">
+                        <div className="cl-treeview-buttonblock">
                             {nodeData._children && 
                                 <OF.IconButton
-                                    className={nodeData._collapsed ? `` : `flip`}
+                                    className={nodeData._collapsed ? `` : `cl-treeview-flip`}
                                     iconProps={{ iconName: 'DrillExpand' }}
                                     onClick={() => this.onClickDetail(nodeData.id!)}
                                     ariaDescription="Delete Turn"
                                 />
                             }
                             <AddButtonInput
-                                className={'treeViewButton treeViewButtonPadded'}
+                                className={'cl-treeview-treeViewButton cl-treeview-treeViewButtonPadded'}
                                 onClick={() => {}}
                                 editType={EditDialogType.TRAIN_ORIGINAL}
                             />
                             <OF.IconButton
                                 disabled={true}
-                                className={`treeViewButton`}
+                                className={`cl-treeview-treeViewButton`}
                                 iconProps={{ iconName: 'BranchMerge' }}
                                 onClick={() => {}}
                             />
                             <AddScoreButton
-                                className={'treeViewButton treeViewButtonPadded'}
+                                className={'cl-treeview-treeViewButton cl-treeview-treeViewButtonPadded'}
                                 // Don't select an activity if on last step
                                 onClick={() => {}}
                             />
                             <OF.IconButton
-                                className={`treeViewButton`}
+                                className={`cl-treeview-treeViewButton`}
                                 iconProps={{ iconName: 'Delete' }}
                                 onClick={() => {}}
                                 ariaDescription="Delete Turn"
@@ -282,10 +282,10 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                     {!nodeData.children && 
                         <div
                             key={`${nodeData.id}END`}
-                            className="endConversation"
+                            className="cl-treeview-endConversation"
                         />
                     }
-                    <div className='memory'>
+                    <div className='cl-treeview-memory'>
                         {nodeData.attributes && Object.keys(nodeData.attributes).join(', ')}
                     </div>
                 </div>
