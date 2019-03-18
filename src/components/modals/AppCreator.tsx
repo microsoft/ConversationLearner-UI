@@ -279,6 +279,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                     onClick={this.onClickImport}
                                     ariaDescription={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION)}
                                     text={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_IMPORT_BUTTON_TEXT)}
+                                    iconProps={{ iconName: 'Accept' }}
                                 />
                             }
                             {this.props.creatorType === AppCreatorType.NEW &&
@@ -288,6 +289,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                     onClick={this.onClickCreate}
                                     ariaDescription={Utils.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION)}
                                     text={Utils.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_TEXT)}
+                                    iconProps={{ iconName: 'Accept' }}
                                 />
                             }
                             {this.props.creatorType === AppCreatorType.COPY &&
@@ -297,6 +299,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                     onClick={this.onClickCreate}
                                     ariaDescription={Utils.formatMessageId(intl, FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION)}
                                     text={Utils.formatMessageId(intl, FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION)}
+                                    iconProps={{ iconName: 'Accept' }}
                                 />
                             }
                             <OF.DefaultButton
@@ -304,6 +307,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                 onClick={this.onClickCancel}
                                 ariaDescription={Utils.formatMessageId(intl, FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION)}
                                 text={Utils.formatMessageId(intl, FM.APPCREATOR_CANCELBUTTON_TEXT)}
+                                iconProps={{ iconName: 'Cancel' }}
                             />
                         </div>
                     </div>

@@ -986,6 +986,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
                         componentRef={component => this.newChatSessionButton = component!}
+                        iconProps={{ iconName: 'Add' }}
                     />
                     <OF.DefaultButton
                         data-testid="logdialogs-button-refresh"

@@ -284,6 +284,7 @@ class Entities extends React.Component<Props, ComponentState> {
                             id: FM.ENTITIES_CREATEBUTTONTEXT,
                             defaultMessage: 'New Entity'
                         })}
+                        iconProps={{ iconName: 'Add' }}
                         componentRef={component => this.newEntityButton = component!}
                     />
                 </div>

@@ -357,11 +357,13 @@ class Settings extends React.Component<Props, ComponentState> {
                             onClick={this.onClickExport}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION)}
                             text={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONTEXT)}
+                            iconProps={{ iconName: 'DownloadDocument' }}
                         />
                         <OF.PrimaryButton
                             onClick={this.onClickCopy}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONARIALDESCRIPTION)}
                             text={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONTEXT)}
+                            iconProps={{ iconName: 'Copy' }}
                         />
                         <OF.DefaultButton
                             data-testid="settings-delete-model-button"
@@ -369,6 +371,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             onClick={this.onClickDelete}
                             ariaDescription={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
                             text={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
+                            iconProps={{ iconName: 'Delete' }}
                         />
                     </div>
                     <OF.TextField
@@ -482,12 +485,14 @@ class Settings extends React.Component<Props, ComponentState> {
                             onClick={this.onClickSave}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_SAVECHANGES)}
                             text={Util.formatMessageId(intl, FM.SETTINGS_SAVECHANGES)}
+                            iconProps={{ iconName: 'Accept' }}
                         />
                         <OF.DefaultButton
                             disabled={this.state.edited === false}
                             onClick={this.onClickDiscard}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_DISCARD)}
                             text={Util.formatMessageId(intl, FM.SETTINGS_DISCARD)}
+                            iconProps={{ iconName: 'Undo' }}
                         />
                     </div>
 

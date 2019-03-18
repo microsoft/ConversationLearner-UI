@@ -42,6 +42,30 @@ export function internalConflict(textVariation: CLM.TextVariation, trainDialog: 
     return null
 }
 
+export function activityIndexFromRound(trainDialog: CLM.TrainDialog, roundIndex: number | null, scoreIndex: number | null): number | undefined {
+    if (!roundIndex) { 
+        return undefined
+    }
+
+    let activityIndex = 0
+    let currentRoundIndex = 0
+    for (const round of trainDialog.rounds) {
+        if (currentRoundIndex === roundIndex) {
+            if (!scoreIndex) {
+                return activityIndex
+            }
+            else {
+                return activityIndex + scoreIndex
+            }
+        }
+        else {
+            currentRoundIndex =  currentRoundIndex + 1
+            activityIndex = activityIndex + 1 + round.scorerSteps.length
+        }
+    }
+    return activityIndex
+}
+
 export function matchedActivityIndex(selectedActivity: Activity, activities: Activity[]): number | null {
     if (!selectedActivity || activities.length === 0) {
         return null

@@ -730,8 +730,12 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   margin-right: 5px;
 }
 */
-.ms-Button--primary.is-disabled, .ms-Button--primary:disabled {
+.ms-Button--primary.is-disabled,
+.ms-Button--primary:disabled {
   background-color: var(--color-neutralTertiary) !important;
+  color: var(--color-neutralSecondary) !important;
+}
+.ms-Button--primary.is-disabled .ms-Button-icon {
   color: var(--color-neutralSecondary) !important;
 }
 

@@ -96,6 +96,7 @@ class Dashboard extends React.Component<Props, ComponentState> {
                                 <OF.PrimaryButton
                                     onClick={() => this.onClickAcceptChanges(appDefinitionChange.updatedAppDefinition)}
                                     text="Accept Changes"
+                                    iconProps={{ iconName: 'Accept' }}
                                 />
                             </div>
                             : <div>
