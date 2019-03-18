@@ -167,12 +167,10 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                     const num_input_lines = Math.min(userInput.length, max_input_lines)
 
                     if (num_input_lines < userInput.length) {
-                        // TOOD: need way for user to select which one.  Currenlty selects last train Dialog
                         userInput = userInput.slice(0, num_input_lines)
                         userInputMore = true
                     }
                     if (num_scorer_lines < scorerSteps.length) {
-                        // TOOD: need way for user to select which one.  Currenlty selects last train Dialog
                         scorerSteps = scorerSteps.slice(0, num_scorer_lines)
                         scorerStepMore = true
                     }
