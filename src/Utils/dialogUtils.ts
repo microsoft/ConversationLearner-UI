@@ -21,7 +21,7 @@ export function getReplayError(activity: Activity | null): CLM.ReplayError | nul
     if (!activity || !activity.channelData || !activity.channelData.clData) {
         return null
     }
-    let clData: CLM.CLChannelData = activity.channelData.clData
+    const clData: CLM.CLChannelData = activity.channelData.clData
     return clData.replayError
 }
 
@@ -29,7 +29,7 @@ export function getReplayError(activity: Activity | null): CLM.ReplayError | nul
 export function internalConflict(textVariation: CLM.TextVariation, trainDialog: CLM.TrainDialog, roundIndex: number | null): CLM.ExtractResponse | null {
     for (let i = 0; i < trainDialog.rounds.length; i = i + 1) {
         if (roundIndex === null || i !== roundIndex) {
-            for (let tv of trainDialog.rounds[i].extractorStep.textVariations) {
+            for (const tv of trainDialog.rounds[i].extractorStep.textVariations) {
                 // If text is same, labels must match
                 if (textVariation.text === tv.text) {
                     if (!CLM.ModelUtils.areEqualTextVariations(textVariation, tv)) {
@@ -71,9 +71,9 @@ export function matchedActivityIndex(selectedActivity: Activity, activities: Act
         return null
     }
     else {
-        let clDataSelected: CLM.CLChannelData = selectedActivity.channelData.clData
-        let index = activities.findIndex(a => {
-            let clData: CLM.CLChannelData = a.channelData.clData
+        const clDataSelected: CLM.CLChannelData = selectedActivity.channelData.clData
+        const index = activities.findIndex(a => {
+            const clData: CLM.CLChannelData = a.channelData.clData
             return (
                 clData.senderType === clDataSelected.senderType &&
                 clData.roundIndex === clDataSelected.roundIndex &&
@@ -114,11 +114,11 @@ export function hasEndSession(trainDialog: CLM.TrainDialog, allActions: CLM.Acti
 // Return best action from ScoreResponse 
 export function getBestAction(scoreResponse: CLM.ScoreResponse, allActions: CLM.ActionBase[], canEndSession: boolean): CLM.ScoredAction | undefined {
 
-    let scoredActions = scoreResponse.scoredActions
+    const scoredActions = scoreResponse.scoredActions
 
     // Get highest scoring Action 
     let best
-    for (let test of scoredActions) {
+    for (const test of scoredActions) {
 
         const action = allActions.find(a => a.actionId === test.actionId)
         if (action) {

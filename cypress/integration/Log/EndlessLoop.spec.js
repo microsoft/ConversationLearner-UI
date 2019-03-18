@@ -43,7 +43,7 @@ function EndlessLoopX() {
         modelNames.push(modelName)
         helpers.ConLog(`EndlessLoop`, `Models: ${modelNames}`)
 
-        let messages = ['one', 'two', 'three', 'ONE', 'TWO', 'THREE']
+        const messages = ['one', 'two', 'three', 'ONE', 'TWO', 'THREE']
         let modelIndex = 0
         let loopIndex = 0
         function LogDialogChat() {
@@ -53,7 +53,7 @@ function EndlessLoopX() {
           logDialogsGrid.CreateNewLogDialogButton()
 
           for (let i = 0; i < 3; i++) {
-            let message = messages[i + (modelIndex * 3)]
+            const message = messages[i + (modelIndex * 3)]
             logDialogModal.TypeYourMessage(`${message} loopIndex: ${loopIndex}`)
             cy.ConLog(`EndlessLoop(modelIndex: ${modelIndex}, loopIndex: ${loopIndex})`, `${message} loopIndex: ${loopIndex}`)
             cy.wait(2000)

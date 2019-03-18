@@ -50,7 +50,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         // Generate list of textVariations that have changed
         const renderData = this.getRenderData()
         const originalTextVariations = renderData.textVariations
-        let changedTextVariations: CLM.TextVariation[] = []
+        const changedTextVariations: CLM.TextVariation[] = []
         textVariations.map(tv => {
             const found = originalTextVariations.find(otv => CLM.ModelUtils.areEqualTextVariations(tv, otv))
             if (!found) {
@@ -62,8 +62,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         // First check for internal conflicts
         if (this.props.sourceTrainDialog) {
-            for (let changedTextVariation of changedTextVariations) {
-                let extractConflict = DialogUtils.internalConflict(changedTextVariation, this.props.sourceTrainDialog, renderData.roundIndex)
+            for (const changedTextVariation of changedTextVariations) {
+                const extractConflict = DialogUtils.internalConflict(changedTextVariation, this.props.sourceTrainDialog, renderData.roundIndex)
                 if (extractConflict) {
                     this.props.setTextVariationConflict(extractConflict)
                     return true
@@ -72,8 +72,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         }
 
         // Next against other TrainDialogs
-        for (let changedTextVariation of changedTextVariations) {
-            let conflict = await this.props.fetchTextVariationConflictThunkAsync(
+        for (const changedTextVariation of changedTextVariations) {
+            const conflict = await this.props.fetchTextVariationConflictThunkAsync(
                 this.props.app.appId,
                 this.props.teachSession.teach!.trainDialogId,
                 changedTextVariation,
@@ -116,9 +116,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const uiScoreResponse: CLM.UIScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
 
         if (!uiScoreResponse.extractConflict && !uiScoreResponse.botAPIError) {
-            let turnLookup = [...this.state.turnLookup]
+            const turnLookup = [...this.state.turnLookup]
             // If first turn, set offset based on existing activities
-            let turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.nextActivityIndex - 1 : this.state.turnLookupOffset
+            const turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.nextActivityIndex - 1 : this.state.turnLookupOffset
 
             turnLookup.push({ textVariations, memories: [...this.props.teachSession.memories] })
             turnLookup.push({ uiScoreResponse, memories: [...this.props.teachSession.memories] })
@@ -129,8 +129,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             })
 
             // Replace webchat text with markdown version where labelled entities are bold
-            let excludedEntities = this.props.entities.filter(e => e.doNotMemorize).map(e => e.entityId)
-            let userText = CLM.ModelUtils.textVariationToMarkdown(textVariations[0], excludedEntities)
+            const excludedEntities = this.props.entities.filter(e => e.doNotMemorize).map(e => e.entityId)
+            const userText = CLM.ModelUtils.textVariationToMarkdown(textVariations[0], excludedEntities)
             this.props.onReplaceActivityText(userText, this.props.nextActivityIndex - 1)
 
             this.props.clearExtractResponses()
@@ -166,7 +166,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         // Store selected action in "turn lookup"
         if (this.state.turnLookup.length > 0) {
-            let turnLookup = [...this.state.turnLookup]
+            const turnLookup = [...this.state.turnLookup]
             turnLookup[this.state.turnLookup.length - 1].selectedActionId = scoredAction.actionId
             this.setState({
                 turnLookup
@@ -195,10 +195,10 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         if (!waitForUser) {
             const uiScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
-            let turnLookup = [...this.state.turnLookup]
+            const turnLookup = [...this.state.turnLookup]
 
             // Update memory on previous turn as may have been an API call
-            let lastLookup = turnLookup[turnLookup.length - 1]
+            const lastLookup = turnLookup[turnLookup.length - 1]
             lastLookup.memories = [...this.props.teachSession.memories]
 
             turnLookup.push({ uiScoreResponse, memories: [...this.props.teachSession.memories] })
@@ -230,11 +230,11 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         if (this.props.selectedActivityIndex != null) {
 
             // Offset lookup index based on pre-existing activities
-            let lookupIndex = this.props.selectedActivityIndex - this.state.turnLookupOffset
+            const lookupIndex = this.props.selectedActivityIndex - this.state.turnLookupOffset
 
             if (lookupIndex >= 0) {
 
-                let turnData = this.state.turnLookup[lookupIndex]
+                const turnData = this.state.turnLookup[lookupIndex]
 
                 const prevTurn = this.state.turnLookup[lookupIndex - 1]
                 const prevMemories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories! : []

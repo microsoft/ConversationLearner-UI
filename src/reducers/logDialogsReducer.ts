@@ -5,19 +5,21 @@
 import { ActionObject, LogDialogState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
+import produce from 'immer'
 
 const initialState: LogDialogState = [];
 
-const logDialogsReducer: Reducer<LogDialogState> = (state = initialState, action: ActionObject): LogDialogState => {
+const logDialogsReducer: Reducer<LogDialogState> = produce((state: LogDialogState, action: ActionObject) => {
     switch (action.type) {
         case AT.USER_LOGOUT:
-            return { ...initialState };
+            return [...initialState]
         case AT.FETCH_LOG_DIALOGS_FULFILLED:
-            return action.allLogDialogs;
+            return action.allLogDialogs
         case AT.CREATE_APPLICATION_FULFILLED:
-            return { ...initialState }
+            return [...initialState]
         case AT.CREATE_LOG_DIALOG:
-            return [...state, action.logDialog];
+            state.push(action.logDialog)
+            return
         case AT.DELETE_LOG_DIALOG_FULFILLED:
             // Delete log dialog optimistically.  Will reload train dialogs on failure
             return state.filter(dialog => dialog.logDialogId !== action.logDialogId);
@@ -25,15 +27,16 @@ const logDialogsReducer: Reducer<LogDialogState> = (state = initialState, action
             // TODO: Refactor to different action instead of using null
             if (action.sourceLogDialogId) {
                 // Update log dialog this train dialog was created from
-                let source = state.filter(d => d.logDialogId === action.sourceLogDialogId);
+                const source = state.filter(d => d.logDialogId === action.sourceLogDialogId);
                 if (source[0]) {
                     source[0].targetTrainDialogIds = [action.trainDialogId]
                 }
                 return state.filter(dialog => dialog.logDialogId !== action.sourceLogDialogId).concat(source[0])
             }
-            return state
+            return
         default:
-            return state;
+            return
     }
-}
-export default logDialogsReducer;
+}, initialState)
+
+export default logDialogsReducer

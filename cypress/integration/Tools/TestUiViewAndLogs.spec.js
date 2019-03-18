@@ -72,7 +72,7 @@ beforeEach(function() {
 
 // Log some of Moca's objects
 afterEach(function() {
-  let funcName = 'afterEach'
+  const funcName = 'afterEach'
   // helpers.Dump(funcName, this.currentTest)
   // helpers.Dump(funcName, this.currentTest.ctx)
   // helpers.Dump(funcName, this.currentTest.parent)

@@ -342,7 +342,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         if (this.props.history.length === 0) {
             return false
         }
-        for (let activity of this.props.history) {
+        for (const activity of this.props.history) {
             const clData: CLM.CLChannelData = activity.channelData.clData
             if (clData &&
                 clData.replayError &&
@@ -361,7 +361,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         // Return most severe error level found
         let replayErrorLevel: CLM.ReplayErrorLevel | null = null
-        for (let h of this.props.history) {
+        for (const h of this.props.history) {
             const clData: CLM.CLChannelData = h.channelData.clData
             if (clData && clData.replayError) {
                 if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
@@ -583,7 +583,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     trainDialogValidity(): CLM.Validity | undefined {
         // Look for individual replay errors
-        let replayErrorLevel = this.replayErrorLevel()
+        const replayErrorLevel = this.replayErrorLevel()
         if (replayErrorLevel) {
             if (replayErrorLevel === CLM.ReplayErrorLevel.BLOCKING || replayErrorLevel === CLM.ReplayErrorLevel.ERROR) {
                 return CLM.Validity.INVALID
@@ -819,7 +819,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         // No Activity selected, but Replay error on an Activity
-        let replayErrorLevel = this.replayErrorLevel()
+        const replayErrorLevel = this.replayErrorLevel()
         if (this.replayErrorLevel()) {
             if (replayErrorLevel === CLM.ReplayErrorLevel.WARNING) {
                 // Only show activity based warning if no trainDialog level warning

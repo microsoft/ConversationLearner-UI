@@ -57,7 +57,7 @@ beforeEach(function() {
   console.log(`******************** ${GetFullTestSuiteTitle(this.currentTest)} ************************************************************`)
 
   test = this.currentTest
-  let title = GetSuiteRootTitle(this.currentTest)
+  const title = GetSuiteRootTitle(this.currentTest)
   if (title !== suiteTitle) {
     suiteTitle = title
     logFileName = `./results/cypress/${suiteTitle}.${Cypress.moment().format("YY.MM.DD.HH.mm.ss..SSS")}.log`
@@ -80,7 +80,7 @@ function LogTestState()
 {
   if (!test) { return false }
 
-  let message = `: ${test.state.toUpperCase()} - Test Case: '${GetFullTestSuiteTitle(test)}' - ${test.state.toUpperCase()} :`
+  const message = `: ${test.state.toUpperCase()} - Test Case: '${GetFullTestSuiteTitle(test)}' - ${test.state.toUpperCase()} :`
   console.log('.'.repeat(message.length))
   console.log(message)
   console.log("'".repeat(message.length))

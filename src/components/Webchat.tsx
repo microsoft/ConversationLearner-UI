@@ -23,7 +23,7 @@ export function renderActivity(
     shouldRenderHighlight: boolean,
 ): JSX.Element {
 
-    let timeLine = <span> {activityProps.fromMe ? "User" : "Bot"}</span>;
+    const timeLine = <span> {activityProps.fromMe ? "User" : "Bot"}</span>;
 
     const isLogDialog = editType === EditDialogType.LOG_ORIGINAL || editType === EditDialogType.LOG_EDITED
     const who = activityProps.fromMe ? 'me' : 'bot'
@@ -33,7 +33,7 @@ export function renderActivity(
             (activityProps.activity as Message).attachmentLayout || 'list',
             activityProps.onClickActivity && 'clickable'].filter(Boolean).join(' ')
 
-    let contentClassName = 'wc-message-content'
+    const contentClassName = 'wc-message-content'
     const clData: CLM.CLChannelData | null = activityProps.activity.channelData ? activityProps.activity.channelData.clData : null
 
     let messageColor = `wc-message-color-${activityProps.fromMe ? (isLogDialog ? 'log' : 'train') : 'bot'}`
@@ -222,7 +222,7 @@ class Webchat extends React.Component<Props, {}> {
         }
 
         // TODO: This call has side-affects and should be moved to componentDidMount
-        let chatProps = this.getChatProps();
+        const chatProps = this.getChatProps();
 
         chatProps.hideInput = this.props.hideInput
         chatProps.focusInput = this.props.focusInput

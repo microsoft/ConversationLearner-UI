@@ -243,6 +243,11 @@ export enum FM {
 
     // ExtractConflictModal
     EXTRACTCONFLICTMODAL_TITLE = 'ExtractConflictModal.title',
+    EXTRACTCONFLICTMODAL_SUBTITLE = 'ExtractConflictModal.subtitle',
+    EXTRACTCONFLICTMODAL_REVIEW = 'ExtractConflictModal.preview',
+    EXTRACTCONFLICTMODAL_CORRECT_LABELS = 'ExtractConflictModal.existing',
+    EXTRACTCONFLICTMODAL_CONFLICTING_LABELS = 'ExtractConflictModal.conflictingLabels',
+    EXTRACTCONFLICTMODAL_CALLTOACTION = 'ExtractConflictModal.callaction',
 
     // LogDialogModal
     LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'LogDialogModal.defaultButton.ariaDescription',
@@ -346,6 +351,7 @@ export enum FM {
     // Tags and Description
     TAGS_INPUT_LABEL = 'Tags.label',
     TAGS_INPUT_ADD = 'TagsInput.add',
+    TAGS_INPUT_ERROR_DUPLICATE = 'TagsInput.error.duplicate',
     TAGS_READONLY_EMPTY = 'TagsReadOnly.empty',
     DESCRIPTION_LABEL = 'Description.label',
     DESCRIPTION_PLACEHOLDER = 'Description.placeholder',
@@ -945,7 +951,12 @@ export default {
         [FM.ERROR_TOOMANYCHARACTERS]: 'Current value exceeds maximum supported length.',
 
         // ExtractConflictModal
-        [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Entity is labelled differently in another user utterance',
+        [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Inconsistent Entity Labels',
+        [FM.EXTRACTCONFLICTMODAL_SUBTITLE]: 'You attempted to submit an input with entities labelled differently than another input in the current or a previous train dialog. Input labels must be consistent to ensure the Bot processes them correctly.',
+        [FM.EXTRACTCONFLICTMODAL_REVIEW]: 'Please review the labels below:',
+        [FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS]: 'Conflicting Labels',
+        [FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS]: 'Previously Submitted Labels',
+        [FM.EXTRACTCONFLICTMODAL_CALLTOACTION]: `Clicking 'Accept' will replace the conflicting labels with the previously submitted labels.`,
 
         // LogDialogModal
         [FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
@@ -977,6 +988,7 @@ export default {
         // Tags and Description
         [FM.TAGS_INPUT_LABEL]: 'Tags',
         [FM.TAGS_INPUT_ADD]: 'Add Tag',
+        [FM.TAGS_INPUT_ERROR_DUPLICATE]: 'The new tag is a duplicate of an existing tag.',
         [FM.TAGS_READONLY_EMPTY]: 'No Tags',
         [FM.DESCRIPTION_LABEL]: 'Description',
         [FM.DESCRIPTION_PLACEHOLDER]: 'Click to add description',

@@ -19,7 +19,7 @@ describe('Tools', () => {
 
 function DeleteAllTestGeneratedModelRows() 
 {
-  let thisFuncName = `DeleteAllTestGeneratedModelRows`
+  const funcName = `DeleteAllTestGeneratedModelRows`
   
   cy.WaitForStableDOM()
   cy.Enqueue(() => { return homePage.GetModelNameIdList() } ).then(modelNameIdList => {
@@ -29,15 +29,18 @@ function DeleteAllTestGeneratedModelRows()
       if (modelNameId.name.startsWith('z-')) 
       {
         thereCouldBeMoreModelsToDelete = true
-        helpers.ConLog(thisFuncName, `Sending Request to Delete Model: ${modelNameId.name}`)
+        helpers.ConLog(funcName, `Sending Request to Delete Model: ${modelNameId.name}`)
         cy.request(
         { 
+          // BUGBUG - This URL Needs to come from the configuration
+          //          Also need to figure out how to confirm these are deleted, 
+          //          by now there could be thousands of models.
           url: `http://localhost:3978/sdk/app/${modelNameId.id}`, 
           method: "DELETE", 
           headers: { 'x-conversationlearner-memory-key': 'x' } 
         }).then(response => 
         { 
-          helpers.ConLog(thisFuncName, `Response Status: ${response.status} - Model: ${modelNameId.name}`) 
+          helpers.ConLog(funcName, `Response Status: ${response.status} - Model: ${modelNameId.name}`) 
           expect(response.status).to.eq(200)
         })
       }

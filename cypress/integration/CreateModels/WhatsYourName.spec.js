@@ -12,7 +12,7 @@ describe('CreateModels', () => {
   it("What's Your Name", () => {
     models.CreateNewModel('z-whatsYourName')
     entities.CreateNewEntity({ name: 'name' })
-    actions.CreateNewActionThenVerifyInGrid({ response: common.whatsYourName, expectedEntities: 'name' })
+    actions.CreateNewActionThenVerifyInGrid({ response: common.whatsYourName, expectedEntities: ['name'] })
 
     // NOTE: the {enter} in this call is necessary to triger the entity detection.
     actions.CreateNewActionThenVerifyInGrid({ response: 'Hello $name{enter}' })

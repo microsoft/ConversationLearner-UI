@@ -60,8 +60,8 @@ class AppsIndex extends React.Component<Props, {}> {
     }
 
     onImportTutorial = (tutorial: AppBase) => {
-        let srcUserId = CL_IMPORT_ID;
-        let destUserId = this.props.user.id;
+        const srcUserId = CL_IMPORT_ID;
+        const destUserId = this.props.user.id;
 
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
         this.props.copyApplicationThunkAsync(srcUserId, destUserId, tutorial.appId)

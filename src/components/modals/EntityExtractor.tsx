@@ -156,7 +156,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     withoutPreBuilts(preditedEntities: CLM.PredictedEntity[]): CLM.PredictedEntity[] {
         return preditedEntities.filter(pe => {
-            let entity = this.props.entities.find(e => e.entityId === pe.entityId)
+            const entity = this.props.entities.find(e => e.entityId === pe.entityId)
             if (entity) {
                 return !entity.doNotMemorize
             }
@@ -167,8 +167,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     // Returns true if predicted entities match
     isValid(primaryResponse: CLM.ExtractResponse, extractResponse: CLM.ExtractResponse): boolean {
         // Ignore prebuilts that aren't resolvers
-        let primaryEntities = this.withoutPreBuilts(primaryResponse.predictedEntities)
-        let extractEntities = this.withoutPreBuilts(extractResponse.predictedEntities)
+        const primaryEntities = this.withoutPreBuilts(primaryResponse.predictedEntities)
+        const extractEntities = this.withoutPreBuilts(extractResponse.predictedEntities)
 
         let missing = primaryEntities.filter(item =>
             !extractEntities.find(er => item.entityId === er.entityId));
@@ -271,13 +271,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     onRemoveExtractResponse(extractResponse: CLM.ExtractResponse): void {
 
         // First look for match in extract responses
-        let foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text);
+        const foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text);
         if (foundResponse) {
             this.props.removeExtractResponse(foundResponse);
             this.setState({ isPendingSubmit: true });
         } else {
             // Otherwise change is in text variation
-            let newVariations = this.state.newTextVariations
+            const newVariations = this.state.newTextVariations
                 .filter(v => v.text !== extractResponse.text);
             this.setState({
                 newTextVariations: newVariations,
@@ -293,19 +293,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onUpdateExtractResponse(extractResponse: CLM.ExtractResponse): Promise<void> {
         // First look for match in extract responses
-        let foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text)
+        const foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text)
         if (foundResponse) {
             await this.props.updateExtractResponse(extractResponse)
             await setStateAsync(this, { isPendingSubmit: true })
         } else {
             // Replace existing text variation (if any) with new one and maintain ordering
-            let index = this.state.newTextVariations.findIndex((v: CLM.TextVariation) => v.text === extractResponse.text)
+            const index = this.state.newTextVariations.findIndex((v: CLM.TextVariation) => v.text === extractResponse.text)
             if (index < 0) {
                 // Should never happen, but protect just in case
                 return
             }
-            let newVariation = CLM.ModelUtils.ToTextVariation(extractResponse)
-            let newVariations = [...this.state.newTextVariations]
+            const newVariation = CLM.ModelUtils.ToTextVariation(extractResponse)
+            const newVariations = [...this.state.newTextVariations]
             newVariations[index] = newVariation
             await setStateAsync(this, {
                 newTextVariations: newVariations,
@@ -334,7 +334,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onSubmitTextVariation() {
-        let text = this.state.textVariationValue.trim();
+        const text = this.state.textVariationValue.trim();
         if (text.length === 0) {
             return
         }
@@ -404,6 +404,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 }))
         const allExtractResponsesValid = extractResponsesForDisplay.every(e => e.isValid)
 
+        // Need to save this to separate variable for typescript control flow
+        const extractConflict = this.props.extractConflict
+        const attemptedExtractResponse = extractConflict && allResponses.find(e => e.text.toLowerCase() === extractConflict.text.toLowerCase())
+        
         return (
             <div className="entity-extractor">
                 <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus} cl-label`}>
@@ -537,10 +541,11 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton onClick={() => this.onClickSaveCheckNo()} text='No' />
                         </OF.DialogFooter>
                     </OF.Dialog>
-                    {this.props.extractConflict &&
-                        <ExtractConflictModal
+                    {(this.props.extractConflict && attemptedExtractResponse)
+                        && <ExtractConflictModal
                             open={true}
                             entities={this.props.entities}
+                            attemptedExtractResponse={attemptedExtractResponse}
                             extractResponse={this.props.extractConflict}
                             onClose={this.onEntityConflictModalAbandon}
                             onAccept={this.onEntityConflictModalAccept}

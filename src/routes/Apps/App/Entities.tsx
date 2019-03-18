@@ -79,11 +79,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 180,
             isResizable: true,
             getSortValue: entity => {
-                let display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType;
+                const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType;
                 return display.toLowerCase();
             },
             render: entity => {
-                let display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType
+                const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType
                 if (display.toLowerCase() === "none") {
                     return (
                         <OF.Icon iconName="Remove" className="cl-icon" />
@@ -150,7 +150,7 @@ class Entities extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        let columns = getColumns(this.props.intl);
+        const columns = getColumns(this.props.intl);
         this.state = {
             searchValue: '',
             createEditModalOpen: false,
@@ -204,8 +204,8 @@ class Entities extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
-        let { columns } = this.state;
-        let isSortedDescending = !clickedColumn.isSortedDescending;
+        const { columns } = this.state;
+        const isSortedDescending = !clickedColumn.isSortedDescending;
 
         // Reset the items and columns to match the state.
         this.setState({
@@ -221,11 +221,11 @@ class Entities extends React.Component<Props, ComponentState> {
     @OF.autobind
     getFilteredAndSortedEntities(): EntityBase[] {
         //runs when user changes the text or sort
-        let lcString = this.state.searchValue.toLowerCase();
-        let filteredEntities = this.props.entities.filter(e => {
-            let nameMatch = e.entityName.toLowerCase().includes(lcString);
-            let typeMatch = e.entityType.toLowerCase().includes(lcString);
-            let match = nameMatch || typeMatch
+        const lcString = this.state.searchValue.toLowerCase();
+        const filteredEntities = this.props.entities.filter(e => {
+            const nameMatch = e.entityName.toLowerCase().includes(lcString);
+            const typeMatch = e.entityType.toLowerCase().includes(lcString);
+            const match = nameMatch || typeMatch
             return match && !e.positiveId && !e.doNotMemorize;
         })
 
@@ -250,7 +250,7 @@ class Entities extends React.Component<Props, ComponentState> {
     @OF.autobind
     onChange(newValue: string) {
         // runs when user changes the text 
-        let lcString = newValue.toLowerCase();
+        const lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
         })

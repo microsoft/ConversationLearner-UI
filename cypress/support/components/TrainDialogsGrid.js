@@ -30,4 +30,4 @@ export function GetCreatedDates() { return helpers.StringArrayFromElementText('[
 export function GetTags() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-tags"]') }
 export function GetScenarios() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-description"]') }
 
-export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).find('i[data-icon-name="IncidentTriangle"].cl-color-error') }
+export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).find('[data-testid="train-dialogs-validity-indicator"]') }

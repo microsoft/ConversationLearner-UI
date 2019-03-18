@@ -346,19 +346,19 @@ class TeachModal extends React.Component<Props, ComponentState> {
             throw new Error("historyRender missing data")
         }
 
-        let clData: CLM.CLChannelData = this.state.selectedHistoryActivity.channelData.clData
-        let roundIndex = clData.roundIndex!
+        const clData: CLM.CLChannelData = this.state.selectedHistoryActivity.channelData.clData
+        const roundIndex = clData.roundIndex!
 
         if (roundIndex === null) {
             throw new Error(`Cannot get previous memories because roundIndex is null. This is likely a problem with code. Please open an issue.`)
         }
 
         let memories: CLM.Memory[] = [];
-        let prevIndex = roundIndex - 1;
+        const prevIndex = roundIndex - 1;
         if (prevIndex >= 0) {
-            let round = this.props.sourceTrainDialog.rounds[prevIndex];
+            const round = this.props.sourceTrainDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
-                let scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
+                const scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
                 memories = scorerStep.input.filledEntities.map<CLM.Memory>(fe => {
                     const entity = this.props.entities.find(e => e.entityId === fe.entityId)
                     if (!entity) {
@@ -389,9 +389,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
 
         const clData: CLM.CLChannelData = this.state.selectedHistoryActivity.channelData.clData
-        let roundIndex = clData.roundIndex!
-        let scoreIndex = clData.scoreIndex
-        let senderType = clData.senderType
+        const roundIndex = clData.roundIndex!
+        const scoreIndex = clData.scoreIndex
+        const senderType = clData.senderType
 
         if (roundIndex !== null && roundIndex < this.props.sourceTrainDialog.rounds.length) {
             round = this.props.sourceTrainDialog.rounds[roundIndex];
@@ -401,7 +401,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
                 }
 
-                let actionId = scorerStep!.labelAction
+                const actionId = scorerStep!.labelAction
                 selectedAction = this.props.actions.find(action => action.actionId === actionId);
 
                 if (!selectedAction) {
@@ -425,8 +425,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 }
 
                 memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
-                    let entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                    let entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
+                    const entity = this.props.entities.find(e => e.entityId === fe.entityId);
+                    const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
                     return {
                         entityName: entityName,
                         entityValues: fe.values
@@ -436,7 +436,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 // Get prevmemories
                 prevMemories = this.getPrevMemories();
 
-                let scoredAction: CLM.ScoredAction = {
+                const scoredAction: CLM.ScoredAction = {
                     actionId: selectedAction.actionId,
                     payload: selectedAction.payload,
                     isTerminal: selectedAction.isTerminal,
@@ -445,7 +445,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 }
 
                 // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
-                let unscoredActions = this.props.actions
+                const unscoredActions = this.props.actions
                     .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
                     .map<CLM.UnscoredAction>(action =>
                         ({
@@ -734,7 +734,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     renderWarning() {
 
-        let replayError = DialogUtils.getReplayError(this.state.selectedHistoryActivity)
+        const replayError = DialogUtils.getReplayError(this.state.selectedHistoryActivity)
         if (replayError) {
             return renderReplayError(replayError)
         }
@@ -759,8 +759,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
         // Put mask of webchat if waiting for score selector or extraction labelling
         const waitingForScore = this.state.selectedActivityIndex === null && this.props.teachSession.dialogMode === CLM.DialogMode.Scorer
         const waitingForExtract = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
-        let chatDisable = (waitingForScore || waitingForExtract) ? <div className="cl-overlay" /> : null;
-        let saveDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
+        const chatDisable = (waitingForScore || waitingForExtract) ? <div className="cl-overlay" /> : null;
+        const saveDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
             || this.props.teachSession.botAPIError !== null
             || this.state.isInitAvailable  // Empty TD
         const isLastActivitySelected = this.state.selectedActivityIndex ? this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1) : false

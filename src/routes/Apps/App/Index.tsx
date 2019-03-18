@@ -49,11 +49,11 @@ class Index extends React.Component<Props, ComponentState> {
     async loadApp(app: CLM.AppBase, packageId: string): Promise<void> {
         this.setState({ packageId })
 
-        let thunk1 = await this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
-        let thunk2 = this.props.setCurrentAppThunkAsync(this.props.user.id, app)
+        const thunk1 = await this.props.fetchBotInfoThunkAsync(this.props.browserId, app.appId)
+        const thunk2 = this.props.setCurrentAppThunkAsync(this.props.user.id, app)
         // Note: We load log dialogs in a separate call as eventually we want to page
-        let thunk3 = this.props.fetchAllLogDialogsThunkAsync(app, packageId)
-        let thunk4 = this.props.fetchAppSourceThunkAsync(app.appId, packageId)
+        const thunk3 = this.props.fetchAllLogDialogsThunkAsync(app, packageId)
+        const thunk4 = this.props.fetchAppSourceThunkAsync(app.appId, packageId)
 
         await Promise.all([thunk1, thunk2, thunk3, thunk4])
         this.setState({ modelLoaded: true })
@@ -94,7 +94,7 @@ class Index extends React.Component<Props, ComponentState> {
         }
 
         if ((newProps.actions !== this.props.actions || newProps.botInfo !== this.props.botInfo) && newProps.botInfo) {
-            let botValidationErrors = this.botValidationErrors(newProps.botInfo, newProps.actions);
+            const botValidationErrors = this.botValidationErrors(newProps.botInfo, newProps.actions);
             this.setState({ botValidationErrors });
         }
     }
@@ -153,7 +153,7 @@ class Index extends React.Component<Props, ComponentState> {
 
     getTrainDialogValidity(): CLM.Validity {
         let validity = CLM.Validity.VALID
-        for (let trainDialog of this.props.trainDialogs) {
+        for (const trainDialog of this.props.trainDialogs) {
             if (trainDialog.validity === CLM.Validity.INVALID) {
                 return CLM.Validity.INVALID
             }
@@ -192,6 +192,7 @@ class Index extends React.Component<Props, ComponentState> {
 
         const trainDialogValidity = this.getTrainDialogValidity();
         const invalidBot = this.state.botValidationErrors && this.state.botValidationErrors.length > 0;
+        const filteredLogDialogs = this.props.logDialogs.filter(l => !l.targetTrainDialogIds || l.targetTrainDialogIds.length === 0)
         const TRIPLE_DIGIT_LOGDIALOG_COUNT = 99;
 
         return (
@@ -266,7 +267,7 @@ class Index extends React.Component<Props, ComponentState> {
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-log-dialogs" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
                                 <OF.Icon iconName="List" /><span>Log Dialogs</span>
-                                <span className="count">{this.state.modelLoaded && ((this.props.logDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : this.props.logDialogs.length)}</span>
+                                <span className="count">{this.state.modelLoaded && ((filteredLogDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : filteredLogDialogs.length)}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-settings" to={{ pathname: `${match.url}/settings`, state: { app } }}>
                                 <OF.Icon iconName="Settings" /><span>Settings</span>

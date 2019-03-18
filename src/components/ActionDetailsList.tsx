@@ -27,7 +27,7 @@ interface ComponentState {
 class ActionDetailsList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
-        let columns = getColumns(this.props.intl)
+        const columns = getColumns(this.props.intl)
         this.state = {
             columns: columns,
             sortColumn: columns[0],
@@ -69,7 +69,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     }
 
     sortActions(): CLM.ActionBase[] {
-        let actions = [...this.props.actions];
+        const actions = [...this.props.actions];
         // If column header selected sort the items
         if (this.state.sortColumn) {
             actions
@@ -87,8 +87,8 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     }
 
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
-        let { columns } = this.state;
-        let isSortedDescending = !clickedColumn.isSortedDescending;
+        const { columns } = this.state;
+        const isSortedDescending = !clickedColumn.isSortedDescending;
 
         // Reset the items and columns to match the state.
         this.setState({
@@ -122,7 +122,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        let sortedActions = this.sortActions();
+        const sortedActions = this.sortActions();
 
         let template: CLM.Template | undefined
         let renderedActionArguments: CLM.RenderedActionArgument[] = []
@@ -250,7 +250,7 @@ function renderConditions(entityIds: string[], conditions: CLM.Condition[], allE
         ])
     }
     
-    let elements: JSX.Element[] = []
+    const elements: JSX.Element[] = []
     entityIds.forEach(entityId => {
         const entity = allEntities.find(e => e.entityId === entityId)
         if (!entity) {

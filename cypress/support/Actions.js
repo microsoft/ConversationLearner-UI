@@ -34,7 +34,7 @@ export function CreateNewActionThenVerifyInGrid({ response, expectedEntities, re
 
   CreateNewAction(arguments[0])
 
-  let requiredEntitiesFromResponse = ExtractEntities(response)
+  const requiredEntitiesFromResponse = ExtractEntities(response)
   response = response.replace(/{enter}/g, '')
 
   // Get the row that we are going to validate and assign a Cypress Alias to it.
@@ -85,7 +85,7 @@ function ExtractEntities(response) {
 
 function IsAlphaNumeric(string) {
   for (let i = 0; i < string.length; i++) {
-    let charCode = string.charCodeAt(i)
+    const charCode = string.charCodeAt(i)
     if (!(charCode > 47 && charCode < 58) &&  // numeric (0-9)
       !(charCode > 64 && charCode < 91) &&  // upper alpha (A-Z)
       !(charCode > 96 && charCode < 123))   // lower alpha (a-z)

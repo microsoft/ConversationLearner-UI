@@ -27,7 +27,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 80,
             isResizable: true,
             render: (tutorial, component) => {
-                let disabled = component.props.apps.filter(a => a.appName === tutorial.appName).length > 0;
+                const disabled = component.props.apps.filter(a => a.appName === tutorial.appName).length > 0;
                 return (
                     <OF.PrimaryButton
                         disabled={disabled}
@@ -106,7 +106,7 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
 
     sortTutorials(): AppBase[] {
         if (this.props.tutorials) {
-            let tutorials = [...this.props.tutorials];
+            const tutorials = [...this.props.tutorials];
             tutorials
                 .sort((a, b) => {
                     return a.appName.localeCompare(b.appName)
