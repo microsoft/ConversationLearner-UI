@@ -42,15 +42,15 @@ export function internalConflict(textVariation: CLM.TextVariation, trainDialog: 
     return null
 }
 
-export function activityIndexFromRounnd(trainDialog: CLM.TrainDialog, roundIndex: number | null, scoreIndex: number | null): number | undefined {
+export function activityIndexFromRound(trainDialog: CLM.TrainDialog, roundIndex: number | null, scoreIndex: number | null): number | undefined {
     if (!roundIndex) { 
         return undefined
     }
 
     let activityIndex = 0
-    let curRIndex = 0
+    let currentRoundIndex = 0
     for (const round of trainDialog.rounds) {
-        if (curRIndex === roundIndex) {
+        if (currentRoundIndex === roundIndex) {
             if (!scoreIndex) {
                 return activityIndex
             }
@@ -59,7 +59,7 @@ export function activityIndexFromRounnd(trainDialog: CLM.TrainDialog, roundIndex
             }
         }
         else {
-            curRIndex =  curRIndex + 1
+            currentRoundIndex =  currentRoundIndex + 1
             activityIndex = activityIndex + 1 + round.scorerSteps.length
         }
     }

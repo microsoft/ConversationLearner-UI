@@ -84,9 +84,9 @@ class TreeView extends React.Component<Props, ComponentState> {
 
     @OF.autobind 
     onNodeDetail(nodeId: string): void {
-        const matches = this.state.treeElement.findNodesById(nodeId, this.state.treeElement.state.data, []);
+        const matches: TreeNode[] = this.state.treeElement.findNodesById(nodeId, this.state.treeElement.state.data, []);
         const expandedNode = matches[0];
-        this.setState({expandedNode})
+        this.setState({expandedNode: expandedNode || null})
     }
 
     @OF.autobind 
@@ -96,19 +96,17 @@ class TreeView extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickExpando(nodeId: string): void {
-        const myRef = this.refs.myRef as any;
-
-        const matches = myRef.findNodesById(nodeId, myRef.state.data, []);
+        const matches = this.state.treeElement.findNodesById(nodeId, this.state.treeElement.state.data, []);
         const targetNode = matches[0];
-        targetNode._collapsed ? myRef.expandNode(targetNode) : myRef.collapseNode(targetNode);
+        targetNode._collapsed ? this.state.treeElement.expandNode(targetNode) : this.state.treeElement.collapseNode(targetNode);
 
-        myRef.setState({ data: myRef.state.data, isTransitioning: false });
+        this.state.treeElement.setState({ data: this.state.treeElement.state.data, isTransitioning: false });
 
         setTimeout(
-            () => myRef.setState({ isTransitioning: false }),
-            myRef.props.transitionDuration + 10,
+            () => this.state.treeElement.setState({ isTransitioning: false }),
+            this.state.treeElement.props.transitionDuration + 10,
         );
-        myRef.internalState.targetNode = targetNode;
+        this.state.treeElement.internalState.targetNode = targetNode;
     }
 
     @OF.autobind
@@ -200,7 +198,6 @@ class TreeView extends React.Component<Props, ComponentState> {
         }
     }
     
-    // LARS goes away
     memoryAttributes(scorerStep: CLM.TrainScorerStep): { [key: string]: string; } | undefined {
         if (!scorerStep.input.filledEntities || scorerStep.input.filledEntities.length === 0) {
             return undefined

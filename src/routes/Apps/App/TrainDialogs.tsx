@@ -999,7 +999,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     async openTrainDialog(trainDialog: CLM.TrainDialog, roundIndex: number, scoreIndex: number | null) {
         
-        const selectedActivityIndex = DialogUtils.activityIndexFromRounnd(trainDialog, roundIndex, scoreIndex) || null
+        const selectedActivityIndex = DialogUtils.activityIndexFromRound(trainDialog, roundIndex, scoreIndex) || null
         this.onClickTrainDialogItem(trainDialog, selectedActivityIndex)
 
         /* TODO: Show editing view

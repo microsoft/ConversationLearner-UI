@@ -20,7 +20,15 @@ export interface TreeUserInput {
     trainDialogId: string
 }
 
-export interface TreeNode {
+// From react-d3-tree library
+interface ReactD3TreeItem {
+    _children?: any
+    _collapsed?: any
+    depth?: number
+    id?: string
+  }
+
+export interface TreeNode extends ReactD3TreeItem {
     name: string
     userInput?: TreeUserInput[]
     attributes: { [key: string]: string; } | undefined
@@ -34,12 +42,6 @@ export interface TreeNode {
     actionId?: string
     nodeLabelComponent?: any
     allowForeignObjects?: boolean
-
-    // Properties added by library
-    _children?: any
-    _collapsed?: any
-    depth?: number
-    id?: string
 }
 
 interface TreeNodeReceivedProps {
@@ -138,11 +140,11 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
         }
         else {
             // Show count of input
-            let userInput: TreeUserInput[] = []
+            let userInputs: TreeUserInput[] = []
             if (nodeData.userInput) {
                 const orgInput = nodeData.userInput
                 const distinctUserInput = orgInput.filter((item, pos) => orgInput.findIndex(i => item.content === i.content) === pos)
-                userInput = distinctUserInput.map(dui => {
+                userInputs = distinctUserInput.map(dui => {
                     const count = orgInput.filter(ui => ui.content === dui.content).length
                     // TOOD: need way for user to select which one.  Currenlty selects last train Dialog
                     return {
@@ -158,16 +160,16 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
 
             // Do we need to show partial data?
             if (!this.props.expanded) {
-                let totalLines = userInput.length + (scorerSteps.length * 2)
+                let totalLines = userInputs.length + (scorerSteps.length * 2)
                 if (totalLines > MAX_LINES) {
                     // Show as many scorer steps as possible but leave space for one extractor step or two if need ellipses
                     const max_scorer_lines = MAX_LINES - 1
                     const num_scorer_lines = Math.min(scorerSteps.length, max_scorer_lines / 2)
                     const max_input_lines = MAX_LINES - (num_scorer_lines * 2)
-                    const num_input_lines = Math.min(userInput.length, max_input_lines)
+                    const num_input_lines = Math.min(userInputs.length, max_input_lines)
 
-                    if (num_input_lines < userInput.length) {
-                        userInput = userInput.slice(0, num_input_lines)
+                    if (num_input_lines < userInputs.length) {
+                        userInputs = userInputs.slice(0, num_input_lines)
                         userInputMore = true
                     }
                     if (num_scorer_lines < scorerSteps.length) {
@@ -183,7 +185,7 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                     <div 
                         className={`userBox${isNodeelected ? ` botBoxSelected` : ''}`}
                     >
-                        {userInput && userInput.map((input, index) =>
+                        {userInputs && userInputs.map((input, index) =>
                             <div
                                 key={`${nodeData.id}${index}`}
                                 className={`userInput${this.props.expanded ? '' : ' ellipse'}`}
