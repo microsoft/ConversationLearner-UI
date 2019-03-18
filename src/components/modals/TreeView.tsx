@@ -45,7 +45,8 @@ interface ComponentState {
     extended: boolean,
     translateX: number | null,
     treeContainer: any,
-    treeElement: any
+    treeElement: any,
+    showBanner: boolean,
 }
 
 class TreeView extends React.Component<Props, ComponentState> {
@@ -58,7 +59,8 @@ class TreeView extends React.Component<Props, ComponentState> {
         extended: false,
         translateX: null,
         treeContainer: null,
-        treeElement: null
+        treeElement: null,
+        showBanner: true
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
@@ -66,11 +68,16 @@ class TreeView extends React.Component<Props, ComponentState> {
             this.updateTree()
         }
         if (this.state.treeContainer) {
-        if (!this.state.translateX || (this.state.treeContainer !== prevState.treeContainer)) {
-                const dimensions = this.state.treeContainer.getBoundingClientRect();
-                this.setState({
-                    translateX: dimensions.width / 2.5,
-                })
+        if (!this.state.translateX || (this.state.selectedNode !== prevState.selectedNode)) {
+            if (this.state.selectedNode) {
+                this.setState({translateX: NODE_WIDTH})
+            }
+            else {
+                    const dimensions = this.state.treeContainer.getBoundingClientRect();
+                    this.setState({
+                        translateX: dimensions.width / 2.5,
+                    })
+                }
             }
         }
     }
@@ -102,6 +109,11 @@ class TreeView extends React.Component<Props, ComponentState> {
             myRef.props.transitionDuration + 10,
         );
         myRef.internalState.targetNode = targetNode;
+    }
+
+    @OF.autobind
+    dismissBanner() {
+        this.setState({showBanner: false})
     }
 
     @OF.autobind
@@ -447,9 +459,24 @@ class TreeView extends React.Component<Props, ComponentState> {
                                             height: NODE_HEIGHT
                                         }
                                     }}
-                                    separation={{siblings: 2, nonSiblings: 2}}
+                                    separation={{siblings: 1.2, nonSiblings: 1.2}}
                                     translate={{x: this.state.translateX || 50, y: 20}}
                                 /> 
+                            }
+                            {this.state.showBanner &&
+                                <OF.MessageBar
+                                    className="messageBar"
+                                    isMultiline={true}
+                                    onDismiss={() => this.dismissBanner()}
+                                    dismissButtonAriaLabel='Close'
+                                    messageBarType={OF.MessageBarType.success}
+                                >
+                                    [Experimental Feature] We're experimenting with a tree view to help visualize your train dialogs. 
+                                    <a href={`mailto: conversation-learner@microsoft.com?subject=[Feedback] Tree View`} role='button'>
+                                        Send us
+                                    </a>
+                                    <span> your suggestions on how this view can better help you!</span>
+                                </OF.MessageBar>
                             }
                         </div>
                     </div>

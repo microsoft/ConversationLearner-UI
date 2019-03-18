@@ -54,6 +54,12 @@
   white-space: nowrap;
 }
 
+.messageBar {
+  top: 0px;
+  background-color: rgba(186, 216, 10) !important;
+  position: fixed !important;
+}
+
 .memoryBox {
   background-color: #DECFDE;
   color: #888888;
