@@ -1444,7 +1444,7 @@ const mapStateToProps = (state: State) => {
         trainDialogs: state.trainDialogs,
         teachSession: state.teachSession,
         // Get all tags from all train dialogs then put in Set to get unique tags
-        allUniqueTags: [...new Set(state.trainDialogs.reduce((tags, trainDialog) => [...tags, ...trainDialog.tags || []], []))]
+        allUniqueTags: [...new Set(state.trainDialogs.reduce((tags, trainDialog) => [...tags, ...trainDialog.tags], []))]
     }
 }
 
