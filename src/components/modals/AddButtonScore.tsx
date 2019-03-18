@@ -10,6 +10,7 @@ import './AddButton.css'
 
 interface Props {
     onClick: () => void,
+    // Replaces current css class rather than extends
     className?: string
 }
 
