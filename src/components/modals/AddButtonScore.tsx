@@ -10,6 +10,8 @@ import './AddButton.css'
 
 interface Props {
     onClick: () => void,
+    // Replaces current css class rather than extends
+    className?: string
 }
 
 class AddButtonScore extends React.Component<Props, {}> {
@@ -17,7 +19,7 @@ class AddButtonScore extends React.Component<Props, {}> {
         return (
             <div
                 role="button"
-                className={`cl-addbutton-add cl-addbutton-addscore`}
+                className={this.props.className || `cl-addbutton-add cl-addbutton-addscore`}
                 onClick={this.props.onClick}
                 data-testid="chat-edit-add-bot-response-button"
             >
@@ -34,6 +36,7 @@ class AddButtonScore extends React.Component<Props, {}> {
                         <polygon
                             points="0,2 19,2 19,6 24,10 19,13 19,17 0,17"
                             transform="rotate(180) translate(-24, -19)"
+                            stroke-width="1"
                         />
                         <text className="cl-addbutton-addscore-text" x="10" y="14">+</text>
                     </svg>
