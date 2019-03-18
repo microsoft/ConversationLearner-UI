@@ -49,12 +49,12 @@ interface TreeNodeReceivedProps {
     selectedNode: TreeNode | null
     generateActionDescriptions: (treeScorerSteps: TreeScorerStep[]) => void
     onDetailClick?: (nodeId: string) => void
-    onPinClick?: (treeNode: TreeNode) => void
+    onPinClick?: (treeNode: TreeNode, isSelected: boolean) => void
     onExpandoClick: (nodeId: string) => void
     onOpenTrainDialog: (treeNode: TreeNode, trainDialogId: string) => void 
 }
 
-const MAX_LINES = 6
+const MAX_LINES = 7
 
 export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
 
@@ -79,7 +79,7 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
     @OF.autobind
     onClickPin(nodeData: TreeNode): void {
         if (this.props.onPinClick) {
-            this.props.onPinClick(nodeData)
+            this.props.onPinClick(nodeData, this.isSelected())
         }
     }
 
@@ -151,6 +151,7 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                     }
                 })
             }
+            const isNodeelected = this.isSelected()
             let scorerSteps = nodeData.scorerSteps || []
             let userInputMore = false
             let scorerStepMore = false
@@ -182,7 +183,7 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
             return (
                 <div>
                     <div 
-                        className={`userBox${this.isSelected() ? ` botBoxSelected` : ''}`}
+                        className={`userBox${isNodeelected ? ` botBoxSelected` : ''}`}
                     >
                         {userInput && userInput.map((input, index) =>
                             <div
@@ -232,7 +233,7 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                         <div>
                             <OF.IconButton 
                                 className="footerButton footerButton-pin"
-                                iconProps={{ iconName: 'Pin' }}
+                                iconProps={{ iconName: isNodeelected ? 'PinnedFill' : 'Pin' }}
                                 onClick={() => this.onClickPin(nodeData)}
                                 ariaDescription="Pin Node"
                             />

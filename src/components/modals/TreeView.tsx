@@ -34,9 +34,12 @@ const botShape = {
     }
 }
 
+const NODE_WIDTH = 250
+const NODE_HEIGHT = 155
+
 interface ComponentState {
     tree: TreeNode | null
-    trainDialog: CLM.TrainDialog | null // LARS maybe goes away
+    trainDialog: CLM.TrainDialog | null 
     selectedNode: TreeNode | null
     expandedNode: TreeNode | null
     extended: boolean,
@@ -58,16 +61,17 @@ class TreeView extends React.Component<Props, ComponentState> {
         treeElement: null
     }
 
-
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
         if (this.props.open && !prevProps.open) {
             this.updateTree()
         }
-        if (!this.state.translateX && this.state.treeContainer) {
-            const dimensions = this.state.treeContainer.getBoundingClientRect();
-            this.setState({
-                translateX: dimensions.width / 2.5,
-            })
+        if (this.state.treeContainer) {
+        if (!this.state.translateX || (this.state.treeContainer !== prevState.treeContainer)) {
+                const dimensions = this.state.treeContainer.getBoundingClientRect();
+                this.setState({
+                    translateX: dimensions.width / 2.5,
+                })
+            }
         }
     }
 
@@ -334,7 +338,6 @@ class TreeView extends React.Component<Props, ComponentState> {
             match.userInput = [...match.userInput, ...newRound.userInput]
             match.trainDialogIds = [...match.trainDialogIds, ...newRound.trainDialogIds]
             match.allowForeignObjects = true
-            match.nodeSvgShape.shapeProps.height += 20  
             return this.getNextRoundParent(match)
         }
 
@@ -383,8 +386,8 @@ class TreeView extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async pinToNode(selectedNode: TreeNode): Promise<void> {
-        if (this.state.selectedNode && this.state.selectedNode.depth === 1) {
+    async pinToNode(selectedNode: TreeNode, isSelected: boolean): Promise<void> {
+        if (this.state.selectedNode && isSelected) {
             await Util.setStateAsync(this, {selectedNode: null})
         }
         else {
@@ -425,6 +428,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                                     orientation='vertical'
                                     allowForeignObjects={true}
                                     collapsible={false}
+                                    nodeSize={{x: NODE_WIDTH, y: NODE_HEIGHT + 2}}
                                     nodeLabelComponent={
                                         {
                                             render: <TreeNodeLabel
@@ -438,9 +442,9 @@ class TreeView extends React.Component<Props, ComponentState> {
                                             />,
                                             foreignObjectWrapper: {
                                             y: 4,
-                                            x: -125,
-                                            width: 250, 
-                                            height: 135
+                                            x: -(NODE_WIDTH * 0.5),
+                                            width: NODE_WIDTH, 
+                                            height: NODE_HEIGHT
                                         }
                                     }}
                                     separation={{siblings: 2, nonSiblings: 2}}

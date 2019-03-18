@@ -78,7 +78,7 @@
 .moreButton-bottom {
   right: 0px;
   bottom: unset;
-  height: 12px;
+  height: 18px;
   color: #ffffff;
   background-color: var(--cl-color-user-train);
 }
@@ -90,7 +90,7 @@
 .footerButton-pin {
   left: 0px;
   bottom: unset;
-  height: 12px;
+  height: 18px;
   color: #ffffff;
   background-color: var(--cl-color-user-train);
 }
