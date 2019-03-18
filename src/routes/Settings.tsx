@@ -51,6 +51,7 @@ class Settings extends React.Component<Props> {
                         <OF.PrimaryButton
                             text="Reset"
                             ariaDescription="Reset"
+                            iconProps={{ iconName: 'Undo' }}
                             onClick={this.reset}
                         />
                     </div>

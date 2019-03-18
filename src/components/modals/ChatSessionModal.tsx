@@ -114,6 +114,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 onClick={this.onClickDone}
                                 ariaDescription={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION)}
                                 text={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT)}
+                                iconProps={{ iconName: 'Accept' }}
                             />
                             <OF.DefaultButton
                                 data-testid="chat-session-modal-session-timeout-button"
@@ -127,6 +128,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 onClick={this.onClickAbandon}
                                 ariaDescription={Util.formatMessageId(intl, FM.BUTTON_ABANDON)}
                                 text={Util.formatMessageId(intl, FM.BUTTON_ABANDON)}
+                                iconProps={{ iconName: 'Delete' }}
                             />
                         </div>
                     </div>

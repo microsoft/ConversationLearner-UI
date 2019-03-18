@@ -207,12 +207,14 @@ export class Component extends React.Component<Props, ComponentState> {
                     onClick={props.onClickCreateNewApp}
                     ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEBUTTONARIADESCRIPTION)}
                     text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEBUTTONTEXT)}
+                    iconProps={{ iconName: 'Add' }}
                 />
                 <OF.DefaultButton
                     data-testid="model-list-import-model-button"
                     onClick={props.onClickImportApp}
                     ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION)}
                     text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONTEXT)}
+                    iconProps={{ iconName: 'DownloadDocument' }}
                 />
                 {!Util.isDemoAccount(props.user.id) &&
                     <OF.DefaultButton
@@ -220,6 +222,7 @@ export class Component extends React.Component<Props, ComponentState> {
                         onClick={props.onClickImportDemoApps}
                         ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION)}
                         text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT)}
+                        iconProps={{ iconName: 'CloudDownload' }}
                     />
                 }
             </div>

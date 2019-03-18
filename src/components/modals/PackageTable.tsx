@@ -98,6 +98,7 @@ class PackageTable extends React.Component<Props, ComponentState> {
                     onClick={this.onClickNewTag}
                     ariaDescription='New Tag'
                     text='New Tag'
+                    iconProps={{ iconName: 'Add' }}
                 />
                 <PackageCreator
                     open={this.state.isPackageCreatorOpen}

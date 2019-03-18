@@ -252,12 +252,14 @@ const Component: React.SFC<Props> = (props) => {
                     text={props.isEditing
                         ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_SAVEBUTTON_TEXT)
                         : Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CREATEBUTTON_TEXT)}
+                    iconProps={{ iconName: 'Accept' }}
                 />
 
                 <OF.DefaultButton
                     onClick={props.onClickCancel}
                     ariaDescription={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
                     text={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CANCELBUTTON_TEXT)}
+                    iconProps={{ iconName: 'Cancel' }}
                 />
 
                 {props.showDelete &&
@@ -266,6 +268,7 @@ const Component: React.SFC<Props> = (props) => {
                         onClick={props.onClickDelete}
                         ariaDescription={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
                         text={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_DELETEBUTTON_TEXT)}
+                        iconProps={{ iconName: 'Delete' }}
                     />}
             </div>
 
