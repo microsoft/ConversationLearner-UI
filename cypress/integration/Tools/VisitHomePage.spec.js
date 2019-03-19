@@ -5,8 +5,8 @@
 
 import * as homePage from '../../support/components/HomePage'
 
-describe('Tools', () => {
-  it('Visit Home Page', () => {
+describe('Visit Home Page - Tools', () => {
+  it('test', () => {
     homePage.Visit()
     homePage.GetModelListRowCount()
   })

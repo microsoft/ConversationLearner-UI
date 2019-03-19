@@ -6,8 +6,8 @@
 import * as homePage from '../../support/components/HomePage'
 import * as helpers from '../../support/Helpers'
 
-describe('Tools', () => {
-  it('Delete All Test Generated Models', () => {
+describe('Delete All Test Generated Models - Tools', () => {
+  it('test', () => {
     homePage.Visit()
     // We must "Enqueue" this function call so that Cypress will have one "Cypress Command" 
     // still running when the DeleteAllRows function exits. If not for this, only one row will

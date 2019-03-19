@@ -5,8 +5,8 @@
 
 import * as homePage from '../../support/components/HomePage'
 
-describe('Tools', () => {
-  it('Visit Home Page', () => {
+describe('Show Home Page - Tools', () => {
+  it('test', () => {
     homePage.Visit()
     cy.WaitForStableDOM()
     cy.wait(5000).then(() => {
