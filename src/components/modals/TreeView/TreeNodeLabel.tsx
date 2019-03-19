@@ -42,7 +42,7 @@ export interface TreeNode extends ReactD3TreeItem {
 }
 
 interface TreeNodeReceivedProps {
-    nodeData?: any
+    nodeData?: TreeNode
     selectedNode: TreeNode | null
     generateActionDescriptions: (treeScorerSteps: TreeScorerStep[]) => void
     onDetailClick?: (nodeId: string) => void
@@ -56,7 +56,7 @@ const MAX_LINES = 7
 export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
 
     isSelected(): boolean {
-        if (this.props.selectedNode)  {
+        if (this.props.selectedNode && this.props.nodeData)  {
             if (this.props.selectedNode.roundIndex === this.props.nodeData.roundIndex) {
                 if (this.props.selectedNode.trainDialogIds.includes(this.props.nodeData.trainDialogIds[0])) {
                     return true
@@ -81,15 +81,15 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
     }
 
     render() {
-        const nodeData: TreeNode = this.props.nodeData
-        if (nodeData.depth === 0) {
+        const treeNode = this.props.nodeData
+        if (!treeNode || treeNode.depth === 0) {
             return null
         }
        
         // Show count of input
         let userInputs: TreeUserInput[] = []
-        if (nodeData.userInput) {
-            const orgInput = nodeData.userInput
+        if (treeNode.userInput) {
+            const orgInput = treeNode.userInput
             const distinctUserInput = orgInput.filter((item, pos) => orgInput.findIndex(i => item.content === i.content) === pos)
             userInputs = distinctUserInput.map(dui => {
                 const count = orgInput.filter(ui => ui.content === dui.content).length
@@ -101,7 +101,7 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
             })
         }
         const isNodeelected = this.isSelected()
-        let scorerSteps = nodeData.scorerSteps || []
+        let scorerSteps = treeNode.scorerSteps || []
         let userInputMore = false
         let scorerStepMore = false
 
@@ -133,10 +133,10 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                 >
                     {userInputs && userInputs.map((input, index) =>
                         <div
-                            key={`${nodeData.id}${index}`}
+                            key={`${treeNode.id}${index}`}
                             className="cl-treeview-userInput cl-treeview-ellipse"
                             role="button"
-                            onClick={() => this.props.onOpenTrainDialog(this.props.nodeData, input.trainDialogId)}
+                            onClick={() => this.props.onOpenTrainDialog(treeNode, input.trainDialogId)}
                         >
                             {input.content}
                         </div>
@@ -145,14 +145,14 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                     <OF.IconButton 
                         className="cl-treeview-footerButton"
                         iconProps={{ iconName: 'More' }}
-                        onClick={() => this.onClickDetail(nodeData.id!)}
+                        onClick={() => this.onClickDetail(treeNode.id!)}
                         ariaDescription="View More"
                     />}
                 </div>
                 <div className="cl-treeview-scorerBox">
                     {scorerSteps.map((s, index) => 
                             <div
-                                key={`${nodeData.id}${index}SH`} 
+                                key={`${treeNode.id}${index}SH`} 
                             >
                                 <div 
                                     className="cl-treeview-memoryBox cl-treeview-ellipse"
@@ -160,7 +160,7 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                                     {`(${s.memory.length}) ${s.memory.join(', ') || '-'}`}
                                 </div>
                                 <div
-                                    key={`${nodeData.id}${index}SS`} 
+                                    key={`${treeNode.id}${index}SS`} 
                                     className="cl-treeview-scorerStep cl-treeview-ellipse"
                                 >
                                     {s.description}
@@ -171,30 +171,30 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                         <OF.IconButton 
                             className="cl-treeview-footerButton cl-treeview-moreButton-scorer"
                             iconProps={{ iconName: 'More' }}
-                            onClick={() => this.onClickDetail(nodeData.id!)}
+                            onClick={() => this.onClickDetail(treeNode.id!)}
                             ariaDescription="View More"
                         />}
                 </div>
                     <OF.IconButton 
                         className="cl-treeview-footerButton cl-treeview-cl-treeview-footerButton-pin"
                         iconProps={{ iconName: isNodeelected ? 'PinnedFill' : 'Pin' }}
-                        onClick={() => this.onClickPin(nodeData)}
+                        onClick={() => this.onClickPin(treeNode)}
                         ariaDescription="Pin Node"
                     />
                     <OF.IconButton 
                         className="cl-treeview-footerButton cl-treeview-moreButton-bottom"
                         iconProps={{ iconName: 'More' }}
-                        onClick={() => this.onClickDetail(nodeData.id!)}
+                        onClick={() => this.onClickDetail(treeNode.id!)}
                         ariaDescription="View More"
                     />
-                {!nodeData.children && 
+                {!treeNode.children && 
                     <div
-                        key={`${nodeData.id}END`}
+                        key={`${treeNode.id}END`}
                         className="cl-treeview-endConversation"
                     />
                 }
                 <div className='cl-treeview-memory'>
-                    {nodeData.attributes && Object.keys(nodeData.attributes).join(', ')}
+                    {treeNode.attributes && Object.keys(treeNode.attributes).join(', ')}
                 </div>
             </div>
         )

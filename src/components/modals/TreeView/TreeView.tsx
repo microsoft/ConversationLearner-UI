@@ -31,8 +31,7 @@ const NODE_WIDTH = 250
 const NODE_HEIGHT = 155
 
 interface ComponentState {
-    tree: TreeNode | null
-    trainDialog: CLM.TrainDialog | null 
+    tree: TreeNode | null 
     selectedNode: TreeNode | null
     expandedNode: TreeNode | null
     translateX: number | null,
@@ -45,7 +44,6 @@ class TreeView extends React.Component<Props, ComponentState> {
 
     state: ComponentState = {
         tree: null,
-        trainDialog: null,
         selectedNode: null,
         expandedNode: null,
         translateX: null,
@@ -431,34 +429,6 @@ class TreeView extends React.Component<Props, ComponentState> {
                             </div>
                         </Modal>
                     }
-                    {
-                    /*
-                    TODO: Display editing dialog in view
-                    this.state.trainDialog &&
-                        <EditDialogAdmin
-                            data-testid="chatmodal-editdialogadmin"
-                            app={this.props.app}
-                            editingPackageId={this.props.editingPackageId}
-                            editingLogDialogId={null}//this.props.editingLogDialogId}
-                            originalTrainDialogId={this.props.originalTrainDialogId}
-                            editType={this.props.editType}
-                            editState={this.props.editState}
-                            trainDialog={this.state.trainDialog}//this.props.trainDialog}
-                            selectedActivity={null}//this.state.selectedActivity}
-                            isLastActivitySelected={false}//isLastActivitySelected}
-                            onChangeAction={()=>{}}//(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
-                            onSubmitExtraction={()=>{}}//(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
-                            onPendingStatusChanged={()=>{}}//(changed: boolean) => this.onPendingStatusChanged(changed)}
-
-                            allUniqueTags={[]}//this.props.allUniqueTags}
-                            tags={[]}//this.state.tags}
-                            onAddTag={()=>{}}//this.onAddTag}
-                            onRemoveTag={()=>{}}//this.onRemoveTag}
-
-                            description={""}//this.state.description}
-                            onChangeDescription={()=>{}}//this.onChangeDescription}
-                    />*/    
-                    }  
                 </div>
                 <div className='cl-treeview-closeButton'>
                     <OF.DefaultButton
