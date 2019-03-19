@@ -285,9 +285,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     sortTrainDialogs(trainDialogs: CLM.TrainDialog[]): CLM.TrainDialog[] {
+        const trainDialogsCopy = [...trainDialogs]
         // If column header selected sort the items, always putting invalid at the top
         if (this.state.sortColumn) {
-            trainDialogs
+            trainDialogsCopy
                 .sort((a, b) => {
 
                     // Always put invalid at top (values can also be undefined)
@@ -317,7 +318,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 })
         }
 
-        return trainDialogs;
+        return trainDialogsCopy
     }
 
     @OF.autobind
