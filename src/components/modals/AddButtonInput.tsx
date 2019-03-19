@@ -39,7 +39,7 @@ class AddButtonInput extends React.Component<Props, {}> {
                     >
                         <polygon
                             points="0,2 19,2 19,6 24,10 19,13 19,17 0,17"
-                            stroke-width="1"
+                            strokeWidth="1"
                         />
                         <text className="cl-addbutton-addinput-text" x="5" y="14">+</text>
                     </svg>

@@ -36,7 +36,7 @@ class AddButtonScore extends React.Component<Props, {}> {
                         <polygon
                             points="0,2 19,2 19,6 24,10 19,13 19,17 0,17"
                             transform="rotate(180) translate(-24, -19)"
-                            stroke-width="1"
+                            strokeWidth="1"
                         />
                         <text className="cl-addbutton-addscore-text" x="10" y="14">+</text>
                     </svg>
