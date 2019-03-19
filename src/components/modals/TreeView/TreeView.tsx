@@ -9,14 +9,15 @@ import { connect } from 'react-redux'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
-import { State } from '../../types'
-import { FM } from '../../react-intl-messages'
+import { State } from '../../../types'
+import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import * as Util from '../../Utils/util'
+import * as Util from '../../../Utils/util'
 import Tree from 'react-d3-tree';
 import { TreeNodeLabel, TreeNode, TreeScorerStep } from './TreeNodeLabel'
+import { TreeNodeExpanded } from './TreeNodeExpanded'
 import './TreeView.css';
-import { EditDialogType, EditState } from '.'
+import { EditDialogType, EditState } from '..'
 
 const userShape = {
     shape: 'circle',
@@ -26,23 +27,13 @@ const userShape = {
     }
 }
 
-const botShape = {
-    shape: 'circle',
-    shapeProps: {
-        r: 4,
-        fill: '#dbdee1'
-    }
-}
-
 const NODE_WIDTH = 250
 const NODE_HEIGHT = 155
 
 interface ComponentState {
-    tree: TreeNode | null
-    trainDialog: CLM.TrainDialog | null 
+    tree: TreeNode | null 
     selectedNode: TreeNode | null
     expandedNode: TreeNode | null
-    extended: boolean,
     translateX: number | null,
     treeContainer: any,
     treeElement: any,
@@ -53,10 +44,8 @@ class TreeView extends React.Component<Props, ComponentState> {
 
     state: ComponentState = {
         tree: null,
-        trainDialog: null,
         selectedNode: null,
         expandedNode: null,
-        extended: false,
         translateX: null,
         treeContainer: null,
         treeElement: null,
@@ -226,31 +215,11 @@ class TreeView extends React.Component<Props, ComponentState> {
             return parentNode
         }
 
-        // If in extended mode, add scorer steps as children
-        if (this.state.extended) {
-            const action = this.props.actions.find(a => a.actionId === scorerStep.labelAction)
-            const name = action ? this.simpleActionRenderer(action) : "- MISSING ACTION -"
-            const child: TreeNode = {
-                name: name,
-                attributes: this.memoryAttributes(scorerStep),
-                children: [],
-                nodeSvgShape: botShape,
-                actionId: action ? action.actionId : "MISSING ACTION",
-                trainDialogIds: [trainDialog.trainDialogId],
-                roundIndex,
-                scoreIndex
-            }
-            parentNode.children.push(child)
-            return child
+        if (!parentNode.scorerSteps) {
+            parentNode.scorerSteps = []
         }
-        // Otherwise just annotate the extractor step
-        else {
-            if (!parentNode.scorerSteps) {
-                parentNode.scorerSteps = []
-            }
-            parentNode.scorerSteps.push(this.toTreeScorerStep(scorerStep))
-            return parentNode
-        }
+        parentNode.scorerSteps.push(this.toTreeScorerStep(scorerStep))
+        return parentNode
     }
 
     addScorerSteps(parentNode: TreeNode, scorerSteps: CLM.TrainScorerStep[], roundIndex: number, trainDialog: CLM.TrainDialog): TreeNode {
@@ -258,24 +227,6 @@ class TreeView extends React.Component<Props, ComponentState> {
         scorerSteps.forEach((scorerStep, scoreIndex) => {
             parent = this.addScorerStep(parent, scorerStep, roundIndex, scoreIndex, trainDialog)
         })
-        return parent
-    }
-
-    // Get next child that it the parent for a round
-    getNextRoundParent(parent: TreeNode): TreeNode {
-        if (this.state.extended) {
-            // Get first scorer step
-            let node = parent.children[0]
-            // Loop until next extractor step
-            while (node && node.actionId) {
-                if (!node.children[0] || !node.children[0].actionId) {
-                    return node
-                }
-                // Scorer steps always have one chile
-                node = node.children[0]
-            }
-            return node
-        }
         return parent
     }
 
@@ -292,40 +243,16 @@ class TreeView extends React.Component<Props, ComponentState> {
             return false
         }
 
-        // If extended view, check scorer steps in children
-        if (this.state.extended) {
-            let node1 = round1.children[0]
-            let node2 = round2.children[0]
-
-            if (!node1 || !node2) {
+        // Check scorer steps array
+        if (round1.scorerSteps && !round2.scorerSteps ||
+            !round1.scorerSteps && round2.scorerSteps) {
                 return false
             }
-            // Loop until next extractor step
-            while (node1 && node1.actionId) {
-                if (node1.actionId !== node2.actionId) {
-                    return false
-                }
-                if (!this.doesMemoryMatch(node1, node2)) {
-                    return false
-                }
-                // Scorer steps always have one child 
-                node1 = node1.children[0]
-                node2 = node2.children[0]
-            }
+        else if (!round1.scorerSteps && !round2.scorerSteps) {
             return true
         }
-        // Otherwise check scorer steps array
         else {
-            if (round1.scorerSteps && !round2.scorerSteps ||
-                !round1.scorerSteps && round2.scorerSteps) {
-                    return false
-                }
-            else if (!round1.scorerSteps && !round2.scorerSteps) {
-                return true
-            }
-            else {
-                return JSON.stringify(round1.scorerSteps) === JSON.stringify(round2.scorerSteps)
-            }
+            return JSON.stringify(round1.scorerSteps) === JSON.stringify(round2.scorerSteps)
         }
     }
 
@@ -347,7 +274,7 @@ class TreeView extends React.Component<Props, ComponentState> {
             match.userInput = [...match.userInput, ...newRound.userInput]
             match.trainDialogIds = [...match.trainDialogIds, ...newRound.trainDialogIds]
             match.allowForeignObjects = true
-            return this.getNextRoundParent(match)
+            return match
         }
 
         if (filter) {
@@ -441,7 +368,6 @@ class TreeView extends React.Component<Props, ComponentState> {
                                     nodeLabelComponent={
                                         {
                                             render: <TreeNodeLabel
-                                                canEdit={false}
                                                 selectedNode={this.state.selectedNode}
                                                 generateActionDescriptions={this.generateActionDescriptions}
                                                 onExpandoClick={this.onClickExpando}
@@ -483,9 +409,8 @@ class TreeView extends React.Component<Props, ComponentState> {
                             containerClassName='cl-modal'
                         >
                             <div className="cl-treeview-expandedNode">
-                                <TreeNodeLabel
+                                <TreeNodeExpanded
                                     nodeData={this.state.expandedNode}
-                                    expanded={true}
                                     canEdit={false}
                                     selectedNode={this.state.selectedNode}
                                     generateActionDescriptions={this.generateActionDescriptions}
@@ -504,34 +429,6 @@ class TreeView extends React.Component<Props, ComponentState> {
                             </div>
                         </Modal>
                     }
-                    {
-                    /*
-                    TODO: Display editing dialog in view
-                    this.state.trainDialog &&
-                        <EditDialogAdmin
-                            data-testid="chatmodal-editdialogadmin"
-                            app={this.props.app}
-                            editingPackageId={this.props.editingPackageId}
-                            editingLogDialogId={null}//this.props.editingLogDialogId}
-                            originalTrainDialogId={this.props.originalTrainDialogId}
-                            editType={this.props.editType}
-                            editState={this.props.editState}
-                            trainDialog={this.state.trainDialog}//this.props.trainDialog}
-                            selectedActivity={null}//this.state.selectedActivity}
-                            isLastActivitySelected={false}//isLastActivitySelected}
-                            onChangeAction={()=>{}}//(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
-                            onSubmitExtraction={()=>{}}//(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
-                            onPendingStatusChanged={()=>{}}//(changed: boolean) => this.onPendingStatusChanged(changed)}
-
-                            allUniqueTags={[]}//this.props.allUniqueTags}
-                            tags={[]}//this.state.tags}
-                            onAddTag={()=>{}}//this.onAddTag}
-                            onRemoveTag={()=>{}}//this.onRemoveTag}
-
-                            description={""}//this.state.description}
-                            onChangeDescription={()=>{}}//this.onChangeDescription}
-                    />*/    
-                    }  
                 </div>
                 <div className='cl-treeview-closeButton'>
                     <OF.DefaultButton

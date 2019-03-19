@@ -101,7 +101,7 @@
   background-color: var(--cl-color-user-train);
 }
 
-.userInput:hover {
+.cl-treeview-userInput:hover {
   text-decoration: underline
 }
 
