@@ -22,7 +22,7 @@ import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import TagsReadOnly from '../../../components/TagsReadOnly'
 import * as moment from 'moment'
-import TreeView from '../../../components/modals/TreeView'
+import TreeView from '../../../components/modals/TreeView/TreeView'
 
 export interface EditHandlerArgs {
     userInput?: string,
