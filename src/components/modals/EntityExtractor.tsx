@@ -406,7 +406,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
         // Need to save this to separate variable for typescript control flow
         const extractConflict = this.props.extractConflict
-        const attemptedExtractResponse = extractConflict && this.props.extractResponses.find(e => e.text.toLowerCase() === extractConflict.text.toLowerCase())
+        const attemptedExtractResponse = extractConflict && allResponses.find(e => e.text.toLowerCase() === extractConflict.text.toLowerCase())
         
         return (
             <div className="entity-extractor">

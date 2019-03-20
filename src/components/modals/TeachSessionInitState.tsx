@@ -14,7 +14,7 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import { FM } from '../../react-intl-messages'
-import './TeachSessionInitState.css';
+import './TeachSessionInitState.css'
 
 interface ComponentState {
     filledEntityMap: CLM.FilledEntityMap
@@ -188,6 +188,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                     id: FM.BUTTON_OK,
                                     defaultMessage: 'Ok'
                                 })}
+                                iconProps={{ iconName: 'Accept' }}
                             />
                             <OF.DefaultButton
                                 data-testid="teach-session-cancel-button"
@@ -200,6 +201,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                     id: FM.BUTTON_CANCEL,
                                     defaultMessage: 'Cancel'
                                 })}
+                                iconProps={{ iconName: 'Cancel' }}
                             />
                         </div>
                     </div>

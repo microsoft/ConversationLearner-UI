@@ -167,12 +167,14 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
                                 onClick={this.props.handleClose}
                                 ariaDescription={formatMessageId(intl, FM.BUTTON_CANCEL)}
                                 text={formatMessageId(intl, FM.BUTTON_CANCEL)}
+                                iconProps={{ iconName: 'Cancel' }}
                             />
                             :
                             <OF.PrimaryButton
                                 onClick={() => this.setState({ moreInfoApp: null })}
                                 ariaDescription={formatMessageId(intl, FM.BUTTON_OK)}
                                 text={formatMessageId(intl, FM.BUTTON_OK)}
+                                iconProps={{ iconName: 'Accept' }}
                             />
                         }
                     </div>

@@ -11,6 +11,7 @@ import './AddButton.css'
 
 interface Props {
     onClick: () => void,
+    className?: string
     editType: EditDialogType
 }
 
@@ -22,7 +23,7 @@ class AddButtonInput extends React.Component<Props, {}> {
         return (
             <div
                 role="button"
-                className={`cl-addbutton-add cl-addbutton-addinput`}
+                className={this.props.className || `cl-addbutton-add cl-addbutton-addinput`}
                 onClick={this.props.onClick}
                 data-testid="chat-edit-add-user-input-button"
             >
@@ -38,6 +39,7 @@ class AddButtonInput extends React.Component<Props, {}> {
                     >
                         <polygon
                             points="0,2 19,2 19,6 24,10 19,13 19,17 0,17"
+                            strokeWidth="1"
                         />
                         <text className="cl-addbutton-addinput-text" x="5" y="14">+</text>
                     </svg>

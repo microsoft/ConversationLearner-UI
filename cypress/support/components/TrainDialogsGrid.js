@@ -28,6 +28,6 @@ export function GetLastModifiedDates() { return helpers.StringArrayFromElementTe
 export function GetCreatedDates() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-created"]') }
 
 export function GetTags() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-tags"]') }
-export function GetScenarios() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-description"]') }
+export function GetDescription() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-description"]') }
 
 export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).find('[data-testid="train-dialogs-validity-indicator"]') }

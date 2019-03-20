@@ -3,17 +3,13 @@
  * Licensed under the MIT License.
 */
 
-import './zTools/CreateModel.spec'
-import './zTools/zDeleteAllTestGeneratedModels.spec'
-import './zTools/ShowHomePage.spec'
+import './CreateModels/WaitVsNoWaitActions.spec.js'
+import './EditAndBranching/Branching.spec.js'
+import './EditAndBranching/TagAndFrog.spec.js'
 
-// import './CreateModels/WaitVsNoWaitActions.spec.js'
-// import './EditAndBranching/Branching.spec.js'
-// import './EditAndBranching/TagAndFrog.spec.js'
+import './ErrorHandling/MissingAction.spec.js'
+import './ErrorHandling/TwoConsecutiveUserInput.spec.js'
+import './ErrorHandling/WaitNonWait.spec.js'
 
-// import './ErrorHandling/MissingAction.spec.js'
-// import './ErrorHandling/TwoConsecutiveUserInput.spec.js'
-// import './ErrorHandling/WaitNonWait.spec.js'
-
-// import './Train/MyNameIs.spec.js'
-// import './Train/TagAndFrog.spec.js'
+import './Train/MyNameIs.spec.js'
+import './Train/TagAndFrog.spec.js'

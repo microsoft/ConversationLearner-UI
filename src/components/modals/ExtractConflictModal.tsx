@@ -86,10 +86,12 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
                     <OF.PrimaryButton
                         onClick={() => props.onAccept()}
                         text={formatMessageId(intl, FM.BUTTON_ACCEPT)}
+                        iconProps={{ iconName: 'Accept' }}
                     />
                     <OF.DefaultButton
                         onClick={() => props.onClose()}
                         text={formatMessageId(intl, FM.BUTTON_CLOSE)}
+                        iconProps={{ iconName: 'Cancel' }}
                     />
                 </div>
             </div>

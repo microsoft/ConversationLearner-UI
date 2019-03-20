@@ -1,0 +1,173 @@
+.cl-treeview-container {
+    height: 100%;
+    background: #999999;
+}
+
+.cl-treeview-expandedNode {
+  padding: 10px;
+  background: #999999;
+  width: 300px;
+}
+
+.cl-treeview-parentContainer {
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+  }
+
+.cl-treeview-columnRight {
+    height: 100%;
+    width: 100%;
+}
+
+.cl-treeview-botBox {
+  background-color: var(--cl-color-botchat-grey);
+  color: black;
+  width: 500px;
+  padding: 5px 5px 0px 5px;
+  font-size: 12px;
+}
+
+.cl-treeview-closeButton {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+}
+
+.cl-treeview-botBoxSelected {
+  border-color: #ffff00;
+  border-width: 5px;
+  border-style: solid;
+}
+
+.cl-treeview-userInput {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.cl-treeview-ellipse {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.cl-treeview-messageBar {
+  top: 0px;
+  background-color: rgba(186, 216, 10) !important;
+  position: fixed !important;
+}
+
+.cl-treeview-memoryBox {
+  background-color: #DECFDE;
+  color: #888888;
+  font-size: 12px;
+  font-style: italic;
+  padding-left: 15px;
+  padding-right: 5px;
+  border-bottom-width: 0.5px;
+  border-color: black;
+  border-bottom-style: solid;
+}
+
+.cl-treeview-footerButton {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  height: 10px;
+  width: 20px;
+  color: #ffffff;
+}
+
+.cl-treeview-moreButton-bottom {
+  right: 0px;
+  bottom: unset;
+  height: 18px;
+  color: #ffffff;
+  background-color: var(--cl-color-user-train);
+}
+
+.cl-treeview-moreButton-scorer {
+  color: #000000
+}
+
+.cl-treeview-cl-treeview-footerButton-pin {
+  left: 0px;
+  bottom: unset;
+  height: 18px;
+  color: #ffffff;
+  background-color: var(--cl-color-user-train);
+}
+
+.cl-treeview-userInput:hover {
+  text-decoration: underline
+}
+
+.cl-treeview-scorerBox {
+  position: relative;
+}
+
+.cl-treeview-scorerStep {
+  display: block;
+  font-size: 12px;
+  background-color: #f4f4f4;
+  border-bottom-style: solid;
+  border-color: black;
+  border-width: 1px;
+  color: #000000;
+  padding-left: 5px;
+}
+
+.cl-treeview-userBox {
+    background-color: var(--cl-color-user-train);
+    color: white;
+    padding: 5px;
+    font-size: 12px;
+    position: relative;
+}
+
+.cl-treeview-endConversation {
+  background-color: var(--cl-color-user-train);
+  height: 5px;
+}
+
+.cl-treeview-flip {
+  -webkit-transform: rotate(-180deg);
+  -moz-transform: rotate(-180deg);
+  -ms-transform: rotate(-180deg);
+  -o-transform: rotate(-180deg);
+}
+
+.cl-treeview-buttonblock {
+  display: block;
+  background-color: #f4f4f4;
+  margin-left: -5px;
+  margin-top: 5px;
+  border-top-style: solid;
+  border-color: black;
+  border-width: 1px;
+  width: 100%;
+}
+
+.cl-treeview-fullscreen {
+  width: 100%;
+  height: 100%;
+}
+
+
+.cl-treeview-treeViewButton {
+  display: inline-block;
+  padding-left: 5px;
+  height: 30px;
+}
+
+.cl-treeview-treeViewButtonPadded {
+  padding-top: 7px;
+}
+
+.cl-treeview-memory {
+  padding-left: 10px;
+  font-size: 10px;
+}

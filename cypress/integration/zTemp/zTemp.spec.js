@@ -13,26 +13,12 @@ import * as editDialogModal from '../../support/components/EditDialogModal'
 
 describe('zTemp', () => {
   it('Temporary Experimental Test', () => {
-    let botDomainAndPort = Cypress.env('BOT_DOMAIN_PORT')
-    helpers.ConLog('zTemp', botDomainAndPort)
-
-    let dateTimeStrings = []
-    dateTimeStrings.push(Cypress.moment().add(2, 'days').format("MMMDD-HHmmss"))
-    dateTimeStrings.push(Cypress.moment().add(1, 'hours').format("MMMDD-HHmmss"))
-    dateTimeStrings.push(Cypress.moment().subtract(1, 'hours').format("MMMDD-HHmmss"))
-    dateTimeStrings.push(Cypress.moment().subtract(2, 'hours').format("MMMDD-HHmmss"))
-    dateTimeStrings.push(Cypress.moment().subtract(3, 'hours').format("MMMDD-HHmmss"))
-    dateTimeStrings.push(Cypress.moment().subtract(2, 'days').format("MMMDD-HHmmss"))
-
-    let now = Cypress.moment()
-    dateTimeStrings.forEach(dateTimeString => {
-      let dtMoment = Cypress.moment(dateTimeString, "MMMDD-HHmmss")
-      let moreThanTwoHoursAgo = dt.moment.isBefore()
-      helpers.ConLog('zTemp', dtMoment.format('LLL'))
-    })
+    homePage.Visit()
+    cy.WaitTillNChangesOccur(2)
+    homePage.GetModelListRowCount()
   })
 
-  it.skip('Should NOT allow more than 20 Train Dialog Tags', () => {
+  it.skip('Temporary Experimental Test', () => {
     // TODO: Turn this into a full test case since there is a 20 tag 
     // limit and produces a bug when saving the Train Dialog.
     // Bug 1930: Train Dialog - Tag Editor should prevent user from entering more than 20 tags.
