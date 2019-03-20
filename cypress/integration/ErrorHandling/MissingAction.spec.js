@@ -42,7 +42,7 @@ describe('Missing Action - ErrorHandling', () => {
     })
   })
 
-  context('Train Dialog Grid', () => {
+  context('Train Dialogs Grid', () => {
     it('Should verify there are now error icons showing in the Train Dialog grid', () => {
       modelPage.NavigateToTrainDialogs()
       modelPage.VerifyErrorIconForTrainDialogs()
