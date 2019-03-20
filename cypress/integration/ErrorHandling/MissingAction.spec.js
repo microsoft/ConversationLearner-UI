@@ -22,14 +22,12 @@ describe('Missing Action - ErrorHandling', () => {
       cy.WaitForTrainingStatusCompleted()
     })
 
-    it('Should verify there are no error icons on the page and create a new Train Dialog', () => {
+    it('Should verify there are no error icons on the page', () => {
       modelPage.VerifyNoErrorIconOnPage()
-    train.CreateNewTrainDialog()
     })
-  })
 
-  context('Train', () => {
     it('Should complete and save a simple 1 action Train Dialog', () => {
+      train.CreateNewTrainDialog()
       train.TypeYourMessage(common.gonnaDeleteAnAction)
       editDialogModal.ClickScoreActionsButton()
       train.SelectAction(common.whatsYourName)
@@ -61,10 +59,8 @@ describe('Missing Action - ErrorHandling', () => {
       editDialogModal.VerifyErrorMessage('Action does not exist')
       scorerModal.VerifyMissingActionNotice()
     })
-  })
 
-  context('Train Add Action', () => {
-    it('Should create a new action and correct the error in the Train Dialog', () => {
+    it('Should create a new action from Train Dialog which should also correct the error in the Train Dialog', () => {
       scorerModal.ClickAddActionButton()
       actions.CreateNewAction({ response: common.whatsYourName, expectedEntities: ['name'] })
       editDialogModal.VerifyNoErrorMessage()
