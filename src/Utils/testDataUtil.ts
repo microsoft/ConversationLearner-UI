@@ -92,12 +92,12 @@ export interface RoundData {
     scorerSteps?: {[labelAction: string]: string[] | undefined}
 }
 
-export function makeTrainDialog(rounds: RoundData[]): CLM.TrainDialog {
+export function makeTrainDialog(rounds: RoundData[], id?: string): CLM.TrainDialog {
     return {
         rounds: rounds.map(round => makeRound(round)),
         "createdDateTime": "",
         "lastModifiedDateTime": "",
-        "trainDialogId": CLM.ModelUtils.generateGUID(),
+        "trainDialogId": id || CLM.ModelUtils.generateGUID(),
         "version": 0,
         "packageCreationId": 0,
         "packageDeletionId": 0,
