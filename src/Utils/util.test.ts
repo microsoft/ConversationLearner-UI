@@ -2,10 +2,36 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { replace, equal, isActionUnique } from './util'
+import { replace, equal, isActionUnique, deepCopy } from './util'
 import * as CLM from '@conversationlearner/models'
 
 describe('util', () => {
+
+    describe('deepcopy', () => {
+
+        test('returns a valid deep copy', () => {
+
+            const testObj = {
+                dateTime: Date.now(),
+                nullV: null,
+                undefinedV: undefined,
+                complex: {
+                    dateTime: Date.now(),
+                    number: 5,
+                    string: "blah",
+                    complex2: {
+                        arrayV: [1, 2, 3],
+                        array2: [{number: 1, string: "1"}, {number: 2, string: "2"}]
+                    }
+                }
+            }
+
+            const copy = deepCopy(testObj)
+
+            expect(JSON.stringify(testObj)).toEqual(JSON.stringify(copy))
+        })
+
+    })
 
     describe('replace', () => {
 
