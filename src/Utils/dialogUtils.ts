@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
+import { deepCopy } from './util'
 
 export interface DialogRenderData {
     dialogMode: CLM.DialogMode
@@ -209,4 +210,50 @@ export function findMatchingTrainDialog(trainDialog: CLM.TrainDialog, trainDialo
         }
     }
     return null
+}
+
+// Returns true is trainDialog1 is longer than trainDialog2
+export function isLonger(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): boolean {
+
+    if (trainDialog1.rounds.length > trainDialog2.rounds.length) {
+        return true
+    }
+    if (trainDialog1.rounds.length < trainDialog2.rounds.length) {
+        return false
+    }
+
+    const lastRound1 = trainDialog1.rounds[trainDialog1.rounds.length - 1]
+    const lastRound2 = trainDialog2.rounds[trainDialog2.rounds.length - 1]
+    if (lastRound1.scorerSteps.length < lastRound2.scorerSteps.length) {
+        return false
+    }
+    return true
+}
+
+// Merges smaller dialog into larger one and returns it
+export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): CLM.TrainDialog {
+    if (!doesTrainDialogMatch(trainDialog1, trainDialog2)) {
+        throw new Error("Attempting to merge non-matching Train Dialogs")
+    }
+
+    // Merge from smallest into largest
+    const d1Longer = isLonger(trainDialog1, trainDialog2)
+    const smallTrainDialog = d1Longer ? trainDialog2 : trainDialog1
+    const largeTrainDialog = d1Longer ? trainDialog1 : trainDialog2
+
+    // Copy text variations from small dialog onto large one
+    let roundIndex = 0
+    while (roundIndex < smallTrainDialog.rounds.length) { 
+        const roundSmall = smallTrainDialog.rounds[roundIndex]
+        const roundLarge = largeTrainDialog.rounds[roundIndex]
+        const extractorStepSmall = roundSmall.extractorStep
+        const extractorStepLarge = roundLarge.extractorStep
+
+        // Add novel text variatitions to large dialog
+        const newTextVariations = extractorStepSmall.textVariations.filter(tvs => !extractorStepLarge.textVariations.find(tvl => tvl.text === tvs.text))
+        roundLarge.extractorStep.textVariations = [...roundLarge.extractorStep.textVariations, ...newTextVariations]
+        
+        roundIndex = roundIndex + 1
+    }
+    return largeTrainDialog
 }

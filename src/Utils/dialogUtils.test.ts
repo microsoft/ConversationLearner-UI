@@ -2,8 +2,9 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { doesTrainDialogMatch, findMatchingTrainDialog } from './dialogUtils'
-import { makeTrainDialog } from './testDataUtil'
+import { doesTrainDialogMatch, findMatchingTrainDialog, isLonger, mergeTrainDialogs } from './dialogUtils'
+import { makeTrainDialog, makeTextVariation, makeExtractorStep } from './testDataUtil'
+import { deepCopy } from './util'
 import * as CLM from '@conversationlearner/models'
 
 describe('dialogUtils', () => {
@@ -60,7 +61,7 @@ describe('dialogUtils', () => {
         })
 
         test('extraRound', () => {
-            const shortDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+            const shortDialog: CLM.TrainDialog = deepCopy(trainDialog1)
             shortDialog.rounds.pop()
             
             let result = doesTrainDialogMatch(shortDialog, trainDialog1)
@@ -71,7 +72,7 @@ describe('dialogUtils', () => {
         })
 
         test('extraScorerStepLastRound', () => {
-            const shortDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+            const shortDialog: CLM.TrainDialog = deepCopy(trainDialog1)
             shortDialog.rounds[shortDialog.rounds.length - 1].scorerSteps.pop()
             
             let result = doesTrainDialogMatch(shortDialog, trainDialog1)
@@ -82,7 +83,7 @@ describe('dialogUtils', () => {
         })
 
         test('extraScorerStepNotLastRound', () => {
-            const shortDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+            const shortDialog: CLM.TrainDialog = deepCopy(trainDialog1)
             shortDialog.rounds[shortDialog.rounds.length - 2].scorerSteps.pop()
             
             let result = doesTrainDialogMatch(shortDialog, trainDialog1)
@@ -93,7 +94,7 @@ describe('dialogUtils', () => {
         })
 
         test('differentAction', () => {
-            const changedDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+            const changedDialog: CLM.TrainDialog = deepCopy(trainDialog1)
             const lastRound = changedDialog.rounds[changedDialog.rounds.length - 1]
             const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
             lastScorerStep.labelAction = "CHANGED"
@@ -107,7 +108,7 @@ describe('dialogUtils', () => {
 
         test('changedFilledEntities', () => {
 
-            const changedDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+            const changedDialog: CLM.TrainDialog = deepCopy(trainDialog1)
             const lastRound = changedDialog.rounds[changedDialog.rounds.length - 1]
             const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
             lastScorerStep.input.filledEntities.pop()
@@ -123,7 +124,7 @@ describe('dialogUtils', () => {
     describe('findMatchingTrainDialog', () => {
 
         // Create two new train dailogs a bit different from the base
-        const trainDialog2: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+        const trainDialog2: CLM.TrainDialog = deepCopy(trainDialog1)
         const lastRound2 = trainDialog2.rounds[trainDialog2.rounds.length - 1]
         const lastScorerStep2 = lastRound2.scorerSteps[lastRound2.scorerSteps.length - 1]
         trainDialog2.trainDialogId = "trainDialog2"
@@ -148,4 +149,97 @@ describe('dialogUtils', () => {
             expect(result).toEqual(null)
         })
     })
+
+    describe('isLonger', () => {
+
+        test('removeRound', () => {
+            
+            // Create two new train dailogs a bit different from the base
+            const trainDialog2: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+            trainDialog2.rounds.pop()
+
+            let result = isLonger(trainDialog1, trainDialog2)
+            expect(result).toEqual(true)
+
+            result = isLonger(trainDialog2, trainDialog1)
+            expect(result).toEqual(false)
+        })
+
+        test('removeScorerStep', () => {
+            
+            // Create two new train dailogs a bit different from the base
+            const trainDialog2: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+            trainDialog2.rounds[trainDialog2.rounds.length - 1].scorerSteps.pop()
+
+            let result = isLonger(trainDialog1, trainDialog2)
+            expect(result).toEqual(true)
+
+            result = isLonger(trainDialog2, trainDialog1)
+            expect(result).toEqual(false)
+        })
+
+        test('same', () => {
+            
+            let result = isLonger(trainDialog1, trainDialog1)
+            expect(result).toEqual(true)
+        })
+    })
+
+    describe('margeTrainDialogs', () => {
+
+        test('addTextVariation', () => {
+            
+            const trainDialog2: CLM.TrainDialog = deepCopy(trainDialog1)
+            trainDialog2.rounds[0].extractorStep = makeExtractorStep(
+                [{
+                    "entity1_n_id": "entity1_n_value",
+                    "entity2_n_id": "entity2_n_value"
+                }]
+            )
+
+            // Need a copy as will be mutated
+            let trainDialog1C = deepCopy(trainDialog1)
+            let result = mergeTrainDialogs(trainDialog1C, trainDialog2)
+            // Larger train dialog should be returned
+            expect(result.trainDialogId).toEqual(trainDialog1C.trainDialogId)
+            // New text variation should be added
+            expect(result.rounds[0].extractorStep.textVariations.length).toEqual(2)
+            // Existing text variation shouldn't be duplicated
+            expect(result.rounds[1].extractorStep.textVariations.length).toEqual(1)
+
+            // Need a copy as will be mutated
+            trainDialog1C = deepCopy(trainDialog1)
+            result = mergeTrainDialogs(trainDialog2, trainDialog1C)
+            // Larger train dialog should be returned
+            expect(result.trainDialogId).toEqual(trainDialog1C.trainDialogId)
+            // New text variation should be added
+            expect(result.rounds[0].extractorStep.textVariations.length).toEqual(2)
+            // Existing text variation shouldn't be duplicated
+            expect(result.rounds[1].extractorStep.textVariations.length).toEqual(1)
+        })
+
+        test('addRound', () => {
+            
+            const trainDialog2: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+            trainDialog2.rounds.pop()
+
+            // Need a copy as will be mutated
+            let trainDialog1C = deepCopy(trainDialog1)
+            let result = mergeTrainDialogs(trainDialog1C, trainDialog2)
+            // Larger train dialog should be returned
+            expect(result.trainDialogId).toEqual(trainDialog1C.trainDialogId)
+            // New should be present
+            expect(result.rounds.length).toEqual(trainDialog1.rounds.length)
+
+            // Need a copy as will be mutated
+            trainDialog1C = deepCopy(trainDialog1)
+            result = mergeTrainDialogs(trainDialog2, trainDialog1C)
+            // Larger train dialog should be returned
+            expect(result.trainDialogId).toEqual(trainDialog1C.trainDialogId)
+            // New rounds should be present
+            expect(result.rounds.length).toEqual(trainDialog1.rounds.length)
+        })
+    })
+
+
 })
