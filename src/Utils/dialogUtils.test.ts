@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-import { doesTrainDialogMatch, findMatchingTrainDialog, isLonger, mergeTrainDialogs } from './dialogUtils'
+import { doesTrainDialogMatch, findMatchingTrainDialog, isTrainDialogLonger, mergeTrainDialogs } from './dialogUtils'
 import { makeTrainDialog, makeExtractorStep } from './testDataUtil'
 import { deepCopy } from './util'
 
@@ -170,10 +170,10 @@ describe('dialogUtils', () => {
             const trainDialog2: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
             trainDialog2.rounds.pop()
 
-            let result = isLonger(trainDialog1, trainDialog2)
+            let result = isTrainDialogLonger(trainDialog1, trainDialog2)
             expect(result).toEqual(true)
 
-            result = isLonger(trainDialog2, trainDialog1)
+            result = isTrainDialogLonger(trainDialog2, trainDialog1)
             expect(result).toEqual(false)
         })
 
@@ -183,16 +183,16 @@ describe('dialogUtils', () => {
             const trainDialog2: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
             trainDialog2.rounds[trainDialog2.rounds.length - 1].scorerSteps.pop()
 
-            let result = isLonger(trainDialog1, trainDialog2)
+            let result = isTrainDialogLonger(trainDialog1, trainDialog2)
             expect(result).toEqual(true)
 
-            result = isLonger(trainDialog2, trainDialog1)
+            result = isTrainDialogLonger(trainDialog2, trainDialog1)
             expect(result).toEqual(false)
         })
 
         test('same', () => {
             
-            let result = isLonger(trainDialog1, trainDialog1)
+            let result = isTrainDialogLonger(trainDialog1, trainDialog1)
             expect(result).toEqual(true)
         })
     })

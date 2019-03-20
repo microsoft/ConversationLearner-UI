@@ -211,8 +211,8 @@ export function findMatchingTrainDialog(trainDialog: CLM.TrainDialog, trainDialo
     return null
 }
 
-// Returns true is trainDialog1 is longer than trainDialog2
-export function isLonger(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): boolean {
+// Returns true if trainDialog1 is longer than trainDialog2
+export function isTrainDialogLonger(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): boolean {
 
     if (trainDialog1.rounds.length > trainDialog2.rounds.length) {
         return true
@@ -236,7 +236,7 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
     }
 
     // Merge from smallest into largest
-    const d1Longer = isLonger(trainDialog1, trainDialog2)
+    const d1Longer = isTrainDialogLonger(trainDialog1, trainDialog2)
     const smallTrainDialog = d1Longer ? trainDialog2 : trainDialog1
     const largeTrainDialog = d1Longer ? trainDialog1 : trainDialog2
 
