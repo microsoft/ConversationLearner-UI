@@ -427,7 +427,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
             // Created shorted verion of TrainDialog at insert point
             // Copy, Remove rounds / scorer steps below insert
-            const history = JSON.parse(JSON.stringify(trainDialog))
+            const history: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog))
             history.definitions = definitions
             history.rounds = history.rounds.slice(0, roundIndex + 1)
 
@@ -466,14 +466,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 throw new Error("No actions available")
             }
 
-            const scorerStep = {
-                input: uiScoreResponse.scoreInput,
+            const scorerStep: CLM.TrainScorerStep = {
+                logicResult: undefined,
+                input: uiScoreResponse.scoreInput!,
                 labelAction: insertedAction.actionId,
                 scoredAction: insertedAction
             }
 
             // Insert new Action into Full TrainDialog
-            const newTrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            const newTrainDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog))
             newTrainDialog.definitions = definitions
             const curRound = newTrainDialog.rounds[roundIndex]
 
@@ -669,7 +670,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             const extractorStep: CLM.TrainExtractorStep = { textVariations }
 
             // Copy original and insert new round for the text
-            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            let newTrainDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog))
             newTrainDialog.definitions = definitions
 
             let scorerSteps: CLM.TrainScorerStep[]
