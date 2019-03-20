@@ -111,3 +111,39 @@ function normalizeActionAndStringify(newAction: CLM.ActionBase) {
     const { actionId, createdDateTime, packageCreationId, packageDeletionId, version, ...normalizedNewAction } = newAction
     return stringify(normalizedNewAction)
 }
+
+export function deepCopy(obj: any): any {
+    let copy: any;
+
+    // Simple types, null or undefined
+    if (obj === null || typeof obj !== "object") {
+        return obj
+    }
+
+    // Date
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+
+    // Array
+    if (obj instanceof Array) {
+        copy = [];
+        obj.forEach((item, index) => copy[index] = deepCopy(obj[index]))
+        return copy;
+    }
+
+    // Handle Object
+    if (obj instanceof Object) {
+        copy = {};
+        Object.keys(obj).forEach(attr => {
+            if (obj.hasOwnProperty(attr)) {
+                copy[attr] = deepCopy(obj[attr])
+            }
+        })
+        return copy;
+    }
+
+    throw new Error("Unknown Type");
+}
