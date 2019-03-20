@@ -30,7 +30,10 @@ describe('Train', () => {
     cy.WaitForTrainingStatusCompleted()
 
     train.TypeYourMessage('My name is Susan.')
+// TODO: Remove these left indented lines once the product bug is fixed.    
+cy.log('Going to hit bug 1948')
     editDialogModal.VerifyEntityLabel('Susan', 'name')
+cy.Enqueue(() => {throw new Error('When this test cases gets here, bug 1948 has been fixed...edit the test code and remove this and the above call to cy.log().')})
     editDialogModal.ClickScoreActionsButton()
     memoryTableComponent.VerifyEntityInMemory('name', ['Susan'], 'David')
     scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
