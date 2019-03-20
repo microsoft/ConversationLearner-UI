@@ -871,7 +871,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         // Remove any data added for rendering
         cleanTrainDialog(newTrainDialog)
-
+        newTrainDialog.sourceLogDialogId = this.state.currentLogDialogId ? this.state.currentLogDialogId : undefined
         newTrainDialog.validity = validity
         newTrainDialog.definitions = null
         try {

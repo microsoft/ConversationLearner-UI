@@ -161,7 +161,12 @@ export const deleteTeachSessionThunkAsync = (
                 }
                 else {
                     // Edit the associated train dialogs tag and description
-                    await clClient.trainDialogEdit(app.appId, { trainDialogId: teachSession.trainDialogId, tags, description })
+                    await clClient.trainDialogEdit(app.appId, {
+                        trainDialogId: teachSession.trainDialogId,
+                        tags,
+                        description,
+                        sourceLogDialogId: sourceLogDialogId ? sourceLogDialogId : undefined
+                    })
                 }
 
                 // If we're adding a new train dialog as consequence of the session save, re-fetch train dialogs and start poll for train status
