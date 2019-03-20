@@ -237,9 +237,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     sortLogDialogs(logDialogs: CLM.LogDialog[]): CLM.LogDialog[] {
+        const logDialogsCopy = [...logDialogs]
         // If column header selected sort the items
         if (this.state.sortColumn) {
-            logDialogs
+            logDialogsCopy
                 .sort((a, b) => {
                     let firstValue = this.state.sortColumn.getSortValue(a, this)
                     let secondValue = this.state.sortColumn.getSortValue(b, this)
@@ -259,7 +260,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 })
         }
 
-        return logDialogs;
+        return logDialogsCopy
     }
 
     @OF.autobind
@@ -985,6 +986,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
                         componentRef={component => this.newChatSessionButton = component!}
+                        iconProps={{ iconName: 'Add' }}
                     />
                     <OF.DefaultButton
                         data-testid="logdialogs-button-refresh"

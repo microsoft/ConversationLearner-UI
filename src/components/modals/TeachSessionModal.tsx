@@ -856,6 +856,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         onClick={this.onClickUndoInput}
                                         ariaDescription={Util.formatMessageId(intl, FM.BUTTON_UNDO)}
                                         text={Util.formatMessageId(intl, FM.BUTTON_UNDO)}
+                                        iconProps={{ iconName: 'Undo' }}
                                     />
                                 }
                                 <OF.PrimaryButton

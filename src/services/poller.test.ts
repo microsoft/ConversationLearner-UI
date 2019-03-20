@@ -107,8 +107,8 @@ describe('Poller', () => {
         await p1
         const after = new Date().getTime()
 
-        // 200 + 400
-        expect(after - now).toBeGreaterThanOrEqual(600)
+        // 200 + 400 (should be 600 but make 590 since javascript timers can be skewed by couple milliseconds)
+        expect(after - now).toBeGreaterThanOrEqual(590)
     })
 
     test('calling poll with different id should NOT extend existing polls', async () => {

@@ -147,6 +147,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                                         id: FM.PACKAGECREATOR_CREATEBUTTON_TEXT,
                                         defaultMessage: 'Create'
                                     })}
+                                    iconProps={{ iconName: 'Add' }}
                                 />
                                 <OF.DefaultButton
                                     onClick={this.onClickCancel}
@@ -158,6 +159,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                                         id: FM.PACKAGECREATOR_CANCELBUTTON_TEXT,
                                         defaultMessage: 'Cancel'
                                     })}
+                                    iconProps={{ iconName: 'Cancel' }}
                                 />
                             </div>
                         </div>

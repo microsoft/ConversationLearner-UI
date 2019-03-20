@@ -27,11 +27,10 @@ const logDialogsReducer: Reducer<LogDialogState> = produce((state: LogDialogStat
             // TODO: Refactor to different action instead of using null
             if (action.sourceLogDialogId) {
                 // Update log dialog this train dialog was created from
-                const source = state.filter(d => d.logDialogId === action.sourceLogDialogId);
-                if (source[0]) {
-                    source[0].targetTrainDialogIds = [action.trainDialogId]
+                const sourceLogDialog = state.find(d => d.logDialogId === action.sourceLogDialogId)
+                if (sourceLogDialog) {
+                    sourceLogDialog.targetTrainDialogIds = [action.trainDialogId]
                 }
-                return state.filter(dialog => dialog.logDialogId !== action.sourceLogDialogId).concat(source[0])
             }
             return
         default:

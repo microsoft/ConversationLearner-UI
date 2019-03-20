@@ -145,6 +145,7 @@ class Actions extends React.Component<Props, ComponentState> {
                             id: FM.ACTIONS_CREATEBUTTONTITLE,
                             defaultMessage: 'New Action'
                         })}
+                        iconProps={{ iconName: 'Add' }}
                         componentRef={component => this.newActionButton = component!}
                     />
                 </div>
