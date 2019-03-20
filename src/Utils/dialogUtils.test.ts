@@ -2,9 +2,11 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
+
 import { doesTrainDialogMatch, findMatchingTrainDialog, isLonger, mergeTrainDialogs } from './dialogUtils'
 import { makeTrainDialog, makeTextVariation, makeExtractorStep } from './testDataUtil'
 import { deepCopy } from './util'
+
 import * as CLM from '@conversationlearner/models'
 
 describe('dialogUtils', () => {
@@ -61,7 +63,9 @@ describe('dialogUtils', () => {
         })
 
         test('extraRound', () => {
+
             const shortDialog: CLM.TrainDialog = deepCopy(trainDialog1)
+
             shortDialog.rounds.pop()
             
             let result = doesTrainDialogMatch(shortDialog, trainDialog1)
@@ -72,7 +76,9 @@ describe('dialogUtils', () => {
         })
 
         test('extraScorerStepLastRound', () => {
+
             const shortDialog: CLM.TrainDialog = deepCopy(trainDialog1)
+
             shortDialog.rounds[shortDialog.rounds.length - 1].scorerSteps.pop()
             
             let result = doesTrainDialogMatch(shortDialog, trainDialog1)
@@ -83,7 +89,9 @@ describe('dialogUtils', () => {
         })
 
         test('extraScorerStepNotLastRound', () => {
+
             const shortDialog: CLM.TrainDialog = deepCopy(trainDialog1)
+
             shortDialog.rounds[shortDialog.rounds.length - 2].scorerSteps.pop()
             
             let result = doesTrainDialogMatch(shortDialog, trainDialog1)
@@ -94,7 +102,9 @@ describe('dialogUtils', () => {
         })
 
         test('differentAction', () => {
+
             const changedDialog: CLM.TrainDialog = deepCopy(trainDialog1)
+
             const lastRound = changedDialog.rounds[changedDialog.rounds.length - 1]
             const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
             lastScorerStep.labelAction = "CHANGED"
@@ -109,6 +119,7 @@ describe('dialogUtils', () => {
         test('changedFilledEntities', () => {
 
             const changedDialog: CLM.TrainDialog = deepCopy(trainDialog1)
+
             const lastRound = changedDialog.rounds[changedDialog.rounds.length - 1]
             const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
             lastScorerStep.input.filledEntities.pop()
@@ -125,6 +136,7 @@ describe('dialogUtils', () => {
 
         // Create two new train dailogs a bit different from the base
         const trainDialog2: CLM.TrainDialog = deepCopy(trainDialog1)
+
         const lastRound2 = trainDialog2.rounds[trainDialog2.rounds.length - 1]
         const lastScorerStep2 = lastRound2.scorerSteps[lastRound2.scorerSteps.length - 1]
         trainDialog2.trainDialogId = "trainDialog2"
@@ -240,6 +252,4 @@ describe('dialogUtils', () => {
             expect(result.rounds.length).toEqual(trainDialog1.rounds.length)
         })
     })
-
-
 })
