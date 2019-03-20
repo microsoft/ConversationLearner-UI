@@ -26,11 +26,11 @@ describe('ErrorHandling', () => {
     editDialogModal.ClickSaveCloseButton()
 
     modelPage.VerifyErrorIconForTrainDialogs()
-    train.VerifyErrorsFoundInTraining(`${common.validityIcon}Hey`, 'world peace', "Sorry $name, I can't help you get $want")
+    train.VerifyErrorsFoundInTraining(`Hey`, 'world peace', "Sorry $name, I can't help you get $want")
 
     // - - - Open the same Train Dialog, validate and fix the errors. - - -
 
-    train.EditTraining(`${common.validityIcon}Hey`, 'world peace', "Sorry $name, I can't help you get $want")
+    train.EditTraining(`Hey`, 'world peace', "Sorry $name, I can't help you get $want")
     editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
     editDialogModal.SelectChatTurnExactMatch('Sam')
     editDialogModal.VerifyErrorMessage('Two consecutive User Inputs')

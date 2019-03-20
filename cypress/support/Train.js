@@ -8,15 +8,18 @@ import * as trainDialogsGrid from './components/TrainDialogsGrid'
 import * as editDialogModal from './components/EditDialogModal'
 import * as helpers from './Helpers'
 
-function Today() { return Cypress.moment().format("MM/DD/YYYY") }
+let currentTrainingSummary
+let originalTrainingSummary
+let isBranched
+let originalChatMessages
+let editedChatMessages
 
-// Workaround: to get true global data it must be attached to the window object.
-window.currentTrainingSummary = undefined
+function Today() { return Cypress.moment().format("MM/DD/YYYY") }
 
 export function CreateNewTrainDialog() {
   cy.Enqueue(() => {
     const turns = trainDialogsGrid.GetTurns()
-    window.currentTrainingSummary =
+    currentTrainingSummary =
       {
         FirstInput: undefined,
         LastInput: undefined,
@@ -30,7 +33,7 @@ export function CreateNewTrainDialog() {
         CreatedDate: undefined,
         TrainGridRowCount: (turns ? turns.length : 0) + 1
       }
-    window.isBranched = false
+    isBranched = false
   })
   trainDialogsGrid.CreateNewTrainDialog()
 }
@@ -48,7 +51,7 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
 
     for (let i = 0; i < firstInputs.length; i++) {
       if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse) {
-        window.currentTrainingSummary =
+        currentTrainingSummary =
           {
             FirstInput: firstInputs[i],
             LastInput: lastInputs[i],
@@ -62,8 +65,8 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
             CreatedDate: createdDates[i],
             TrainGridRowCount: (turns ? turns.length : 0)
           }
-        window.originalTrainingSummary = Object.create(window.currentTrainingSummary)
-        window.isBranched = false
+        originalTrainingSummary = Object.create(currentTrainingSummary)
+        isBranched = false
 
         helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `ClickTraining for ${i} - ${turns[i]}, ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
         trainDialogsGrid.ClickTraining(i)
@@ -96,9 +99,9 @@ export function VerifyErrorsFoundInTraining(firstInput, lastInput, lastResponse)
 export function TypeYourMessage(message) {
   editDialogModal.TypeYourMessage(message)
   cy.Enqueue(() => {
-    if (!window.currentTrainingSummary.FirstInput) window.currentTrainingSummary.FirstInput = message
-    window.currentTrainingSummary.LastInput = message
-    window.currentTrainingSummary.Turns++
+    if (!currentTrainingSummary.FirstInput) currentTrainingSummary.FirstInput = message
+    currentTrainingSummary.LastInput = message
+    currentTrainingSummary.Turns++
   })
 }
 
@@ -107,16 +110,16 @@ export function TypeYourMessage(message) {
 export function SelectAction(expectedResponse, lastResponse) {
   scorerModal.ClickAction(expectedResponse)
   cy.Enqueue(() => {
-    if (lastResponse) window.currentTrainingSummary.LastResponse = lastResponse
-    else window.currentTrainingSummary.LastResponse = expectedResponse
+    if (lastResponse) currentTrainingSummary.LastResponse = lastResponse
+    else currentTrainingSummary.LastResponse = expectedResponse
   })
 }
 
 export function SelectEndSessionAction(expectedData, lastResponse) {
   scorerModal.ClickEndSessionAction(expectedData);
   cy.Enqueue(() => {
-    if (lastResponse) window.currentTrainingSummary.LastResponse = lastResponse;
-    else window.currentTrainingSummary.LastResponse = 'EndSession: ' + expectedData;
+    if (lastResponse) currentTrainingSummary.LastResponse = lastResponse;
+    else currentTrainingSummary.LastResponse = 'EndSession: ' + expectedData;
   });
 }
 
@@ -124,7 +127,7 @@ export function SelectEndSessionAction(expectedData, lastResponse) {
 export function ClickScoreActionsButton(lastResponse) {
   editDialogModal.ClickScoreActionsButton()
   cy.Enqueue(() => {
-    window.currentTrainingSummary.LastResponse = lastResponse
+    currentTrainingSummary.LastResponse = lastResponse
   })
 }
 
@@ -134,11 +137,11 @@ export function Save() {
   cy.Enqueue(() => {
     // FUDGING on the time - adding 25 seconds because the time is set by the server
     // which is not exactly the same as our test machine.
-    window.currentTrainingSummary.MomentTrainingEnded = Cypress.moment().add(25, 'seconds')
+    currentTrainingSummary.MomentTrainingEnded = Cypress.moment().add(25, 'seconds')
 
-    if (window.isBranched) VerifyTrainingSummaryIsInGrid(window.originalTrainingSummary)
+    if (isBranched) VerifyTrainingSummaryIsInGrid(originalTrainingSummary)
 
-    VerifyTrainingSummaryIsInGrid(window.currentTrainingSummary)
+    VerifyTrainingSummaryIsInGrid(currentTrainingSummary)
   })
 }
 
@@ -178,19 +181,19 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
 }
 
 export function CaptureOriginalChatMessages() {
-  cy.WaitForStableDOM().then(() => { window.originalChatMessages = editDialogModal.GetAllChatMessages() })
+  cy.WaitForStableDOM().then(() => { originalChatMessages = editDialogModal.GetAllChatMessages() })
 }
 
 export function VerifyOriginalChatMessages() {
-  VerifyAllChatMessages(() => { return window.originalChatMessages })
+  VerifyAllChatMessages(() => { return originalChatMessages })
 }
 
 export function CaptureEditedChatMessages() {
-  cy.WaitForStableDOM().then(() => { window.editedChatMessages = editDialogModal.GetAllChatMessages() })
+  cy.WaitForStableDOM().then(() => { editedChatMessages = editDialogModal.GetAllChatMessages() })
 }
 
 export function VerifyEditedChatMessages() {
-  VerifyAllChatMessages(() => { return window.editedChatMessages })
+  VerifyAllChatMessages(() => { return editedChatMessages })
 }
 
 function VerifyAllChatMessages(functionGetChatMessagesToBeVerified) {
@@ -237,9 +240,9 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
     })
 
     editDialogModal.BranchChatTurn(newMessage)
-    window.isBranched = true
-    window.originalTrainingSummary.TrainGridRowCount++
-    window.currentTrainingSummary.TrainGridRowCount++
+    isBranched = true
+    originalTrainingSummary.TrainGridRowCount++
+    currentTrainingSummary.TrainGridRowCount++
 
     VerifyAllChatMessages(() => { return branchedChatMessages })
   })
@@ -266,7 +269,7 @@ export function EditTrainingNEW(scenario, tags) {
   const funcName = `EditTrainingNEW(${scenario}, ${tags})`
   cy.Enqueue(() => {
     const tagsFromGrid = trainDialogsGrid.GetTags()
-    const scenarios = trainDialogsGrid.GetScenarios()
+    const scenarios = trainDialogsGrid.GetDescription()
 
     helpers.ConLog(funcName, `Row Count: ${scenarios.length}`)
 

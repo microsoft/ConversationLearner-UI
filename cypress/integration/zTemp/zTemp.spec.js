@@ -13,6 +13,12 @@ import * as editDialogModal from '../../support/components/EditDialogModal'
 
 describe('zTemp', () => {
   it('Temporary Experimental Test', () => {
+    homePage.Visit()
+    cy.WaitTillNChangesOccur(2)
+    homePage.GetModelListRowCount()
+  })
+
+  it.skip('Temporary Experimental Test', () => {
     // TODO: Turn this into a full test case since there is a 20 tag 
     // limit and produces a bug when saving the Train Dialog.
     // Bug 1930: Train Dialog - Tag Editor should prevent user from entering more than 20 tags.
