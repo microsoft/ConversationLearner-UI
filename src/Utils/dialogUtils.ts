@@ -4,7 +4,6 @@
  */
 import * as CLM from '@conversationlearner/models'
 import { Activity } from 'botframework-directlinejs'
-import { deepCopy } from './util'
 
 export interface DialogRenderData {
     dialogMode: CLM.DialogMode

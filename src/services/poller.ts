@@ -32,7 +32,7 @@ export interface IPollerOptions {
 const global = window
 export class Poller {
     // Need some random character for visual difference in logs. Could use uuid() library but don't want dependency
-    private id = Symbol(Math.floor(Math.random() * 100))
+    // For Console.log : private id = Symbol(Math.floor(Math.random() * 100))
     private polls: ActivePoll[] = []
     constructor(options: IPollerOptions) {
         global.setInterval(async () => await this.poll(), options.interval)

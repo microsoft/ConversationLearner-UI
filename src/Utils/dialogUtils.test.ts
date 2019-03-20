@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import { doesTrainDialogMatch, findMatchingTrainDialog, isLonger, mergeTrainDialogs } from './dialogUtils'
-import { makeTrainDialog, makeTextVariation, makeExtractorStep } from './testDataUtil'
+import { makeTrainDialog, makeExtractorStep } from './testDataUtil'
 import { deepCopy } from './util'
 import * as CLM from '@conversationlearner/models'
 
@@ -240,6 +240,4 @@ describe('dialogUtils', () => {
             expect(result.rounds.length).toEqual(trainDialog1.rounds.length)
         })
     })
-
-
 })

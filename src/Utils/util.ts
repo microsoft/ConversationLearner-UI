@@ -130,7 +130,7 @@ export function deepCopy(obj: any): any {
     // Array
     if (obj instanceof Array) {
         copy = [];
-        obj.forEach((item,index) => copy[index] = deepCopy(obj[index]))
+        obj.forEach((item, index) => copy[index] = deepCopy(obj[index]))
         return copy;
     }
 
