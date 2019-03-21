@@ -407,7 +407,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // Need to save this to separate variable for typescript control flow
         const extractConflict = this.props.extractConflict
         const attemptedExtractResponse = extractConflict && allResponses.find(e => e.text.toLowerCase() === extractConflict.text.toLowerCase())
-        
+
         return (
             <div className="entity-extractor">
                 <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus} cl-label`}>
@@ -452,6 +452,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             ariaDescription={'Add'}
                             text={'Add'}
                             componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                            iconProps={{ iconName: 'Add' }}
                         />
                         <OF.TextField
                             data-testid="entity-extractor-alternative-input-text"
@@ -467,29 +468,30 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         />
                         <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_TEXTVARIATION} />
                     </div>}
-                {editingRound &&
-                    <div className="cl-buttons-row">
-                        <OF.PrimaryButton
-                            data-testid="submit-changes-button"
-                            disabled={!this.state.isPendingSubmit
-                                || !allExtractResponsesValid
-                                || this.state.pendingVariationChange}
-                            onClick={this.onClickSubmitExtractions}
-                            ariaDescription={'Submit Changes'}
-                            text={'Submit Changes'}
-                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
-                        />
-                        <OF.PrimaryButton
-                            disabled={!this.state.isPendingSubmit}
-                            onClick={this.onClickUndoChanges}
-                            ariaDescription="Undo Changes"
-                            text="Undo"
-                        />
-                    </div>
-                }
-                {!editingRound &&
-                    <div className="cl-buttons-row">
-                        <OF.PrimaryButton
+
+                <div className="cl-buttons-row">
+                    {editingRound
+                        ? <>
+                            <OF.PrimaryButton
+                                data-testid="submit-changes-button"
+                                disabled={!this.state.isPendingSubmit
+                                    || !allExtractResponsesValid
+                                    || this.state.pendingVariationChange}
+                                onClick={this.onClickSubmitExtractions}
+                                ariaDescription={'Submit Changes'}
+                                text={'Submit Changes'}
+                                componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                                iconProps={{ iconName: 'Accept' }}
+                            />
+                            <OF.PrimaryButton
+                                disabled={!this.state.isPendingSubmit}
+                                onClick={this.onClickUndoChanges}
+                                ariaDescription="Undo Changes"
+                                text="Undo"
+                                iconProps={{ iconName: 'Undo' }}
+                            />
+                        </>
+                        : <OF.PrimaryButton
                             data-testid="score-actions-button"
                             disabled={!allExtractResponsesValid || this.state.pendingVariationChange || !canEdit}
                             onClick={this.onClickSubmitExtractions}
@@ -497,8 +499,9 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             text={'Score Actions'}
                             componentRef={(ref: any) => { this.doneExtractingButton = ref }}
                         />
-                    </div>
-                }
+                    }
+                </div>
+
                 <div className="cl-dialog-admin__dialogs">
                     <EntityCreatorEditor
                         data-testid="entity-extractor-editor"

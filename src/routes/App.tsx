@@ -153,7 +153,12 @@ class App extends React.Component<Props, ComponentState> {
                       <div>
                         <p>Loading Failed.</p>
                         <div>
-                          <OF.PrimaryButton onClick={this.loadBotInfo}>Retry</OF.PrimaryButton>
+                          <OF.PrimaryButton
+                            onClick={this.loadBotInfo}
+                            iconProps={{ iconName: 'Refresh' }}
+                          >
+                            Retry
+                          </OF.PrimaryButton>
                         </div>
                       </div>
                     }

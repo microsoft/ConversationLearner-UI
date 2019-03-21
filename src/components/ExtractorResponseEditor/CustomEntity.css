@@ -90,11 +90,8 @@
     cursor: default;
 }
 
-.cl-entity-node--custom .cl-entity-node-indicator__controls button {
-    background: var(--color-warning);
-}
-.cl-entity-node--prebuilt .cl-entity-node-indicator__controls button {
-    background: var(--color-warning);
+.cl-entity-node--custom .cl-entity-node-indicator__controls button i {
+    color: var(--color-red);
 }
 
 .cl-entity-node-indicator__name {
