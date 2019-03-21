@@ -229,8 +229,14 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     onGetNameErrorMessage(value: string): string {
+        const MAX_NAME_LENGTH = 30
+
         if (value.length === 0) {
             return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_REQUIREDVALUE)
+        }
+
+        if (value.length > MAX_NAME_LENGTH) {
+            return Util.formatMessageId(this.props.intl, FM.APPCREATOR_FIELDERROR_TOOLONG)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
