@@ -12,7 +12,6 @@
     padding: 0.25em;
     position: absolute;
     left: -10000px;
-    bottom: 10000px;
     transition: opacity .75s;
     z-index: 2;
     visibility: hidden;
@@ -63,8 +62,8 @@
     margin: 0;
     list-style: none;
     padding: 0;
-    padding-bottom: 0.25em;
-    border-bottom: 2px solid lightgrey;
+    padding-top: 0.25em;
+    border-top: 2px solid lightgrey;
     overflow-y: auto;
     max-height: 8.9em;
 }
