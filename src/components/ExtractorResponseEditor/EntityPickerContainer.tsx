@@ -85,33 +85,37 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        if (nextProps.options.length !== this.props.options.length
-            || (this.props.isVisible === false
+        if ((this.props.isVisible === false
             && nextProps.isVisible === true)) {
 
-            this.fuse = new Fuse(nextProps.options, fuseOptions)
-
-            // Recompute default options in case options list and max displayed props have changed
-            this.defaultMatchedOptions = nextProps.options.filter((_, i) => i < nextProps.maxDisplayedOptions)
-                .map<MatchedOption<IOption>>(option => ({
-                    highlighted: false,
-                    matchedStrings: [{ text: option.name, matched: false }],
-                    original: option
-                }))
-
-            // We want to still show all options of the user has entered nothing or whitespace so trim and check for empty condition
-            const normalizedSearchText = this.state.searchText.trim()
-            const matchedOptions = (normalizedSearchText.length === 0)
-                ? this.defaultMatchedOptions
-                : this.fuse.search<FuseResult<IOption>>(normalizedSearchText)
-                    .filter((_, i) => i < nextProps.maxDisplayedOptions)
-                    .map(result => convertMatchedTextIntoMatchedOption(result.item.name, result.matches[0].indices, result.item))
-
-            this.setState(prevState => ({
+            this.setState({
                 ...initialState,
-                matchedOptions,
-                highlightIndex: 0 //prevState.highlightIndex > (matchedOptions.length - 1) ? 0 : prevState.highlightIndex
-            }))
+                highlightIndex: 0
+            })
+
+            if (nextProps.options.length !== this.props.options.length) {
+                this.fuse = new Fuse(nextProps.options, fuseOptions)
+
+                // Recompute default options in case options list and max displayed props have changed
+                this.defaultMatchedOptions = nextProps.options.filter((_, i) => i < nextProps.maxDisplayedOptions)
+                    .map<MatchedOption<IOption>>(option => ({
+                        highlighted: false,
+                        matchedStrings: [{ text: option.name, matched: false }],
+                        original: option
+                    }))
+
+                // We want to still show all options of the user has entered nothing or whitespace so trim and check for empty condition
+                const normalizedSearchText = this.state.searchText.trim()
+                const matchedOptions = (normalizedSearchText.length === 0)
+                    ? this.defaultMatchedOptions
+                    : this.fuse.search<FuseResult<IOption>>(normalizedSearchText)
+                        .filter((_, i) => i < nextProps.maxDisplayedOptions)
+                        .map(result => convertMatchedTextIntoMatchedOption(result.item.name, result.matches[0].indices, result.item))
+
+                this.setState({
+                    matchedOptions
+                })
+            }
         }
     }
 
