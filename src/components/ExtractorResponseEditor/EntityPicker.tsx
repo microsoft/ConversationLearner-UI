@@ -92,7 +92,7 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
                 />
                 <div className="custom-toolbar__results" ref={this.state.resultsRef}>
                     {this.props.matchedOptions.length === 0
-                        ? <div className="custom-toolbar__result">No matching entites</div>
+                        ? <div className="custom-toolbar__result">No matching entities</div>
                         : this.props.matchedOptions.map((matchedOption, i) =>
                             <div
                                 key={matchedOption.original.id}
