@@ -62,7 +62,7 @@ describe('My Name Is - Train Dialog', () => {
       // Also uncomment the 3rd line of code.
       memoryTableComponent.VerifyNoDisplacedEntityInMemory('David')
       memoryTableComponent.VerifyEntitiesInMemory('name', ['Susan'])
-      //memoryTableComponent.VerifyEntityInMemory('name', ['Susan'], 'David')
+      //memoryTableComponent.VerifyEntitiesInMemory('name', ['Susan'], 'David')
     })
 
     it('Should show one disabled and one enabled Action', () => {
