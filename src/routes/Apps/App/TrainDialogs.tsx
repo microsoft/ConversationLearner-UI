@@ -1254,6 +1254,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         iconProps={{ iconName: 'Add' }}
                     />
                     <OF.DefaultButton
+                        className="cl-button--tree-view"
+                        iconProps={{ iconName: 'BranchFork2' }}
                         onClick={this.onOpenTreeView}
                         ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={"Tree View"}

@@ -256,6 +256,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                         className="cl-action-creator-file-button"
                                         ariaDescription={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION)}
                                         text={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT)}
+                                        iconProps={{ iconName: 'DocumentSearch' }}
                                     />
                                     <OF.TextField
                                         disabled={true}

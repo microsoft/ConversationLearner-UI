@@ -581,6 +581,24 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    renderAbandonIcon() {
+        const dialogChanged = this.isDialogChanged()
+
+        switch (this.props.editType) {
+            case EditDialogType.NEW:
+            case EditDialogType.BRANCH:
+            case EditDialogType.LOG_EDITED:
+            case EditDialogType.TRAIN_EDITED:
+                return "Cancel"
+            case EditDialogType.LOG_ORIGINAL:
+                return "Delete"
+            case EditDialogType.TRAIN_ORIGINAL:
+                return dialogChanged
+                    ? "Cancel"
+                    : "Delete"
+        }
+    }
+
     trainDialogValidity(): CLM.Validity | undefined {
         // Look for individual replay errors
         const replayErrorLevel = this.replayErrorLevel()
@@ -716,6 +734,24 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     : formatMessageId(intl, FM.BUTTON_CLOSE)
             default:
                 return ""
+        }
+    }
+
+    renderCloseOrSaveIcon() {
+        const dialogChanged = this.isDialogChanged()
+
+        switch (this.props.editType) {
+            case EditDialogType.NEW:
+            case EditDialogType.BRANCH:
+            case EditDialogType.LOG_EDITED:
+            case EditDialogType.TRAIN_EDITED:
+                return "Accept"
+            case EditDialogType.LOG_ORIGINAL:
+                return "Cancel"
+            case EditDialogType.TRAIN_ORIGINAL:
+                return dialogChanged
+                    ? "Accept"
+                    : "Cancel"
         }
     }
 
@@ -956,6 +992,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onClick={this.onClickConvert}
                                     ariaDescription={formatMessageId(intl, FM.BUTTON_SAVE_AS_TRAIN_DIALOG)}
                                     text={formatMessageId(intl, FM.BUTTON_SAVE_AS_TRAIN_DIALOG)}
+                                    iconProps={{ iconName: 'Accept' }}
                                 />
                             }
                             <TooltipHost
@@ -971,6 +1008,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onClick={() => this.props.onReplayDialog(this.props.trainDialog)}
                                     ariaDescription={formatMessageId(intl, FM.BUTTON_REPLAY)}
                                     text={formatMessageId(intl, FM.BUTTON_REPLAY)}
+                                    iconProps={{ iconName: 'Refresh' }}
                                 />
                             </TooltipHost>
 
@@ -980,6 +1018,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 onClick={this.onClickSave}
                                 ariaDescription={this.renderCloseOrSaveText(intl)}
                                 text={this.renderCloseOrSaveText(intl)}
+                                iconProps={{ iconName: this.renderCloseOrSaveIcon() }}
                             />
                             <OF.DefaultButton
                                 data-testid="edit-dialog-modal-abandon-delete-button"
@@ -988,6 +1027,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 onClick={this.onClickAbandon}
                                 ariaDescription={this.renderAbandonText(intl)}
                                 text={this.renderAbandonText(intl)}
+                                iconProps={{ iconName: this.renderAbandonIcon() }}
                             />
                         </div>
                     </div>
