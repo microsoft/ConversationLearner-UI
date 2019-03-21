@@ -16,3 +16,7 @@ export function VerifyEntityInMemory(entityName, entityValues, displacedValue) {
 
   if (displacedValue) cy.Get('.cl-font--deleted,[data-testid="entity-memory-value"]').contains(displacedValue)
 }
+
+export function VerifyNoDisplacedEntityInMemory(displacedValue, expectFailure = false) {
+  cy.DoesNotContain('.cl-font--deleted,[data-testid="entity-memory-value"]', displacedValue, expectFailure)
+}
