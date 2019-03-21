@@ -1,0 +1,12 @@
+.cl-action-scorer-placeholder {
+    min-height: 20em;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+}
+
+.cl-action-scorer-placeholder__description {
+    margin-bottom: 1em;
+    max-width: 100ch;
+}
