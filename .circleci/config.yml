@@ -28,7 +28,6 @@ jobs:
 
       # Randomly pick 1 out of 5 LUIS Authoring Keys and set the BASH_ENV with it.
       - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
-      - run: node .circleci/RevealAuthoringKeys.js
 
       - run: npm run test
       - run: npm run cibuild
