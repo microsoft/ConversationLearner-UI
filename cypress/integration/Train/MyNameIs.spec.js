@@ -22,7 +22,6 @@ describe('My Name Is - Train Dialog', () => {
       cy.WaitForTrainingStatusCompleted()
     })
   })
-
   
   context('Train Dialog', () => {
     it('Should create a new Train Dialog', () => {
@@ -36,10 +35,10 @@ describe('My Name Is - Train Dialog', () => {
 
     it('Should find labeled Entity in memory', () => {
       editDialogModal.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntityInMemory('name', ['David'])
+      memoryTableComponent.VerifyEntitiesInMemory('name', ['David'])
     })
 
-    it('Should have one disabled and one enabled Action', () => {
+    it('Should show one disabled and one enabled Action', () => {
       scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
       scorerModal.VerifyContainsEnabledAction('Hello David')
     })
@@ -62,11 +61,11 @@ describe('My Name Is - Train Dialog', () => {
       // This test will fail once the bug has been fixed.
       // Also uncomment the 3rd line of code.
       memoryTableComponent.VerifyNoDisplacedEntityInMemory('David')
-      memoryTableComponent.VerifyEntityInMemory('name', ['Gabriella'])
+      memoryTableComponent.VerifyEntitiesInMemory('name', ['Gabriella'])
       //memoryTableComponent.VerifyEntityInMemory('name', ['Gabriella'], 'David')
     })
 
-    it('Should have one disabled and one enabled Action', () => {
+    it('Should show one disabled and one enabled Action', () => {
       scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
       scorerModal.VerifyContainsEnabledAction('Hello Gabriella')
     })
@@ -90,10 +89,10 @@ describe('My Name Is - Train Dialog', () => {
 
     it('Should find labeled Entity in memory', () => {
       editDialogModal.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntityInMemory('name', ['Susan'])
+      memoryTableComponent.VerifyEntitiesInMemory('name', ['Susan'])
     })
 
-    it('Should have one disabled and one enabled Action', () => {
+    it('Should show one disabled and one enabled Action', () => {
       scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
       scorerModal.VerifyContainsEnabledAction('Hello Susan')
     })

@@ -5,7 +5,7 @@
 
 // When an entity is detected/selected that replaces a previous value
 // the "displacedValue" parameter will verify it is displayed.
-export function VerifyEntityInMemory(entityName, entityValues, displacedValue) {
+export function VerifyEntitiesInMemory(entityName, entityValues, displacedValue) {
   cy.Get('[data-testid="entity-memory-name"]').contains(entityName)
 
   cy.Get('.cl-font--emphasis,[data-testid="entity-memory-value"]').then(elements => {
