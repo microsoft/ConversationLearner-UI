@@ -1,5 +1,0 @@
-console.log(`process.env.LUIS_AUTHORING_KEY_ALT_1=${process.env.LUIS_AUTHORING_KEY_ALT_1}\n`)
-console.log(`process.env.LUIS_AUTHORING_KEY_ALT_1=${process.env.LUIS_AUTHORING_KEY_ALT_2}\n`)
-console.log(`process.env.LUIS_AUTHORING_KEY_ALT_1=${process.env.LUIS_AUTHORING_KEY_ALT_3}\n`)
-console.log(`process.env.LUIS_AUTHORING_KEY_ALT_1=${process.env.LUIS_AUTHORING_KEY_ALT_4}\n`)
-console.log(`process.env.LUIS_AUTHORING_KEY_ALT_1=${process.env.LUIS_AUTHORING_KEY_ALT_5}\n`)
