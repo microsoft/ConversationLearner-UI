@@ -265,7 +265,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         if (activity.type === 'message') {
 
             const newTrainDialog: CLM.TrainDialog = {
-                ...Util.deepCopy(this.props.trainDialog),
+                ...deepCopy(this.props.trainDialog),
                 tags: this.state.tags,
                 description: this.state.description,
                 definitions: {

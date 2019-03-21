@@ -192,7 +192,7 @@ class Container extends React.Component<Props, ComponentState> {
         if (!enumValues) {
             return Array(CLM.MAX_ENUM_VALUES).fill(null)
         }
-        const enumClone = deepCopy(enumValues)
+        const enumClone = Util.deepCopy(enumValues)
         const remaining = Array(CLM.MAX_ENUM_VALUES - enumValues.length).fill(null)
         return [...enumClone, ...remaining]
     }
