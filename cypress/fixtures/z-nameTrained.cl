@@ -1,6 +1,8 @@
 ﻿{
   "trainDialogs": [
     {
+      "tags": [],
+      "description": "",
       "trainDialogId": "4d02e9b3-f63f-42e4-af3e-d5c1d4479a45",
       "rounds": [
         {
@@ -76,11 +78,13 @@
         }
       ],
       "initialFilledEntities": [],
-      "createdDateTime": "2018-11-07T23:54:57.1680165+00:00",
-      "lastModifiedDateTime": "2018-11-08T01:39:46+00:00"
+      "createdDateTime": "2019-03-21T02:39:58.1417409+00:00",
+      "lastModifiedDateTime": "2019-03-21T02:39:58+00:00"
     },
     {
-      "trainDialogId": "f75d10b0-5537-4401-92cf-bf2c9bf2737e",
+      "tags": [],
+      "description": "",
+      "trainDialogId": "0427088c-b615-4259-9144-e8d471a8ad33",
       "rounds": [
         {
           "extractorStep": {
@@ -120,13 +124,70 @@
               "labelAction": "2d846a6e-113e-4302-9877-d0e0a581672b",
               "metrics": {
                 "predictMetrics": {
-                  "blisTime": 0.005843162536621094,
+                  "blisTime": 0.006306886672973633,
                   "contextDialogBlisTime": 0
                 }
               }
             }
           ]
         },
+        {
+          "extractorStep": {
+            "textVariations": [
+              {
+                "text": "My name is Gabriella.",
+                "labelEntities": [
+                  {
+                    "entityId": "251fa360-def4-4a89-aa79-eb487e432f29",
+                    "startCharIndex": 11,
+                    "endCharIndex": 19,
+                    "entityText": "Gabriella",
+                    "resolution": {},
+                    "builtinType": "LUIS"
+                  }
+                ]
+              }
+            ]
+          },
+          "scorerSteps": [
+            {
+              "input": {
+                "filledEntities": [
+                  {
+                    "entityId": "251fa360-def4-4a89-aa79-eb487e432f29",
+                    "values": [
+                      {
+                        "userText": "Gabriella",
+                        "displayText": "Gabriella",
+                        "builtinType": "LUIS",
+                        "resolution": {}
+                      }
+                    ]
+                  }
+                ],
+                "context": {},
+                "maskedActions": []
+              },
+              "labelAction": "2d846a6e-113e-4302-9877-d0e0a581672b",
+              "metrics": {
+                "predictMetrics": {
+                  "blisTime": 0.012497425079345703,
+                  "contextDialogBlisTime": 0
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "initialFilledEntities": [],
+      "createdDateTime": "2019-03-21T02:40:13.7900273+00:00",
+      "lastModifiedDateTime": "2019-03-21T02:40:58+00:00"
+    },
+    {
+      "tags": [],
+      "description": "",
+      "trainDialogId": "02f01ce0-cac1-4349-ab9f-d1d7f5c5edd3",
+      "rounds": [
         {
           "extractorStep": {
             "textVariations": [
@@ -165,7 +226,7 @@
               "labelAction": "2d846a6e-113e-4302-9877-d0e0a581672b",
               "metrics": {
                 "predictMetrics": {
-                  "blisTime": 0.011355400085449218,
+                  "blisTime": 0.0062961578369140625,
                   "contextDialogBlisTime": 0
                 }
               }
@@ -174,14 +235,14 @@
         }
       ],
       "initialFilledEntities": [],
-      "createdDateTime": "2018-11-08T01:40:03.88763+00:00",
-      "lastModifiedDateTime": "2018-11-08T01:40:37+00:00"
+      "createdDateTime": "2019-03-21T02:41:13.9163567+00:00",
+      "lastModifiedDateTime": "2019-03-21T02:41:23+00:00"
     }
   ],
   "actions": [
     {
       "actionId": "3959904b-7905-49e1-8e6a-7fd24d710b30",
-      "createdDateTime": "2018-11-07T20:08:07.2572688+00:00",
+      "createdDateTime": "2019-03-21T02:39:58.1416699+00:00",
       "actionType": "TEXT",
       "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"What's your name?\",\"marks\":[]}]}]}]}}}",
       "isTerminal": true,
@@ -190,11 +251,13 @@
       "negativeEntities": [
         "251fa360-def4-4a89-aa79-eb487e432f29"
       ],
+      "requiredConditions": [],
+      "negativeConditions": [],
       "suggestedEntity": "251fa360-def4-4a89-aa79-eb487e432f29"
     },
     {
       "actionId": "2d846a6e-113e-4302-9877-d0e0a581672b",
-      "createdDateTime": "2018-11-07T20:08:14.675811+00:00",
+      "createdDateTime": "2019-03-21T02:39:58.1417167+00:00",
       "actionType": "TEXT",
       "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"Hello \",\"marks\":[]}]},{\"kind\":\"inline\",\"type\":\"mention-inline-node\",\"isVoid\":false,\"data\":{\"completed\":true,\"option\":{\"id\":\"251fa360-def4-4a89-aa79-eb487e432f29\",\"name\":\"name\"}},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"$name\",\"marks\":[]}]}]},{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"\",\"marks\":[]}]}]}]}}}",
       "isTerminal": true,
@@ -204,18 +267,21 @@
       "requiredEntities": [
         "251fa360-def4-4a89-aa79-eb487e432f29"
       ],
-      "negativeEntities": []
+      "negativeEntities": [],
+      "requiredConditions": [],
+      "negativeConditions": []
     }
   ],
   "entities": [
     {
       "entityId": "251fa360-def4-4a89-aa79-eb487e432f29",
-      "createdDateTime": "2018-11-07T20:07:57.8521773+00:00",
+      "createdDateTime": "2019-03-21T02:39:58.1416233+00:00",
       "entityName": "name",
       "entityType": "LUIS",
       "isMultivalue": false,
-      "isNegatible": false
+      "isNegatible": false,
+      "resolverType": "none"
     }
   ],
-  "packageId": "c65dd214-4d73-41a7-83de-96155c2df096"
+  "packageId": "9927ec03-fa88-4427-ab0e-d4e403e02082"
 }
