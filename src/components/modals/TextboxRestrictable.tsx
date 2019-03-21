@@ -27,7 +27,7 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
     }
 
     isContinueDisabled() {
-        return (this.props.matched_text != null) && this.props.matched_text !== this.state.value
+        return (this.props.matchedText != null) && this.props.matchedText !== this.state.value
     }
 
     @OF.autobind
@@ -84,13 +84,13 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
                                 disabled={this.isContinueDisabled()}
                                 data-testid="app-modal-continue-button"
                                 onClick={this.onClickOK}
-                                ariaDescription={this.props.button_ok}
-                                text={this.props.button_ok}
+                                ariaDescription={this.props.buttonOk}
+                                text={this.props.buttonOk}
                             />
                             <OF.DefaultButton
                                 onClick={this.onClickCancel}
-                                ariaDescription={this.props.button_cancel}
-                                text={this.props.button_cancel}
+                                ariaDescription={this.props.buttonCancel}
+                                text={this.props.buttonCancel}
                             />
                         </div>
                     </div>
@@ -114,9 +114,9 @@ export interface ReceivedProps {
     open: boolean
     message: JSX.Element
     placeholder: string
-    matched_text: any
-    button_ok: string
-    button_cancel: string
+    matchedText: any
+    buttonOk: string
+    buttonCancel: string
     onOK: (userInput: string) => void
     onCancel: () => void
 }
