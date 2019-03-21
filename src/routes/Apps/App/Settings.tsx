@@ -229,8 +229,14 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     onGetNameErrorMessage(value: string): string {
+        const MAX_NAME_LENGTH = 30
+
         if (value.length === 0) {
             return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_REQUIREDVALUE)
+        }
+
+        if (value.length > MAX_NAME_LENGTH) {
+            return Util.formatMessageId(this.props.intl, FM.APPCREATOR_FIELDERROR_TOOLONG)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
@@ -308,11 +314,11 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    getDeleteDialogBoxText = (model_name: string) => {
+    getDeleteDialogBoxText = (modelName: string) => {
         return (
             <div>
-                <h1 className="cl-ux-msg-cautionary">{Util.formatMessageId(this.props.intl, FM.SETINGS_DELETEISPERMANENT)}</h1>
-                <p>Confirm permanent deletion of the <strong>{model_name}</strong> Model by entering its name.</p>
+                <h1 className={`${OF.FontClassNames.xxLarge} cl-text--error`} style={{ fontWeight: OF.FontWeights.semibold }}>{Util.formatMessageId(this.props.intl, FM.SETINGS_DELETEISPERMANENT)}</h1>
+                <p>Confirm permanent deletion of the <strong>{modelName}</strong> Model by entering its name.</p>
             </div>
         )
     }
@@ -511,9 +517,9 @@ class Settings extends React.Component<Props, ComponentState> {
                     open={this.state.isConfirmDeleteAppModalOpen}
                     message={this.getDeleteDialogBoxText(this.props.app.appName)}
                     placeholder={""}
-                    matched_text={this.props.app.appName}
-                    button_ok={Util.getDefaultText(FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
-                    button_cancel={Util.getDefaultText(FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
+                    matchedText={this.props.app.appName}
+                    buttonOk={Util.getDefaultText(FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
+                    buttonCancel={Util.getDefaultText(FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
                     onOK={this.onConfirmDeleteApp}
                     onCancel={this.onCancelDeleteModal}
                 />

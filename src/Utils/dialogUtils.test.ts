@@ -134,15 +134,15 @@ describe('dialogUtils', () => {
 
     describe('findMatchingTrainDialog', () => {
 
-        // Create two new train dailogs a bit different from the base
-        const trainDialog2: CLM.TrainDialog = deepCopy(trainDialog1)
+        // Create two new train dialogs a bit different from the base
+        const trainDialog2 = deepCopy(trainDialog1)
 
         const lastRound2 = trainDialog2.rounds[trainDialog2.rounds.length - 1]
         const lastScorerStep2 = lastRound2.scorerSteps[lastRound2.scorerSteps.length - 1]
         trainDialog2.trainDialogId = "trainDialog2"
         lastScorerStep2.labelAction = "CHANGED"
 
-        const trainDialog3: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+        const trainDialog3 = deepCopy(trainDialog1)
         const lastRound3 = trainDialog3.rounds[trainDialog3.rounds.length - 1]
         const lastScorerStep3 = lastRound3.scorerSteps[lastRound3.scorerSteps.length - 1]
         trainDialog2.trainDialogId = "trainDialog3"
@@ -166,8 +166,8 @@ describe('dialogUtils', () => {
 
         test('removeRound', () => {
             
-            // Create two new train dailogs a bit different from the base
-            const trainDialog2: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+            // Create two new train dialogs a bit different from the base
+            const trainDialog2 = deepCopy(trainDialog1)
             trainDialog2.rounds.pop()
 
             let result = isTrainDialogLonger(trainDialog1, trainDialog2)
@@ -179,8 +179,8 @@ describe('dialogUtils', () => {
 
         test('removeScorerStep', () => {
             
-            // Create two new train dailogs a bit different from the base
-            const trainDialog2: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+            // Create two new train dialogs a bit different from the base
+            const trainDialog2 = deepCopy(trainDialog1)
             trainDialog2.rounds[trainDialog2.rounds.length - 1].scorerSteps.pop()
 
             let result = isTrainDialogLonger(trainDialog1, trainDialog2)
@@ -232,7 +232,7 @@ describe('dialogUtils', () => {
 
         test('addRound', () => {
             
-            const trainDialog2: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog1))
+            const trainDialog2 = deepCopy(trainDialog1)
             trainDialog2.rounds.pop()
 
             // Need a copy as will be mutated

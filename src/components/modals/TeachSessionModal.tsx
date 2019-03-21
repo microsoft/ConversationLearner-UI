@@ -865,6 +865,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     onClick={this.onClickSave}
                                     ariaDescription={this.renderSaveText(intl)}
                                     text={this.renderSaveText(intl)}
+                                    iconProps={{ iconName: 'Accept' }}
                                 />
                                 <OF.DefaultButton
                                     data-testid="edit-dialog-modal-abandon-delete-button"
@@ -873,6 +874,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     onClick={this.onClickAbandonTeach}
                                     ariaDescription={this.renderAbandonText(intl)}
                                     text={this.renderAbandonText(intl)}
+                                    iconProps={{ iconName: 'Cancel' }}
                                 />
 
                             </div>

@@ -160,7 +160,7 @@ class TreeView extends React.Component<Props, ComponentState> {
             userInput: extractorStep.textVariations.map(tv => { return {content: tv.text, trainDialogId: trainDialog.trainDialogId}}),
             attributes: undefined,
             children: [],
-            nodeSvgShape: JSON.parse(JSON.stringify(userShape)),
+            nodeSvgShape: Util.deepCopy(userShape),
             trainDialogIds: [trainDialog.trainDialogId],
             roundIndex 
         }
