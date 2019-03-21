@@ -49,8 +49,8 @@ describe('My Name Is - Train Dialog', () => {
     })
 
     it('Should require manual Entity labeling', () => {
-      train.TypeYourMessage('My name is Gabriella.')
-      editDialogModal.LabelTextAsEntity('Gabriella', 'name')
+      train.TypeYourMessage('My name is Susan.')
+      editDialogModal.LabelTextAsEntity('Susan', 'name')
     })
 
     it('Should find labeled Entity in memory', () => {
@@ -61,17 +61,17 @@ describe('My Name Is - Train Dialog', () => {
       // This test will fail once the bug has been fixed.
       // Also uncomment the 3rd line of code.
       memoryTableComponent.VerifyNoDisplacedEntityInMemory('David')
-      memoryTableComponent.VerifyEntitiesInMemory('name', ['Gabriella'])
-      //memoryTableComponent.VerifyEntityInMemory('name', ['Gabriella'], 'David')
+      memoryTableComponent.VerifyEntitiesInMemory('name', ['Susan'])
+      //memoryTableComponent.VerifyEntityInMemory('name', ['Susan'], 'David')
     })
 
     it('Should show one disabled and one enabled Action', () => {
       scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-      scorerModal.VerifyContainsEnabledAction('Hello Gabriella')
+      scorerModal.VerifyContainsEnabledAction('Hello Susan')
     })
 
     it('Should be able to select an Action and save the training', () => {
-      train.SelectAction('Hello Gabriella', 'Hello $name')
+      train.SelectAction('Hello Susan', 'Hello $name')
       train.Save()
     })
   })
@@ -83,22 +83,22 @@ describe('My Name Is - Train Dialog', () => {
     })
 
     it('Should auto-label Entity in user utterance based previous Train Dialog', () => {
-      train.TypeYourMessage('My name is Susan.')
-      editDialogModal.VerifyEntityLabel('Susan', 'name')
+      train.TypeYourMessage('My name is Gabriella.')
+      editDialogModal.VerifyEntityLabel('Gabriella', 'name')
     })
 
     it('Should find labeled Entity in memory', () => {
       editDialogModal.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntitiesInMemory('name', ['Susan'])
+      memoryTableComponent.VerifyEntitiesInMemory('name', ['Gabriella'])
     })
 
     it('Should show one disabled and one enabled Action', () => {
       scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-      scorerModal.VerifyContainsEnabledAction('Hello Susan')
+      scorerModal.VerifyContainsEnabledAction('Hello Gabriella')
     })
 
     it('Should be able to select an Action and save the training', () => {
-      train.SelectAction('Hello Susan', 'Hello $name')
+      train.SelectAction('Hello Gabriella', 'Hello $name')
       train.Save()
     })
     // Manually EXPORT this to fixtures folder and name it 'z-nameTrained.cl'

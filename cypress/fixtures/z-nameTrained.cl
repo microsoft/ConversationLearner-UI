@@ -78,13 +78,13 @@
         }
       ],
       "initialFilledEntities": [],
-      "createdDateTime": "2019-03-21T02:39:58.1417409+00:00",
-      "lastModifiedDateTime": "2019-03-21T02:39:58+00:00"
+      "createdDateTime": "2019-03-21T20:51:59.8576607+00:00",
+      "lastModifiedDateTime": "2019-03-21T20:51:59+00:00"
     },
     {
       "tags": [],
       "description": "",
-      "trainDialogId": "0427088c-b615-4259-9144-e8d471a8ad33",
+      "trainDialogId": "702e2af3-d902-4a4c-a3c6-57fa682b1daf",
       "rounds": [
         {
           "extractorStep": {
@@ -124,7 +124,7 @@
               "labelAction": "2d846a6e-113e-4302-9877-d0e0a581672b",
               "metrics": {
                 "predictMetrics": {
-                  "blisTime": 0.006306886672973633,
+                  "blisTime": 0.012633323669433593,
                   "contextDialogBlisTime": 0
                 }
               }
@@ -135,13 +135,13 @@
           "extractorStep": {
             "textVariations": [
               {
-                "text": "My name is Gabriella.",
+                "text": "My name is Susan.",
                 "labelEntities": [
                   {
                     "entityId": "251fa360-def4-4a89-aa79-eb487e432f29",
                     "startCharIndex": 11,
-                    "endCharIndex": 19,
-                    "entityText": "Gabriella",
+                    "endCharIndex": 15,
+                    "entityText": "Susan",
                     "resolution": {},
                     "builtinType": "LUIS"
                   }
@@ -157,8 +157,8 @@
                     "entityId": "251fa360-def4-4a89-aa79-eb487e432f29",
                     "values": [
                       {
-                        "userText": "Gabriella",
-                        "displayText": "Gabriella",
+                        "userText": "Susan",
+                        "displayText": "Susan",
                         "builtinType": "LUIS",
                         "resolution": {}
                       }
@@ -171,7 +171,7 @@
               "labelAction": "2d846a6e-113e-4302-9877-d0e0a581672b",
               "metrics": {
                 "predictMetrics": {
-                  "blisTime": 0.012497425079345703,
+                  "blisTime": 0.006091117858886719,
                   "contextDialogBlisTime": 0
                 }
               }
@@ -180,25 +180,25 @@
         }
       ],
       "initialFilledEntities": [],
-      "createdDateTime": "2019-03-21T02:40:13.7900273+00:00",
-      "lastModifiedDateTime": "2019-03-21T02:40:58+00:00"
+      "createdDateTime": "2019-03-21T20:52:16.1428651+00:00",
+      "lastModifiedDateTime": "2019-03-21T20:52:49+00:00"
     },
     {
       "tags": [],
       "description": "",
-      "trainDialogId": "02f01ce0-cac1-4349-ab9f-d1d7f5c5edd3",
+      "trainDialogId": "45e7da87-ecf5-47f4-9903-39e9ade1fe53",
       "rounds": [
         {
           "extractorStep": {
             "textVariations": [
               {
-                "text": "My name is Susan.",
+                "text": "My name is Gabriella.",
                 "labelEntities": [
                   {
                     "entityId": "251fa360-def4-4a89-aa79-eb487e432f29",
                     "startCharIndex": 11,
-                    "endCharIndex": 15,
-                    "entityText": "Susan"
+                    "endCharIndex": 19,
+                    "entityText": "Gabriella"
                   }
                 ]
               }
@@ -212,8 +212,8 @@
                     "entityId": "251fa360-def4-4a89-aa79-eb487e432f29",
                     "values": [
                       {
-                        "userText": "Susan",
-                        "displayText": "Susan",
+                        "userText": "Gabriella",
+                        "displayText": "Gabriella",
                         "builtinType": null,
                         "resolution": null
                       }
@@ -226,7 +226,7 @@
               "labelAction": "2d846a6e-113e-4302-9877-d0e0a581672b",
               "metrics": {
                 "predictMetrics": {
-                  "blisTime": 0.0062961578369140625,
+                  "blisTime": 0.011754035949707031,
                   "contextDialogBlisTime": 0
                 }
               }
@@ -235,14 +235,14 @@
         }
       ],
       "initialFilledEntities": [],
-      "createdDateTime": "2019-03-21T02:41:13.9163567+00:00",
-      "lastModifiedDateTime": "2019-03-21T02:41:23+00:00"
+      "createdDateTime": "2019-03-21T20:53:05.9698371+00:00",
+      "lastModifiedDateTime": "2019-03-21T20:53:15+00:00"
     }
   ],
   "actions": [
     {
       "actionId": "3959904b-7905-49e1-8e6a-7fd24d710b30",
-      "createdDateTime": "2019-03-21T02:39:58.1416699+00:00",
+      "createdDateTime": "2019-03-21T20:51:59.8576231+00:00",
       "actionType": "TEXT",
       "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"What's your name?\",\"marks\":[]}]}]}]}}}",
       "isTerminal": true,
@@ -257,7 +257,7 @@
     },
     {
       "actionId": "2d846a6e-113e-4302-9877-d0e0a581672b",
-      "createdDateTime": "2019-03-21T02:39:58.1417167+00:00",
+      "createdDateTime": "2019-03-21T20:51:59.8576455+00:00",
       "actionType": "TEXT",
       "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"Hello \",\"marks\":[]}]},{\"kind\":\"inline\",\"type\":\"mention-inline-node\",\"isVoid\":false,\"data\":{\"completed\":true,\"option\":{\"id\":\"251fa360-def4-4a89-aa79-eb487e432f29\",\"name\":\"name\"}},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"$name\",\"marks\":[]}]}]},{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"\",\"marks\":[]}]}]}]}}}",
       "isTerminal": true,
@@ -275,7 +275,7 @@
   "entities": [
     {
       "entityId": "251fa360-def4-4a89-aa79-eb487e432f29",
-      "createdDateTime": "2019-03-21T02:39:58.1416233+00:00",
+      "createdDateTime": "2019-03-21T20:51:59.857582+00:00",
       "entityName": "name",
       "entityType": "LUIS",
       "isMultivalue": false,
@@ -283,5 +283,5 @@
       "resolverType": "none"
     }
   ],
-  "packageId": "9927ec03-fa88-4427-ab0e-d4e403e02082"
+  "packageId": "f91899c3-e7bc-4868-ac27-07120778b8fc"
 }
