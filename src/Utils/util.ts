@@ -112,7 +112,7 @@ function normalizeActionAndStringify(newAction: CLM.ActionBase) {
     return stringify(normalizedNewAction)
 }
 
-export function deepCopy(obj: any): any {
+export function deepCopy<T>(obj: T): T {
     let copy: any;
 
     // Simple types, null or undefined
@@ -124,14 +124,14 @@ export function deepCopy(obj: any): any {
     if (obj instanceof Date) {
         copy = new Date();
         copy.setTime(obj.getTime());
-        return copy;
+        return copy as T;
     }
 
     // Array
     if (obj instanceof Array) {
         copy = [];
         obj.forEach((item, index) => copy[index] = deepCopy(obj[index]))
-        return copy;
+        return copy as T;
     }
 
     // Handle Object
@@ -142,7 +142,7 @@ export function deepCopy(obj: any): any {
                 copy[attr] = deepCopy(obj[attr])
             }
         })
-        return copy;
+        return copy as T;
     }
 
     throw new Error("Unknown Type");

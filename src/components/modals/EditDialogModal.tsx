@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as OF from 'office-ui-fabric-react'
 import * as DialogUtils from '../../Utils/dialogUtils'
-import { formatMessageId, equal } from '../../Utils/util'
+import { formatMessageId, equal, deepCopy } from '../../Utils/util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import actions from '../../actions'
@@ -265,7 +265,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         if (activity.type === 'message') {
 
             const newTrainDialog: CLM.TrainDialog = {
-                ...JSON.parse(JSON.stringify(this.props.trainDialog)),
+                ...deepCopy(this.props.trainDialog),
                 tags: this.state.tags,
                 description: this.state.description,
                 definitions: {
