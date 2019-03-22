@@ -50,8 +50,11 @@ jobs:
           background: true
 
       # Run UI e2e tests
-      #- run: npm run cypress -- run --browser chrome --spec "cypress/integration/(Regression).js" --record --key $CYPRESS_RECORD_KEY
-      - run: npm run cypress -- run --spec "cypress/integration/(Regression).spec.js" --record --key $CYPRESS_RECORD_KEY
+      # Need to add in --parallel once we have a license for it from Cypress
+      - run: npm run cypress -- run --record --key $CYPRESS_RECORD_KEY --spec "cypress/integration/CreateModels/AllEntityTypes.spec.js,cypress/integration/CreateModels/DisqualifyingEntities.spec.js,cypress/integration/CreateModels/Travel.spec.js,cypress/integration/CreateModels/WaitVsNoWaitActions.spec.js,cypress/integration/CreateModels/WhatsYourName.spec.js,cypress/integration/EditAndBranching/AddEndSessionAction.spec.js,cypress/integration/EditAndBranching/Branching.spec.js,cypress/integration/EditAndBranching/VerifyEditTrainingControlsAndLabels.spec.js,cypress/integration/ErrorHandling/ActionUnavailable.spec.js,cypress/integration/ErrorHandling/MissingAction.spec.js,cypress/integration/ErrorHandling/TwoConsecutiveUserInput.spec.js,cypress/integration/ErrorHandling/WaitNonWait.spec.js,cypress/integration/Log/WhatsYourName.spec.js,cypress/integration/Train/BookMeAFlight.spec.js,cypress/integration/Train/DisqualifyingEntities.spec.js,cypress/integration/Train/MyNameIs.spec.js,cypress/integration/Train/ScenarioAndTags.spec.js,cypress/integration/Train/TagAndFrog.spec.js,cypress/integration/Train/WaitVsNoWaitActions.spec.js,cypress/integration/Train/WhatsYourName.spec.js,cypress/integration/UX/BotModelMismatch.spec.js"
+      - run: 
+          command: npm run cypress -- run  --record --key $CYPRESS_RECORD_KEY --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js"
+          when: always
 
       - store_artifacts:
           path: results
