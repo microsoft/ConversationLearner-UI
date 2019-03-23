@@ -9,27 +9,28 @@ export function ClickSessionTimeoutButton() { cy.Get('[data-testid="chat-session
 export function TypeYourMessage(message) { cy.Get('input[placeholder="Type your message..."]').type(`${message}{enter}`) }  // data-testid NOT possible
 
 export function TypeYourMessageValidateResponse(message, expectedResponse) {
+  let originalUtteranceCount = 0
+  cy.WaitForStableDOM()
+  cy.Enqueue(() => {
+    let elements = Cypress.$('.wc-message-content')
+    originalUtteranceCount =  elements.length
+  })
+
   cy.Get('input[placeholder="Type your message..."]').type(`${message}{enter}`)  // data-testid NOT possible
 
   // Verify both the input message is reflected back and the response is what we are expecting.
   // This also has the useful side effect of blocking this function from returning until after
   // the response has been returned.
-  let messageCount = 0
   let expectedUtterance = message.replace(/'/g, "’")
-  cy.Get('.wc-message-content').then(elements => {
-    messageCount = elements.length
-    cy.wrap(elements[elements.length - 1]).contains(expectedUtterance)
-  }).then(() => {
-    if (expectedResponse) {
-      expectedUtterance = expectedResponse.replace(/'/g, "’")
-      cy.Get('.wc-message-content', { timeout: 60000 }).then(elements => {
-        cy.wrap(elements[messageCount]).contains(expectedUtterance)
-      })
-    }
-    else {
-      cy.Get('.wc-message-content', { timeout: 60000 }).then(elements => {
-        cy.wrap(elements[messageCount]).DoesNotContain(expectedUtterance)
-      })
-    }
+  cy.Get('.wc-message-content').last().contains(expectedUtterance).then(() => {
+    
+    // We allow for a long retry timeout because there have been times the Bot is either slow to respond
+    // or it does not respond at all and we want to which of those errors are frequent or rare.
+    cy.get('.wc-message-content', { timeout: 30000 }).should('have.length', originalUtteranceCount + 2).then(elements =>{
+      if (expectedResponse) {
+        expectedUtterance = expectedResponse.replace(/'/g, "’")
+        cy.wrap(elements[elements.length - 1]).contains(expectedUtterance)
+      }
+    })
   })
 }
