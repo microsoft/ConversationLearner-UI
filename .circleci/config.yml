@@ -6,7 +6,7 @@ jobs:
         environment:
           ## this enables colors in the output
           TERM: xterm
-    parallelism: 4
+    parallelism: 1
     steps:
       - checkout
 
