@@ -6,8 +6,8 @@
 import * as homePage from '../../support/components/HomePage'
 import * as helpers from '../../support/Helpers'
 
-describe('Tools', () => {
-  it('Delete All Test Generated Models', () => {
+describe('Delete All Test Generated Models - Tools', () => {
+  it('test', () => {
     homePage.Visit()
     // We must "Enqueue" this function call so that Cypress will have one "Cypress Command" 
     // still running when the DeleteAllRows function exits. If not for this, only one row will
@@ -20,7 +20,13 @@ describe('Tools', () => {
 function DeleteAllTestGeneratedModelRows() 
 {
   const funcName = `DeleteAllTestGeneratedModelRows`
-  
+
+  // To override the 'localhost:3978' default, add an environment variable named 'CYPRESS_BOT_DOMAIN_PORT'.
+  // Cypress removes the 'CYPRESS_' part of that variable name, which is why you see it missing below.
+  // See https://docs.cypress.io/guides/guides/environment-variables.html#Option-3-CYPRESS for more info.
+  let botDomainAndPort = Cypress.env('BOT_DOMAIN_PORT')
+  const deleteRequestUrlRoot = `http://${botDomainAndPort ? botDomainAndPort : 'localhost:3978'}/sdk/app/`
+    
   cy.WaitForStableDOM()
   cy.Enqueue(() => { return homePage.GetModelNameIdList() } ).then(modelNameIdList => {
     let thereCouldBeMoreModelsToDelete = false
@@ -32,10 +38,7 @@ function DeleteAllTestGeneratedModelRows()
         helpers.ConLog(funcName, `Sending Request to Delete Model: ${modelNameId.name}`)
         cy.request(
         { 
-          // BUGBUG - This URL Needs to come from the configuration
-          //          Also need to figure out how to confirm these are deleted, 
-          //          by now there could be thousands of models.
-          url: `http://localhost:3978/sdk/app/${modelNameId.id}`, 
+          url: deleteRequestUrlRoot + modelNameId.id,
           method: "DELETE", 
           headers: { 'x-conversationlearner-memory-key': 'x' } 
         }).then(response => 

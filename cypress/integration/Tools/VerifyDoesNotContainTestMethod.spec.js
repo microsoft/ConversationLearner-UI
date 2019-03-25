@@ -12,8 +12,8 @@ import * as editDialogModal from '../../support/components/EditDialogModal'
 // The problem with that method is that if it has a bug and does not find
 // the element we were expecting to not be on the page it passes, so this
 // will verify that our method is working as we expect.
-describe('Tools', () => {
-  it('Verify the "DoesNotContain" Test Method', () => {
+describe('Verify the "DoesNotContain" test function - Tools', () => {
+  it('test', () => {
     models.ImportModel('z-editContols', 'z-nameTrained.cl')
     modelPage.NavigateToTrainDialogs()
 
