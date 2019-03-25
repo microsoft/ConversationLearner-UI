@@ -91,9 +91,9 @@ export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainD
             return teachWithHistory
         }
         catch (e) {
-            const error = e as AxiosError
             dispatch(createTeachSessionFromHistoryRejected())
-
+            
+            const error = e as AxiosError
             if (error.response && error.response.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
                 const conflictError = new EntityLabelConflictError(error.message, textVariations)

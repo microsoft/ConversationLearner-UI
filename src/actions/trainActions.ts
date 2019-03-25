@@ -28,8 +28,9 @@ export const createTrainDialogThunkAsync = (appId: string, trainDialog: CLM.Trai
             return createdTrainDialog
         }
         catch (e) {
-            const error = e as AxiosError
             dispatch(createTrainDialogRejected())
+            
+            const error = e as AxiosError
             if (error.response && error.response.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
                 const conflictError = new EntityLabelConflictError(error.message, textVariations)
@@ -149,6 +150,8 @@ export const scoreFromHistoryThunkAsync = (appId: string, trainDialog: CLM.Train
             return uiScoreResponse
         }
         catch (e) {
+            dispatch(scoreFromHistoryRejected())
+
             const error = e as AxiosError
             if (error.response && error.response.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
@@ -177,6 +180,11 @@ const scoreFromHistoryFulfilled = (uiScoreResponse: CLM.UIScoreResponse): Action
     }
 }
 
+const scoreFromHistoryRejected = (): ActionObject =>
+    ({
+        type: AT.FETCH_SCOREFROMHISTORY_REJECTED
+    })
+
 // --------------------------
 // ExtractFromHistory
 // --------------------------
@@ -191,6 +199,8 @@ export const extractFromHistoryThunkAsync = (appId: string, trainDialog: CLM.Tra
             return extractResponse
         }
         catch (e) {
+            dispatch(extractFromHistoryRejected())
+            
             const error = e as AxiosError
             if (error.response && error.response.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
@@ -219,6 +229,11 @@ const extractFromHistoryFulfilled = (extractResponse: CLM.ExtractResponse): Acti
         extractResponse
     }
 }
+
+const  extractFromHistoryRejected = (): ActionObject =>
+    ({
+        type: AT.FETCH_EXTRACTFROMHISTORY_REJECTED
+    })
 
 // --------------------------
 // TrainDialogReplay

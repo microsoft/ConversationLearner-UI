@@ -211,7 +211,7 @@ interface ComponentState {
     lastTeachSession: TeachSessionState | null
 
 }
-const defaultAcceptConflictResolutionFn = async () => { throw new Error(`acceptConflictResolutionFn called without being assigned.`)}
+const defaultAcceptConflictResolutionFn = async () => { throw new Error(`acceptConflictResolutionFn called without being assigned.`) }
 
 // TODO: This component is highly redundant with TrainDialogs.  Should collapse
 class LogDialogs extends React.Component<Props, ComponentState> {
@@ -516,7 +516,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 return
             }
 
-            console.warn(`Error when attempting to insert an Action `,  { error })
+            console.warn(`Error when attempting to insert an Action `, { error })
         }
     }
 
@@ -736,7 +736,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 })
                 return
             }
-            
+
             console.warn(`Error when attempting to create teach session from history: `, { error })
         }
     }
@@ -993,25 +993,25 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
 
         const updatedTrainDialog = produce(this.state.currentTrainDialog, (draft: CLM.TrainDialog) => {
+            // For each conflicting text variation replace the inconsistent labels with the consistent labels
             for (const conflict of conflictPairs) {
                 const textVariation = CLM.ModelUtils.ToTextVariation(conflict.previouslySubmitted)
                 draft.rounds[conflict.roundIndex].extractorStep.textVariations[conflict.textVariationIndex].labelEntities = textVariation.labelEntities
             }
+
+            draft.definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+        })
+
+        this.setState({
+            conflictPairs: []
         })
 
         await this.acceptConflictResolutionFn(updatedTrainDialog)
         this.acceptConflictResolutionFn = defaultAcceptConflictResolutionFn
-        
-        // onEditTeach={(historyIndex, userInput, editHandler) => this.onEditTeach(historyIndex, userInput, editHandler)}
-        // onInsertAction={(trainDialog, activity, editHandlerArgs) =>      this.onInsertAction    (trainDialog, activity, editHandlerArgs.isLastActivity!)}
-        // onInsertInput={(trainDialog, activity, editHandlerArgs) =>       this.onInsertInput     (trainDialog, activity, editHandlerArgs.userInput)}
-        // onDeleteTurn={(trainDialog, activity) =>                         this.onDeleteTurn      (trainDialog, activity)}
-        // onChangeExtraction={(trainDialog, activity, editHandlerArgs) =>  this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)}
-        // onChangeAction={(trainDialog, activity, editHandlerArgs) =>      this.onChangeAction    (trainDialog, activity, editHandlerArgs.trainScorerStep)}
-        
-        this.setState({
-            conflictPairs: []
-        })
     }
 
     @OF.autobind

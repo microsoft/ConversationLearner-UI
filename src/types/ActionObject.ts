@@ -245,6 +245,8 @@ export type FetchAction = {
     type: AT.FETCH_SCOREFROMHISTORY_FULFILLED,
     uiScoreResponse: CLM.UIScoreResponse
 } | {
+    type: AT.FETCH_SCOREFROMHISTORY_REJECTED
+} | {
     type: AT.FETCH_EXTRACTFROMHISTORY_ASYNC,
     appId: string,
     trainDialog: CLM.TrainDialog,
@@ -252,6 +254,8 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_EXTRACTFROMHISTORY_FULFILLED,
     extractResponse: CLM.ExtractResponse
+} | {
+    type: AT.FETCH_EXTRACTFROMHISTORY_REJECTED
 } | {
     type: AT.FETCH_TRAINDIALOGREPLAY_ASYNC,
     appId: string,

@@ -155,6 +155,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                             </div>
                             <div className="cl-logconversion-conflicts__navigation">
                                 <OF.DefaultButton
+                                    disabled={this.props.conflictPairs.length === 1}
                                     iconProps={{
                                         iconName: "Back"
                                     }}
@@ -162,6 +163,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                                     text={formatMessageId(intl, FM.BUTTON_PREVIOUS)}
                                 />
                                 <OF.DefaultButton
+                                    disabled={this.props.conflictPairs.length === 1}
                                     iconProps={{
                                         iconName: "Forward"
                                     }}
