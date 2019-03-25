@@ -178,7 +178,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         const left = (selectionBoundingRect.left - relativeRect.left) + window.scrollX - menu.offsetWidth / 2 + selectionBoundingRect.width / 2
         const menuPosition: IPosition = {
-            top: ((selectionBoundingRect.top - relativeRect.top) - menu.offsetHeight) + window.scrollY - 20,
+            top: ((selectionBoundingRect.top - relativeRect.top) + selectionBoundingRect.height) + window.scrollY + 10,
             left: Math.max(0, left),
             bottom: relativeRect.height - (selectionBoundingRect.top - relativeRect.top) + 10
         }

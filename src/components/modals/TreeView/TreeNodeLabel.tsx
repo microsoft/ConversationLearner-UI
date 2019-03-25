@@ -36,7 +36,6 @@ export interface TreeNode extends ReactD3TreeItem {
     roundMemory?: string[]
     children: TreeNode[]
     nodeSvgShape?: any
-    actionId?: string
     nodeLabelComponent?: any
     allowForeignObjects?: boolean
 }

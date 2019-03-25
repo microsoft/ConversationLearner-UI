@@ -160,7 +160,7 @@ class TreeView extends React.Component<Props, ComponentState> {
             userInput: extractorStep.textVariations.map(tv => { return {content: tv.text, trainDialogId: trainDialog.trainDialogId}}),
             attributes: undefined,
             children: [],
-            nodeSvgShape: JSON.parse(JSON.stringify(userShape)),
+            nodeSvgShape: Util.deepCopy(userShape),
             trainDialogIds: [trainDialog.trainDialogId],
             roundIndex 
         }
@@ -230,18 +230,7 @@ class TreeView extends React.Component<Props, ComponentState> {
         return parent
     }
 
-    doesMemoryMatch(node1: TreeNode, node2: TreeNode): boolean {
-        return (JSON.stringify(node1.attributes) === JSON.stringify(node2.attributes))
-    }
-
     doesRoundMatch(round1: TreeNode, round2: TreeNode): boolean {
-        if (!this.doesMemoryMatch(round1, round2)) {
-            return false
-        }
-        // Must both be extractor steps
-        if (round1.actionId || round2.actionId) {
-            return false
-        }
 
         // Check scorer steps array
         if (round1.scorerSteps && !round2.scorerSteps ||
@@ -384,6 +373,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                                     }}
                                     separation={{siblings: 1.2, nonSiblings: 1.2}}
                                     translate={{x: this.state.translateX || 50, y: 20}}
+                                    transitionDuration={0}
                                 /> 
                             }
                             {this.state.showBanner &&

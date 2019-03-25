@@ -133,3 +133,126 @@ export function getBestAction(scoreResponse: CLM.ScoreResponse, allActions: CLM.
     }
     return best
 }
+
+function doesScorerStepMatch(scorerStep1: CLM.TrainScorerStep, scorerStep2: CLM.TrainScorerStep): boolean {
+    if (scorerStep1.labelAction !== scorerStep2.labelAction) {
+        return false
+    }
+    if (scorerStep1.input.filledEntities.length !== scorerStep2.input.filledEntities.length) {
+        return false
+    }
+    let entityIndex = 0
+    while (entityIndex < scorerStep1.input.filledEntities.length) {
+        let entity1Id = scorerStep1.input.filledEntities[entityIndex].entityId
+        if (!scorerStep2.input.filledEntities.find(fe => fe.entityId === entity1Id)) {
+            return false
+        }
+        entityIndex = entityIndex + 1
+    }
+    return true
+}
+
+function doesRoundMatch(round1: CLM.TrainRound, round2: CLM.TrainRound, isLastRound: boolean): boolean {
+    
+    // If one has scorer steps and the other doesn't, only ok, on last round
+    if (round1.scorerSteps && !round2.scorerSteps ||
+        !round1.scorerSteps && round2.scorerSteps) {
+            return isLastRound
+        }
+    // If they both don't have scorer steps
+    if (!round1.scorerSteps && !round2.scorerSteps) {
+        return true
+    }
+
+    // Test that scorer steps match
+    const maxSteps = Math.max(round1.scorerSteps.length, round2.scorerSteps.length)
+    let stepIndex = 0
+    while (stepIndex < maxSteps) {
+        const scorerStep1 = round1.scorerSteps[stepIndex]
+        const scorerStep2 = round2.scorerSteps[stepIndex]
+        // If the last round it's ok that round has extra scorer steps
+        const extraScorerStep = (scorerStep1 && !scorerStep2) || (!scorerStep1 && scorerStep2)
+        if (extraScorerStep) {
+            return isLastRound
+        }
+        if (!doesScorerStepMatch(scorerStep1, scorerStep2)) {
+            return false
+        }
+        stepIndex = stepIndex + 1
+    }
+    return true
+}
+
+export function doesTrainDialogMatch(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): boolean {
+    const maxRounds = Math.max(trainDialog1.rounds.length, trainDialog2.rounds.length)
+    let roundIndex = 0
+    while (roundIndex < maxRounds) { 
+        const round1 = trainDialog1.rounds[roundIndex]
+        const round2 = trainDialog2.rounds[roundIndex]
+        // If one ran out of rounds that's ok, one dialog can be longer than the other  
+        if ((round1 && !round2) || (round2 && !round1)) {
+            return true
+        }
+        const isLastRound = (roundIndex === maxRounds - 1)
+        if (!doesRoundMatch(round1, round2, isLastRound)) {
+            return false
+        }
+        roundIndex = roundIndex + 1
+    }
+    return true
+}
+
+export function findMatchingTrainDialog(trainDialog: CLM.TrainDialog, trainDialogs: CLM.TrainDialog[]): CLM.TrainDialog | null {
+    for (const td of trainDialogs) {
+        if (doesTrainDialogMatch(trainDialog, td)) {
+            return td
+        }
+    }
+    return null
+}
+
+// Returns true if trainDialog1 is longer than trainDialog2
+export function isTrainDialogLonger(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): boolean {
+
+    if (trainDialog1.rounds.length > trainDialog2.rounds.length) {
+        return true
+    }
+    if (trainDialog1.rounds.length < trainDialog2.rounds.length) {
+        return false
+    }
+
+    const lastRound1 = trainDialog1.rounds[trainDialog1.rounds.length - 1]
+    const lastRound2 = trainDialog2.rounds[trainDialog2.rounds.length - 1]
+    if (lastRound1.scorerSteps.length < lastRound2.scorerSteps.length) {
+        return false
+    }
+    return true
+}
+
+// Merges smaller dialog into larger one and returns it
+export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): CLM.TrainDialog {
+    if (!doesTrainDialogMatch(trainDialog1, trainDialog2)) {
+        throw new Error("Attempting to merge non-matching Train Dialogs")
+    }
+
+    // Merge from smallest into largest
+    const d1Longer = isTrainDialogLonger(trainDialog1, trainDialog2)
+    const smallTrainDialog = d1Longer ? trainDialog2 : trainDialog1
+    const largeTrainDialog = d1Longer ? trainDialog1 : trainDialog2
+
+    // Copy text variations from small dialog onto large one
+    let roundIndex = 0
+    while (roundIndex < smallTrainDialog.rounds.length) { 
+        const roundSmall = smallTrainDialog.rounds[roundIndex]
+        const roundLarge = largeTrainDialog.rounds[roundIndex]
+        const extractorStepSmall = roundSmall.extractorStep
+        const extractorStepLarge = roundLarge.extractorStep
+
+        // Add novel text variatitions to large dialog
+        const newTextVariations = extractorStepSmall.textVariations.filter(tvs => !extractorStepLarge.textVariations.find(tvl => tvl.text === tvs.text))
+        roundLarge.extractorStep.textVariations = [...roundLarge.extractorStep.textVariations, ...newTextVariations]
+        
+        roundIndex = roundIndex + 1
+    }
+    return largeTrainDialog
+}

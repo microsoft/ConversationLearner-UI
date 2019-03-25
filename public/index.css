@@ -158,7 +158,6 @@ html {
 .cl-icon[data-icon-name="Delete"] {
   font-size: 16px;
   vertical-align: middle;
-  color: var(--color-red) !important;
 }
 
 .cl-icon[data-icon-name="IncidentTriangle"] {
@@ -234,10 +233,6 @@ html {
   background-color: transparent !important;
 }
 
-.ms-Button-icon[data-icon-name="Delete"]:not(:disabled) {
-  color: var(--color-red);
-}
-
 .ms-Button-icon[data-icon-name="EditSolidMirrored12"] {
   color: var(--color-red);
 }
@@ -283,11 +278,8 @@ html {
     margin-bottom: 15px;
 }
 
-i[data-icon-name="Delete"] {
-  color: var(--color-red) !important;
-}
-
-i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
+i[data-icon-name="Delete"]:hover, 
+i[data-icon-name="Edit"]:hover {
   cursor: pointer;
 }
 
@@ -830,6 +822,10 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   color: 1px solid var(--color-neutralQuaternary) !important;
 }
 
+.cl-button--tree-view i {
+  transform: rotateX(180deg);
+}
+
 /** Log Dialog Admin */
 .cl-dialog-admin {
   display: grid;
@@ -940,11 +936,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   align-items: center;
   margin-top:0.15em;
   margin-bottom:1em;
-}
-
-.cl-ux-msg-cautionary {
-  color: var(--color-alert) !important;
-  font-weight: 900;
 }
 
 .cl-float-left {
