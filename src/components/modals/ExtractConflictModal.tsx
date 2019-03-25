@@ -20,7 +20,6 @@ interface ReceivedProps {
     entities: CLM.EntityBase[]
     attemptedExtractResponse: CLM.ExtractResponse
     extractResponse: CLM.ExtractResponse
-    message?: () => React.ReactNode
 }
 
 type Props = ReceivedProps & InjectedIntlProps
@@ -36,7 +35,6 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
         >
             <div className={`cl-modal_header cl-text--error ${OF.FontClassNames.xLarge} `}>
                 <OF.Icon iconName="Warning" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_TITLE)}
-                {typeof props.message === 'function' && props.message()}
             </div>
             <div>
                 <p>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_SUBTITLE)}</p>

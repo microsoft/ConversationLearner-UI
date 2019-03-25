@@ -115,7 +115,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
 
         // Check the changed ones for conflicts
 
-        // First check for internal conflics
+        // First check for internal conflicts
         for (const changedTextVariation of changedTextVariations) {
             const extractConflict = DialogUtils.internalConflict(changedTextVariation, this.props.trainDialog, renderData.roundIndex)
             if (extractConflict) {

@@ -31,6 +31,7 @@ import { FM } from '../../react-intl-messages'
 import { SelectionType } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.'
+import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
 import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs'
 
 interface ComponentState {
@@ -905,6 +906,14 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     isOpen={this.state.isInitStateOpen}
                     handleClose={this.onCloseInitState}
                 />
+                <LogConversionConflictModal
+                    title={Util.formatMessageId(intl, FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE)}
+                    open={this.props.conflictPairs.length > 0}
+                    entities={this.props.entities}
+                    conflictPairs={this.props.conflictPairs}
+                    onClose={this.props.onAbortConflictResolution}
+                    onAccept={this.props.onAcceptConflictResolution}
+                />
             </div>
         );
     }
@@ -957,6 +966,10 @@ export interface ReceivedProps {
     initialHistory: Activity[]
     lastAction: CLM.ActionBase | null
     allUniqueTags: string[]
+
+    conflictPairs: ConflictPair[]
+    onAcceptConflictResolution: (conflictPairs: ConflictPair[]) => Promise<void>
+    onAbortConflictResolution: () => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
