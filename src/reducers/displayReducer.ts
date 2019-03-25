@@ -66,6 +66,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.CREATE_APPLICATION_ASYNC:
         case AT.CREATE_TEACH_SESSION_ASYNC:
         case AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC:
+        case AT.CREATE_TRAIN_DIALOG_ASYNC:
         case AT.CREATE_CHAT_SESSION_ASYNC:
         case AT.CREATE_ENTITY_ASYNC:
 
@@ -123,6 +124,8 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.CREATE_TEACH_SESSION_FULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMHISTORY_FULFILLED:
         case AT.CREATE_TEACH_SESSION_FROMHISTORY_REJECTED:
+        case AT.CREATE_TRAIN_DIALOG_FULFILLED:
+        case AT.CREATE_TRAIN_DIALOG_REJECTED:
         case AT.CREATE_ENTITY_FULFILLED:
 
         case AT.DELETE_ACTION_FULFILLED:

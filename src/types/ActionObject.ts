@@ -319,6 +319,8 @@ export type CreateAction = {
     type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
     trainDialog: CLM.TrainDialog,
 } | {
+    type: AT.CREATE_TRAIN_DIALOG_REJECTED
+} | {
     type: AT.CREATE_LOG_DIALOG,
     logDialog: CLM.LogDialog,
 } | {

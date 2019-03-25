@@ -92,7 +92,6 @@ export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainD
         }
         catch (e) {
             const error = e as AxiosError
-            console.log(`create teach session from history`)
             dispatch(createTeachSessionFromHistoryRejected())
 
             if (error.response && error.response.status === 409) {

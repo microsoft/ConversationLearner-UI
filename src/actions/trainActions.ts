@@ -29,8 +29,7 @@ export const createTrainDialogThunkAsync = (appId: string, trainDialog: CLM.Trai
         }
         catch (e) {
             const error = e as AxiosError
-            console.log(`createTrainDialog: `, { error })
-
+            dispatch(createTrainDialogRejected())
             if (error.response && error.response.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
                 const conflictError = new EntityLabelConflictError(error.message, textVariations)
@@ -54,6 +53,11 @@ const createTrainDialogFulfilled = (trainDialog: CLM.TrainDialog): ActionObject 
     ({
         type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
         trainDialog: trainDialog
+    })
+
+const createTrainDialogRejected = (): ActionObject =>
+    ({
+        type: AT.CREATE_TRAIN_DIALOG_REJECTED
     })
 
 // --------------------------
