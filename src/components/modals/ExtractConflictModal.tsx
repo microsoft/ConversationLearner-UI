@@ -32,6 +32,7 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
             className={OF.FontClassNames.mediumPlus}
             containerClassName="cl-modal cl-modal--small"
             onDismiss={() => props.onClose()}
+            data-testid="extract-conflict-modal"
         >
             <div className={`cl-modal_header cl-text--error ${OF.FontClassNames.xLarge} `}>
                 <OF.Icon iconName="Warning" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_TITLE)}
@@ -40,7 +41,7 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
                 <p>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_SUBTITLE)}</p>
                 <div>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_REVIEW)}</div>
 
-                <div className="cl-inconsistent-entity-modal-header cl-text--error"><OF.Icon iconName="ChromeClose" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS)}</div>
+                <div className="cl-inconsistent-entity-modal-header cl-text--error" data-testid="extract-conflict-modal-conflicting-labels"><OF.Icon iconName="ChromeClose" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS)}</div>
                 <ExtractorResponseEditor.EditorWrapper
                     render={(editorProps, onChangeCustomEntities) =>
                         <ExtractorResponseEditor.Editor
@@ -85,11 +86,13 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
                         onClick={() => props.onAccept()}
                         text={formatMessageId(intl, FM.BUTTON_ACCEPT)}
                         iconProps={{ iconName: 'Accept' }}
+                        data-testid="entity-conflict-accept"
                     />
                     <OF.DefaultButton
                         onClick={() => props.onClose()}
                         text={formatMessageId(intl, FM.BUTTON_CLOSE)}
                         iconProps={{ iconName: 'Cancel' }}
+                        data-testid="entity-conflict-cancel"
                     />
                 </div>
             </div>
