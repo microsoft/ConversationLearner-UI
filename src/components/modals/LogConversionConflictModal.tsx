@@ -95,7 +95,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
             >
                 <div
                     className={`cl-modal_header cl-text--error ${OF.FontClassNames.xxLarge} `}
-                    data-testid="log-conversion-conflict-modal"
+                    data-testid="log-conversion-conflicts-modal"
                 >
                     <OF.Icon iconName="Warning" />&nbsp;{formatMessageId(intl, FM.LOGCONVERSIONCONFLICTMODAL_TITLE)}
                 </div>
@@ -112,7 +112,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                                         key={i}
                                         onClick={() => this.onClickConflictButton(i)}
                                         className={`cl-logconversion-conflicts__button-selection ${OF.FontClassNames.xLarge} ${i === this.state.currentConflictPairIndex ? 'active' : ''}`}
-                                        data-testid={`log-conversion-conflict-${i}`}
+                                        data-testid={`log-conversion-conflicts-conflict-${i + 1}`}
                                     >
                                         {i + 1}
                                     </button>)}
@@ -123,7 +123,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                                     : <>
                                         <div
                                             className="cl-inconsistent-entity-modal-header cl-text--error"
-                                            data-testid="log-conversion-conflict-inconsistent-labels"
+                                            data-testid="log-conversion-conflicts-inconsistent-labels"
                                         >
                                             <OF.Icon iconName="ChromeClose" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS)}
                                         </div>
@@ -146,7 +146,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
 
                                         <div
                                             className="cl-inconsistent-entity-modal-header cl-text--success"
-                                            data-testid="log-conversion-conflict-consistent-labels"
+                                            data-testid="log-conversion-conflicts-consistent-labels"
                                         >
                                             <OF.Icon iconName="Accept" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS)}
                                         </div>
@@ -176,7 +176,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                                     }}
                                     onClick={this.onClickPrevious}
                                     text={formatMessageId(intl, FM.BUTTON_PREVIOUS)}
-                                    data-testid="log-conversion-conflict-modal-previous"
+                                    data-testid="log-conversion-conflicts-modal-previous"
                                 />
                                 <OF.DefaultButton
                                     disabled={this.props.conflictPairs.length === 1}
@@ -185,7 +185,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                                     }}
                                     onClick={this.onClickNext}
                                     text={formatMessageId(intl, FM.BUTTON_NEXT)}
-                                    data-testid="log-conversion-conflict-modal-next"
+                                    data-testid="log-conversion-conflicts-modal-next"
                                 />
                             </div>
                         </div>
@@ -198,13 +198,13 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                     <div className="cl-modal-buttons_secondary"></div>
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
-                            data-testid="log-conversion-conflict-modal-accept"
+                            data-testid="log-conversion-conflicts-modal-accept"
                             iconProps={{ iconName: 'Accept' }}
                             onClick={() => this.props.onAccept(this.props.conflictPairs)}
                             text={formatMessageId(intl, FM.LOGCONVERSIONCONFLICTMODAL_ACCEPT)}
                         />
                         <OF.DefaultButton
-                            data-testid="log-conversion-conflict-modal-cancel"
+                            data-testid="log-conversion-conflicts-modal-cancel"
                             iconProps={{ iconName: 'Cancel' }}
                             onClick={() => this.props.onClose()}
                             text={formatMessageId(intl, FM.LOGCONVERSIONCONFLICTMODAL_ABORT)}

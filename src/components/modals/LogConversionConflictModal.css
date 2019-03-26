@@ -34,7 +34,7 @@
     margin-right: 1em;
 }
 
-.cl-logconversion-conflicts__current{
+.cl-logconversion-conflicts__current {
     border: 1px solid var(--color-neutralQuaternary);
     border-left-color: var(--color-themePrimary);
     padding: 0.75em 2em 2em 2em;
