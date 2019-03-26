@@ -494,9 +494,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 trainDialogs: []
             }
 
-            // Created shorted verion of TrainDialog at insert point
+            // Created shorted version of TrainDialog at insert point
             // Copy, Remove rounds / scorer steps below insert
-            const shortTrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            const shortTrainDialog = Util.deepCopy(trainDialog)
             shortTrainDialog.definitions = definitions
             shortTrainDialog.rounds = shortTrainDialog.rounds.slice(0, roundIndex + 1)
 
@@ -535,14 +535,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 throw new Error("Unable to find an action")
             }
 
-            const scorerStep = {
-                input: uiScoreResponse.scoreInput,
+            const scorerStep: CLM.TrainScorerStep = {
+                input: uiScoreResponse.scoreInput!,
                 labelAction: insertedAction.actionId,
+                logicResult: undefined,
                 scoredAction: insertedAction
             }
 
             // Insert new Action into Full TrainDialog
-            const newTrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            const newTrainDialog = Util.deepCopy(trainDialog)
             newTrainDialog.definitions = definitions
             const curRound = newTrainDialog.rounds[roundIndex]
 
@@ -587,7 +588,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 trainDialogs: []
             }
 
-            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog)) as CLM.TrainDialog
+            let newTrainDialog = Util.deepCopy(trainDialog)
             newTrainDialog.rounds[roundIndex].scorerSteps[scoreIndex] = trainScorerStep
             newTrainDialog.definitions = definitions;
 
@@ -616,7 +617,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 trainDialogs: []
             }
 
-            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog)) as CLM.TrainDialog
+            let newTrainDialog = Util.deepCopy(trainDialog)
             newTrainDialog.definitions = definitions;
             newTrainDialog.rounds[roundIndex].extractorStep.textVariations = textVariations;
 
@@ -681,7 +682,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 trainDialogs: []
             }
 
-            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog)) as CLM.TrainDialog
+            let newTrainDialog = Util.deepCopy(trainDialog)
             newTrainDialog.definitions = definitions
             // I've replayed so warning status goes away (but not invalid)
             if (trainDialog.validity === CLM.Validity.WARNING || trainDialog.validity === CLM.Validity.UNKNOWN) {
@@ -711,7 +712,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
 
             // Copy, Remove rounds / scorer steps below branch
-            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            let newTrainDialog = Util.deepCopy(trainDialog)
             newTrainDialog.definitions = definitions
             newTrainDialog.rounds = newTrainDialog.rounds.slice(0, roundIndex)
 
@@ -769,7 +770,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
 
             // Copy, Remove rounds / scorer steps below insert
-            const partialTrainDialog: CLM.TrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            const partialTrainDialog = Util.deepCopy(trainDialog)
             partialTrainDialog.definitions = definitions
             partialTrainDialog.rounds = partialTrainDialog.rounds.slice(0, roundIndex + 1)
             const lastRound = partialTrainDialog.rounds[partialTrainDialog.rounds.length - 1]
@@ -788,7 +789,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             const extractorStep: CLM.TrainExtractorStep = { textVariations }
 
             // Copy original and insert new round for the text
-            let newTrainDialog = JSON.parse(JSON.stringify(trainDialog))
+            let newTrainDialog = Util.deepCopy(trainDialog)
             newTrainDialog.definitions = definitions
 
             let scorerSteps: CLM.TrainScorerStep[]
@@ -1285,6 +1286,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         iconProps={{ iconName: 'Add' }}
                     />
                     <OF.DefaultButton
+                        className="cl-button--tree-view"
+                        iconProps={{ iconName: 'BranchFork2' }}
                         onClick={this.onOpenTreeView}
                         ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={"Tree View"}

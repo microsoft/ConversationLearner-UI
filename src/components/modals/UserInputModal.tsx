@@ -105,11 +105,13 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                                 onClick={this.onClickSubmit}
                                 ariaDescription={Util.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION)}
                                 text={Util.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_TEXT)}
+                                iconProps={{ iconName: 'Accept' }}
                             />
                             <OF.DefaultButton
                                 onClick={this.onClickCancel}
                                 ariaDescription={Util.formatMessageId(intl, FM.BUTTON_CANCEL)}
                                 text={Util.formatMessageId(intl, FM.BUTTON_CANCEL)}
+                                iconProps={{ iconName: 'Cancel' }}
                             />
                         </div>
                     </div>
