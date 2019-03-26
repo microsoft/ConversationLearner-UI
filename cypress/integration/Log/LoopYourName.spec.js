@@ -37,9 +37,9 @@ describe("Loop What's Your Name - Log", () => {
           logDialogModal.TypeYourMessageValidateResponse('Hello', common.whatsYourName)
         })
 
-        let name = names[i % names.length]
-        let userUtterance = `My name is ${name}`
-        let botResponse = `Hello ${name}`
+        const name = names[i % names.length]
+        const userUtterance = `My name is ${name}`
+        const botResponse = `Hello ${name}`
 
         it(`Should say, "${userUtterance}" and receive Bot response, "${botResponse}"`, () => {
           logDialogModal.TypeYourMessageValidateResponse(userUtterance, botResponse)
