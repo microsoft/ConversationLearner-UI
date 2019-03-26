@@ -6,7 +6,7 @@
 .cl-treeview-expandedNode {
   padding: 10px;
   background: #999999;
-  width: 300px;
+  width: 500px;
 }
 
 .cl-treeview-parentContainer {
@@ -25,7 +25,7 @@
 .cl-treeview-botBox {
   background-color: var(--cl-color-botchat-grey);
   color: black;
-  width: 500px;
+  width: 800px;
   padding: 5px 5px 0px 5px;
   font-size: 12px;
 }
@@ -63,7 +63,7 @@
 .cl-treeview-memoryBox {
   background-color: #DECFDE;
   color: #888888;
-  font-size: 12px;
+  font-size: 16px;
   font-style: italic;
   padding-left: 15px;
   padding-right: 5px;
@@ -111,7 +111,7 @@
 
 .cl-treeview-scorerStep {
   display: block;
-  font-size: 12px;
+  font-size: 16px;
   background-color: #f4f4f4;
   border-bottom-style: solid;
   border-color: black;
@@ -124,7 +124,7 @@
     background-color: var(--cl-color-user-train);
     color: white;
     padding: 5px;
-    font-size: 12px;
+    font-size: 16px;
     position: relative;
 }
 
@@ -169,5 +169,5 @@
 
 .cl-treeview-memory {
   padding-left: 10px;
-  font-size: 10px;
+  font-size: 14px;
 }
