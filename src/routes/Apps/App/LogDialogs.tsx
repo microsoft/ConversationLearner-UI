@@ -3,16 +3,18 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { returntypeof } from 'react-redux-typescript'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import * as OF from 'office-ui-fabric-react'
-import { State } from '../../../types'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../Utils/util'
 import * as DialogUtils from '../../../Utils/dialogUtils'
+import * as OF from 'office-ui-fabric-react'
+import * as moment from 'moment'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { State } from '../../../types'
 import { SelectionType } from '../../../types/const'
 import FormattedMessageId from '../../../components/FormattedMessageId'
+import ConfirmCancelModal from '../../../components/modals/ConfirmCancelModal'
 import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState } from '../../../components/modals'
 import actions from '../../../actions'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
@@ -20,7 +22,7 @@ import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { EditHandlerArgs, cleanTrainDialog } from './TrainDialogs'
 import { TeachSessionState } from '../../../types/StateTypes'
-import * as moment from 'moment'
+
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: CLM.LogDialog, component: LogDialogs) => React.ReactNode
@@ -189,6 +191,7 @@ interface ComponentState {
     isChatSessionWindowOpen: boolean
     isEditDialogModalOpen: boolean
     isTeachDialogModalOpen: boolean
+    isMergeWarningOpen: boolean
     // Item selected in webchat window
     selectedHistoryIndex: number | null
     // The ID of the selected log dialog
@@ -223,6 +226,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isChatSessionWindowOpen: false,
             isEditDialogModalOpen: false,
             isTeachDialogModalOpen: false,
+            isMergeWarningOpen: false,
             selectedHistoryIndex: null,
             currentLogDialogId: null,
             currentTrainDialog: null,
@@ -391,7 +395,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 }
 
                 // Delete the teach session w/o saving
-                await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null)
+                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, false, null, null, this.props.trainDialogs)
 
                 // Generate history
                 const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
@@ -718,7 +722,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         try {
             if (this.props.teachSession.teach) {
                 // Delete the teach session w/o saving
-                await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null)
+                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, false, null, null, this.props.trainDialogs)
             }
 
             const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput) as any) as Promise<CLM.TeachWithHistory>)
@@ -842,6 +846,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
+    @OF.autobind
+    onCloseMergeWarning() {
+            this.setState({isMergeWarningOpen: false})
+    }
+
     async onCloseEditDialogModal(reload: boolean = false) {
 
         this.setState({
@@ -850,7 +859,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session w/o saving
-            await this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null)
+            await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, false, null, null, this.props.trainDialogs)
         }
 
         this.setState({
@@ -874,8 +883,28 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         newTrainDialog.validity = validity
         newTrainDialog.definitions = null
+
         try {
-            await this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog)
+            // Check to see if it can be merged with an exising TrainDialog
+            const existingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs)
+            if (existingTrainDialog) {
+                const mergedTrainDialog = DialogUtils.mergeTrainDialogs(newTrainDialog, existingTrainDialog)
+                // Replace existing one (if it was the master)
+                if (mergedTrainDialog.trainDialogId === existingTrainDialog.trainDialogId) {
+                    await this.props.editTrainDialogThunkAsync(this.props.app.appId, mergedTrainDialog)
+                }
+                // Otherwise delete existing one and create new one
+                else {
+                    await this.props.deleteTrainDialogThunkAsync(this.props.app, existingTrainDialog.trainDialogId)
+                    await this.props.createTrainDialogThunkAsync(this.props.app.appId, mergedTrainDialog)
+                }
+
+                this.setState({isMergeWarningOpen: true})
+            }
+            // Otherwise save as a new TrainDialog
+            else {
+                await this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog)
+            }
             if (this.state.currentLogDialogId) {
                 await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
             }
@@ -891,16 +920,19 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onCloseTeachSession(save: boolean) {
+    async onCloseTeachSession(save: boolean) {
         if (this.props.teachSession && this.props.teachSession.teach) {
             if (save) {
                 // If source was a trainDialog, delete the original
                 const sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
                     ? this.state.currentTrainDialog.trainDialogId : null
-                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, true, sourceTrainDialogId, this.state.currentLogDialogId)
+                const merged = await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId, this.state.currentLogDialogId, this.props.trainDialogs)
+                if (merged) {
+                    this.setState({isMergeWarningOpen: true})
+                }
             }
             else {
-                this.props.deleteTeachSessionThunkAsync(this.props.user.id, this.props.teachSession.teach, this.props.app, this.props.editingPackageId, false, null, null); // False = abandon
+                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, false, null, null, this.props.trainDialogs); // False = abandon
             }
         }
 
@@ -1070,6 +1102,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         allUniqueTags={[]}
                     />
                 }
+                <ConfirmCancelModal
+                    open={this.state.isMergeWarningOpen}
+                    onOk={this.onCloseMergeWarning}
+                    title={Util.formatMessageId(this.props.intl, FM.MERGE_TITLE)}
+                />
                 <EditDialogModal
                     data-testid="train-dialog-modal"
                     app={this.props.app}
@@ -1110,6 +1147,8 @@ const mapDispatchToProps = (dispatch: any) => {
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,
         deleteLogDialogThunkAsync: actions.log.deleteLogDialogThunkAsync,
         deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
+        deleteTrainDialogThunkAsync: actions.train.deleteTrainDialogThunkAsync,
+        editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
         extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
         fetchAllLogDialogsThunkAsync: actions.log.fetchAllLogDialogsThunkAsync,
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
@@ -1125,6 +1164,7 @@ const mapStateToProps = (state: State) => {
 
     return {
         logDialogs: state.logDialogs,
+        trainDialogs: state.trainDialogs,
         user: state.user.user,
         actions: state.actions,
         entities: state.entities,

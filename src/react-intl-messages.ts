@@ -284,6 +284,9 @@ export enum FM {
     // MemoryTable
     MEMORYTABLE_EMPTY = 'MemoryTable.empty',
 
+    // Merge Warning
+    MERGE_TITLE = 'Merge.title',
+
     // PackageCreator
     PACKAGECREATOR_TITLE = 'PackageCreator.title',
     PACKAGECREATOR_TAG_LABEL = 'PackageCreator.tagLabel',
@@ -974,6 +977,9 @@ export default {
 
         // MemoryTable
         [FM.MEMORYTABLE_EMPTY]: 'Empty',
+
+        // Merege
+        [FM.MERGE_TITLE]: 'This Dialog shares the same conversation flow with another Train Dialog.  They have been merged.',
 
         // PackageCreator
         [FM.PACKAGECREATOR_TITLE]: 'Create a new Tag',

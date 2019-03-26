@@ -393,17 +393,12 @@ export type DeleteAction = {
         sessionId: string,
     } | {
         type: AT.DELETE_TEACH_SESSION_ASYNC,
-        key: string,
         teachSession: CLM.Teach,
         appId: string,
         save: boolean
     } | {
         type: AT.DELETE_TEACH_SESSION_FULFILLED,
-        teachSessionGUID: string,
-        sourceLogDialogId: string | null,
-        trainDialogId: string,
-        key: string,
-        appId: string,
+        teachSessionGUID: string
     } | {
         type: AT.CLEAR_TEACH_SESSION
     } | {
@@ -444,6 +439,10 @@ export type TeachAction = {
 } | {
     type: AT.UPDATE_EXTRACT_RESPONSE,
     extractResponse: CLM.ExtractResponse
+} | {
+    type: AT.UPDATE_SOURCE_LOG_DIALOG,
+    sourceLogDialogId: string,
+    trainDialogId: string
 } | {
     type: AT.REMOVE_EXTRACT_RESPONSE,
     extractResponse: CLM.ExtractResponse

@@ -184,7 +184,13 @@ function doesRoundMatch(round1: CLM.TrainRound, round2: CLM.TrainRound, isLastRo
 }
 
 export function doesTrainDialogMatch(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): boolean {
+    // Never match to same train dialog Id
+    if (trainDialog1.trainDialogId === trainDialog2.trainDialogId) {
+        return false
+    }
+
     const maxRounds = Math.max(trainDialog1.rounds.length, trainDialog2.rounds.length)
+    const minRounds = Math.min(trainDialog1.rounds.length, trainDialog2.rounds.length)
     let roundIndex = 0
     while (roundIndex < maxRounds) { 
         const round1 = trainDialog1.rounds[roundIndex]
@@ -193,7 +199,7 @@ export function doesTrainDialogMatch(trainDialog1: CLM.TrainDialog, trainDialog2
         if ((round1 && !round2) || (round2 && !round1)) {
             return true
         }
-        const isLastRound = (roundIndex === maxRounds - 1)
+        const isLastRound = (roundIndex === minRounds - 1)
         if (!doesRoundMatch(round1, round2, isLastRound)) {
             return false
         }
@@ -254,5 +260,12 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
         
         roundIndex = roundIndex + 1
     }
+
+    // Assume longest description is best (TODO: Let user choose)
+    largeTrainDialog.description = largeTrainDialog.description.length > smallTrainDialog.description.length 
+        ? largeTrainDialog.description : smallTrainDialog.description
+
+    // Unique merge of tags
+    largeTrainDialog.tags = [...largeTrainDialog.tags, ...smallTrainDialog.tags].filter((item, i, ar) => ar.indexOf(item) === i)
     return largeTrainDialog
 }

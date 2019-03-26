@@ -278,7 +278,7 @@ export const setTextVariationConflict = (extractResponse: ExtractResponse): Acti
 // --------------------------
 // DeleteTrainDialog
 // --------------------------
-export const deleteTrainDialogThunkAsync = (userId: string, app: AppBase, trainDialogId: string) => {
+export const deleteTrainDialogThunkAsync = (app: AppBase, trainDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTrainDialogAsync(trainDialogId, app.appId))
         const clClient = ClientFactory.getInstance(AT.DELETE_TRAIN_DIALOG_ASYNC)
