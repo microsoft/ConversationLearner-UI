@@ -50,7 +50,7 @@ Cypress.Commands.add('UploadFile', (fileName, selector) => {
       // https://github.com/cypress-io/cypress/issues/3730
       // Deal with Chrome v73 issue that was not uploading the files until we add the following line of code.
       // Also needed to force the trigger since Cypress won't normally do that on an element that is not visible.
-      return cy.wrap(elements).trigger('change', {force: true})
+      if (Cypress.browser.name === 'chrome') { cy.wrap(elements).trigger('change', {force: true}) }
     })
   })
 })
