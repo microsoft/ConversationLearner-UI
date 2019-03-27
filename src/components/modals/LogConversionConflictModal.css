@@ -1,0 +1,41 @@
+.cl-logconversion-conflicts {
+    display: grid;
+    grid-template: auto max-content / max-content 1fr;
+    grid-gap: 1em 0;
+    margin: 1em 0;
+}
+
+.cl-logconversion-conflicts__buttons {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.cl-logconversion-conflicts__button-selection {
+    padding: 0.75rem 1rem;
+    border: none;
+    cursor: pointer;
+    background: var(--color-neutralQuaternary);
+}
+.cl-logconversion-conflicts__button-selection:not(:last-of-type) {
+    margin-bottom: 1px;
+}
+
+.cl-logconversion-conflicts__button-selection.active {
+    background: var(--color-themePrimary);
+    color: white;
+}
+
+.cl-logconversion-conflicts__navigation {
+    grid-column: 1 / -1;
+    text-align: center;
+}
+.cl-logconversion-conflicts__navigation > * {
+    margin-right: 1em;
+}
+
+.cl-logconversion-conflicts__current {
+    border: 1px solid var(--color-neutralQuaternary);
+    border-left-color: var(--color-themePrimary);
+    padding: 0.75em 2em 2em 2em;
+}

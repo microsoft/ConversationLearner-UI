@@ -208,7 +208,7 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
 // word = a word within the utterance that should already be labeled
-// entity = name of entity the word was labled with
+// entity = name of entity the word was labeled with
 // *** This may work for multiple word labels, but you must only pass in the one
 // *** word that uniquely identifies the labeled text
 export function RemoveEntityLabel(word, entity, index = 0) {

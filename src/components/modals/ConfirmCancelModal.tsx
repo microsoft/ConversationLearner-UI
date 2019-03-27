@@ -48,6 +48,8 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
                             }
                         }}
                         text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT)}
+                        iconProps={{ iconName: 'Accept' }}
+                        data-testid="confirm-cancel-modal-accept"
                     />
                 }
                 {props.onCancel &&
@@ -58,6 +60,8 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
                             }
                         }}
                         text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT)}
+                        iconProps={{ iconName: 'Cancel' }}
+                        data-testid="confirm-cancel-modal-cancel"
                     />
                 }
                 {props.onOk &&
@@ -68,6 +72,8 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
                             }
                         }}
                         text={formatMessageId(intl, FM.BUTTON_OK)}
+                        iconProps={{ iconName: 'Accept' }}
+                        data-testid="confirm-cancel-modal-ok"
                     />
                 }
             </DialogFooter>
