@@ -12,6 +12,7 @@ import { PartialTrainDialog } from '../types/models'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { AxiosError } from 'axios'
 import { setErrorDisplay } from './displayActions'
+import { EntityLabelConflictError } from '../types/errors'
 
 // --------------------------
 // CreateTrainDialog
@@ -28,7 +29,15 @@ export const createTrainDialogThunkAsync = (appId: string, trainDialog: CLM.Trai
             return createdTrainDialog
         }
         catch (e) {
+            dispatch(createTrainDialogRejected())
+            
             const error = e as AxiosError
+            if (error.response && error.response.status === 409) {
+                const textVariations: CLM.TextVariation[] = error.response.data.reason
+                const conflictError = new EntityLabelConflictError(error.message, textVariations)
+                throw conflictError
+            }
+
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TRAIN_DIALOG_ASYNC))
             throw error
         }
@@ -46,6 +55,11 @@ const createTrainDialogFulfilled = (trainDialog: CLM.TrainDialog): ActionObject 
     ({
         type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
         trainDialog: trainDialog
+    })
+
+const createTrainDialogRejected = (): ActionObject =>
+    ({
+        type: AT.CREATE_TRAIN_DIALOG_REJECTED
     })
 
 // --------------------------
@@ -137,7 +151,15 @@ export const scoreFromHistoryThunkAsync = (appId: string, trainDialog: CLM.Train
             return uiScoreResponse
         }
         catch (e) {
+            dispatch(scoreFromHistoryRejected())
+
             const error = e as AxiosError
+            if (error.response && error.response.status === 409) {
+                const textVariations: CLM.TextVariation[] = error.response.data.reason
+                const conflictError = new EntityLabelConflictError(error.message, textVariations)
+                throw conflictError
+            }
+
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_SCOREFROMHISTORY_ASYNC))
             throw error
         }
@@ -159,6 +181,11 @@ const scoreFromHistoryFulfilled = (uiScoreResponse: CLM.UIScoreResponse): Action
     }
 }
 
+const scoreFromHistoryRejected = (): ActionObject =>
+    ({
+        type: AT.FETCH_SCOREFROMHISTORY_REJECTED
+    })
+
 // --------------------------
 // ExtractFromHistory
 // --------------------------
@@ -173,7 +200,15 @@ export const extractFromHistoryThunkAsync = (appId: string, trainDialog: CLM.Tra
             return extractResponse
         }
         catch (e) {
+            dispatch(extractFromHistoryRejected())
+            
             const error = e as AxiosError
+            if (error.response && error.response.status === 409) {
+                const textVariations: CLM.TextVariation[] = error.response.data.reason
+                const conflictError = new EntityLabelConflictError(error.message, textVariations)
+                throw conflictError
+            }
+            
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_EXTRACTFROMHISTORY_ASYNC))
             throw error
         }
@@ -195,6 +230,11 @@ const extractFromHistoryFulfilled = (extractResponse: CLM.ExtractResponse): Acti
         extractResponse
     }
 }
+
+const  extractFromHistoryRejected = (): ActionObject =>
+    ({
+        type: AT.FETCH_EXTRACTFROMHISTORY_REJECTED
+    })
 
 // --------------------------
 // TrainDialogMerge

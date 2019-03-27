@@ -255,6 +255,8 @@ export type FetchAction = {
     type: AT.FETCH_SCOREFROMHISTORY_FULFILLED,
     uiScoreResponse: CLM.UIScoreResponse
 } | {
+    type: AT.FETCH_SCOREFROMHISTORY_REJECTED
+} | {
     type: AT.FETCH_EXTRACTFROMHISTORY_ASYNC,
     appId: string,
     trainDialog: CLM.TrainDialog,
@@ -262,6 +264,8 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_EXTRACTFROMHISTORY_FULFILLED,
     extractResponse: CLM.ExtractResponse
+} | {
+    type: AT.FETCH_EXTRACTFROMHISTORY_REJECTED
 } | {
     type: AT.FETCH_TRAINDIALOGREPLAY_ASYNC,
     appId: string,
@@ -329,6 +333,8 @@ export type CreateAction = {
     type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
     trainDialog: CLM.TrainDialog,
 } | {
+    type: AT.CREATE_TRAIN_DIALOG_REJECTED
+} | {
     type: AT.CREATE_LOG_DIALOG,
     logDialog: CLM.LogDialog,
 } | {
@@ -350,14 +356,16 @@ export type CreateAction = {
     teachSession: CLM.Teach,
     memories: CLM.Memory[]
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
+    type: AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC,
     appId: string,
     userName: string,
     userId: string,
     trainDialog: CLM.TrainDialog
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED,
+    type: AT.CREATE_TEACH_SESSION_FROMHISTORY_FULFILLED,
     teachWithHistory: CLM.TeachWithHistory
+} | {
+    type: AT.CREATE_TEACH_SESSION_FROMHISTORY_REJECTED
 }
 
 export type DeleteAction = {

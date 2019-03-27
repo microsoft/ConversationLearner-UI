@@ -147,6 +147,8 @@ export enum FM {
     BUTTON_UNDO = 'Button.UNDO',
     BUTTON_SELECT = 'Button.SELECT',
     BUTTON_SELECTED = 'Button.SELECTED',
+    BUTTON_NEXT = 'Button.next',
+    BUTTON_PREVIOUS = 'Button.previous',
 
     // ChatSessionModal
     CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'ChatSessionModal.primaryButton.ariaDescription',
@@ -248,6 +250,14 @@ export enum FM {
     EXTRACTCONFLICTMODAL_CORRECT_LABELS = 'ExtractConflictModal.existing',
     EXTRACTCONFLICTMODAL_CONFLICTING_LABELS = 'ExtractConflictModal.conflictingLabels',
     EXTRACTCONFLICTMODAL_CALLTOACTION = 'ExtractConflictModal.callaction',
+
+    // LogConversionConflictModal
+    LOGCONVERSIONCONFLICTMODAL_TITLE = 'LogConversionConflictModal.title',
+    LOGCONVERSIONCONFLICTMODAL_SUBTITLE = 'LogConversionConflictModal.subTitle',
+    LOGCONVERSIONCONFLICTMODAL_REVIEW = 'LogConversionConflictModal.review',
+    LOGCONVERSIONCONFLICTMODAL_BUTTON_EXPLANATION = 'LogConversionConflictModal.buttonExplanation',
+    LOGCONVERSIONCONFLICTMODAL_ACCEPT = 'LogConversionConflictModal.accept',
+    LOGCONVERSIONCONFLICTMODAL_ABORT = 'LogConversionConflictModal.abort',
 
     // LogDialogModal
     LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'LogDialogModal.defaultButton.ariaDescription',
@@ -667,6 +677,8 @@ export default {
         [FM.BUTTON_UNDO]: 'Undo',
         [FM.BUTTON_SELECT]: 'Select',
         [FM.BUTTON_SELECTED]: 'Selected',
+        [FM.BUTTON_NEXT]: 'Next',
+        [FM.BUTTON_PREVIOUS]: 'Previous',
 
         // Error Messages
         [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
@@ -961,6 +973,14 @@ export default {
         [FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS]: 'Previously Submitted Labels',
         [FM.EXTRACTCONFLICTMODAL_CALLTOACTION]: `Clicking 'Accept' will replace the conflicting labels with the previously submitted labels.`,
 
+        // LogConversionConflictModal
+        [FM.LOGCONVERSIONCONFLICTMODAL_TITLE]: 'Incompatible Log Dialog',
+        [FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE]: 'You attempted to save this log dialog as a train dialog but this dialog is incompatible with the current model due to conflicts in entity labels.  This may occur if the model has changed from the version of model used to create the log dialog. You need to update the dialog to match current model to convert it.',
+        [FM.LOGCONVERSIONCONFLICTMODAL_REVIEW]: 'The log dialog contains {conflictCount} conflicts. Please review the changes to labels for each conflict below:',
+        [FM.LOGCONVERSIONCONFLICTMODAL_BUTTON_EXPLANATION]: "Clicking 'Accept' will use the previously submitted labels for all conflicts.",
+        [FM.LOGCONVERSIONCONFLICTMODAL_ACCEPT]: 'Accept',
+        [FM.LOGCONVERSIONCONFLICTMODAL_ABORT]: 'Abort',
+
         // LogDialogModal
         [FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
         [FM.LOGDIALOGMODAL_DEFAULTBUTTON_TEXT]: 'Delete',
@@ -1062,7 +1082,8 @@ export default {
         [AT.CREATE_APP_TAG_ASYNC]: 'Creating Application Tag',
         [AT.CREATE_CHAT_SESSION_ASYNC]: 'Creating Chat Session',
         [AT.CREATE_TEACH_SESSION_ASYNC]: 'Creating Teach Session',
-        [AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC]: 'Creating Teach Session from history',
+        [AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC]: 'Creating Teach Session from history',
+        [AT.CREATE_TRAIN_DIALOG_ASYNC]: 'Creating Train Dialog',
         [AT.FETCH_BOTINFO_ASYNC]: 'Fetching Bot information',
         [AT.FETCH_HISTORY_ASYNC]: 'Fetching history',
         [AT.FETCH_TUTORIALS_ASYNC]: 'Fetching tutorials',

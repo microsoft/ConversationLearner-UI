@@ -35,7 +35,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = produce((state: TeachSes
             state.dialogMode = DialogMode.Wait
             state.memories = action.memories
             return
-        case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
+        case AT.CREATE_TEACH_SESSION_FROMHISTORY_FULFILLED:
             return {
                 ...initialState,
                 teach: action.teachWithHistory.teach,

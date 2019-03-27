@@ -208,7 +208,7 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
 // word = a word within the utterance that should already be labeled
-// entity = name of entity the word was labled with
+// entity = name of entity the word was labeled with
 // *** This may work for multiple word labels, but you must only pass in the one
 // *** word that uniquely identifies the labeled text
 export function RemoveEntityLabel(word, entity, index = 0) {
@@ -249,18 +249,11 @@ export function VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs) { Ver
 export function VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs) { VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, 'Accept') }
 
 function VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, buttonLabel) {
-  cy.Get('.ms-Dialog-main')     // This returns multiple parent objects
-    .contains('Inconsistent Entity Labels') // Narrows it down to the one we want
-    .parents('.ms-Dialog-main') // Now we have the single parent object
-    .within(() => {
-      cy.get('[data-testid="extract-conflict-modal-previously-submitted-labels"]')
-        .next('div.entity-labeler')
-        .within(() => { textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
+  cy.Get('[data-testid="extract-conflict-modal-previously-submitted-labels"]').as('ExtractConflictModal')
+    .next('div.entity-labeler')
+    .within(() => { textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
 
-      // TODO: Wanted to use 'ExactMatch' instead of 'contains', but there is a weird problem...
-      //       for some reson the first two button texts on this popup all end with a newline.
-      cy.get('button.ms-Button').contains(buttonLabel).Click()
-    })
+  cy.get('@ExtractConflictModal').parent().next().contains(buttonLabel).Click()  
 }
 
 export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index) {

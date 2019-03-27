@@ -46,6 +46,12 @@ Cypress.Commands.add('UploadFile', (fileName, selector) => {
 
       dataTransfer.items.add(testFile)
       element.files = dataTransfer.files
+      
+      // https://github.com/cypress-io/cypress/issues/3730
+      // Deal with Chrome v73 issue that was not uploading the files until we add the following line of code.
+      // Also needed to force the trigger since Cypress won't normally do that on an element that is not visible.
+      // Also the {force: true} part fails on the Electron Browser, so do this for Chrome only.
+      if (Cypress.browser.name === 'chrome') { cy.wrap(elements).trigger('change', {force: true}) }
     })
   })
 })
