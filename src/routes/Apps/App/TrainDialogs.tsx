@@ -439,7 +439,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     // User has edited an Activity in a TeachSession
-    async onEditTeach(historyIndex: number, args: EditHandlerArgs | null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any) {
+    private async onEditTeach(historyIndex: number, args: EditHandlerArgs | null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any) {
 
         try {
             if (this.props.teachSession.teach) {
@@ -510,10 +510,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             const uiScoreResponse = await ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, shortTrainDialog) as any) as Promise<CLM.UIScoreResponse>)
 
             if (!uiScoreResponse.scoreResponse) {
-                throw new Error("Empty Score REsponse")
+                throw new Error("Empty Score Response")
             }
 
-            // End sesion call only allowed on last turn if one doesn't exist already
+            // End session call only allowed on last turn if one doesn't exist already
             const canEndSession = isLastActivity && !DialogUtils.hasEndSession(trainDialog, this.props.actions)
 
             // Find top scoring Action
@@ -562,7 +562,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             await this.onUpdateHistory(newTrainDialog, selectedActivity, selectionType, this.state.editType)
         }
         catch (error) {
-            console.warn(`Error when attempting to insert an Action `, error)
+            console.warn(`Error when attempting to insert an Action `, { error })
         }
     }
 
@@ -1375,6 +1375,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
                         allUniqueTags={this.props.allUniqueTags}
+
+                        conflictPairs={[]}
+                        onAbortConflictResolution={() => {}}
+                        onAcceptConflictResolution={async () => {}}
                     />
                 }
                 <EditDialogModal
@@ -1402,6 +1406,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={(newTrainDialog, validity) => this.onCreateTrainDialog(newTrainDialog, validity)}
                     allUniqueTags={this.props.allUniqueTags}
+
+                    conflictPairs={[]}
+                    onAbortConflictResolution={() => {}}
+                    onAcceptConflictResolution={async () => {}}
                 />
                 <TreeView
                     open={(this.state.isTreeViewModalOpen)}

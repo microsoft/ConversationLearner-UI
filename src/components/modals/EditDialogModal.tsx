@@ -30,6 +30,7 @@ import HelpIcon from '../HelpIcon'
 import { TipType } from '../ToolTips/ToolTips'
 import { renderReplayError } from '../../Utils/RenderReplayError'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
@@ -1059,6 +1060,14 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onCancel={this.onCancelBranch}
                     onSubmit={this.onSubmitBranch}
                 />
+                <LogConversionConflictModal
+                    title={formatMessageId(intl, FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE)}
+                    open={this.props.conflictPairs.length > 0}
+                    entities={this.props.entities}
+                    conflictPairs={this.props.conflictPairs}
+                    onClose={this.props.onAbortConflictResolution}
+                    onAccept={this.props.onAcceptConflictResolution}
+                />
             </Modal>
         );
     }
@@ -1096,6 +1105,7 @@ export interface ReceivedProps {
     // If starting with activity selected
     initialSelectedActivityIndex: number | null
     allUniqueTags: string[]
+    
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, isLastActivity: boolean, selectionType: SelectionType) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
@@ -1109,6 +1119,10 @@ export interface ReceivedProps {
     // Add a new train dialog to the Model (when EditDialogType === NEW)
     onCreateDialog: (newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) => void
     onDeleteDialog: () => void
+
+    conflictPairs: ConflictPair[]
+    onAcceptConflictResolution: (conflictPairs: ConflictPair[]) => Promise<void>
+    onAbortConflictResolution: () => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

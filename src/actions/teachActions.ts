@@ -11,6 +11,7 @@ import * as CLM from '@conversationlearner/models'
 import { AxiosError } from 'axios'
 import { fetchAllTrainDialogsThunkAsync } from './trainActions'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
+import { EntityLabelConflictError } from '../types/errors'
 
 // --------------------------
 // createTeachSession
@@ -58,7 +59,7 @@ export const createTeachSessionThunkAsync = (appId: string, initialEntityMap: CL
 // --------------------------
 const createTeachSessionFromHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
     return {
-        type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
+        type: AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC,
         appId: appId,
         userName: userName,
         userId: userId,
@@ -69,14 +70,19 @@ const createTeachSessionFromHistoryAsync = (appId: string, trainDialog: CLM.Trai
 const createTeachSessionFromHistoryFulfilled = (teachWithHistory: CLM.TeachWithHistory): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
-        type: AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED,
+        type: AT.CREATE_TEACH_SESSION_FROMHISTORY_FULFILLED,
         teachWithHistory: teachWithHistory
     }
 }
 
+const createTeachSessionFromHistoryRejected = (): ActionObject =>
+    ({
+        type: AT.CREATE_TEACH_SESSION_FROMHISTORY_REJECTED
+    })
+
 export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string, initialUserInput: CLM.UserInput | null = null) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
+        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC)
         dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
 
         try {
@@ -85,9 +91,16 @@ export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainD
             return teachWithHistory
         }
         catch (e) {
+            dispatch(createTeachSessionFromHistoryRejected())
+            
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC))
-            dispatch(createTeachSessionRejected())
+            if (error.response && error.response.status === 409) {
+                const textVariations: CLM.TextVariation[] = error.response.data.reason
+                const conflictError = new EntityLabelConflictError(error.message, textVariations)
+                throw conflictError
+            }
+
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC))
             throw error
         }
     }
@@ -156,7 +169,7 @@ export const deleteTeachSessionThunkAsync = (
                         description
                     }
                     const deletePromise = clClient.trainDialogsDelete(app.appId, teachSession.trainDialogId)
-                    const editPromise =  clClient.trainDialogEdit(app.appId, updatedSourceDialog)
+                    const editPromise = clClient.trainDialogEdit(app.appId, updatedSourceDialog)
                     await Promise.all([deletePromise, editPromise])
                 }
                 else {

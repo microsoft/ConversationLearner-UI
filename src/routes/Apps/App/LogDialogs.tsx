@@ -14,13 +14,16 @@ import * as DialogUtils from '../../../Utils/dialogUtils'
 import { SelectionType } from '../../../types/const'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState } from '../../../components/modals'
+import { ConflictPair } from '../../../components/modals/LogConversionConflictModal'
 import actions from '../../../actions'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { EditHandlerArgs, cleanTrainDialog } from './TrainDialogs'
 import { TeachSessionState } from '../../../types/StateTypes'
+import produce from 'immer'
 import * as moment from 'moment'
+import { EntityLabelConflictError } from 'src/types/errors'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: CLM.LogDialog, component: LogDialogs) => React.ReactNode
@@ -186,6 +189,7 @@ interface ComponentState {
     columns: IRenderableColumn[]
     sortColumn: IRenderableColumn
     chatSession: CLM.Session | null
+    conflictPairs: ConflictPair[]
     isChatSessionWindowOpen: boolean
     isEditDialogModalOpen: boolean
     isTeachDialogModalOpen: boolean
@@ -207,9 +211,11 @@ interface ComponentState {
     lastTeachSession: TeachSessionState | null
 
 }
+const defaultAcceptConflictResolutionFn = async () => { throw new Error(`acceptConflictResolutionFn called without being assigned.`) }
 
 // TODO: This component is highly redundant with TrainDialogs.  Should collapse
 class LogDialogs extends React.Component<Props, ComponentState> {
+    acceptConflictResolutionFn: (conflictFreeDialog: CLM.TrainDialog) => Promise<void> = defaultAcceptConflictResolutionFn
     newChatSessionButton: OF.IButton
     state: ComponentState
 
@@ -220,6 +226,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             columns: columns,
             sortColumn: columns[5],
             chatSession: null,
+            conflictPairs: [],
             isChatSessionWindowOpen: false,
             isEditDialogModalOpen: false,
             isTeachDialogModalOpen: false,
@@ -378,7 +385,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     // User has edited an Activity in a TeachSession
-    async onEditTeach(historyIndex: number, args: EditHandlerArgs | null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any) {
+    private async onEditTeach(historyIndex: number, args: EditHandlerArgs | null = null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any) {
 
         try {
             if (this.props.teachSession.teach) {
@@ -408,6 +415,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             }
         }
         catch (error) {
+            console.log(`LogDialogs.onEditTeach: `, { error, textVariations: error.textVariations })
             console.warn(`Error when attempting to edit Teach session`, error)
         }
     }
@@ -447,10 +455,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             const uiScoreResponse = await ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, history) as any) as Promise<CLM.UIScoreResponse>)
 
             if (!uiScoreResponse.scoreResponse) {
-                throw new Error("Empty Score REsponse")
+                throw new Error("Empty Score Response")
             }
 
-            // End sesion call only allowed on last turn if one doesn't exist already
+            // End session call only allowed on last turn if one doesn't exist already
             const canEndSession = isLastActivity && !DialogUtils.hasEndSession(trainDialog, this.props.actions)
 
             // Find top scoring Action
@@ -499,7 +507,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NEXT)
         }
         catch (error) {
-            console.warn(`Error when attempting to insert an Action `, error)
+            if (error instanceof EntityLabelConflictError) {
+                const conflictPairs = LogDialogs.getConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                this.acceptConflictResolutionFn = (updatedDialog) => this.onInsertAction(updatedDialog, selectedActivity, isLastActivity)
+                this.setState({
+                    conflictPairs
+                })
+                return
+            }
+
+            console.warn(`Error when attempting to insert an Action `, { error })
         }
     }
 
@@ -710,7 +727,17 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NEXT)
         }
         catch (error) {
-            console.warn(`Error when attempting to create teach session from history: `, error)
+            if (error instanceof EntityLabelConflictError) {
+                const conflictPairs = LogDialogs.getConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                console.log(`Conflict detected: `, { conflictPairs })
+                this.acceptConflictResolutionFn = (updatedDialog) => this.onInsertInput(updatedDialog, selectedActivity, inputText)
+                this.setState({
+                    conflictPairs
+                })
+                return
+            }
+
+            console.warn(`Error when attempting to create teach session from history: `, { error })
         }
     }
 
@@ -735,6 +762,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             })
         }
         catch (error) {
+            if (error instanceof EntityLabelConflictError) {
+                const conflictPairs = LogDialogs.getConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                this.acceptConflictResolutionFn = (updatedDialog) => this.onContinueTrainDialog(updatedDialog, initialUserInput)
+                this.setState({
+                    conflictPairs
+                })
+                return
+            }
+
             console.warn(`Error when attempting to create teach session from train dialog: `, error)
         }
     }
@@ -807,42 +843,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    async onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
-        const trainDialogWithDefinitions: CLM.TrainDialog = {
-            ...trainDialog,
-            createdDateTime: new Date().toJSON(),
-            lastModifiedDateTime: new Date().toJSON(),
-            trainDialogId: undefined!,
-            sourceLogDialogId: trainDialog.sourceLogDialogId,
-            version: undefined!,
-            packageCreationId: undefined!,
-            packageDeletionId: undefined!,
-            rounds: trainDialog.rounds,
-            initialFilledEntities: trainDialog.initialFilledEntities,
-            definitions: {
-                actions: this.props.actions,
-                entities: this.props.entities,
-                trainDialogs: []
-            }
-        };
-
-        try {
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            this.setState({
-                history: teachWithHistory.history,
-                lastAction: teachWithHistory.lastAction,
-                currentTrainDialog: trainDialog,
-                isEditDialogModalOpen: true,
-                selectedHistoryIndex: null,
-                editType: EditDialogType.LOG_ORIGINAL
-            })
-        }
-        catch (e) {
-            const error = e as Error
-            console.warn(`Error when attempting to create history: `, error)
-        }
-    }
-
     async onCloseEditDialogModal(reload: boolean = false) {
 
         this.setState({
@@ -865,18 +865,21 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) {
-
-        this.setState({
-            isEditDialogModalOpen: false,
-        })
-
         // Remove any data added for rendering
         cleanTrainDialog(newTrainDialog)
+        const cleanedDialog = {
+            ...newTrainDialog,
+            validity,
+            definitions: null
+        }
 
-        newTrainDialog.validity = validity
-        newTrainDialog.definitions = null
         try {
-            await this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog)
+            await this.props.createTrainDialogThunkAsync(this.props.app.appId, cleanedDialog)
+
+            this.setState({
+                isEditDialogModalOpen: false,
+            })
+
             if (this.state.currentLogDialogId) {
                 await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
             }
@@ -885,6 +888,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             }
         }
         catch (error) {
+            if (error instanceof EntityLabelConflictError) {
+                const conflictPairs = LogDialogs.getConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                this.acceptConflictResolutionFn = this.onSaveTrainDialog
+                this.setState({
+                    conflictPairs
+                })
+                return
+            }
+
             console.warn(`Error when attempting to convert log dialog to train dialog: `, error)
         }
 
@@ -948,6 +960,65 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         filteredLogDialogs = this.sortLogDialogs(filteredLogDialogs);
         return filteredLogDialogs;
+    }
+
+    static getConflicts(rounds: CLM.TrainRound[], previouslySubmittedTextVariations: CLM.TextVariation[]) {
+        const conflictPairs: ConflictPair[] = []
+
+        rounds.forEach((round, roundIndex) => {
+            round.extractorStep.textVariations.forEach((textVariation, textVariationIndex) => {
+                const previouslySubmittedTextVariation = previouslySubmittedTextVariations.find(tv => tv.text.toLowerCase() === textVariation.text.toLowerCase())
+                if (previouslySubmittedTextVariation) {
+                    const conflictPair: ConflictPair = {
+                        roundIndex,
+                        textVariationIndex,
+                        conflicting: CLM.ModelUtils.ToExtractResponse(textVariation),
+                        previouslySubmitted: CLM.ModelUtils.ToExtractResponse(previouslySubmittedTextVariation)
+                    }
+
+                    conflictPairs.push(conflictPair)
+                }
+            })
+        })
+
+        return conflictPairs
+    }
+
+    @OF.autobind
+    async onAcceptConflictChanges(conflictPairs: ConflictPair[]) {
+        // This shouldn't be possible but have to check.
+        // Would be better for the modal to return all the data required to continue the conversion
+        if (!this.state.currentTrainDialog) {
+            throw new Error(`No train dialog available to update with changes`)
+        }
+
+        const updatedTrainDialog = produce(this.state.currentTrainDialog, (draft: CLM.TrainDialog) => {
+            // For each conflicting text variation replace the inconsistent labels with the consistent labels
+            for (const conflict of conflictPairs) {
+                const textVariation = CLM.ModelUtils.ToTextVariation(conflict.previouslySubmitted)
+                draft.rounds[conflict.roundIndex].extractorStep.textVariations[conflict.textVariationIndex].labelEntities = textVariation.labelEntities
+            }
+
+            draft.definitions = {
+                entities: this.props.entities,
+                actions: this.props.actions,
+                trainDialogs: []
+            }
+        })
+
+        this.setState({
+            conflictPairs: []
+        })
+
+        await this.acceptConflictResolutionFn(updatedTrainDialog)
+        this.acceptConflictResolutionFn = defaultAcceptConflictResolutionFn
+    }
+
+    @OF.autobind
+    onAbortConflictChanges() {
+        this.setState({
+            conflictPairs: []
+        })
     }
 
     render() {
@@ -1017,7 +1088,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                             <div>
                                 <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
                                     Search:
-                            </OF.Label>
+                                </OF.Label>
                                 <OF.SearchBox
                                     id="logdialogs-input-search"
                                     data-testid="logdialogs-search-box"
@@ -1040,6 +1111,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                             />
                         </React.Fragment>
                 }
+
                 <ChatSessionModal
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
@@ -1069,6 +1141,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
                         allUniqueTags={[]}
+
+                        conflictPairs={this.state.conflictPairs}
+                        onAcceptConflictResolution={this.onAcceptConflictChanges}
+                        onAbortConflictResolution={this.onAbortConflictChanges}
                     />
                 }
                 <EditDialogModal
@@ -1096,6 +1172,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={() => { }}
                     allUniqueTags={[]}
+
+                    conflictPairs={this.state.conflictPairs}
+                    onAcceptConflictResolution={this.onAcceptConflictChanges}
+                    onAbortConflictResolution={this.onAbortConflictChanges}
                 />
             </div>
         );
