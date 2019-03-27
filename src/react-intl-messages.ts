@@ -1078,6 +1078,8 @@ export default {
         [AT.EDIT_ENTITY_ASYNC]: 'Editing Entity',
         [AT.EDIT_ACTION_ASYNC]: 'Editing Action',
         [AT.EDIT_TRAINDIALOG_ASYNC]: 'Editing Train Dialog',
+        [AT.EDIT_TRAINDIALOG_MERGE_ASYNC]: 'Merging Train Dialog',
+        [AT.EDIT_TRAINDIALOG_REPLACE_ASYNC]: 'Replacing Train Dialog',
         [AT.EDIT_APP_LIVE_TAG_ASYNC]: 'Editing Application live tag',
         [AT.EDIT_APP_EDITING_TAG_ASYNC]: 'Editing Application editing tag',
     },

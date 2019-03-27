@@ -200,7 +200,8 @@ interface ComponentState {
     isTeachDialogModalOpen: boolean
     isEditDialogModalOpen: boolean
     isTreeViewModalOpen: boolean
-    isMergeWarningOpen: boolean
+    mergeExistingTrainDialog: CLM.TrainDialog | null
+    mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
     selectedActivityIndex: number | null
     // Current train dialogs being edited
@@ -234,7 +235,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTeachDialogModalOpen: false,
             isEditDialogModalOpen: false,
             isTreeViewModalOpen: false,
-            isMergeWarningOpen: false,
+            mergeExistingTrainDialog: null,
+            mergeNewTrainDialog: null,
             selectedActivityIndex: null,
             currentTrainDialog: null,
             originalTrainDialogId: null,
@@ -392,7 +394,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 lastTeachSession: { ...this.props.teachSession }
             })
 
-            await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, false, null, null, this.props.trainDialogs); // False = abandon
+            await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
 
             // Create new one with initial entities
             await this.onClickNewTeachSession(initialFilledEntityMap)
@@ -420,17 +422,42 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session unless it was already closed with and EndSessionAction
             if (this.props.teachSession.dialogMode !== CLM.DialogMode.EndSession) {
+
                 if (save) {
-                    // If source was a trainDialog, delete the original
+
+                    // If editing an existing train dialog, extract its dialogId
                     const sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
-                        ? this.state.currentTrainDialog.trainDialogId : null;
-                    let merged = await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId, null, this.props.trainDialogs, tags, description)
-                    if (merged) {
-                        this.setState({isMergeWarningOpen: true})
+                        ? this.state.currentTrainDialog.trainDialogId : null
+
+                    // Delete the teach session and retreive the new TrainDialog
+                    const newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId)as any) as Promise<CLM.TrainDialog>)
+                    newTrainDialog.tags = tags
+                    newTrainDialog.description = description
+
+                    // Check to see if new TrainDialog can be merged with an exising TrainDialog
+                    const matchingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs)
+
+                    if (matchingTrainDialog) {
+                        this.setState({
+                            mergeExistingTrainDialog: matchingTrainDialog,
+                            mergeNewTrainDialog: newTrainDialog
+                        })
+                        return
+                    }
+                    else {
+                        // If editing an existing Train Dialog, replace existing with the new one
+                        if (sourceTrainDialogId) {
+                            await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog)
+                        }
+                        // Otherwise just update the tags and description
+                        else {
+                            await this.props.editTrainDialogThunkAsync(this.props.app.appId, { trainDialogId: newTrainDialog.trainDialogId, tags, description })
+                        }
                     }
                 }
+                // Just delete the teach sesion without saving
                 else {
-                    await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, false, null, null, this.props.trainDialogs); // False = abandon
+                    await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
                 }
             }
         }
@@ -458,7 +485,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
 
                 // Delete the teach session w/o saving
-                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, false, null, null, this.props.trainDialogs)
+                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
 
                 // Generate history
                 const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
@@ -845,8 +872,34 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onCloseMergeWarning() {
-            this.setState({isMergeWarningOpen: false})
+    async onCloseMergeModal(shouldMerge: boolean) {
+
+        if (!this.state.mergeNewTrainDialog || !this.state.mergeExistingTrainDialog) {
+            throw new Error ("Expected merge props to be set")
+        }
+
+        const sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
+                        ? this.state.currentTrainDialog.trainDialogId : null
+
+        if (shouldMerge) {
+            await this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, sourceTrainDialogId)
+        }
+        else {
+            // If editing an existing Train Dialog, replace existing with the new one
+            if (sourceTrainDialogId) {
+                await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, this.state.mergeNewTrainDialog)
+            }
+        }
+        this.setState({
+            mergeExistingTrainDialog: null,
+            mergeNewTrainDialog: null,
+            isTeachDialogModalOpen: false,
+            history: [],
+            lastAction: null,
+            currentTrainDialog: null,
+            // originalTrainDialogId - do not clear. Need for later 
+            dialogKey: this.state.dialogKey + 1
+        })
     }
 
     onDeleteTrainDialog() {
@@ -941,7 +994,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session w/o saving
-            await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, false, null, null, this.props.trainDialogs)
+            await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
         }
 
         const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput) as any) as Promise<CLM.TeachWithHistory>)
@@ -977,21 +1030,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             newTrainDialog.definitions = null
 
              // Check to see if it can be merged with an exising TrainDialog
-            const existingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs)
-            if (existingTrainDialog) {
-                const mergedTrainDialog = DialogUtils.mergeTrainDialogs(newTrainDialog, existingTrainDialog)
-                // Replace existing one (if it was the master)
-                if (mergedTrainDialog.trainDialogId === existingTrainDialog.trainDialogId) {
-                    await this.props.deleteTrainDialogThunkAsync(this.props.app, newTrainDialog.trainDialogId )
-                    await this.props.editTrainDialogThunkAsync(this.props.app.appId, mergedTrainDialog)
-                }
-                // Otherwise delete existing one and create new one
-                else {
-                    await this.props.deleteTrainDialogThunkAsync(this.props.app, existingTrainDialog.trainDialogId)
-                    await this.props.editTrainDialogThunkAsync(this.props.app.appId, mergedTrainDialog)
-                }
-
-                this.setState({isMergeWarningOpen: true})
+            const matchedTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs)
+            if (matchedTrainDialog) {
+                // Open model to ask user if they want to merge
+                this.setState({
+                    mergeExistingTrainDialog: matchedTrainDialog,
+                    mergeNewTrainDialog: newTrainDialog
+                })
             }
             // Otherwise save as a new TrainDialog
             else {
@@ -1126,7 +1171,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session w/o saving
-            await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, false, null, null, this.props.trainDialogs)
+            await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
         }
 
         if (reload && this.state.originalTrainDialogId) {
@@ -1409,8 +1454,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                 }
                 <ConfirmCancelModal
-                    open={this.state.isMergeWarningOpen}
-                    onOk={this.onCloseMergeWarning}
+                    open={this.state.mergeExistingTrainDialog !== null}
+                    onOk={() => this.onCloseMergeModal(true)}
+                    onCancel={() => this.onCloseMergeModal(false)}
                     title={Util.formatMessageId(intl, FM.MERGE_TITLE)}
                 />
                 <EditDialogModal
@@ -1469,6 +1515,8 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
+        trainDialogMergeThunkAsync: actions.train.trainDialogMergeThunkAsync,
+        trainDialogReplaceThunkAsync: actions.train.trainDialogReplaceThunkAsync,
         scoreFromHistoryThunkAsync: actions.train.scoreFromHistoryThunkAsync,
         trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,
     }, dispatch)

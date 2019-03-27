@@ -43,6 +43,16 @@ export type UpdateAction = {
     appId: string,
     trainDialog: PartialTrainDialog
 } | {
+    type: AT.EDIT_TRAINDIALOG_MERGE_ASYNC
+} | {
+    type: AT.EDIT_TRAINDIALOG_MERGE_FULFILLED
+} | {
+    type: AT.EDIT_TRAINDIALOG_REPLACE_ASYNC
+} | {
+    type: AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED,
+    updatedTrainDialog: CLM.TrainDialog,
+    deletedTrainDialogId: string
+} | {
     type: AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC,
     appId: string,
     sessionId: string,

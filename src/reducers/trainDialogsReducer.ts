@@ -47,6 +47,9 @@ const trainDialogsReducer: Reducer<TrainDialogState> = produce((state: TrainDial
             else {
                 return
             }
+        case AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED:
+            const trainDialogs = state.filter(dialog => dialog.trainDialogId !== action.deletedTrainDialogId)
+            return replace(trainDialogs, action.updatedTrainDialog, a => a.trainDialogId)
         default:
             return
     }

@@ -2,14 +2,12 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
+import * as CLM from '@conversationlearner/models'
+import * as ClientFactory from '../services/clientFactory'
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Dispatch } from 'redux'
-import ClClient from '../services/client'
-import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
-import * as CLM from '@conversationlearner/models'
-import * as DialogUtils from '../Utils/dialogUtils'
 import { AxiosError } from 'axios'
 import { fetchAllTrainDialogsThunkAsync } from './trainActions'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
@@ -128,37 +126,11 @@ export const clearTeachSession = (): ActionObject => {
     }
 }
 
-// Replace destinatation dialog with train dialog and delete the original
-const replaceDialog = async (
-    destinationTrainDialogId: string,
-    trainDialog: CLM.TrainDialog, 
-    tags: string[], 
-    description: string,
-    clClient: ClClient,
-    appId: string
-    ) => {
-
-    // Created updated source dialog from new dialogs rounds
-    const updatedSourceDialog: CLM.TrainDialog = {
-        ...trainDialog,
-        trainDialogId: destinationTrainDialogId,
-        tags,
-        description
-    }
-    const deletePromise = clClient.trainDialogsDelete(appId, trainDialog.trainDialogId)
-    const editPromise =  clClient.trainDialogEdit(appId, updatedSourceDialog)
-    await Promise.all([deletePromise, editPromise])
-}
-
 export const deleteTeachSessionThunkAsync = (
     teachSession: CLM.Teach,
     app: CLM.AppBase,
-    save: boolean,
-    sourceTrainDialogId: string | null,
-    sourceLogDialogId: string | null,
-    allTrainDialogs: CLM.TrainDialog[],
-    tags: string[] = [],
-    description: string = '', 
+    save: boolean = false,
+    sourceLogDialogId: string | null = null,
 ) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTeachSessionAsync(teachSession, app.appId, save))
@@ -167,84 +139,21 @@ export const deleteTeachSessionThunkAsync = (
         try {
             await clClient.teachSessionDelete(app.appId, teachSession, save)
             if (sourceLogDialogId) {
+                // Will hide converted log dialog from the UI
                 dispatch(updateSourceLogDialog(teachSession.trainDialogId, sourceLogDialogId))
             }
 
-            if (!save) {
-                dispatch(deleteTeachSessionFulfilled(teachSession));
-                return false
-            }
-
-            // If saving to a TrainDialog
-            const promises: Promise<any>[] = []
-
-            // Retreive the created train dialog 
-            const newTrainDialog = await clClient.trainDialog(app.appId, teachSession.trainDialogId)
-            newTrainDialog.description = description
-            newTrainDialog.tags = tags
-            
-            // Check to see if new TrainDialog can be merged with an exising TrainDialog
-            const existingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, allTrainDialogs)
-
-            // If merge possible
-            if (existingTrainDialog) {
-                // Create merged train dialog
-                const mergedTrainDialog = DialogUtils.mergeTrainDialogs(newTrainDialog, existingTrainDialog)
-                
-                // If merge dialog is from existing dialog
-                if (mergedTrainDialog.trainDialogId === existingTrainDialog.trainDialogId) {
-                    // Update existing train dialog with merged train dialog, and delete other dialogs
-                    mergedTrainDialog.lastModifiedDateTime = `${new Date().toISOString().slice(0, 19)}+00:00`
-                    promises.push(clClient.trainDialogEdit(app.appId, mergedTrainDialog))
-                    promises.push(clClient.trainDialogsDelete(app.appId, newTrainDialog.trainDialogId))
-                    if (sourceTrainDialogId) {
-                        promises.push(clClient.trainDialogsDelete(app.appId, sourceTrainDialogId))
-                    }
-                    await Promise.all(promises)
-                }
-                // Otherwise merge dialog is from new dialog
-                else {
-
-                    if (sourceTrainDialogId) {
-                        // Replace source with merged and delete new and merged
-                        await replaceDialog(sourceTrainDialogId, mergedTrainDialog, tags, description, clClient, app.appId)
-                        promises.push(clClient.trainDialogsDelete(app.appId, newTrainDialog.trainDialogId))
-                        promises.push(clClient.trainDialogsDelete(app.appId, existingTrainDialog.trainDialogId))
-                        await Promise.all(promises)
-                    }
-                    else {
-                        // Replace new with merge
-                        await replaceDialog(newTrainDialog.trainDialogId, mergedTrainDialog, tags, description, clClient, app.appId)
-                    }
-                }
-            }
-            // If no merge was possible
-            else {
-
-                // If source train dialog exists update it with data from new dialog and then delete the new dialog
-                // The new dialog was only created as side effect of new teach session. It was intermediate/temporary and can be discarded.
-                if (sourceTrainDialogId) {
-                    await replaceDialog(sourceTrainDialogId, newTrainDialog, tags, description, clClient, app.appId)
-                }
-                else {
-                    // Edit the associated train dialogs tag and description
-                    await clClient.trainDialogEdit(app.appId, { trainDialogId: teachSession.trainDialogId, tags, description })
-                }
-            }
+            // If saving return the new train dialog
+            const newTrainDialog = save ? await clClient.trainDialog(app.appId, teachSession.trainDialogId) : null
             dispatch(deleteTeachSessionFulfilled(teachSession));
+            return newTrainDialog
 
-            // If we're adding a new train dialog as consequence of the session save, re-fetch train dialogs and start poll for train status
-            dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
-            dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
-
-            // Return "true" if resulted in merge
-            return existingTrainDialog !== null;
         } catch (e) {
             const error = e as AxiosError
             dispatch(clearTeachSession())
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TRAIN_DIALOG_ASYNC))
             dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
-            return false;
+            throw error
         }
     }
 }
