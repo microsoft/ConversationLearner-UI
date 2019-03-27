@@ -19,6 +19,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import ConfirmCancelModal from './ConfirmCancelModal'
+import './ActionScorer.css'
 
 const ACTION_BUTTON = 'action_button'
 const MISSING_ACTION = 'missing_action'
@@ -735,7 +736,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
 
         // If editing allowed and Action creation button
-        if (scoredItems && !this.props.autoTeach && this.props.canEdit) {
+        if (!this.props.autoTeach && this.props.canEdit) {
             scoredItems.push(this.makeDummyItem(ACTION_BUTTON, 0));
         }
 
@@ -751,7 +752,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
 
         const { intl } = this.props
-        const scores: CLM.ScoredBase[] = this.getScoredItems()
+        const scores = this.getScoredItems()
         let template: CLM.Template | undefined
         let renderedActionArguments: CLM.RenderedActionArgument[] = []
         if (this.state.cardViewerAction) {
@@ -765,18 +766,33 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         return (
             <div>
-                <OF.DetailsList
-                    className={OF.FontClassNames.mediumPlus}
-                    items={scores}
-                    columns={this.state.columns}
-                    checkboxVisibility={OF.CheckboxVisibility.hidden}
-                    onRenderItemColumn={this.renderItemColumn}
-                    onColumnHeaderClick={this.onColumnClick}
-                    onRenderDetailsHeader={(
-                        detailsHeaderProps: OF.IDetailsHeaderProps,
-                        defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
-                        onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
-                />
+                {scores.length === 1 && (!this.props.autoTeach && this.props.canEdit)
+                    ? <div className="cl-action-scorer-placeholder">
+                        <div className={`cl-action-scorer-placeholder__description`}>
+                            <h1 className={OF.FontClassNames.xxLarge}>Create an Action</h1>
+                            <p>You're bot does not have any actions.<br />It needs at least one action to continue building this training dialog.</p>
+                        </div>
+                        <div>
+                            <OF.PrimaryButton
+                                text="Create Action"
+                                iconProps={{ iconName: 'Add' }}
+                                onClick={this.handleOpenActionModal}
+                            />
+                        </div>
+                    </div>
+                    : <OF.DetailsList
+                        className={OF.FontClassNames.mediumPlus}
+                        items={scores}
+                        columns={this.state.columns}
+                        checkboxVisibility={OF.CheckboxVisibility.hidden}
+                        onRenderItemColumn={this.renderItemColumn}
+                        onColumnHeaderClick={this.onColumnClick}
+                        onRenderDetailsHeader={(
+                            detailsHeaderProps: OF.IDetailsHeaderProps,
+                            defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
+                            onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
+                    />
+                }
 
                 <ActionCreatorEditor
                     app={this.props.app}
