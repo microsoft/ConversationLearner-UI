@@ -153,26 +153,14 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   helpers.ConLog(funcName, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
   helpers.ConLog(funcName, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
 
-  //const timesInARowThatGridShouldContainTheExpectedLength = 10
-  //let countDownToGood = timesInARowThatGridShouldContainTheExpectedLength
   cy.Get('[data-testid="train-dialogs-turns"]', {timeout: 10000})
     .should(elements => { 
       if (elements.length != trainingSummary.TrainGridRowCount) { 
         helpers.ConLog(funcName, `Did NOT find the expected row count: ${elements.length}.`)
         throw new Error(`${elements.length} rows found in the training grid, however we were expecting ${trainingSummary.TrainGridRowCount}`)
-
-        helpers.ConLog(funcName, `The row count: ${elements.length} is what we expect and it held that cound for ${timesInARowThatGridShouldContainTheExpectedLength} for times in a row, so now we can trust it.`)
-        throw new Error(`${elements.length} rows found in the training grid. We must wait till the grid consistently has ${trainingSummary.TrainGridRowCount} rows in it for ${timesInARowThatGridShouldContainTheExpectedLength} retries (about 1/2 a second)`)
       }
-      helpers.ConLog(funcName, `Found the expected row count: ${elements.length} - need to retry ${countDownToGood} more times before we can trust it.`)
 
-      // if(--countDownToGood > 0) {
-      //   throw new Error(`The Training Grid now has ${trainingSummary.TrainGridRowCount} rows, which is the expected number of rows, however, it need to maintain that count for ${countDownToGood} more retries before we can trust it.`)
-      // }
-      
-      // The real validation begins, prior to this we were just waiting till we could trust that the Train Grid is stable and not likely to update.
-      helpers.ConLog(funcName, `The row count: ${elements.length} is what we expect`)
-      //helpers.ConLog(funcName, `The row count: ${elements.length} is what we expect and it held that cound for ${timesInARowThatGridShouldContainTheExpectedLength} for times in a row, so now we can trust it.`)
+      helpers.ConLog(funcName, `Found the expected row count: ${elements.length}`)
 
       const turns = trainDialogsGrid.GetTurns()
       const firstInputs = trainDialogsGrid.GetFirstInputs()
@@ -195,6 +183,9 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
           firstInputs[i] == trainingSummary.FirstInput &&
           lastInputs[i] == trainingSummary.LastInput &&
           lastResponses[i] == trainingSummary.LastResponse)
+          
+          helpers.ConLog(funcName, 'Found all of the expected data. Validation PASSES!')
+
           return; // Fully VALIDATED! We found what we expected.
       }
       throw new Error(`The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`)
