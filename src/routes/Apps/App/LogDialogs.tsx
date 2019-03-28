@@ -8,13 +8,13 @@ import * as Util from '../../../Utils/util'
 import * as DialogUtils from '../../../Utils/dialogUtils'
 import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
+import MergeModal from '../../../components/modals/MergeModal'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../../types'
 import { SelectionType } from '../../../types/const'
 import FormattedMessageId from '../../../components/FormattedMessageId'
-import ConfirmCancelModal from '../../../components/modals/ConfirmCancelModal'
 import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState } from '../../../components/modals'
 import { ConflictPair } from '../../../components/modals/LogConversionConflictModal'
 import actions from '../../../actions'
@@ -222,6 +222,28 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     newChatSessionButton: OF.IButton
     state: ComponentState
 
+    static getConflicts(rounds: CLM.TrainRound[], previouslySubmittedTextVariations: CLM.TextVariation[]) {
+        const conflictPairs: ConflictPair[] = []
+
+        rounds.forEach((round, roundIndex) => {
+            round.extractorStep.textVariations.forEach((textVariation, textVariationIndex) => {
+                const previouslySubmittedTextVariation = previouslySubmittedTextVariations.find(tv => tv.text.toLowerCase() === textVariation.text.toLowerCase())
+                if (previouslySubmittedTextVariation) {
+                    const conflictPair: ConflictPair = {
+                        roundIndex,
+                        textVariationIndex,
+                        conflicting: CLM.ModelUtils.ToExtractResponse(textVariation),
+                        previouslySubmitted: CLM.ModelUtils.ToExtractResponse(previouslySubmittedTextVariation)
+                    }
+
+                    conflictPairs.push(conflictPair)
+                }
+            })
+        })
+
+        return conflictPairs
+    }
+    
     constructor(props: Props) {
         super(props)
         const columns = getColumns(this.props.intl);
@@ -966,7 +988,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 const newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId)as any) as Promise<CLM.TrainDialog>)
 
                 // Check to see if new TrainDialog can be merged with an exising TrainDialog
-                const matchingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs)
+                const matchingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
 
                 if (matchingTrainDialog) {
                     this.setState({
@@ -1031,28 +1053,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         filteredLogDialogs = this.sortLogDialogs(filteredLogDialogs);
         return filteredLogDialogs;
-    }
-
-    static getConflicts(rounds: CLM.TrainRound[], previouslySubmittedTextVariations: CLM.TextVariation[]) {
-        const conflictPairs: ConflictPair[] = []
-
-        rounds.forEach((round, roundIndex) => {
-            round.extractorStep.textVariations.forEach((textVariation, textVariationIndex) => {
-                const previouslySubmittedTextVariation = previouslySubmittedTextVariations.find(tv => tv.text.toLowerCase() === textVariation.text.toLowerCase())
-                if (previouslySubmittedTextVariation) {
-                    const conflictPair: ConflictPair = {
-                        roundIndex,
-                        textVariationIndex,
-                        conflicting: CLM.ModelUtils.ToExtractResponse(textVariation),
-                        previouslySubmitted: CLM.ModelUtils.ToExtractResponse(previouslySubmittedTextVariation)
-                    }
-
-                    conflictPairs.push(conflictPair)
-                }
-            })
-        })
-
-        return conflictPairs
     }
 
     @OF.autobind
@@ -1218,11 +1218,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onAbortConflictResolution={this.onAbortConflictChanges}
                     />
                 }
-                <ConfirmCancelModal
+                <MergeModal
                     open={this.state.mergeExistingTrainDialog !== null}
-                    onOk={() => this.onCloseMergeModal(true)}
+                    onMerge={() => this.onCloseMergeModal(true)}
                     onCancel={() => this.onCloseMergeModal(false)}
-                    title={Util.formatMessageId(this.props.intl, FM.MERGE_TITLE)}
+                    trainDialog1={this.state.mergeExistingTrainDialog}
+                    trainDialog2={this.state.mergeNewTrainDialog}
                 />
                 <EditDialogModal
                     data-testid="train-dialog-modal"

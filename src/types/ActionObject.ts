@@ -51,7 +51,7 @@ export type UpdateAction = {
 } | {
     type: AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED,
     updatedTrainDialog: CLM.TrainDialog,
-    deletedTrainDialogId: string
+    deletedTrainDialogId: string | null
 } | {
     type: AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC,
     appId: string,
@@ -398,36 +398,38 @@ export type DeleteAction = {
 } | {
     type: AT.DELETE_TRAIN_DIALOG_REJECTED
 } | DeleteLogDialogAsyncAction
-    | DeleteLogDialogFulfilledAction
-    | DeleteLogDialogRejectedAction
-    | {
-        type: AT.DELETE_CHAT_SESSION_ASYNC,
-        key: string,
-        session: CLM.Session,
-        appId: string,
-        packageId: string
-    } | {
-        type: AT.DELETE_CHAT_SESSION_FULFILLED,
-        sessionId: string,
-    } | {
-        type: AT.DELETE_TEACH_SESSION_ASYNC,
-        teachSession: CLM.Teach,
-        appId: string,
-        save: boolean
-    } | {
-        type: AT.DELETE_TEACH_SESSION_FULFILLED,
-        teachSessionGUID: string
-    } | {
-        type: AT.CLEAR_TEACH_SESSION
-    } | {
-        type: AT.DELETE_MEMORY_ASYNC,
-        key: string,
-        appId: string
-    } | {
-        type: AT.DELETE_MEMORY_FULFILLED
-    } | {
-        type: AT.DELETE_OPERATION_FULFILLED
-    }
+| DeleteLogDialogFulfilledAction
+| DeleteLogDialogRejectedAction
+| {
+    type: AT.DELETE_CHAT_SESSION_ASYNC,
+    key: string,
+    session: CLM.Session,
+    appId: string,
+    packageId: string
+} | {
+    type: AT.DELETE_CHAT_SESSION_FULFILLED,
+    sessionId: string,
+} | {
+    type: AT.DELETE_TEACH_SESSION_ASYNC,
+    teachSession: CLM.Teach,
+    appId: string,
+    save: boolean
+} | {
+    type: AT.DELETE_TEACH_SESSION_FULFILLED,
+    teachSessionGUID: string,
+    newTrainDialog: CLM.TrainDialog | null,
+    sourceTrainDialogId: string | null
+} | {
+    type: AT.CLEAR_TEACH_SESSION
+} | {
+    type: AT.DELETE_MEMORY_ASYNC,
+    key: string,
+    appId: string
+} | {
+    type: AT.DELETE_MEMORY_FULFILLED
+} | {
+    type: AT.DELETE_OPERATION_FULFILLED
+}
 
 export type DeleteLogDialogAsyncAction = {
     type: AT.DELETE_LOG_DIALOG_ASYNC,

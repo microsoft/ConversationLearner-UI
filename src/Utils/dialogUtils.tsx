@@ -3,7 +3,10 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
+import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
 import { Activity } from 'botframework-directlinejs'
+import TagsReadOnly from '../components/TagsReadOnly'
 
 export interface DialogRenderData {
     dialogMode: CLM.DialogMode
@@ -134,6 +137,43 @@ export function getBestAction(scoreResponse: CLM.ScoreResponse, allActions: CLM.
     return best
 }
 
+export function trainDialogFirstInput(trainDialog: CLM.TrainDialog): string | void {
+    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+        return trainDialog.rounds[0].extractorStep.textVariations[0].text
+    }
+}
+
+export function trainDialogLastInput(trainDialog: CLM.TrainDialog): string | void {
+    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+        return trainDialog.rounds[trainDialog.rounds.length - 1].extractorStep.textVariations[0].text;
+    }
+}
+
+export function trainDialogRenderTags(trainDialog: CLM.TrainDialog): React.ReactNode {
+    return (
+        <span className={`${OF.FontClassNames.mediumPlus}`} data-testid="train-dialogs-tags">
+            {trainDialog.tags.length === 0
+                ? <OF.Icon iconName="Remove" className="cl-icon" />
+                : <TagsReadOnly tags={trainDialog.tags} />}
+        </span>
+    )
+}
+
+export function trainDialogRenderDescription(trainDialog: CLM.TrainDialog): React.ReactNode {
+    const firstInput = trainDialogFirstInput(trainDialog)
+    const lastInput = trainDialogLastInput(trainDialog)
+    return (
+        <span data-testid="train-dialogs-description">
+            {trainDialog.description
+                || <>
+                    <span>{firstInput ? firstInput : ''}</span>
+                    <span> - </span>
+                    <span>{lastInput ? lastInput : ''}</span>
+                </>}
+        </span>
+    )
+}
+
 function doesScorerStepMatch(scorerStep1: CLM.TrainScorerStep, scorerStep2: CLM.TrainScorerStep): boolean {
     if (scorerStep1.labelAction !== scorerStep2.labelAction) {
         return false
@@ -208,9 +248,9 @@ export function doesTrainDialogMatch(trainDialog1: CLM.TrainDialog, trainDialog2
     return true
 }
 
-export function findMatchingTrainDialog(trainDialog: CLM.TrainDialog, trainDialogs: CLM.TrainDialog[]): CLM.TrainDialog | null {
+export function findMatchingTrainDialog(trainDialog: CLM.TrainDialog, trainDialogs: CLM.TrainDialog[], ignoreTrainDialogId: string | null = null): CLM.TrainDialog | null {
     for (const td of trainDialogs) {
-        if (doesTrainDialogMatch(trainDialog, td)) {
+        if (td.trainDialogId !== ignoreTrainDialogId && doesTrainDialogMatch(trainDialog, td)) {
             return td
         }
     }

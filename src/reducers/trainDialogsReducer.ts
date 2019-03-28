@@ -25,6 +25,12 @@ const trainDialogsReducer: Reducer<TrainDialogState> = produce((state: TrainDial
         case AT.CREATE_TRAIN_DIALOG_FULFILLED:
             state.push(action.trainDialog)
             return
+        case AT.DELETE_TEACH_SESSION_FULFILLED:
+            const filteredDialogs = state.filter(dialog => dialog.trainDialogId !== action.sourceTrainDialogId)
+            if (action.newTrainDialog) {
+                filteredDialogs.push(action.newTrainDialog)
+            }
+            return filteredDialogs
         case AT.DELETE_TRAIN_DIALOG_ASYNC:
             // Delete train dialog optimistically to update UI.  Will reload train dialogs on failure
             return state.filter(dialog => dialog.trainDialogId !== action.trainDialogId)

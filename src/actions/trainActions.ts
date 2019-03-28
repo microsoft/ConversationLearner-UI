@@ -274,7 +274,6 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
                         trainDialogId: sourceTrainDialogId,
                     }
                     promises.push(clClient.trainDialogEdit(appId, updatedSourceDialog))
-                    promises.push(clClient.trainDialogsDelete(appId, newTrainDialog.trainDialogId))
                     promises.push(clClient.trainDialogsDelete(appId, existingTrainDialog.trainDialogId))
                     await Promise.all(promises)
                 }
@@ -325,18 +324,25 @@ export const trainDialogReplaceThunkAsync = (appId: string,  destinationTrainDia
         dispatch(trainDialogReplaceAsync())
 
         try {
+            const promises: Promise<any>[] = []
+
             // Created updated source dialog from new dialogs rounds
             const updatedDestinationDialog: CLM.TrainDialog = {
                 ...newTrainDialog,
                 trainDialogId: destinationTrainDialogId,
             }
 
-            const deletePromise = clClient.trainDialogsDelete(appId, newTrainDialog.trainDialogId)
-            const editPromise =  clClient.trainDialogEdit(appId, updatedDestinationDialog)
-            await Promise.all([deletePromise, editPromise])
+            // If not replacing same train dialog, delete the one being replaced
+            const deleteDialogId = destinationTrainDialogId !== newTrainDialog.trainDialogId ? newTrainDialog.trainDialogId : null
+            
+            if (deleteDialogId) {
+                promises.push(clClient.trainDialogsDelete(appId, newTrainDialog.trainDialogId))
+            }
+            promises.push(clClient.trainDialogEdit(appId, updatedDestinationDialog))
+            await Promise.all(promises)
 
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
-            dispatch(trainDialogReplaceFulfilled(updatedDestinationDialog, newTrainDialog.trainDialogId))
+            dispatch(trainDialogReplaceFulfilled(updatedDestinationDialog, deleteDialogId))
         }
         catch (e) {
             const error = e as AxiosError
@@ -352,7 +358,7 @@ const trainDialogReplaceAsync = (): ActionObject => {
     }
 }
 
-const trainDialogReplaceFulfilled = (updatedTrainDialog: CLM.TrainDialog, deletedTrainDialogId: string): ActionObject => {
+const trainDialogReplaceFulfilled = (updatedTrainDialog: CLM.TrainDialog, deletedTrainDialogId: string | null): ActionObject => {
     return {
         type: AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED,
         updatedTrainDialog,

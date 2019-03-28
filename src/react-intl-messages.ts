@@ -296,6 +296,10 @@ export enum FM {
 
     // Merge Warning
     MERGE_TITLE = 'Merge.title',
+    MERGE_BODY1 = 'Merge.body1',
+    MERGE_BODY2 = 'Merge.body2',
+    MERGE_BODY3 = 'Merge.body3',
+    MERGE_BUTTON_MERGE = 'Merge.button.merge',
 
     // PackageCreator
     PACKAGECREATOR_TITLE = 'PackageCreator.title',
@@ -999,7 +1003,12 @@ export default {
         [FM.MEMORYTABLE_EMPTY]: 'Empty',
 
         // Merege
-        [FM.MERGE_TITLE]: 'This Dialog shares the same conversation flow with another Train Dialog.  They have been merged.',
+        [FM.MERGE_TITLE]: 'Merge?',
+        [FM.MERGE_BODY1]: 'The Dialog you are saving has the same conversation flow and is functionally equivalent with another Train Dialog.',
+        [FM.MERGE_BODY2]: 'We suggest merging them to prevent the creation of unneeded TrainDialogs.',
+        [FM.MERGE_BODY3]: 'The user inputs at each turn will be combined as Alternative user inputs.',
+        
+        [FM.MERGE_BUTTON_MERGE]: 'Merge',
 
         // PackageCreator
         [FM.PACKAGECREATOR_TITLE]: 'Create a new Tag',

@@ -118,10 +118,12 @@ const deleteTeachSessionAsync = (teachSession: CLM.Teach, appId: string, save: b
     }
 }
 
-const deleteTeachSessionFulfilled = (teachSession: CLM.Teach): ActionObject => {
+const deleteTeachSessionFulfilled = (teachSession: CLM.Teach, newTrainDialog: CLM.TrainDialog | null, sourceTrainDialogId: string | null): ActionObject => {
     return {
         type: AT.DELETE_TEACH_SESSION_FULFILLED,
-        teachSessionGUID: teachSession.teachId
+        teachSessionGUID: teachSession.teachId,
+        newTrainDialog,
+        sourceTrainDialogId
     }
 }
 
@@ -144,6 +146,7 @@ export const deleteTeachSessionThunkAsync = (
     app: CLM.AppBase,
     save: boolean = false,
     sourceLogDialogId: string | null = null,
+    sourceTrainDialogId: string | null = null
 ) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteTeachSessionAsync(teachSession, app.appId, save))
@@ -158,7 +161,7 @@ export const deleteTeachSessionThunkAsync = (
 
             // If saving return the new train dialog
             const newTrainDialog = save ? await clClient.trainDialog(app.appId, teachSession.trainDialogId) : null
-            dispatch(deleteTeachSessionFulfilled(teachSession));
+            dispatch(deleteTeachSessionFulfilled(teachSession, newTrainDialog, sourceTrainDialogId));
             return newTrainDialog
 
         } catch (e) {
