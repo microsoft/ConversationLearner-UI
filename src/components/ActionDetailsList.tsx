@@ -199,10 +199,12 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
     }
     else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
         const apiAction = new CLM.ApiAction(action)
+        const callback = component.props.botInfo.callbacks.find(t => t.name === apiAction.name)
         return (<ActionPayloadRenderers.ApiPayloadRendererContainer
             apiAction={apiAction}
             entities={component.props.entities}
             memories={null}
+            callback={callback}
         />)
     }
     else if (action.actionType === CLM.ActionTypes.CARD) {

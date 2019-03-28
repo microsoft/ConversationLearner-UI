@@ -128,12 +128,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 }
                 else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
                     const apiAction = new CLM.ApiAction(action)
+                    const callback = component.props.botInfo.callbacks.find(t => t.name === apiAction.name)
                     return (
                         <ActionPayloadRenderers.ApiPayloadRendererContainer
                             data-testid="action-scorer-action-api"
                             apiAction={apiAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
+                            callback={callback}
                         />)
                 }
                 else if (action.actionType === CLM.ActionTypes.CARD) {
@@ -758,7 +760,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         if (this.state.cardViewerAction) {
             const cardAction = new CLM.CardAction(this.state.cardViewerAction)
             const entityMap = Util.getDefaultEntityMap(this.props.entities)
-            template = this.props.templates.find((t) => t.name === cardAction.templateName)
+            template = this.props.botInfo.templates.find((t) => t.name === cardAction.templateName)
             renderedActionArguments = this.state.cardViewerShowOriginal
                 ? cardAction.renderArguments(entityMap, { preserveOptionalNodeWrappingCharacters: true })
                 : cardAction.renderArguments(Util.createEntityMapFromMemories(this.props.entities, this.props.memories), { fallbackToOriginal: true })
@@ -862,7 +864,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
         user: state.user.user,
         entities: state.entities,
         actions: state.actions,
-        templates: state.bot.botInfo.templates
+        botInfo: state.bot.botInfo
     }
 }
 
