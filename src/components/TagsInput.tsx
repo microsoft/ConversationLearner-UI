@@ -18,6 +18,7 @@ interface Props extends React.HTMLProps<HTMLDivElement> {
     onRemove: (tag: string) => void
     maxTags: number
     magTagLength: number
+    readOnly?: boolean
 }
 
 interface State {
@@ -269,12 +270,14 @@ class component extends React.Component<Props, State> {
                 {this.props.tags.map((tag, i) =>
                     <div className="cl-tags__tag" key={i}>
                         <span>{tag}</span>
-                        <button onClick={() => this.props.onRemove(tag)}>
-                            <OF.Icon iconName="Clear" />
-                        </button>
+                        {!this.props.readOnly &&
+                            <button onClick={() => this.props.onRemove(tag)}>
+                                <OF.Icon iconName="Clear" />
+                            </button>
+                        }
                     </div>
                 )}
-                {!hasMaxTags && (!showForm
+                {!this.props.readOnly && !hasMaxTags && (!showForm
                     ? <button className="cl-tags__button-add" id={this.props.id} onClick={() => this.onClickAdd()} data-testid="tags-input-add-tag-button" >
                         {this.props.tags.length === 0
                             ? <FormattedMessageId id={FM.TAGS_INPUT_ADD} />

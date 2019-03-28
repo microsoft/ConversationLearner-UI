@@ -871,17 +871,17 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onCloseMergeModal(shouldMerge: boolean) {
+    async onCloseMergeModal(shouldMerge: boolean, description: string = "", tags: string[] = []) {
 
         if (!this.state.mergeNewTrainDialog || !this.state.mergeExistingTrainDialog) {
             throw new Error ("Expected merge props to be set")
         }
 
         const sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
-                        ? this.state.currentTrainDialog.trainDialogId : null
+                ? this.state.currentTrainDialog.trainDialogId : null
 
         if (shouldMerge) {
-            await this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, sourceTrainDialogId)
+            await this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags, sourceTrainDialogId)
         }
         else {
             // If editing an existing Train Dialog, replace existing with the new one
@@ -889,6 +889,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, this.state.mergeNewTrainDialog)
             }
         }
+
+        if (this.state.currentLogDialogId) {
+            await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
+        } 
+
         this.setState({
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
@@ -931,6 +936,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             definitions: null
         }
 
+        this.setState({
+            isEditDialogModalOpen: false,
+        })
+
         try {
             await this.props.createTrainDialogThunkAsync(this.props.app.appId, cleanedDialog)
 
@@ -942,13 +951,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     mergeExistingTrainDialog: matchedTrainDialog,
                     mergeNewTrainDialog: cleanedDialog
                 })
+                return
             }
             // Otherwise save as a new TrainDialog
             else {
-
-                this.setState({
-                    isEditDialogModalOpen: false
-                })
 
                 if (this.state.currentLogDialogId) {
                     await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
@@ -1220,10 +1226,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 }
                 <MergeModal
                     open={this.state.mergeExistingTrainDialog !== null}
-                    onMerge={() => this.onCloseMergeModal(true)}
+                    onMerge={(description, tags) => this.onCloseMergeModal(true, description, tags)}
                     onCancel={() => this.onCloseMergeModal(false)}
-                    trainDialog1={this.state.mergeExistingTrainDialog}
-                    trainDialog2={this.state.mergeNewTrainDialog}
+                    savedTrainDialog={this.state.mergeNewTrainDialog}
+                    existingTrainDialog={this.state.mergeExistingTrainDialog}
+                    allUniqueTags={this.props.allUniqueTags}
                 />
                 <EditDialogModal
                     data-testid="train-dialog-modal"
@@ -1328,7 +1335,9 @@ const mapStateToProps = (state: State) => {
         user: state.user.user,
         actions: state.actions,
         entities: state.entities,
-        teachSession: state.teachSession
+        teachSession: state.teachSession,
+        // Get all tags from all train dialogs then put in Set to get unique tags
+        allUniqueTags: [...new Set(state.trainDialogs.reduce((tags, trainDialog) => [...tags, ...trainDialog.tags], []))]
     }
 }
 

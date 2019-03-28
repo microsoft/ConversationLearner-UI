@@ -300,6 +300,7 @@ export enum FM {
     MERGE_BODY2 = 'Merge.body2',
     MERGE_BODY3 = 'Merge.body3',
     MERGE_BUTTON_MERGE = 'Merge.button.merge',
+    MERGE_BUTTON_SAVE = 'Merge.button.save',
 
     // PackageCreator
     PACKAGECREATOR_TITLE = 'PackageCreator.title',
@@ -1009,6 +1010,7 @@ export default {
         [FM.MERGE_BODY3]: 'The user inputs at each turn will be combined as Alternative user inputs.',
         
         [FM.MERGE_BUTTON_MERGE]: 'Merge',
+        [FM.MERGE_BUTTON_SAVE]: 'Save As Is',
 
         // PackageCreator
         [FM.PACKAGECREATOR_TITLE]: 'Create a new Tag',

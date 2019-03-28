@@ -239,7 +239,7 @@ const  extractFromHistoryRejected = (): ActionObject =>
 // --------------------------
 // TrainDialogMerge
 // --------------------------
-export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.TrainDialog, existingTrainDialog: CLM.TrainDialog, sourceTrainDialogId: string | null) => {
+export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.TrainDialog, existingTrainDialog: CLM.TrainDialog, description: string, tags: string[], sourceTrainDialogId: string | null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_MERGE_ASYNC)
         dispatch(trainDialogMergeAsync())
@@ -249,6 +249,8 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
 
             // Create merged train dialog
             const mergedTrainDialog = DialogUtils.mergeTrainDialogs(newTrainDialog, existingTrainDialog)
+            mergedTrainDialog.description = description
+            mergedTrainDialog.tags = tags
             
             // If merged into exisiting TrainDialog (as it was longer)
             if (mergedTrainDialog.trainDialogId === existingTrainDialog.trainDialogId) {
@@ -270,7 +272,7 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
                 if (sourceTrainDialogId) {
                     // Created updated source dialog from new dialogs rounds
                     const updatedSourceDialog: CLM.TrainDialog = {
-                        ...newTrainDialog,
+                        ...mergedTrainDialog,
                         trainDialogId: sourceTrainDialogId,
                     }
                     promises.push(clClient.trainDialogEdit(appId, updatedSourceDialog))
@@ -281,7 +283,7 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
                 else {
                     // Created updated source dialog from new dialogs rounds
                     const updatedNewDialog: CLM.TrainDialog = {
-                        ...newTrainDialog,
+                        ...mergedTrainDialog,
                         trainDialogId: newTrainDialog.trainDialogId,
                     }
                     promises.push(clClient.trainDialogEdit(appId, updatedNewDialog))

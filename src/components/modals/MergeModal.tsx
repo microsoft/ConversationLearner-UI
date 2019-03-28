@@ -7,6 +7,7 @@ import * as CLM from '@conversationlearner/models'
 import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import * as OF from 'office-ui-fabric-react'
+import DialogMetadata from './DialogMetadata'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -14,79 +15,141 @@ import './MergeModal.css'
 
 interface ReceivedProps {
     onCancel: Function
-    onMerge: Function
+    onMerge: (description: string, tags: string[]) => void
     open: boolean
-    trainDialog1: CLM.TrainDialog | null,
-    trainDialog2: CLM.TrainDialog | null,
+    savedTrainDialog: CLM.TrainDialog | null,
+    existingTrainDialog: CLM.TrainDialog | null,
+    allUniqueTags: string[]
+}
+
+interface ComponentState {
+    description: string
+    tags: string[]
 }
 
 type Props = ReceivedProps & InjectedIntlProps
 
-const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
+class MergeModal extends React.Component<Props, ComponentState> {
 
-    if (!props.trainDialog1 || !props.trainDialog2) {
-        return null
+    state: ComponentState = {
+        description: "",
+        tags: []
     }
 
-    const { intl } = props
-    const onDismiss = props.onCancel || props.onMerge
-    if (!onDismiss) {
-        throw new Error("Must have cancel or ok callback")
-    }
-    return (
-        <Modal
-            containerClassName='cl-modal cl-modal--small'
-            isOpen={props.open}
-            isBlocking={true}
-        >
-            <div className='cl-modal_header'>
-                <span className={OF.FontClassNames.xxLarge}>
-                    {Util.formatMessageId(intl, FM.MERGE_TITLE)}
-                </span>
-            </div>
-            <div>
-                <div>
-                    {Util.formatMessageId(intl, FM.MERGE_BODY1)}
-                </div>
-                <div>
-                    {Util.formatMessageId(intl, FM.MERGE_BODY2)}
-                </div>
-                <div>
-                    {Util.formatMessageId(intl, FM.MERGE_BODY3)}
-                </div>
-                <div className="cl-merge-box">
-                    {DialogUtils.trainDialogRenderDescription(props.trainDialog1)}
-                    {DialogUtils.trainDialogRenderTags(props.trainDialog1)}
-                </div>
-                <div className="cl-merge-box">
-                    {DialogUtils.trainDialogRenderDescription(props.trainDialog2)}
-                    {DialogUtils.trainDialogRenderTags(props.trainDialog2)}
-                </div>
-            </div>
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.savedTrainDialog !== prevProps.savedTrainDialog ||
+            this.props.existingTrainDialog !== prevProps.existingTrainDialog) {
 
-            <OF.DialogFooter>
-                <OF.PrimaryButton
-                    onClick={() => {
-                        if (props.onMerge) {
-                            props.onMerge()
-                        }
-                    }}
-                    text={Util.formatMessageId(intl, FM.MERGE_BUTTON_MERGE)}
-                    iconProps={{ iconName: 'Accept' }}
-                    data-testid="confirm-cancel-modal-ok"
-                />
-                <OF.DefaultButton
-                    onClick={() => {
-                        if (props.onCancel) {
-                            props.onCancel()
-                        }
-                    }}
-                    text={Util.formatMessageId(intl, FM.BUTTON_CANCEL)}
-                    iconProps={{ iconName: 'Cancel' }}
-                    data-testid="confirm-cancel-modal-cancel"
-                />
-            </OF.DialogFooter>
-        </Modal>
-    )
+            if (this.props.savedTrainDialog && this.props.existingTrainDialog) {
+                this.setState({
+                    description: DialogUtils.mergeTrainDialogDescription(this.props.savedTrainDialog, this.props.existingTrainDialog),
+                    tags: DialogUtils.mergeTrainDialogTags(this.props.savedTrainDialog, this.props.existingTrainDialog)
+                })
+            }
+        }
+    }
+
+    @OF.autobind
+    onAddTag(tag: string) {
+        this.setState(prevState => ({
+            tags: [...prevState.tags, tag]
+        }))
+    }
+
+    @OF.autobind
+    onRemoveTag(tag: string) {
+      this.setState(prevState => ({
+            tags: prevState.tags.filter(t => t !== tag)
+        }))
+    }
+
+    @OF.autobind
+    onChangeDescription(description: string) {
+        this.setState({
+            description
+        })
+    }
+
+    render() {
+
+        if (!this.props.savedTrainDialog || !this.props.existingTrainDialog) {
+            return null
+        }
+
+        const { intl } = this.props
+        return (
+            <Modal
+                containerClassName='cl-modal cl-modal--small'
+                isOpen={this.props.open}
+                isBlocking={true}
+            >
+
+                <div className='cl-modal_header'>
+                    <span className={OF.FontClassNames.xxLarge}>
+                        {Util.formatMessageId(intl, FM.MERGE_TITLE)}
+                    </span>
+                </div>
+                <div className="cl-modal_subheader">
+                    <div>
+                        {Util.formatMessageId(intl, FM.MERGE_BODY1)}
+                    </div>
+                    <div>
+                        {Util.formatMessageId(intl, FM.MERGE_BODY2)}
+                    </div>
+                    <div>
+                        {Util.formatMessageId(intl, FM.MERGE_BODY3)}
+                    </div>
+                </div>    
+                <div>
+                    <OF.Label className="ms-Label--tight cl-label">Merged dialog:</OF.Label>
+                    <div className="cl-merge-box">
+                        <DialogMetadata
+                                description={this.state.description}
+                                tags={this.state.tags}
+                                allUniqueTags={this.props.allUniqueTags}
+                                onChangeDescription={this.onChangeDescription}
+                                onAddTag={this.onAddTag}
+                                onRemoveTag={this.onRemoveTag}
+                        />
+                    </div>
+                    <OF.Label className="ms-Label--tight cl-label">Saved dialog:</OF.Label>
+                    <div className="cl-merge-box cl-merge-box--readonly">
+                        <DialogMetadata
+                                description={DialogUtils.trainDialogRenderDescription(this.props.savedTrainDialog)}
+                                userInput={DialogUtils.trainDialogFirstInput(this.props.savedTrainDialog)}
+                                tags={this.props.savedTrainDialog.tags}
+                                allUniqueTags={[]}
+                                readOnly={true}
+                        />
+                    </div>
+                    <OF.Label className="ms-Label--tight cl-label">Equivalent dialog:</OF.Label>
+                    <div className="cl-merge-box cl-merge-box--readonly">
+                        <DialogMetadata
+                                description={DialogUtils.trainDialogRenderDescription(this.props.existingTrainDialog)}
+                                tags={this.props.existingTrainDialog.tags}
+                                allUniqueTags={[]}
+                                readOnly={true}
+                        />
+                    </div>
+                </div>              
+                <OF.DialogFooter>
+                    <OF.PrimaryButton
+                        onClick={() => this.props.onMerge(this.state.description, this.state.tags)}
+                        className="cl-rotate"
+                        text={Util.formatMessageId(intl, FM.MERGE_BUTTON_MERGE)}
+                        iconProps={{ iconName: 'Merge' }}
+                        data-testid="confirm-cancel-modal-ok"
+                    />
+                    <OF.DefaultButton
+                        onClick={() => this.props.onCancel()}
+                        text={Util.formatMessageId(intl, FM.MERGE_BUTTON_SAVE)}
+                        iconProps={{ iconName: 'Accept' }}
+                        data-testid="confirm-cancel-modal-cancel"
+                    />
+                </OF.DialogFooter>        
+            </Modal>
+        )
+    }
 }
-export default injectIntl(ConfirmCancelModal)
+
+export default injectIntl(MergeModal)

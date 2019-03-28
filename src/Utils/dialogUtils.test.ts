@@ -4,7 +4,7 @@
  */
 
 import { doesTrainDialogMatch, findMatchingTrainDialog, isTrainDialogLonger, mergeTrainDialogs } from './dialogUtils'
-import { makeTrainDialog, makeExtractorStep, makeScorerStep } from './testDataUtil'
+import { makeTrainDialog, makeExtractorStep, makeScorerStep, makeLabelEntities } from './testDataUtil'
 import { deepCopy } from './util'
 import * as CLM from '@conversationlearner/models'
 
@@ -85,6 +85,41 @@ describe('dialogUtils', () => {
 
             result = doesTrainDialogMatch(trainDialog1, shortDialog)
             expect(result).toEqual(true)
+        })
+
+        test('changedExtractorStep', () => {
+
+            const newDialog = copyTrainDialog()
+
+            // Add a label
+            let newLabelledEntities = makeLabelEntities({"new_id": "value"})
+            newDialog.rounds[0].extractorStep.textVariations[0].labelEntities.push(newLabelledEntities[0])
+            
+            let result = doesTrainDialogMatch(newDialog, trainDialog1)
+            expect(result).toEqual(false)
+
+            result = doesTrainDialogMatch(trainDialog1, newDialog)
+            expect(result).toEqual(false)
+
+            // Delete labels
+            newDialog.rounds[0].extractorStep.textVariations[0].labelEntities = []
+            
+            result = doesTrainDialogMatch(newDialog, trainDialog1)
+            expect(result).toEqual(false)
+
+            result = doesTrainDialogMatch(trainDialog1, newDialog)
+            expect(result).toEqual(false)
+
+            // Different labels
+            newLabelledEntities = makeLabelEntities({"entityN1_id": "entity1_value", "entityN2_id": "entity2_value"})
+            newDialog.rounds[0].extractorStep.textVariations[0].labelEntities = newLabelledEntities
+            
+            result = doesTrainDialogMatch(newDialog, trainDialog1)
+            expect(result).toEqual(false)
+
+            result = doesTrainDialogMatch(trainDialog1, newDialog)
+            expect(result).toEqual(false)
+
         })
 
         test('extraScorerStepLastRound', () => {
@@ -243,8 +278,8 @@ describe('dialogUtils', () => {
             const trainDialog2 = copyTrainDialog()
             trainDialog2.rounds[0].extractorStep = makeExtractorStep(
                 [{
-                    "entity1_n_id": "entity1_n_value",
-                    "entity2_n_id": "entity2_n_value"
+                    "entity1_id": "entity1_value_new",
+                    "entity2_id": "entity2_value_new"
                 }]
             )
 

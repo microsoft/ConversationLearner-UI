@@ -5,6 +5,7 @@
 import * as CLM from '@conversationlearner/models'
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
+import { deepCopy } from './util'
 import { Activity } from 'botframework-directlinejs'
 import TagsReadOnly from '../components/TagsReadOnly'
 
@@ -137,10 +138,11 @@ export function getBestAction(scoreResponse: CLM.ScoreResponse, allActions: CLM.
     return best
 }
 
-export function trainDialogFirstInput(trainDialog: CLM.TrainDialog): string | void {
+export function trainDialogFirstInput(trainDialog: CLM.TrainDialog): string {
     if (trainDialog.rounds && trainDialog.rounds.length > 0) {
         return trainDialog.rounds[0].extractorStep.textVariations[0].text
     }
+    return ""
 }
 
 export function trainDialogLastInput(trainDialog: CLM.TrainDialog): string | void {
@@ -159,18 +161,11 @@ export function trainDialogRenderTags(trainDialog: CLM.TrainDialog): React.React
     )
 }
 
-export function trainDialogRenderDescription(trainDialog: CLM.TrainDialog): React.ReactNode {
+export function trainDialogRenderDescription(trainDialog: CLM.TrainDialog): string {
     const firstInput = trainDialogFirstInput(trainDialog)
     const lastInput = trainDialogLastInput(trainDialog)
     return (
-        <span data-testid="train-dialogs-description">
-            {trainDialog.description
-                || <>
-                    <span>{firstInput ? firstInput : ''}</span>
-                    <span> - </span>
-                    <span>{lastInput ? lastInput : ''}</span>
-                </>}
-        </span>
+        trainDialog.description || `${firstInput ? firstInput : ''} -> ${lastInput ? lastInput : ''}`
     )
 }
 
@@ -192,8 +187,32 @@ function doesScorerStepMatch(scorerStep1: CLM.TrainScorerStep, scorerStep2: CLM.
     return true
 }
 
+function doesExtractorStepMatch(extractorStep1: CLM.TrainExtractorStep, extractorStep2: CLM.TrainExtractorStep): boolean {
+    // Only need to test the 1st Text Variation as they are equivalent w/in a round
+    const labelEntities1 = extractorStep1.textVariations[0].labelEntities
+    const labelEntities2 = extractorStep2.textVariations[0].labelEntities
+    if (labelEntities1.length !== labelEntities2.length) {
+        return false
+    }
+    const entityIds1 = labelEntities1.map(le => le.entityId)
+    const entityIds2 = labelEntities2.map(le => le.entityId)
+
+    if (entityIds1.filter(entityId => entityIds2.indexOf(entityId) < 0).length > 0) {
+        return false
+    }
+    if (entityIds2.filter(entityId => entityIds1.indexOf(entityId) < 0).length > 0) {
+        return false
+    }
+    return true
+}
+
 function doesRoundMatch(round1: CLM.TrainRound, round2: CLM.TrainRound, isLastRound: boolean): boolean {
     
+    // Check that text variations are equivalent in the extractor step
+    if (!doesExtractorStepMatch(round1.extractorStep, round2.extractorStep)) {
+        return false
+    }
+
     // If one has scorer steps and the other doesn't, only ok, on last round
     if (round1.scorerSteps && !round2.scorerSteps ||
         !round1.scorerSteps && round2.scorerSteps) {
@@ -275,6 +294,16 @@ export function isTrainDialogLonger(trainDialog1: CLM.TrainDialog, trainDialog2:
     return true
 }
 
+export function mergeTrainDialogTags(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): string[] {
+    return [...trainDialog1.tags, ...trainDialog2.tags].filter((item, i, ar) => ar.indexOf(item) === i)
+}
+
+export function mergeTrainDialogDescription(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): string {
+     // Assume longest description is best 
+    return trainDialog1.description.length > trainDialog2.description.length 
+        ? trainDialog1.description : trainDialog2.description
+}
+
 // Merges smaller dialog into larger one and returns it
 export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): CLM.TrainDialog {
     if (!doesTrainDialogMatch(trainDialog1, trainDialog2)) {
@@ -284,7 +313,8 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
     // Merge from smallest into largest
     const d1Longer = isTrainDialogLonger(trainDialog1, trainDialog2)
     const smallTrainDialog = d1Longer ? trainDialog2 : trainDialog1
-    const largeTrainDialog = d1Longer ? trainDialog1 : trainDialog2
+    // Make copy of the one that I'm altering
+    const largeTrainDialog = deepCopy(d1Longer ? trainDialog1 : trainDialog2)
 
     // Copy text variations from small dialog onto large one
     let roundIndex = 0
@@ -301,11 +331,7 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
         roundIndex = roundIndex + 1
     }
 
-    // Assume longest description is best (TODO: Let user choose)
-    largeTrainDialog.description = largeTrainDialog.description.length > smallTrainDialog.description.length 
-        ? largeTrainDialog.description : smallTrainDialog.description
-
-    // Unique merge of tags
-    largeTrainDialog.tags = [...largeTrainDialog.tags, ...smallTrainDialog.tags].filter((item, i, ar) => ar.indexOf(item) === i)
+    largeTrainDialog.description = mergeTrainDialogDescription(largeTrainDialog, smallTrainDialog)
+    largeTrainDialog.tags = mergeTrainDialogTags(largeTrainDialog, smallTrainDialog)
     return largeTrainDialog
 }

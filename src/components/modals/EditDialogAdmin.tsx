@@ -6,23 +6,23 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import * as DialogUtils from '../../Utils/dialogUtils'
-import "./TeachSessionModal.css"
-import { returntypeof } from 'react-redux-typescript'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import { State } from '../../types'
+import DialogMetadata from './DialogMetadata'
 import actions from '../../actions'
 import EntityExtractor from './EntityExtractor'
 import ActionScorer from './ActionScorer'
 import MemoryTable from './MemoryTable'
+import FormattedMessageId from '../FormattedMessageId'
+import TrainingStatusContainer from '../TrainingStatusContainer'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { State } from '../../types'
 import { Activity } from 'botframework-directlinejs'
 import { FM } from '../../react-intl-messages'
-import DialogMetadata from './DialogMetadata'
 import { EditDialogType, EditState } from '.'
-import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import TrainingStatusContainer from '../TrainingStatusContainer'
 import './EditDialogAdmin.css'
+import "./TeachSessionModal.css"
 
 class EditDialogAdmin extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
@@ -395,27 +395,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                             onAddTag={this.props.onAddTag}
                             onRemoveTag={this.props.onRemoveTag}
                         />
-                        /*<div className={`cl-dialog-metadata ${OF.FontClassNames.mediumPlus}`}>
-                            <label htmlFor="description"><OF.Icon iconName="TextField" className="cl-icon" /><span><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</span></label>
-                            <BorderlessTextInput
-                                data-testid="train-dialog-description"
-                                id="description"
-                                placeholder={Util.formatMessageId(intl, FM.DESCRIPTION_PLACEHOLDER)}
-                                value={this.props.description}
-                                onChange={this.props.onChangeDescription}
-                            />
-                            <label htmlFor="tags"><OF.Icon iconName="Tag" className="cl-icon" /><span><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</span></label>
-                            <TagsInput
-                                data-testid="train-dialog-tags"
-                                id="tags"
-                                // Map to objects because odd Fuse.js behavior on string[]
-                                // See: https://github.com/krisk/Fuse/issues/287
-                                allUniqueTags={this.props.allUniqueTags.map(t => ({ text: t }))}
-                                tags={this.props.tags}
-                                onAdd={this.props.onAddTag}
-                                onRemove={this.props.onRemoveTag}
-                            />
-                    </div>*/}
+                    }
                     <TrainingStatusContainer
                         app={this.props.app}
                     />

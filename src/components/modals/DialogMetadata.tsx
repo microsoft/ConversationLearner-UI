@@ -10,15 +10,17 @@ import BorderlessTextInput from '../BorderlessTextInput'
 import FormattedMessageId from '../FormattedMessageId'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import './MergeModal.css'
+import './TeachSessionAdmin.css'
 
 interface ReceivedProps {
     description: string
     tags: string[]
+    userInput?: string
     allUniqueTags: string[]
-    onChangeDescription: (description: string) => void
-    onAddTag: (tag: string) => void
-    onRemoveTag: (tag: string) => void
+    onChangeDescription?: (description: string) => void
+    onAddTag?: (tag: string) => void
+    onRemoveTag?: (tag: string) => void
+    readOnly?: boolean
 }
 
 type Props = ReceivedProps & InjectedIntlProps
@@ -34,9 +36,10 @@ const DialogMetadata: React.SFC<Props> = (props: Props) => {
             <BorderlessTextInput
                 data-testid="train-dialog-description"
                 id="description"
-                placeholder={Util.formatMessageId(props.intl, FM.DESCRIPTION_PLACEHOLDER)}
+                placeholder={props.readOnly ? "" : Util.formatMessageId(props.intl, FM.DESCRIPTION_PLACEHOLDER)}
                 value={props.description}
-                onChange={props.onChangeDescription}
+                onChange={props.onChangeDescription ? props.onChangeDescription : () => {}}
+                readOnly={props.readOnly}
             />
             <label htmlFor="tags"><OF.Icon iconName="Tag" className="cl-icon" /><span><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</span></label>
             <TagsInput
@@ -46,9 +49,13 @@ const DialogMetadata: React.SFC<Props> = (props: Props) => {
                 // See: https://github.com/krisk/Fuse/issues/287
                 allUniqueTags={props.allUniqueTags.map(t => ({ text: t }))}
                 tags={props.tags}
-                onAdd={props.onAddTag}
-                onRemove={props.onRemoveTag}
+                onAdd={props.onAddTag ? props.onAddTag : () => {}}
+                onRemove={props.onRemoveTag ? props.onRemoveTag : () => {}}
+                readOnly={props.readOnly}
             />
+            {props.userInput &&
+                <label>{props.userInput}`</label>
+            }
         </div>
     )
 }

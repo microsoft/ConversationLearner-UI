@@ -114,7 +114,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                                 data-testid="train-dialogs-validity-indicator"
                             />
                         }
-                        {DialogUtils.trainDialogRenderDescription(trainDialog)}
+                        <span data-testid="train-dialogs-description">
+                            {DialogUtils.trainDialogRenderDescription(trainDialog)}
+                        </span>
                     </span>
                     {/* TODO: Keep firstInput and lastInput available in DOM until tests are upgraded */}
                     <span style={{ display: "none" }} data-testid="train-dialogs-first-input">{firstInput ? firstInput : ''}</span>
@@ -814,7 +816,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onCloseMergeModal(shouldMerge: boolean) {
+    async onCloseMergeModal(shouldMerge: boolean, description: string = "", tags: string[] = []) {
 
         if (!this.state.mergeNewTrainDialog || !this.state.mergeExistingTrainDialog) {
             throw new Error ("Expected merge props to be set")
@@ -824,7 +826,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         ? this.state.currentTrainDialog.trainDialogId : null
 
         if (shouldMerge) {
-            await this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, sourceTrainDialogId)
+            await this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags, sourceTrainDialogId)
         }
         else {
             // If editing an existing Train Dialog, replace existing with the new one
@@ -1274,7 +1276,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         iconProps={{ iconName: 'Add' }}
                     />
                     <OF.DefaultButton
-                        className="cl-button--tree-view"
+                        className="cl-rotate"
                         iconProps={{ iconName: 'BranchFork2' }}
                         onClick={this.onOpenTreeView}
                         ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
@@ -1402,10 +1404,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
                 <MergeModal
                     open={this.state.mergeExistingTrainDialog !== null}
-                    onMerge={() => this.onCloseMergeModal(true)}
+                    onMerge={(description, tags) => this.onCloseMergeModal(true, description, tags)}
                     onCancel={() => this.onCloseMergeModal(false)}
-                    trainDialog1={this.state.mergeExistingTrainDialog}
-                    trainDialog2={this.state.mergeNewTrainDialog}
+                    savedTrainDialog={this.state.mergeNewTrainDialog}
+                    existingTrainDialog={this.state.mergeExistingTrainDialog}
+                    allUniqueTags={this.props.allUniqueTags}
                 />
                 <EditDialogModal
                     data-testid="train-dialog-modal"
