@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as IntlMessages from '../react-intl-messages'
+import { MessageValue } from 'react-intl'
 import * as moment from 'moment'
 import * as stringify from 'fast-json-stable-stringify'
 
@@ -87,11 +88,11 @@ export function getDefaultText(id: IntlMessages.FM): string {
     return IntlMessages.default["en-US"].hasOwnProperty(id) ? IntlMessages.default["en-US"][id] : ""
 }
 
-export function formatMessageId(intl: ReactIntl.InjectedIntl, id: IntlMessages.FM) {
+export function formatMessageId(intl: ReactIntl.InjectedIntl, id: IntlMessages.FM, values?: {[key: string]: MessageValue}) {
     return intl.formatMessage({
         id: id,
         defaultMessage: getDefaultText(id)
-    })
+    }, values)
 }
 
 export function earlierDateOrTimeToday(timestamp: string): string {

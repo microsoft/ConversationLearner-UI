@@ -28,7 +28,7 @@ const userShape = {
 }
 
 const NODE_WIDTH = 250
-const NODE_HEIGHT = 155
+const NODE_HEIGHT = 200
 
 interface ComponentState {
     tree: TreeNode | null 

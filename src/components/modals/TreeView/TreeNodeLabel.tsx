@@ -84,7 +84,7 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
         if (!treeNode || treeNode.depth === 0) {
             return null
         }
-       
+
         // Show count of input
         let userInputs: TreeUserInput[] = []
         if (treeNode.userInput) {
