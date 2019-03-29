@@ -8,22 +8,21 @@ import * as Util from '../../../Utils/util'
 import * as DialogUtils from '../../../Utils/dialogUtils'
 import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
-import MergeModal from '../../../components/modals/MergeModal'
+import FormattedMessageId from '../../../components/FormattedMessageId'
+import actions from '../../../actions'
+import produce from 'immer'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../../types'
 import { SelectionType } from '../../../types/const'
-import FormattedMessageId from '../../../components/FormattedMessageId'
-import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState } from '../../../components/modals'
+import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState, MergeModal } from '../../../components/modals'
 import { ConflictPair } from '../../../components/modals/LogConversionConflictModal'
-import actions from '../../../actions'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { EditHandlerArgs, cleanTrainDialog } from './TrainDialogs'
 import { TeachSessionState } from '../../../types/StateTypes'
-import produce from 'immer'
 import { EntityLabelConflictError } from '../../../types/errors'
 
 interface IRenderableColumn extends OF.IColumn {
@@ -1217,7 +1216,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         initialHistory={this.state.history}
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
-                        allUniqueTags={[]}
+                        allUniqueTags={this.props.allUniqueTags}
 
                         conflictPairs={this.state.conflictPairs}
                         onAcceptConflictResolution={this.onAcceptConflictChanges}
@@ -1256,7 +1255,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onSaveDialog={(editedTrainDialog, validity) => this.onSaveTrainDialog(editedTrainDialog, validity)}
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={() => { }}
-                    allUniqueTags={[]}
+                    allUniqueTags={this.props.allUniqueTags}
 
                     conflictPairs={this.state.conflictPairs}
                     onAcceptConflictResolution={this.onAcceptConflictChanges}

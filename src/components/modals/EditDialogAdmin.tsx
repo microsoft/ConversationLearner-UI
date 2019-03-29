@@ -385,17 +385,14 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         />
                         {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
                     </div>
-                    {isLogDialog
-                        ? <div>{/* placeholder for grid */}</div>
-                        : <DialogMetadata
-                            description={this.props.description}
-                            tags={this.props.tags}
-                            allUniqueTags={this.props.allUniqueTags}
-                            onChangeDescription={this.props.onChangeDescription}
-                            onAddTag={this.props.onAddTag}
-                            onRemoveTag={this.props.onRemoveTag}
-                        />
-                    }
+                    <DialogMetadata
+                        description={this.props.description}
+                        tags={this.props.tags}
+                        allUniqueTags={this.props.allUniqueTags}
+                        onChangeDescription={this.props.onChangeDescription}
+                        onAddTag={this.props.onAddTag}
+                        onRemoveTag={this.props.onRemoveTag}
+                    />
                     <TrainingStatusContainer
                         app={this.props.app}
                     />
