@@ -150,7 +150,7 @@ export function trainDialogSampleInput(trainDialog: CLM.TrainDialog): string {
         length = length + userInput.length
         round = round + 1
     }
-    return userInputs.join(" ◾️ ").slice(0,MAX_SAMPLE_INPUT_LENGTH)
+    return userInputs.join(" ◾️ ").slice(0, MAX_SAMPLE_INPUT_LENGTH)
 }
 
 export function trainDialogFirstInput(trainDialog: CLM.TrainDialog): string {
@@ -202,11 +202,14 @@ function doesExtractorStepMatch(extractorStep1: CLM.TrainExtractorStep, extracto
     // Only need to test the 1st Text Variation as they are equivalent w/in a round
     const labelEntities1 = extractorStep1.textVariations[0].labelEntities
     const labelEntities2 = extractorStep2.textVariations[0].labelEntities
-    if (labelEntities1.length !== labelEntities2.length) {
+
+    // Get unique ids
+    const entityIds1 = labelEntities1.map(le => le.entityId).filter((item, i, ar) => ar.indexOf(item) === i)
+    const entityIds2 = labelEntities2.map(le => le.entityId).filter((item, i, ar) => ar.indexOf(item) === i)
+
+    if (entityIds1.length !== entityIds2.length) {
         return false
     }
-    const entityIds1 = labelEntities1.map(le => le.entityId)
-    const entityIds2 = labelEntities2.map(le => le.entityId)
 
     if (entityIds1.filter(entityId => entityIds2.indexOf(entityId) < 0).length > 0) {
         return false
@@ -302,6 +305,7 @@ export function isTrainDialogLonger(trainDialog1: CLM.TrainDialog, trainDialog2:
     if (lastRound1.scorerSteps.length < lastRound2.scorerSteps.length) {
         return false
     }
+    // Prefer trainDialog1
     return true
 }
 

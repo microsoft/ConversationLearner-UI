@@ -91,7 +91,7 @@ describe('dialogUtils', () => {
 
             const newDialog = copyTrainDialog()
 
-            // Add a label
+            // Add a label - should fail
             let newLabelledEntities = makeLabelEntities({"new_id": "value"})
             newDialog.rounds[0].extractorStep.textVariations[0].labelEntities.push(newLabelledEntities[0])
             
@@ -101,7 +101,7 @@ describe('dialogUtils', () => {
             result = doesTrainDialogMatch(trainDialog1, newDialog)
             expect(result).toEqual(false)
 
-            // Delete labels
+            // Delete all labels - should fail
             newDialog.rounds[0].extractorStep.textVariations[0].labelEntities = []
             
             result = doesTrainDialogMatch(newDialog, trainDialog1)
@@ -110,7 +110,7 @@ describe('dialogUtils', () => {
             result = doesTrainDialogMatch(trainDialog1, newDialog)
             expect(result).toEqual(false)
 
-            // Different labels
+            // Different labels - should fail
             newLabelledEntities = makeLabelEntities({"entityN1_id": "entity1_value", "entityN2_id": "entity2_value"})
             newDialog.rounds[0].extractorStep.textVariations[0].labelEntities = newLabelledEntities
             
@@ -120,6 +120,15 @@ describe('dialogUtils', () => {
             result = doesTrainDialogMatch(trainDialog1, newDialog)
             expect(result).toEqual(false)
 
+            // Multiple of same entity should be ok
+            newLabelledEntities = deepCopy(trainDialog1.rounds[0].extractorStep.textVariations[0].labelEntities)
+            newLabelledEntities.push(trainDialog1.rounds[0].extractorStep.textVariations[0].labelEntities[0])
+            newDialog.rounds[0].extractorStep.textVariations[0].labelEntities = newLabelledEntities
+            result = doesTrainDialogMatch(newDialog, trainDialog1)
+            expect(result).toEqual(true)
+
+            result = doesTrainDialogMatch(trainDialog1, newDialog)
+            expect(result).toEqual(true)
         })
 
         test('extraScorerStepLastRound', () => {
