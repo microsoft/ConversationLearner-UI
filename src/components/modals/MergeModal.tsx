@@ -110,7 +110,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
                 </div>    
                 <div>
                     <OF.Label className="ms-Label--tight cl-label">
-                        {Util.formatMessageId(intl, FM.MERGE_BUTTON_MERGE)}
+                        {Util.formatMessageId(intl, FM.MERGE_LABEL_MERGED)}
                     </OF.Label>
                     <div className="cl-merge-box">
                         <DialogMetadata
