@@ -140,25 +140,15 @@ export function getBestAction(scoreResponse: CLM.ScoreResponse, allActions: CLM.
     return best
 }
 
-export function logDialogSampleInput(trainDialog: CLM.LogDialog): string {
+export function dialogSampleInput(dialog: CLM.TrainDialog | CLM.LogDialog): string {
     const userInputs: string[] = []
     let round = 0
     let length = 0
-    while (round < trainDialog.rounds.length && length < MAX_SAMPLE_INPUT_LENGTH) {
-        const userInput = trainDialog.rounds[round].extractorStep.text
-        userInputs.push(userInput)
-        length = length + userInput.length
-        round = round + 1
-    }
-    return userInputs.join(" ◾️ ").slice(0, MAX_SAMPLE_INPUT_LENGTH)
-}
-
-export function trainDialogSampleInput(trainDialog: CLM.TrainDialog): string {
-    const userInputs: string[] = []
-    let round = 0
-    let length = 0
-    while (round < trainDialog.rounds.length && length < MAX_SAMPLE_INPUT_LENGTH) {
-        const userInput = trainDialog.rounds[round].extractorStep.textVariations[0].text
+    while (round < dialog.rounds.length && length < MAX_SAMPLE_INPUT_LENGTH) {
+        const userInput = 
+            (dialog as CLM.LogDialog).rounds[round].extractorStep.text ||
+            (dialog as CLM.TrainDialog).rounds[round].extractorStep.textVariations[0].text
+        
         userInputs.push(userInput)
         length = length + userInput.length
         round = round + 1
@@ -190,7 +180,7 @@ export function trainDialogRenderTags(trainDialog: CLM.TrainDialog): React.React
 }
 
 export function trainDialogRenderDescription(trainDialog: CLM.TrainDialog): string {
-    return trainDialog.description || trainDialogSampleInput(trainDialog)
+    return trainDialog.description || dialogSampleInput(trainDialog)
 }
 
 function doesScorerStepMatch(scorerStep1: CLM.TrainScorerStep, scorerStep2: CLM.TrainScorerStep): boolean {

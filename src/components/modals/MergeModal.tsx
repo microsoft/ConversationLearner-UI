@@ -45,8 +45,8 @@ class MergeModal extends React.Component<Props, ComponentState> {
             if (this.props.savedTrainDialog && this.props.existingTrainDialog) {
 
                 const userInput = DialogUtils.isTrainDialogLonger(this.props.savedTrainDialog, this.props.existingTrainDialog)
-                    ? DialogUtils.trainDialogSampleInput(this.props.savedTrainDialog)
-                    : DialogUtils.trainDialogSampleInput(this.props.existingTrainDialog)
+                    ? DialogUtils.dialogSampleInput(this.props.savedTrainDialog)
+                    : DialogUtils.dialogSampleInput(this.props.existingTrainDialog)
 
                 this.setState({
                     description: DialogUtils.mergeTrainDialogDescription(this.props.savedTrainDialog, this.props.existingTrainDialog),
@@ -129,7 +129,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
                     <div className="cl-merge-box cl-merge-box--readonly">
                         <DialogMetadata
                                 description={this.props.savedTrainDialog.description}
-                                userInput={DialogUtils.trainDialogSampleInput(this.props.savedTrainDialog)}
+                                userInput={DialogUtils.dialogSampleInput(this.props.savedTrainDialog)}
                                 tags={this.props.savedTrainDialog.tags}
                                 allUniqueTags={[]}
                                 readOnly={true}
@@ -141,7 +141,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
                     <div className="cl-merge-box cl-merge-box--readonly">
                         <DialogMetadata
                                 description={this.props.existingTrainDialog.description}
-                                userInput={DialogUtils.trainDialogSampleInput(this.props.existingTrainDialog)}
+                                userInput={DialogUtils.dialogSampleInput(this.props.existingTrainDialog)}
                                 tags={this.props.existingTrainDialog.tags}
                                 allUniqueTags={[]}
                                 readOnly={true}
