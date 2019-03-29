@@ -822,7 +822,7 @@ i[data-icon-name="Edit"]:hover {
   color: 1px solid var(--color-neutralQuaternary) !important;
 }
 
-.cl-button--tree-view i {
+.cl-rotate i {
   transform: rotateX(180deg);
 }
 

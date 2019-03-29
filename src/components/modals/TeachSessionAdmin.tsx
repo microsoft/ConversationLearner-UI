@@ -3,26 +3,24 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as DialogUtils from '../../Utils/dialogUtils'
+import * as OF from 'office-ui-fabric-react'
+import * as CLM from '@conversationlearner/models'
+import actions from '../../actions'
+import DialogMetadata from './DialogMetadata'
+import ActionScorer from './ActionScorer'
+import EntityExtractor from './EntityExtractor'
+import MemoryTable from './MemoryTable'
+import TrainingStatusContainer from '../TrainingStatusContainer'
+import FormattedMessageId from '../FormattedMessageId'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import actions from '../../actions'
-import * as CLM from '@conversationlearner/models'
 import { EditDialogType } from '../../components/modals'
-import ActionScorer from './ActionScorer'
-import EntityExtractor from './EntityExtractor'
-import MemoryTable from './MemoryTable'
 import { FM } from '../../react-intl-messages'
-import * as Util from '../../Utils/util'
-import * as DialogUtils from '../../Utils/dialogUtils'
 import { TeachSessionState } from '../../types/StateTypes'
-import TrainingStatusContainer from '../TrainingStatusContainer'
-import * as OF from 'office-ui-fabric-react'
-import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import TagsInput from '../TagsInput'
-import BorderlessTextInput from '../BorderlessTextInput'
 import './TeachSessionAdmin.css'
 
 interface RoundLookup {
@@ -292,7 +290,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             return null;
         }
 
-        const { intl } = this.props
         const renderData = this.getRenderData()
         const autoTeachWithRound = this.props.teachSession.autoTeach
         const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL)
@@ -310,27 +307,15 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     </div>
                     {isLogDialog
                         ? <div>{/* placeholder for grid */}</div>
-                        : <div className={`cl-dialog-metadata ${OF.FontClassNames.mediumPlus}`}>
-                            <label htmlFor="description"><OF.Icon iconName="TextField" className="cl-icon" /><span><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</span></label>
-                            <BorderlessTextInput
-                                data-testid="train-dialog-description"
-                                id="description"
-                                placeholder={Util.formatMessageId(intl, FM.DESCRIPTION_PLACEHOLDER)}
-                                value={this.props.description}
-                                onChange={this.props.onChangeDescription}
-                            />
-                            <label htmlFor="tags"><OF.Icon iconName="Tag" className="cl-icon" /><span><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</span></label>
-                            <TagsInput
-                                data-testid="train-dialog-tags"
-                                id="tags"
-                                // Map to objects because odd Fuse.js behavior on string[]
-                                // See: https://github.com/krisk/Fuse/issues/287
-                                allUniqueTags={this.props.allUniqueTags.map(t => ({ text: t }))}
-                                tags={this.props.tags}
-                                onAdd={this.props.onAddTag}
-                                onRemove={this.props.onRemoveTag}
-                            />
-                        </div>}
+                        : <DialogMetadata
+                            description={this.props.description}
+                            tags={this.props.tags}
+                            allUniqueTags={this.props.allUniqueTags}
+                            onChangeDescription={this.props.onChangeDescription}
+                            onAddTag={this.props.onAddTag}
+                            onRemoveTag={this.props.onRemoveTag}
+                        />
+                    }
                     <TrainingStatusContainer
                         app={this.props.app}
                     />

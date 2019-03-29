@@ -1,8 +1,12 @@
 .cl-dialog-metadata {
     display: grid;
-    grid-template: auto / max-content 1fr;
+    grid-template: 23px / max-content 1fr;
     grid-gap: 0.25em 0.5em;
     align-items: start;
+}
+
+.cl-dialog-metadata--short {
+    grid-template: 23px 23px / max-content 1fr;
 }
 
 .cl-dialog-metadata label {
@@ -10,6 +14,7 @@
     grid-template: auto / max-content 1fr;
     grid-gap: 0.5rem;
     align-items: center;
+    height: 26px;
 }
 
 /* Special to align header, don't repeat this */
