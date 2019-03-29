@@ -12,6 +12,7 @@ import EditDialogAdmin from './EditDialogAdmin'
 import ErrorPanel from './ErrorPanel'
 import Expando from './Expando'
 import LogConversionConflictModal from './LogConversionConflictModal'
+import MergeModal from './MergeModal'
 import SpinnerWindow from './SpinnerWindow'
 import TeachSessionModal from './TeachSessionModal'
 import TutorialImporterModal from './TutorialImporter'
@@ -46,6 +47,7 @@ export {
     ErrorPanel,
     Expando,
     LogConversionConflictModal,
+    MergeModal,
     SpinnerWindow,
     TeachSessionModal,
     TutorialImporterModal,
