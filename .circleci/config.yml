@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:lts-browsers
+      - image: cypress/browsers:chrome65-ff57
         environment:
           TERM: xterm
     steps:
