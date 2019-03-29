@@ -97,7 +97,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 return <>
                     <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-first-input">
                         <span data-testid="train-dialogs-description">
-                            {DialogUtils.logDialogSampleInput(trainDialog)}
+                            {DialogUtils.dialogSampleInput(trainDialog)}
                         </span>
                     </span>
                 </>
