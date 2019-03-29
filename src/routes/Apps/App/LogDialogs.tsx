@@ -26,8 +26,8 @@ import { TeachSessionState } from '../../../types/StateTypes'
 import { EntityLabelConflictError } from '../../../types/errors'
 
 interface IRenderableColumn extends OF.IColumn {
-    render: (x: CLM.LogDialog, component: LogDialogs) => React.ReactNode
-    getSortValue: (logDialog: CLM.LogDialog, component: LogDialogs) => string
+    render: (x: CLM.LogDialog, logRanking: {[key: string]: number} | null, component: LogDialogs) => React.ReactNode
+    getSortValue: (logDialog: CLM.LogDialog, logRanking: {[key: string]: number} | null, component: LogDialogs) => string
 }
 
 const returnStringWhenError = (s: string) => {
@@ -76,11 +76,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 80,
             maxWidth: 120,
             isResizable: true,
-            render: (logDialog, component) => {
+            render: (logDialog, rank, component) => {
                 const tagName = getTagName(logDialog, component);
                 return <span className={OF.FontClassNames.mediumPlus}>{tagName}</span>;
             },
-            getSortValue: (logDialog, component) => {
+            getSortValue: (logDialog, rank, component) => {
                 const tagName = getTagName(logDialog, component)
                 return tagName ? tagName.toLowerCase() : ''
             }
@@ -92,11 +92,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: 1500,
             isResizable: true,
-            render: (trainDialog, component) => {
+            render: (trainDialog) => {
 
                 return <>
                     <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-first-input">
-                        <span data-testid="train-dialogs-description">
+                        <span>
                             {DialogUtils.dialogSampleInput(trainDialog)}
                         </span>
                     </span>
@@ -116,6 +116,30 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: false,
             render: logDialog => <span className={OF.FontClassNames.mediumPlus}>{logDialog.rounds.length}</span>,
             getSortValue: logDialog => logDialog.rounds.length.toString().padStart(4, '0')
+        },
+        {
+            key: 'rank',
+            name: Util.formatMessageId(intl, FM.LOGDIALOGS_RANK),
+            fieldName: 'rank',
+            minWidth: 50,
+            maxWidth: 50,
+            isResizable: false,
+            render: (logDialog, logRanking: {[key: string]: number} | null) => {
+                if (logRanking) {
+                    return logRanking[logDialog.logDialogId] ? 
+                    <OF.Icon iconName="LikeSolid" className="cl-icon" /> : 
+                    <OF.Icon iconName="DislikeSolid" className="cl-icon" />
+                }
+                else {
+                    return "?"
+                }
+            },
+            getSortValue: (logDialog, logRanking: {[key: string]: number} | null) => {
+                if (logRanking) {
+                    return logRanking[logDialog.logDialogId].toString()
+                }
+                return ""
+            }
         },
         {
             key: 'created',
@@ -156,6 +180,7 @@ interface ComponentState {
     validationErrors: CLM.ReplayError[]
     // Hack to keep screen from flashing when transition to Edit Page
     lastTeachSession: TeachSessionState | null
+    logRanking: {[key: string]: number} | null
 
 }
 const defaultAcceptConflictResolutionFn = async () => { throw new Error(`acceptConflictResolutionFn called without being assigned.`) }
@@ -190,7 +215,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     
     constructor(props: Props) {
         super(props)
-        const columns = getColumns(this.props.intl);
+        const columns = getColumns(this.props.intl)
         this.state = {
             columns: columns,
             sortColumn: columns[5],
@@ -210,7 +235,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             history: [],
             lastAction: null,
             validationErrors: [],
-            lastTeachSession: null
+            lastTeachSession: null,
+            logRanking: null
         }
     }
 
@@ -220,15 +246,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         if (this.state.sortColumn) {
             logDialogsCopy
                 .sort((a, b) => {
-                    let firstValue = this.state.sortColumn.getSortValue(a, this)
-                    let secondValue = this.state.sortColumn.getSortValue(b, this)
+                    let firstValue = this.state.sortColumn.getSortValue(a, this.state.logRanking, this)
+                    let secondValue = this.state.sortColumn.getSortValue(b, this.state.logRanking, this)
                     let compareValue = firstValue.localeCompare(secondValue)
 
                     // If primary sort is the same do secondary sort on another column, to prevent sort jumping around
                     if (compareValue === 0) {
                         const sortColumn2 = ((this.state.sortColumn !== this.state.columns[1]) ? this.state.columns[1] : this.state.columns[2]) as IRenderableColumn
-                        firstValue = sortColumn2.getSortValue(a, this)
-                        secondValue = sortColumn2.getSortValue(b, this)
+                        firstValue = sortColumn2.getSortValue(a, this.state.logRanking, this)
+                        secondValue = sortColumn2.getSortValue(b, this.state.logRanking, this)
                         compareValue = firstValue.localeCompare(secondValue)
                     }
 
@@ -339,8 +365,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
+    @OF.autobind
     async onClickSync() {
         await this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId);
+    }
+
+    @OF.autobind
+    async onClickRank() {
+        const logRanking = DialogUtils.logDialogRanking(this.props.logDialogs, this.props.trainDialogs)
+        this.setState({logRanking})
     }
 
     @OF.autobind
@@ -1083,10 +1116,17 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                     <OF.DefaultButton
                         data-testid="logdialogs-button-refresh"
-                        onClick={() => this.onClickSync()}
+                        onClick={this.onClickSync}
                         ariaDescription="Refresh"
                         text="Refresh"
                         iconProps={{ iconName: 'Sync' }}
+                    />
+                    <OF.DefaultButton
+                        data-testid="logdialogs-button-refresh"
+                        onClick={this.onClickRank}
+                        ariaDescription="Rank"
+                        text="Rank"
+                        iconProps={{ iconName: 'TestImpactSolid' }}
                     />
                 </div>
                 {
@@ -1127,7 +1167,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                                 columns={this.state.columns}
                                 checkboxVisibility={OF.CheckboxVisibility.hidden}
                                 onColumnHeaderClick={this.onClickColumnHeader}
-                                onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
+                                onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this.state.logRanking, this))}
                                 onActiveItemChanged={logDialog => this.onClickLogDialogItem(logDialog)}
                             />
                         </React.Fragment>

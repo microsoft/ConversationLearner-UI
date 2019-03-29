@@ -8,6 +8,7 @@ import * as OF from 'office-ui-fabric-react'
 import { deepCopy } from './util'
 import { Activity } from 'botframework-directlinejs'
 import TagsReadOnly from '../components/TagsReadOnly'
+import { ModelUtils } from '@conversationlearner/models';
 
 const MAX_SAMPLE_INPUT_LENGTH = 150
 
@@ -352,4 +353,14 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
     largeTrainDialog.description = mergeTrainDialogDescription(largeTrainDialog, smallTrainDialog)
     largeTrainDialog.tags = mergeTrainDialogTags(largeTrainDialog, smallTrainDialog)
     return largeTrainDialog
+}
+
+export function logDialogRanking(logDialogs: CLM.LogDialog[], trainDialogs: CLM.TrainDialog[]): {[key: string]: number} {
+    const rankIndex: {[key: string]: number} = {}
+    for (const logDialog of logDialogs) {
+        const logAsTrainDialog = ModelUtils.ToTrainDialog(logDialog)
+        const matchingTrainDialog = findMatchingTrainDialog(logAsTrainDialog, trainDialogs)
+        rankIndex[logDialog.logDialogId] = matchingTrainDialog ? 0 : 1
+    }
+    return rankIndex
 }
