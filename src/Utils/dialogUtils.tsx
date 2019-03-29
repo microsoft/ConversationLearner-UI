@@ -140,6 +140,19 @@ export function getBestAction(scoreResponse: CLM.ScoreResponse, allActions: CLM.
     return best
 }
 
+export function logDialogSampleInput(trainDialog: CLM.LogDialog): string {
+    const userInputs: string[] = []
+    let round = 0
+    let length = 0
+    while (round < trainDialog.rounds.length && length < MAX_SAMPLE_INPUT_LENGTH) {
+        const userInput = trainDialog.rounds[round].extractorStep.text
+        userInputs.push(userInput)
+        length = length + userInput.length
+        round = round + 1
+    }
+    return userInputs.join(" ◾️ ").slice(0, MAX_SAMPLE_INPUT_LENGTH)
+}
+
 export function trainDialogSampleInput(trainDialog: CLM.TrainDialog): string {
     const userInputs: string[] = []
     let round = 0
