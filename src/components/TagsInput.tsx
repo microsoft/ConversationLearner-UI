@@ -280,7 +280,7 @@ class component extends React.Component<Props, State> {
                 {!this.props.readOnly && !hasMaxTags && (!showForm
                     ? <button className="cl-tags__button-add" id={this.props.id} onClick={() => this.onClickAdd()} data-testid="tags-input-add-tag-button" >
                         {this.props.tags.length === 0
-                            ? <FormattedMessageId id={FM.TAGS_INPUT_ADD} />
+                            ? <FormattedMessageId id={FM.TAGSINPUT_ADD} />
                             : <OF.Icon iconName="Add" />}
                     </button>
                     : <>
@@ -313,7 +313,7 @@ class component extends React.Component<Props, State> {
                                 }
                             </div>
                         </form>
-                        {pendingTagIsDuplicate && <div className="cl-tags-error"><OF.Icon iconName="Warning" /> <FormattedMessageId id={FM.TAGS_INPUT_ERROR_DUPLICATE} /></div>}
+                        {pendingTagIsDuplicate && <div className="cl-tags-error"><OF.Icon iconName="Warning" /> <FormattedMessageId id={FM.TAGSINPUT_ERROR_DUPLICATE} /></div>}
                     </>)
                 }
             </div>

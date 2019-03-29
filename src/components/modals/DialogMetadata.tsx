@@ -28,20 +28,39 @@ type Props = ReceivedProps & InjectedIntlProps
 const DialogMetadata: React.SFC<Props> = (props: Props) => {
 
     return (
-        <div className={`cl-dialog-metadata ${OF.FontClassNames.mediumPlus}`}>
+        <div className={`cl-dialog-metadata ${!props.userInput ? 'cl-dialog-metadata--short' : ''} ${OF.FontClassNames.mediumPlus}`}>
+            {!props.userInput ? null :
+                <label htmlFor="user input">
+                    <OF.Icon iconName="Chat" className="cl-icon" />
+                    <span><FormattedMessageId id={FM.DIALOGMETADATA_USERINPUT_LABEL} />:</span>
+                </label>
+            }
+            {!props.userInput ? null :
+                <BorderlessTextInput
+                    data-testid="dialogmetadata-userinput"
+                    id="userinput"
+                    placeholder=""
+                    value={props.userInput || ''}
+                    onChange={() => {}}
+                    readOnly={true}
+                />
+            }
             <label htmlFor="description">
                 <OF.Icon iconName="TextField" className="cl-icon" />
-                <span><FormattedMessageId id={FM.DESCRIPTION_LABEL} />:</span>
+                <span><FormattedMessageId id={FM.DIALOGMETADATA_DESCRIPTION_LABEL} />:</span>
             </label>
             <BorderlessTextInput
                 data-testid="train-dialog-description"
                 id="description"
-                placeholder={props.readOnly ? "" : Util.formatMessageId(props.intl, FM.DESCRIPTION_PLACEHOLDER)}
+                placeholder={props.readOnly ? "" : Util.formatMessageId(props.intl, FM.DIALOGMETADATA_DESCRIPTION_PLACEHOLDER)}
                 value={props.description}
                 onChange={props.onChangeDescription ? props.onChangeDescription : () => {}}
                 readOnly={props.readOnly}
             />
-            <label htmlFor="tags"><OF.Icon iconName="Tag" className="cl-icon" /><span><FormattedMessageId id={FM.TAGS_INPUT_LABEL} />:</span></label>
+            <label htmlFor="tags">
+                <OF.Icon iconName="Tag" className="cl-icon" />
+                <span><FormattedMessageId id={FM.DIALOGMETADATA_TAGS_LABEL} />:</span>
+            </label>
             <TagsInput
                 data-testid="train-dialog-tags"
                 id="tags"
@@ -53,9 +72,6 @@ const DialogMetadata: React.SFC<Props> = (props: Props) => {
                 onRemove={props.onRemoveTag ? props.onRemoveTag : () => {}}
                 readOnly={props.readOnly}
             />
-            {props.userInput &&
-                <label>{props.userInput}`</label>
-            }
         </div>
     )
 }

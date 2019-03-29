@@ -367,12 +367,13 @@ export enum FM {
     SETINGS_DELETEISPERMANENT = 'Settings.deleteIsPermanent',
 
     // Tags and Description
-    TAGS_INPUT_LABEL = 'Tags.label',
-    TAGS_INPUT_ADD = 'TagsInput.add',
-    TAGS_INPUT_ERROR_DUPLICATE = 'TagsInput.error.duplicate',
-    TAGS_READONLY_EMPTY = 'TagsReadOnly.empty',
-    DESCRIPTION_LABEL = 'Description.label',
-    DESCRIPTION_PLACEHOLDER = 'Description.placeholder',
+    DIALOGMETADATA_TAGS_LABEL = 'DialogMetadata.Tags.label',
+    TAGSINPUT_ADD = 'TagsInput.add',
+    TAGSINPUT_ERROR_DUPLICATE = 'TagsInput.error.duplicate',
+    TAGSINPUT_READONLY_EMPTY = 'TagsReadOnly.empty',
+    DIALOGMETADATA_DESCRIPTION_LABEL = 'DialogMetadata.Description.label',
+    DIALOGMETADATA_DESCRIPTION_PLACEHOLDER = 'DialogMetadata.Description.placeholder',
+    DIALOGMETADATA_USERINPUT_LABEL = 'DialogMetadata.UserInput.label',
 
     // TeachSessionAdmin
     TEACHSESSIONADMIN_DIALOGMODE_USER = 'TeachSessionAdmin.dialogMode.user',
@@ -918,6 +919,12 @@ export default {
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
 
+        // DialogMetadata
+        [FM.DIALOGMETADATA_TAGS_LABEL]: 'Tags',
+        [FM.DIALOGMETADATA_DESCRIPTION_LABEL]: 'Description',
+        [FM.DIALOGMETADATA_DESCRIPTION_PLACEHOLDER]: 'Click to add description',
+        [FM.DIALOGMETADATA_USERINPUT_LABEL]: 'User Input',
+
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
@@ -1022,13 +1029,10 @@ export default {
         [FM.PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.PACKAGECREATOR_CANCELBUTTON_TEXT]: 'Cancel',
 
-        // Tags and Description
-        [FM.TAGS_INPUT_LABEL]: 'Tags',
-        [FM.TAGS_INPUT_ADD]: 'Add Tag',
-        [FM.TAGS_INPUT_ERROR_DUPLICATE]: 'The new tag is a duplicate of an existing tag.',
-        [FM.TAGS_READONLY_EMPTY]: 'No Tags',
-        [FM.DESCRIPTION_LABEL]: 'Description',
-        [FM.DESCRIPTION_PLACEHOLDER]: 'Click to add description',
+        // TagsInput
+        [FM.TAGSINPUT_ADD]: 'Add Tag',
+        [FM.TAGSINPUT_ERROR_DUPLICATE]: 'The new tag is a duplicate of an existing tag.',
+        [FM.TAGSINPUT_READONLY_EMPTY]: 'No Tags',
 
         // TeachSessionAdmin
         [FM.TEACHSESSIONADMIN_DIALOGMODE_USER]: 'User Input',

@@ -22,7 +22,7 @@
 }
 
 .cl-tags__tag {
-    margin-top: 5px;
+    margin-top: 8px;
     margin-left: 5px;
     background-color: var(--color-themeLight);
     display: grid;

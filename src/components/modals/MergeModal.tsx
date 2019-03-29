@@ -25,6 +25,7 @@ interface ReceivedProps {
 interface ComponentState {
     description: string
     tags: string[]
+    userInput: string
 }
 
 type Props = ReceivedProps & InjectedIntlProps
@@ -33,7 +34,8 @@ class MergeModal extends React.Component<Props, ComponentState> {
 
     state: ComponentState = {
         description: "",
-        tags: []
+        tags: [],
+        userInput: ""
     }
 
     componentDidUpdate(prevProps: Props) {
@@ -41,9 +43,15 @@ class MergeModal extends React.Component<Props, ComponentState> {
             this.props.existingTrainDialog !== prevProps.existingTrainDialog) {
 
             if (this.props.savedTrainDialog && this.props.existingTrainDialog) {
+
+                const userInput = DialogUtils.isTrainDialogLonger(this.props.savedTrainDialog, this.props.existingTrainDialog)
+                    ? DialogUtils.trainDialogFirstInput(this.props.savedTrainDialog)
+                    : DialogUtils.trainDialogFirstInput(this.props.existingTrainDialog)
+
                 this.setState({
                     description: DialogUtils.mergeTrainDialogDescription(this.props.savedTrainDialog, this.props.existingTrainDialog),
-                    tags: DialogUtils.mergeTrainDialogTags(this.props.savedTrainDialog, this.props.existingTrainDialog)
+                    tags: DialogUtils.mergeTrainDialogTags(this.props.savedTrainDialog, this.props.existingTrainDialog),
+                    userInput
                 })
             }
         }
@@ -58,7 +66,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onRemoveTag(tag: string) {
-      this.setState(prevState => ({
+        this.setState(prevState => ({
             tags: prevState.tags.filter(t => t !== tag)
         }))
     }
@@ -106,6 +114,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
                         <DialogMetadata
                                 description={this.state.description}
                                 tags={this.state.tags}
+                                userInput={this.state.userInput}
                                 allUniqueTags={this.props.allUniqueTags}
                                 onChangeDescription={this.onChangeDescription}
                                 onAddTag={this.onAddTag}
@@ -115,7 +124,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
                     <OF.Label className="ms-Label--tight cl-label">Saved dialog:</OF.Label>
                     <div className="cl-merge-box cl-merge-box--readonly">
                         <DialogMetadata
-                                description={DialogUtils.trainDialogRenderDescription(this.props.savedTrainDialog)}
+                                description={this.props.savedTrainDialog.description}
                                 userInput={DialogUtils.trainDialogFirstInput(this.props.savedTrainDialog)}
                                 tags={this.props.savedTrainDialog.tags}
                                 allUniqueTags={[]}
@@ -125,7 +134,8 @@ class MergeModal extends React.Component<Props, ComponentState> {
                     <OF.Label className="ms-Label--tight cl-label">Equivalent dialog:</OF.Label>
                     <div className="cl-merge-box cl-merge-box--readonly">
                         <DialogMetadata
-                                description={DialogUtils.trainDialogRenderDescription(this.props.existingTrainDialog)}
+                                description={this.props.existingTrainDialog.description}
+                                userInput={DialogUtils.trainDialogFirstInput(this.props.existingTrainDialog)}
                                 tags={this.props.existingTrainDialog.tags}
                                 allUniqueTags={[]}
                                 readOnly={true}
