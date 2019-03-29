@@ -67,27 +67,6 @@ function getFirstInput(logDialog: CLM.LogDialog): string | void {
     }
 }
 
-function getLastInput(logDialog: CLM.LogDialog): string | void {
-    if (logDialog.rounds && logDialog.rounds.length > 0) {
-        return logDialog.rounds[logDialog.rounds.length - 1].extractorStep.text;
-    }
-}
-
-function getLastResponse(logDialog: CLM.LogDialog, component: LogDialogs): string | void {
-    // Find last action of last scorer step of last round
-    // If found, return payload, otherwise return not found icon
-    if (logDialog.rounds && logDialog.rounds.length > 0) {
-        const scorerSteps = logDialog.rounds[logDialog.rounds.length - 1].scorerSteps;
-        if (scorerSteps.length > 0) {
-            const actionId = scorerSteps[scorerSteps.length - 1].predictedAction;
-            const action = component.props.actions.find(a => a.actionId === actionId);
-            if (action) {
-                return CLM.ActionBase.GetPayload(action, Util.getDefaultEntityMap(component.props.entities))
-            }
-        }
-    }
-}
-
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
@@ -107,18 +86,21 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }
         },
         {
-            key: 'firstInput',
-            name: Util.formatMessageId(intl, FM.LOGDIALOGS_FIRSTINPUT),
-            fieldName: 'firstInput',
+            key: `description`,
+            name: Util.formatMessageId(intl, FM.LOGDIALOGS_USERINPUT),
+            fieldName: `description`,
             minWidth: 100,
-            maxWidth: 300,
+            maxWidth: 1500,
             isResizable: true,
-            render: logDialog => {
-                const firstInput = getFirstInput(logDialog);
-                if (firstInput) {
-                    return <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-first-input">{firstInput}</span>;
-                }
-                return <OF.Icon iconName="Remove" className="notFoundIcon" />
+            render: (trainDialog, component) => {
+
+                return <>
+                    <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-first-input">
+                        <span data-testid="train-dialogs-description">
+                            {DialogUtils.logDialogSampleInput(trainDialog)}
+                        </span>
+                    </span>
+                </>
             },
             getSortValue: logDialog => {
                 const firstInput = getFirstInput(logDialog)
@@ -126,48 +108,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }
         },
         {
-            key: 'lastInput',
-            name: Util.formatMessageId(intl, FM.LOGDIALOGS_LASTINPUT),
-            fieldName: 'lastInput',
-            minWidth: 100,
-            maxWidth: 300,
-            isResizable: true,
-            render: logDialog => {
-                const lastInput = getLastInput(logDialog)
-                if (lastInput) {
-                    return <span className={OF.FontClassNames.mediumPlus}>{lastInput}</span>;
-                }
-                return <OF.Icon iconName="Remove" className="notFoundIcon" />
-            },
-            getSortValue: logDialog => {
-                const lastInput = getLastInput(logDialog)
-                return lastInput ? lastInput.toLowerCase() : ''
-            }
-        },
-        {
-            key: 'lastResponse',
-            name: Util.formatMessageId(intl, FM.LOGDIALOGS_LASTRESPONSE),
-            fieldName: 'lastResponse',
-            minWidth: 100,
-            maxWidth: 300,
-            isResizable: true,
-            render: (logDialog, component) => {
-                const lastResponse = getLastResponse(logDialog, component);
-                if (lastResponse) {
-                    return <span className={OF.FontClassNames.mediumPlus}>{lastResponse}</span>;
-                }
-                return <OF.Icon iconName="Remove" className="notFoundIcon" />;
-            },
-            getSortValue: (logDialog, component) => {
-                const lastResponse = getLastResponse(logDialog, component)
-                return lastResponse ? lastResponse.toLowerCase() : ''
-            }
-        },
-        {
             key: 'turns',
             name: Util.formatMessageId(intl, FM.LOGDIALOGS_TURNS),
             fieldName: 'dialog',
             minWidth: 50,
+            maxWidth: 50,
             isResizable: false,
             render: logDialog => <span className={OF.FontClassNames.mediumPlus}>{logDialog.rounds.length}</span>,
             getSortValue: logDialog => logDialog.rounds.length.toString().padStart(4, '0')
