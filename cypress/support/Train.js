@@ -146,38 +146,50 @@ export function Save() {
 }
 
 function VerifyTrainingSummaryIsInGrid(trainingSummary) {
-  trainDialogsGrid.WaitForGridReadyThen(trainingSummary.TrainGridRowCount, () => {
-    // Keep these lines of logging code in this method, they come in handy when things go bad.
-    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDate: ${trainingSummary.CreatedDate}`)
-    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDate: ${trainingSummary.LastModifiedDate}`)
-    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
-    helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
+  const funcName = 'VerifyTrainingSummaryIsInGrid'
+  // Keep these lines of logging code in this method, they come in handy when things go bad.
+  helpers.ConLog(funcName, `CreatedDate: ${trainingSummary.CreatedDate}`)
+  helpers.ConLog(funcName, `LastModifiedDate: ${trainingSummary.LastModifiedDate}`)
+  helpers.ConLog(funcName, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
+  helpers.ConLog(funcName, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
 
-    const turns = trainDialogsGrid.GetTurns()
-    const firstInputs = trainDialogsGrid.GetFirstInputs()
-    const lastInputs = trainDialogsGrid.GetLastInputs()
-    const lastResponses = trainDialogsGrid.GetLastResponses()
-    const lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
-    const createdDates = trainDialogsGrid.GetCreatedDates()
+  cy.Get('[data-testid="train-dialogs-turns"]', {timeout: 10000})
+    .should(elements => { 
+      if (elements.length != trainingSummary.TrainGridRowCount) { 
+        helpers.ConLog(funcName, `Did NOT find the expected row count: ${elements.length}.`)
+        throw new Error(`${elements.length} rows found in the training grid, however we were expecting ${trainingSummary.TrainGridRowCount}`)
+      }
 
-    for (let i = 0; i < trainingSummary.TrainGridRowCount; i++) {
-      // Keep these lines of logging code in this method, they come in handy when things go bad.
-      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `CreatedDates[${i}]: ${createdDates[i]} --- ${helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
-      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `LastModifiedDates[${i}]: ${lastModifiedDates[i]} --- ${helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
-      helpers.ConLog(`VerifyTrainingSummaryIsInGrid`, `Turns[${i}]: ${turns[i]}`)
+      helpers.ConLog(funcName, `Found the expected row count: ${elements.length}`)
 
-      if (((trainingSummary.LastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
-        helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
-        turns[i] == trainingSummary.Turns &&
-        ((trainingSummary.CreatedDate && createdDates[i] == trainingSummary.CreatedDate) ||
-          helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
-        firstInputs[i] == trainingSummary.FirstInput &&
-        lastInputs[i] == trainingSummary.LastInput &&
-        lastResponses[i] == trainingSummary.LastResponse)
-        return; // We found what we expected.
-    }
-    throw `The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`
-  })
+      const turns = trainDialogsGrid.GetTurns()
+      const firstInputs = trainDialogsGrid.GetFirstInputs()
+      const lastInputs = trainDialogsGrid.GetLastInputs()
+      const lastResponses = trainDialogsGrid.GetLastResponses()
+      const lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
+      const createdDates = trainDialogsGrid.GetCreatedDates()
+  
+      for (let i = 0; i < trainingSummary.TrainGridRowCount; i++) {
+        // Keep these lines of logging code in this method, they come in handy when things go bad.
+        helpers.ConLog(funcName, `CreatedDates[${i}]: ${createdDates[i]} --- ${helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
+        helpers.ConLog(funcName, `LastModifiedDates[${i}]: ${lastModifiedDates[i]} --- ${helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)}`)
+        helpers.ConLog(funcName, `Turns[${i}]: ${turns[i]}`)
+  
+        if (((trainingSummary.LastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
+          helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
+          turns[i] == trainingSummary.Turns &&
+          ((trainingSummary.CreatedDate && createdDates[i] == trainingSummary.CreatedDate) ||
+            helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
+          firstInputs[i] == trainingSummary.FirstInput &&
+          lastInputs[i] == trainingSummary.LastInput &&
+          lastResponses[i] == trainingSummary.LastResponse)
+          
+          helpers.ConLog(funcName, 'Found all of the expected data. Validation PASSES!')
+
+          return; // Fully VALIDATED! We found what we expected.
+      }
+      throw new Error(`The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`)
+    })
 }
 
 export function CaptureOriginalChatMessages() {
