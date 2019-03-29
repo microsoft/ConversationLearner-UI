@@ -109,7 +109,9 @@ class MergeModal extends React.Component<Props, ComponentState> {
                     </div>
                 </div>    
                 <div>
-                    <OF.Label className="ms-Label--tight cl-label">Merged dialog:</OF.Label>
+                    <OF.Label className="ms-Label--tight cl-label">
+                        {Util.formatMessageId(intl, FM.MERGE_BUTTON_MERGE)}
+                    </OF.Label>
                     <div className="cl-merge-box">
                         <DialogMetadata
                                 description={this.state.description}
@@ -121,7 +123,9 @@ class MergeModal extends React.Component<Props, ComponentState> {
                                 onRemoveTag={this.onRemoveTag}
                         />
                     </div>
-                    <OF.Label className="ms-Label--tight cl-label">Saved dialog:</OF.Label>
+                    <OF.Label className="ms-Label--tight cl-label">
+                        {Util.formatMessageId(intl, FM.MERGE_LABEL_SAVED)}
+                    </OF.Label>
                     <div className="cl-merge-box cl-merge-box--readonly">
                         <DialogMetadata
                                 description={this.props.savedTrainDialog.description}
@@ -131,7 +135,9 @@ class MergeModal extends React.Component<Props, ComponentState> {
                                 readOnly={true}
                         />
                     </div>
-                    <OF.Label className="ms-Label--tight cl-label">Equivalent dialog:</OF.Label>
+                    <OF.Label className="ms-Label--tight cl-label">
+                        {Util.formatMessageId(intl, FM.MERGE_LABEL_EQUIVALENT)}
+                    </OF.Label>
                     <div className="cl-merge-box cl-merge-box--readonly">
                         <DialogMetadata
                                 description={this.props.existingTrainDialog.description}

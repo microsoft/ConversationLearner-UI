@@ -9,7 +9,7 @@ import { deepCopy } from './util'
 import { Activity } from 'botframework-directlinejs'
 import TagsReadOnly from '../components/TagsReadOnly'
 
-const MAX_SAMPLE_INPUT_LENGTH = 100
+const MAX_SAMPLE_INPUT_LENGTH = 150
 
 export interface DialogRenderData {
     dialogMode: CLM.DialogMode

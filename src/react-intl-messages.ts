@@ -173,6 +173,35 @@ export enum FM {
     DEMOIMPORT_BUTTON_ARIADESCRIPTION = 'DemoImporter.button.ariaDescription',
     DEMOIMPORT_BUTTON_TEXT = 'DemoImporter.button.text',
 
+    // EditDialogAdmin
+    EDITDIALOGADMIN_DIALOGMODE_USER = 'EditDialogAdmin.dialogMode.user',
+    EDITDIALOGADMIN_DIALOGMODE_TEXT = 'EditDialogAdmin.dialogMode.text',
+    EDITDIALOGADMIN_MEMORY_TITLE = 'EditDialogAdmin.memory.title',
+    EDITDIALOGADMIN_HELPTEXT_TITLE_LOG = 'EditDialogAdmin.helpText.title.log',
+    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_LOG = 'EditDialogAdmin.helpText.description.log',
+    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_LOG = 'EditDialogAdmin.helpText.description2.log',
+    EDITDIALOGADMIN_HELPTEXT_TITLE_TRAIN = 'EditDialogAdmin.helpText.title.train',
+    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_TRAIN = 'EditDialogAdmin.helpText.description.train',
+    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_TRAIN = 'EditDialogAdmin.helpText.description2.train',
+    EDITDIALOGADMIN_ENTITYDETECTION_TITLE = 'EditDialogAdmin.entityDetection.title',
+    EDITDIALOGADMIN_ENTITYDETECTION_HELPTEXT = 'EditDialogAdmin.entityDetection.helpText',
+    EDITDIALOGADMIN_ACTION_TITLE = 'EditDialogAdmin.action.title',
+
+    // EditDialogModal
+    EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION = 'EditDialogModal.branch.ariaDescription',
+    EDITDIALOGMODAL_BRANCH_TEXT = 'EditDialogModal.branch.text',
+    EDITDIALOGMODAL_BRANCH_TIP = 'EditDialogModal.branch.tip',
+    EDITDIALOGMODAL_CANTBRANCH_TITLE = 'EditDialogModal.cantbranch.title',
+    EDITDIALOGMODAL_CANTREPLAY_TITLE = 'EditDialogModal.cantreplay.title',
+    EDITDIALOGMODAL_CONFIRMDELETELOG_TITLE = 'EditDialogModal.confirmDeleteLog.title',
+    EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE = 'EditDialogModal.confirmDeleteTrain.title',
+    EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE = 'EditDialogModal.confirmAbandonNew.title',
+    EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE = 'EditDialogModal.confirmAbandonEdit.title',
+    EDITDIALOGMODAL_WARNING_INVALID_BOT = 'EditDialogModal.warningInvalidBot.title',
+    EDITDIALOGMODAL_WARNING_INVALID_PACKAGE = 'EditDialogModal.warningInvalidPackage.title',
+    EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY = 'EditDialogModal.unknownNeedReplay.title',
+    EDITDIALOGMODAL_WARNING_NEED_REPLAY = 'EditDialogModal.warningNeedReplay.title',
+
     // Entities
     ENTITIES_TITLE = 'Entities.title',
     ENTITIES_SUBTITLE = 'Entities.subtitle',
@@ -301,6 +330,9 @@ export enum FM {
     MERGE_BODY3 = 'Merge.body3',
     MERGE_BUTTON_MERGE = 'Merge.button.merge',
     MERGE_BUTTON_SAVE = 'Merge.button.save',
+    MERGE_LABEL_MERGED = 'Merge.label.merged',
+    MERGE_LABEL_SAVED = 'Merge.label.saved',
+    MERGE_LABEL_EQUIVALENT = 'Merge.label.equivalent',
 
     // PackageCreator
     PACKAGECREATOR_TITLE = 'PackageCreator.title',
@@ -476,35 +508,6 @@ export enum FM {
     TOOLTIP_TRAINDIALOG_INVALID = 'ToolTip.TRAINDIALOG_INVALID',
     TOOLTIP_TRAINDIALOG_UNKNOWN = 'ToolTip.TOOLTIP_TRAINDIALOG_UNKNOWN',
     TOOLTIP_TRAINDIALOG_WARNING = 'ToolTip.TRAINDIALOG_WARNING',
-
-    // EditDialogAdmin
-    EDITDIALOGADMIN_DIALOGMODE_USER = 'EditDialogAdmin.dialogMode.user',
-    EDITDIALOGADMIN_DIALOGMODE_TEXT = 'EditDialogAdmin.dialogMode.text',
-    EDITDIALOGADMIN_MEMORY_TITLE = 'EditDialogAdmin.memory.title',
-    EDITDIALOGADMIN_HELPTEXT_TITLE_LOG = 'EditDialogAdmin.helpText.title.log',
-    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_LOG = 'EditDialogAdmin.helpText.description.log',
-    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_LOG = 'EditDialogAdmin.helpText.description2.log',
-    EDITDIALOGADMIN_HELPTEXT_TITLE_TRAIN = 'EditDialogAdmin.helpText.title.train',
-    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_TRAIN = 'EditDialogAdmin.helpText.description.train',
-    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_TRAIN = 'EditDialogAdmin.helpText.description2.train',
-    EDITDIALOGADMIN_ENTITYDETECTION_TITLE = 'EditDialogAdmin.entityDetection.title',
-    EDITDIALOGADMIN_ENTITYDETECTION_HELPTEXT = 'EditDialogAdmin.entityDetection.helpText',
-    EDITDIALOGADMIN_ACTION_TITLE = 'EditDialogAdmin.action.title',
-
-    // EditDialogModal
-    EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION = 'EditDialogModal.branch.ariaDescription',
-    EDITDIALOGMODAL_BRANCH_TEXT = 'EditDialogModal.branch.text',
-    EDITDIALOGMODAL_BRANCH_TIP = 'EditDialogModal.branch.tip',
-    EDITDIALOGMODAL_CANTBRANCH_TITLE = 'EditDialogModal.cantbranch.title',
-    EDITDIALOGMODAL_CANTREPLAY_TITLE = 'EditDialogModal.cantreplay.title',
-    EDITDIALOGMODAL_CONFIRMDELETELOG_TITLE = 'EditDialogModal.confirmDeleteLog.title',
-    EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE = 'EditDialogModal.confirmDeleteTrain.title',
-    EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE = 'EditDialogModal.confirmAbandonNew.title',
-    EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE = 'EditDialogModal.confirmAbandonEdit.title',
-    EDITDIALOGMODAL_WARNING_INVALID_BOT = 'EditDialogModal.warningInvalidBot.title',
-    EDITDIALOGMODAL_WARNING_INVALID_PACKAGE = 'EditDialogModal.warningInvalidPackage.title',
-    EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY = 'EditDialogModal.unknownNeedReplay.title',
-    EDITDIALOGMODAL_WARNING_NEED_REPLAY = 'EditDialogModal.warningNeedReplay.title',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -1010,14 +1013,16 @@ export default {
         // MemoryTable
         [FM.MEMORYTABLE_EMPTY]: 'Empty',
 
-        // Merege
+        // Merge
         [FM.MERGE_TITLE]: 'Merge?',
         [FM.MERGE_BODY1]: 'The Dialog you are saving has the same conversation flow and is functionally equivalent with another Train Dialog.',
         [FM.MERGE_BODY2]: 'We suggest merging them to prevent the creation of unneeded TrainDialogs.',
         [FM.MERGE_BODY3]: 'The user inputs at each turn will be combined as Alternative user inputs.',
-        
         [FM.MERGE_BUTTON_MERGE]: 'Merge',
         [FM.MERGE_BUTTON_SAVE]: 'Save As Is',
+        [FM.MERGE_LABEL_MERGED]: 'Merged Dialog',
+        [FM.MERGE_LABEL_SAVED]: 'Saved Dialog',
+        [FM.MERGE_LABEL_EQUIVALENT]: 'Equivalent Dialog',
 
         // PackageCreator
         [FM.PACKAGECREATOR_TITLE]: 'Create a new Tag',
