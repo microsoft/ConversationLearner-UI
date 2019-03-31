@@ -168,6 +168,14 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage) {
   cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]', '+')
 }
 
+export function VerifyEndSessionChatTurnControls() {
+  cy.Contains('[data-testid="edit-dialog-modal-delete-turn-button"]', 'Delete Turn')
+  cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]')
+  cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
+  cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]')
+}
+
+
 // This is an odd verification function in that it is validating test code that we
 // had wrong at one point. We need to do this because if the cy.DoesNotContain fails
 // to find the selector, it could mean that cy.DoesNotContain method has a bug in it.

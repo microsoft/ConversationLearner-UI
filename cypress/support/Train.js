@@ -120,7 +120,7 @@ export function SelectEndSessionAction(expectedData, lastResponse) {
   cy.Enqueue(() => {
     if (lastResponse) currentTrainingSummary.LastResponse = lastResponse;
     else currentTrainingSummary.LastResponse = 'EndSession: ' + expectedData;
-  });
+  })
 }
 
 // This method is used to score AND AUTO-SELECT the action after branching.

@@ -62,3 +62,22 @@ export function VerifyContainsDisabledAction(expectedResponse) {
     .should('be.disabled')
 }
 
+export function VerifyContainsDisabledEndSessionAction(expectedData) {
+  cy.Get('[data-testid="action-scorer-session-response"]')
+    .ExactMatch('EndSession')
+    .siblings('[data-testid="action-scorer-session-response-user"]')
+    .ExactMatch(expectedData)
+    .parents('div.ms-DetailsRow-fields')
+    .find('[data-testid="action-scorer-button-clickable"]')
+    .should('be.disabled')
+}
+
+export function VerifyContainsEnabledEndSessionAction(expectedData) {
+  cy.Get('[data-testid="action-scorer-session-response"]')
+    .ExactMatch('EndSession')
+    .siblings('[data-testid="action-scorer-session-response-user"]')
+    .ExactMatch(expectedData)
+    .parents('div.ms-DetailsRow-fields')
+    .find('[data-testid="action-scorer-button-clickable"]')
+    .should('be.enabled')
+}
