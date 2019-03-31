@@ -62,22 +62,15 @@ export function VerifyContainsDisabledAction(expectedResponse) {
     .should('be.disabled')
 }
 
-export function VerifyContainsDisabledEndSessionAction(expectedData) {
-  cy.Get('[data-testid="action-scorer-session-response"]')
-    .ExactMatch('EndSession')
-    .siblings('[data-testid="action-scorer-session-response-user"]')
-    .ExactMatch(expectedData)
-    .parents('div.ms-DetailsRow-fields')
-    .find('[data-testid="action-scorer-button-clickable"]')
-    .should('be.disabled')
-}
+export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-clickable', 'be.enabled') }
+export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-no-click', 'be.disabled') }
 
-export function VerifyContainsEnabledEndSessionAction(expectedData) {
+function VerifyEndSessionActionState(expectedData, selectButtonDataTestId, stateToVerify) {
   cy.Get('[data-testid="action-scorer-session-response"]')
     .ExactMatch('EndSession')
     .siblings('[data-testid="action-scorer-session-response-user"]')
     .ExactMatch(expectedData)
     .parents('div.ms-DetailsRow-fields')
-    .find('[data-testid="action-scorer-button-clickable"]')
-    .should('be.enabled')
+    .find(`[data-testid="${selectButtonDataTestId}"]`)
+    .should(stateToVerify)
 }

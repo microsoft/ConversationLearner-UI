@@ -7,7 +7,7 @@ import * as homePage from '../../support/components/HomePage'
 import * as helpers from '../../support/Helpers'
 import * as scorerModal from '../../support/components/ScorerModal'
 
-export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p'
+export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div' // > div.format-markdown > p'
 export const TypeYourMessageSelector = 'input.wc-shellinput[placeholder="Type your message..."]' // data-testid NOT possible
 export const ScoreActionsButtonSelector = '[data-testid="score-actions-button"]'
 
@@ -96,8 +96,8 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
     const elements = Cypress.$(AllChatMessagesSelector)
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (let i = 0; i < elements.length; i++) {
-      helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
-      if (matchPredicate(elements[i].textContent, message)) {
+      helpers.ConLog(funcName, `Chat turn - Text: '${elements[i].innerText}' - Inner HTML '${elements[i].innerHTML}'`)
+      if (matchPredicate(elements[i].innerText, message)) {
         if (index > 0) index--
         else {
           helpers.ConLog(funcName, `FOUND!`)
@@ -130,7 +130,7 @@ export function BranchChatTurn(message) {
 }
 
 // Creates the '@allChatTurns' alias.
-export function GetAllChatTurns() {
+export function CreateAliasForAllChatTurns() {
   cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')
 }
 
@@ -283,6 +283,7 @@ export function InsertUserInputAfter(existingMessage, newMessage) {
   cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
 }
 
+// OPTIONAL newMessage parameter if provided will replace the autoselected Bot response
 // OPTIONAL index parameter lets you select other than the 1st 
 // instance of a message as the point of insertion.
 export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
@@ -305,7 +306,7 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
         // so we need to confirm that we actually need to click on the action, 
         // otherwise an unnecessary message box pops up that we don't want to deal with.
 
-        const chatMessages = helpers.StringArrayFromElementText(AllChatMessagesSelector)
+        const chatMessages = GetAllChatMessages()
         const indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
         if (chatMessages[indexOfInsertedBotResponse] != newMessage)
           scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
@@ -313,4 +314,16 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
     }
     cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `End`)
   })
+}
+
+export function VerifyChatTurnDoesNotContain(turnIndex, turnText) {
+//const funcName = `VerifyChatTurnDoesNotContain(${turnIndex}, ${turnText})`
+  const chatMessages = GetAllChatMessages()
+  if(chatMessages.length < turnIndex) { 
+    throw new Error(`VerifyChatTurnDoesNotContain(${turnIndex}, ${turnText}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`) 
+  }
+
+  if(chatMessages[turnIndex] === turnText) { 
+    throw new Error(`Chat turn ${turnIndex} should NOT contain ${turnText}`) 
+  }
 }

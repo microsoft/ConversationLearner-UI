@@ -34,26 +34,27 @@ describe('End Session', () => {
       train.SelectEndSessionAction('Goodbye')
     })
 
-    it('End Session Action should be disabled for 1st Bot turn', () => {
+    it('End Session Score Action should be disabled for 1st Bot turn', () => {
       editDialogModal.SelectChatTurnExactMatch('Hello')
       scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
     })
 
-    it('End Session Action should be disabled for last Bot turn', () => {
+    it('End Session Score Action should be disabled for last Bot turn', () => {
       editDialogModal.SelectChatTurnExactMatch('EndSession: Goodbye')
       scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
     })
 
-    it('End Session chat turn should only contain a delete Action button.', () => {
+    it('End Session chat turn should only contain a delete turn button.', () => {
       editDialogModal.VerifyEndSessionChatTurnControls()
     })
 
     it('Should save the training', () => {
       train.Save()
+    })
   })
 
   context('Edit Train Dialog', () => {
-    it('Should be able to edit training that we just saved', () => {
+    it('Should be able to edit the training that we just saved', () => {
       cy.WaitForTrainingStatusCompleted()
       train.EditTraining('Hi', 'Bye', "EndSession: Goodbye")
     })
@@ -68,44 +69,48 @@ describe('End Session', () => {
       scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
     })
 
-    it('Should delete last user turn', () => {
+    it('Should delete last user turn and cause a Bot turn to be the last turn', () => {
       editDialogModal.SelectChatTurnExactMatch('Hello')
       editDialogModal.ClickDeleteChatTurn()
     })
 
-    it('Now that the Bot turn is the last turn, the End Session Action should be enabled', () => {
+    it('End Session Action should now be enabled', () => {
       editDialogModal.SelectChatTurnExactMatch('Hello')
+      scorerModal.VerifyContainsEnabledEndSessionAction('Goodbye')
+    })
+
+    it('Should abandon our changes', () => {
+      editDialogModal.ClickAbandonDeleteButton()
+    })
+  })
+
+  context('Edit another Train Dialog', () => {
+    it('Should be able to edit a training that came with the model we imported', () => {
+      cy.WaitForTrainingStatusCompleted()
+      train.EditTraining('Yo', 'Bye', "EndSession: Goodbye")
+    })
+
+    it('End Session Score Action should be disabled for last Bot turn', () => {
+      editDialogModal.SelectChatTurnExactMatch('EndSession: Goodbye')
       scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
     })
 
-    it('Should', () => {
+    it('End Session chat turn should only contain a delete turn button.', () => {
+      editDialogModal.VerifyEndSessionChatTurnControls()
     })
 
-    it('Should', () => {
-    })
-    it('Should', () => {
+    it('End Session Score Action should be disabled for 1st Bot turn', () => {
+      editDialogModal.SelectChatTurnExactMatch('Okay')
+      scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
     })
 
-    // End Session Test Case:
-  // - New Train Dialog
-  // - Enter chat turns...hi, hello, bye, goodbye
-  // - Verify other end session actions are disabled when clicking on a previous Bot turn.
-  // - Verify add and branching buttons are missing on the End Session Bot turn
-  // - Subtle nuance at 1:00 into video "C:\Users\v-miskow\Microsoft\ConvSysResearch - General\Test Videos\End Session and Edit.mp4"
-  // -- Delete the existing End Session.
-  // ---- verify the other bot turn still shows End Session Action as disabled
-  // ---- Delete the user turn as well
-  // ---- verify the other bot turn now enables the End Session Action
-  // ---- ABORT there is a second saved Train Dialog we can use for editing.
-  // - Another Subtle nuance at 1:55 into video
-  // -- Verify editing an existing training, that End Session is disabled for all Bot turns prior to the End Session Action.
-  // -- Verify that OKAY cannot be replaced with End Session Action
-  // -- Delete the existing End Session.
-  // ---- Score Action and pick "hello" instead of goodbye.
-  // ---- Add another 'bye' user turn
-  // ---- Score Action and pick goodbye.
-  // ------ Verify flash of End Session at top shows up as expected.
-  // ---- Select 2nd to last bye, add a Bot turn.
-  // ---- Verify you don't get End Session Action
-  
+    it('Should insert a new Bot turn whose Action is automatically selected', () => {
+      editDialogModal.InsertBotResponseAfter('Okay')
+    })
+
+    it('Verify that the automatically selected Bot turn is NOT our EndSession Action', () => {
+      editDialogModal.VerifyChatTurnDoesNotContain('EndSession Goodbye')
+    })
+  })
 })
+
