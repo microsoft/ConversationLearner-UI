@@ -33,7 +33,7 @@ export function GetModelNameIdList() {
     let listToReturn = []
     const elements = Cypress.$('[data-testid="model-list-model-name"]')
     for (let i = 0; i < elements.length; i++) {
-      const modelName = elements[i].textContent
+      const modelName = elements[i].innerText
       const modelId = elements[i].getAttribute('data-model-id')
       listToReturn.push({ name: modelName, id: modelId })
       helpers.ConLog('GetModelNameIdList', `modelName: ${modelName} - modelId: ${modelId}`)

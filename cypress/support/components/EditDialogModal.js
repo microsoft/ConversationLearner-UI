@@ -203,7 +203,7 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
 
       // If you need to find a phrase, this part of the code will fail, 
       // you will need to upgrade this code in that case.
-      const element = elements.find(element => element.textContent === text)
+      const element = elements.find(element => element.innerText === text)
       if (element) {
         found = Cypress.$(element).parents('.cl-entity-node--custom').find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`).length == 0
       }
