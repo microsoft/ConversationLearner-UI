@@ -34,7 +34,7 @@ interface Props {
     options: IOption[]
     maxDisplayedOptions: number
     menuRef: any
-    position: IPosition
+    position: IPosition | null
     value: any
     entityTypeFilter: string
 
@@ -49,7 +49,7 @@ interface State {
     matchedOptions: MatchedOption<IOption>[]
 }
 
-const initialState: State = {
+const initialState: Readonly<State> = {
     highlightIndex: 0,
     searchText: '',
     matchedOptions: []
@@ -67,8 +67,6 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     element: HTMLElement
     resultsElement: HTMLDivElement | null
 
-    state = initialState
-
     constructor(props: Props) {
         super(props)
 
@@ -81,7 +79,11 @@ export default class EntityPickerContainer extends React.Component<Props, State>
                 matchedStrings: [{ text: option.name, matched: false }],
                 original: option
             }))
-        this.state.matchedOptions = this.defaultMatchedOptions
+            
+        this.state = {
+            ...initialState,
+            matchedOptions: this.defaultMatchedOptions
+        }
     }
 
     componentWillReceiveProps(nextProps: Props) {

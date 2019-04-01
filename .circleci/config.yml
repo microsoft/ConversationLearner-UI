@@ -4,6 +4,33 @@ jobs:
     docker:
       - image: cypress/browsers:chrome65-ff57
         environment:
+          TERM: xterm
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
+          key: v1-deps-{{ .Branch }}
+          key: v1-deps
+
+      - run: node --version
+      - run: npm --version
+      - run: npm ci
+
+      - save_cache:
+          key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - ~/.npm
+            - ~/.cache
+
+      - run: npm run test
+      - run: npm run cibuild
+
+  test:
+    docker:
+      - image: cypress/browsers:chrome65-ff57
+        environment:
           ## this enables colors in the output
           TERM: xterm
           ipc: host ## https://github.com/cypress-io/cypress/issues/350
@@ -29,9 +56,6 @@ jobs:
 
       # Randomly pick 1 out of 5 LUIS Authoring Keys and set the BASH_ENV with it.
       - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
-
-      - run: npm run test
-      - run: npm run cibuild
 
       # Clone the Samples BOT
       - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
@@ -68,3 +92,6 @@ workflows:
   build:
     jobs:
       - build
+      - test:
+          requires:
+              - build

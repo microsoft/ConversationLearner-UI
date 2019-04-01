@@ -22,7 +22,7 @@ interface ComponentState {
 }
 
 class Dashboard extends React.Component<Props, ComponentState> {
-    state = {
+    state: Readonly<ComponentState> = {
         retrying: false
     }
 

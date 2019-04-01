@@ -250,7 +250,7 @@ interface ComponentState {
     isTerminal: boolean
 }
 
-const initialState: ComponentState = {
+const initialState: Readonly<ComponentState> = {
     apiOptions: [],
     renderOptions: [],
     cardOptions: [],
