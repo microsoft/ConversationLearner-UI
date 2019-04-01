@@ -7,7 +7,7 @@ import * as homePage from '../../support/components/HomePage'
 import * as helpers from '../../support/Helpers'
 import * as scorerModal from '../../support/components/ScorerModal'
 
-export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div' // > div.format-markdown > p'
+export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div'
 export const TypeYourMessageSelector = 'input.wc-shellinput[placeholder="Type your message..."]' // data-testid NOT possible
 export const ScoreActionsButtonSelector = '[data-testid="score-actions-button"]'
 
