@@ -42,6 +42,21 @@ interface State {
     builtInTypeFilter: string | null
 }
 
+const initialState: Readonly<State> = {
+    isSelectionOverlappingOtherEntities: false,
+    isMenuVisible: false,
+    isDeleteButtonVisible: false,
+    isPreBuiltExpandoOpen: true,
+    menuPosition: {
+        top: 0,
+        left: 0,
+        bottom: 0
+    },
+    value: Plain.deserialize(''),
+    preBuiltEditorValues: [{}],
+    builtInTypeFilter: null
+}
+
 const disallowedOperations = ['insert_text', 'remove_text']
 const externalChangeOperations = ['insert_node', 'remove_node']
 
@@ -59,29 +74,19 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     menu: HTMLElement
     editor: React.RefObject<any>
 
-    state = {
-        isSelectionOverlappingOtherEntities: false,
-        isMenuVisible: false,
-        isDeleteButtonVisible: false,
-        isPreBuiltExpandoOpen: true,
-        menuPosition: {
-            top: 0,
-            left: 0,
-            bottom: 0
-        },
-        value: Plain.deserialize(''),
-        preBuiltEditorValues: [{}],
-        builtInTypeFilter: null
-    }
-
     constructor(props: Props) {
         super(props)
 
         this.editor = React.createRef();
 
-        this.state.value = convertEntitiesAndTextToTokenizedEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType)
-        this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
-        this.state.isPreBuiltExpandoOpen = this.state.preBuiltEditorValues.length <= 4
+        const preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
+
+        this.state = {
+            ...initialState,
+            value: convertEntitiesAndTextToTokenizedEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType),
+            preBuiltEditorValues,
+            isPreBuiltExpandoOpen: preBuiltEditorValues.length <= 4
+        }
     }
 
     componentWillReceiveProps(nextProps: Props) {

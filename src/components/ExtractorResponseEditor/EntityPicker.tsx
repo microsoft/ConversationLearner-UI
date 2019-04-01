@@ -18,7 +18,7 @@ interface MenuProps {
     onChangeSearchText: (value: string) => void
     onClickOption: (o: IOption) => void
     onClickNewEntity: (entityTypeFilter: string) => void
-    position: IPosition
+    position: IPosition | null
     menuRef: any
     searchText: string
     value: any,
@@ -56,8 +56,8 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
 
     render() {
         const style = {
-            left: this.props.isVisible ? `${this.props.position.left}px` : undefined,
-            top: this.props.isVisible ? `${this.props.position.top}px` : undefined,
+            left: (this.props.position && this.props.isVisible) ? `${this.props.position.left}px` : undefined,
+            top: (this.props.position && this.props.isVisible) ? `${this.props.position.top}px` : undefined,
             height: !this.props.isOverlappingOtherEntities ? "auto" : "4em",
             marginBottom: !this.props.isOverlappingOtherEntities ? "0" : "1em"
         }
