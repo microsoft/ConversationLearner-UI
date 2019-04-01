@@ -32,7 +32,8 @@ describe('CreateModels', () => {
     train.TypeYourMessage('Fish')
     editDialogModal.ClickScoreActionsButton()
     train.SelectAction('Fish just swim.')
-
+    train.SelectAction('Which animal would you like?')
+    
     train.Save()
 
     // Manually EXPORT this to fixtures folder and name it 'z-waitNoWait.cl'
