@@ -9,6 +9,7 @@ interface Props {
     onChange: (value: string) => void
     maxLength: number
     [testIdAttribute]: string
+    readOnly?: boolean
 }
 
 class component extends React.Component<Props> {
@@ -20,6 +21,7 @@ class component extends React.Component<Props> {
     render() {
         return (
             <input
+                readOnly={this.props.readOnly}
                 data-testid={this.props[testIdAttribute]}
                 className="cl-borderless-text-input"
                 type="text"

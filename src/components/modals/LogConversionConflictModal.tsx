@@ -216,5 +216,4 @@ class LogConversionConflictModal extends React.Component<Props, State> {
     }
 }
 
-
 export default injectIntl(LogConversionConflictModal)

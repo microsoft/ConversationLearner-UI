@@ -173,6 +173,35 @@ export enum FM {
     DEMOIMPORT_BUTTON_ARIADESCRIPTION = 'DemoImporter.button.ariaDescription',
     DEMOIMPORT_BUTTON_TEXT = 'DemoImporter.button.text',
 
+    // EditDialogAdmin
+    EDITDIALOGADMIN_DIALOGMODE_USER = 'EditDialogAdmin.dialogMode.user',
+    EDITDIALOGADMIN_DIALOGMODE_TEXT = 'EditDialogAdmin.dialogMode.text',
+    EDITDIALOGADMIN_MEMORY_TITLE = 'EditDialogAdmin.memory.title',
+    EDITDIALOGADMIN_HELPTEXT_TITLE_LOG = 'EditDialogAdmin.helpText.title.log',
+    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_LOG = 'EditDialogAdmin.helpText.description.log',
+    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_LOG = 'EditDialogAdmin.helpText.description2.log',
+    EDITDIALOGADMIN_HELPTEXT_TITLE_TRAIN = 'EditDialogAdmin.helpText.title.train',
+    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_TRAIN = 'EditDialogAdmin.helpText.description.train',
+    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_TRAIN = 'EditDialogAdmin.helpText.description2.train',
+    EDITDIALOGADMIN_ENTITYDETECTION_TITLE = 'EditDialogAdmin.entityDetection.title',
+    EDITDIALOGADMIN_ENTITYDETECTION_HELPTEXT = 'EditDialogAdmin.entityDetection.helpText',
+    EDITDIALOGADMIN_ACTION_TITLE = 'EditDialogAdmin.action.title',
+
+    // EditDialogModal
+    EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION = 'EditDialogModal.branch.ariaDescription',
+    EDITDIALOGMODAL_BRANCH_TEXT = 'EditDialogModal.branch.text',
+    EDITDIALOGMODAL_BRANCH_TIP = 'EditDialogModal.branch.tip',
+    EDITDIALOGMODAL_CANTBRANCH_TITLE = 'EditDialogModal.cantbranch.title',
+    EDITDIALOGMODAL_CANTREPLAY_TITLE = 'EditDialogModal.cantreplay.title',
+    EDITDIALOGMODAL_CONFIRMDELETELOG_TITLE = 'EditDialogModal.confirmDeleteLog.title',
+    EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE = 'EditDialogModal.confirmDeleteTrain.title',
+    EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE = 'EditDialogModal.confirmAbandonNew.title',
+    EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE = 'EditDialogModal.confirmAbandonEdit.title',
+    EDITDIALOGMODAL_WARNING_INVALID_BOT = 'EditDialogModal.warningInvalidBot.title',
+    EDITDIALOGMODAL_WARNING_INVALID_PACKAGE = 'EditDialogModal.warningInvalidPackage.title',
+    EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY = 'EditDialogModal.unknownNeedReplay.title',
+    EDITDIALOGMODAL_WARNING_NEED_REPLAY = 'EditDialogModal.warningNeedReplay.title',
+
     // Entities
     ENTITIES_TITLE = 'Entities.title',
     ENTITIES_SUBTITLE = 'Entities.subtitle',
@@ -272,9 +301,7 @@ export enum FM {
     LOGDIALOGS_CREATEBUTTONTITLE = 'LogDialogs.createButtonTitle',
     LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION = 'LogDialogs.createButtonAriaDescription',
     LOGDIALOGS_MODEL_VERSION = 'LogDialogs.modelVersion',
-    LOGDIALOGS_FIRSTINPUT = 'LogDialogs.firstInput',
-    LOGDIALOGS_LASTINPUT = 'LogDialogs.lastInput',
-    LOGDIALOGS_LASTRESPONSE = 'LogDialogs.lastResponse',
+    LOGDIALOGS_USERINPUT = 'LogDialogs.userInput',
     LOGDIALOGS_TURNS = 'LogDialogs.turns',
     LOGDIALOGS_LOGDISABLED = 'LogDialogs.logdisabled',
     LOGDIALOGS_CREATED_DATE_TIME = 'LogDialogs.createdDateTime',
@@ -293,6 +320,17 @@ export enum FM {
 
     // MemoryTable
     MEMORYTABLE_EMPTY = 'MemoryTable.empty',
+
+    // Merge Warning
+    MERGE_TITLE = 'Merge.title',
+    MERGE_BODY1 = 'Merge.body1',
+    MERGE_BODY2 = 'Merge.body2',
+    MERGE_BODY3 = 'Merge.body3',
+    MERGE_BUTTON_MERGE = 'Merge.button.merge',
+    MERGE_BUTTON_SAVE = 'Merge.button.save',
+    MERGE_LABEL_MERGED = 'Merge.label.merged',
+    MERGE_LABEL_SAVED = 'Merge.label.saved',
+    MERGE_LABEL_EQUIVALENT = 'Merge.label.equivalent',
 
     // PackageCreator
     PACKAGECREATOR_TITLE = 'PackageCreator.title',
@@ -359,12 +397,13 @@ export enum FM {
     SETINGS_DELETEISPERMANENT = 'Settings.deleteIsPermanent',
 
     // Tags and Description
-    TAGS_INPUT_LABEL = 'Tags.label',
-    TAGS_INPUT_ADD = 'TagsInput.add',
-    TAGS_INPUT_ERROR_DUPLICATE = 'TagsInput.error.duplicate',
-    TAGS_READONLY_EMPTY = 'TagsReadOnly.empty',
-    DESCRIPTION_LABEL = 'Description.label',
-    DESCRIPTION_PLACEHOLDER = 'Description.placeholder',
+    DIALOGMETADATA_TAGS_LABEL = 'DialogMetadata.Tags.label',
+    TAGSINPUT_ADD = 'TagsInput.add',
+    TAGSINPUT_ERROR_DUPLICATE = 'TagsInput.error.duplicate',
+    TAGSINPUT_READONLY_EMPTY = 'TagsReadOnly.empty',
+    DIALOGMETADATA_DESCRIPTION_LABEL = 'DialogMetadata.Description.label',
+    DIALOGMETADATA_DESCRIPTION_PLACEHOLDER = 'DialogMetadata.Description.placeholder',
+    DIALOGMETADATA_USERINPUT_LABEL = 'DialogMetadata.UserInput.label',
 
     // TeachSessionAdmin
     TEACHSESSIONADMIN_DIALOGMODE_USER = 'TeachSessionAdmin.dialogMode.user',
@@ -467,35 +506,6 @@ export enum FM {
     TOOLTIP_TRAINDIALOG_INVALID = 'ToolTip.TRAINDIALOG_INVALID',
     TOOLTIP_TRAINDIALOG_UNKNOWN = 'ToolTip.TOOLTIP_TRAINDIALOG_UNKNOWN',
     TOOLTIP_TRAINDIALOG_WARNING = 'ToolTip.TRAINDIALOG_WARNING',
-
-    // EditDialogAdmin
-    EDITDIALOGADMIN_DIALOGMODE_USER = 'EditDialogAdmin.dialogMode.user',
-    EDITDIALOGADMIN_DIALOGMODE_TEXT = 'EditDialogAdmin.dialogMode.text',
-    EDITDIALOGADMIN_MEMORY_TITLE = 'EditDialogAdmin.memory.title',
-    EDITDIALOGADMIN_HELPTEXT_TITLE_LOG = 'EditDialogAdmin.helpText.title.log',
-    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_LOG = 'EditDialogAdmin.helpText.description.log',
-    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_LOG = 'EditDialogAdmin.helpText.description2.log',
-    EDITDIALOGADMIN_HELPTEXT_TITLE_TRAIN = 'EditDialogAdmin.helpText.title.train',
-    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_TRAIN = 'EditDialogAdmin.helpText.description.train',
-    EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_TRAIN = 'EditDialogAdmin.helpText.description2.train',
-    EDITDIALOGADMIN_ENTITYDETECTION_TITLE = 'EditDialogAdmin.entityDetection.title',
-    EDITDIALOGADMIN_ENTITYDETECTION_HELPTEXT = 'EditDialogAdmin.entityDetection.helpText',
-    EDITDIALOGADMIN_ACTION_TITLE = 'EditDialogAdmin.action.title',
-
-    // EditDialogModal
-    EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION = 'EditDialogModal.branch.ariaDescription',
-    EDITDIALOGMODAL_BRANCH_TEXT = 'EditDialogModal.branch.text',
-    EDITDIALOGMODAL_BRANCH_TIP = 'EditDialogModal.branch.tip',
-    EDITDIALOGMODAL_CANTBRANCH_TITLE = 'EditDialogModal.cantbranch.title',
-    EDITDIALOGMODAL_CANTREPLAY_TITLE = 'EditDialogModal.cantreplay.title',
-    EDITDIALOGMODAL_CONFIRMDELETELOG_TITLE = 'EditDialogModal.confirmDeleteLog.title',
-    EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE = 'EditDialogModal.confirmDeleteTrain.title',
-    EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE = 'EditDialogModal.confirmAbandonNew.title',
-    EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE = 'EditDialogModal.confirmAbandonEdit.title',
-    EDITDIALOGMODAL_WARNING_INVALID_BOT = 'EditDialogModal.warningInvalidBot.title',
-    EDITDIALOGMODAL_WARNING_INVALID_PACKAGE = 'EditDialogModal.warningInvalidPackage.title',
-    EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY = 'EditDialogModal.unknownNeedReplay.title',
-    EDITDIALOGMODAL_WARNING_NEED_REPLAY = 'EditDialogModal.warningNeedReplay.title',
 
     // Train Dialogs
     TRAINDIALOGS_TITLE = 'TrainDialogs.title',
@@ -704,9 +714,7 @@ export default {
         [FM.LOGDIALOGS_CREATEBUTTONTITLE]: 'New Log Dialog',
         [FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION]: 'Create a New Log Dialog',
         [FM.LOGDIALOGS_MODEL_VERSION]: 'Model Version',
-        [FM.LOGDIALOGS_FIRSTINPUT]: 'First Input',
-        [FM.LOGDIALOGS_LASTINPUT]: 'Last Input',
-        [FM.LOGDIALOGS_LASTRESPONSE]: 'Last Response',
+        [FM.LOGDIALOGS_USERINPUT]: 'User Input',
         [FM.LOGDIALOGS_TURNS]: 'Turns',
         [FM.LOGDIALOGS_LOGDISABLED]: 'Logging is disabled',
         [FM.LOGDIALOGS_CREATED_DATE_TIME]: 'Created',
@@ -910,6 +918,12 @@ export default {
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
 
+        // DialogMetadata
+        [FM.DIALOGMETADATA_TAGS_LABEL]: 'Tags',
+        [FM.DIALOGMETADATA_DESCRIPTION_LABEL]: 'Description',
+        [FM.DIALOGMETADATA_DESCRIPTION_PLACEHOLDER]: 'Click to add description',
+        [FM.DIALOGMETADATA_USERINPUT_LABEL]: 'User Input',
+
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
@@ -995,6 +1009,17 @@ export default {
         // MemoryTable
         [FM.MEMORYTABLE_EMPTY]: 'Empty',
 
+        // Merge
+        [FM.MERGE_TITLE]: 'Merge?',
+        [FM.MERGE_BODY1]: 'The Dialog you are saving has the same conversation flow and is functionally equivalent with another Train Dialog.',
+        [FM.MERGE_BODY2]: 'We suggest merging them to prevent the creation of unneeded TrainDialogs.',
+        [FM.MERGE_BODY3]: 'The user inputs at each turn will be combined as Alternative user inputs.',
+        [FM.MERGE_BUTTON_MERGE]: 'Merge',
+        [FM.MERGE_BUTTON_SAVE]: 'Save As Is',
+        [FM.MERGE_LABEL_MERGED]: 'Merged Dialog',
+        [FM.MERGE_LABEL_SAVED]: 'Saved Dialog',
+        [FM.MERGE_LABEL_EQUIVALENT]: 'Equivalent Dialog',
+
         // PackageCreator
         [FM.PACKAGECREATOR_TITLE]: 'Create a new Tag',
         [FM.PACKAGECREATOR_TAG_LABEL]: 'Name',
@@ -1005,13 +1030,10 @@ export default {
         [FM.PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.PACKAGECREATOR_CANCELBUTTON_TEXT]: 'Cancel',
 
-        // Tags and Description
-        [FM.TAGS_INPUT_LABEL]: 'Tags',
-        [FM.TAGS_INPUT_ADD]: 'Add Tag',
-        [FM.TAGS_INPUT_ERROR_DUPLICATE]: 'The new tag is a duplicate of an existing tag.',
-        [FM.TAGS_READONLY_EMPTY]: 'No Tags',
-        [FM.DESCRIPTION_LABEL]: 'Description',
-        [FM.DESCRIPTION_PLACEHOLDER]: 'Click to add description',
+        // TagsInput
+        [FM.TAGSINPUT_ADD]: 'Add Tag',
+        [FM.TAGSINPUT_ERROR_DUPLICATE]: 'The new tag is a duplicate of an existing tag.',
+        [FM.TAGSINPUT_READONLY_EMPTY]: 'No Tags',
 
         // TeachSessionAdmin
         [FM.TEACHSESSIONADMIN_DIALOGMODE_USER]: 'User Input',
@@ -1093,6 +1115,8 @@ export default {
         [AT.EDIT_ENTITY_ASYNC]: 'Editing Entity',
         [AT.EDIT_ACTION_ASYNC]: 'Editing Action',
         [AT.EDIT_TRAINDIALOG_ASYNC]: 'Editing Train Dialog',
+        [AT.EDIT_TRAINDIALOG_MERGE_ASYNC]: 'Merging Train Dialog',
+        [AT.EDIT_TRAINDIALOG_REPLACE_ASYNC]: 'Replacing Train Dialog',
         [AT.EDIT_APP_LIVE_TAG_ASYNC]: 'Editing Application live tag',
         [AT.EDIT_APP_EDITING_TAG_ASYNC]: 'Editing Application editing tag',
     },
