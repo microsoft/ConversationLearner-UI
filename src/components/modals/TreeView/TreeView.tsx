@@ -195,7 +195,7 @@ class TreeView extends React.Component<Props, ComponentState> {
         scorerStep.input.filledEntities.forEach(fe => {
             let entity = this.props.entities.find(e => e.entityId === fe.entityId)
             if (entity) {
-                // LARS handle missing entity with warning?
+                // TODO: handle missing entity with warning?
                 attributes[entity.entityName] = ""
             }
         })
