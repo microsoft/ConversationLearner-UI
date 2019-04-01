@@ -48,23 +48,26 @@ interface State {
     menuProps: IPickerProps
 }
 
+const initialState: Readonly<State> = {
+    highlightIndex: 0,
+    matchedOptions: [] as MatchedOption<IOption>[],
+    maxDisplayedOptions: 4,
+    menuProps: defaultPickerProps,
+}
+
 export default class PayloadEditor extends React.Component<Props, State> {
     fuse: Fuse
     menu: HTMLElement
     plugins: any[]
 
-    state = {
-        highlightIndex: 0,
-        matchedOptions: [] as MatchedOption<IOption>[],
-        maxDisplayedOptions: 4,
-        menuProps: defaultPickerProps,
-    }
-
     constructor(props: Props) {
         super(props)
 
         this.fuse = new Fuse(this.props.options, fuseOptions)
-        this.state.matchedOptions = this.getDefaultMatchedOptions()
+        this.state = {
+            ...initialState,
+            matchedOptions: this.getDefaultMatchedOptions(initialState.highlightIndex)
+        }
 
         this.plugins = [
             OptionalPlugin(),
@@ -80,10 +83,10 @@ export default class PayloadEditor extends React.Component<Props, State> {
         }
     }
 
-    getDefaultMatchedOptions() {
+    getDefaultMatchedOptions(highlightIndex: number) {
         return this.props.options
             .map<MatchedOption<IOption>>((option, i) => ({
-                highlighted: this.state.highlightIndex === i,
+                highlighted: highlightIndex === i,
                 matchedStrings: [{ text: option.name, matched: false }],
                 original: option
             }))
@@ -328,7 +331,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
         // console.log(`onChangePickerProps: `, menuProps)
 
         const matchedOptions = (typeof menuProps.searchText !== 'string' || menuProps.searchText === "")
-            ? this.getDefaultMatchedOptions()
+            ? this.getDefaultMatchedOptions(this.state.highlightIndex)
             : this.fuse.search<FuseResult<IOption>>(menuProps.searchText)
                 .map(result => convertMatchedTextIntoMatchedOption(result.item.name, result.matches[0].indices, result.item))
 
