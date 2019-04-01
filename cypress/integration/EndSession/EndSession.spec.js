@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
 */
 
+import * as homePage from '../../support/components/HomePage'
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
@@ -56,7 +57,7 @@ describe('End Session', () => {
   context('Edit Train Dialog', () => {
     it('Should be able to edit the training that we just saved', () => {
       cy.WaitForTrainingStatusCompleted()
-      train.EditTraining('Hi', 'Bye', "EndSession: Goodbye")
+      train.EditTraining('Hi', 'Bye', "Goodbye")
     })
 
     it('Should delete EndSession turn', () => {
@@ -70,7 +71,7 @@ describe('End Session', () => {
     })
 
     it('Should delete last user turn and cause a Bot turn to be the last turn', () => {
-      editDialogModal.SelectChatTurnExactMatch('Hello')
+      editDialogModal.SelectChatTurnExactMatch('Bye')
       editDialogModal.ClickDeleteChatTurn()
     })
 
@@ -81,13 +82,14 @@ describe('End Session', () => {
 
     it('Should abandon our changes', () => {
       editDialogModal.ClickAbandonDeleteButton()
+      homePage.ClickConfirmButton()
     })
   })
 
   context('Edit another Train Dialog', () => {
     it('Should be able to edit a training that came with the model we imported', () => {
       cy.WaitForTrainingStatusCompleted()
-      train.EditTraining('Yo', 'Bye', "EndSession: Goodbye")
+      train.EditTraining('Yo', 'Bye', "Goodbye")
     })
 
     it('End Session Score Action should be disabled for last Bot turn', () => {
@@ -109,7 +111,7 @@ describe('End Session', () => {
     })
 
     it('Verify that the automatically selected Bot turn is NOT our EndSession Action', () => {
-      editDialogModal.VerifyChatTurnDoesNotContain('EndSession Goodbye')
+      editDialogModal.VerifyChatTurnDoesNotContain('EndSession: Goodbye', 5, 2)
     })
   })
 })

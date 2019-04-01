@@ -316,14 +316,21 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
   })
 }
 
-export function VerifyChatTurnDoesNotContain(turnIndex, turnText) {
-//const funcName = `VerifyChatTurnDoesNotContain(${turnIndex}, ${turnText})`
-  const chatMessages = GetAllChatMessages()
-  if(chatMessages.length < turnIndex) { 
-    throw new Error(`VerifyChatTurnDoesNotContain(${turnIndex}, ${turnText}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`) 
-  }
+export function VerifyChatTurnDoesNotContain(turnText, expectedTurnCount, turnIndex) {
+  cy.WaitForStableDOM()
+  let chatMessages
+  cy.wrap(undefined).should(() => { 
+    chatMessages = GetAllChatMessages()
+    if (chatMessages.length != expectedTurnCount) { 
+      throw new Error(`${chatMessages.length} chat turns were found, however we were expecting ${expectedTurnCount}`)
+    }
+  }).then(() => {
+    if(chatMessages.length < turnIndex) { 
+      throw new Error(`VerifyChatTurnDoesNotContain(${turnIndex}, ${turnText}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`) 
+    }
 
-  if(chatMessages[turnIndex] === turnText) { 
-    throw new Error(`Chat turn ${turnIndex} should NOT contain ${turnText}`) 
-  }
+    if(chatMessages[turnIndex] === turnText) { 
+      throw new Error(`Chat turn ${turnIndex} should NOT contain ${turnText}`) 
+    }
+  })
 }
