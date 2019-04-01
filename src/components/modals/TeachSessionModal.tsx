@@ -764,6 +764,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         const saveDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
             || this.props.teachSession.botAPIError !== null
             || this.state.isInitAvailable  // Empty TD
+            || !this.state.hasTerminalAction
         const isLastActivitySelected = this.state.selectedActivityIndex ? this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1) : false
         return (
             <div>
