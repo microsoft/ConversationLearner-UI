@@ -413,7 +413,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     newTrainDialog.description = description
 
                     // Check to see if new TrainDialog can be merged with an exising TrainDialog
-                    const matchingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
+                    const matchingTrainDialog = false // DISABLE DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
 
                     if (matchingTrainDialog) {
                         this.setState({
@@ -973,7 +973,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             newTrainDialog.definitions = null
 
              // Check to see if it can be merged with an exising TrainDialog
-            const matchedTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, this.state.originalTrainDialogId)
+            const matchedTrainDialog = false // DISABLE DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, this.state.originalTrainDialogId)
             if (matchedTrainDialog) {
                 // Open model to ask user if they want to merge
                 this.setState({
@@ -1231,6 +1231,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         componentRef={component => this.newTeachSessionButton = component!}
                         iconProps={{ iconName: 'Add' }}
                     />
+                    {/* DISABLE
                     <OF.DefaultButton
                         className="cl-rotate"
                         iconProps={{ iconName: 'BranchFork2' }}
@@ -1238,6 +1239,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={"Tree View"}
                     />
+                    */}
                 </div>
 
                 {trainDialogs.length === 0
