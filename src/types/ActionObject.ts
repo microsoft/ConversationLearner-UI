@@ -402,7 +402,6 @@ export type DeleteAction = {
 | DeleteLogDialogRejectedAction
 | {
     type: AT.DELETE_CHAT_SESSION_ASYNC,
-    key: string,
     session: CLM.Session,
     appId: string,
     packageId: string

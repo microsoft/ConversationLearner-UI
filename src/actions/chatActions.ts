@@ -46,10 +46,9 @@ const createChatSessionFulfilled = (session: Session): ActionObject =>
 // --------------------------
 // DeleteChatSession
 // --------------------------
-export const deleteChatSessionThunkAsync = (key: string, session: Session, app: AppBase, packageId: string, deleteAssociatedLogDialog: boolean = false) => {
+export const deleteChatSessionThunkAsync = (session: Session, app: AppBase, packageId: string, deleteAssociatedLogDialog: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
-        const userId = key
-        dispatch(deleteChatSessionAsync(userId, session, app.appId, packageId))
+        dispatch(deleteChatSessionAsync(session, app.appId, packageId))
         const clClient = ClientFactory.getInstance(AT.DELETE_CHAT_SESSION_ASYNC)
 
         try {
@@ -57,7 +56,7 @@ export const deleteChatSessionThunkAsync = (key: string, session: Session, app: 
             dispatch(deleteChatSessionFulfilled(session.sessionId));
 
             if (deleteAssociatedLogDialog) {
-                await deleteLogDialogThunkAsync(userId, app, session.logDialogId, packageId)
+                await deleteLogDialogThunkAsync(app, session.logDialogId, packageId)
             }
             
             dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
@@ -70,10 +69,9 @@ export const deleteChatSessionThunkAsync = (key: string, session: Session, app: 
     }
 }
 
-const deleteChatSessionAsync = (key: string, session: Session, appId: string, packageId: string): ActionObject => {
+const deleteChatSessionAsync = (session: Session, appId: string, packageId: string): ActionObject => {
     return {
         type: AT.DELETE_CHAT_SESSION_ASYNC,
-        key: key,
         session: session,
         appId: appId,
         packageId: packageId

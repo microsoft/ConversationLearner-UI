@@ -350,7 +350,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
 
         if (this.state.currentLogDialogId) {
-            await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
+            await this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
         }
         await this.onCloseEditDialogModal();
     }
@@ -686,6 +686,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
             const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput) as any) as Promise<CLM.TeachWithHistory>)
 
+            // Update currentTrainDialog with tags and description
+            const currentTrainDialog = this.state.currentTrainDialog ? {
+                ...this.state.currentTrainDialog,
+                tags: newTrainDialog.tags,
+                description: newTrainDialog.description
+            } : null
+
             // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
             this.setState({
                 history: teachWithHistory.history,
@@ -693,7 +700,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 isEditDialogModalOpen: false,
                 selectedHistoryIndex: null,
                 isTeachDialogModalOpen: true,
-                editType: EditDialogType.LOG_EDITED
+                editType: EditDialogType.LOG_EDITED,
+                currentTrainDialog
             })
         }
         catch (error) {
@@ -835,7 +843,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
 
         if (this.state.currentLogDialogId) {
-            await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
+            await this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
         } 
 
         this.setState({
@@ -901,7 +909,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             else {
 
                 if (this.state.currentLogDialogId) {
-                    await this.props.deleteLogDialogThunkAsync(this.props.user.id, this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
+                    await this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
                 }
                 else {
                     throw new Error("Could not find LogDialag associated with conversion to TrainDialog")
@@ -925,7 +933,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onCloseTeachSession(save: boolean) {
+    async onCloseTeachSession(save: boolean, tags: string[] = [], description: string = '') {
         if (this.props.teachSession && this.props.teachSession.teach) {
 
             if (save) {
@@ -936,6 +944,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
                 // Delete the teach session and retreive the new TrainDialog
                 const newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId)as any) as Promise<CLM.TrainDialog>)
+                newTrainDialog.tags = tags
+                newTrainDialog.description = description
 
                 // Check to see if new TrainDialog can be merged with an exising TrainDialog
                 const matchingTrainDialog = false // DISABLE DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
@@ -952,6 +962,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     if (sourceTrainDialogId) {
                         await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog)
                     }
+                    // Otherwise just update the tags and description
+                    else {
+                        await this.props.editTrainDialogThunkAsync(this.props.app.appId, { trainDialogId: newTrainDialog.trainDialogId, tags, description })
+                    }
+                    
+                    // Delete associated log dialog
+                    if (this.state.currentLogDialogId) {
+                        await this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
+                    } 
                 }
             }
             // Just delete the teach sesion without saving
