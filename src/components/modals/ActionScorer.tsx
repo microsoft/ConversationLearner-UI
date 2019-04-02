@@ -20,7 +20,6 @@ import { FM } from '../../react-intl-messages'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import './ActionScorer.css'
-import { ActionTypes } from '@conversationlearner/models';
 
 const ACTION_BUTTON = 'action_button'
 const MISSING_ACTION = 'missing_action'
@@ -353,7 +352,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
         if (newAction
             && (
-                newAction.actionType === ActionTypes.END_SESSION
+                newAction.actionType === CLM.ActionTypes.END_SESSION
                     ? this.props.isEndSessionAvailable
                     : true
             )
