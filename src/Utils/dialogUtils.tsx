@@ -179,8 +179,8 @@ export function trainDialogRenderTags(trainDialog: CLM.TrainDialog): React.React
     )
 }
 
-export function trainDialogRenderDescription(trainDialog: CLM.TrainDialog): string {
-    return trainDialog.description || dialogSampleInput(trainDialog)
+export function trainDialogRenderDescription(trainDialog: CLM.TrainDialog): React.ReactNode {
+    return trainDialog.description ? <i>{trainDialog.description}</i> : dialogSampleInput(trainDialog)
 }
 
 function doesScorerStepMatch(scorerStep1: CLM.TrainScorerStep, scorerStep2: CLM.TrainScorerStep): boolean {

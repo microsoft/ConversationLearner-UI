@@ -33,7 +33,7 @@ const deleteLogDialogRejected = (): ActionObject => {
     }
 }
 
-export const deleteLogDialogThunkAsync = (userId: string, app: AppBase, logDialogId: string, packageId: string) => {
+export const deleteLogDialogThunkAsync = (app: AppBase, logDialogId: string, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteLogDialogAsync(app.appId, logDialogId))
         const clClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC)
