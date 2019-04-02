@@ -94,10 +94,9 @@ const teachSessionReducer: Reducer<TeachSessionState> = produce((state: TeachSes
             state.uiScoreInput = action.uiScoreInput
             return
         case AT.GET_SCORES_FULFILLED:
-            state.dialogMode =  DialogMode.Scorer,
-            state.memories =  action.uiScoreResponse.memories!,
-            state.prevMemories = state.memories,
-            state.scoreInput =  action.uiScoreResponse!.scoreInput,
+            state.dialogMode =  DialogMode.Scorer
+            state.memories =  action.uiScoreResponse.memories!
+            state.scoreInput =  action.uiScoreResponse!.scoreInput
             state.scoreResponse =  action.uiScoreResponse!.scoreResponse
             return
         case AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED:
@@ -121,7 +120,6 @@ const teachSessionReducer: Reducer<TeachSessionState> = produce((state: TeachSes
             else {
                 state.dialogMode = DialogMode.Scorer
                 state.memories = action.uiScoreResponse.memories!
-                state.prevMemories = state.memories
                 state.scoreInput = action.uiScoreResponse.scoreInput
                 state.scoreResponse = action.uiScoreResponse.scoreResponse
                 state.extractConflict = null

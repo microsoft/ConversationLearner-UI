@@ -312,7 +312,10 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                             entityName: entityName,
                             entityValues: fe.values
                         }
-                    });
+                    })
+
+                    // Get prevmemories
+                    prevMemories = this.getPrevMemories()
                 }
             }
         }

@@ -413,7 +413,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     newTrainDialog.description = description
 
                     // Check to see if new TrainDialog can be merged with an exising TrainDialog
-                    const matchingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
+                    const matchingTrainDialog = false // DISABLE DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
 
                     if (matchingTrainDialog) {
                         this.setState({
@@ -973,7 +973,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             newTrainDialog.definitions = null
 
              // Check to see if it can be merged with an exising TrainDialog
-            const matchedTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, this.state.originalTrainDialogId)
+            const matchedTrainDialog = false // DISABLE DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, this.state.originalTrainDialogId)
             if (matchedTrainDialog) {
                 // Open model to ask user if they want to merge
                 this.setState({
@@ -1023,49 +1023,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         
         const selectedActivityIndex = DialogUtils.activityIndexFromRound(trainDialog, roundIndex, scoreIndex) || null
         this.onClickTrainDialogItem(trainDialog, selectedActivityIndex)
-
-        /* TODO: Show editing view
-        // LARS: duplicate code with below clean up on both opens
-        let trainDialogWithDefinitions: CLM.TrainDialog = {
-            ...trainDialog,
-            createdDateTime: new Date().toJSON(),
-            lastModifiedDateTime: new Date().toJSON(),
-            trainDialogId: undefined!,
-            sourceLogDialogId: trainDialog.sourceLogDialogId,
-            version: undefined!,
-            packageCreationId: undefined!,
-            packageDeletionId: undefined!,
-            rounds: trainDialog.rounds,
-            initialFilledEntities: trainDialog.initialFilledEntities,
-            definitions: {
-                actions: this.props.actions,
-                entities: this.props.entities,
-                trainDialogs: []
-            },
-        };
-
-        try {
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            const originalId = this.state.currentTrainDialog
-                ? this.state.currentTrainDialog.trainDialogId
-                : null
-            this.setState({
-                history: teachWithHistory.history,
-                lastAction: teachWithHistory.lastAction,
-                currentTrainDialog: trainDialog,
-                originalTrainDialogId: originalId,
-                editType: EditDialogType.TRAIN_ORIGINAL,
-                isEditDialogModalOpen: false,
-                isTreeViewModalOpen: true,
-                selectedActivityIndex
-            })
-        }
-        catch (e) {
-            const error = e as Error
-            console.warn(`Error when attempting to create history: `, error)
-        }
-        */
-       
     }
 
     @OF.autobind
@@ -1274,6 +1231,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         componentRef={component => this.newTeachSessionButton = component!}
                         iconProps={{ iconName: 'Add' }}
                     />
+                    {/* DISABLE
                     <OF.DefaultButton
                         className="cl-rotate"
                         iconProps={{ iconName: 'BranchFork2' }}
@@ -1281,6 +1239,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={"Tree View"}
                     />
+                    */}
                 </div>
 
                 {trainDialogs.length === 0

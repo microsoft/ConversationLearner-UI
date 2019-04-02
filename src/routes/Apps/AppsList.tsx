@@ -16,15 +16,15 @@ import { autobind } from 'office-ui-fabric-react'
 import AppsListComponent from './AppsListComponent'
 
 interface ComponentState {
-    readonly isAppCreateModalOpen: boolean
-    readonly appCreatorType: AppCreatorType
-    readonly isImportTutorialsOpen: boolean
-    readonly appToDelete: AppBase | null
-    readonly tutorials: AppBase[] | null
+    isAppCreateModalOpen: boolean
+    appCreatorType: AppCreatorType
+    isImportTutorialsOpen: boolean
+    appToDelete: AppBase | null
+    tutorials: AppBase[] | null
 }
 
 class AppsList extends React.Component<Props, ComponentState> {
-    state: ComponentState = {
+    state: Readonly<ComponentState> = {
         isAppCreateModalOpen: false,
         appCreatorType: AppCreatorType.NEW,
         isImportTutorialsOpen: false,

@@ -888,7 +888,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             await this.props.createTrainDialogThunkAsync(this.props.app.appId, cleanedDialog)
 
             // Check to see if it can be merged with an exising TrainDialog
-            const matchedTrainDialog = DialogUtils.findMatchingTrainDialog(cleanedDialog, this.props.trainDialogs)
+            const matchedTrainDialog = false // DISABLE DialogUtils.findMatchingTrainDialog(cleanedDialog, this.props.trainDialogs)
             if (matchedTrainDialog) {
                 // Open model to ask user if they want to merge
                 this.setState({
@@ -938,7 +938,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 const newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId)as any) as Promise<CLM.TrainDialog>)
 
                 // Check to see if new TrainDialog can be merged with an exising TrainDialog
-                const matchingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
+                const matchingTrainDialog = false // DISABLE DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
 
                 if (matchingTrainDialog) {
                     this.setState({

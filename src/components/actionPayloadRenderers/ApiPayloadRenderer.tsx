@@ -32,7 +32,7 @@ interface State {
 }
 
 export default class Component extends React.Component<Props, State> {
-    state = {
+    state: Readonly<State> = {
         isOriginalVisible: false
     }
 

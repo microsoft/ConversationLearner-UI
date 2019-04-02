@@ -465,7 +465,24 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     unscoredActions: unscoredActions
                 }
             }
+            // Extraction step
+            else {
+                // If scorer step exists, use it to populate memory
+                scorerStep = round.scorerSteps[0];
+                if (scorerStep) {
+                    memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
+                        const entity = this.props.entities.find(e => e.entityId === fe.entityId);
+                        const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
+                        return {
+                            entityName: entityName,
+                            entityValues: fe.values
+                        }
+                    });
 
+                    // Get prevmemories
+                    prevMemories = this.getPrevMemories()
+                }
+            }
             return {
                 dialogMode: (senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
                 scoreInput: scorerStep ? scorerStep.input : undefined,
@@ -764,6 +781,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         const saveDisable = this.props.teachSession.dialogMode === CLM.DialogMode.Extractor
             || this.props.teachSession.botAPIError !== null
             || this.state.isInitAvailable  // Empty TD
+            || !this.state.hasTerminalAction
         const isLastActivitySelected = this.state.selectedActivityIndex ? this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1) : false
         return (
             <div>

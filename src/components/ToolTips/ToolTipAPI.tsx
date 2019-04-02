@@ -78,12 +78,12 @@ const apiWrong =
 const resultAsEntity =
     `cl.AddCallback({
         name: "ResultAsEntity",
-        logic: async (memoryManager : ClientMemoryManager) => {
+        logic: async (memoryManager) => {
             var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
             const response = await requestpromise(options)
-            memoryManager.Set("RandomMessage", response.body);
+            memoryManager.Set("RandomMessage", response.body.title);
         },
-        render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
+        render: async (logicResult, memoryManager) => {
             const value = memoryManager.Get("RandomMessage", ClientMemoryManager.AS_STRING)
             return value || ""
         }
@@ -92,13 +92,13 @@ const resultAsEntity =
 const resultPassed =
     `cl.AddCallback({
         name: "ResultAsLogicResult",
-        logic: async (memoryManager : ClientMemoryManager) => {
+        logic: async (memoryManager) => {
             var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
             const response = await requestpromise(options)
-            memoryManager.Set("RandomMessage", response.body);
+            return response.body
         },
-        render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
-            return logicResult.body
+        render: async (logicResult) => {
+            return \`Title: \${logicResult.title}\`
         }
     })`;
 
