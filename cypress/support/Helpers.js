@@ -41,7 +41,7 @@ export function StringArrayFromElementText(selector, retainMarkup = false) {
   ConLog(`StringArrayFromElementText(${selector})`, elements.length)
   let returnValues = []
   for (let i = 0; i < elements.length; i++)  {
-    let text = retainMarkup ? elements[i].innerHTML : elements[i].innerText
+    let text = retainMarkup ? elements[i].innerHTML : InnerText(elements[i])
     returnValues.push(text)
     ConLog(`StringArrayFromElementText(${selector})`, text)
   }
@@ -51,7 +51,7 @@ export function StringArrayFromElementText(selector, retainMarkup = false) {
 export function NumericArrayFromElementText(selector) {
   let elements = Cypress.$(selector)
   let returnValues = []
-  for (let i = 0; i < elements.length; i++) { returnValues.push(parseInt(elements[i].innerText)) }
+  for (let i = 0; i < elements.length; i++) { returnValues.push(parseInt(InnerText(elements[i]))) }
   return returnValues
 }
 
@@ -65,4 +65,14 @@ export function Moment(dateTime) {
   return undefined
 }
 
-
+// This will return the Inner Text of an element without markup nor newline characters.
+// Needed because each browser handles this functionality differently.
+export function InnerText(element)
+{
+  ConLog('InnerText', `Browser: ${Cypress.browser.name}`)
+  if (Cypress.browser.name === 'chrome') { return element.innerText }
+  else { 
+    ConLog('InnerText', 'not Chrome')
+    return element.textContent 
+  }
+}
