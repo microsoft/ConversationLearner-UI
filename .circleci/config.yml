@@ -34,7 +34,7 @@ jobs:
           ## this enables colors in the output
           TERM: xterm
           ipc: host ## https://github.com/cypress-io/cypress/issues/350
-    parallelism: 1
+    parallelism: 4
     steps:
       - checkout
 

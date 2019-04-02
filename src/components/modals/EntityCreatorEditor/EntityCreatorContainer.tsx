@@ -91,7 +91,7 @@ class Container extends React.Component<Props, ComponentState> {
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             },
-            /*
+            /* DISABLE
             {
                 key: CLM.EntityType.ENUM,
                 text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM),
