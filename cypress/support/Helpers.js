@@ -69,10 +69,5 @@ export function Moment(dateTime) {
 // Needed because each browser handles this functionality differently.
 export function InnerText(element)
 {
-  ConLog('InnerText', `Browser: ${Cypress.browser.name}`)
-  if (Cypress.browser.name === 'chrome') { return element.innerText }
-  else { 
-    ConLog('InnerText', 'not Chrome')
-    return element.textContent 
-  }
+  return element.textContent.replace(/(\r\n|\n|\r)/gm, '')
 }
