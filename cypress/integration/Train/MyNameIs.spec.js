@@ -60,9 +60,9 @@ describe('My Name Is - Train Dialog', () => {
       // Bug 1956: Replaced Entity Indicator has been lost when training, can still be seen when editing a training
       // This test will fail once the bug has been fixed.
       // Also uncomment the 3rd line of code.
-      memoryTableComponent.VerifyNoDisplacedEntityInMemory('David')
-      memoryTableComponent.VerifyEntitiesInMemory('name', ['Susan'])
-      //memoryTableComponent.VerifyEntitiesInMemory('name', ['Susan'], 'David')
+      // memoryTableComponent.VerifyNoDisplacedEntityInMemory('David')
+      // memoryTableComponent.VerifyEntitiesInMemory('name', ['Susan'])
+      memoryTableComponent.VerifyEntitiesInMemory('name', ['Susan'], 'David')
     })
 
     it('Should show one disabled and one enabled Action', () => {
