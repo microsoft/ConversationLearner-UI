@@ -479,7 +479,6 @@ export function getTip(tipType: string) {
 
                     <p>Model performance can be improved by providing examples of alternative ways the user might say the same thing.</p>
                     <p>For example, after the Bot asks: "What is your name?" some alternative inputs might be:</p>
-                    <p>For example, after the Bot asks: "What is your name?" some alternive inputs might be:</p>
                     <ul>
                         <li>I go by Joe</li>
                         <li>Call me Joe</li>
