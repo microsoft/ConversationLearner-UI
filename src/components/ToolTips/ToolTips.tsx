@@ -456,7 +456,7 @@ export function getTip(tipType: string) {
                         <li>Select the corresponding Entity from the menu, or create a New Entity</li>
                     </ol>
 
-                    <img src="/entity-extractor-label.gif" width="350px" height="342px" alt="Entity Extractor Label" />
+                    <img src="entity-extractor-label.gif" width="350px" height="342px" alt="Entity Extractor Label" />
 
                     <h2>Remove Label</h2>
                     <ol>
@@ -464,7 +464,7 @@ export function getTip(tipType: string) {
                         <li>Click the delete icon</li>
                     </ol>
 
-                    <img src="/entity-extractor-remove-label.gif" width="350px" height="342px" alt="Entity Extractor Remove Label" />
+                    <img src="entity-extractor-remove-label.gif" width="350px" height="342px" alt="Entity Extractor Remove Label" />
 
                     <h2>Notes:</h2>
                     <ul>
@@ -479,7 +479,6 @@ export function getTip(tipType: string) {
 
                     <p>Model performance can be improved by providing examples of alternative ways the user might say the same thing.</p>
                     <p>For example, after the Bot asks: "What is your name?" some alternative inputs might be:</p>
-                    <p>For example, after the Bot asks: "What is your name?" some alternive inputs might be:</p>
                     <ul>
                         <li>I go by Joe</li>
                         <li>Call me Joe</li>
