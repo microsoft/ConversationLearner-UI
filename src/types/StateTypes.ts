@@ -67,10 +67,6 @@ export interface ProfileState {
     current: any
 }
 
-export interface SettingsState {
-    botPort: number
-}
-
 export type SourceState = { [appId: string]: CLM.AppDefinitionChange }
 
 export type State = {
@@ -86,6 +82,5 @@ export type State = {
     logDialogs: LogDialogState,
     teachSession: TeachSessionState,
     chatSessions: ChatSessionState,
-    settings: SettingsState,
     source: SourceState
 }

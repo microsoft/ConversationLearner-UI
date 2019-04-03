@@ -112,12 +112,6 @@
     vertical-align: sub;
 }
 
-.cl-header-office-icon {
-    font-size: 1.4rem;
-    margin-right: 0.3em;
-    vertical-align: sub;
-}
-
 .cl-header_links {
     display: flex;
     flex-direction: row;

@@ -11,7 +11,6 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { State } from '../types'
 import AppsIndex from './Apps/AppsIndex'
-import Settings from './Settings'
 import NoMatch from './NoMatch'
 import { Banner } from '@conversationlearner/models'
 import HelpPanel from '../components/HelpPanel'
@@ -116,7 +115,6 @@ class App extends React.Component<Props, ComponentState> {
               <a href="https://labs.cognitive.microsoft.com/en-us/project-conversation-learner" target="_blank" rel="noopener noreferrer">Documentation</a>
               <a href="https://cognitive.uservoice.com/forums/912199-project-conversation-learner" target="_blank" rel="noopener noreferrer">Feedback</a>
             </nav>
-            <NavLink className="cl-header_user" to="/settings"><OF.Icon className="cl-header-office-icon" iconName="Settings" /> Settings</NavLink>
           </header>
 
           <div className="cl-app_header-placeholder" />
@@ -170,7 +168,6 @@ class App extends React.Component<Props, ComponentState> {
                   </React.Fragment>
                 }
               />
-              <Route path="/settings" component={Settings} />
               <Route component={NoMatch} />
             </Switch>
           </div>

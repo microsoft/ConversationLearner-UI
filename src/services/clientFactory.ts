@@ -5,9 +5,9 @@
 import ClClient, { ClientHeaders } from './client'
 import { AT } from '../types/ActionTypes'
 import { ErrorInjector } from '../Utils/ErrorInjector'
+import { botPort } from '../types/const'
 //import DebugErrors from '../components/modals/DebugErrors'
 
-let sdkPort = 3978
 let getClientHeaders = (): ClientHeaders => {
     console.warn(`You attempted to use the Conversation Learner Client before its getClientHeaders method was properly configured. Call setClientHeaders to configure`)
     return {
@@ -26,11 +26,7 @@ export const getInstance = (actionType: AT): ClClient => {
     // TODO: Refactor out the force error argument and need to take in paramter. This should be implemented in another layer as extension not modification
     // TODO: Allow configuration whole URI for SDK to enable communicating with hosted version (Likely change to getter function like access token)
 
-    return new ClClient(`http://localhost:${sdkPort}/sdk`, () => getClientHeaders(), {}, forceError)
-}
-
-export const setPort = (port: number) => {
-    sdkPort = port
+    return new ClClient(`http://localhost:${botPort}/sdk`, () => getClientHeaders(), {}, forceError)
 }
 
 export const setHeaders = (newGetClientHeaders: () => ClientHeaders) => {

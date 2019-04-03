@@ -21,6 +21,11 @@ export enum SelectionType {
 }
 
 export const CL_IMPORT_ID = '9c110735ea8b440d8f31c5c68ffb767d'
-
-export const previousBotPort = 5000
+export const devUiPort = 5050
 export const defaultBotPort = 3978
+
+// Allow developers who run UI on 5050 to use Bot running on 3987
+// But still allow customers to run Bot and UI on any other port than 5050
+export const botPort = location.port === devUiPort.toString()
+    ? defaultBotPort
+    : location.port

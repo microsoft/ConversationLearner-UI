@@ -70,11 +70,6 @@ export type UpdateAction = {
 } | {
     type: AT.EDIT_APP_EDITING_TAG_FULFILLED,
     activeApps: { [appId: string]: string }
-} | {
-    type: AT.SETTINGS_UPDATE,
-    botPort: number
-} | {
-    type: AT.SETTINGS_RESET
 }
 
 export type DisplayAction = {
