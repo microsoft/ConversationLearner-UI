@@ -111,11 +111,11 @@ class AppCreator extends React.Component<Props, ComponentState> {
         // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file
         if (this.props.creatorType !== AppCreatorType.IMPORT && event.key === 'Enter' && this.state.appNameVal) {
-            this.onClickCreate();
+            this.onClickCreate()
         }
 
         if (this.props.creatorType === AppCreatorType.IMPORT && event.key === 'Enter' && this.state.appNameVal && this.state.file) {
-            this.onClickCreate();
+            this.onClickImport()
         }
     }
 
