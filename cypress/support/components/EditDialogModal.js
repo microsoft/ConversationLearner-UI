@@ -96,8 +96,9 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
     const elements = Cypress.$(AllChatMessagesSelector)
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (let i = 0; i < elements.length; i++) {
-      helpers.ConLog(funcName, `Chat turn - Text: '${helpers.InnerText(elements[i])}' - Inner HTML '${elements[i].innerHTML}'`)
-      if (matchPredicate(helpers.InnerText(elements[i]), message)) {
+      const innerText = helpers.InnerText(elements[i])
+      helpers.ConLog(funcName, `Chat turn - Text: '${innerText}' - Inner HTML '${elements[i].innerHTML}'`)
+      if (matchPredicate(innerText, message)) {
         if (index > 0) index--
         else {
           helpers.ConLog(funcName, `FOUND!`)
