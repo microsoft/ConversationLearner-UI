@@ -570,7 +570,7 @@ export function getTip(tipType: string) {
                         <li>In your LUIS' apps "Keys and Endpoint settings", click on "Assign resource"
                             <img src="https://blisstorage.blob.core.windows.net/uiimages/addkey.PNG" width="50%" alt="Add Key" />
                         </li>
-                        <li>If you don't yet have an Azure Subscription key you'll need to <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/luis/azureibizasubscription" target="_blank" rel="noopener noreferrer">Create One</a></li>
+                        <li>If you don't yet have an Azure Subscription key you'll need to <a href="https://docs.microsoft.com/en-us/azure/cognitive-services/LUIS/luis-how-to-azure-subscription" target="_blank" rel="noopener noreferrer">Create One</a> from the <a href="https://portal.azure.com" target="_blank" rel="noopener noreferrer">Azure Portal</a>. See this short <a href="createLanguageUnderstandingService.gif" target="_blank" rel="noopener noreferrer">image</a> for demonstration.</li>
                         <li>Then select the subscription and add the key to your LUIS model</li>
                         <img src="https://blisstorage.blob.core.windows.net/uiimages/assignkey.PNG" width="50%" alt="Assign Key" />
                         <li>Click the Key String to copy the key value and use it as the LUIS_SUBSCRIPTION_KEY value for your model
