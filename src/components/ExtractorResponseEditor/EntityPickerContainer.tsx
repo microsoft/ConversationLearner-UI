@@ -91,7 +91,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
             && nextProps.isVisible === true)) {
 
             this.setState({
-                ...initialState,
+                searchText: '',
                 highlightIndex: 0
             })
 
