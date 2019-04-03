@@ -456,7 +456,7 @@ export function getTip(tipType: string) {
                         <li>Select the corresponding Entity from the menu, or create a New Entity</li>
                     </ol>
 
-                    <img src="/entity-extractor-label.gif" width="350px" height="342px" alt="Entity Extractor Label" />
+                    <img src="entity-extractor-label.gif" width="350px" height="342px" alt="Entity Extractor Label" />
 
                     <h2>Remove Label</h2>
                     <ol>
@@ -464,7 +464,7 @@ export function getTip(tipType: string) {
                         <li>Click the delete icon</li>
                     </ol>
 
-                    <img src="/entity-extractor-remove-label.gif" width="350px" height="342px" alt="Entity Extractor Remove Label" />
+                    <img src="entity-extractor-remove-label.gif" width="350px" height="342px" alt="Entity Extractor Remove Label" />
 
                     <h2>Notes:</h2>
                     <ul>
