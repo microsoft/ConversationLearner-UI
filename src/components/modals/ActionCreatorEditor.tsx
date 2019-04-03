@@ -606,7 +606,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onClickSyncBotInfo() {
-        this.props.fetchBotInfoThunkAsync(this.props.browserId, this.props.app.appId)
+        this.props.fetchBotInfoThunkAsync(this.props.browserId, this.props.app.appId, this.props.settings)
     }
 
     onClickViewCard() {
@@ -1508,7 +1508,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
         actions: state.actions,
         trainDialogs: state.trainDialogs,
         botInfo: state.bot.botInfo,
-        browserId: state.bot.browserId
+        browserId: state.bot.browserId,
+        settings: state.settings
     }
 }
 

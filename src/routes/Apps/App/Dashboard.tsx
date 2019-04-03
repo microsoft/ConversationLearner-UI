@@ -27,7 +27,7 @@ class Dashboard extends React.Component<Props, ComponentState> {
     }
 
     onClickRetry = () => {
-        this.props.fetchBotInfoThunkAsync(this.props.browserId, this.props.app.appId)
+        this.props.fetchBotInfoThunkAsync(this.props.browserId, this.props.app.appId, this.props.settings)
 
         /**
          * This is here to toggle visibility of text for the screen reader.
@@ -146,7 +146,8 @@ const mapStateToProps = (state: State) => {
         trainDialogs: state.trainDialogs,
         browserId: state.bot.browserId,
         source: state.source,
-        activeApps: state.apps.activeApps
+        activeApps: state.apps.activeApps,
+        settings: state.settings
     }
 }
 

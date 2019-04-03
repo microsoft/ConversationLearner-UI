@@ -18,7 +18,11 @@ class Settings extends React.Component<Props> {
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
         const botPort = parseInt(event.target.value, 10)
-        this.props.settingsUpdate(botPort)
+        this.props.settingsUpdate(botPort, this.props.settings.key)
+    }
+
+    onChangeKey = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.props.settingsUpdate(this.props.settings.botPort, event.target.value)
     }
 
     reset = () => {
@@ -47,6 +51,17 @@ class Settings extends React.Component<Props> {
                         <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
                         <FormattedMessageId id={FM.PROFILE_SETTINGS_BOT_PORT_WARNING} />
                     </div>
+                    <hr/>
+                    <OF.Label>
+                        LUIS KEY
+                    </OF.Label>
+                    <input
+                        className="cl-input"
+                        type="string"
+                        value={this.props.settings.key || ""}
+                        onChange={this.onChangeKey}
+                    />
+                    <hr/>
                     <div>
                         <OF.PrimaryButton
                             text="Reset"

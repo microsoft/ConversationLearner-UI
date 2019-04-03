@@ -50,7 +50,7 @@ class App extends React.Component<Props, ComponentState> {
       this.setState({
         loadingState: LoadingState.LOADING
       })
-      await this.props.fetchBotInfoThunkAsync(this.props.browserId)
+      await this.props.fetchBotInfoThunkAsync(this.props.browserId, undefined, this.props.settings)
       this.setState({
         loadingState: LoadingState.SUCCEEDED
       })
@@ -196,7 +196,8 @@ const mapStateToProps = (state: State) => {
   return {
     browserId: state.bot.browserId,
     botInfo: state.bot.botInfo,
-    clearedBanner: state.display.clearedBanner
+    clearedBanner: state.display.clearedBanner,
+    settings: state.settings
   }
 }
 

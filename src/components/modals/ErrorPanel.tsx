@@ -57,7 +57,7 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
         }
 
         if (this.state.errorCode === ErrorCode.INVALID_BOT_CHECKSUM) {
-            this.props.fetchBotInfoThunkAsync(this.props.browserId, this.props.appId)
+            this.props.fetchBotInfoThunkAsync(this.props.browserId, this.props.appId, this.props.settings)
         }
 
         if (this.props.error.closeCallback) {
@@ -189,7 +189,8 @@ const mapStateToProps = (state: State) => {
     return {
         error: state.error,
         browserId: state.bot.browserId,
-        appId: state.apps.selectedAppId
+        appId: state.apps.selectedAppId,
+        settings: state.settings
     }
 }
 

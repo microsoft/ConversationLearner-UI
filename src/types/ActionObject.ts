@@ -73,6 +73,7 @@ export type UpdateAction = {
 } | {
     type: AT.SETTINGS_UPDATE,
     botPort: number
+    key: string | undefined
 } | {
     type: AT.SETTINGS_RESET
 }

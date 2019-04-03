@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { ActionObject, ErrorType } from '../types'
+import { ActionObject, ErrorType, SettingsState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
@@ -26,13 +26,13 @@ const fetchBotInfoFulfilled = (botInfo: BotInfo, browserId: string): ActionObjec
     }
 }
 
-export const fetchBotInfoThunkAsync = (browserId: string, appId?: string) => {
+export const fetchBotInfoThunkAsync = (browserId: string, appId: string | undefined, settings: SettingsState) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_BOTINFO_ASYNC)
         dispatch(fetchBotInfoAsync(browserId, appId))
-
+        
         try {
-            const botInfo = await clClient.getBotInfo(browserId, appId)
+            const botInfo = await clClient.getBotInfo(browserId, appId, settings.key)
             dispatch(fetchBotInfoFulfilled(botInfo, browserId))
             return botInfo
         } catch (e) {

@@ -92,9 +92,9 @@ export default class ClClient {
     }
 
     // Each browser instance has a different browserId
-    async getBotInfo(browserId: string, appId?: string): Promise<CLM.BotInfo> {
+    async getBotInfo(browserId: string, appId: string | undefined, key: string | undefined): Promise<CLM.BotInfo> {
         const response = await this.send<CLM.BotInfo>({
-            url: `${this.baseUrl}/bot?browserId=${browserId}${appId ? `&appId=${appId}` : ''}`
+            url: `${this.baseUrl}/bot?browserId=${browserId}${appId ? `&appId=${appId}` : ''}${key ? `&key=${key}` : ''}`
         })
         return response.data
     }

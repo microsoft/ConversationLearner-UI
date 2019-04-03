@@ -8,7 +8,8 @@ import { Reducer } from 'redux'
 import produce from 'immer'
 
 const initialState: SettingsState = {
-    botPort: defaultBotPort
+    botPort: defaultBotPort,
+    key: undefined
 }
 
 const settingsReducer: Reducer<SettingsState> = produce((state: SettingsState, action: ActionObject) => {
@@ -17,6 +18,7 @@ const settingsReducer: Reducer<SettingsState> = produce((state: SettingsState, a
             return { ...initialState }
         case AT.SETTINGS_UPDATE:
             state.botPort = action.botPort
+            state.key = action.key
             return
         default:
             return
