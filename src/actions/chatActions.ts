@@ -56,7 +56,7 @@ export const deleteChatSessionThunkAsync = (session: Session, app: AppBase, pack
             dispatch(deleteChatSessionFulfilled(session.sessionId));
 
             if (deleteAssociatedLogDialog) {
-                await deleteLogDialogThunkAsync(app, session.logDialogId, packageId)
+                dispatch(deleteLogDialogThunkAsync(app, session.logDialogId, packageId))
             }
             
             dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
