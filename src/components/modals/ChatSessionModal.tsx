@@ -3,22 +3,22 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
+import * as BotChat from '@conversationlearner/webchat'
+import * as Util from '../../Utils/util'
+import ConfirmCancelModal from './ConfirmCancelModal'
+import actions from '../../actions'
+import Webchat, { renderActivity } from '../Webchat'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { EditDialogType } from '.'
-import ConfirmCancelModal from './ConfirmCancelModal'
 import { FontClassNames, Icon } from 'office-ui-fabric-react'
-import * as OF from 'office-ui-fabric-react'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
-import Webchat, { renderActivity } from '../Webchat'
 import { AppBase } from '@conversationlearner/models'
-import actions from '../../actions'
 import { FM } from '../../react-intl-messages'
-import * as BotChat from '@conversationlearner/webchat'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import * as Util from '../../Utils/util'
 
 interface ComponentState {
     isSessionEndModalOpen: boolean
