@@ -888,12 +888,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             definitions: null
         }
 
-        this.setState({
-            isEditDialogModalOpen: false,
-        })
-
         try {
             await this.props.createTrainDialogThunkAsync(this.props.app.appId, cleanedDialog)
+  
+            this.setState({
+                isEditDialogModalOpen: false,
+            })
 
             // Check to see if it can be merged with an exising TrainDialog
             const matchedTrainDialog = false // DISABLE DialogUtils.findMatchingTrainDialog(cleanedDialog, this.props.trainDialogs)
