@@ -394,7 +394,13 @@ export enum FM {
     SETTINGS_SAVECHANGES = 'Settings.saveChanges',
     SETTINGS_DISCARD = 'Settings.discard',
     SETTINGS_LOGGINGON_LABEL = 'Settings.loggingon',
-    SETINGS_DELETEISPERMANENT = 'Settings.deleteIsPermanent',
+    SETTINGS_DELETEISPERMANENT = 'Settings.deleteIsPermanent',
+    SETTINGS_LUIS_LINK = 'Settings.luisLink',
+    SETTINGS_MODEL_VERSION_EDITING = 'Settings.modelVersionEditing',
+    SETTINGS_MODEL_VERSION_LIVE = 'Settings.modelVersionLive',
+    SETTINGS_MODEL_VERSIONS_CREATE = 'Settings.modelVersionsCreate',
+    SETTINGS_MODEL_VERSIONS_TITLE = 'Settings.modelVersionsTitle',
+    SETTINGS_MODEL_VERSIONS_DESCRIPTION = 'Settings.modelVersionsDescription',
 
     // Tags and Description
     DIALOGMETADATA_TAGS_LABEL = 'DialogMetadata.Tags.label',
@@ -776,7 +782,13 @@ export default {
         [FM.SETTINGS_SAVECHANGES]: 'Save Changes',
         [FM.SETTINGS_DISCARD]: 'Discard',
         [FM.SETTINGS_LOGGINGON_LABEL]: 'Log Conversations',
-        [FM.SETINGS_DELETEISPERMANENT]: 'Deletion is irreversible.',
+        [FM.SETTINGS_DELETEISPERMANENT]: 'Deletion is irreversible.',
+        [FM.SETTINGS_LUIS_LINK]: 'Go to LUIS',
+        [FM.SETTINGS_MODEL_VERSION_EDITING]: 'Editing Version',
+        [FM.SETTINGS_MODEL_VERSION_LIVE]: 'Live Version',
+        [FM.SETTINGS_MODEL_VERSIONS_CREATE]: 'New Version',
+        [FM.SETTINGS_MODEL_VERSIONS_TITLE]: 'Model Versions',
+        [FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION]: 'Creating a new version will save a snapshot of the currently active model. You can promote this version to "live" for use in deployed bots while you continue to edit the latest version.  You can also recall these snapshots at any point in time to test previous bot behavior.',
 
         // ToolTip
         [FM.TOOLTIP_ACTION_API]: 'APIs exposed in the running Bot of the form:',
