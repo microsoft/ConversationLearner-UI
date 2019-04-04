@@ -34,7 +34,7 @@ describe('ErrorHandling', () => {
 
     editDialogModal.ClickSaveCloseButton()
     modelPage.VerifyErrorIconForTrainDialogs()
-    train.VerifyErrorsFoundInTraining(`Joe`, 'Joe', "Hello $name")
+    train.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Joe`, 'Joe', "Hello $name")
 
     train.EditTraining(`Joe`, 'Joe', "Hello $name")
     editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
