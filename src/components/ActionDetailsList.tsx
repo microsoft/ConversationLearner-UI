@@ -310,6 +310,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             const cardAction = new CLM.CardAction(action)
                             return cardAction.templateName
                         }
+                        case CLM.ActionTypes.END_SESSION: {
+                            const sessionAction = new CLM.SessionAction(action)
+                            return sessionAction.renderValue(entityMap, { preserveOptionalNodeWrappingCharacters: true })
+                        }
                         default: {
                             console.warn(`Could not get sort value for unknown action type: ${action.actionType}`)
                             return ''

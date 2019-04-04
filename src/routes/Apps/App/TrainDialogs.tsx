@@ -1161,7 +1161,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
 
                 const tagFilter = this.state.tagsFilter
-                if (tagFilter && tagFilter.key
+                if (tagFilter && tagFilter.key !== null
                     && !t.tags.map(t => t.toLowerCase()).includes(tagFilter.text.toLowerCase())) {
                     return false
                 }
