@@ -74,7 +74,9 @@ export const editTrainDialogThunkAsync = (appId: string, trainDialog: PartialTra
         try {
             await clClient.trainDialogEdit(appId, trainDialog)
             dispatch(editTrainDialogFulfilled(appId, trainDialog))
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+            if (trainDialog.rounds) {
+                dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+            }
             return trainDialog
         }
         catch (e) {

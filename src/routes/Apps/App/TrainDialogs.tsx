@@ -407,12 +407,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     const sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
                         ? this.state.currentTrainDialog.trainDialogId : null
 
-                    // Delete the teach session and retreive the new TrainDialog
+                    // Delete the teach session and retrieve the new TrainDialog
                     const newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId)as any) as Promise<CLM.TrainDialog>)
                     newTrainDialog.tags = tags
                     newTrainDialog.description = description
 
-                    // Check to see if new TrainDialog can be merged with an exising TrainDialog
+                    // Check to see if new TrainDialog can be merged with an existing TrainDialog
                     const matchingTrainDialog = false // DISABLE DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
 
                     if (matchingTrainDialog) {
@@ -435,7 +435,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         }
                     }
                 }
-                // Just delete the teach sesion without saving
+                // Just delete the teach session without saving
                 else {
                     await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
                 }
