@@ -197,7 +197,7 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onClickSave() {
+    onClickSave() {
         const app = this.props.app
         const modifiedApp: AppBase = {
             ...app,
@@ -214,18 +214,7 @@ class Settings extends React.Component<Props, ComponentState> {
             trainingStatus: TrainingStatusCode.Completed,
             datetime: new Date()
         }
-        await this.props.editApplicationThunkAsync(modifiedApp)
-        this.setState({
-            localeVal: app.locale,
-            appIdVal: app.appId,
-            appNameVal: app.appName,
-            markdownVal: (app.metadata && app.metadata.markdown) ? app.metadata.markdown : '',
-            videoVal: (app.metadata && app.metadata.video) ? app.metadata.video : '',
-            botFrameworkAppsVal: app.metadata.botFrameworkApps,
-            isLoggingOnVal: app.metadata.isLoggingOn,
-            edited: false,
-            newBotVal: ''
-        })
+        this.props.editApplicationThunkAsync(modifiedApp)
     }
 
     onGetNameErrorMessage(value: string): string {
