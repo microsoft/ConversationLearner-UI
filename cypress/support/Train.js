@@ -261,7 +261,10 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
 }
 
 export function SelectAndVerifyEachChatTurn(index = 0) {
-  if (index == 0) editDialogModal.CreateAliasForAllChatTurns()
+  if (index == 0) { 
+    editDialogModal.CreateAliasForAllChatTurns() 
+  }
+
   cy.Get('@allChatTurns').then(elements => {
     if (index < elements.length) {
       cy.wrap(elements[index]).Click().then(() => {
