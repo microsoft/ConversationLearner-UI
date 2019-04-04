@@ -197,7 +197,7 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickSave() {
+    async onClickSave() {
         const app = this.props.app
         const modifiedApp: AppBase = {
             ...app,
@@ -214,7 +214,7 @@ class Settings extends React.Component<Props, ComponentState> {
             trainingStatus: TrainingStatusCode.Completed,
             datetime: new Date()
         }
-        this.props.editApplicationThunkAsync(modifiedApp)
+        await this.props.editApplicationThunkAsync(modifiedApp)
         this.setState({
             localeVal: app.locale,
             appIdVal: app.appId,
