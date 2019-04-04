@@ -46,7 +46,7 @@ export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
     const element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
-    expect(element.textContent).to.equal(expectedUtterance)
+    expect(helpers.TextContentWithoutNewlines(element)).to.equal(expectedUtterance)
   })
 }
 
@@ -62,3 +62,15 @@ export function VerifyContainsDisabledAction(expectedResponse) {
     .should('be.disabled')
 }
 
+export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-clickable', 'be.enabled') }
+export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-no-click', 'be.disabled') }
+
+function VerifyEndSessionActionState(expectedData, selectButtonDataTestId, stateToVerify) {
+  cy.Get('[data-testid="action-scorer-session-response"]')
+    .ExactMatch('EndSession')
+    .siblings('[data-testid="action-scorer-session-response-user"]')
+    .ExactMatch(expectedData)
+    .parents('div.ms-DetailsRow-fields')
+    .find(`[data-testid="${selectButtonDataTestId}"]`)
+    .should(stateToVerify)
+}

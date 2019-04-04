@@ -120,7 +120,7 @@ export function SelectEndSessionAction(expectedData, lastResponse) {
   cy.Enqueue(() => {
     if (lastResponse) currentTrainingSummary.LastResponse = lastResponse;
     else currentTrainingSummary.LastResponse = 'EndSession: ' + expectedData;
-  });
+  })
 }
 
 // This method is used to score AND AUTO-SELECT the action after branching.
@@ -261,7 +261,10 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
 }
 
 export function SelectAndVerifyEachChatTurn(index = 0) {
-  if (index == 0) editDialogModal.GetAllChatTurns()
+  if (index == 0) { 
+    editDialogModal.CreateAliasForAllChatTurns() 
+  }
+
   cy.Get('@allChatTurns').then(elements => {
     if (index < elements.length) {
       cy.wrap(elements[index]).Click().then(() => {

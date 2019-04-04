@@ -7,7 +7,7 @@ import * as homePage from '../../support/components/HomePage'
 import * as helpers from '../../support/Helpers'
 import * as scorerModal from '../../support/components/ScorerModal'
 
-export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p'
+export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div'
 export const TypeYourMessageSelector = 'input.wc-shellinput[placeholder="Type your message..."]' // data-testid NOT possible
 export const ScoreActionsButtonSelector = '[data-testid="score-actions-button"]'
 
@@ -96,8 +96,9 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
     const elements = Cypress.$(AllChatMessagesSelector)
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (let i = 0; i < elements.length; i++) {
-      helpers.ConLog(funcName, `Chat turn: '${elements[i].innerHTML}'`)
-      if (matchPredicate(elements[i].textContent, message)) {
+      const innerText = helpers.TextContentWithoutNewlines(elements[i])
+      helpers.ConLog(funcName, `Chat turn - Text: '${innerText}' - Inner HTML '${elements[i].innerHTML}'`)
+      if (matchPredicate(innerText, message)) {
         if (index > 0) index--
         else {
           helpers.ConLog(funcName, `FOUND!`)
@@ -130,7 +131,7 @@ export function BranchChatTurn(message) {
 }
 
 // Creates the '@allChatTurns' alias.
-export function GetAllChatTurns() {
+export function CreateAliasForAllChatTurns() {
   cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')
 }
 
@@ -168,6 +169,14 @@ export function VerifyThereAreNoChatEditControls(userMessage, botMessage) {
   cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]', '+')
 }
 
+export function VerifyEndSessionChatTurnControls() {
+  cy.Contains('[data-testid="edit-dialog-modal-delete-turn-button"]', 'Delete Turn')
+  cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]')
+  cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
+  cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]')
+}
+
+
 // This is an odd verification function in that it is validating test code that we
 // had wrong at one point. We need to do this because if the cy.DoesNotContain fails
 // to find the selector, it could mean that cy.DoesNotContain method has a bug in it.
@@ -195,7 +204,7 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
 
       // If you need to find a phrase, this part of the code will fail, 
       // you will need to upgrade this code in that case.
-      const element = elements.find(element => element.textContent === text)
+      const element = elements.find(element => helpers.TextContentWithoutNewlines(elements) === text)
       if (element) {
         found = Cypress.$(element).parents('.cl-entity-node--custom').find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`).length == 0
       }
@@ -275,6 +284,7 @@ export function InsertUserInputAfter(existingMessage, newMessage) {
   cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
 }
 
+// OPTIONAL newMessage parameter if provided will replace the autoselected Bot response
 // OPTIONAL index parameter lets you select other than the 1st 
 // instance of a message as the point of insertion.
 export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
@@ -297,12 +307,31 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
         // so we need to confirm that we actually need to click on the action, 
         // otherwise an unnecessary message box pops up that we don't want to deal with.
 
-        const chatMessages = helpers.StringArrayFromElementText(AllChatMessagesSelector)
+        const chatMessages = GetAllChatMessages()
         const indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
         if (chatMessages[indexOfInsertedBotResponse] != newMessage)
           scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
       })
     }
     cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `End`)
+  })
+}
+
+export function VerifyChatTurnDoesNotContain(turnText, expectedTurnCount, turnIndex) {
+  cy.WaitForStableDOM()
+  let chatMessages
+  cy.wrap(undefined).should(() => { 
+    chatMessages = GetAllChatMessages()
+    if (chatMessages.length != expectedTurnCount) { 
+      throw new Error(`${chatMessages.length} chat turns were found, however we were expecting ${expectedTurnCount}`)
+    }
+  }).then(() => {
+    if(chatMessages.length < turnIndex) { 
+      throw new Error(`VerifyChatTurnDoesNotContain(${turnIndex}, ${turnText}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`) 
+    }
+
+    if(chatMessages[turnIndex] === turnText) { 
+      throw new Error(`Chat turn ${turnIndex} should NOT contain ${turnText}`) 
+    }
   })
 }
