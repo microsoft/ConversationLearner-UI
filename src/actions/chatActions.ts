@@ -58,8 +58,9 @@ export const deleteChatSessionThunkAsync = (session: Session, app: AppBase, pack
             if (deleteAssociatedLogDialog) {
                 dispatch(deleteLogDialogThunkAsync(app, session.logDialogId, packageId))
             }
-            
-            dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
+            else {
+                dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
+            }
             return true;
         } catch (e) {
             const error = e as AxiosError
