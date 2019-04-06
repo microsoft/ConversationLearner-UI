@@ -11,6 +11,8 @@ import * as train from '../../support/Train'
 import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as helpers from '../../support/Helpers'
 
+const preliminaryTrainingDescription = 'Preliminary Training to cause some expected behaviors in future Train Dialogs'
+
 describe('End Session - Create Model', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
@@ -46,7 +48,7 @@ describe('End Session - Create Model', () => {
     })
     
     it('Should add a description and save the Train Dialog', () => {
-      editDialogModal.TypeDescription('Preliminary Training to cause some expected behaviors in future Train Dialogs')
+      editDialogModal.TypeDescription(preliminaryTrainingDescription)
       train.Save()
     })
 
@@ -56,7 +58,7 @@ describe('End Session - Create Model', () => {
     it('Should be able to edit the training that we just saved and find the description we gave it', () => {
       cy.WaitForTrainingStatusCompleted()
       train.EditTraining('Hi', 'Yo', 'Okay')
-      editDialogModal.VerifyDescription('Preliminary Training to cause some expected behaviors in future Train Dialogs')
+      editDialogModal.VerifyDescription(preliminaryTrainingDescription)
     })
 
     it('Should train model to respond to "Bye"', () => {
@@ -65,9 +67,13 @@ describe('End Session - Create Model', () => {
       train.SelectEndSessionAction('Goodbye')
     })
 
+    it('Verify that the selecting the EndSession Bot response did not remove the description', () => {
+      editDialogModal.VerifyDescription(preliminaryTrainingDescription)
+    })
+
     it('Should save the Train Dialog and verifies that we still have only 1 Train Dialog and that the description persisted', () => {
       train.Save()
-      trainDialogsGrid.VerifyDescriptionForRow(0, 'Preliminary Training to cause some expected behaviors in future Train Dialogs')
+      trainDialogsGrid.VerifyDescriptionForRow(0, preliminaryTrainingDescription)
     })
   })
 
