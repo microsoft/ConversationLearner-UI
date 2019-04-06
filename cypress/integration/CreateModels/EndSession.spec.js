@@ -8,6 +8,7 @@ import * as modelPage from '../../support/components/ModelPage'
 import * as actions from '../../support/Actions'
 import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as train from '../../support/Train'
+import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as helpers from '../../support/Helpers'
 
 describe('End Session - Create Model', () => {
@@ -44,15 +45,29 @@ describe('End Session - Create Model', () => {
       train.SelectAction('Okay')
     })
     
+    it('Should add a description and save the Train Dialog', () => {
+      editDialogModal.TypeDescription('Preliminary Training to cause some expected behaviors in future Train Dialogs')
+      train.Save()
+    })
+
+    // IMPORTANT! - Keep this stage of the test here before we add in the End Session Bot response.
+    // There was a bug where the End Session Bot response caused the edited TD to lose its description and be saved
+    // as a second TD rather than overwriting the edited TD and retaining the description as it should have done.
+    it('Should be able to edit the training that we just saved and find the description we gave it', () => {
+      cy.WaitForTrainingStatusCompleted()
+      train.EditTraining('Hi', 'Yo', 'Okay')
+      editDialogModal.VerifyDescription('Preliminary Training to cause some expected behaviors in future Train Dialogs')
+    })
+
     it('Should train model to respond to "Bye"', () => {
       train.TypeYourMessage('Bye')
       editDialogModal.ClickScoreActionsButton()
       train.SelectEndSessionAction('Goodbye')
     })
 
-    it('Should add a description and save the Train Dialog', () => {
-      editDialogModal.TypeDescription('Preliminary Training to cause some expected behaviors in future Train Dialogs')
+    it('Should save the Train Dialog and verifies that we still have only 1 Train Dialog and that the description persisted', () => {
       train.Save()
+      trainDialogsGrid.VerifyDescriptionForRow(0, 'Preliminary Training to cause some expected behaviors in future Train Dialogs')
     })
   })
 
