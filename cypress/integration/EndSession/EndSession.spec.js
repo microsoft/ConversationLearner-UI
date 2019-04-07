@@ -111,7 +111,7 @@ describe('End Session', () => {
     })
 
     it('Verify that the automatically selected Bot turn is NOT our EndSession Action', () => {
-      editDialogModal.VerifyChatTurnDoesNotContain('EndSession: Goodbye', 5, 2)
+      editDialogModal.VerifyChatTurnIsNotAnExactMatch('EndSession: Goodbye', 5, 2)
     })
   })
 })
