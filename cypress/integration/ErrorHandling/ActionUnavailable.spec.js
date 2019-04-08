@@ -8,47 +8,74 @@ import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
 import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as common from '../../support/Common'
+import * as helpers from '../../support/Helpers'
 
-describe('ErrorHandling', () => {
-  it('Action Unavailable', () => {
-    models.ImportModel('z-actionUnavail', 'z-whatsYourName.cl')
-    modelPage.NavigateToTrainDialogs()
-    cy.WaitForTrainingStatusCompleted()
+describe('Action Unavailable - ErrorHandling', () => {
+  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
-    modelPage.VerifyNoErrorIconOnPage()
+  context('Setup', () => {
+    it('Create a model to test against', () => {
+      models.ImportModel('z-actionUnavail', 'z-whatsYourName.cl')
+      modelPage.NavigateToTrainDialogs()
+      cy.WaitForTrainingStatusCompleted()
+    })
+  })
 
-    train.CreateNewTrainDialog()
+  context('Train Dialog - Create Errors', () => {
+    it('Verify there are no Incident Triangles on the page and should create a new Train Dialog', () => {
+      modelPage.VerifyNoIncidentTriangleOnPage()
+      train.CreateNewTrainDialog()
+    })
 
-    train.TypeYourMessage('Joe')
-    editDialogModal.LabelTextAsEntity('Joe', 'name')
-    editDialogModal.ClickScoreActionsButton()
-    train.SelectAction('Hello Joe')
+    it('Should add user turn "Joe" and label it as the "name" entity', () => {
+      train.TypeYourMessage('Joe')
+      editDialogModal.LabelTextAsEntity('Joe', 'name')
+    })
 
-    editDialogModal.SelectChatTurnExactMatch('Joe')
-    editDialogModal.RemoveEntityLabel('Joe', 'name')
-    editDialogModal.ClickSubmitChangesButton()
-    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+    it('Should Score Actions to train the Bot to respond with "Hello Joe"', () => {
+      editDialogModal.ClickScoreActionsButton()
+      train.SelectAction('Hello Joe')
+    })
 
-    editDialogModal.SelectChatTurnStartsWith('Hello')
-    editDialogModal.VerifyErrorMessage('Action is unavailable')
+    it('Should introduce an error in the Bot response by removing the entity label from "Joe"', () => {
+      editDialogModal.SelectChatTurnExactMatch('Joe')
+      editDialogModal.RemoveEntityLabel('Joe', 'name')
+      editDialogModal.ClickSubmitChangesButton()
+      editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+    })
 
-    editDialogModal.ClickSaveCloseButton()
-    modelPage.VerifyErrorIconForTrainDialogs()
-    train.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Joe`, 'Joe', "Hello $name")
+    it('Should verify the specifics of the error', () => {
+      editDialogModal.SelectChatTurnStartsWith('Hello')
+      editDialogModal.VerifyErrorMessage('Action is unavailable')
+      editDialogModal.VerifyChatTurnIsAnExactMatch('Hello [$name]', 2, 1)
+    })
 
-    train.EditTraining(`Joe`, 'Joe', "Hello $name")
-    editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+    it('Should save the training with errors', () => {
+      editDialogModal.ClickSaveCloseButton()
+      modelPage.VerifyIncidentTriangleForTrainDialogs()
+      train.VerifyErrorsFoundInTraining(`Joe`, 'Joe', "Hello $name")
+    })
+  })
 
-    editDialogModal.SelectChatTurnStartsWith('Hello')
-    editDialogModal.VerifyErrorMessage('Action is unavailable')
+  context('Edit Dialog - Validate Errors and Fix Them', () => {
+    it('Should edit the training and verify it has errors', () => {
+      train.EditTraining(`Joe`, 'Joe', "Hello $name")
+      editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+      editDialogModal.SelectChatTurnStartsWith('Hello')
+      editDialogModal.VerifyErrorMessage('Action is unavailable')
+      editDialogModal.VerifyChatTurnIsAnExactMatch('Hello [$name]', 2, 1)
+    })
 
-    editDialogModal.SelectChatTurnExactMatch('Joe')
-    editDialogModal.LabelTextAsEntity('Joe', 'name')
-    editDialogModal.ClickSubmitChangesButton()
+    it('Should fix the user turn that caused the error', () => {
+      editDialogModal.SelectChatTurnExactMatch('Joe')
+      editDialogModal.LabelTextAsEntity('Joe', 'name')
+      editDialogModal.ClickSubmitChangesButton()
+    })
 
-    editDialogModal.VerifyNoErrorMessage()
-
-    editDialogModal.ClickSaveCloseButton()
-    modelPage.VerifyNoErrorIconOnPage()
+    it('Should verify that there are no more errors', () => {
+      editDialogModal.VerifyNoErrorMessage()
+      editDialogModal.ClickSaveCloseButton()
+      modelPage.VerifyNoIncidentTriangleOnPage()
+    })
   })
 })

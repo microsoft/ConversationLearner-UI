@@ -23,7 +23,7 @@ describe('Missing Action - ErrorHandling', () => {
     })
 
     it('Should verify there are no error icons on the page', () => {
-      modelPage.VerifyNoErrorIconOnPage()
+      modelPage.VerifyNoIncidentTriangleOnPage()
     })
 
     it('Should complete and save a simple 1 action Train Dialog', () => {
@@ -45,7 +45,7 @@ describe('Missing Action - ErrorHandling', () => {
   context('Train Dialogs Grid', () => {
     it('Should verify there are now error icons showing in the Train Dialog grid', () => {
       modelPage.NavigateToTrainDialogs()
-      modelPage.VerifyErrorIconForTrainDialogs()
+      modelPage.VerifyIncidentTriangleForTrainDialogs()
       train.VerifyIncidentTriangleFoundInTrainDialogsGrid(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '')
     })
   })
@@ -65,7 +65,7 @@ describe('Missing Action - ErrorHandling', () => {
       actions.CreateNewAction({ response: common.whatsYourName, expectedEntities: ['name'] })
       editDialogModal.VerifyNoErrorMessage()
       editDialogModal.ClickSaveCloseButton()
-      modelPage.VerifyNoErrorIconOnPage()
+      modelPage.VerifyNoIncidentTriangleOnPage()
     })
   })
 })

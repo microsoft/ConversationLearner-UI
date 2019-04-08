@@ -317,7 +317,25 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
   })
 }
 
-export function VerifyChatTurnDoesNotContain(turnText, expectedTurnCount, turnIndex) {
+export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expectedTurnCount, turnIndex) {
+  VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
+    if (chatMessageFound === turnTextThatShouldNotMatch) { 
+      throw new Error(`Chat turn ${turnIndex} should NOT be an exact match to: ${turnTextThatShouldNotMatch}`) 
+    }
+  })
+}
+
+export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount, turnIndex) { 
+  VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
+    if (chatMessageFound !== expectedTurnText) { 
+      throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}`) 
+    }
+  })
+}
+
+// This function does the hard work of retrying until the chat message count is what we expect
+// before it verifies a specific chat turn with a custom verification.
+function VerifyChatTurnInternal(expectedTurnCount, turnIndex, doVerification) {
   cy.WaitForStableDOM()
   let chatMessages
   cy.wrap(undefined).should(() => { 
@@ -327,11 +345,9 @@ export function VerifyChatTurnDoesNotContain(turnText, expectedTurnCount, turnIn
     }
   }).then(() => {
     if(chatMessages.length < turnIndex) { 
-      throw new Error(`VerifyChatTurnDoesNotContain(${turnIndex}, ${turnText}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`) 
+      throw new Error(`VerifyChatTurnInternal(${expectedTurnCount}, ${turnIndex}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`) 
     }
-
-    if(chatMessages[turnIndex] === turnText) { 
-      throw new Error(`Chat turn ${turnIndex} should NOT contain ${turnText}`) 
-    }
+    
+    doVerification(chatMessages[turnIndex])
   })
 }

@@ -15,7 +15,7 @@ describe('ErrorHandling', () => {
     modelPage.NavigateToTrainDialogs()
     cy.WaitForTrainingStatusCompleted()
 
-    modelPage.VerifyNoErrorIconOnPage()
+    modelPage.VerifyNoIncidentTriangleOnPage()
 
     train.EditTraining('Hey', 'world peace', "Sorry $name, I can't help you get $want")
     editDialogModal.InsertUserInputAfter('Sam', 'InsertedText')
@@ -25,7 +25,7 @@ describe('ErrorHandling', () => {
 
     editDialogModal.ClickSaveCloseButton()
 
-    modelPage.VerifyErrorIconForTrainDialogs()
+    modelPage.VerifyIncidentTriangleForTrainDialogs()
     train.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Hey`, 'world peace', "Sorry $name, I can't help you get $want")
 
     // - - - Open the same Train Dialog, validate and fix the errors. - - -
@@ -39,6 +39,6 @@ describe('ErrorHandling', () => {
     editDialogModal.VerifyNoErrorMessage()
 
     editDialogModal.ClickSaveCloseButton()
-    modelPage.VerifyNoErrorIconOnPage()
+    modelPage.VerifyNoIncidentTriangleOnPage()
   })
 })
