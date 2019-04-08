@@ -250,7 +250,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
 interface ComponentState {
     actionModalOpen: boolean
-    columns: OF.IColumn[]
+    columns: OF.IColumn[],
+    scoredItems: CLM.ScoredBase[],
     sortColumn: IRenderableColumn
     haveEdited: boolean
     cardViewerAction: CLM.ActionBase | null
@@ -268,6 +269,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.state = {
             actionModalOpen: false,
             columns,
+            scoredItems: [],
             sortColumn: columns[2], // "score"
             haveEdited: false,
             cardViewerAction: null,
@@ -283,16 +285,21 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.showAlreadySelectedPopUp = this.showAlreadySelectedPopUp.bind(this);
         this.onCloseAlreadySelectedPopUp = this.onCloseAlreadySelectedPopUp.bind(this);
     }
-    componentWillReceiveProps(newProps: Props) {
-        if (this.props.scoreResponse !== newProps.scoreResponse) {
+
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.scoreResponse !== prevProps.scoreResponse) {
             this.setState({
-                haveEdited: false
+                haveEdited: false,
+                scoredItems: this.getScoredItems()
             })
         }
     }
 
     componentDidMount() {
         this.autoSelect();
+        this.setState({
+            scoredItems: this.getScoredItems()
+        })
     }
 
     onClickViewCard(action: CLM.ActionBase, cardViewerShowOriginal: boolean) {
@@ -556,6 +563,17 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     isUnscoredActionAvailable(action: CLM.UnscoredAction): boolean {
         // Can't add an end session action if one has already been added
         if (action.actionType === CLM.ActionTypes.END_SESSION && !this.props.isEndSessionAvailable) {
+
+            // If selected action is EndSession, it's ok to replace it with another EndSession
+            // If no selected actionId, first item is selected one
+            const selectedActionId = this.props.selectedActionId || (this.state.scoredItems.length > 0 ? this.state.scoredItems[0].actionId : null) 
+            if (selectedActionId) {
+                let selectedAction = this.props.actions.find(a => a.actionId === selectedActionId)
+                if (selectedAction && selectedAction.actionType === CLM.ActionTypes.END_SESSION) {
+                    return true
+                }
+                
+            }
             return false
         }
         if (action.reason === CLM.ScoreReason.NotAvailable) {
@@ -759,7 +777,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
 
         const { intl } = this.props
-        const scores = this.getScoredItems()
         let template: CLM.Template | undefined
         let renderedActionArguments: CLM.RenderedActionArgument[] = []
         if (this.state.cardViewerAction) {
@@ -773,7 +790,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         return (
             <div>
-                {scores.length === 1 && (!this.props.autoTeach && this.props.canEdit)
+                {this.state.scoredItems.length === 1 && (!this.props.autoTeach && this.props.canEdit)
                     ? <div className="cl-action-scorer-placeholder">
                         <div className={`cl-action-scorer-placeholder__description`}>
                             <h1 className={OF.FontClassNames.xxLarge}>Create an Action</h1>
@@ -789,7 +806,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     </div>
                     : <OF.DetailsList
                         className={OF.FontClassNames.mediumPlus}
-                        items={scores}
+                        items={this.state.scoredItems}
                         columns={this.state.columns}
                         checkboxVisibility={OF.CheckboxVisibility.hidden}
                         onRenderItemColumn={this.renderItemColumn}
