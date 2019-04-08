@@ -31,3 +31,5 @@ export function GetTags() { return helpers.StringArrayFromElementText('[data-tes
 export function GetDescription() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-description"]') }
 
 export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).find('[data-testid="train-dialogs-validity-indicator"]') }
+
+export function VerifyDescriptionForRow(row, description) { cy.Get(`div[data-item-index=${row}][data-automationid="DetailsRow"]`).find('span[data-testid="train-dialogs-description"]').contains(description) }
