@@ -232,9 +232,10 @@ const Component: React.SFC<Props> = (props) => {
         </div >
         <div className="cl-modal_footer cl-modal-buttons">
             <div className="cl-modal-buttons_secondary">
-                {props.isEditing &&
+                {props.isEditing && 
                     <OF.DefaultButton
                         onClick={props.onClickTrainDialogs}
+                        disabled={!props.isSaveButtonDisabled} // Disable so user doesn't lose work if clicked
                         iconProps={{ iconName: 'QueryList' }}
                         ariaDescription={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION)}
                         text={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT)}

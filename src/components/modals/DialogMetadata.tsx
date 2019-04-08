@@ -10,7 +10,7 @@ import BorderlessTextInput from '../BorderlessTextInput'
 import FormattedMessageId from '../FormattedMessageId'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import './TeachSessionAdmin.css'
+import './DialogMetadata.css'
 
 interface ReceivedProps {
     description: string
@@ -28,22 +28,15 @@ type Props = ReceivedProps & InjectedIntlProps
 const DialogMetadata: React.SFC<Props> = (props: Props) => {
 
     return (
-        <div className={`cl-dialog-metadata ${!props.userInput ? 'cl-dialog-metadata--short' : ''} ${OF.FontClassNames.mediumPlus}`}>
+        <div className={`cl-dialog-metadata ${OF.FontClassNames.mediumPlus}`}>
             {!props.userInput ? null :
-                <label htmlFor="user input">
-                    <OF.Icon iconName="Chat" className="cl-icon" />
-                    <span><FormattedMessageId id={FM.DIALOGMETADATA_USERINPUT_LABEL} />:</span>
-                </label>
-            }
-            {!props.userInput ? null :
-                <BorderlessTextInput
-                    data-testid="dialogmetadata-userinput"
-                    id="userinput"
-                    placeholder=""
-                    value={props.userInput || ''}
-                    onChange={() => {}}
-                    readOnly={true}
-                />
+                <>
+                    <label>
+                        <OF.Icon iconName="Chat" className="cl-icon" />
+                        <span><FormattedMessageId id={FM.DIALOGMETADATA_USERINPUT_LABEL} />:</span>
+                    </label>
+                    <div className="cl-dialog-metadata__user-input">{props.userInput || ''}</div>
+                </>
             }
             <label htmlFor="description">
                 <OF.Icon iconName="TextField" className="cl-icon" />
@@ -54,7 +47,7 @@ const DialogMetadata: React.SFC<Props> = (props: Props) => {
                 id="description"
                 placeholder={props.readOnly ? "" : Util.formatMessageId(props.intl, FM.DIALOGMETADATA_DESCRIPTION_PLACEHOLDER)}
                 value={props.description}
-                onChange={props.onChangeDescription ? props.onChangeDescription : () => {}}
+                onChange={props.onChangeDescription ? props.onChangeDescription : () => { }}
                 readOnly={props.readOnly}
             />
             <label htmlFor="tags">
@@ -68,8 +61,8 @@ const DialogMetadata: React.SFC<Props> = (props: Props) => {
                 // See: https://github.com/krisk/Fuse/issues/287
                 allUniqueTags={props.allUniqueTags.map(t => ({ text: t }))}
                 tags={props.tags}
-                onAdd={props.onAddTag ? props.onAddTag : () => {}}
-                onRemove={props.onRemoveTag ? props.onRemoveTag : () => {}}
+                onAdd={props.onAddTag ? props.onAddTag : () => { }}
+                onRemove={props.onRemoveTag ? props.onRemoveTag : () => { }}
                 readOnly={props.readOnly}
             />
         </div>
