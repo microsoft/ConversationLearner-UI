@@ -2,7 +2,7 @@
     display: flex;
     flex-wrap: wrap;
     margin: -5px 0 0 -5px;
-    padding-left: 8px;
+    padding-left: 5px;
 }
 
 .cl-tags i,
@@ -22,7 +22,7 @@
 }
 
 .cl-tags__tag {
-    margin-top: 8px;
+    margin-top: 5px;
     margin-left: 5px;
     background-color: var(--color-themeLight);
     display: grid;
@@ -46,7 +46,7 @@
     padding: 0.15em 0.25em 0 0.25em;
     background-color: var(--color-themeLight);
     cursor: pointer;
-    margin-top: 8px;
+    margin-top: 5px;
     margin-left: 5px;
     height: 20px;
 }
