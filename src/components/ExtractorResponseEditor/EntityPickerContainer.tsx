@@ -49,10 +49,9 @@ interface State {
     matchedOptions: MatchedOption<IOption>[]
 }
 
-const initialState: Readonly<State> = {
+const initialState: Readonly<Pick<State, "highlightIndex" | "searchText">> = {
     highlightIndex: 0,
-    searchText: '',
-    matchedOptions: []
+    searchText: ''
 }
 
 type IndexFunction = (x: number, limit?: number) => number
@@ -65,7 +64,6 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     defaultMatchedOptions: MatchedOption<IOption>[]
     fuse: Fuse
     element: HTMLElement
-    resultsElement: HTMLDivElement | null
 
     constructor(props: Props) {
         super(props)
@@ -91,8 +89,8 @@ export default class EntityPickerContainer extends React.Component<Props, State>
             && nextProps.isVisible === true)) {
 
             this.setState({
-                searchText: '',
-                highlightIndex: 0
+                ...initialState,
+                matchedOptions: this.defaultMatchedOptions
             })
 
             if (nextProps.options.length !== this.props.options.length) {
