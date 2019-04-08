@@ -21,7 +21,7 @@ describe('Scenario and Tags - Train Dialog', () => {
         //cy.WaitForTrainingStatusCompleted()
         train.CreateNewTrainDialog()
         
-        editDialogModal.VerifyScenario('')
+        editDialogModal.VerifyDescription('')
         editDialogModal.VerifyTags([])
       })
 
@@ -31,7 +31,7 @@ describe('Scenario and Tags - Train Dialog', () => {
         // Save
         // Verify tags and description in list
         
-        editDialogModal.TypeScenario('Test Scenario')
+        editDialogModal.TypeDescription('Test Scenario')
         editDialogModal.AddTags(['TagX'])
 
         // Must have done some training in order to save the dialog.
@@ -50,7 +50,7 @@ describe('Scenario and Tags - Train Dialog', () => {
         // Open it
         // Verify tags and description are the same as shown in the list
         train.EditTrainingNEW('Test Scenario', 'TagX')
-        editDialogModal.VerifyScenario('Test Scenario')
+        editDialogModal.VerifyDescription('Test Scenario')
         editDialogModal.VerifyTags(['TagX'])
       })
 
@@ -62,12 +62,12 @@ describe('Scenario and Tags - Train Dialog', () => {
         // Abandon changes
         // Re-open dialog
         // Verify tags and description are unmodified
-        editDialogModal.TypeScenario('Changed Test Scenario')
+        editDialogModal.TypeDescription('Changed Test Scenario')
         editDialogModal.AddTags(['TagY'])
         train.AbandonDialog()
 
         train.EditTrainingNEW('Test Scenario', 'TagX')
-        editDialogModal.VerifyScenario('Test Scenario')
+        editDialogModal.VerifyDescription('Test Scenario')
         editDialogModal.VerifyTags(['TagX'])
       })
 
@@ -78,12 +78,12 @@ describe('Scenario and Tags - Train Dialog', () => {
         // Note tags and description
         // reload
         // Verify edited tags and description are still on dialog
-        editDialogModal.TypeScenario('Edited Test Scenario')
+        editDialogModal.TypeDescription('Edited Test Scenario')
         editDialogModal.AddTags(['TagY'])
         train.Save()
 
         train.EditTrainingNEW('Edited Test Scenario', 'TagXTagY')
-        editDialogModal.VerifyScenario('Edited Test Scenario')
+        editDialogModal.VerifyDescription('Edited Test Scenario')
         editDialogModal.VerifyTags(['TagX', 'TagY'])
       })
 
