@@ -713,7 +713,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             nextActivityIndex: this.state.nextActivityIndex + 1
         })
         if (scoredAction.actionType === CLM.ActionTypes.END_SESSION) {
-            this.props.onEndSessionActivity()
+            this.props.onEndSessionActivity(this.state.tags, this.state.description)
         }
     }
 
@@ -968,7 +968,7 @@ export interface ReceivedProps {
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
-    onEndSessionActivity: () => any
+    onEndSessionActivity: (tags: string[], description: string) => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any
     onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => void) | null
     app: CLM.AppBase
