@@ -29,8 +29,8 @@ interface ComponentState {
     localeVal: string
     appIdVal: string
     appNameVal: string
-    selectedEditingTagOptionKey: string | number | undefined,
-    selectedLiveTagOptionKey: string | number | undefined,
+    selectedEditingVersionOptionKey: string | number | undefined,
+    selectedLiveVersionOptionKey: string | number | undefined,
     markdownVal: string
     videoVal: string
     edited: boolean
@@ -52,8 +52,8 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: '',
             appIdVal: '',
             appNameVal: '',
-            selectedEditingTagOptionKey: undefined,
-            selectedLiveTagOptionKey: undefined,
+            selectedEditingVersionOptionKey: undefined,
+            selectedLiveVersionOptionKey: undefined,
             markdownVal: '',
             videoVal: '',
             edited: false,
@@ -73,8 +73,8 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: app.locale,
             appIdVal: app.appId,
             appNameVal: app.appName,
-            selectedEditingTagOptionKey: this.props.editingPackageId,
-            selectedLiveTagOptionKey: app.livePackageId,
+            selectedEditingVersionOptionKey: this.props.editingPackageId,
+            selectedLiveVersionOptionKey: app.livePackageId,
             markdownVal: (app.metadata && app.metadata.markdown) ? app.metadata.markdown : '',
             videoVal: (app.metadata && app.metadata.video) ? app.metadata.video : '',
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
@@ -253,17 +253,17 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChangedEditingTag = (editingOption: OF.IDropdownOption) => {
+    onChangedEditingVersion = (editingOption: OF.IDropdownOption) => {
         this.props.editAppEditingTagThunkAsync(this.props.app.appId, editingOption.key as string)
         this.setState({
-            selectedEditingTagOptionKey: editingOption.key,
+            selectedEditingVersionOptionKey: editingOption.key,
         })
     }
 
-    onChangedLiveTag = (liveOption: OF.IDropdownOption) => {
+    onChangedLiveVersion = (liveOption: OF.IDropdownOption) => {
         this.props.editAppLiveTagThunkAsync(this.props.app, liveOption.key as string)
         this.setState({
-            selectedLiveTagOptionKey: liveOption.key,
+            selectedLiveVersionOptionKey: liveOption.key,
         })
     }
 
@@ -306,7 +306,7 @@ class Settings extends React.Component<Props, ComponentState> {
     getDeleteDialogBoxText = (modelName: string) => {
         return (
             <div>
-                <h1 className={`${OF.FontClassNames.xxLarge} cl-text--error`} style={{ fontWeight: OF.FontWeights.semibold }}>{Util.formatMessageId(this.props.intl, FM.SETINGS_DELETEISPERMANENT)}</h1>
+                <h1 className={`${OF.FontClassNames.xxLarge} cl-text--error`} style={{ fontWeight: OF.FontWeights.semibold }}>{Util.formatMessageId(this.props.intl, FM.SETTINGS_DELETEISPERMANENT)}</h1>
                 <p>Confirm permanent deletion of the <strong>{modelName}</strong> Model by entering its name.</p>
             </div>
         )
@@ -389,33 +389,33 @@ class Settings extends React.Component<Props, ComponentState> {
                                 target="_blank">
                                 <OF.DefaultButton
                                     iconProps={{ iconName: "OpenInNewWindow" }}
-                                    ariaDescription="Go to LUIS"
-                                    text="Go to LUIS"
+                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.SETTINGS_LUIS_LINK)}
+                                    text={Util.formatMessageId(this.props.intl, FM.SETTINGS_LUIS_LINK)}
                                 />
                             </a>
                         </div>
                     </div>
                     <div className="cl-command-bar">
                         <TC.Dropdown
-                            label="Editing Tag"
+                            label={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSION_EDITING)}
                             options={packageOptions}
-                            onChanged={acionTypeOption => this.onChangedEditingTag(acionTypeOption)}
-                            selectedKey={this.state.selectedEditingTagOptionKey}
-                            tipType={ToolTip.TipType.TAG_EDITING}
+                            onChanged={this.onChangedEditingVersion}
+                            selectedKey={this.state.selectedEditingVersionOptionKey}
+                            tipType={ToolTip.TipType.MODEL_VERSION_EDITING}
                         />
                         <TC.Dropdown
-                            label="Live Tag"
+                            label={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSION_LIVE)}
                             options={packageOptions}
-                            onChanged={acionTypeOption => this.onChangedLiveTag(acionTypeOption)}
-                            selectedKey={this.state.selectedLiveTagOptionKey}
-                            tipType={ToolTip.TipType.TAG_LIVE}
+                            onChanged={this.onChangedLiveVersion}
+                            selectedKey={this.state.selectedLiveVersionOptionKey}
+                            tipType={ToolTip.TipType.MODEL_VERSION_LIVE}
                         />
                     </div>
 
                     <Expando
                         className={'cl-settings-container-header'}
                         isOpen={this.state.isPackageExpandoOpen}
-                        text="Version Tags"
+                        text="Model Versions"
                         onToggle={() => this.setState({ isPackageExpandoOpen: !this.state.isPackageExpandoOpen })}
                     />
                     {this.state.isPackageExpandoOpen &&

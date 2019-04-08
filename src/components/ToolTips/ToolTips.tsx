@@ -70,8 +70,8 @@ export enum TipType {
     REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE = "REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE",
     REPLAYERROR_DESC_ACTION_UNDEFINED = "REPLAYERROR_DESC_ACTION_UNDEFINED",
 
-    TAG_EDITING = 'tagEditing',
-    TAG_LIVE = 'tagLIve'
+    MODEL_VERSION_EDITING = 'modelVersionEditing',
+    MODEL_VERSION_LIVE = 'modelVersionLIve'
 }
 
 export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps, defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) {
@@ -742,10 +742,10 @@ export function getTip(tipType: string) {
                 </div>
             )
 
-        case TipType.TAG_EDITING:
+        case TipType.MODEL_VERSION_EDITING:
             return (<FormattedMessageId id={FM.TOOLTIP_TAG_EDITING} />);
 
-        case TipType.TAG_LIVE:
+        case TipType.MODEL_VERSION_LIVE:
             return (<FormattedMessageId id={FM.TOOLTIP_TAG_LIVE} />);
 
         default:
