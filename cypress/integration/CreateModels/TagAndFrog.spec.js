@@ -44,7 +44,7 @@ describe('Tag And Frog - Create Model', () => {
     // of: Bug 1901-Automatic Entity Labeling Is NOT Consistent
     // ------------------------------------------------------------------------
     it('Create a SPECIAL Training Dialog to deal with bug 1901', () => {
-      editDialogModal.TypeScenario('Tag Only')
+      editDialogModal.TypeDescription('Tag Only')
       editDialogModal.AddTags(['Tag'])
     
       train.TypeYourMessage('This is Tag.')
@@ -61,7 +61,7 @@ describe('Tag And Frog - Create Model', () => {
     // ------------------------------------------------------------------------
 
     it('Label single word as an entity.', () => {
-      editDialogModal.TypeScenario('Both Tag & Frog')
+      editDialogModal.TypeDescription('Both Tag & Frog')
       editDialogModal.AddTags(['Tag', 'Frog'])
 
       train.TypeYourMessage('This is Tag.')

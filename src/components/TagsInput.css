@@ -1,8 +1,10 @@
 .cl-tags {
+    --tag-spacing: 5px;
+    
     display: flex;
     flex-wrap: wrap;
-    margin: -5px 0 0 -5px;
-    padding-left: 8px;
+    margin: calc(-1 * var(--tag-spacing)) 0 0 calc(-1 * var(--tag-spacing));
+    padding-left: 5px;
 }
 
 .cl-tags i,
@@ -22,8 +24,8 @@
 }
 
 .cl-tags__tag {
-    margin-top: 8px;
-    margin-left: 5px;
+    margin-top: var(--tag-spacing);
+    margin-left: var(--tag-spacing);
     background-color: var(--color-themeLight);
     display: grid;
     grid-template: auto / auto min-content;
@@ -46,14 +48,14 @@
     padding: 0.15em 0.25em 0 0.25em;
     background-color: var(--color-themeLight);
     cursor: pointer;
-    margin-top: 8px;
-    margin-left: 5px;
+    margin-top: var(--tag-spacing);
+    margin-left: var(--tag-spacing);
     height: 20px;
 }
 
 .cl-tags__form {
-    margin-top: 8px;
-    margin-left: 5px;
+    margin-top: var(--tag-spacing);
+    margin-left: var(--tag-spacing);
 }
 
 .cl-tags__suggested-tags-container {
@@ -90,8 +92,8 @@
 }
 
 .cl-tags-error {
-    margin-top: 5px;
-    margin-left: 5px;
+    margin-top: var(--tag-spacing);
+    margin-left: var(--tag-spacing);
     color: var(--color-error);
 }
 

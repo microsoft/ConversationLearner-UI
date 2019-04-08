@@ -1,24 +1,22 @@
 .cl-dialog-metadata {
     display: grid;
-    grid-template: 23px / max-content 1fr;
+    grid-template-columns: max-content 1fr;
     grid-gap: 0.25em 0.5em;
     align-items: start;
 }
 
-.cl-dialog-metadata--short {
-    grid-template: 23px 23px / max-content 1fr;
-}
-
 .cl-dialog-metadata label {
     display: grid;
-    grid-template: auto / max-content 1fr;
+    grid-template-columns: max-content 1fr;
     grid-gap: 0.5rem;
     align-items: center;
-    height: 26px;
+}
+
+.cl-dialog-metadata__user-input {
+    padding: 0 calc(0.375em + 1px);
 }
 
 /* Special to align header, don't repeat this */
 .cl-dialog-metadata label[for="description"] {
     padding: 3px 0;
 }
-
