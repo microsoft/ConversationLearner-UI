@@ -50,7 +50,7 @@ describe('Wait Non Wait Error Handling', () => {
     it('Saves the Training with Errors, verifies Model page and Train Dialog grid shows an error', () => {
       editDialogModal.ClickSaveCloseButton()
       modelPage.VerifyErrorIconForTrainDialogs()
-      train.VerifyErrorsFoundInTraining(`Duck`, 'Fish', common.fishJustSwim)
+      train.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Duck`, 'Fish', common.fishJustSwim)
     })
 
     it('Re-opens the Training and validates all error messages remain', () => {
