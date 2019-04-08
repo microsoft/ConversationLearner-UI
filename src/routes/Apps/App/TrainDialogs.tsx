@@ -862,23 +862,25 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     // End Session activity selected.  Switch from Teach to Edit
     @OF.autobind
-    async onEndSessionActivity() {
+    async onEndSessionActivity(tags: string[] = [], description: string = '') {
 
         try {
             if (this.props.teachSession.teach) {
                 // Get train dialog associated with the teach session
                 const trainDialog = await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.props.teachSession.teach.trainDialogId, false) as any) as Promise<CLM.TrainDialog>)
+                trainDialog.tags = tags
+                trainDialog.description = description
                 trainDialog.definitions = {
                     entities: this.props.entities,
                     actions: this.props.actions,
                     trainDialogs: []
                 }
 
-                // EndSession callback close the teach session, but UI state still needs to be updates after fetch
+                // EndSession callback close the teach session, but UI state still needs to be updated after fetch
                 await ((this.props.clearTeachSession() as any) as Promise<CLM.TrainDialog>)
 
                 // Generate history
-                await this.onUpdateHistory(trainDialog, null, SelectionType.NONE, EditDialogType.NEW)
+                await this.onUpdateHistory(trainDialog, null, SelectionType.NONE, this.state.editType)
             }
         }
         catch (error) {

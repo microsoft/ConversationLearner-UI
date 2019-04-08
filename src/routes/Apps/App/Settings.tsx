@@ -215,17 +215,6 @@ class Settings extends React.Component<Props, ComponentState> {
             datetime: new Date()
         }
         this.props.editApplicationThunkAsync(modifiedApp)
-        this.setState({
-            localeVal: app.locale,
-            appIdVal: app.appId,
-            appNameVal: app.appName,
-            markdownVal: (app.metadata && app.metadata.markdown) ? app.metadata.markdown : '',
-            videoVal: (app.metadata && app.metadata.video) ? app.metadata.video : '',
-            botFrameworkAppsVal: app.metadata.botFrameworkApps,
-            isLoggingOnVal: app.metadata.isLoggingOn,
-            edited: false,
-            newBotVal: ''
-        })
     }
 
     onGetNameErrorMessage(value: string): string {

@@ -21,7 +21,6 @@ import { EditDialogType } from '../../components/modals'
 import { FM } from '../../react-intl-messages'
 import { TeachSessionState } from '../../types/StateTypes'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import './TeachSessionAdmin.css'
 
 interface RoundLookup {
     textVariations?: CLM.TextVariation[] | null

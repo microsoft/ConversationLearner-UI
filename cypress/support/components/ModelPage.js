@@ -47,10 +47,10 @@ export function WaitForTrainingStatusCompleted() {
   expect(currentHtml.includes('data-testid="training-status-completed"')).to.be.true
 }
 
-export function VerifyNoErrorIconOnPage() { VerifyErrorIcon(true) }
+export function VerifyNoIncidentTriangleOnPage() { VerifyErrorIcon(true) }
 
 // Verify for just the Left Pane "Train Dialogs" link.
-export function VerifyErrorIconForTrainDialogs() { VerifyErrorIcon(false) }
+export function VerifyIncidentTriangleForTrainDialogs() { VerifyErrorIcon(false) }
 
 function VerifyErrorIcon(noErrorIconExpected)
 {
