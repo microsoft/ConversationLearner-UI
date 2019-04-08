@@ -33,13 +33,12 @@ class HelpPanel extends React.Component<Props, {}> {
                 isFooterAtBottom={true}
                 onRenderFooterContent={this._onRenderFooterContent}
             >
-                <span>{ToolTip.getTip(this.props.tipType)}</span>
-
+                {ToolTip.getTip(this.props.tipType)}
             </OF.Panel>
         )
     }
 
-    _onRenderFooterContent = () => {
+    private _onRenderFooterContent = () => {
         return (
             <OF.DefaultButton
                 data-testid="helppanel-close-button"
