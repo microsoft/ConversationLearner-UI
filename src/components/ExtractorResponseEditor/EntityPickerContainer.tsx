@@ -89,7 +89,8 @@ export default class EntityPickerContainer extends React.Component<Props, State>
             && nextProps.isVisible === true)) {
 
             this.setState({
-                ...initialState
+                ...initialState,
+                matchedOptions: this.defaultMatchedOptions
             })
 
             if (nextProps.options.length !== this.props.options.length) {
