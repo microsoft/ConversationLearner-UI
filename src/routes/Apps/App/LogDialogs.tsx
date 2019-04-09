@@ -550,7 +550,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 }
 
                 // Delete the teach session w/o saving
-                await this.props.clearTeachSession()
+                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
   
                 // Generate history
                 await this.onUpdateHistory(trainDialog, null, SelectionType.NONE)
