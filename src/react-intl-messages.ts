@@ -218,6 +218,7 @@ export enum FM {
 
     // EntityCreatorEditor
     ENTITYCREATOREDITOR_FIELDERROR_NOBLANK = 'EntityCreatorEditor.fieldError.noblank',
+    ENTITYCREATOREDITOR_FIELDERROR_MAX_LENGTH = 'EntityCreatorEditor.fieldError.maxLength',
     ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE = 'EntityCreatorEditor.fieldError.requiredValue',
     ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC = 'EntityCreatorEditor.fieldsError.alphanumerica',
     ENTITYCREATOREDITOR_FIELDERROR_DISTINCT = 'EntityCreatorEditor.fields.distinct',
@@ -939,6 +940,7 @@ export default {
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
+        [FM.ENTITYCREATOREDITOR_FIELDERROR_MAX_LENGTH]: 'May not exceed 30 characters.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC]: 'May only contain alphanumeric characters with no spaces.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED]: 'Name is reserved.',

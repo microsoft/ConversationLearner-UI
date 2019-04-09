@@ -18,6 +18,7 @@ import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import Component from './EntityCreatorComponent'
 
+const entityNameMaxLength = 30
 const prebuiltPrefix = 'builtin-'
 
 const initState: ComponentState = {
@@ -425,6 +426,10 @@ class Container extends React.Component<Props, ComponentState> {
 
         if (value.length === 0) {
             return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE)
+        }
+
+        if (value.length > entityNameMaxLength) {
+            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_MAX_LENGTH)
         }
 
         if (!/^[a-zA-Z0-9-]+$/.test(value)) {
