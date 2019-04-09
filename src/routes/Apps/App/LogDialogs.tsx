@@ -549,9 +549,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     trainDialogs: []
                 }
 
-                // EndSession callback close the teach session, but UI state still needs to be updates after fetch
+                // Delete the teach session w/o saving
                 await this.props.clearTeachSession()
-
+  
                 // Generate history
                 await this.onUpdateHistory(trainDialog, null, SelectionType.NONE)
             }
@@ -1068,7 +1068,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
-        clearTeachSession: actions.teach.clearTeachSession,
         createChatSessionThunkAsync: actions.chat.createChatSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,
