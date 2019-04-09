@@ -6,7 +6,6 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as common from '../../support/Common'
 import * as actions from '../../support/Actions'
 import * as scorerModal from '../../support/components/ScorerModal'
@@ -29,7 +28,7 @@ describe('Missing Action - ErrorHandling', () => {
     it('Should complete and save a simple 1 action Train Dialog', () => {
       train.CreateNewTrainDialog()
       train.TypeYourMessage(common.gonnaDeleteAnAction)
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       train.SelectAction(common.whatsYourName)
       train.Save()
     })
@@ -53,18 +52,18 @@ describe('Missing Action - ErrorHandling', () => {
   context('Train', () => {
     it('Should edit the Train Dialog and verify the expected error messages show up', () => {
       train.EditTraining(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '')
-      editDialogModal.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
+      train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
-      editDialogModal.SelectChatTurnStartsWith('ERROR: Can’t find Action Id')
-      editDialogModal.VerifyErrorMessage('Action does not exist')
+      train.SelectChatTurnStartsWith('ERROR: Can’t find Action Id')
+      train.VerifyErrorMessage('Action does not exist')
       scorerModal.VerifyMissingActionNotice()
     })
 
     it('Should create a new action from Train Dialog which should also correct the error in the Train Dialog', () => {
       scorerModal.ClickAddActionButton()
       actions.CreateNewAction({ response: common.whatsYourName, expectedEntities: ['name'] })
-      editDialogModal.VerifyNoErrorMessage()
-      editDialogModal.ClickSaveCloseButton()
+      train.VerifyNoErrorMessage()
+      train.ClickSaveCloseButton()
       modelPage.VerifyNoIncidentTriangleOnPage()
     })
   })

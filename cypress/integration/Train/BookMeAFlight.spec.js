@@ -8,7 +8,6 @@ import * as modelPage from '../../support/components/ModelPage'
 import * as memoryTableComponent from '../../support/components/MemoryTableComponent'
 import * as scorerModal from '../../support/components/ScorerModal'
 import * as train from '../../support/Train'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as common from '../../support/Common'
 import * as helpers from '../../support/Helpers'
 
@@ -26,7 +25,6 @@ describe('Book Me A Flight - Train', () => {
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
-
   })
 
   context('Train', () => {
@@ -36,7 +34,7 @@ describe('Book Me A Flight - Train', () => {
     })
 
     it('Should verify that we have 1 disabled and 1 enabled action to chose from', () => {
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       scorerModal.VerifyContainsDisabledAction('You are leaving on $departure and returning on $return')
       scorerModal.VerifyContainsEnabledAction('When are you planning to travel?')
     })
@@ -47,12 +45,12 @@ describe('Book Me A Flight - Train', () => {
 
     it('Should type in the next user turn and label the departure and return dates', () => {
       train.TypeYourMessage('Leaving tomorrow and returning Sunday next week.')
-      editDialogModal.LabelTextAsEntity('tomorrow', 'departure')
-      editDialogModal.LabelTextAsEntity('Sunday next week', 'return')
+      train.LabelTextAsEntity('tomorrow', 'departure')
+      train.LabelTextAsEntity('Sunday next week', 'return')
     })
 
     it('Should verify that we have the expected entities in memory after clicking Score Actions Button', () => {
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntitiesInMemory('departure', ['tomorrow'])
       memoryTableComponent.VerifyEntitiesInMemory('return', ['Sunday next week'])
     })

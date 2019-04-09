@@ -6,7 +6,6 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as actions from '../../support/Actions'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as train from '../../support/Train'
 import * as common from '../../support/Common'
 
@@ -23,7 +22,7 @@ describe('CreateModels', () => {
     train.CreateNewTrainDialog()
 
     train.TypeYourMessage('hi')
-    editDialogModal.ClickScoreActionsButton()
+    train.ClickScoreActionsButton()
     train.SelectAction('Action One')
     cy.WaitForTrainingStatusCompleted()
     train.SelectAction('Action Two')
@@ -35,7 +34,7 @@ describe('CreateModels', () => {
     train.CreateNewTrainDialog()
 
     train.TypeYourMessage('howdy')
-    editDialogModal.ClickScoreActionsButton()
+    train.ClickScoreActionsButton()
     train.SelectAction('Action Two')
     cy.WaitForTrainingStatusCompleted()
     train.SelectAction('Action Three')
@@ -47,7 +46,7 @@ describe('CreateModels', () => {
     train.CreateNewTrainDialog()
 
     train.TypeYourMessage('namaste')
-    editDialogModal.ClickScoreActionsButton()
+    train.ClickScoreActionsButton()
     train.SelectAction('Action Three')
     cy.WaitForTrainingStatusCompleted()
     train.SelectAction('Action Two')
