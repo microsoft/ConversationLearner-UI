@@ -876,9 +876,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     trainDialogs: []
                 }
 
-                // EndSession callback close the teach session, but UI state still needs to be updated after fetch
-                await ((this.props.clearTeachSession() as any) as Promise<CLM.TrainDialog>)
-
+                // Delete the teach session w/o saving
+                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+  
                 // Generate history
                 await this.onUpdateHistory(trainDialog, null, SelectionType.NONE, this.state.editType)
             }
@@ -916,8 +916,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
             }
 
-            const editType = (editDialogType !== EditDialogType.NEW && editDialogType !== EditDialogType.BRANCH) ?
-                EditDialogType.TRAIN_EDITED : editDialogType
+            const editType = (editDialogType !== EditDialogType.NEW && editDialogType !== EditDialogType.BRANCH) 
+                ? EditDialogType.TRAIN_EDITED 
+                : editDialogType
 
             this.setState({
                 history: teachWithHistory.history,
@@ -1455,7 +1456,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
-        clearTeachSession: actions.teach.clearTeachSession,
         createTeachSessionThunkAsync: actions.teach.createTeachSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,
