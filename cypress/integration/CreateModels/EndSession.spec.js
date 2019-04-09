@@ -67,7 +67,7 @@ describe('End Session - Create Model', () => {
       train.SelectEndSessionAction('Goodbye')
     })
 
-    it('Verify that the selecting the EndSession Bot response did not remove the description', () => {
+    it('Verify that selecting the EndSession Bot response did not remove the description', () => {
       editDialogModal.VerifyDescription(preliminaryTrainingDescription)
     })
 
