@@ -64,7 +64,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             />
                         }
                         <span data-testid="train-dialogs-description">
-                            {DialogUtils.trainDialogRenderDescription(trainDialog)}
+                            {DialogUtils.trainDialogRenderDescription(trainDialog, component.props.actions, component.props.entities)}
                         </span>
                     </span>
                     {/* TODO: Keep firstInput and lastInput available in DOM until tests are upgraded */}
@@ -1133,6 +1133,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     savedTrainDialog={this.state.mergeNewTrainDialog}
                     existingTrainDialog={this.state.mergeExistingTrainDialog}
                     allUniqueTags={this.props.allUniqueTags}
+                    actions={this.props.actions}
+                    entities={this.props.entities}
                 />
                 <EditDialogModal
                     data-testid="train-dialog-modal"

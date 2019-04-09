@@ -49,7 +49,7 @@ export function internalConflict(textVariation: CLM.TextVariation, trainDialog: 
 }
 
 export function activityIndexFromRound(trainDialog: CLM.TrainDialog, roundIndex: number | null, scoreIndex: number | null): number | undefined {
-    if (!roundIndex) { 
+    if (!roundIndex) {
         return undefined
     }
 
@@ -65,7 +65,7 @@ export function activityIndexFromRound(trainDialog: CLM.TrainDialog, roundIndex:
             }
         }
         else {
-            currentRoundIndex =  currentRoundIndex + 1
+            currentRoundIndex = currentRoundIndex + 1
             activityIndex = activityIndex + 1 + round.scorerSteps.length
         }
     }
@@ -140,20 +140,39 @@ export function getBestAction(scoreResponse: CLM.ScoreResponse, allActions: CLM.
     return best
 }
 
-export function dialogSampleInput(dialog: CLM.TrainDialog | CLM.LogDialog): string {
-    const userInputs: string[] = []
-    let round = 0
+export function dialogSampleInput(dialog: CLM.TrainDialog | CLM.LogDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): string {
+    const phrases: string[] = []
+    let roundIndex = 0
     let length = 0
-    while (round < dialog.rounds.length && length < MAX_SAMPLE_INPUT_LENGTH) {
-        const userInput = 
-            (dialog as CLM.LogDialog).rounds[round].extractorStep.text ||
-            (dialog as CLM.TrainDialog).rounds[round].extractorStep.textVariations[0].text
-        
-        userInputs.push(userInput)
+    while (roundIndex < dialog.rounds.length && length < MAX_SAMPLE_INPUT_LENGTH) {
+        const round = dialog.rounds[roundIndex]
+
+        // Add user input
+        const userInput =
+            (round.extractorStep as CLM.LogExtractorStep).text ||
+            (round.extractorStep as CLM.TrainExtractorStep).textVariations[0].text;
+
+        phrases.push(userInput)
+
+        // Add bot response
+        const scorerStep = round.scorerSteps[0]
+        if (scorerStep) {
+            const actionId =
+                (scorerStep as CLM.LogScorerStep).predictedAction ||
+                (scorerStep as CLM.TrainScorerStep).labelAction;
+
+            const action = actions.find(a => a.actionId === actionId)
+            if (action && action.actionType === CLM.ActionTypes.TEXT) {
+                const textAction = new CLM.TextAction(action)
+                const botResponse = textAction.renderValue(getDefaultEntityMap(entities))
+                phrases.push(botResponse)
+            }
+        }
+
         length = length + userInput.length
-        round = round + 1
+        roundIndex = roundIndex + 1
     }
-    return userInputs.join(" ◾️ ").slice(0, MAX_SAMPLE_INPUT_LENGTH)
+    return phrases.join(" ◾️ ").slice(0, MAX_SAMPLE_INPUT_LENGTH)
 }
 
 export function trainDialogFirstInput(trainDialog: CLM.TrainDialog): string {
@@ -194,8 +213,10 @@ export function trainDialogRenderTags(trainDialog: CLM.TrainDialog): React.React
     )
 }
 
-export function trainDialogRenderDescription(trainDialog: CLM.TrainDialog): React.ReactNode {
-    return trainDialog.description ? <i>{trainDialog.description}</i> : dialogSampleInput(trainDialog)
+export function trainDialogRenderDescription(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): React.ReactNode {
+    return trainDialog.description
+        ? <i>{trainDialog.description}</i>
+        : dialogSampleInput(trainDialog, actions, entities)
 }
 
 export function cleanTrainDialog(trainDialog: CLM.TrainDialog) {
@@ -254,7 +275,7 @@ function doesExtractorStepMatch(extractorStep1: CLM.TrainExtractorStep, extracto
 }
 
 function doesRoundMatch(round1: CLM.TrainRound, round2: CLM.TrainRound, isLastRound: boolean): boolean {
-    
+
     // Check that text variations are equivalent in the extractor step
     if (!doesExtractorStepMatch(round1.extractorStep, round2.extractorStep)) {
         return false
@@ -263,8 +284,8 @@ function doesRoundMatch(round1: CLM.TrainRound, round2: CLM.TrainRound, isLastRo
     // If one has scorer steps and the other doesn't, only ok, on last round
     if (round1.scorerSteps && !round2.scorerSteps ||
         !round1.scorerSteps && round2.scorerSteps) {
-            return isLastRound
-        }
+        return isLastRound
+    }
     // If they both don't have scorer steps
     if (!round1.scorerSteps && !round2.scorerSteps) {
         return true
@@ -298,7 +319,7 @@ export function doesTrainDialogMatch(trainDialog1: CLM.TrainDialog, trainDialog2
     const maxRounds = Math.max(trainDialog1.rounds.length, trainDialog2.rounds.length)
     const minRounds = Math.min(trainDialog1.rounds.length, trainDialog2.rounds.length)
     let roundIndex = 0
-    while (roundIndex < maxRounds) { 
+    while (roundIndex < maxRounds) {
         const round1 = trainDialog1.rounds[roundIndex]
         const round2 = trainDialog2.rounds[roundIndex]
         // If one ran out of rounds that's ok, one dialog can be longer than the other  
@@ -347,8 +368,8 @@ export function mergeTrainDialogTags(trainDialog1: CLM.TrainDialog, trainDialog2
 }
 
 export function mergeTrainDialogDescription(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): string {
-     // Assume longest description is best 
-    return trainDialog1.description.length > trainDialog2.description.length 
+    // Assume longest description is best 
+    return trainDialog1.description.length > trainDialog2.description.length
         ? trainDialog1.description : trainDialog2.description
 }
 
@@ -366,7 +387,7 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
 
     // Copy text variations from small dialog onto large one
     let roundIndex = 0
-    while (roundIndex < smallTrainDialog.rounds.length) { 
+    while (roundIndex < smallTrainDialog.rounds.length) {
         const roundSmall = smallTrainDialog.rounds[roundIndex]
         const roundLarge = largeTrainDialog.rounds[roundIndex]
         const extractorStepSmall = roundSmall.extractorStep
@@ -375,7 +396,7 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
         // Add novel text variatitions to large dialog
         const newTextVariations = extractorStepSmall.textVariations.filter(tvs => !extractorStepLarge.textVariations.find(tvl => tvl.text === tvs.text))
         roundLarge.extractorStep.textVariations = [...roundLarge.extractorStep.textVariations, ...newTextVariations]
-        
+
         roundIndex = roundIndex + 1
     }
 

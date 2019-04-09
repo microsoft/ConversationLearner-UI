@@ -83,11 +83,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 1500,
             isResizable: true,
             render: (trainDialog, component) => {
-
                 return <>
                     <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-first-input">
                         <span data-testid="train-dialogs-description">
-                            {DialogUtils.dialogSampleInput(trainDialog)}
+                            {DialogUtils.dialogSampleInput(trainDialog, component.props.actions, component.props.entities)}
                         </span>
                     </span>
                 </>
@@ -998,6 +997,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     savedTrainDialog={this.state.mergeNewTrainDialog}
                     existingTrainDialog={this.state.mergeExistingTrainDialog}
                     allUniqueTags={this.props.allUniqueTags}
+                    actions={this.props.actions}
+                    entities={this.props.entities}
                 />
                 <EditDialogModal
                     data-testid="train-dialog-modal"
