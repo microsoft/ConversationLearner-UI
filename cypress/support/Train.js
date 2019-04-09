@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-import * as homePage from '../../support/components/HomePage'
+import * as homePage from './components/HomePage'
 import * as scorerModal from './components/ScorerModal'
 import * as trainDialogsGrid from './components/TrainDialogsGrid'
 import * as helpers from './Helpers'
@@ -20,10 +20,9 @@ export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] >
 export const TypeYourMessageSelector = 'input.wc-shellinput[placeholder="Type your message..."]' // data-testid NOT possible
 export const ScoreActionsButtonSelector = '[data-testid="score-actions-button"]'
 
-export function TypeYourMessage(trainMessage) { cy.Get(TypeYourMessageSelector).type(`${trainMessage}{enter}`) }
 export function TypeAlternativeInput(trainMessage) { cy.Get('[data-testid="entity-extractor-alternative-input-text"]').type(`${trainMessage}{enter}`) }
 export function ClickSetInitialStateButton() { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
-export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).Click() }
+// *** export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).Click() }
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
@@ -134,10 +133,10 @@ export function VerifyBranchButtonIsInSameControlGroupAsMessage(message) {
 }
 
 // This depends on the '@branchButton' alias having been created by the VerifyBranchButtonIsInSameControlGroupAsMessage() function.
-export function BranchChatTurn(message) {
-  cy.Get('@branchButton').Click()
-  cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${message}{enter}`)
-}
+// *** export function BranchChatTurn(message) {
+//   cy.Get('@branchButton').Click()
+//   cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${message}{enter}`)
+// }
 
 // Creates the '@allChatTurns' alias.
 export function CreateAliasForAllChatTurns() {
@@ -425,7 +424,7 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
 }
 
 export function TypeYourMessage(message) {
-  TypeYourMessage(message)
+  cy.Get(TypeYourMessageSelector).type(`${message}{enter}`)
   cy.Enqueue(() => {
     if (!currentTrainingSummary.FirstInput) currentTrainingSummary.FirstInput = message
     currentTrainingSummary.LastInput = message
@@ -453,10 +452,7 @@ export function SelectEndSessionAction(expectedData, lastResponse) {
 
 // This method is used to score AND AUTO-SELECT the action after branching.
 export function ClickScoreActionsButton(lastResponse) {
-  ClickScoreActionsButton()
-  cy.Enqueue(() => {
-    currentTrainingSummary.LastResponse = lastResponse
-  })
+  cy.Get(ScoreActionsButtonSelector).Click().then(() => { currentTrainingSummary.LastResponse = lastResponse })
 }
 
 export function Save() {
@@ -579,7 +575,9 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
       }
     })
 
-    BranchChatTurn(newMessage)
+    cy.Get('@branchButton').Click()
+    cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
+  
     isBranched = true
     originalTrainingSummary.TrainGridRowCount++
     currentTrainingSummary.TrainGridRowCount++
