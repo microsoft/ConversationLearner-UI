@@ -150,7 +150,12 @@ class TeachModal extends React.Component<Props, ComponentState> {
             isInitAvailable = true
             hasTerminalAction = false
             initialEntities = null
+            this.setState({
+                tags: [],
+                description: ''
+            })
         }
+
         // Set terminal action from History but only if I just loaded it
         if (this.props.initialHistory !== newProps.initialHistory && newProps.initialHistory && newProps.initialHistory.length > 0) {
             hasTerminalAction = newProps.lastAction
