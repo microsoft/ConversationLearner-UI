@@ -7,6 +7,7 @@ import * as BotChat from '@conversationlearner/webchat'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
+import { EditHandlerArgs } from '../../Utils/dialogEditing'
 import * as CLM from '@conversationlearner/models'
 import AddButtonInput from './AddButtonInput'
 import AddButtonScore from './AddButtonScore'
@@ -31,7 +32,6 @@ import { FM } from '../../react-intl-messages'
 import { SelectionType } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.'
-import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs'
 import './TeachSessionModal.css'
 
 interface ComponentState {
@@ -945,7 +945,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
-        fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
         toggleAutoTeach: actions.teach.toggleAutoTeach,
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
