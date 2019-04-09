@@ -77,26 +77,6 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
   })
 }
 
-export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastInput, lastResponse) {
-  const funcName = `VerifyIncidentTriangleFoundInTrainDialogsGrid(${firstInput}, ${lastInput}, ${lastResponse})`
-  cy.Enqueue(() => {
-    const firstInputs = trainDialogsGrid.GetFirstInputs()
-    const lastInputs = trainDialogsGrid.GetLastInputs()
-    const lastResponses = trainDialogsGrid.GetLastResponses()
-
-    helpers.ConLog(funcName, `Before Loop of ${firstInputs.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
-
-    for (let i = 0; i < firstInputs.length; i++) {
-      if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse) {
-        helpers.ConLog(funcName, `Found it at Index: ${i} - ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
-        trainDialogsGrid.VerifyErrorIconForTrainGridRow(i)
-        return
-      }
-    }
-    throw `Can't Find Training to Verify it contains errors. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`
-  })
-}
-
 export function TypeYourMessage(message) {
   editDialogModal.TypeYourMessage(message)
   cy.Enqueue(() => {
