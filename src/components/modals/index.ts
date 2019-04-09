@@ -30,9 +30,9 @@ export enum EditDialogType {
 // State of current edited dialog
 export enum EditState {
     CAN_EDIT = 'CAN_EDIT',
-    // Runing bot not compatible with Model
+    // Running bot not compatible with Model
     INVALID_BOT = 'INVALID_BOT',
-    // Attemping to edit older package id
+    // Attempting to edit older package id
     INVALID_PACKAGE = 'INVALID_PACKAGE'
 }
 

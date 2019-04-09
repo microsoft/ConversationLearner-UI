@@ -14,6 +14,7 @@ import * as BotChat from '@conversationlearner/webchat'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
+import { EditHandlerArgs } from '../../Utils/dialogEditing'
 import { State, TeachSessionState } from '../../types'
 import Webchat, { renderActivity } from '../Webchat'
 import TeachSessionAdmin from './TeachSessionAdmin'
@@ -32,7 +33,6 @@ import { SelectionType } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.'
 import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
-import { EditHandlerArgs } from '../../routes/Apps/App/TrainDialogs'
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
@@ -940,7 +940,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
-        fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
         toggleAutoTeach: actions.teach.toggleAutoTeach,
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
