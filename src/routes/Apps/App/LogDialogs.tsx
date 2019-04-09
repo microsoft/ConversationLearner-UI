@@ -896,7 +896,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             })
 
             // Check to see if it can be merged with an exising TrainDialog
-            const matchedTrainDialog = false // DISABLE DialogUtils.findMatchingTrainDialog(cleanedDialog, this.props.trainDialogs)
+            const matchedTrainDialog = DialogUtils.findMatchingTrainDialog(cleanedDialog, this.props.trainDialogs)
             if (matchedTrainDialog) {
                 // Open model to ask user if they want to merge
                 this.setState({
@@ -948,7 +948,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 newTrainDialog.description = description
 
                 // Check to see if new TrainDialog can be merged with an exising TrainDialog
-                const matchingTrainDialog = false // DISABLE DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
+                const matchingTrainDialog =  DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
 
                 if (matchingTrainDialog) {
                     this.setState({
