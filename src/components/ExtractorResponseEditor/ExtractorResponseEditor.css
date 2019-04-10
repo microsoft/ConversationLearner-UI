@@ -30,7 +30,7 @@
 }
 
 .entity-labeler__custom-editor--error {
-    border-color: red;
+    border-color: var(--cl-color-error);
 }
 
 .entity-labeler__custom-editor--warning {
