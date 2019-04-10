@@ -276,18 +276,11 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             cardViewerShowOriginal: false,
             isAlreadySelectedOpen: false
         };
-        this.handleActionSelection = this.handleActionSelection.bind(this);
-        this.handleDefaultSelection = this.handleDefaultSelection.bind(this);
-        this.handleOpenActionModal = this.handleOpenActionModal.bind(this);
-        this.renderItemColumn = this.renderItemColumn.bind(this);
-        this.onColumnClick = this.onColumnClick.bind(this);
-        this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
-        this.showAlreadySelectedPopUp = this.showAlreadySelectedPopUp.bind(this);
-        this.onCloseAlreadySelectedPopUp = this.onCloseAlreadySelectedPopUp.bind(this);
     }
 
     componentDidUpdate(prevProps: Props) {
         if (this.props.scoreResponse !== prevProps.scoreResponse) {
+            this.autoSelect()
             this.setState({
                 haveEdited: false,
                 scoredItems: this.getScoredItems()
@@ -338,6 +331,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             setTimeout(this.focusPrimaryButton, 100)
         }
     }
+
+    @OF.autobind
     focusPrimaryButton(): void {
         if (this.primaryScoreButton) {
             this.primaryScoreButton.focus();
@@ -372,11 +367,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
+    @OF.autobind
     handleOpenActionModal() {
         this.setState({
             actionModalOpen: true
         })
     }
+
+    @OF.autobind
     onColumnClick(event: any, column: any) {
         const { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
@@ -401,6 +399,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         });
     }
 
+    @OF.autobind
     handleDefaultSelection() {
         // Look for a valid action
         let actionId = null
@@ -419,6 +418,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             this.handleActionSelection(actionId);
         }
     }
+
+    @OF.autobind
     handleActionSelection(actionId: string) {
         const { scoredActions, unscoredActions } = this.props.scoreResponse
         let scoredAction = scoredActions.find(a => a.actionId === actionId);
@@ -647,6 +648,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     isMasked(actionId: string): boolean {
         return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
     }
+
+    @OF.autobind
     renderItemColumn(action: CLM.ScoredBase, index: number, column: IRenderableColumn) {
         // Null is action create button
         if (action.actionId === ACTION_BUTTON) {
@@ -846,10 +849,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         )
     }
 
+    @OF.autobind
     showAlreadySelectedPopUp() {
         this.setState({ isAlreadySelectedOpen: true })
     }
 
+    @OF.autobind
     onCloseAlreadySelectedPopUp() {
         this.setState({ isAlreadySelectedOpen: false })
     }
