@@ -71,6 +71,10 @@ describe('My Name Is - Train Dialog', () => {
   context('Train Dialog Next', () => {
     it('Should create a new Train Dialog', () => {
       cy.WaitForTrainingStatusCompleted()
+
+      // Hack to deal with "Bug 1901: Training Status is Misleading Causes Automatic Entity Labeling to NOT be Consistent"
+      cy.wait(30000)
+
       train.CreateNewTrainDialog()
     })
 
