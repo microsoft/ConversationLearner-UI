@@ -28,8 +28,13 @@
 .entity-labeler__custom-editor--read-only {
     background-color: rgba(0,0,0,0.025);
 }
+
 .entity-labeler__custom-editor--error {
-    border-color: red;
+    border-color: var(--cl-color-error);
+}
+
+.entity-labeler__custom-editor--warning {
+    border-color: var(--cl-color-warning);
 }
 
 .entity-labeler__prebuilt-editors {
