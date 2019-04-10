@@ -90,7 +90,7 @@ jobs:
           path: results
       
 workflows:
-  build:
+  build-test:
     jobs:
       - build
       - test:
