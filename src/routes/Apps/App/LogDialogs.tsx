@@ -972,7 +972,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         originalTrainDialogId={null}
                         onClose={this.onCloseTeachSession}
                         onSetInitialEntities={null}
-                        onEditTeach={(historyIndex, editHandlerArgs, editHandler) => this.onEditTeach(historyIndex, editHandlerArgs ? editHandlerArgs : undefined, editHandler)}
+                        onEditTeach={(historyIndex, editHandlerArgs, tags, description, editHandler) => this.onEditTeach(historyIndex, editHandlerArgs ? editHandlerArgs : undefined, tags, description, editHandler)}
                         onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.isLastActivity!)}
                         onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)}
                         onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
@@ -1037,6 +1037,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     private async onEditTeach(
         historyIndex: number,
         args: EditHandlerArgs | undefined = undefined,
+        tags: string[],
+        description: string,
         editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any
     ) {
         try {
@@ -1047,6 +1049,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             DialogEditing.onEditTeach(
                 historyIndex,
                 args,
+                tags,
+                description,
                 editHandler,
                 this.props.teachSession.teach,
                 this.props.app,
