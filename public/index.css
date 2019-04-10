@@ -564,10 +564,10 @@ i[data-icon-name="Edit"]:hover {
 
 .cl-debug-marker {
   width: 1px;
-  height: 1px;
+  height: 2px;
   position: absolute;
-  left: 0px;
-  bottom: 0px;
+  top: 0px;
+  right: 0px;
   background-color: #000000;
 }
 
@@ -936,6 +936,11 @@ i[data-icon-name="Edit"]:hover {
   align-items: center;
   margin-top:0.15em;
   margin-bottom:1em;
+}
+
+.cl-error-message-label--dark {
+  color: var(--color-neutralSecondaryAlt);
+  display: inline-block;
 }
 
 .cl-float-left {

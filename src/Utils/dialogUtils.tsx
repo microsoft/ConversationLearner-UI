@@ -5,7 +5,7 @@
 import * as CLM from '@conversationlearner/models'
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
-import { deepCopy } from './util'
+import { deepCopy, getDefaultEntityMap } from './util'
 import { Activity } from 'botframework-directlinejs'
 import TagsReadOnly from '../components/TagsReadOnly'
 
@@ -169,6 +169,21 @@ export function trainDialogLastInput(trainDialog: CLM.TrainDialog): string | voi
     }
 }
 
+export function trainDialogLastResponse(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): string | void {
+    // Find last action of last scorer step of last round
+    // If found, return payload, otherwise return not found icon
+    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+        const scorerSteps = trainDialog.rounds[trainDialog.rounds.length - 1].scorerSteps;
+        if (scorerSteps.length > 0) {
+            const actionId = scorerSteps[scorerSteps.length - 1].labelAction;
+            const action = actions.find(a => a.actionId === actionId);
+            if (action) {
+                return CLM.ActionBase.GetPayload(action, getDefaultEntityMap(entities))
+            }
+        }
+    }
+}
+
 export function trainDialogRenderTags(trainDialog: CLM.TrainDialog): React.ReactNode {
     return (
         <span className={`${OF.FontClassNames.mediumPlus}`} data-testid="train-dialogs-tags">
@@ -181,6 +196,21 @@ export function trainDialogRenderTags(trainDialog: CLM.TrainDialog): React.React
 
 export function trainDialogRenderDescription(trainDialog: CLM.TrainDialog): React.ReactNode {
     return trainDialog.description ? <i>{trainDialog.description}</i> : dialogSampleInput(trainDialog)
+}
+
+export function cleanTrainDialog(trainDialog: CLM.TrainDialog) {
+    // Remove actionless dummy step (used for rendering) if they exist
+    for (const round of trainDialog.rounds) {
+        if (round.scorerSteps.length > 0 && round.scorerSteps[0].labelAction === undefined) {
+            round.scorerSteps = []
+        }
+    }
+    // Remove empty filled entities (used for rendering) if they exist
+    for (const round of trainDialog.rounds) {
+        for (const scorerStep of round.scorerSteps) {
+            scorerStep.input.filledEntities = scorerStep.input.filledEntities.filter(fe => fe.values.length > 0)
+        }
+    }
 }
 
 function doesScorerStepMatch(scorerStep1: CLM.TrainScorerStep, scorerStep2: CLM.TrainScorerStep): boolean {
