@@ -47,14 +47,14 @@ export function WaitForTrainingStatusCompleted() {
   expect(currentHtml.includes('data-testid="training-status-completed"')).to.be.true
 }
 
-export function VerifyNoIncidentTriangleOnPage() { VerifyErrorIcon(true) }
+export function VerifyNoIncidentTriangleOnPage() { VerifyErrorIcon(false) }
 
 // Verify for just the Left Pane "Train Dialogs" link.
-export function VerifyIncidentTriangleForTrainDialogs() { VerifyErrorIcon(false) }
+export function VerifyIncidentTriangleForTrainDialogs() { VerifyErrorIcon(true) }
 
-function VerifyErrorIcon(noErrorIconExpected)
+function VerifyErrorIcon(errorIconExpected)
 {
-  let funcName = `VerifyErrorIcon(${noErrorIconExpected})`
+  let funcName = `VerifyErrorIcon(${errorIconExpected})`
 
   cy.WaitForStableDOM()
   cy.wrap({ countFound: -1, timesInARowAtThisCount: 0 }, { timeout: 10000 }).should(retryInfo => {
@@ -75,7 +75,7 @@ function VerifyErrorIcon(noErrorIconExpected)
     // Now we need to verify that it is in the state we expect, and if this next part fails, it will retry
     // up to the time out setting to see if it changes to what we expect.
 
-    if(noErrorIconExpected) {
+    if(!errorIconExpected) {
       if(elements.length > 0) {
         throw new Error(`Expected to find no Incident Triangles on the page, yet ${elements.length} were found`)
       }

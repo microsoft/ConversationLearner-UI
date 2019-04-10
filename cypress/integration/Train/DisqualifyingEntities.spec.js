@@ -8,7 +8,6 @@ import * as modelPage from '../../support/components/ModelPage'
 import * as memoryTableComponent from '../../support/components/MemoryTableComponent'
 import * as scorerModal from '../../support/components/ScorerModal'
 import * as train from '../../support/Train'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as common from '../../support/Common'
 
 describe('Train', () => {
@@ -21,7 +20,7 @@ describe('Train', () => {
     train.CreateNewTrainDialog()
 
     train.TypeYourMessage('Hey')
-    editDialogModal.ClickScoreActionsButton()
+    train.ClickScoreActionsButton()
     scorerModal.VerifyContainsEnabledAction(common.whatsYourName)
     scorerModal.VerifyContainsDisabledAction('Hey $name')
     scorerModal.VerifyContainsDisabledAction('Hey $name, what do you really want?')
@@ -29,8 +28,8 @@ describe('Train', () => {
     train.SelectAction(common.whatsYourName)
 
     train.TypeYourMessage('Sam')
-    editDialogModal.VerifyEntityLabel('Sam', 'name')
-    editDialogModal.ClickScoreActionsButton()
+    train.VerifyEntityLabel('Sam', 'name')
+    train.ClickScoreActionsButton()
     memoryTableComponent.VerifyEntitiesInMemory('name', ['Sam'])
     scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
     scorerModal.VerifyContainsEnabledAction('Hey Sam')
@@ -39,7 +38,7 @@ describe('Train', () => {
     train.SelectAction('Hey Sam', 'Hey $name')
 
     train.TypeYourMessage('Hey')
-    editDialogModal.ClickScoreActionsButton()
+    train.ClickScoreActionsButton()
     memoryTableComponent.VerifyEntitiesInMemory('name', ['Sam'])
     scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
     scorerModal.VerifyContainsEnabledAction('Hey Sam')
@@ -48,7 +47,7 @@ describe('Train', () => {
     train.SelectAction('Hey Sam, what do you really want?', 'Hey $name, what do you really want?')
 
     train.TypeYourMessage('world peace')
-    editDialogModal.ClickScoreActionsButton()
+    train.ClickScoreActionsButton()
     memoryTableComponent.VerifyEntitiesInMemory('name', ['Sam'])
     memoryTableComponent.VerifyEntitiesInMemory('want', ['world peace'])
     scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
