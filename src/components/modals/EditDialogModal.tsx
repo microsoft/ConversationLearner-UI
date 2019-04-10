@@ -87,12 +87,14 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 selectedActivity = nextProps.history[nextProps.initialSelectedActivityIndex]
             }
 
-            // Force webchat to re-mount as history prop can't be updated
             this.setState({
                 currentTrainDialog: nextProps.trainDialog,
+                // Force webchat to re-mount as history prop can't be updated
                 webchatKey: this.state.webchatKey + 1,
                 selectedActivity,
-                hasEndSession: this.hasSessionEnded(nextProps.trainDialog)
+                hasEndSession: this.hasSessionEnded(nextProps.trainDialog),
+                tags: nextProps.trainDialog ? [...nextProps.trainDialog.tags] : [],
+                description: nextProps.trainDialog ? nextProps.trainDialog.description : ""
             })
         }
     }
