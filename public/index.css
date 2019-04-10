@@ -938,6 +938,11 @@ i[data-icon-name="Edit"]:hover {
   margin-bottom:1em;
 }
 
+.cl-error-message-label--dark {
+  color: var(--color-neutralSecondaryAlt);
+  display: inline-block;
+}
+
 .cl-float-left {
   float: left;
 }

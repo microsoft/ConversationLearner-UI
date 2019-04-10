@@ -8,23 +8,24 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as ToolTips from '../ToolTips/ToolTips'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
+import ExtractConflictModal from './ExtractConflictModal'
+import actions from '../../actions'
+import HelpIcon from '../HelpIcon'
+import EntityCreatorEditor from './EntityCreatorEditor'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { EditDialogType } from '.'
+import { FM } from '../../react-intl-messages'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import { setStateAsync, formatMessageId } from '../../Utils/util'
-import ExtractConflictModal from './ExtractConflictModal'
-import EntityCreatorEditor from './EntityCreatorEditor'
-import actions from '../../actions'
-import HelpIcon from '../HelpIcon'
-import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { EditDialogType } from '.'
-import { FM } from '../../react-intl-messages'
 import './EntityExtractor.css'
 
 interface ExtractResponseForDisplay {
     extractResponse: CLM.ExtractResponse
     isValid: boolean
+    duplicateEntityNames: string[]
 }
 
 interface ComponentState {
@@ -164,6 +165,29 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             return false
         })
     }
+
+    // Return list of non-multivalue entity names that have been labelled more than once
+    duplicateEntityNames(extractResponse: CLM.ExtractResponse): string[] {
+        const extractEntities = this.withoutPreBuilts(extractResponse.predictedEntities)
+
+        // Get list of entity ids that are tagged more than once
+        const multiEntityIds = extractEntities.map(pe => pe.entityId)
+            .filter(entityId => {
+                const count = extractEntities.filter(pe => pe.entityId === entityId)
+                return count && count.length > 1
+            })
+
+        // If any aren't multi-value they are duplicate labels
+        const duplicateEntityNames: string[] = []
+        for (const entityId of multiEntityIds) {
+            let entity =  this.props.entities.find(e => e.entityId === entityId)
+            if (entity && !entity.isMultivalue) {
+                duplicateEntityNames.push(entity.entityName)
+            }
+        }
+        return [...new Set(duplicateEntityNames)]
+    }
+
     // Returns true if predicted entities match
     isValid(primaryResponse: CLM.ExtractResponse, extractResponse: CLM.ExtractResponse): boolean {
         // Ignore prebuilts that aren't resolvers
@@ -182,6 +206,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         if (missing.length > 0) {
             return false;
         }
+
         return true;
     }
 
@@ -192,7 +217,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
      */
     allValid(extractResponses: CLM.ExtractResponse[]): boolean {
         const primaryExtractResponse = extractResponses[0]
-        return extractResponses.every(extractResponse => (extractResponse === primaryExtractResponse) ? true : this.isValid(primaryExtractResponse, extractResponse))
+        return extractResponses.every(extractResponse => (extractResponse === primaryExtractResponse) 
+            ? true 
+            : this.isValid(primaryExtractResponse, extractResponse)
+                && this.duplicateEntityNames(extractResponse).length === 0)
     }
 
     // Return merge of extract responses and text variations
@@ -400,7 +428,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             .map<ExtractResponseForDisplay>(extractResponse =>
                 ({
                     extractResponse,
-                    isValid: this.isValid(primaryExtractResponse, extractResponse)
+                    isValid: this.isValid(primaryExtractResponse, extractResponse),
+                    duplicateEntityNames: this.duplicateEntityNames(extractResponse)
                 }))
         const allExtractResponsesValid = extractResponsesForDisplay.every(e => e.isValid)
 
@@ -414,13 +443,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_HELP)}
                     <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_HELP} />
                 </OF.Label>
-                {extractResponsesForDisplay.map(({ isValid, extractResponse }, key) => {
+                {extractResponsesForDisplay.map(({ isValid, duplicateEntityNames, extractResponse }, key) => {
                     return <div key={key} className={`editor-container ${OF.FontClassNames.mediumPlus}`}>
                         <ExtractorResponseEditor.EditorWrapper
                             render={(editorProps, onChangeCustomEntities) =>
                                 <ExtractorResponseEditor.Editor
                                     readOnly={!canEdit}
-                                    isValid={isValid}
+                                    status={
+                                        !isValid 
+                                        ? ExtractorResponseEditor.Models.ExtractorStatus.ERROR
+                                        : duplicateEntityNames.length > 0
+                                        ? ExtractorResponseEditor.Models.ExtractorStatus.WARNING
+                                        : ExtractorResponseEditor.Models.ExtractorStatus.OK
+                                    }
                                     entities={this.props.entities}
                                     {...editorProps}
 
@@ -432,14 +467,29 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             extractorResponse={extractResponse}
                             onChange={this.onUpdateExtractResponse}
                         />
-                        {(key !== 0) && <div className="editor-container__icons">
-                            <button type="button" className={`editor-button-delete ${OF.FontClassNames.large}`} onClick={() => this.onRemoveExtractResponse(extractResponse)}>
-                                <OF.Icon iconName="Delete" />
-                            </button>
-                        </div>}
-                        {!isValid && <div className="cl-error-message-label">
-                            {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING)}
-                        </div>}
+                        {(key !== 0) 
+                        ?   <div className="editor-container__icons">
+                                <button type="button" className={`editor-button-delete ${OF.FontClassNames.large}`} onClick={() => this.onRemoveExtractResponse(extractResponse)}>
+                                    <OF.Icon iconName="Delete" />
+                                </button>
+                            </div>
+                        : <div/>}
+                        {!isValid && 
+                            <div className="cl-error-message-label">
+                                {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_MATCH_WARNING)}
+                            </div>
+                        }
+                        {isValid && duplicateEntityNames.length > 0 &&
+                            <div className='cl-label'>
+                                <OF.Icon
+                                    className={`cl-icon cl-color-warning`}
+                                    iconName="IncidentTriangle"
+                                />
+                                <div className="cl-error-message-label cl-error-message-label--dark">
+                                    {`${Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_DUPE_WARNING1)}${duplicateEntityNames.join(', ')}${Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_DUPE_WARNING2)}`}
+                                </div>
+                            </div>
+                        }
                     </div>
                 })}
                 {canEdit &&

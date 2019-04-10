@@ -3,25 +3,25 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { Editor } from 'slate-react'
-import Plain from 'slate-plain-serializer'
 import * as OF from 'office-ui-fabric-react'
-import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType, IGenericEntityData } from './models'
-import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValueUsingTokenData, getSelectedText } from './utilities'
+import Plain from 'slate-plain-serializer'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
-import './ExtractorResponseEditor.css'
 import TokenNode from './TokenNode'
+import { Editor } from 'slate-react'
 import { EntityType, EntityBase } from '@conversationlearner/models'
 import { Expando } from '../modals'
+import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType, IGenericEntityData, ExtractorStatus } from './models'
+import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValueUsingTokenData, getSelectedText } from './utilities'
+import './ExtractorResponseEditor.css'
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any
 
 interface Props {
     readOnly: boolean
-    isValid: boolean
+    status: ExtractorStatus,
     options: IOption[]
     text: string
     entities: EntityBase[]
@@ -240,7 +240,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             && selection.anchorNode.parentElement 
             && selection.anchorNode.parentElement.parentNode
 
-        if (parentNode) {
+        if (parentNode && selection) {
             const sibling = parentNode.nextSibling ? parentNode.nextSibling : parentNode.parentNode && parentNode.parentNode.nextSibling
 
             if (sibling && sibling.firstChild && sibling.firstChild.firstChild && sibling.firstChild.firstChild.firstChild) {
@@ -448,11 +448,24 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         range.setStartBefore(firstDiv)
         range.setEndAfter(lastDiv)
 
-        selection.removeAllRanges();
-        selection.addRange(range)
+        if (selection) {
+            selection.removeAllRanges();
+            selection.addRange(range)
+            
+            // Fire select event
+            this.editor.current.onEvent("onSelect", selectEvent)
+        }
+    }
 
-        // Fire select event
-        this.editor.current.onEvent("onSelect", selectEvent)
+    borderStyle(): string {
+        switch (this.props.status) {
+            case ExtractorStatus.ERROR: 
+                return 'entity-labeler__custom-editor--error'
+            case ExtractorStatus.WARNING: 
+                return 'entity-labeler__custom-editor--warning'
+            default:
+                return ''
+        }
     }
 
     render() {
@@ -466,7 +479,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                         role="button"
                     />
                 }
-                <div className={`entity-labeler__custom-editor ${this.props.readOnly ? 'entity-labeler__custom-editor--read-only' : ''} ${this.props.isValid ? '' : 'entity-labeler__custom-editor--error'}`}>
+                <div className={`entity-labeler__custom-editor ${this.props.readOnly ? 'entity-labeler__custom-editor--read-only' : ''} ${this.borderStyle()}`}>
                     <div className="entity-labeler__editor">
                         <Editor
                             data-testid="extractorresponseeditor-editor-text"

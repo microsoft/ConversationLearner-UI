@@ -89,3 +89,9 @@ export interface MatchedString {
     text: string
     matched: boolean
 }
+
+export enum ExtractorStatus {
+    ERROR = 'ERROR',
+    WARNING = 'WARNING',
+    OK = 'OK'
+}
