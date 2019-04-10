@@ -153,10 +153,12 @@ export function dialogSampleInput(dialog: CLM.TrainDialog | CLM.LogDialog, actio
             (round.extractorStep as CLM.TrainExtractorStep).textVariations[0].text;
 
         phrases.push(userInput)
+        length = length + userInput.length
 
         // Add bot response
-        const scorerStep = round.scorerSteps[0]
-        if (scorerStep) {
+        let scorerStepIndex = 0
+        while (scorerStepIndex < round.scorerSteps.length && length < MAX_SAMPLE_INPUT_LENGTH) {
+            const scorerStep = round.scorerSteps[scorerStepIndex]
             const actionId =
                 (scorerStep as CLM.LogScorerStep).predictedAction ||
                 (scorerStep as CLM.TrainScorerStep).labelAction;
@@ -166,10 +168,11 @@ export function dialogSampleInput(dialog: CLM.TrainDialog | CLM.LogDialog, actio
                 const textAction = new CLM.TextAction(action)
                 const botResponse = textAction.renderValue(getDefaultEntityMap(entities))
                 phrases.push(botResponse)
+                length = length + botResponse.length 
             }
+            scorerStepIndex = scorerStepIndex + 1
         }
 
-        length = length + userInput.length
         roundIndex = roundIndex + 1
     }
     return phrases.join(" ◾️ ").slice(0, MAX_SAMPLE_INPUT_LENGTH)
