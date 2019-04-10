@@ -173,8 +173,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // Get list of entity ids that are tagged more than once
         const multiEntityIds = extractEntities.map(pe => pe.entityId)
             .filter(entityId => {
-                const count = extractEntities.filter(pe => pe.entityId === entityId)
-                return count && count.length > 1
+                return extractEntities.filter(pe => pe.entityId === entityId).length > 1
             })
 
         // If any aren't multi-value they are duplicate labels
