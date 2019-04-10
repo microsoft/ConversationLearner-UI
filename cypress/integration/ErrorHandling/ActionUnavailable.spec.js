@@ -6,6 +6,7 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
+import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as common from '../../support/Common'
 import * as helpers from '../../support/Helpers'
 
@@ -52,7 +53,7 @@ describe('Action Unavailable - ErrorHandling', () => {
     it('Should save the training with errors', () => {
       train.ClickSaveCloseButton()
       modelPage.VerifyIncidentTriangleForTrainDialogs()
-      train.VerifyErrorsFoundInTraining(`Joe`, 'Joe', "Hello $name")
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Joe`, 'Joe', "Hello $name")
     })
   })
 
