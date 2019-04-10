@@ -22,7 +22,7 @@ export const ScoreActionsButtonSelector = '[data-testid="score-actions-button"]'
 
 export function TypeAlternativeInput(trainMessage) { cy.Get('[data-testid="entity-extractor-alternative-input-text"]').type(`${trainMessage}{enter}`) }
 export function ClickSetInitialStateButton() { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
-// *** export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).Click() }
+export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).Click() }
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
@@ -451,8 +451,11 @@ export function SelectEndSessionAction(expectedData, lastResponse) {
 }
 
 // This method is used to score AND AUTO-SELECT the action after branching.
-export function ClickScoreActionsButton(lastResponse) {
-  cy.Get(ScoreActionsButtonSelector).Click().then(() => { currentTrainingSummary.LastResponse = lastResponse })
+export function ClickScoreActionsButtonAfterBranching(lastResponse) {
+  ClickScoreActionsButton()
+  cy.Enqueue(() => {
+    currentTrainingSummary.LastResponse = lastResponse
+  })
 }
 
 export function Save() {

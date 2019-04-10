@@ -6,6 +6,7 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
+import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as common from '../../support/Common'
 import * as actions from '../../support/Actions'
 import * as scorerModal from '../../support/components/ScorerModal'
@@ -45,7 +46,7 @@ describe('Missing Action - ErrorHandling', () => {
     it('Should verify there are now error icons showing in the Train Dialog grid', () => {
       modelPage.NavigateToTrainDialogs()
       modelPage.VerifyIncidentTriangleForTrainDialogs()
-      train.VerifyIncidentTriangleFoundInTrainDialogsGrid(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '')
+      trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '')
     })
   })
 

@@ -6,6 +6,7 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
+import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as common from '../../support/Common'
 
 describe('ErrorHandling', () => {
@@ -25,7 +26,7 @@ describe('ErrorHandling', () => {
     train.ClickSaveCloseButton()
 
     modelPage.VerifyIncidentTriangleForTrainDialogs()
-    train.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Hey`, 'world peace', "Sorry $name, I can't help you get $want")
+    trainDialogsGrid.VerifyIncidentTriangleFoundInTrainDialogsGrid(`Hey`, 'world peace', "Sorry $name, I can't help you get $want")
 
     // - - - Open the same Train Dialog, validate and fix the errors. - - -
 
