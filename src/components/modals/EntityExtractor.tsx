@@ -41,7 +41,7 @@ interface ComponentState {
     savedRoundIndex: number
     textVariationValue: string
     newTextVariations: CLM.TextVariation[]
-    openPickerText: string | null
+    activePickerText: string | null
 }
 
 // TODO: Need to re-define TextVariation / ExtractResponse class defs so we don't need
@@ -61,7 +61,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             textVariationValue: '',
             newTextVariations: [],
             entityTypeFilter: CLM.EntityType.LUIS,
-            openPickerText: null
+            activePickerText: null
         }
     }
 
@@ -150,13 +150,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onOpenPicker(extractResponse: CLM.ExtractResponse): void {
-        this.setState({openPickerText: extractResponse.text})
+        this.setState({activePickerText: extractResponse.text})
     }
 
     @OF.autobind
     onClosePicker(extractResponse: CLM.ExtractResponse, onlyCloseOthers: boolean): void {
-        if (!onlyCloseOthers || extractResponse.text !== this.state.openPickerText) {
-            this.setState({openPickerText: null})
+        if (!onlyCloseOthers || extractResponse.text !== this.state.activePickerText) {
+            this.setState({activePickerText: null})
         }
     }
 
@@ -445,7 +445,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     extractResponse,
                     isValid: this.isValid(primaryExtractResponse, extractResponse),
                     duplicateEntityNames: this.duplicateEntityNames(extractResponse),
-                    isPickerVisible: this.state.openPickerText === extractResponse.text
+                    isPickerVisible: this.state.activePickerText === extractResponse.text
                 }))
         const allExtractResponsesValid = extractResponsesForDisplay.every(e => e.isValid)
 
