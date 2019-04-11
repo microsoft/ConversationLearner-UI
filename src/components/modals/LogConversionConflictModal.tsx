@@ -137,6 +137,9 @@ class LogConversionConflictModal extends React.Component<Props, State> {
 
                                                     onChangeCustomEntities={onChangeCustomEntities}
                                                     onClickNewEntity={() => { }}
+                                                    isPickerVisible={false}
+                                                    onOpenPicker={() => { }}
+                                                    onClosePicker={() => { }}
                                                 />
                                             }
                                             entities={this.props.entities}
@@ -160,6 +163,9 @@ class LogConversionConflictModal extends React.Component<Props, State> {
 
                                                     onChangeCustomEntities={onChangeCustomEntities}
                                                     onClickNewEntity={() => { }}
+                                                    isPickerVisible={false}
+                                                    onOpenPicker={() => { }}
+                                                    onClosePicker={() => { }}
                                                 />
                                             }
                                             entities={this.props.entities}

@@ -52,6 +52,9 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
 
                             onChangeCustomEntities={onChangeCustomEntities}
                             onClickNewEntity={() => { }}
+                            isPickerVisible={false}
+                            onOpenPicker={() => { }}
+                            onClosePicker={() => { }}
                         />
                     }
                     entities={props.entities}
@@ -70,6 +73,9 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
 
                             onChangeCustomEntities={onChangeCustomEntities}
                             onClickNewEntity={() => { }}
+                            isPickerVisible={false}
+                            onOpenPicker={() => { }}
+                            onClosePicker={() => { }}
                         />
                     }
                     entities={props.entities}
