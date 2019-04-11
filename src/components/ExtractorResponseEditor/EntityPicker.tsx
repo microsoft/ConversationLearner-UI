@@ -27,15 +27,22 @@ interface MenuProps {
 
 interface ComponentState {
     resultsRef: React.RefObject<HTMLDivElement>
+    searchRef: HTMLInputElement | undefined
 }
 export default class EntityPicker extends React.Component<MenuProps, ComponentState> {
     state: ComponentState = {
-        resultsRef: React.createRef<HTMLDivElement>()
+        resultsRef: React.createRef<HTMLDivElement>(),
+        searchRef: undefined
     }
 
     componentDidUpdate(prevProps: MenuProps, prevState: ComponentState) {
         if (this.props.highlightIndex !== prevProps.highlightIndex && this.state.resultsRef.current) {
             this.scrollHighlightedElementIntoView(this.state.resultsRef.current)
+        }
+        
+        // Focus search 
+        if (this.state.searchRef) {
+            this.state.searchRef.focus()
         }
     }
 
@@ -52,6 +59,11 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
                 })
             }, 0)
         }
+    }
+
+    @OF.autobind
+    setSearchRef(ref: HTMLInputElement): void {
+        this.setState({searchRef: ref})
     }
 
     render() {
@@ -75,6 +87,8 @@ export default class EntityPicker extends React.Component<MenuProps, ComponentSt
             >
                 <div className="custom-toolbar__search">
                     <input
+                        autoFocus={true}
+                        ref={this.setSearchRef}
                         data-testid="entity-picker-entity-search"
                         id="toolbar-input"
                         type="text"

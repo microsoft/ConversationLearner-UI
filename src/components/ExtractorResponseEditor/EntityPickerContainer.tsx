@@ -146,6 +146,8 @@ export default class EntityPickerContainer extends React.Component<Props, State>
                 event.stopPropagation()
                 event.preventDefault()
                 break;
+            default:
+                return
         }
 
         this.setState(prevState => ({
