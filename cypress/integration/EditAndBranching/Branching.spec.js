@@ -7,7 +7,6 @@ import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as scorerModal from '../../support/components/ScorerModal'
 import * as train from '../../support/Train'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as helpers from '../../support/Helpers'
 
 describe('Basic Branching', () => {
@@ -27,7 +26,7 @@ describe('Basic Branching', () => {
       train.CaptureOriginalChatMessages()
 
       train.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
-      editDialogModal.ClickScoreActionsButton('Hello $name')
+      train.ClickScoreActionsButton('Hello $name')
       scorerModal.VerifyChatMessage('Hello Joseph')
       train.CaptureEditedChatMessages()
       train.Save()
@@ -36,13 +35,13 @@ describe('Basic Branching', () => {
     it('Should edit the original Train Dialog and verify it was not changed.', () => {
       train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
       train.VerifyOriginalChatMessages()
-      editDialogModal.ClickSaveCloseButton()
+      train.ClickSaveCloseButton()
     })
 
     it('Should edit the Train Dialog created by branching and verify it was persisted correctly.', () => {
       train.EditTraining('My name is David.', 'My name is Joseph.', 'Hello $name')
       train.VerifyEditedChatMessages()
-      editDialogModal.ClickSaveCloseButton()
+      train.ClickSaveCloseButton()
     })
   })
 })

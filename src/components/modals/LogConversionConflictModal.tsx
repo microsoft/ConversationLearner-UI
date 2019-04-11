@@ -131,12 +131,15 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                                             render={(editorProps, onChangeCustomEntities) =>
                                                 <ExtractorResponseEditor.Editor
                                                     readOnly={true}
-                                                    isValid={true}
+                                                    status={ExtractorResponseEditor.Models.ExtractorStatus.OK}
                                                     entities={this.props.entities}
                                                     {...editorProps}
 
                                                     onChangeCustomEntities={onChangeCustomEntities}
                                                     onClickNewEntity={() => { }}
+                                                    isPickerVisible={false}
+                                                    onOpenPicker={() => { }}
+                                                    onClosePicker={() => { }}
                                                 />
                                             }
                                             entities={this.props.entities}
@@ -154,12 +157,15 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                                             render={(editorProps, onChangeCustomEntities) =>
                                                 <ExtractorResponseEditor.Editor
                                                     readOnly={true}
-                                                    isValid={true}
+                                                    status={ExtractorResponseEditor.Models.ExtractorStatus.OK}
                                                     entities={this.props.entities}
                                                     {...editorProps}
 
                                                     onChangeCustomEntities={onChangeCustomEntities}
                                                     onClickNewEntity={() => { }}
+                                                    isPickerVisible={false}
+                                                    onOpenPicker={() => { }}
+                                                    onClosePicker={() => { }}
                                                 />
                                             }
                                             entities={this.props.entities}

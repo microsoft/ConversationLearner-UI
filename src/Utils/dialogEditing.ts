@@ -377,8 +377,9 @@ export interface EditHandlerArgs {
 export async function onEditTeach(
     historyIndex: number,
     args: EditHandlerArgs | undefined,
+    tags: string[],
+    description: string,
     editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any,
-
     teachSession: CLM.Teach,
     app: CLM.AppBase,
     user: User,
@@ -396,6 +397,8 @@ export async function onEditTeach(
 ) {
     // Get train dialog associated with the teach session
     const trainDialog = await fetchTrainDialogAsync(app.appId, teachSession.trainDialogId, false)
+    trainDialog.tags = tags
+    trainDialog.description = description
     trainDialog.definitions = {
         entities: entities,
         actions: actions,

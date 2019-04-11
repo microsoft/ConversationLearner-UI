@@ -5,7 +5,6 @@ import * as models from '../support/Models'
 import * as model from '../support/components/ModelPage'
 import * as action from '../support/Actions'
 import * as actions from '../support/components/ActionsGrid'
-import * as editDialogModal from '../support/components/EditDialogModal'
 import * as trainDialog from '../support/Train'
 import * as logDialogs from '../support/components/LogDialogsGrid'
 import * as logDialog from '../support/components/LogDialogModal'
@@ -86,12 +85,12 @@ describe('Entity Conflicts', () => {
                 model.NavigateToTrainDialogs()
                 trainDialog.CreateNewTrainDialog()
                 trainDialog.TypeYourMessage(testData.userInput1)
-                editDialogModal.RemoveEntityLabel(labeledWord1, testData.entityName)
-                editDialogModal.LabelTextAsEntity(labeledWord2, testData.entityName)
+                trainDialog.RemoveEntityLabel(labeledWord1, testData.entityName)
+                trainDialog.LabelTextAsEntity(labeledWord2, testData.entityName)
             })
 
             it('should show entity conflict modal when score actions is clicked', () => {
-                editDialogModal.ClickScoreActionsButton()
+                trainDialog.ClickScoreActionsButton()
 
                 cy.get(testSelectors.dialogModal.entityConflictModal.modal)
             })
@@ -100,19 +99,19 @@ describe('Entity Conflicts', () => {
                 cy.get(testSelectors.dialogModal.entityConflictModal.cancelButton)
                     .click()
 
-                editDialogModal.VerifyEntityLabel(labeledWord2, testData.entityName)
+                trainDialog.VerifyEntityLabel(labeledWord2, testData.entityName)
             })
 
             it('should change the labels if Accept is clicked', () => {
-                editDialogModal.ClickScoreActionsButton()
+                trainDialog.ClickScoreActionsButton()
                 cy.WaitForStableDOM()
                 cy.get(testSelectors.dialogModal.entityConflictModal.acceptButton)
                     .click()
 
                 // TODO: Selects score actions immediately, need to verify memory
-                // editDialogModal.VerifyEntityLabel(labeledWord1, testData.entityName)
+                // trainDialog.VerifyEntityLabel(labeledWord1, testData.entityName)
                 trainDialog.SelectAction(testData.actionResponse)
-                editDialogModal.ClickAbandonDeleteButton()
+                trainDialog.ClickAbandonDeleteButton()
 
                 cy.get(testSelectors.confirmCancelModal.acceptButton)
                     .click()
@@ -152,17 +151,17 @@ describe('Entity Conflicts', () => {
                 .contains(testData.userInput1)
                 .click()
 
-            editDialogModal.SelectChatTurnExactMatch(testData.userInput1)
-            editDialogModal.RemoveEntityLabel(labeledWord1, testData.entityName)
-            editDialogModal.LabelTextAsEntity(labeledWord2, testData.entityName)
-            editDialogModal.ClickSubmitChangesButton()
+            trainDialog.SelectChatTurnExactMatch(testData.userInput1)
+            trainDialog.RemoveEntityLabel(labeledWord1, testData.entityName)
+            trainDialog.LabelTextAsEntity(labeledWord2, testData.entityName)
+            trainDialog.ClickSubmitChangesButton()
 
-            editDialogModal.SelectChatTurnExactMatch(testData.userInput2)
-            editDialogModal.RemoveEntityLabel(labeledWord1, testData.entityName)
-            editDialogModal.LabelTextAsEntity(labeledWord2, testData.entityName)
-            editDialogModal.ClickSubmitChangesButton()
+            trainDialog.SelectChatTurnExactMatch(testData.userInput2)
+            trainDialog.RemoveEntityLabel(labeledWord1, testData.entityName)
+            trainDialog.LabelTextAsEntity(labeledWord2, testData.entityName)
+            trainDialog.ClickSubmitChangesButton()
 
-            editDialogModal.ClickSaveCloseButton()
+            trainDialog.ClickSaveCloseButton()
         })
 
         describe('direct conversion without edit', () => {
@@ -249,7 +248,7 @@ describe('Entity Conflicts', () => {
                         .click()
 
                     // Due to bug this has to be second input
-                    editDialogModal.InsertUserInputAfter(testData.userInput3, 'New User Input')
+                    trainDialog.InsertUserInputAfter(testData.userInput3, 'New User Input')
 
                     cy.get(testSelectors.logConversionConflictsModal.modal, { timeout: 10000 })
                 })
@@ -262,7 +261,7 @@ describe('Entity Conflicts', () => {
                         .click()
 
                     // Get second bot action since there seems to be bug with inserting after first
-                    editDialogModal.InsertBotResponseAfter(testData.actionResponse, null, 1)
+                    trainDialog.InsertBotResponseAfter(testData.actionResponse, null, 1)
 
                     cy.get(testSelectors.logConversionConflictsModal.modal, { timeout: 10000 })
                 })
@@ -298,7 +297,7 @@ describe('Entity Conflicts', () => {
                     .contains(testData.userInput1)
                     .click()
 
-                editDialogModal.TypeYourMessage('Continued Log Dialog')
+                trainDialog.TypeYourMessage('Continued Log Dialog')
 
                 cy.get(testSelectors.logConversionConflictsModal.modal)
 
@@ -307,9 +306,9 @@ describe('Entity Conflicts', () => {
                 cy.get(testSelectors.logConversionConflictsModal.acceptButton)
                     .click()
 
-                editDialogModal.ClickScoreActionsButton()
+                trainDialog.ClickScoreActionsButton()
                 trainDialog.SelectAction(testData.actionResponse)
-                editDialogModal.ClickSaveCloseButton()
+                trainDialog.ClickSaveCloseButton()
             })
         })
     })

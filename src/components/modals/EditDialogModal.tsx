@@ -87,12 +87,14 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 selectedActivity = nextProps.history[nextProps.initialSelectedActivityIndex]
             }
 
-            // Force webchat to re-mount as history prop can't be updated
             this.setState({
                 currentTrainDialog: nextProps.trainDialog,
+                // Force webchat to re-mount as history prop can't be updated
                 webchatKey: this.state.webchatKey + 1,
                 selectedActivity,
-                hasEndSession: this.hasSessionEnded(nextProps.trainDialog)
+                hasEndSession: this.hasSessionEnded(nextProps.trainDialog),
+                tags: nextProps.trainDialog ? [...nextProps.trainDialog.tags] : [],
+                description: nextProps.trainDialog ? nextProps.trainDialog.description : ""
             })
         }
     }
@@ -791,6 +793,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     <OF.PrimaryButton
                         data-testid="score-actions-button"
                         className="cl-rightjustify"
+                        disabled={this.props.editState !== EditState.CAN_EDIT}
                         onClick={() => this.onClickAddScore(this.props.history[this.props.history.length - 1], SelectionType.NONE)}
                         ariaDescription={'Score Actions'}
                         text={'Score Actions'} // TODO internationalize
@@ -939,7 +942,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 onScrollChange={position => this.onScrollChange(position)}
-                                hideInput={disableUserInput || hasBlockingError || this.state.hasEndSession}
+                                hideInput={disableUserInput || hasBlockingError || this.state.hasEndSession || this.props.editState !== EditState.CAN_EDIT}
                                 focusInput={false}
                                 disableDL={true} // Prevents ProcessActivity from being called
                                 renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}

@@ -1,6 +1,5 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as train from '../../support/Train'
 import * as helpers from '../../support/Helpers'
 
@@ -21,8 +20,8 @@ describe('Scenario and Tags - Train Dialog', () => {
         //cy.WaitForTrainingStatusCompleted()
         train.CreateNewTrainDialog()
         
-        editDialogModal.VerifyDescription('')
-        editDialogModal.VerifyTags([])
+        train.VerifyDescription('')
+        train.VerifyTags([])
       })
 
       it('should save the tags and description on the new dialog', () => {
@@ -31,12 +30,12 @@ describe('Scenario and Tags - Train Dialog', () => {
         // Save
         // Verify tags and description in list
         
-        editDialogModal.TypeDescription('Test Scenario')
-        editDialogModal.AddTags(['TagX'])
+        train.TypeDescription('Test Scenario')
+        train.AddTags(['TagX'])
 
         // Must have done some training in order to save the dialog.
         train.TypeYourMessage('Hello')
-        editDialogModal.ClickScoreActionsButton()
+        train.ClickScoreActionsButton()
         train.SelectAction("What's your name?")
 
         train.Save()
@@ -50,8 +49,8 @@ describe('Scenario and Tags - Train Dialog', () => {
         // Open it
         // Verify tags and description are the same as shown in the list
         train.EditTrainingNEW('Test Scenario', 'TagX')
-        editDialogModal.VerifyDescription('Test Scenario')
-        editDialogModal.VerifyTags(['TagX'])
+        train.VerifyDescription('Test Scenario')
+        train.VerifyTags(['TagX'])
       })
 
       it('should discard the changes made to tags and description when abandoned', () => {
@@ -62,13 +61,13 @@ describe('Scenario and Tags - Train Dialog', () => {
         // Abandon changes
         // Re-open dialog
         // Verify tags and description are unmodified
-        editDialogModal.TypeDescription('Changed Test Scenario')
-        editDialogModal.AddTags(['TagY'])
+        train.TypeDescription('Changed Test Scenario')
+        train.AddTags(['TagY'])
         train.AbandonDialog()
 
         train.EditTrainingNEW('Test Scenario', 'TagX')
-        editDialogModal.VerifyDescription('Test Scenario')
-        editDialogModal.VerifyTags(['TagX'])
+        train.VerifyDescription('Test Scenario')
+        train.VerifyTags(['TagX'])
       })
 
       it('should save the edited tags and description', () => {
@@ -78,13 +77,13 @@ describe('Scenario and Tags - Train Dialog', () => {
         // Note tags and description
         // reload
         // Verify edited tags and description are still on dialog
-        editDialogModal.TypeDescription('Edited Test Scenario')
-        editDialogModal.AddTags(['TagY'])
+        train.TypeDescription('Edited Test Scenario')
+        train.AddTags(['TagY'])
         train.Save()
 
         train.EditTrainingNEW('Edited Test Scenario', 'TagXTagY')
-        editDialogModal.VerifyDescription('Edited Test Scenario')
-        editDialogModal.VerifyTags(['TagX', 'TagY'])
+        train.VerifyDescription('Edited Test Scenario')
+        train.VerifyTags(['TagX', 'TagY'])
       })
 
       it('(advanced edit) should save the edited tags, description, and rounds', () => {

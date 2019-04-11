@@ -8,7 +8,6 @@ import * as modelPage from '../../support/components/ModelPage'
 import * as memoryTableComponent from '../../support/components/MemoryTableComponent'
 import * as scorerModal from '../../support/components/ScorerModal'
 import * as train from '../../support/Train'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as common from '../../support/Common'
 
 describe('Train', () => {
@@ -20,14 +19,14 @@ describe('Train', () => {
     train.CreateNewTrainDialog()
 
     train.TypeYourMessage('Hello')
-    editDialogModal.ClickScoreActionsButton()
+    train.ClickScoreActionsButton()
     scorerModal.VerifyContainsEnabledAction(common.whatsYourName)
     scorerModal.VerifyContainsDisabledAction('Hello $name')
     train.SelectAction(common.whatsYourName)
 
     train.TypeYourMessage('David')
-    editDialogModal.VerifyEntityLabel('David', 'name')
-    editDialogModal.ClickScoreActionsButton()
+    train.VerifyEntityLabel('David', 'name')
+    train.ClickScoreActionsButton()
     memoryTableComponent.VerifyEntitiesInMemory('name', ['David'])
     scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
     scorerModal.VerifyContainsEnabledAction('Hello David')
