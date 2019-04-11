@@ -41,7 +41,7 @@ describe('End Session', () => {
 
     it('End Session Score Action should be disabled for last Bot turn only because it is already selected.', () => {
       train.SelectChatTurnExactMatch('EndSession: Goodbye')
-      scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
+      scorerModal.VerifyContainsSelectedEndSessionAction('Goodbye')
     })
 
     it('End Session chat turn should only contain a delete turn button.', () => {
