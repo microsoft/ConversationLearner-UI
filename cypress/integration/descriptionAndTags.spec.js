@@ -4,7 +4,6 @@ import * as models from '../support/Models'
 import * as model from '../support/components/ModelPage'
 import * as actions from '../support/Actions'
 import * as actionsList from '../support/components/ActionsGrid'
-import * as editDialogModal from '../support/components/EditDialogModal'
 import * as trainDialog from '../support/Train'
 import * as logDialogModal from '../support/components/LogDialogModal'
 
@@ -101,12 +100,12 @@ describe('Description and Tags', () => {
                     .type(`${testData.tag01}{enter}`)
 
                 trainDialog.TypeYourMessage(testData.userInput)
-                editDialogModal.ClickScoreActionsButton()
+                trainDialog.ClickScoreActionsButton()
 
                 // Add temporary rounds to be deleted later
                 trainDialog.SelectAction(testData.actionResponse)
                 trainDialog.TypeYourMessage('Should be deleted')
-                editDialogModal.ClickScoreActionsButton()
+                trainDialog.ClickScoreActionsButton()
                 trainDialog.SelectAction(testData.actionResponse)
                 trainDialog.Save()
 
@@ -248,7 +247,7 @@ describe('Description and Tags', () => {
                 cy.get(testSelectors.dialogModal.closeSave)
                     // .click()
                 // TODO: Find out what is blocking the click?
-                editDialogModal.ClickSaveCloseButton()
+                trainDialog.ClickSaveCloseButton()
 
                 cy.wait(['@putTrainDialog'])
                 cy.wait(5000)
@@ -286,9 +285,9 @@ describe('Description and Tags', () => {
 
                 // Modify dialog to add user input
                 trainDialog.TypeYourMessage(testData.continuedInput)
-                editDialogModal.ClickScoreActionsButton()
+                trainDialog.ClickScoreActionsButton()
                 trainDialog.SelectAction(testData.actionResponse)
-                editDialogModal.ClickSaveCloseButton()
+                trainDialog.ClickSaveCloseButton()
 
                 // TODO: Should cy.reload() to ensure data was persisted
                 // TODO: Find better alternative than waiting

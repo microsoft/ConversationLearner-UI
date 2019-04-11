@@ -151,8 +151,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
             hasTerminalAction = false
             initialEntities = null
             this.setState({
-                tags: [],
-                description: ''
+                tags: newProps.sourceTrainDialog ? newProps.sourceTrainDialog.tags : [], 
+                description: newProps.sourceTrainDialog ? newProps.sourceTrainDialog.description : ''
             })
         }
 
@@ -523,7 +523,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     onClickUndoInput(): void {
         if (this.state.nextActivityIndex > 1) {
             // Replay dialog to get rid of input
-            this.props.onEditTeach(0, null, this.props.onReplayDialog)
+            this.props.onEditTeach(0, null, this.state.tags, this.state.description, this.props.onReplayDialog)
         }
         else {
             // Reset webchat to clear input
@@ -542,7 +542,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
         else {
             // Otherwise delete the most recent turn with the error
-            this.props.onEditTeach(this.state.nextActivityIndex - 1, null, this.props.onDeleteTurn)
+            this.props.onEditTeach(this.state.nextActivityIndex - 1, null, this.state.tags, this.state.description, this.props.onDeleteTurn)
         }
     }
 
@@ -552,7 +552,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             isUserInputModalOpen: false
         })
         if (this.state.selectedActivityIndex != null) {
-            this.props.onEditTeach(this.state.selectedActivityIndex, { userInput, selectionType: this.state.addUserInputSelectionType }, this.props.onInsertInput)
+            this.props.onEditTeach(this.state.selectedActivityIndex, { userInput, selectionType: this.state.addUserInputSelectionType }, this.state.tags, this.state.description, this.props.onInsertInput)
         }
     }
 
@@ -561,28 +561,28 @@ class TeachModal extends React.Component<Props, ComponentState> {
         if (this.state.selectedActivityIndex != null) {
             const isLastActivity = this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1)
             const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
-            this.props.onEditTeach(this.state.selectedActivityIndex, { isLastActivity, selectionType }, this.props.onInsertAction)
+            this.props.onEditTeach(this.state.selectedActivityIndex, { isLastActivity, selectionType }, this.state.tags, this.state.description, this.props.onInsertAction)
         }
     }
 
     @OF.autobind
     onDeleteTurn() {
         if (this.state.selectedActivityIndex != null) {
-            this.props.onEditTeach(this.state.selectedActivityIndex, null, this.props.onDeleteTurn)
+            this.props.onEditTeach(this.state.selectedActivityIndex, null, this.state.tags, this.state.description, this.props.onDeleteTurn)
         }
     }
 
     @OF.autobind
     onEditExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
         if (this.state.selectedActivityIndex != null) {
-            this.props.onEditTeach(this.state.selectedActivityIndex, { extractResponse, textVariations }, this.props.onChangeExtraction)
+            this.props.onEditTeach(this.state.selectedActivityIndex, { extractResponse, textVariations }, this.state.tags, this.state.description, this.props.onChangeExtraction)
         }
     }
 
     @OF.autobind
     onEditScore(trainScorerStep: CLM.TrainScorerStep) {
         if (this.state.selectedActivityIndex != null) {
-            this.props.onEditTeach(this.state.selectedActivityIndex, { trainScorerStep }, this.props.onChangeAction)
+            this.props.onEditTeach(this.state.selectedActivityIndex, { trainScorerStep }, this.state.tags, this.state.description, this.props.onChangeAction)
         }
     }
 
@@ -966,7 +966,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean
     onClose: (save: boolean, tags?: string[], description?: string) => void
-    onEditTeach: (historyIndex: number, args: EditHandlerArgs | null, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any) => void
+    onEditTeach: (historyIndex: number, args: EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any) => void
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any

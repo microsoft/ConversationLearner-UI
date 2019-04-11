@@ -433,7 +433,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 trainDialog,
                 selectedActivity,
                 trainScorerStep,
-
                 this.props.app.appId,
                 this.props.entities,
                 this.props.actions,
@@ -709,7 +708,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const editType = (this.state.editType !== EditDialogType.NEW && this.state.editType !== EditDialogType.BRANCH) ?
             EditDialogType.TRAIN_EDITED : this.state.editType
 
-        // TODO: Why does LogDialogs add tags but TrainDialogs do not?
+        // Update currentTrainDialog with tags and description
+        const currentTrainDialog = this.state.currentTrainDialog ? {
+            ...this.state.currentTrainDialog,
+            tags: newTrainDialog.tags,
+            description: newTrainDialog.description
+        } : null
+        
 
         // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
         this.setState({
@@ -719,7 +724,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             selectedActivityIndex: null,
             isTeachDialogModalOpen: true,
             editType,
-            currentTrainDialog: newTrainDialog
+            currentTrainDialog
         })
     }
 
@@ -1106,7 +1111,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         editingPackageId={this.props.editingPackageId}
                         originalTrainDialogId={this.state.originalTrainDialogId}
                         onClose={this.onCloseTeachSession}
-                        onEditTeach={(historyIndex, editHandlerArgs, editHandler) => this.onEditTeach(historyIndex, editHandlerArgs ? editHandlerArgs : undefined, editHandler)}
+                        onEditTeach={(historyIndex, editHandlerArgs, tags, description, editHandler) => this.onEditTeach(historyIndex, editHandlerArgs ? editHandlerArgs : undefined, tags, description, editHandler)}
                         onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.isLastActivity!, editHandlerArgs.selectionType!)}
                         onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput!, editHandlerArgs.selectionType!)}
                         onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
@@ -1183,6 +1188,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     private async onEditTeach(
         historyIndex: number,
         args: DialogEditing.EditHandlerArgs | undefined,
+        tags: string[],
+        description: string,
         editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: DialogEditing.EditHandlerArgs) => any
     ) {
         try {
@@ -1193,6 +1200,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             DialogEditing.onEditTeach(
                 historyIndex,
                 args,
+                tags,
+                description,
                 editHandler,
                 this.props.teachSession.teach,
                 this.props.app,

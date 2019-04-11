@@ -312,7 +312,7 @@ export function getTip(tipType: string) {
         case TipType.ENTITY_ACTION_REQUIRED:
             return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_ACTION_REQUIRED} />)
         case TipType.ENTITY_EXTRACTOR_WARNING:
-            return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} />)
+            return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_EXTRACTOR_MATCH_WARNING} />)
         case TipType.ENTITY_VALUE:
             return (<FormattedMessageId id={FM.TOOLTIP_ENTITY_VALUE} />);
         case TipType.ENTITY_MULTIVALUE:

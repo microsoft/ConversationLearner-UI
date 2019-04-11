@@ -6,7 +6,6 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 
 // This is a test case to test one of our test methods, cy.DoesNotContain.
 // The problem with that method is that if it has a bug and does not find
@@ -20,9 +19,9 @@ describe('Verify the "DoesNotContain" test function - Tools', () => {
     train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
     train.CaptureOriginalChatMessages()
 
-    editDialogModal.SelectChatTurn('My name is Susan.')
-    editDialogModal.VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector()
+    train.SelectChatTurn('My name is Susan.')
+    train.VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector()
 
-    editDialogModal.ClickSaveCloseButton()
+    train.ClickSaveCloseButton()
   })
 })

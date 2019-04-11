@@ -7,7 +7,6 @@ import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as entities from '../../support/Entities'
 import * as actions from '../../support/Actions'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as train from '../../support/Train'
 import * as memoryTableComponent from '../../support/components/MemoryTableComponent'
 import * as common from '../../support/Common'
@@ -44,12 +43,12 @@ describe('Tag And Frog - Create Model', () => {
     // of: Bug 1901-Automatic Entity Labeling Is NOT Consistent
     // ------------------------------------------------------------------------
     it('Create a SPECIAL Training Dialog to deal with bug 1901', () => {
-      editDialogModal.TypeDescription('Tag Only')
-      editDialogModal.AddTags(['Tag'])
+      train.TypeDescription('Tag Only')
+      train.AddTags(['Tag'])
     
       train.TypeYourMessage('This is Tag.')
-      editDialogModal.LabelTextAsEntity('Tag', 'multi')
-      editDialogModal.ClickScoreActionsButton()
+      train.LabelTextAsEntity('Tag', 'multi')
+      train.ClickScoreActionsButton()
       train.SelectAction('Hello')
 
       train.Save()
@@ -61,12 +60,12 @@ describe('Tag And Frog - Create Model', () => {
     // ------------------------------------------------------------------------
 
     it('Label single word as an entity.', () => {
-      editDialogModal.TypeDescription('Both Tag & Frog')
-      editDialogModal.AddTags(['Tag', 'Frog'])
+      train.TypeDescription('Both Tag & Frog')
+      train.AddTags(['Tag', 'Frog'])
 
       train.TypeYourMessage('This is Tag.')
-      editDialogModal.LabelTextAsEntity('Tag', 'multi', false)
-      editDialogModal.ClickScoreActionsButton()
+      train.LabelTextAsEntity('Tag', 'multi', false)
+      train.ClickScoreActionsButton()
       // TODO: Verify that the entity was labeled and now in memory.
       train.SelectAction('Hello')
       cy.WaitForTrainingStatusCompleted()
@@ -75,9 +74,9 @@ describe('Tag And Frog - Create Model', () => {
     it('Label multiple words as the same entity.', () => {
       train.TypeYourMessage('This is Frog and Tag.')
       memoryTableComponent.VerifyEntitiesInMemory('multi', ['Tag'])
-      editDialogModal.VerifyEntityLabel('Tag', 'multi')
-      editDialogModal.LabelTextAsEntity('Frog', 'multi', false)
-      editDialogModal.ClickScoreActionsButton()
+      train.VerifyEntityLabel('Tag', 'multi')
+      train.LabelTextAsEntity('Frog', 'multi', false)
+      train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntitiesInMemory('multi', ['Tag', 'Frog'])
       train.SelectAction('Hi')
       cy.WaitForTrainingStatusCompleted()
@@ -86,9 +85,9 @@ describe('Tag And Frog - Create Model', () => {
     it('Reverse the labeled words and once again label them as the same entity.', () => {
       train.TypeYourMessage('This is Tag and Frog.')
       memoryTableComponent.VerifyEntitiesInMemory('multi', ['Tag', 'Frog'])
-      editDialogModal.VerifyEntityLabel('Tag', 'multi')
-      editDialogModal.VerifyEntityLabel('Frog', 'multi', 1)
-      editDialogModal.ClickScoreActionsButton()
+      train.VerifyEntityLabel('Tag', 'multi')
+      train.VerifyEntityLabel('Frog', 'multi', 1)
+      train.ClickScoreActionsButton()
       train.SelectAction('Hi')
 
       train.Save()

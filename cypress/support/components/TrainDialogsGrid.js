@@ -14,9 +14,9 @@ export function ActionDropDownFilter() { cy.Get('[data-testid="dropdown-filter-b
 export function ClickTraining(row) { cy.Get('[data-testid="train-dialogs-description"]').then(elements => { cy.wrap(elements[row]).Click() }) }
 
 export function WaitForGridReadyThen(expectedRowCount, functionToRunAfterGridIsReady) {
-    cy.Get('[data-testid="train-dialogs-turns"]', { timeout: 10000 })
-        .should(elements => { expect(elements).to.have.length(expectedRowCount) })
-        .then(() => { functionToRunAfterGridIsReady() })
+  cy.Get('[data-testid="train-dialogs-turns"]', { timeout: 10000 })
+    .should(elements => { expect(elements).to.have.length(expectedRowCount) })
+    .then(() => { functionToRunAfterGridIsReady() })
 }
 
 // These functions circumvent the Cypress retry logic by using jQuery
@@ -33,3 +33,23 @@ export function GetDescription() { return helpers.StringArrayFromElementText('[d
 export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).find('[data-testid="train-dialogs-validity-indicator"]') }
 
 export function VerifyDescriptionForRow(row, description) { cy.Get(`div[data-item-index=${row}][data-automationid="DetailsRow"]`).find('span[data-testid="train-dialogs-description"]').contains(description) }
+
+export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastInput, lastResponse) {
+  const funcName = `VerifyIncidentTriangleFoundInTrainDialogsGrid(${firstInput}, ${lastInput}, ${lastResponse})`
+  cy.Enqueue(() => {
+    const firstInputs = GetFirstInputs()
+    const lastInputs = GetLastInputs()
+    const lastResponses = GetLastResponses()
+
+    helpers.ConLog(funcName, `Before Loop of ${firstInputs.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
+
+    for (let i = 0; i < firstInputs.length; i++) {
+      if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse) {
+        helpers.ConLog(funcName, `Found it at Index: ${i} - ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
+        VerifyErrorIconForTrainGridRow(i)
+        return
+      }
+    }
+    throw `Can't Find Training to Verify it contains errors. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`
+  })
+}
