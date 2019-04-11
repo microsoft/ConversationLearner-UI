@@ -26,6 +26,7 @@ interface ExtractResponseForDisplay {
     extractResponse: CLM.ExtractResponse
     isValid: boolean
     duplicateEntityNames: string[]
+    isPickerVisible: boolean
 }
 
 interface ComponentState {
@@ -40,6 +41,7 @@ interface ComponentState {
     savedRoundIndex: number
     textVariationValue: string
     newTextVariations: CLM.TextVariation[]
+    activePickerText: string | null
 }
 
 // TODO: Need to re-define TextVariation / ExtractResponse class defs so we don't need
@@ -58,7 +60,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             savedRoundIndex: 0,
             textVariationValue: '',
             newTextVariations: [],
-            entityTypeFilter: CLM.EntityType.LUIS
+            entityTypeFilter: CLM.EntityType.LUIS,
+            activePickerText: null
         }
     }
 
@@ -144,6 +147,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             entityTypeFilter: entityTypeFilter
         })
     }
+
+    @OF.autobind
+    onOpenPicker(extractResponse: CLM.ExtractResponse): void {
+        this.setState({activePickerText: extractResponse.text})
+    }
+
+    @OF.autobind
+    onClosePicker(extractResponse: CLM.ExtractResponse, onlyCloseOthers: boolean): void {
+        if (!onlyCloseOthers || extractResponse.text !== this.state.activePickerText) {
+            this.setState({activePickerText: null})
+        }
+    }
+
     handleCloseWarning() {
         this.setState({
             warningOpen: false
@@ -428,7 +444,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                 ({
                     extractResponse,
                     isValid: this.isValid(primaryExtractResponse, extractResponse),
-                    duplicateEntityNames: this.duplicateEntityNames(extractResponse)
+                    duplicateEntityNames: this.duplicateEntityNames(extractResponse),
+                    isPickerVisible: this.state.activePickerText === extractResponse.text
                 }))
         const allExtractResponsesValid = extractResponsesForDisplay.every(e => e.isValid)
 
@@ -442,12 +459,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_HELP)}
                     <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_HELP} />
                 </OF.Label>
-                {extractResponsesForDisplay.map(({ isValid, duplicateEntityNames, extractResponse }, key) => {
+                {extractResponsesForDisplay.map(({ isValid, duplicateEntityNames, extractResponse, isPickerVisible }, key) => {
                     return <div key={key} className={`editor-container ${OF.FontClassNames.mediumPlus}`}>
                         <ExtractorResponseEditor.EditorWrapper
                             render={(editorProps, onChangeCustomEntities) =>
                                 <ExtractorResponseEditor.Editor
                                     readOnly={!canEdit}
+                                    isPickerVisible={isPickerVisible}
                                     status={
                                         !isValid 
                                         ? ExtractorResponseEditor.Models.ExtractorStatus.ERROR
@@ -460,6 +478,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
                                     onChangeCustomEntities={onChangeCustomEntities}
                                     onClickNewEntity={this.onNewEntity}
+                                    onOpenPicker={() => this.onOpenPicker(extractResponse)}
+                                    onClosePicker={(onlyCloseOthers: boolean = false) => this.onClosePicker(extractResponse, onlyCloseOthers)}
                                 />
                             }
                             entities={this.props.entities}
