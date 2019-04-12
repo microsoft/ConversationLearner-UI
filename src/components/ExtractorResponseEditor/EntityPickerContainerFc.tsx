@@ -101,6 +101,7 @@ export const usePicker = (
         setHighlighIndex(modifyFunction(highlightIndex, matchedOptions.length - 1))
     }
 
+    const resetHighlighIndex = () => setHighlighIndex(0)
     const onClickOption = (option: IOption) => onSelectOption(option)
     const onSelectHighlightedOption = () => {
         const option = matchedOptions[highlightIndex]
@@ -116,5 +117,6 @@ export const usePicker = (
         matchedOptions,
         onClickOption,
         highlightIndex,
+        resetHighlighIndex,
     }
 }

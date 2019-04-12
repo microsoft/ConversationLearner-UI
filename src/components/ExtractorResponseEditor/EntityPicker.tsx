@@ -44,7 +44,7 @@ const scrollHighlightedElementIntoView = (resultsElement: HTMLDivElement) => {
 
 export const EntityPicker = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
     const resultsRef = React.useRef<HTMLDivElement>(null)
-    const { searchText, setSearchText, onKeyDown, matchedOptions, onClickOption, highlightIndex } = usePicker(
+    const { searchText, setSearchText, onKeyDown, matchedOptions, onClickOption, highlightIndex, resetHighlighIndex } = usePicker(
         props.options,
         props.maxDisplayedOptions,
         props.onSelectOption,
@@ -59,6 +59,7 @@ export const EntityPicker = React.forwardRef<HTMLDivElement, Props>((props, ref)
     React.useEffect(() => {
         if (props.isVisible === false) {
             setSearchText('')
+            resetHighlighIndex()
         }
     }, [props.isVisible])
 
