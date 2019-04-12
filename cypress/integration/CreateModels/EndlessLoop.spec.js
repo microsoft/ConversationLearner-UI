@@ -9,7 +9,7 @@ import * as actions from '../../support/Actions'
 import * as train from '../../support/Train'
 import * as common from '../../support/Common'
 
-describe('CreateModels', () => {
+describe('Endless Loop - CreateModels', () => {
   it('Endless Loop', () => {
     // models.ImportModel('z-endlessLoop', 'z-endlessLoop.cl')
     models.CreateNewModel('z-endlessLoop')
