@@ -72,7 +72,7 @@ const externalChangeOperations = ['insert_node', 'remove_node']
  */
 class ExtractorResponseEditor extends React.Component<Props, State> {
     menuRef = React.createRef<HTMLDivElement>()
-    editor = React.createRef<any>(); 
+    editor = React.createRef<any>();
 
     constructor(props: Props) {
         super(props)
@@ -417,15 +417,24 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     // For end 2 end unit testing.
     @OF.autobind
     onTestSelectWord(val: any) {
-
-        const words = val.detail.split(" ")
+        const phrase: string = val.detail
+        const words = phrase.split(" ")
+        const firstWord = words[0]
+        const lastWord = words[words.length - 1]
 
         // Get start div
-        const arr = Array.from(document.querySelectorAll(".cl-token-node"))
+        const tokens = Array.from(document.querySelectorAll(".cl-token-node"))
+        const firstWordToken = tokens.filter(element => element.children[0].textContent === firstWord)[0]
+        const lastWordToken = tokens.filter(element => element.children[0].textContent === lastWord)[0]
 
-        const firstDiv = arr.filter(element => element.children[0].textContent === words[0])[0].children[0].children[0]
-        const lastDiv = arr.filter(element => element.children[0].textContent === words[words.length - 1])[0].children[0].children[0]
+        if (!firstWordToken || !lastWordToken) {
+            const extractionTextElement = document.querySelector('[data-slate-editor="true"]')
+            const input = extractionTextElement ? extractionTextElement.textContent : ''
+            throw new Error(`You attempted to select the phrase: '${phrase}', but it was not found in the input: '${input}'`)
+        }
 
+        const firstDiv = firstWordToken.children[0].children[0]
+        const lastDiv = lastWordToken.children[0].children[0]
         const slateEditor = firstDiv!.parentElement!.parentElement!.parentElement!.parentElement
 
         // Events are special, can't use spread or Object.keys
@@ -450,11 +459,11 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             range.setStartBefore(firstDiv)
             range.setEndAfter(lastDiv)
 
-        if (selection) {
-            selection.removeAllRanges();
-            selection.addRange(range)
-        }
-            
+            if (selection) {
+                selection.removeAllRanges();
+                selection.addRange(range)
+            }
+
             // Fire select event
             this.editor.current.onEvent("onSelect", selectEvent)
         }
@@ -462,9 +471,9 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     borderStyle(): string {
         switch (this.props.status) {
-            case ExtractorStatus.ERROR: 
+            case ExtractorStatus.ERROR:
                 return 'entity-labeler__custom-editor--error'
-            case ExtractorStatus.WARNING: 
+            case ExtractorStatus.WARNING:
                 return 'entity-labeler__custom-editor--warning'
             default:
                 return ''

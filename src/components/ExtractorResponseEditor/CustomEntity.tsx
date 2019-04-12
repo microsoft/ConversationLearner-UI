@@ -33,6 +33,7 @@ export const CustomEntity = (props: Props) => {
                                 iconProps={{ iconName: 'Delete' }}
                                 onClick={props.onClickDelete}
                                 title="Unselect Entity"
+                                data-testid="entity-extractor-button-remove-label"
                             />
                         }
                     </div>
