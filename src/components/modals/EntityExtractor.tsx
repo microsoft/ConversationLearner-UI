@@ -150,13 +150,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onOpenPicker(extractResponse: CLM.ExtractResponse): void {
-        this.setState({activePickerText: extractResponse.text})
+        this.setState({ activePickerText: extractResponse.text })
     }
 
     @OF.autobind
     onClosePicker(extractResponse: CLM.ExtractResponse, onlyCloseOthers: boolean): void {
         if (!onlyCloseOthers || extractResponse.text !== this.state.activePickerText) {
-            this.setState({activePickerText: null})
+            this.setState({ activePickerText: null })
         }
     }
 
@@ -195,7 +195,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // If any aren't multi-value they are duplicate labels
         const duplicateEntityNames: string[] = []
         for (const entityId of multiEntityIds) {
-            let entity =  this.props.entities.find(e => e.entityId === entityId)
+            let entity = this.props.entities.find(e => e.entityId === entityId)
             if (entity && !entity.isMultivalue) {
                 duplicateEntityNames.push(entity.entityName)
             }
@@ -232,10 +232,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
      */
     allValid(extractResponses: CLM.ExtractResponse[]): boolean {
         const primaryExtractResponse = extractResponses[0]
-        return extractResponses.every(extractResponse => (extractResponse === primaryExtractResponse) 
-            ? true 
+        return extractResponses.every(extractResponse => (extractResponse === primaryExtractResponse)
+            ? true
             : this.isValid(primaryExtractResponse, extractResponse)
-                && this.duplicateEntityNames(extractResponse).length === 0)
+            && this.duplicateEntityNames(extractResponse).length === 0)
     }
 
     // Return merge of extract responses and text variations
@@ -467,11 +467,11 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                     readOnly={!canEdit}
                                     isPickerVisible={isPickerVisible}
                                     status={
-                                        !isValid 
-                                        ? ExtractorResponseEditor.Models.ExtractorStatus.ERROR
-                                        : duplicateEntityNames.length > 0
-                                        ? ExtractorResponseEditor.Models.ExtractorStatus.WARNING
-                                        : ExtractorResponseEditor.Models.ExtractorStatus.OK
+                                        !isValid
+                                            ? ExtractorResponseEditor.Models.ExtractorStatus.ERROR
+                                            : duplicateEntityNames.length > 0
+                                                ? ExtractorResponseEditor.Models.ExtractorStatus.WARNING
+                                                : ExtractorResponseEditor.Models.ExtractorStatus.OK
                                     }
                                     entities={this.props.entities}
                                     {...editorProps}
@@ -486,14 +486,18 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             extractorResponse={extractResponse}
                             onChange={this.onUpdateExtractResponse}
                         />
-                        {(key !== 0) 
-                        ?   <div className="editor-container__icons">
-                                <button type="button" className={`editor-button-delete ${OF.FontClassNames.large}`} onClick={() => this.onRemoveExtractResponse(extractResponse)}>
+                        {(key !== 0)
+                            ? <div className="editor-container__icons">
+                                <button
+                                    type="button"
+                                    className={`editor-button-delete ${OF.FontClassNames.large}`}
+                                    onClick={() => this.onRemoveExtractResponse(extractResponse)}
+                                >
                                     <OF.Icon iconName="Delete" />
                                 </button>
                             </div>
-                        : <div/>}
-                        {!isValid && 
+                            : <div />}
+                        {!isValid &&
                             <div className="cl-error-message-label">
                                 {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_MATCH_WARNING)}
                             </div>

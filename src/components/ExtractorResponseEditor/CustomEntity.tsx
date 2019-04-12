@@ -21,7 +21,7 @@ interface Props extends EntityComponentProps {
 
 export const CustomEntity = (props: Props) => {
     const { name, isDeleteButtonOpen, readOnly } = props
-    
+
     return (
         <span className={`cl-entity-node cl-entity-node--custom ${isDeleteButtonOpen ? 'cl-entity-node--is-editing' : ''} ${readOnly ? 'cl-entity-node--read-only' : ''}`}>
             <div className="cl-entity-node-indicator noselect">
@@ -33,15 +33,16 @@ export const CustomEntity = (props: Props) => {
                                 iconProps={{ iconName: 'Delete' }}
                                 onClick={props.onClickDelete}
                                 title="Unselect Entity"
+                                data-testid="entity-extractor-button-remove-label"
                             />
                         }
                     </div>
                     <div className="cl-entity-node-indicator__name noselect" spellCheck={false}>
-                        <button 
+                        <button
                             className={isDeleteButtonOpen ? "cl-button-delete-open" : ""}
-                            type="button" 
-                            data-testid="custom-entity-name-button" 
-                            onClick={props.onClickName} 
+                            type="button"
+                            data-testid="custom-entity-name-button"
+                            onClick={props.onClickName}
                             tabIndex={-1}
                         >
                             {name}
@@ -50,7 +51,7 @@ export const CustomEntity = (props: Props) => {
                 </div>
                 <div className='cl-entity-node-indicator__bracket' />
             </div>
-            <span 
+            <span
                 className={`cl-entity-node__text${isDeleteButtonOpen ? " noselect" : ""}`}
                 onClick={props.onClickName}
                 role="button"
