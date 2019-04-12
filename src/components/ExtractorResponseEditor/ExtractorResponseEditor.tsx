@@ -71,17 +71,13 @@ const externalChangeOperations = ['insert_node', 'remove_node']
  * however internally it stores as generic options list and a Slate.js value object.
  */
 class ExtractorResponseEditor extends React.Component<Props, State> {
-    tokenMenu: HTMLElement
-    menu: HTMLElement
-    editor: React.RefObject<any>
+    menuRef = React.createRef<HTMLDivElement>()
+    editor = React.createRef<any>(); 
 
     constructor(props: Props) {
         super(props)
 
-        this.editor = React.createRef();
-
         const preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
-
         this.state = {
             ...initialState,
             value: convertEntitiesAndTextToTokenizedEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType),
@@ -154,7 +150,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
     }
 
-    getNextPickerProps = (value: SlateValue, menu: HTMLElement): IEntityPickerProps | void => {
+    getNextPickerProps = (value: SlateValue, menu: HTMLElement | null): IEntityPickerProps | void => {
         const hideMenu: IEntityPickerProps = {
             isOverlappingOtherEntities: false,
             isVisible: false,
@@ -321,7 +317,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             this.props.onChangeCustomEntities(customEntities, this.props.entities)
         }
 
-        const pickerProps = this.getNextPickerProps(change.value, this.menu)
+        const pickerProps = this.getNextPickerProps(change.value, this.menuRef.current)
         if (pickerProps) {
             this.setState({
                 isSelectionOverlappingOtherEntities: pickerProps.isOverlappingOtherEntities,
@@ -360,8 +356,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         return undefined
     }
-
-    menuRef = React.createRef<HTMLDivElement>()
 
     @OF.autobind
     onDeleteButtonVisible(isDeleteButtonVisible: boolean): void {
@@ -494,8 +488,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                 }
             })
 
-        console.log({ menuPosition: this.state.menuPosition })
-
         return (
             <div className="entity-labeler">
                 {(this.props.isPickerVisible || this.state.isDeleteButtonVisible) &&
@@ -524,7 +516,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             isVisible={this.props.isPickerVisible}
                             options={filteredOptions}
                             maxDisplayedOptions={500}
-                            menuRef={this.menuRef}
+                            ref={this.menuRef}
                             position={this.state.menuPosition}
                             value={this.state.value}
 

@@ -25,7 +25,6 @@ interface Props {
 
     isOverlappingOtherEntities: boolean
     position: IPosition | null
-    menuRef: React.RefObject<HTMLDivElement>
 }
 
 const scrollHighlightedElementIntoView = (resultsElement: HTMLDivElement) => {
@@ -43,7 +42,7 @@ const scrollHighlightedElementIntoView = (resultsElement: HTMLDivElement) => {
     }
 }
 
-export const EntityPicker: React.FC<Props> = (props) => {
+export const EntityPicker = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
     const resultsRef = React.useRef<HTMLDivElement>(null)
     const { searchText, setSearchText, onKeyDown, matchedOptions, onClickOption, highlightIndex } = usePicker(
         props.options,
@@ -56,6 +55,12 @@ export const EntityPicker: React.FC<Props> = (props) => {
             scrollHighlightedElementIntoView(resultsRef.current)
         }
     }, [highlightIndex, resultsRef.current])
+
+    React.useEffect(() => {
+        if (props.isVisible === false) {
+            setSearchText('')
+        }
+    }, [props.isVisible])
 
     const style = {
         left: (props.position && props.isVisible) ? `${props.position.left}px` : undefined,
@@ -72,7 +77,7 @@ export const EntityPicker: React.FC<Props> = (props) => {
         <div
             className={`custom-toolbar ${props.isVisible ? "custom-toolbar--visible" : ""}`}
             onKeyDown={onKeyDown}
-            ref={props.menuRef}
+            ref={ref}
             style={style}
             role="button"
         >
@@ -88,6 +93,7 @@ export const EntityPicker: React.FC<Props> = (props) => {
                 />
             </div>
             <OF.PrimaryButton
+                data-testid="entity-picker-button-new"
                 tabIndex={-1}
                 onClick={() => props.onClickNewEntity(props.entityTypeFilter)}
                 text="New Entity"
@@ -109,6 +115,6 @@ export const EntityPicker: React.FC<Props> = (props) => {
             </div>
         </div>
     )
-}
+})
 
 export default EntityPicker
