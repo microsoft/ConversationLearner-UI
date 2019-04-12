@@ -7,7 +7,7 @@ import { IOption, IPosition } from './models'
 import FuseMatch from './FuseMatch'
 import './EntityPicker.css'
 import * as OF from 'office-ui-fabric-react'
-import { usePicker } from './EntityPickerContainerFc'
+import { usePicker } from './usePicker'
 
 interface Props {
     /** 
