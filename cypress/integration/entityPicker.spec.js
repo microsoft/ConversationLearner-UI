@@ -210,7 +210,7 @@ describe('EntityPicker', () => {
     })
 
     // Should work the same for new model but it makes it easier to text searching with a bunch of entities
-    describe.only('existing model', () => {
+    describe('existing model', () => {
         const testData = {
             highlightClass: 'custom-toolbar__result--highlight',
             modelName: `z-entityPicker2-${Cypress.moment().format('MM-d-mm-ss')}`,
