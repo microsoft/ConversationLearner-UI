@@ -39,7 +39,7 @@ describe('End Session', () => {
       scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
     })
 
-    it('End Session Score Action should be disabled for last Bot turn only because it is already selected.', () => {
+    it('End Session Score Action button should be labeled "Selected" for last Bot turn', () => {
       train.SelectChatTurnExactMatch('EndSession: Goodbye')
       scorerModal.VerifyContainsSelectedEndSessionAction('Goodbye')
     })
@@ -91,9 +91,9 @@ describe('End Session', () => {
       train.EditTraining('Yo', 'Bye', "Goodbye")
     })
 
-    it('End Session Score Action should be disabled for last Bot turn only because it is already selected.', () => {
+    it('End Session Score Action button should be labeled "Selected" for last Bot turn', () => {
       train.SelectChatTurnExactMatch('EndSession: Goodbye')
-      scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
+      scorerModal.VerifyContainsSelectedEndSessionAction('Goodbye')
     })
 
     it('End Session chat turn should only contain a delete turn button.', () => {
