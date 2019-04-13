@@ -64,6 +64,7 @@ export function VerifyContainsDisabledAction(expectedResponse) {
 
 export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-clickable', 'be.enabled') }
 export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-no-click', 'be.disabled') }
+export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-selected', 'be.enabled') }
 
 function VerifyEndSessionActionState(expectedData, selectButtonDataTestId, stateToVerify) {
   cy.Get('[data-testid="action-scorer-session-response"]')
