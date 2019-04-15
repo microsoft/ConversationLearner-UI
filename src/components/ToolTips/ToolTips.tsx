@@ -385,7 +385,7 @@ export function getTip(tipType: string) {
         case TipType.ENTITY_TYPE:
             return (
                 <div>
-                    <p><b>There are three types of Entities:</b></p>
+                    <p><b>There are four types of Entities:</b></p>
                     <h3>Pre-Trained</h3>
                     <p>Pre-Trained Entities are entities such as "datetime" or "temperature" that have been pre-trained.  Pre-Trained are labelled automatically and cannot changed</p>
                     <img
@@ -404,6 +404,9 @@ export function getTip(tipType: string) {
                     />
                     <div>See also: <HelpLink label="Resolver Type" tipType={TipType.ENTITY_RESOLVER} /></div>
 
+                    <h3>Enum</h3>
+                    <p>Use the Enum Entity when the value of the Entity should impact Action selection.</p>
+                    
                     <h3>Programmatic</h3>
                     <p>Programmatic Entities are not extracted from user input but rather set in code in the EntityDetectionCallback or other API callbacks</p>
                 </div>

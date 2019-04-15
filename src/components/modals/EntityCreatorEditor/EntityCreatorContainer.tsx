@@ -92,14 +92,12 @@ class Container extends React.Component<Props, ComponentState> {
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             },
-            /*
             {
                 key: CLM.EntityType.ENUM,
                 text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM),
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
-            }
-            */
+            },
             {
                 key: 'divider',
                 text: '-',
