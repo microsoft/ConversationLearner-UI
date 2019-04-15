@@ -11,7 +11,7 @@ import * as train from '../../support/Train'
 import * as common from '../../support/Common'
 import * as helpers from '../../support/Helpers'
 
-describe('Book Me A Flight - Train', () => {
+describe('Date Time Resolver - Train', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   const today = Cypress.moment()
@@ -21,7 +21,7 @@ describe('Book Me A Flight - Train', () => {
 
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {
-      models.ImportModel('z-BookMeAFlight', 'z-travel.cl')
+      models.ImportModel('z-dateTimeResolvr', 'z-dateTimeResolvr.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
