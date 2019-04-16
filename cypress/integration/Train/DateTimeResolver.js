@@ -55,6 +55,7 @@ describe('Date Time Resolver - Train', () => {
       memoryTableComponent.VerifyEntitiesInMemory('return', ['Sunday next week'])
     })
 
+    // We caught "bug 1816 - Need to pass Timezone into LUIS when doing Entity Extraction" with this validation.
     it('Should verify that the that the dates selected are correct and that the disabled and enabled actions are reversed from prior turn', () => {
       scorerModal.VerifyContainsEnabledAction(botResponse)
       scorerModal.VerifyContainsDisabledAction('When are you planning to travel?')
