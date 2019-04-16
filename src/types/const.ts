@@ -22,5 +22,5 @@ export enum SelectionType {
 
 export const CL_IMPORT_ID = '9c110735ea8b440d8f31c5c68ffb767d'
 
-export const previousBotPort = 5000
+export const urlBotPort = parseInt(location.port, 10)
 export const defaultBotPort = 3978

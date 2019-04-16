@@ -7,18 +7,23 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
 import actions from '../actions'
-import { State } from '../types'
+import { State, urlBotPort } from '../types'
 import { bindActionCreators } from 'redux'
 import FormattedMessageId from '../components/FormattedMessageId'
+import * as Util from '../Utils/util'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import * as OF from 'office-ui-fabric-react'
 import './Settings.css'
 
 class Settings extends React.Component<Props> {
-
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
         const botPort = parseInt(event.target.value, 10)
         this.props.settingsUpdate(botPort)
+    }
+
+    onChangeCustomPort = () => {
+        this.props.settingsUseCustomPort()
     }
 
     reset = () => {
@@ -32,28 +37,44 @@ class Settings extends React.Component<Props> {
                     <FormattedMessageId id={FM.PROFILE_SETTINGS_TITLE} />
                 </div>
                 <div>
-                    <OF.Label>
-                        <FormattedMessageId id={FM.PROFILE_SETTINGS_BOT_PORT} />
-                    </OF.Label>
-                    <input
-                        className="cl-input"
-                        type="number"
-                        min={0}
-                        max={99999}
-                        value={this.props.settings.botPort}
-                        onChange={this.onChangeSdkPort}
-                    />
-                    <div className="cl-input-warning cl-label">
-                        <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
-                        <FormattedMessageId id={FM.PROFILE_SETTINGS_BOT_PORT_WARNING} />
-                    </div>
-                    <div>
-                        <OF.PrimaryButton
-                            text="Reset"
-                            ariaDescription="Reset"
-                            iconProps={{ iconName: 'Undo' }}
-                            onClick={this.reset}
-                        />
+                    <div className="cl-settings__bot-port">
+                        <div className={`${OF.FontClassNames.xLarge}`}>
+                            <FormattedMessageId id={FM.PROFILE_SETTINGS_BOT_PORT} />
+                        </div>
+                        <div>
+                            {Util.formatMessageId(this.props.intl, FM.PROFILE_SETTINGS_BOT_PORT_DESCRIPTION, { port: urlBotPort })}
+                        </div>
+                        <div>
+                            <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
+                            <FormattedMessageId id={FM.PROFILE_SETTINGS_BOT_PORT_WARNING} />
+                        </div>
+                        <div>
+                            <OF.Checkbox
+                                data-testid="settings-custom-bot-port"
+                                label={Util.formatMessageId(this.props.intl, FM.PROFILE_SETTINGS_BOT_PORT_USE_CUSTOM)}
+                                checked={this.props.settings.useCustomPort}
+                                onChange={this.onChangeCustomPort}
+                            />
+                        </div>
+                        <div>
+                            <input
+                                className="cl-input"
+                                type="number"
+                                min={0}
+                                max={99999}
+                                value={this.props.settings.customPort}
+                                onChange={this.onChangeSdkPort}
+                                disabled={!this.props.settings.useCustomPort}
+                            />
+
+                            <OF.PrimaryButton
+                                text="Reset"
+                                ariaDescription="Reset"
+                                iconProps={{ iconName: 'Undo' }}
+                                onClick={this.reset}
+                                disabled={!this.props.settings.useCustomPort}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -64,7 +85,8 @@ class Settings extends React.Component<Props> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         settingsReset: actions.settings.settingsReset,
-        settingsUpdate: actions.settings.settingsUpdate
+        settingsUpdate: actions.settings.settingsUpdate,
+        settingsUseCustomPort: actions.settings.settingsUseCustomPort,
     }, dispatch)
 }
 
@@ -77,6 +99,6 @@ const mapStateToProps = (state: State) => {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps)
 const dispatchProps = returntypeof(mapDispatchToProps)
-type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any>
+type Props = typeof stateProps & typeof dispatchProps & RouteComponentProps<any> & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(Settings)
+export default connect<typeof stateProps, typeof dispatchProps, RouteComponentProps<any>>(mapStateToProps, mapDispatchToProps)(injectIntl(Settings))

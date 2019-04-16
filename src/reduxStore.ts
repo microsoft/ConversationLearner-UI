@@ -4,7 +4,7 @@
  */
 import { createStore, applyMiddleware, Store } from 'redux'
 import thunk from 'redux-thunk'
-import { State, defaultBotPort, previousBotPort } from './types'
+import { State } from './types'
 import rootReducer from './reducers/root'
 import { throttle } from 'lodash'
 import * as localStorage from './services/localStorage'
@@ -13,16 +13,9 @@ import * as ClientFactory from './services/clientFactory'
 export const createReduxStore = (): Store<State> => {
     const persistedState = localStorage.load<Partial<State>>()
 
-    /**
-     * This is a work around to auto reset port to 3978 from 5000
-     * and avoid users having to manually resetting
-     */
-    // TODO: Remove after most people have upgraded
     const settings = persistedState && persistedState.settings
     if (settings) {
-        if (settings.botPort === previousBotPort) {
-            settings.botPort = defaultBotPort
-        }
+        ClientFactory.setPort(settings.botPort)
     }
 
     const store = createStore(rootReducer,
