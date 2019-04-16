@@ -5,10 +5,10 @@
 import ClClient, { ClientHeaders } from './client'
 import { AT } from '../types/ActionTypes'
 import { ErrorInjector } from '../Utils/ErrorInjector'
-import { urlBotPort } from '../types/const'
+import { ports } from '../types/const'
 //import DebugErrors from '../components/modals/DebugErrors'
 
-let sdkPort = urlBotPort
+let sdkPort = ports.urlBotPort
 let getClientHeaders = (): ClientHeaders => {
     console.warn(`You attempted to use the Conversation Learner Client before its getClientHeaders method was properly configured. Call setClientHeaders to configure`)
     return {

@@ -7,7 +7,7 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
 import actions from '../actions'
-import { State, urlBotPort } from '../types'
+import { State, ports } from '../types'
 import { bindActionCreators } from 'redux'
 import FormattedMessageId from '../components/FormattedMessageId'
 import * as Util from '../Utils/util'
@@ -42,7 +42,7 @@ class Settings extends React.Component<Props> {
                             <FormattedMessageId id={FM.PROFILE_SETTINGS_BOT_PORT} />
                         </div>
                         <div>
-                            {Util.formatMessageId(this.props.intl, FM.PROFILE_SETTINGS_BOT_PORT_DESCRIPTION, { port: urlBotPort })}
+                            {Util.formatMessageId(this.props.intl, FM.PROFILE_SETTINGS_BOT_PORT_DESCRIPTION, { port: ports.urlBotPort })}
                         </div>
                         <div>
                             <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
