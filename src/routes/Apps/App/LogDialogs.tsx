@@ -6,7 +6,6 @@ import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../Utils/util'
 import * as DialogEditing from '../../../Utils/dialogEditing'
-import { EditHandlerArgs } from '../../../Utils/dialogEditing'
 import * as DialogUtils from '../../../Utils/dialogUtils'
 import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
@@ -633,17 +632,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             throw new Error("Expected merge props to be set")
         }
 
-        const sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
-            ? this.state.currentTrainDialog.trainDialogId : null
-
         if (shouldMerge) {
-            await this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags, sourceTrainDialogId)
-        }
-        else {
-            // If editing an existing Train Dialog, replace existing with the new one
-            if (sourceTrainDialogId) {
-                await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, this.state.mergeNewTrainDialog)
-            }
+            await this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags, null)
         }
 
         if (this.state.currentLogDialogId) {
@@ -742,34 +732,23 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
             if (save) {
 
-                // If editing an existing train dialog, extract its dialogId
-                const sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
-                    ? this.state.currentTrainDialog.trainDialogId : null
-
                 // Delete the teach session and retreive the new TrainDialog
-                const newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId) as any) as Promise<CLM.TrainDialog>)
+                const newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true) as any) as Promise<CLM.TrainDialog>)
                 newTrainDialog.tags = tags
                 newTrainDialog.description = description
 
                 // Check to see if new TrainDialog can be merged with an exising TrainDialog
-                const matchingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
+                const matchingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs)
 
                 if (matchingTrainDialog) {
                     this.setState({
                         mergeExistingTrainDialog: matchingTrainDialog,
                         mergeNewTrainDialog: newTrainDialog
                     })
-                    return
                 }
                 else {
-                    // If editing an existing Train Dialog, replace existing with the new one
-                    if (sourceTrainDialogId) {
-                        await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog)
-                    }
                     // Otherwise just update the tags and description
-                    else {
-                        await this.props.editTrainDialogThunkAsync(this.props.app.appId, { trainDialogId: newTrainDialog.trainDialogId, tags, description })
-                    }
+                    await this.props.editTrainDialogThunkAsync(this.props.app.appId, { trainDialogId: newTrainDialog.trainDialogId, tags, description })
 
                     // Delete associated log dialog
                     if (this.state.currentLogDialogId) {
@@ -1036,10 +1015,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     // User has edited an Activity in a TeachSession
     private async onEditTeach(
         historyIndex: number,
-        args: EditHandlerArgs | undefined = undefined,
+        args: DialogEditing.EditHandlerArgs | undefined,
         tags: string[],
         description: string,
-        editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: EditHandlerArgs) => any
+        editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args?: DialogEditing.EditHandlerArgs) => any
     ) {
         try {
             if (!this.props.teachSession.teach) {
