@@ -87,7 +87,7 @@ describe('EntityPicker', () => {
         testData.phrase = `Phrase start ${testData.word1} ${testData.word2} ${testData.word3} ${testData.word4} end.`
 
         before(() => {
-            cy.visit('http://localhost:5050')
+            cy.visit('http://localhost:3000')
 
             cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner })
                 .should('not.exist')
@@ -234,7 +234,7 @@ describe('EntityPicker', () => {
         testData.phrase = `Phrase start ${testData.word1} ${testData.word2} ${testData.word3} ${testData.word4} end.`
 
         before(() => {
-            cy.visit('http://localhost:5050')
+            cy.visit('http://localhost:3000')
 
             cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner })
                 .should('not.exist')
