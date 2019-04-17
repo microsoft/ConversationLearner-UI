@@ -397,11 +397,11 @@ export default class ClClient {
 
     //AT.FETCH_TEXTVARIATIONCONFLICT_ASYNC
     // If there is a conflicting text variation, returns corresponding extractresponse, otherwise null
-    // filteredDialog = dialog to ignore when checking for conflicting labels
-    async fetchTextVariationConflict(appId: string, trainDialogId: string, textVariation: CLM.TextVariation, filteredDialog: string | null): Promise<CLM.ExtractResponse | null> {
+    // excludeDialogId = dialog to ignore when checking for conflicting labels
+    async fetchTextVariationConflict(appId: string, trainDialogId: string, textVariation: CLM.TextVariation, excludeDialogId: string | null): Promise<CLM.ExtractResponse | null> {
         let url = `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/extractor/textvariation`
-        if (filteredDialog) {
-            url = `${url}?filteredDialog=${filteredDialog}`
+        if (excludeDialogId) {
+            url = `${url}?filteredDialog=${excludeDialogId}`
         }
         const response = await this.send<CLM.ExtractResponse>({
             method: 'post',

@@ -259,6 +259,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     @OF.autobind
     onSaveConflictCancel() {
         // Increment webchat key to reset and clear last input
+        // Forces redraw of webchat from TrainDialog (which hasn't been updated yet)
         this.setState({
             isSaveConflictModalOpen: false,
             webchatKey: this.state.webchatKey + 1
