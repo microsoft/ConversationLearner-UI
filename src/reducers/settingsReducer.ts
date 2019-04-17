@@ -22,7 +22,8 @@ const initialState: SettingsState = {
 const settingsReducer: Reducer<SettingsState> = produce((state: SettingsState, action: ActionObject) => {
     switch (action.type) {
         case AT.SETTINGS_RESET:
-            return { ...initialState }
+            state.customPort = ports.defaultBotPort
+            return
         case AT.SETTINGS_UPDATE:
             state.customPort = action.port
             if (state.useCustomPort) {
@@ -31,9 +32,9 @@ const settingsReducer: Reducer<SettingsState> = produce((state: SettingsState, a
             return
         case AT.SETTINGS_USE_CUSTOM_PORT:
             state.useCustomPort = !state.useCustomPort
-            if (state.useCustomPort) {
-                state.botPort = state.customPort
-            }
+            state.botPort = state.useCustomPort
+                ? state.customPort
+                : ports.urlBotPort
             return
         default:
             return
