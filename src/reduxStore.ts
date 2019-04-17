@@ -13,16 +13,15 @@ import * as ClientFactory from './services/clientFactory'
 export const createReduxStore = (): Store<State> => {
     const persistedState = localStorage.load<Partial<State>>()
 
-    const defaultPorts = [ports.defaultUiDevPort, ports.defaultUiReactPort]
     const settings = persistedState && persistedState.settings
+    // If user chose to use custom port update the client to use this port
+    // Need this since the subscribe below only happens on store change not initialization
     if (settings && settings.useCustomPort) {
         ClientFactory.setPort(settings.customPort)
     }
     // TODO: Could move initialization to client, but try to keep on one place
-    // If it's the first time loaded there are no saved settings
-    // Use default port for dev and tests
     else {
-        if (defaultPorts.includes(ports.urlBotPort)) {
+        if (ports.defaultUiPort = ports.urlBotPort) {
             ClientFactory.setPort(ports.defaultBotPort)
         }
     }
@@ -42,7 +41,6 @@ export const createReduxStore = (): Store<State> => {
             ClientFactory.setPort(state.settings.botPort)
         }
 
-        // Don't store botPort from settings
         const stateToPersist = {
             settings: {
                 userCustomPort: state.settings.useCustomPort,
