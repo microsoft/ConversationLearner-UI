@@ -345,6 +345,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
+    // If editing an existing train dialog, return its Id, otherwise null
+    sourceTrainDialogId(): string | null {
+        if (this.state.currentTrainDialog 
+            && this.state.editType !== EditDialogType.BRANCH
+            && this.state.editType !== EditDialogType.NEW) {
+                return this.state.currentTrainDialog.trainDialogId
+            }
+        return null
+    }
+
     @OF.autobind
     async onCloseTeachSession(save: boolean, tags: string[] = [], description: string = '') {
         if (this.props.teachSession && this.props.teachSession.teach) {
@@ -354,8 +364,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 if (save) {
 
                     // If editing an existing train dialog, extract its dialogId
-                    const sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
-                        ? this.state.currentTrainDialog.trainDialogId : null
+                    const sourceTrainDialogId = this.sourceTrainDialogId()
 
                     // Delete the teach session and retreive the new TrainDialog
                     const newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId) as any) as Promise<CLM.TrainDialog>)
@@ -594,8 +603,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             throw new Error("Expected merge props to be set")
         }
 
-        const sourceTrainDialogId = this.state.currentTrainDialog && this.state.editType !== EditDialogType.BRANCH
-            ? this.state.currentTrainDialog.trainDialogId : null
+        // If editing an existing train dialog, extract its dialogId
+        const sourceTrainDialogId = this.sourceTrainDialogId()
 
         if (shouldMerge) {
             await this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags, sourceTrainDialogId)
