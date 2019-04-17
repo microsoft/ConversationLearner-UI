@@ -841,7 +841,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 history: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: trainDialog,
-                originalTrainDialog: this.state.currentTrainDialog || this.state.currentTrainDialog,
+                originalTrainDialog: this.state.currentTrainDialog,
                 editType: EditDialogType.TRAIN_ORIGINAL,
                 isEditDialogModalOpen: true,
                 isTreeViewModalOpen: false,
