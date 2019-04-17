@@ -569,15 +569,21 @@ export default class ClClient {
     }
 
     //AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
-    async teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
+    // filteredDialog = dialog to ignore when checking for conflicting labels
+    async teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string, filteredDialog: string | null): Promise<CLM.TeachWithHistory> {
+        let url = `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`
+        if (filteredDialog) {
+            url = `${url}&filteredDialog=${filteredDialog}`
+        }
         const response = await this.send<CLM.TeachWithHistory>({
             method: 'post',
-            url: `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`,
+            url,
             data: {
                 trainDialog,
                 userInput
             }
         })
+
         return response.data
     }
 
