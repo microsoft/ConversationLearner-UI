@@ -2,72 +2,35 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import actions from '../../../actions';
-import { bindActionCreators } from 'redux';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import actions from '../../../actions'
+import { bindActionCreators } from 'redux'
 import PackageTable from '../../../components/modals/PackageTable'
-import { connect } from 'react-redux';
-import { State, AppCreatorType } from '../../../types';
-import * as OF from 'office-ui-fabric-react';
+import { connect } from 'react-redux'
+import { State, AppCreatorType } from '../../../types'
+import * as OF from 'office-ui-fabric-react'
 import { Expando, AppCreator } from '../../../components/modals'
+import FormattedMessageId from '../../../components/FormattedMessageId'
 import { saveAs } from 'file-saver'
 import { AppBase, AppDefinition, TrainingStatusCode } from '@conversationlearner/models'
 import './Settings.css'
 import { FM } from '../../../react-intl-messages'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
-import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities';
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import * as TC from '../../../components/tipComponents'
 import * as ToolTip from '../../../components/ToolTips/ToolTips'
-import * as util from '../../../Utils/util'
 import HelpIcon from '../../../components/HelpIcon'
-
-const messages = defineMessages({
-    fieldErrorRequired: {
-        id: FM.SETTINGS_FIELDERROR_REQUIREDVALUE,
-        defaultMessage: 'Required Value'
-    },
-    fieldErrorAlphanumeric: {
-        id: FM.SETTINGS_FIELDERROR_ALPHANUMERIC,
-        defaultMessage: 'Model name may only contain alphanumeric characters'
-    },
-    fieldErrorDistinct: {
-        id: FM.SETTINGS_FIELDERROR_DISTINCT,
-        defaultMessage: 'Name is already in use.'
-    },
-    passwordHidden: {
-        id: FM.SETTINGS_PASSWORDHIDDEN,
-        defaultMessage: 'Show'
-    },
-    passwordVisible: {
-        id: FM.SETTINGS_PASSWORDVISIBLE,
-        defaultMessage: 'Hide'
-    },
-    botFrameworkAppIdFieldLabel: {
-        id: FM.SETTINGS_BOTFRAMEWORKAPPIDFIELDLABEL,
-        defaultMessage: 'Model ID'
-    },
-    botFrameworkAddBotButtonText: {
-        id: FM.SETTINGS_BOTFRAMEWORKADDBOTBUTTONTEXT,
-        defaultMessage: 'Add'
-    },
-    saveChanges: {
-        id: FM.SETTINGS_SAVECHANGES,
-        defaultMessage: 'Save Changes'
-    },
-    discard: {
-        id: FM.SETTINGS_DISCARD,
-        defaultMessages: 'Discard'
-    }
-})
+import * as Util from '../../../Utils/util'
+import TextboxRestrictableModal from '../../../components/modals/TextboxRestrictable'
 
 interface ComponentState {
     localeVal: string
     appIdVal: string
     appNameVal: string
-    selectedEditingTagOptionKey: string | number | undefined,
-    selectedLiveTagOptionKey: string | number | undefined,
+    selectedEditingVersionOptionKey: string | number | undefined,
+    selectedLiveVersionOptionKey: string | number | undefined,
     markdownVal: string
     videoVal: string
     edited: boolean
@@ -78,6 +41,7 @@ interface ComponentState {
     isPackageExpandoOpen: boolean,
     isSettingsExpandoOpen: boolean,
     isAppCopyModalOpen: boolean
+    isConfirmDeleteAppModalOpen: boolean
 }
 
 class Settings extends React.Component<Props, ComponentState> {
@@ -88,8 +52,8 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: '',
             appIdVal: '',
             appNameVal: '',
-            selectedEditingTagOptionKey: undefined,
-            selectedLiveTagOptionKey: undefined,
+            selectedEditingVersionOptionKey: undefined,
+            selectedLiveVersionOptionKey: undefined,
             markdownVal: '',
             videoVal: '',
             edited: false,
@@ -99,7 +63,8 @@ class Settings extends React.Component<Props, ComponentState> {
             isLoggingOnVal: true,
             isPackageExpandoOpen: false,
             isSettingsExpandoOpen: false,
-            isAppCopyModalOpen: false
+            isAppCopyModalOpen: false,
+            isConfirmDeleteAppModalOpen: false
         }
     }
 
@@ -108,8 +73,8 @@ class Settings extends React.Component<Props, ComponentState> {
             localeVal: app.locale,
             appIdVal: app.appId,
             appNameVal: app.appName,
-            selectedEditingTagOptionKey: this.props.editingPackageId,
-            selectedLiveTagOptionKey: app.livePackageId,
+            selectedEditingVersionOptionKey: this.props.editingPackageId,
+            selectedLiveVersionOptionKey: app.livePackageId,
             markdownVal: (app.metadata && app.metadata.markdown) ? app.metadata.markdown : '',
             videoVal: (app.metadata && app.metadata.video) ? app.metadata.video : '',
             botFrameworkAppsVal: app.metadata.botFrameworkApps,
@@ -123,7 +88,7 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate() {
-        let app = this.props.app
+        const app = this.props.app
         if (this.state.edited === false && (this.state.localeVal !== app.locale ||
             this.state.appIdVal !== app.appId ||
             this.state.appNameVal !== app.appName ||
@@ -169,7 +134,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickAddBot() {
-        let newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
+        const newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
         this.setState({
             botFrameworkAppsVal: newBotApps,
             newBotVal: ''
@@ -217,7 +182,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickDiscard() {
-        let app = this.props.app
+        const app = this.props.app
         this.setState({
             localeVal: app.locale,
             appIdVal: app.appId,
@@ -233,8 +198,8 @@ class Settings extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickSave() {
-        let app = this.props.app
-        let modifiedApp: AppBase = {
+        const app = this.props.app
+        const modifiedApp: AppBase = {
             ...app,
             appName: this.state.appNameVal,
             metadata: {
@@ -250,33 +215,27 @@ class Settings extends React.Component<Props, ComponentState> {
             datetime: new Date()
         }
         this.props.editApplicationThunkAsync(modifiedApp)
-        this.setState({
-            localeVal: app.locale,
-            appIdVal: app.appId,
-            appNameVal: app.appName,
-            markdownVal: (app.metadata && app.metadata.markdown) ? app.metadata.markdown : '',
-            videoVal: (app.metadata && app.metadata.video) ? app.metadata.video : '',
-            botFrameworkAppsVal: app.metadata.botFrameworkApps,
-            isLoggingOnVal: app.metadata.isLoggingOn,
-            edited: false,
-            newBotVal: ''
-        })
     }
 
     onGetNameErrorMessage(value: string): string {
-        const { intl } = this.props
+        const MAX_NAME_LENGTH = 30
+
         if (value.length === 0) {
-            return intl.formatMessage(messages.fieldErrorRequired)
+            return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_REQUIREDVALUE)
+        }
+
+        if (value.length > MAX_NAME_LENGTH) {
+            return Util.formatMessageId(this.props.intl, FM.APPCREATOR_FIELDERROR_TOOLONG)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
-            return intl.formatMessage(messages.fieldErrorAlphanumeric)
+            return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_ALPHANUMERIC)
         }
 
         // Check that name isn't in use
-        let foundApp = this.props.apps.find(a => (a.appName === value && a.appId !== this.props.app.appId));
+        const foundApp = this.props.apps.find(a => (a.appName === value && a.appId !== this.props.app.appId));
         if (foundApp) {
-            return intl.formatMessage(messages.fieldErrorDistinct)
+            return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_DISTINCT)
         }
 
         return ''
@@ -294,24 +253,24 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChangedEditingTag = (editingOption: OF.IDropdownOption) => {
+    onChangedEditingVersion = (editingOption: OF.IDropdownOption) => {
         this.props.editAppEditingTagThunkAsync(this.props.app.appId, editingOption.key as string)
         this.setState({
-            selectedEditingTagOptionKey: editingOption.key,
+            selectedEditingVersionOptionKey: editingOption.key,
         })
     }
 
-    onChangedLiveTag = (liveOption: OF.IDropdownOption) => {
-        this.props.editAppLiveTagThunkAsync(this.props.app.appId, liveOption.key as string)
+    onChangedLiveVersion = (liveOption: OF.IDropdownOption) => {
+        this.props.editAppLiveTagThunkAsync(this.props.app, liveOption.key as string)
         this.setState({
-            selectedLiveTagOptionKey: liveOption.key,
+            selectedLiveVersionOptionKey: liveOption.key,
         })
     }
 
     @autobind
     async onClickExport() {
         const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<AppDefinition>)
-        const blob = new Blob([JSON.stringify(appDefinition)], {type: "text/plain;charset=utf-8"})
+        const blob = new Blob([JSON.stringify(appDefinition)], { type: "text/plain;charset=utf-8" })
         saveAs(blob, `${this.props.app.appName}.cl`);
     }
 
@@ -322,8 +281,39 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
+    @autobind
+    onClickDelete() {
+        this.setState({
+            isConfirmDeleteAppModalOpen: true
+        })
+    }
+
+    @autobind
+    onConfirmDeleteApp() {
+        this.props.onDeleteApp(this.props.app.appId)
+        this.setState({
+            isConfirmDeleteAppModalOpen: false
+        })
+    }
+
+    @autobind
+    onCancelDeleteModal() {
+        this.setState({
+            isConfirmDeleteAppModalOpen: false
+        })
+    }
+
+    getDeleteDialogBoxText = (modelName: string) => {
+        return (
+            <div>
+                <h1 className={`${OF.FontClassNames.xxLarge} cl-text--error`} style={{ fontWeight: OF.FontWeights.semibold }}>{Util.formatMessageId(this.props.intl, FM.SETTINGS_DELETEISPERMANENT)}</h1>
+                <p>Confirm permanent deletion of the <strong>{modelName}</strong> Model by entering its name.</p>
+            </div>
+        )
+    }
+
     packageOptions() {
-        let packageReferences = util.packageReferences(this.props.app);
+        const packageReferences = Util.packageReferences(this.props.app);
 
         return Object.values(packageReferences)
             .map<OF.IDropdownOption>(pr => {
@@ -336,58 +326,47 @@ class Settings extends React.Component<Props, ComponentState> {
 
     render() {
         const { intl } = this.props
-        let options = [{
+        const options = [{
             key: this.state.localeVal,
             text: this.state.localeVal,
         }]
-        let packageOptions = this.packageOptions();
+        const packageOptions = this.packageOptions();
         return (
             <div className="cl-page">
                 <span data-testid="settings-title" className={OF.FontClassNames.xxLarge}>
-                    <FormattedMessage
-                        id={FM.SETTINGS_TITLE}
-                        defaultMessage="Settings"
-                    />
+                    <FormattedMessageId id={FM.SETTINGS_TITLE} />
                 </span>
                 <span className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessage
-                        id={FM.SETTINGS_SUBTITLE}
-                        defaultMessage="Control your model version tags and other model configuration"
-                    />
+                    <FormattedMessageId id={FM.SETTINGS_SUBTITLE} />
                 </span>
                 <div className="cl-settings-fields">
                     <OF.TextField
                         className={OF.FontClassNames.mediumPlus}
                         onChanged={(text) => this.onChangedName(text)}
-                        label={intl.formatMessage({
-                            id: FM.SETTINGS_FIELDS_NAMELABEL,
-                            defaultMessage: 'Name'
-                        })}
+                        label={Util.formatMessageId(intl, FM.SETTINGS_FIELDS_NAMELABEL)}
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         value={this.state.appNameVal}
                     />
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
                             onClick={this.onClickExport}
-                            ariaDescription={intl.formatMessage({
-                                id: FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION,
-                                defaultMessage: 'Export Model to a file'
-                            })}
-                            text={intl.formatMessage({
-                                id: FM.SETTINGS_EXPORTBUTTONTEXT,
-                                defaultMessage: 'Export'
-                            })}
+                            ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION)}
+                            text={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONTEXT)}
+                            iconProps={{ iconName: 'DownloadDocument' }}
                         />
                         <OF.PrimaryButton
                             onClick={this.onClickCopy}
-                            ariaDescription={intl.formatMessage({
-                                id: FM.SETTINGS_COPYBUTTONARIALDESCRIPTION,
-                                defaultMessage: 'Copy Model'
-                            })}
-                            text={intl.formatMessage({
-                                id: FM.SETTINGS_COPYBUTTONTEXT,
-                                defaultMessage: 'Copy'
-                            })}
+                            ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONARIALDESCRIPTION)}
+                            text={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONTEXT)}
+                            iconProps={{ iconName: 'Copy' }}
+                        />
+                        <OF.DefaultButton
+                            data-testid="settings-delete-model-button"
+                            className="cl-button-delete"
+                            onClick={this.onClickDelete}
+                            ariaDescription={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
+                            text={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
+                            iconProps={{ iconName: 'Delete' }}
                         />
                     </div>
                     <OF.TextField
@@ -397,43 +376,46 @@ class Settings extends React.Component<Props, ComponentState> {
                         value={this.state.appIdVal}
                     />
                     <div>
-                        <OF.Label className={OF.FontClassNames.mediumPlus}>
+                        <OF.Label className={`${OF.FontClassNames.mediumPlus} cl-label`}>
                             LUIS_SUBSCRIPTION_KEY
-                            <HelpIcon 
-                                tipType={ToolTip.TipType.LUIS_SUBSCRIPTION_KEY} 
+                            <HelpIcon
+                                tipType={ToolTip.TipType.LUIS_SUBSCRIPTION_KEY}
                             />
                         </OF.Label>
                         <div>
-                            <a href={`https://www.luis.ai/applications/${this.props.app.luisAppId}/versions/0.1/publish`} target="_blank">
+                            <a
+                                href={`https://www.luis.ai/applications/${this.props.app.luisAppId}/versions/0.1/manage/endpoints`}
+                                rel="noopener noreferrer"
+                                target="_blank">
                                 <OF.DefaultButton
                                     iconProps={{ iconName: "OpenInNewWindow" }}
-                                    ariaDescription="Go to LUIS"
-                                    text="Go to LUIS"
+                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.SETTINGS_LUIS_LINK)}
+                                    text={Util.formatMessageId(this.props.intl, FM.SETTINGS_LUIS_LINK)}
                                 />
                             </a>
                         </div>
                     </div>
                     <div className="cl-command-bar">
                         <TC.Dropdown
-                            label="Editing Tag"
+                            label={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSION_EDITING)}
                             options={packageOptions}
-                            onChanged={acionTypeOption => this.onChangedEditingTag(acionTypeOption)}
-                            selectedKey={this.state.selectedEditingTagOptionKey}
-                            tipType={ToolTip.TipType.TAG_EDITING}
+                            onChanged={this.onChangedEditingVersion}
+                            selectedKey={this.state.selectedEditingVersionOptionKey}
+                            tipType={ToolTip.TipType.MODEL_VERSION_EDITING}
                         />
                         <TC.Dropdown
-                            label="Live Tag"
+                            label={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSION_LIVE)}
                             options={packageOptions}
-                            onChanged={acionTypeOption => this.onChangedLiveTag(acionTypeOption)}
-                            selectedKey={this.state.selectedLiveTagOptionKey}
-                            tipType={ToolTip.TipType.TAG_LIVE}
+                            onChanged={this.onChangedLiveVersion}
+                            selectedKey={this.state.selectedLiveVersionOptionKey}
+                            tipType={ToolTip.TipType.MODEL_VERSION_LIVE}
                         />
                     </div>
 
                     <Expando
                         className={'cl-settings-container-header'}
                         isOpen={this.state.isPackageExpandoOpen}
-                        text="Version Tags"
+                        text="Model Versions"
                         onToggle={() => this.setState({ isPackageExpandoOpen: !this.state.isPackageExpandoOpen })}
                     />
                     {this.state.isPackageExpandoOpen &&
@@ -445,10 +427,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
                     <div>
                         <OF.Label className={OF.FontClassNames.mediumPlus} htmlFor="settings-dropdown-locale">
-                            <FormattedMessage
-                                id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL}
-                                defaultMessage="Locale"
-                            />
+                            <FormattedMessageId id={FM.SETTINGS_BOTFRAMEWORKLOCALELABEL} />
                         </OF.Label>
                         <OF.Dropdown
                             id="settings-dropdown-locale"
@@ -460,26 +439,20 @@ class Settings extends React.Component<Props, ComponentState> {
                     </div>
                     <div className="cl-entity-creator-checkbox">
                         <TC.Checkbox
-                            label={intl.formatMessage({
-                                id: FM.SETTINGS_LOGGINGON_LABEL,
-                                defaultMessage: 'Log Conversations'
-                            })}
+                            label={Util.formatMessageId(intl, FM.SETTINGS_LOGGINGON_LABEL)}
                             checked={this.state.isLoggingOnVal}
                             onChange={this.onToggleLoggingOn}
                             tipType={ToolTip.TipType.LOGGING_TOGGLE}
                         />
                     </div>
 
-                    {util.isDemoAccount(this.props.user.id) &&
+                    {Util.isDemoAccount(this.props.user.id) &&
                         <React.Fragment>
                             <div>
                                 <OF.TextField
                                     className={OF.FontClassNames.mediumPlus}
                                     onChanged={(text) => this.onChangedMarkdown(text)}
-                                    label={intl.formatMessage({
-                                        id: FM.SETTINGS_FIELDS_MARKDOWNLABEL,
-                                        defaultMessage: 'Markdown'
-                                    })}
+                                    label={Util.formatMessageId(intl, FM.SETTINGS_FIELDS_MARKDOWNLABEL)}
                                     value={this.state.markdownVal}
                                     multiline={true}
                                     rows={5}
@@ -487,17 +460,14 @@ class Settings extends React.Component<Props, ComponentState> {
                                 <OF.TextField
                                     className={OF.FontClassNames.mediumPlus}
                                     onChanged={(text) => this.onChangedVideo(text)}
-                                    label={intl.formatMessage({
-                                        id: FM.SETTINGS_FIELDS_VIDEOLABEL,
-                                        defaultMessage: 'Video'
-                                    })}
+                                    label={Util.formatMessageId(intl, FM.SETTINGS_FIELDS_VIDEOLABEL)}
                                     value={this.state.videoVal}
                                 />
                             </div>
                             <div>
                                 <OF.DefaultButton
                                     onClick={() => this.onOpenDebugErrors()}
-                                    ariaDescription={intl.formatMessage(messages.discard)}
+                                    ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_DISCARD)}
                                     text={'Inject Errors'}
                                 />
                             </div>
@@ -508,17 +478,19 @@ class Settings extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             disabled={this.state.edited === false || this.onGetNameErrorMessage(this.state.appNameVal) !== ''}
                             onClick={this.onClickSave}
-                            ariaDescription={intl.formatMessage(messages.saveChanges)}
-                            text={intl.formatMessage(messages.saveChanges)}
+                            ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_SAVECHANGES)}
+                            text={Util.formatMessageId(intl, FM.SETTINGS_SAVECHANGES)}
+                            iconProps={{ iconName: 'Accept' }}
                         />
                         <OF.DefaultButton
                             disabled={this.state.edited === false}
                             onClick={this.onClickDiscard}
-                            ariaDescription={intl.formatMessage(messages.discard)}
-                            text={intl.formatMessage(messages.discard)}
+                            ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_DISCARD)}
+                            text={Util.formatMessageId(intl, FM.SETTINGS_DISCARD)}
+                            iconProps={{ iconName: 'Undo' }}
                         />
                     </div>
-                    
+
                     <ErrorInjectionEditor
                         open={this.state.debugErrorsOpen}
                         onClose={() => this.onCloseDebugErrors()}
@@ -530,6 +502,16 @@ class Settings extends React.Component<Props, ComponentState> {
                     onCancel={this.onCancelAppCopyModal}
                     creatorType={AppCreatorType.COPY}
                 />
+                <TextboxRestrictableModal
+                    open={this.state.isConfirmDeleteAppModalOpen}
+                    message={this.getDeleteDialogBoxText(this.props.app.appName)}
+                    placeholder={""}
+                    matchedText={this.props.app.appName}
+                    buttonOk={Util.getDefaultText(FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
+                    buttonCancel={Util.getDefaultText(FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
+                    onOK={this.onConfirmDeleteApp}
+                    onCancel={this.onCancelDeleteModal}
+                />
             </div>
         );
     }
@@ -539,7 +521,8 @@ const mapDispatchToProps = (dispatch: any) => {
         editApplicationThunkAsync: actions.app.editApplicationThunkAsync,
         editAppEditingTagThunkAsync: actions.app.editAppEditingTagThunkAsync,
         editAppLiveTagThunkAsync: actions.app.editAppLiveTagThunkAsync,
-        fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync
+        fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
+        deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -557,6 +540,7 @@ export interface ReceivedProps {
     app: AppBase,
     editingPackageId: string,
     onCreateApp: (app: AppBase, source: AppDefinition) => void
+    onDeleteApp: (id: string) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

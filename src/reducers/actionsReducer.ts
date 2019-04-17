@@ -6,10 +6,11 @@ import { ActionObject, ActionState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import { replace } from '../Utils/util'
+import produce from 'immer'
 
 const initialState: ActionState = [];
 
-const actionsReducer: Reducer<ActionState> = (state = initialState, actionObject: ActionObject): ActionState => {
+const actionsReducer: Reducer<ActionState> = produce((state: ActionState, actionObject: ActionObject) => {
     switch (actionObject.type) {
         case AT.USER_LOGOUT:
             return [...initialState]
@@ -22,13 +23,15 @@ const actionsReducer: Reducer<ActionState> = (state = initialState, actionObject
         case AT.CREATE_APPLICATION_FULFILLED:
             return [...initialState]
         case AT.CREATE_ACTION_FULFILLED:
-            return [...state, actionObject.action];
+            state.push(actionObject.action)
+            return
         case AT.DELETE_ACTION_FULFILLED:
             return state.filter(a => a.actionId !== actionObject.actionId)
         case AT.EDIT_ACTION_FULFILLED:
             return replace(state, actionObject.action, a => a.actionId)
         default:
-            return state;
+            return
     }
-}
+}, initialState)
+
 export default actionsReducer;

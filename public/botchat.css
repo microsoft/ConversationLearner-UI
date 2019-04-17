@@ -167,17 +167,18 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   border-radius: 2px;
   box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.2);
   padding: 8px;
-  word-break: break-word; }
+  word-break: break-word; 
+  min-width: 50px;
+}
 
 .wc-message-content.clickable {
   cursor: pointer; }
 
 .wc-message-selected {
-  background-color: #ffeeee;
-  outline: 1px solid #ffaaaa;
-  outline-offset: 2px;
+  background-color: #fcd096;
+  outline: 6px solid #ffca84;
 }
-
+  
 .wc-message-content img {
   max-height: 320px;
   max-width: 100%; }
@@ -462,13 +463,15 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   position: relative;
   stroke: none;
   left: 11px;
+  width: 100%;
 }
+
 .wc-message-downarrow-points {
   fill: #DCDFE0;
 }
 
 .wc-message-downarrow-points-red {
-  fill: #ffd2d2;
+  fill:rgb(168, 0, 0);
 }
 
 /* console */

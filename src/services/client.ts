@@ -3,8 +3,14 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
+import { PartialTrainDialog } from '../types/models'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
-import { AppInput } from '../types/models';
+import { AppInput } from '../types/models'
+
+export interface ClientHeaders {
+    botChecksum: string
+    memoryKey: string
+}
 
 interface TypedAxiosResponse<T> extends AxiosResponse {
     data: T
@@ -43,538 +49,543 @@ export default class ClClient {
     }
     forceError: boolean = false
 
-    // The memory is key is used by ConversationLearner-SDK to access the memory partition for a particular user
-    // TODO: Need to further find out why this is required. (I would expect this to also partition on session)
-    getMemoryKey: () => string
+    // The memory is key is used by ConversationLearner-SDK to access the memory partition for a particular user and check consistency of running bot
+    getClientHeaders: () => ClientHeaders
 
-    constructor(baseUrl: string, getMemoryKey: () => string, defaultHeaders?: { [x: string]: string }, forceError: boolean = false) {
+    constructor(baseUrl: string, getClientHeaders: () => ClientHeaders, defaultHeaders?: { [x: string]: string }, forceError: boolean = false) {
         this.baseUrl = baseUrl
-        this.getMemoryKey = getMemoryKey
+        this.getClientHeaders = getClientHeaders
         this.defaultConfig.headers = { ...this.defaultConfig.headers, ...defaultHeaders }
         this.forceError = forceError
     }
 
     send<T = any>(config: AxiosRequestConfig) {
         if (this.forceError) {
-            return Promise.reject(new Error("Injected Error"));
+            return Promise.reject(new Error("Injected Error"))
         }
 
-        const memoryKey = this.getMemoryKey()
+        const clientHeaders = this.getClientHeaders()
         const finalConfig = {
             ...this.defaultConfig,
             ...config
         }
 
-        finalConfig.headers[CLM.MEMORY_KEY_HEADER_NAME] = memoryKey
-        
+        finalConfig.headers[CLM.MEMORY_KEY_HEADER_NAME] = clientHeaders.memoryKey
+        finalConfig.headers[CLM.BOT_CHECKSUM_HEADER_NAME] = clientHeaders.botChecksum
+
         return Axios(finalConfig) as Promise<TypedAxiosResponse<T>>
     }
 
-    setApp(app: CLM.AppBase): Promise<void> {
-        return this.send({
+    async setApp(app: CLM.AppBase): Promise<void> {
+        await this.send({
             method: 'put',
             url: `${this.baseUrl}/state/app`,
             data: app
         })
-            .then(response => { })
     }
 
-    setConversationId(userName: string, userId: string, conversationId: string): Promise<void> {
-        return this.send({
+    async setConversationId(userName: string, userId: string, conversationId: string): Promise<void> {
+        await this.send({
             method: 'put',
             url: `${this.baseUrl}/state/conversationId?userName=${userName}&conversationId=${conversationId}`,
         })
-            .then(response => { })
     }
 
     // Each browser instance has a different browserId
-    getBotInfo(browserId: string, appId?: string): Promise<CLM.BotInfo> {
-        return this.send<CLM.BotInfo>({
+    async getBotInfo(browserId: string, appId?: string): Promise<CLM.BotInfo> {
+        const response = await this.send<CLM.BotInfo>({
             url: `${this.baseUrl}/bot?browserId=${browserId}${appId ? `&appId=${appId}` : ''}`
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    apps(userId: string): Promise<CLM.UIAppList> {
-        return this.send<CLM.UIAppList>({
+    async apps(userId: string): Promise<CLM.UIAppList> {
+        const response = await this.send<CLM.UIAppList>({
             url: `${this.baseUrl}/apps?userId=${userId}`
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
-    appGet(appId: string): Promise<CLM.AppBase> {
-        return this.send<CLM.AppBase>({
+    async appGet(appId: string): Promise<CLM.AppBase> {
+        const response = await this.send<CLM.AppBase>({
             url: `${this.baseUrl}/app/${appId}`
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    appGetTrainingStatus(appId: string): Promise<CLM.TrainingStatus> {
-        return this.send<CLM.TrainingStatus>({
+    async appGetTrainingStatus(appId: string): Promise<CLM.TrainingStatus> {
+        const response = await this.send<CLM.TrainingStatus>({
             url: `${this.baseUrl}/app/${appId}/trainingstatus`
         })
-            .then(response => response.data)
+        return response.data
     }
 
     // AT.CREATE_APPLICATION_ASYNC
-    appsCreate(userId: string, appInput: AppInput): Promise<CLM.AppBase> {
-        return this.send<CLM.AppBase>({
+    async appsCreate(userId: string, appInput: AppInput): Promise<CLM.AppBase> {
+        const response = await this.send<CLM.AppBase>({
             method: 'post',
             url: `${this.baseUrl}/app?userId=${userId}`,
             data: appInput
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
     // AT.COPY_APPLICATION_ASYNC
-    appCopy(srcUserId: string, destUserId: string, appId: string): Promise<void> {
-        return this.send<string>({
+    async appCopy(srcUserId: string, destUserId: string, appId: string): Promise<void> {
+        await this.send<string>({
             method: 'post',
             url: `${this.baseUrl}/apps/copy?srcUserId=${srcUserId}&destUserId=${destUserId}&appId=${appId}`
-        }).then(response => {})
+        })
     }
 
-    appsDelete(appId: string): Promise<void> {
-        return this.send({
+    async appsDelete(appId: string): Promise<void> {
+        await this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}`
         })
-            .then(response => { })
     }
 
-    appsUpdate(appId: string, app: CLM.AppBase): Promise<CLM.AppBase> {
-        return this.send({
+    async appsUpdate(appId: string, app: CLM.AppBase): Promise<CLM.AppBase> {
+        await this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}`,
             data: app
         })
-            .then(response => app)
+        return app
     }
 
-    appCreateTag(appId: string, tagName: string, makeLive: boolean): Promise<CLM.AppBase> {
-        return this.send<CLM.AppBase>({
+    async appCreateTag(appId: string, tagName: string, makeLive: boolean): Promise<CLM.AppBase> {
+        const response = await this.send<CLM.AppBase>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/publish?version=${tagName}&makeLive=${makeLive}`
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    appSetLiveTag(appId: string, tagName: string): Promise<CLM.AppBase> {
-        return this.send<CLM.AppBase>({
+    async appSetLiveTag(appId: string, tagName: string): Promise<CLM.AppBase> {
+        const response = await this.send<CLM.AppBase>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/publish/${tagName}`
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    appSetEditingTag(appId: string, tagName: string): Promise<{ [appId: string]: string }> {
-        return this.send<{ [appId: string]: string }>({
+    async appSetEditingTag(appId: string, tagName: string): Promise<{ [appId: string]: string }> {
+        const response = await this.send<{
+            [appId: string]: string;
+        }>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/edit/${tagName}`
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    entitiesGetById(appId: string, entityId: string): Promise<CLM.EntityBase> {
-        return this.send<CLM.EntityBase>({
+    async entitiesGetById(appId: string, entityId: string): Promise<CLM.EntityBase> {
+        const response = await this.send<CLM.EntityBase>({
             url: `${this.baseUrl}/app/${appId}/entity/${entityId}`
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
-    entities(appId: string): Promise<CLM.EntityBase[]> {
-        return this.send<CLM.EntityList>({
+    async entities(appId: string): Promise<CLM.EntityBase[]> {
+        const response = await this.send<CLM.EntityList>({
             url: `${this.baseUrl}/app/${appId}/entities`
-        }).then(response => response.data.entities)
+        })
+        return response.data.entities
     }
 
-    entitiesCreate(appId: string, entity: CLM.EntityBase): Promise<CLM.EntityBase> {
-        return this.send<CLM.ChangeEntityResponse>({
+    async entitiesCreate(appId: string, entity: CLM.EntityBase): Promise<CLM.EntityBase> {
+        const response = await this.send<CLM.ChangeEntityResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/entity`,
             data: entity
-        }).then(response => {
-            const changeEntityResponse = response.data
-            entity.entityId = changeEntityResponse.entityId
-            entity.negativeId = changeEntityResponse.negativeEntityId
-            return entity
         })
+        const changeEntityResponse = response.data;
+        entity.entityId = changeEntityResponse.entityId;
+        entity.negativeId = changeEntityResponse.negativeEntityId;
+        return entity
     }
 
-    entitiesDelete(appId: string, entityId: string): Promise<CLM.DeleteEditResponse> {
-        return this.send({
+    async entitiesDelete(appId: string, entityId: string): Promise<CLM.DeleteEditResponse> {
+        const response = await this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/entity/${entityId}`
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    entitiesDeleteValidation(appId: string, packageId: string, entityId: string): Promise<string[]> {
-        return this.send({
+    async entitiesDeleteValidation(appId: string, packageId: string, entityId: string): Promise<string[]> {
+        const response = await this.send({
             method: 'get',
             url: `${this.baseUrl}/app/${appId}/entity/${entityId}/deleteValidation?packageId=${packageId}`
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    entitiesUpdate(appId: string, entity: CLM.EntityBase): Promise<CLM.ChangeEntityResponse> {
+    async entitiesUpdate(appId: string, entity: CLM.EntityBase): Promise<CLM.ChangeEntityResponse> {
         const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
-        return this.send<CLM.ChangeEntityResponse>({
+        const response = await this.send<CLM.ChangeEntityResponse>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/entity/${entity.entityId}`,
             data: entityToSend
         })
-            .then(response => {
-                const changeEntityResponse = response.data
-                entity.entityId = changeEntityResponse.entityId
-                entity.negativeId = changeEntityResponse.negativeEntityId
-                return changeEntityResponse
-            })
+        const changeEntityResponse = response.data;
+        entity.entityId = changeEntityResponse.entityId;
+        entity.negativeId = changeEntityResponse.negativeEntityId;
+        return changeEntityResponse
     }
 
-    entitiesUpdateValidation(appId: string, packageId: string, entity: CLM.EntityBase): Promise<string[]> {
+    async entitiesUpdateValidation(appId: string, packageId: string, entity: CLM.EntityBase): Promise<string[]> {
         const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
-        return this.send({
+        const response = await this.send({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/entity/${entity.entityId}/editValidation?packageId=${packageId}`,
             data: entityToSend
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    source(appId: string, packageId: string): Promise<CLM.AppDefinitionChange> {
-        return this.send<CLM.AppDefinitionChange>({
+    async source(appId: string, packageId: string): Promise<CLM.AppDefinitionChange> {
+        const response = await this.send<CLM.AppDefinitionChange>({
             url: `${this.baseUrl}/app/${appId}/source?packageId=${packageId}`
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
-    sourcepost(appId: string, source: CLM.AppDefinition): Promise<any> {
-        return this.send({
+    async sourcepost(appId: string, source: CLM.AppDefinition): Promise<any> {
+        const response = await this.send({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/source`,
             data: source
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
-    actions(appId: string): Promise<CLM.ActionBase[]> {
-        return this.send<CLM.ActionList>({
+    async actions(appId: string): Promise<CLM.ActionBase[]> {
+        const response = await this.send<CLM.ActionList>({
             url: `${this.baseUrl}/app/${appId}/actions`
-        }).then(response => response.data.actions)
+        })
+        return response.data.actions
     }
 
-    actionsCreate(appId: string, action: CLM.ActionBase): Promise<CLM.ActionBase> {
-        return this.send<IActionCreationResponse>({
+    async actionsCreate(appId: string, action: CLM.ActionBase): Promise<CLM.ActionBase> {
+        const response = await this.send<IActionCreationResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/action`,
             data: action
         })
-            .then(response => {
-                action.actionId = response.data.actionId
-                return action
-            })
+        action.actionId = response.data.actionId;
+        return action
     }
 
-    actionsDelete(appId: string, actionId: string): Promise<CLM.DeleteEditResponse> {
-        return this.send({
+    async actionsDelete(appId: string, actionId: string): Promise<CLM.DeleteEditResponse> {
+        const response = await this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/action/${actionId}`
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    actionsDeleteValidation(appId: string, packageId: string, actionId: string): Promise<string[]> {
-        return this.send({
+    async actionsDeleteValidation(appId: string, packageId: string, actionId: string): Promise<string[]> {
+        const response = await this.send({
             method: 'get',
             url: `${this.baseUrl}/app/${appId}/action/${actionId}/deleteValidation?packageId=${packageId}`
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    actionsUpdate(appId: string, action: CLM.ActionBase): Promise<CLM.DeleteEditResponse> {
+    async actionsUpdate(appId: string, action: CLM.ActionBase): Promise<CLM.DeleteEditResponse> {
         const { version, packageCreationId, packageDeletionId, ...actionToSend } = action
-        return this.send({
+        const response = await this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/action/${action.actionId}`,
             data: actionToSend
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    actionsUpdateValidation(appId: string, packageId: string, action: CLM.ActionBase): Promise<string[]> {
+    async actionsUpdateValidation(appId: string, packageId: string, action: CLM.ActionBase): Promise<string[]> {
         const { version, packageCreationId, packageDeletionId, ...actionToSend } = action
-        return this.send({
+        const response = await this.send({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/action/${action.actionId}/editValidation?packageId=${packageId}`,
             data: actionToSend
         })
-            .then(response => response.data)
+        return response.data
     }
-      
+
     //AT.EDIT_TRAINDIALOG_ASYNC
-    trainDialogEdit(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainResponse> {
-        return this.send<CLM.TrainResponse>({
+    async trainDialogEdit(appId: string, trainDialog: PartialTrainDialog): Promise<CLM.TrainResponse> {
+        const response = await this.send<CLM.TrainResponse>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialog.trainDialogId}`,
             data: trainDialog
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
     //AT.FETCH_TRAIN_DIALOG_ASYNC
-    trainDialog(appId: string, trainDialogId: string): Promise<CLM.TrainDialog> {
-        return this.send<CLM.TrainDialog>({
+    async trainDialog(appId: string, trainDialogId: string): Promise<CLM.TrainDialog> {
+        const response = await this.send<CLM.TrainDialog>({
             url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}`
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
-    trainDialogs(appId: string): Promise<CLM.TrainDialog[]> {
-        return this.send<CLM.TrainDialogList>({
+    async trainDialogs(appId: string): Promise<CLM.TrainDialog[]> {
+        const response = await this.send<CLM.TrainDialogList>({
             url: `${this.baseUrl}/app/${appId}/traindialogs?includeDefinitions=false`
-        }).then(response => response.data.trainDialogs)
+        })
+        return response.data.trainDialogs
     }
 
-    trainDialogsCreate(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainDialog> {
-        return this.send({
+    async trainDialogsCreate(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainDialog> {
+        const response = await this.send({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/traindialog`,
             data: trainDialog
         })
-        .then(response => {
-            trainDialog.trainDialogId = response.data.trainDialogId 
-            return trainDialog
-        })
+        trainDialog.trainDialogId = response.data.trainDialogId;
+        return trainDialog
     }
 
-    trainDialogsDelete(appId: string, trainDialogId: string): Promise<void> {
-        return this.send({
+    async trainDialogsDelete(appId: string, trainDialogId: string): Promise<void> {
+        await this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}`
         })
-            .then(response => { })
     }
 
     //AT.FETCH_SCOREFROMHISTORY_ASYNC
-    trainDialogScoreFromHistory(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.UIScoreResponse> {
-        return this.send<CLM.UIScoreResponse>({
+    async trainDialogScoreFromHistory(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.UIScoreResponse> {
+        const response = await this.send<CLM.UIScoreResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/scorefromhistory`,
             data: trainDialog
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
     //AT.FETCH_EXTRACTFROMHISTORY_ASYNC
-    trainDialogExtractFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): Promise<CLM.ExtractResponse> {
-        return this.send<CLM.ExtractResponse>({
+    async trainDialogExtractFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): Promise<CLM.ExtractResponse> {
+        const response = await this.send<CLM.ExtractResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/extractfromhistory`,
-            data: {trainDialog, userInput }
-        }).then(response => response.data)
+            data: { trainDialog, userInput }
+        })
+        return response.data
     }
 
     //AT.FETCH_TRAINDIALOGREPLAY_ASYNC
-    trainDialogReplay(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainDialog> {
-        return this.send<CLM.TrainDialog>({
+    async trainDialogReplay(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.TrainDialog> {
+        const response = await this.send<CLM.TrainDialog>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/traindialogreplay`,
             data: trainDialog
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
-    trainDialogsUpdateExtractStep(appId: string, trainDialogId: string, turnIndex: number, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
-        return this.send({
+    async trainDialogsUpdateExtractStep(appId: string, trainDialogId: string, turnIndex: number, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
+        const response = await this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/extractor/${turnIndex}?includeDefinitions=true`,
             data: userInput
         })
-            .then(response => response.data)
+        return response.data
     }
 
     //AT.FETCH_TEXTVARIATIONCONFLICT_ASYNC
     // If there is a conflicting text variation, returns corresponding extractresponse, otherwise null
     // filteredDialog = dialog to ignore when checking for conflicting labels
-    fetchTextVariationConflict(appId: string, trainDialogId: string, textVariation: CLM.TextVariation, filteredDialog: string | null): Promise<CLM.ExtractResponse | null> {
+    async fetchTextVariationConflict(appId: string, trainDialogId: string, textVariation: CLM.TextVariation, filteredDialog: string | null): Promise<CLM.ExtractResponse | null> {
         let url = `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/extractor/textvariation`
         if (filteredDialog) {
             url = `${url}?filteredDialog=${filteredDialog}`
         }
-        return this.send<CLM.ExtractResponse>({
+        const response = await this.send<CLM.ExtractResponse>({
             method: 'post',
             url,
             data: textVariation
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
-    tutorials(userId: string): Promise<CLM.AppBase[]> {
-        return this.send<CLM.UIAppList>({
+    async tutorials(userId: string): Promise<CLM.AppBase[]> {
+        const response = await this.send<CLM.UIAppList>({
             url: `${this.baseUrl}/apps?userId=${userId}`
-        }).then(response => response.data.appList.apps)
+        })
+        return response.data.appList.apps
     }
 
-    history(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
-        return this.send<CLM.TeachWithHistory>({
+    async history(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
+        const response = await this.send<CLM.TeachWithHistory>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/history?username=${userName}&userid=${userId}`,
             data: trainDialog
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
-    logDialogs(appId: string, packageId: string): Promise<CLM.LogDialog[]> {
-        return this.send<CLM.LogDialogList>({
+    async logDialogs(appId: string, packageId: string): Promise<CLM.LogDialog[]> {
+        const response = await this.send<CLM.LogDialogList>({
             url: `${this.baseUrl}/app/${appId}/logdialogs?packageId=${packageId}`
-        }).then(response => response.data.logDialogs)
+        })
+        return response.data.logDialogs
     }
 
-    logDialogsCreate(appId: string, logDialog: CLM.LogDialog): Promise<CLM.LogDialog> {
-        return this.send<string>({
+    async logDialogsCreate(appId: string, logDialog: CLM.LogDialog): Promise<CLM.LogDialog> {
+        const response = await this.send<string>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/logdialog`,
             data: logDialog
         })
-            .then(response => {
-                logDialog.logDialogId = response.data
-                return logDialog
-            })
+        logDialog.logDialogId = response.data;
+        return logDialog
     }
 
-    logDialogsDelete(appId: string, logDialogId: string): Promise<void> {
-        return this.send({
+    async logDialogsDelete(appId: string, logDialogId: string): Promise<void> {
+        await this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/logdialog/${logDialogId}`
         })
-            .then(response => { })
     }
 
-    logDialogsUpdateExtractStep(appId: string, logDialogId: string, turnIndex: number, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
-        return this.send({
+    async logDialogsUpdateExtractStep(appId: string, logDialogId: string, turnIndex: number, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
+        const response = await this.send({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/logdialog/${logDialogId}/extractor/${turnIndex}`,
             data: userInput
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    chatSessions(appId: string): Promise<CLM.Session[]> {
-        return this.send<CLM.SessionList>({
+    async chatSessions(appId: string): Promise<CLM.Session[]> {
+        const response = await this.send<CLM.SessionList>({
             url: `${this.baseUrl}/app/${appId}/sessions`
         })
-            .then(response => response.data.sessions)
+        return response.data.sessions
     }
 
-    chatSessionsCreate(appId: string, sessionCreateParams: CLM.SessionCreateParams): Promise<CLM.Session> {
-        return this.send<CLM.Session>({
+    async chatSessionsCreate(appId: string, sessionCreateParams: CLM.SessionCreateParams): Promise<CLM.Session> {
+        const response = await this.send<CLM.Session>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/session`,
             data: sessionCreateParams
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    chatSessionsExpire(appId: string, sessionId: string): Promise<void> {
-        return this.send<void>({
+    async chatSessionsExpire(appId: string): Promise<void> {
+        await this.send<void>({
             method: 'put',
-            url: `${this.baseUrl}/app/${appId}/session/${sessionId}`
+            url: `${this.baseUrl}/app/${appId}/session`
         })
-            .then(response => { })
     }
 
     // AT.DELETE_CHAT_SESSION_ASYNC
-    chatSessionsDelete(appId: string, sessionId: string): Promise<void> {
-        return this.send({
+    async chatSessionsDelete(appId: string): Promise<void> {
+        await this.send({
             method: 'delete',
-            url: `${this.baseUrl}/app/${appId}/session/${sessionId}`
+            url: `${this.baseUrl}/app/${appId}/session`
         })
-            .then(rsponse => { })
     }
 
-    teachSessions(appId: string): Promise<CLM.Teach[]> {
-        return this.send<CLM.TeachList>({
+    async teachSessions(appId: string): Promise<CLM.Teach[]> {
+        const response = await this.send<CLM.TeachList>({
             url: `${this.baseUrl}/app/${appId}/teaches`
         })
-            .then(response => response.data.teaches)
+        return response.data.teaches
     }
 
-    teachSessionCreate(appId: string, initialFilledEntities: CLM.FilledEntity[] = []): Promise<CLM.TeachResponse> {
-        return this.send<CLM.TeachResponse>({
+    async teachSessionCreate(appId: string, initialFilledEntities: CLM.FilledEntity[] = []): Promise<CLM.TeachResponse> {
+        const response = await this.send<CLM.TeachResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/teach`,
             data: initialFilledEntities
         })
-            .then(response => response.data)
+        return response.data
     }
 
     // DELETE_TEACH_SESSION_ASYNC
-    teachSessionDelete(appId: string, teachSession: CLM.Teach, save: boolean): Promise<void> {
-        return this.send({
+    async teachSessionDelete(appId: string, teachSession: CLM.Teach, save: boolean): Promise<string> {
+        const response = await this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/teach/${teachSession.teachId}?save=${save}`
         })
-            .then(response => { })
+        
+        return response.data.trainDialogId
     }
 
     // filteredDialog = dialog to ignore when checking for conflicting labels
-    teachSessionAddExtractStep(appId: string, sessionId: string, userInput: CLM.UserInput, filteredDialog: string | null): Promise<CLM.UIExtractResponse> {
+    async teachSessionAddExtractStep(appId: string, sessionId: string, userInput: CLM.UserInput, filteredDialog: string | null): Promise<CLM.UIExtractResponse> {
         let url = `${this.baseUrl}/app/${appId}/teach/${sessionId}/extractor`
         if (filteredDialog) {
             url = `${url}?filteredDialog=${filteredDialog}`
         }
-        return this.send({
+        const response = await this.send({
             method: 'put',
             url,
             data: userInput
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    teachSessionRescore(appId: string, teachId: string, scoreInput: CLM.ScoreInput): Promise<CLM.UIScoreResponse> {
-        return this.send<CLM.UIScoreResponse>({
+    async teachSessionRescore(appId: string, teachId: string, scoreInput: CLM.ScoreInput): Promise<CLM.UIScoreResponse> {
+        const response = await this.send<CLM.UIScoreResponse>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/teach/${teachId}/rescore`,
             data: scoreInput
         })
-            .then(response => response.data)
+        return response.data
     }
 
     // AT.POST_SCORE_FEEDBACK_ASYNC
-    teachSessionAddScorerStep(appId: string, teachId: string, uiTrainScorerStep: CLM.UITrainScorerStep): Promise<CLM.UIPostScoreResponse> {
-        return this.send<CLM.UIPostScoreResponse>({
+    async teachSessionAddScorerStep(appId: string, teachId: string, uiTrainScorerStep: CLM.UITrainScorerStep): Promise<CLM.UIPostScoreResponse> {
+        const response = await this.send<CLM.UIPostScoreResponse>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/teach/${teachId}/scorer`,
             data: uiTrainScorerStep
         })
-            .then(response => response.data)
+        return response.data
     }
 
     // AT.RUN_SCORER_ASYNC
-    teachSessionUpdateScorerStep(appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput): Promise<CLM.UIScoreResponse> {
-        return this.send<CLM.UIScoreResponse>({
+    async teachSessionUpdateScorerStep(appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput): Promise<CLM.UIScoreResponse> {
+        const response = await this.send<CLM.UIScoreResponse>({
             method: 'put',
             url: `${this.baseUrl}/app/${appId}/teach/${teachId}/scorer`,
             data: uiScoreInput
         })
-            .then(response => response.data)
+        return response.data
     }
 
-    teachSessionFromBranch(appId: string, trainDialogId: string, userName: string, userId: string, turnIndex: number): Promise<CLM.TeachWithHistory> {
-        return this.send<CLM.TeachWithHistory>({
+    async teachSessionFromBranch(appId: string, trainDialogId: string, userName: string, userId: string, turnIndex: number): Promise<CLM.TeachWithHistory> {
+        const response = await this.send<CLM.TeachWithHistory>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/traindialog/${trainDialogId}/branch/${turnIndex}?username=${userName}&userid=${userId}`
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
     //AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
-    teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
-        return this.send<CLM.TeachWithHistory>({
+    async teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
+        const response = await this.send<CLM.TeachWithHistory>({
             method: 'post',
             url: `${this.baseUrl}/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`,
             data: {
                 trainDialog,
-                userInput 
+                userInput
             }
-        }).then(response => response.data)
+        })
+        return response.data
     }
 
     // AT.DELETE_MEMORY_ASYNC
-    memoryDelete(appId: string): Promise<void> {
-        return this.send({
+    async memoryDelete(appId: string): Promise<void> {
+        await this.send({
             method: 'delete',
             url: `${this.baseUrl}/app/${appId}/botmemory`
         })
-        .then(response => { })
     }
 }

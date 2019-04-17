@@ -6,22 +6,25 @@ import * as React from 'react'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as OF from 'office-ui-fabric-react'
 import * as TC from '../../tipComponents'
+import * as ToolTip from '../../ToolTips/ToolTips'
+import * as CLM from '@conversationlearner/models'
+import * as Util from '../../../Utils/util'
 import ActionDetailsList from '../../ActionDetailsList'
 import ConfirmCancelModal from '../ConfirmCancelModal'
 import { CLDropdownOption } from '../CLDropDownOption'
-import * as ToolTip from '../../ToolTips/ToolTips'
-import { ActionBase } from '@conversationlearner/models'
 import './styles.css'
 import { FM } from '../../../react-intl-messages'
-import { InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../../FormattedMessageId'
+import { InjectedIntlProps } from 'react-intl'
 
-interface Props extends InjectedIntlProps {
+// Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
+interface ReceivedProps {
     open: boolean
     title: string
 
     entityOptions: OF.IDropdownOption[]
-    
-    selectedTypeKey: string
+
+    entityTypeKey: CLM.EntityType | string
     isTypeDisabled: boolean
     onChangedType: (option: OF.IDropdownOption) => void
 
@@ -31,19 +34,16 @@ interface Props extends InjectedIntlProps {
     onChangedName: (name: string) => void
     onKeyDownName: React.KeyboardEventHandler<HTMLInputElement>
 
-    isProgrammatic: boolean
-    
     isMultiValue: boolean
     isMultiValueDisabled: boolean
     onChangeMultiValue: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
 
     isNegatable: boolean
-    isNegatableDisabled: boolean
     onChangeNegatable: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
 
     isEditing: boolean
-    requiredActions: ActionBase[]
-    disqualifiedActions: ActionBase[]
+    requiredActions: CLM.ActionBase[]
+    disqualifiedActions: CLM.ActionBase[]
 
     onClickTrainDialogs: () => void
 
@@ -53,6 +53,7 @@ interface Props extends InjectedIntlProps {
     onClickCancel: () => void
 
     isConfirmDeleteModalOpen: boolean
+    showValidationWarning: boolean
     isDeleteErrorModalOpen: boolean
     showDelete: boolean
     onClickDelete: () => void
@@ -63,25 +64,30 @@ interface Props extends InjectedIntlProps {
     onCancelEdit: () => void
     onConfirmEdit: () => void
 
-    showValidationWarning: boolean
+    needPrebuiltWarning: string | null
+    onClosePrebuiltWarning: () => void
 
-    isAlwaysTagged: boolean
-    onAlwaysTagChange: () => void
-    isAlwaysTagDisabled: boolean
+    selectedResolverKey: string
+    resolverOptions: OF.IDropdownOption[]
+    onResolverChanged: (option: OF.IDropdownOption) => void
+
+    enumValues: (CLM.EnumValue | null)[]
+    onChangedEnum: (index: number, value: string) => void
+    onDeleteEnum: (enumValue: CLM.EnumValue) => void
+    onGetEnumErrorMessage: (enumValue: CLM.EnumValue | null) => string
+    onCancelEnumDelete: () => void
+    onConfirmEnumDelete: () => void
+    deleteEnumCheck: CLM.EnumValue | null
 }
 
-const EditComponent: React.SFC<Props> = (props: Props) => {
+type Props = ReceivedProps & InjectedIntlProps
+
+const EditComponent: React.SFC<Props> = (props) => {
     return <div className="cl-entity-creator-form">
         <TC.Dropdown
             data-testid="entity-creator-entity-type-dropdown"
-            ariaLabel={props.intl.formatMessage({
-                id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
-                defaultMessage: 'Entity Type'
-            })}
-            label={props.intl.formatMessage({
-                id: FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL,
-                defaultMessage: 'Entity Type'
-            })}
+            ariaLabel={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL)}
+            label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL)}
             options={props.entityOptions}
             onChanged={props.onChangedType}
             onRenderOption={(option: CLDropdownOption) =>
@@ -89,7 +95,7 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
                     <span className={option.style}>{option.text}</span>
                 </div>
             }
-            selectedKey={props.selectedTypeKey}
+            selectedKey={props.entityTypeKey}
             disabled={props.isTypeDisabled}
             tipType={ToolTip.TipType.ENTITY_TYPE}
         />
@@ -98,54 +104,78 @@ const EditComponent: React.SFC<Props> = (props: Props) => {
             onGetErrorMessage={props.onGetNameErrorMessage}
             onChanged={props.onChangedName}
             onKeyDown={props.onKeyDownName}
-            label={props.intl.formatMessage({
-                id: FM.ENTITYCREATOREDITOR_FIELDS_NAME_LABEL,
-                defaultMessage: 'Entity Name'
-            })}
-            placeholder={props.intl.formatMessage({
-                id: FM.ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER,
-                defaultMessage: 'Name...'
-            })}
+            label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NAME_LABEL)}
+            placeholder={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER)}
             required={true}
             value={props.name}
             disabled={props.isNameDisabled}
+            ref={setFocused}
         />
+        {props.entityTypeKey === CLM.EntityType.LUIS &&
+            <TC.Dropdown
+                data-testid="entity-creator-resolver-type-dropdown"
+                ariaLabel={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_LABEL)}
+                label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_LABEL)}
+                options={props.resolverOptions}
+                onChanged={props.onResolverChanged}
+                onRenderOption={(option: CLDropdownOption) =>
+                    <div className="dropdownExample-option">
+                        <span className={option.style}>{option.text}</span>
+                    </div>
+                }
+                selectedKey={props.selectedResolverKey}
+                tipType={ToolTip.TipType.ENTITY_RESOLVER}
+            />
+        }
+        {props.entityTypeKey === CLM.EntityType.ENUM &&
+            
+            props.enumValues.map((value, index) => {
+                return (
+                    <div 
+                        className="cl-inputWithButton-input"
+                        key={index}
+                    >
+                        <OF.TextField
+                            key={index}
+                            className={OF.FontClassNames.mediumPlus}
+                            onChanged={(text) => props.onChangedEnum(index, text)}
+                            label={index === 0 ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_ENUM_LABEL) : ""}
+                            errorMessage={props.onGetEnumErrorMessage(value)}
+                            value={value ? value.enumValue : ""}
+                        />
+                        {value && value.enumValueId &&
+                            <OF.IconButton
+                                className={`cl-inputWithButton-button`}
+                                iconProps={{ iconName: 'Delete' }}
+                                onClick={() => props.onDeleteEnum(value)}
+                                ariaDescription="Delete Turn"
+                            />
+                        }
+                    </div>
+                )
+            })
+
+        }
         <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
-            <TC.Checkbox
-                data-testid="entity-creator-multi-valued-checkbox"
-                label={props.intl.formatMessage({
-                    id: FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL,
-                    defaultMessage: 'Multi-valued'
-                })}
-                checked={props.isMultiValue}
-                onChange={props.onChangeMultiValue}
-                disabled={props.isMultiValueDisabled}
-                tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
-            />
-            <TC.Checkbox
-                data-testid="entity-creator-negatable-checkbox"
-                label={props.intl.formatMessage({
-                    id: FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL,
-                    defaultMessage: 'Negatable'
-                })}
-                checked={props.isNegatable}
-                onChange={props.onChangeNegatable}
-                disabled={props.isNegatableDisabled}
-                tipType={ToolTip.TipType.ENTITY_NEGATABLE}
-            />
-            {!props.isAlwaysTagDisabled &&
-            <TC.Checkbox	
-                data-testid="entitycreator-checkbox-alwaystag"	
-                label={props.intl.formatMessage({	
-                    id: FM.ENTITYCREATOREDITOR_FIELDS_ALWAYSTAG_LABEL,	
-                    defaultMessage: 'Always Extract'	
-                })}	
-                
-                checked={props.isAlwaysTagged}	
-                onChange={props.onAlwaysTagChange}
-                disabled={props.isAlwaysTagDisabled}	
-                tipType={ToolTip.TipType.ENTITY_ALWAYS_EXTRACT}	
-            />}
+            {props.entityTypeKey !== CLM.EntityType.ENUM &&            
+                <TC.Checkbox
+                    data-testid="entity-creator-multi-valued-checkbox"
+                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL)}
+                    checked={props.isMultiValue}
+                    onChange={props.onChangeMultiValue}
+                    disabled={props.isMultiValueDisabled}
+                    tipType={ToolTip.TipType.ENTITY_MULTIVALUE}
+                />
+            }
+            {props.entityTypeKey === CLM.EntityType.LUIS &&
+                <TC.Checkbox
+                    data-testid="entity-creator-negatable-checkbox"
+                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NEGATABLE_LABEL)}
+                    checked={props.isNegatable}
+                    onChange={props.onChangeNegatable}
+                    tipType={ToolTip.TipType.ENTITY_NEGATABLE}
+                />
+            }
         </div>
     </div>
 }
@@ -165,16 +195,13 @@ const Component: React.SFC<Props> = (props) => {
                     <div>
                         <OF.Pivot linkSize={OF.PivotLinkSize.large}>
                             <OF.PivotItem
-                                linkText={props.intl.formatMessage({
-                                    id: FM.ENTITYCREATOREDITOR_PIVOT_EDIT,
-                                    defaultMessage: 'Edit Entity'
-                                })}
+                                linkText={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_PIVOT_EDIT)}
                             >
                                 <EditComponent {...props} />
                             </OF.PivotItem>
                             <OF.PivotItem
                                 ariaLabel={ToolTip.TipType.ENTITY_ACTION_REQUIRED}
-                                linkText={props.intl.formatMessage({ id: FM.ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR, defaultMessage: 'Required For Actions' })}
+                                linkText={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR)}
                                 onRenderItemLink={(
                                     pivotItemProps: OF.IPivotItemProps,
                                     defaultRender: (link: OF.IPivotItemProps) => JSX.Element) =>
@@ -182,41 +209,36 @@ const Component: React.SFC<Props> = (props) => {
                             >
                                 <ActionDetailsList
                                     actions={props.requiredActions}
-                                    onSelectAction={() => {}}
+                                    onSelectAction={() => { }}
                                 />
                             </OF.PivotItem>
                             <OF.PivotItem
                                 ariaLabel={ToolTip.TipType.ENTITY_ACTION_DISQUALIFIED}
-                                linkText={props.intl.formatMessage({ id: FM.ENTITYCREATOREDITOR_PIVOT_DISQUALIFIEDACTIONS, defaultMessage: 'Disqualified Actions' })}
+                                linkText={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_PIVOT_DISQUALIFIEDACTIONS)}
                                 onRenderItemLink={(
                                     pivotItemProps: OF.IPivotItemProps,
                                     defaultRender: (link: OF.IPivotItemProps) => JSX.Element) =>
-                                        ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}
+                                    ToolTip.onRenderPivotItem(pivotItemProps, defaultRender)}
                             >
                                 <ActionDetailsList
                                     actions={props.disqualifiedActions}
-                                    onSelectAction={() => {}}
+                                    onSelectAction={() => { }}
                                 />
                             </OF.PivotItem>
                         </OF.Pivot>
-                    </div>
+                    </div >
                 )
                 : <EditComponent {...props} />}
-        </div>
+        </div >
         <div className="cl-modal_footer cl-modal-buttons">
             <div className="cl-modal-buttons_secondary">
-                {props.isEditing &&
+                {props.isEditing && 
                     <OF.DefaultButton
                         onClick={props.onClickTrainDialogs}
+                        disabled={!props.isSaveButtonDisabled} // Disable so user doesn't lose work if clicked
                         iconProps={{ iconName: 'QueryList' }}
-                        ariaDescription={props.intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION,
-                            defaultMessage: 'Train Dialogs'
-                        })}
-                        text={props.intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT,
-                            defaultMessage: 'Trail Dialogs'
-                        })}
+                        ariaDescription={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION)}
+                        text={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT)}
                     />
                 }
             </div>
@@ -226,49 +248,28 @@ const Component: React.SFC<Props> = (props) => {
                     disabled={props.isSaveButtonDisabled}
                     onClick={props.onClickSaveCreate}
                     ariaDescription={props.isEditing
-                        ? props.intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION,
-                            defaultMessage: 'Save'
-                        })
-                        : props.intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION,
-                            defaultMessage: 'Create'
-                        })}
+                        ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION)
+                        : Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION)}
                     text={props.isEditing
-                        ? props.intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_SAVEBUTTON_TEXT,
-                            defaultMessage: 'Save'
-                        })
-                        : props.intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_CREATEBUTTON_TEXT,
-                            defaultMessage: 'Create'
-                        })}
+                        ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_SAVEBUTTON_TEXT)
+                        : Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CREATEBUTTON_TEXT)}
+                    iconProps={{ iconName: 'Accept' }}
                 />
 
                 <OF.DefaultButton
                     onClick={props.onClickCancel}
-                    ariaDescription={props.intl.formatMessage({
-                        id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION,
-                        defaultMessage: 'Cancel'
-                    })}
-                    text={props.intl.formatMessage({
-                        id: FM.ENTITYCREATOREDITOR_CANCELBUTTON_TEXT,
-                        defaultMessage: 'Cancel'
-                    })}
+                    ariaDescription={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
+                    text={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CANCELBUTTON_TEXT)}
+                    iconProps={{ iconName: 'Cancel' }}
                 />
 
                 {props.showDelete &&
                     <OF.DefaultButton
                         className="cl-button-delete"
                         onClick={props.onClickDelete}
-                        ariaDescription={props.intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION,
-                            defaultMessage: 'Delete'
-                        })}
-                        text={props.intl.formatMessage({
-                            id: FM.ENTITYCREATOREDITOR_DELETEBUTTON_TEXT,
-                            defaultMessage: 'Delete'
-                        })}
+                        ariaDescription={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
+                        text={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_DELETEBUTTON_TEXT)}
+                        iconProps={{ iconName: 'Delete' }}
                     />}
             </div>
 
@@ -277,52 +278,54 @@ const Component: React.SFC<Props> = (props) => {
             open={props.isConfirmDeleteModalOpen}
             onCancel={props.onCancelDelete}
             onConfirm={props.onConfirmDelete}
-            title={props.intl.formatMessage({
-                    id: FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_TITLE,
-                    defaultMessage: 'Are you sure you want to delete this Entity?'
-                })}
+            title={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_TITLE)}
             message={() => props.showValidationWarning &&
                 <div className={`${OF.FontClassNames.medium} cl-text--warning`}>
                     <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
-                    <FormattedMessage
-                        id={FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING}
-                        defaultMessage='This Entity is used by one or more Actions or Training Dialogs.  If you proceed it will also be removed from these Actions and Training Dialogs.'
-                    />
-            </div>}
+                    <FormattedMessageId id={FM.ENTITYCREATOREDITOR_CONFIRM_DELETE_WARNING} />
+                </div>}
         />
         <ConfirmCancelModal
             open={props.isConfirmEditModalOpen}
-            onCancel={props.onCancelEdit} 
+            onCancel={props.onCancelEdit}
             onConfirm={props.onConfirmEdit}
-            title={props.intl.formatMessage({
-                    id: FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE,
-                    defaultMessage: 'Are you sure you want to edit this Entity?'
-                })}
+            title={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_TITLE)}
             message={() => <div className={`${OF.FontClassNames.medium} cl-text--warning`}>
                 <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
-                <FormattedMessage
-                    id={FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING}
-                    defaultMessage='This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.'
-                />
+                <FormattedMessageId id={FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING} />
             </div>}
+        />
+        <ConfirmCancelModal
+            open={props.needPrebuiltWarning != null && !props.isConfirmEditModalOpen}
+            onOk={props.onClosePrebuiltWarning}
+            title={props.needPrebuiltWarning || ""}
+            message={() => <FormattedMessageId id={FM.ENTITYCREATOREDITOR_PREBUILT_WARNING} />}
         />
         <ConfirmCancelModal
             open={props.isDeleteErrorModalOpen}
             onCancel={props.onCancelDelete}
             onConfirm={null}
-            title={props.intl.formatMessage({
-                id: FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE,
-                defaultMessage: 'Unable to delete'
-            })}
+            title={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE)}
             message={() => <div className={`${OF.FontClassNames.medium} cl-text--error`}>
                 <OF.Icon iconName="Error" className="cl-icon" /> Error:&nbsp;
-                <FormattedMessage
-                    id={FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING}
-                    defaultMessage='It is either referenced within the payload or used as suggested entity by one or more Actions.'
-                />
+                <FormattedMessageId id={FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING} />
             </div>}
         />
-    </Modal>
+        <ConfirmCancelModal
+            open={props.deleteEnumCheck != null}
+            onCancel={props.onCancelEnumDelete}
+            onConfirm={props.onConfirmEnumDelete}
+            title={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_TITLE)}
+            message={() => <div className={`${OF.FontClassNames.medium} cl-text--error`}>
+                <OF.Icon iconName="Warning" className="cl-icon" />
+                <FormattedMessageId id={FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_WARNING} />
+            </div>}
+        />
+    </Modal >
+}
+
+function setFocused(ref: OF.TextField) {
+    if (ref) ref.focus()
 }
 
 export default Component

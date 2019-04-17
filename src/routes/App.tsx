@@ -13,12 +13,12 @@ import { State } from '../types'
 import AppsIndex from './Apps/AppsIndex'
 import Settings from './Settings'
 import NoMatch from './NoMatch'
-import { Banner } from '@conversationlearner/models';
+import { Banner } from '@conversationlearner/models'
 import HelpPanel from '../components/HelpPanel'
 import * as OF from 'office-ui-fabric-react'
 import { SpinnerWindow, ErrorPanel } from '../components/modals'
 import './App.css'
-import { FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../components/FormattedMessageId'
 import { FM } from '../react-intl-messages'
 import { fetchBotInfoThunkAsync } from '../actions/botActions'
 import { clearBanner } from '../actions/displayActions'
@@ -100,21 +100,18 @@ class App extends React.Component<Props, ComponentState> {
   render() {
     const banner = this.props.botInfo ? this.props.botInfo.banner : null
     return (
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <div className="cl-app">
           <div className="cl-app_header-placeholder" />
           <header className={`cl-app_header cl-header`}>
             <nav className="cl-header_links">
-              <img className="cl-header-logo" src="/Microsoft-logo_rgb_c-wht.png" alt="Microsoft Logo" />
+              <img className="cl-header-logo" src="Microsoft-logo_rgb_c-wht.png" alt="Microsoft Logo" />
               <span className="cl-header-text">
-                <img className="cl-header-icon" src="/icon.svg" alt="ConversationLearner Logo" />
+                <img className="cl-header-icon" src="icon.svg" alt="ConversationLearner Logo" />
                 Project Conversation Learner
               </span>
               <NavLink to="/home">
-                <FormattedMessage
-                  id={FM.APP_HEADER_MODELS}
-                  defaultMessage="My Models"
-                />
+                <FormattedMessageId id={FM.APP_HEADER_MODELS} />
               </NavLink>
               <a href="https://labs.cognitive.microsoft.com/en-us/project-conversation-learner" target="_blank" rel="noopener noreferrer">Documentation</a>
               <a href="https://cognitive.uservoice.com/forums/912199-project-conversation-learner" target="_blank" rel="noopener noreferrer">Feedback</a>
@@ -144,33 +141,38 @@ class App extends React.Component<Props, ComponentState> {
               </OF.MessageBar>
             }
             <Switch>
-                <Route exact path="/" render={() => <Redirect to="/home" />} />
-                <Route 
-                  path="/home" 
-                  render={props => 
-                      <React.Fragment>
-                        {this.state.loadingState === LoadingState.LOADING && 
-                          <p>Loading...</p>
-                        }
-                        {this.state.loadingState === LoadingState.FAILED && 
-                          <div>
-                            <p>Loading Failed.</p>
-                            <div>
-                              <OF.PrimaryButton onClick={this.loadBotInfo}>Retry</OF.PrimaryButton>
-                            </div>
-                          </div>
-                        }
-                        {this.state.loadingState === LoadingState.SUCCEEDED && this.props.botInfo !== null && 
-                          <AppsIndex 
-                            {...props} 
-                          />
-                        }
-                      </React.Fragment>
-                    } 
-                />
-                <Route path="/settings" component={Settings} />
-                <Route component={NoMatch} />
-              </Switch>
+              <Route exact path="/" render={() => <Redirect to="/home" />} />
+              <Route
+                path="/home"
+                render={props =>
+                  <React.Fragment>
+                    {this.state.loadingState === LoadingState.LOADING &&
+                      <p>Loading...</p>
+                    }
+                    {this.state.loadingState === LoadingState.FAILED &&
+                      <div>
+                        <p>Loading Failed.</p>
+                        <div>
+                          <OF.PrimaryButton
+                            onClick={this.loadBotInfo}
+                            iconProps={{ iconName: 'Refresh' }}
+                          >
+                            Retry
+                          </OF.PrimaryButton>
+                        </div>
+                      </div>
+                    }
+                    {this.state.loadingState === LoadingState.SUCCEEDED && this.props.botInfo !== null &&
+                      <AppsIndex
+                        {...props}
+                      />
+                    }
+                  </React.Fragment>
+                }
+              />
+              <Route path="/settings" component={Settings} />
+              <Route component={NoMatch} />
+            </Switch>
           </div>
           <div className="cl-app_modals">
             <ErrorPanel />

@@ -12,8 +12,9 @@ export type EntityState = CLM.EntityBase[];
 export type ErrorState = {
     type: ErrorType,
     title: string | null,
-    messages: string[],
-    actionType: AT | null
+    message: string,
+    actionType: AT | null,
+    closeCallback: (() => void) | null
 }
 export type TrainDialogState = CLM.TrainDialog[];
 
@@ -22,6 +23,7 @@ export type LogDialogState = CLM.LogDialog[]
 export type AppsState = {
     all: CLM.AppBase[],
     activeApps: { [appId: string]: string };  // appId: packageId
+    selectedAppId: string | undefined
 }
 export type BotState = {
     botInfo: CLM.BotInfo | null
@@ -37,7 +39,7 @@ export type TeachSessionState = {
     uiScoreInput: CLM.UIScoreInput | undefined,
     extractResponses: CLM.ExtractResponse[],
     extractConflict: CLM.ExtractResponse | null,
-    botAPIError: CLM.BotAPIError | null,
+    botAPIError: CLM.LogicAPIError | null,
     scoreResponse: CLM.ScoreResponse | undefined,
     autoTeach: boolean
 }

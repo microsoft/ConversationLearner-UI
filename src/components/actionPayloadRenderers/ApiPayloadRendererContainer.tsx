@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { ApiAction, EntityBase, Memory } from '@conversationlearner/models'
+import { ApiAction, EntityBase, Memory, Callback } from '@conversationlearner/models'
 import * as Util from '../../Utils/util'
 import ApiPayloadRenderer from './ApiPayloadRenderer'
 
@@ -11,11 +11,12 @@ interface Props {
     apiAction: ApiAction
     entities: EntityBase[]
     memories: Memory[] | null
+    callback: Callback | undefined
 }
 
 export default class Component extends React.Component<Props, {}> {
     render() {
-        const { apiAction, entities, memories } = this.props
+        const { apiAction, entities, memories, callback } = this.props
         const defaultEntityMap = Util.getDefaultEntityMap(entities)
         const logicArgumentsUsingEntityNames = apiAction.renderLogicArguments(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
         const logicArgumentsUsingCurrentMemory = memories === null
@@ -27,10 +28,22 @@ export default class Component extends React.Component<Props, {}> {
             ? null
             : apiAction.renderRenderArguments(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
 
+        const showLogicFunction = !callback
+            ? true
+            : callback.isLogicFunctionProvided
+                // && callback.logicArguments.length > 0
+
+        const showRenderFunction = !callback
+            ? true
+            : callback.isRenderFunctionProvided
+                // && callback.renderArguments.length > 0
+
         return <ApiPayloadRenderer
             name={apiAction.name}
+            showLogicFunction={showLogicFunction}
             originalLogicArguments={logicArgumentsUsingEntityNames}
             substitutedLogicArguments={logicArgumentsUsingCurrentMemory}
+            showRenderFunction={showRenderFunction}
             originalRenderArguments={renderArgumentsUsingEntityNames}
             substitutedRenderArguments={renderArgumentsUsingCurrentMemory}
         />

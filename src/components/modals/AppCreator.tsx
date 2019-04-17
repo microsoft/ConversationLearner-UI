@@ -2,44 +2,23 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
 import { getLuisApplicationCultures } from '../../epics/apiHelpers'
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as OF from 'office-ui-fabric-react'
 import { State, ErrorType, AppCreatorType } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
 import { FilePicker } from 'react-file-picker'
 import { setErrorDisplay } from '../../actions/displayActions'
-import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
-import { AppInput } from '../../types/models';
-import { AppDefinition } from '@conversationlearner/models';
-
-const messages = defineMessages({
-    fieldErrorRequired: {
-        id: FM.APPCREATOR_FIELDERROR_REQUIREDVALUE,
-        defaultMessage: "Required Value"
-    },
-    fieldErrorAlphanumeric: {
-        id: FM.APPCREATOR_FIELDERROR_ALPHANUMERIC,
-        defaultMessage: 'Model name may only contain alphanumeric characters'
-    },
-    fieldErrorDistinct: {
-        id: FM.APPCREATOR_FIELDERROR_DISTINCT,
-        defaultMessage: 'Name is already in use.'
-    },
-    passwordHidden: {
-        id: FM.SETTINGS_PASSWORDHIDDEN,
-        defaultMessage: 'Show'
-    },
-    passwordVisible: {
-        id: FM.SETTINGS_PASSWORDVISIBLE,
-        defaultMessage: 'Hide'
-    },
-})
+import FormattedMessageId from '../FormattedMessageId'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { AppInput } from '../../types/models'
+import { AppDefinition } from '@conversationlearner/models'
+import * as Utils from '../../Utils/util'
 
 interface ComponentState {
     appNameVal: string
@@ -65,26 +44,24 @@ class AppCreator extends React.Component<Props, ComponentState> {
         this.onClickCancel = this.onClickCancel.bind(this)
     }
 
-    componentDidMount() {
-        getLuisApplicationCultures()
-            .then(cultures => {
-                const cultureOptions = cultures.map<OF.IDropdownOption>(c =>
-                    ({
-                        key: c.cultureCode,
-                        text: c.cultureCode,
-                    }))
+    async componentDidMount() {
+        const cultures = await getLuisApplicationCultures()
+        const cultureOptions = cultures.map<OF.IDropdownOption>(c =>
+            ({
+                key: c.cultureCode,
+                text: c.cultureCode,
+            }))
 
-                this.setState({
-                    localeOptions: cultureOptions,
-                    localeVal: cultureOptions[0].text
-                })
-            })
+        this.setState({
+            localeOptions: cultureOptions,
+            localeVal: cultureOptions[0].text
+        })
     }
 
     componentWillReceiveProps(nextProps: Props) {
         // Reset when opening modal
         if (this.props.open === false && nextProps.open === true) {
-            let firstValue = this.state.localeOptions[0].text
+            const firstValue = this.state.localeOptions[0].text
             this.setState({
                 appNameVal: '',
                 localeVal: firstValue,
@@ -95,7 +72,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     nameChanged(text: string) {
         this.setState({
-            appNameVal: text
+            appNameVal: text.trim().length ? text : ""
         })
     }
     localeChanged(obj: OF.IDropdownOption) {
@@ -110,7 +87,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     getAppInput(): AppInput {
         return {
-            appName: this.state.appNameVal,
+            appName: this.state.appNameVal.trim(),
             locale: this.state.localeVal,
             metadata: {
                 botFrameworkApps: [],
@@ -134,31 +111,44 @@ class AppCreator extends React.Component<Props, ComponentState> {
         // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file
         if (this.props.creatorType !== AppCreatorType.IMPORT && event.key === 'Enter' && this.state.appNameVal) {
-            this.onClickCreate();
+            this.onClickCreate()
+        }
+
+        if (this.props.creatorType === AppCreatorType.IMPORT && event.key === 'Enter' && this.state.appNameVal && this.state.file) {
+            this.onClickImport()
         }
     }
 
     onGetNameErrorMessage(value: string): string {
         const { intl } = this.props
+        const MAX_NAME_LENGTH = 30
+
         if (value.length === 0) {
-            return intl.formatMessage(messages.fieldErrorRequired)
+            return Utils.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_REQUIREDVALUE)
+        }
+
+        if (value.length > MAX_NAME_LENGTH) {
+            return Utils.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_TOOLONG)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
-            return intl.formatMessage(messages.fieldErrorAlphanumeric)
+            return Utils.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_ALPHANUMERIC)
+        }
+
+        if (!value.trim().length) {
+            return Utils.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_ALPHANUMERIC)
         }
 
         // Check that name isn't in use
-        let foundApp = this.props.apps.find(a => a.appName === value)
-        if (foundApp) {
-            return intl.formatMessage(messages.fieldErrorDistinct)
+        if (this.props.apps.find(a => a.appName === value)) {
+            return Utils.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
         }
 
         return ""
     }
 
     onGetPasswordErrorMessage(value: string): string {
-        return value ? "" : this.props.intl.formatMessage(messages.fieldErrorRequired);
+        return value ? "" : Utils.formatMessageId(this.props.intl, FM.APPCREATOR_FIELDERROR_REQUIREDVALUE)
     }
 
     onChangeFile = (file: File) => {
@@ -185,7 +175,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
             }
             catch (e) {
                 const error = e as Error
-                this.props.setErrorDisplay(ErrorType.Error, error.message, ["Invalid file contents"], AT.CREATE_APPLICATION_ASYNC)
+                this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", AT.CREATE_APPLICATION_ASYNC)
             }
         }
         reader.readAsText(this.state.file)
@@ -195,22 +185,13 @@ class AppCreator extends React.Component<Props, ComponentState> {
         switch (this.props.creatorType) {
             case AppCreatorType.NEW:
                 return (
-                    <FormattedMessage
-                        id={FM.APPCREATOR_TITLE}
-                        defaultMessage="Create a Conversation Learner Model"
-                    />)
+                    <FormattedMessageId id={FM.APPCREATOR_TITLE} />)
             case AppCreatorType.IMPORT:
                 return (
-                    <FormattedMessage
-                        id={FM.APPCREATOR_IMPORT_TITLE}
-                        defaultMessage="Import a Conversation Learner Model"
-                    />)
+                    <FormattedMessageId id={FM.APPCREATOR_IMPORT_TITLE} />)
             case AppCreatorType.COPY:
                 return (
-                    <FormattedMessage
-                        id={FM.APPCREATOR_COPY_TITLE}
-                        defaultMessage="Copy a Conversation Learner Model"
-                    />)
+                    <FormattedMessageId id={FM.APPCREATOR_COPY_TITLE} />)
             default:
                 throw new Error(`Could not get title for unknown app creator type: ${this.props.creatorType}`)
         }
@@ -218,15 +199,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     getLabel(intl: ReactIntl.InjectedIntl): string {
         return (this.props.creatorType !== AppCreatorType.NEW) ?
-            intl.formatMessage({
-                id: FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL,
-                defaultMessage: "New Model Name"
-            })
+            Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL)
             :
-            intl.formatMessage({
-                id: FM.APPCREATOR_FIELDS_NAME_LABEL,
-                defaultMessage: "Name"
-            })
+            Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_NAME_LABEL)
     }
 
     render() {
@@ -251,23 +226,14 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         onChanged={text => this.nameChanged(text)}
                         label={this.getLabel(intl)}
-                        placeholder={intl.formatMessage({
-                            id: FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER,
-                            defaultMessage: "Model Name..."
-                        })}
+                        placeholder={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER)}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal}
                     />
                     {this.props.creatorType === AppCreatorType.NEW &&
                         <OF.Dropdown
-                            ariaLabel={intl.formatMessage({
-                                id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
-                                defaultMessage: 'Locale'
-                            })}
-                            label={intl.formatMessage({
-                                id: FM.APPCREATOR_FIELDS_LOCALE_LABEL,
-                                defaultMessage: 'Locale'
-                            })}
+                            ariaLabel={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
+                            label={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
                             defaultSelectedKey={this.state.localeVal}
                             options={this.state.localeOptions}
                             onChanged={this.localeChanged}
@@ -281,21 +247,16 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             <FilePicker
                                 extensions={['cl']}
                                 onChange={this.onChangeFile}
-                                onError={(error: string) => this.props.setErrorDisplay(ErrorType.Error, error, [], null)}
+                                onError={(error: string) => this.props.setErrorDisplay(ErrorType.Error, error, "", null)}
                                 maxSize={10}
                             >
                                 <div className="cl-action-creator-file-picker">
                                     <OF.PrimaryButton
                                         data-testid="model-creator-locate-file-button"
                                         className="cl-action-creator-file-button"
-                                        ariaDescription={this.props.intl.formatMessage({
-                                            id: FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION,
-                                            defaultMessage: 'Choose a file'
-                                        })}
-                                        text={this.props.intl.formatMessage({
-                                            id: FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT,
-                                            defaultMessage: 'Choose'
-                                        })}
+                                        ariaDescription={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION)}
+                                        text={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT)}
+                                        iconProps={{ iconName: 'DocumentSearch' }}
                                     />
                                     <OF.TextField
                                         disabled={true}
@@ -317,14 +278,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                     disabled={invalidImport}
                                     data-testid="model-creator-submit-button"
                                     onClick={this.onClickImport}
-                                    ariaDescription={this.props.intl.formatMessage({
-                                        id: FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Import from File'
-                                    })}
-                                    text={this.props.intl.formatMessage({
-                                        id: FM.APPCREATOR_IMPORT_BUTTON_TEXT,
-                                        defaultMessage: 'Import'
-                                    })}
+                                    ariaDescription={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION)}
+                                    text={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_IMPORT_BUTTON_TEXT)}
+                                    iconProps={{ iconName: 'Accept' }}
                                 />
                             }
                             {this.props.creatorType === AppCreatorType.NEW &&
@@ -332,14 +288,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                     disabled={invalidName}
                                     data-testid="model-creator-submit-button"
                                     onClick={this.onClickCreate}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Create'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.APPCREATOR_CREATEBUTTON_TEXT,
-                                        defaultMessage: 'Create'
-                                    })}
+                                    ariaDescription={Utils.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION)}
+                                    text={Utils.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_TEXT)}
+                                    iconProps={{ iconName: 'Accept' }}
                                 />
                             }
                             {this.props.creatorType === AppCreatorType.COPY &&
@@ -347,27 +298,17 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                     disabled={invalidName}
                                     data-testid="model-creator-submit-button"
                                     onClick={this.onClickCreate}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Copy'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Copy'
-                                    })}
+                                    ariaDescription={Utils.formatMessageId(intl, FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION)}
+                                    text={Utils.formatMessageId(intl, FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION)}
+                                    iconProps={{ iconName: 'Accept' }}
                                 />
                             }
                             <OF.DefaultButton
                                 data-testid="model-creator-cancel-button"
                                 onClick={this.onClickCancel}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Cancel'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.APPCREATOR_CANCELBUTTON_TEXT,
-                                    defaultMessage: 'Cancel'
-                                })}
+                                ariaDescription={Utils.formatMessageId(intl, FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION)}
+                                text={Utils.formatMessageId(intl, FM.APPCREATOR_CANCELBUTTON_TEXT)}
+                                iconProps={{ iconName: 'Cancel' }}
                             />
                         </div>
                     </div>

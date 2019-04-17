@@ -2,15 +2,15 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { bindActionCreators } from 'redux';
-import { State } from '../types';
-import { returntypeof } from 'react-redux-typescript';
-import { connect } from 'react-redux';
-import * as ToolTip from './ToolTips/ToolTips';
-import * as OF from 'office-ui-fabric-react';
+import * as React from 'react'
+import { bindActionCreators } from 'redux'
+import { State } from '../types'
+import { returntypeof } from 'react-redux-typescript'
+import { connect } from 'react-redux'
+import * as ToolTip from './ToolTips/ToolTips'
+import * as OF from 'office-ui-fabric-react'
 import { setTipType } from '../actions/displayActions'
-import { FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../components/FormattedMessageId'
 import { FM } from '../react-intl-messages'
 
 class HelpPanel extends React.Component<Props, {}> {
@@ -30,25 +30,24 @@ class HelpPanel extends React.Component<Props, {}> {
                 customWidth="400px"
                 closeButtonAriaLabel="Close"
                 hasCloseButton={true}
+                isFooterAtBottom={true}
+                onRenderFooterContent={this._onRenderFooterContent}
             >
-                <span>{ToolTip.getTip(this.props.tipType)}</span>
-
-                <div className="cl-ux-gutter" style={{width: '89%'}}>
-                    <div className="cl-ux-flexpanel--right">
-                        <OF.DefaultButton
-                            data-testid="helppanel-close-button"
-                            className="cl-button-close"
-                            onClick={() => { this.onDismiss() }}
-                        >
-                            <FormattedMessage
-                                id={FM.BUTTON_CLOSE}
-                                defaultMessage='Close'
-                            />
-                        </OF.DefaultButton>
-                    </div>
-                </div>
-
+                {ToolTip.getTip(this.props.tipType)}
             </OF.Panel>
+        )
+    }
+
+    private _onRenderFooterContent = () => {
+        return (
+            <OF.DefaultButton
+                data-testid="helppanel-close-button"
+                className="cl-button-close cl-ux-flexpanel--right"
+                onClick={() => { this.onDismiss() }}
+                style={{ marginBottom: "1.5em" }}
+            >
+                <FormattedMessageId id={FM.BUTTON_CLOSE} />
+            </OF.DefaultButton>
         )
     }
 }

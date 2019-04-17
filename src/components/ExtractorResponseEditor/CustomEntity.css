@@ -38,8 +38,13 @@
 .cl-entity-node--custom.cl-entity-node--is-editing .cl-entity-node__text {
     background: var(--color-custom-entity-bg);
 }
+
 .cl-entity-node--prebuilt.cl-entity-node--is-editing .cl-entity-node__text {
     background: var(--color-prebuilt-entity-bg);
+}
+
+.cl-entity-node--is-editing {
+    z-index: 100;
 }
 
 .cl-entity-node-indicator {
@@ -85,15 +90,34 @@
     cursor: default;
 }
 
-.cl-entity-node--custom .cl-entity-node-indicator__controls button {
-    background: var(--color-warning);
-}
-.cl-entity-node--prebuilt .cl-entity-node-indicator__controls button {
-    background: var(--color-warning);
+.cl-entity-node--custom .cl-entity-node-indicator__controls button i {
+    color: var(--color-red);
 }
 
 .cl-entity-node-indicator__name {
     cursor: default;
+}
+
+.cl-entity-node:hover {
+    z-index: 100;
+}
+
+.cl-entity-node:hover .cl-entity-node-indicator__name button {
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid #aaaaaa !important;
+    padding-left: 5px;  
+    padding-right: 5px;
+    margin-left: -5px;
+    box-sizing: border-box !important;
+}
+
+.cl-button-delete-open {
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid #aaaaaa !important;
+    padding-left: 5px !important;  
+    padding-right: 5px !important;
+    margin-left: -5px !important;
+    box-sizing: border-box !important;
 }
 
 .cl-entity-node-indicator__name button {
@@ -141,4 +165,8 @@
     border-bottom: 1px solid #ffffff;
     border-left: 1px solid rgba(0,0,0,0.25);
     background: #ffffff !important;
+}
+
+.ms-Button--selected {
+background-color: var(--color-themeDark) !important
 }

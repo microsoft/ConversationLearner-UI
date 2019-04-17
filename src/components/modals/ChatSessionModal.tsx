@@ -2,52 +2,74 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { EditDialogType } from '.'
-import ConfirmCancelModal from './ConfirmCancelModal'
-import { FontClassNames, Icon, PrimaryButton, DefaultButton } from 'office-ui-fabric-react';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { State } from '../../types';
-import Webchat, { renderActivity } from '../Webchat'
-import { AppBase } from '@conversationlearner/models'
-import actions from '../../actions'
-import { FM } from '../../react-intl-messages'
+import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
 import * as BotChat from '@conversationlearner/webchat'
+import * as Util from '../../Utils/util'
+import ConfirmCancelModal from './ConfirmCancelModal'
+import actions from '../../actions'
+import Webchat, { renderActivity } from '../Webchat'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { EditDialogType } from '.'
+import { FontClassNames, Icon } from 'office-ui-fabric-react'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
+import { State } from '../../types'
+import { AppBase } from '@conversationlearner/models'
+import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
     isSessionEndModalOpen: boolean
+    hasChatActivity: boolean
 }
 class SessionWindow extends React.Component<Props, ComponentState> {
-    
+
     constructor(props: Props) {
         super(props)
         this.state = {
-            isSessionEndModalOpen: false
+            isSessionEndModalOpen: false,
+            hasChatActivity: false
         }
     }
 
-    onClickDone() {
+    componentWillReceiveProps(newProps: Props) {
+        if (this.props.open && !newProps.open) {
+            // Reset
+            this.setState({ hasChatActivity: false })
+        }
+    }
+    @OF.autobind
+    async onClickDone() {
         if (this.props.chatSession.current !== null) {
-            this.props.deleteChatSessionThunkAsync(this.props.user.id, this.props.chatSession.current, this.props.app, this.props.editingPackageId)
+            await this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId)
         }
 
-        this.props.onClose();
+        this.props.onClose()
+    }
+
+    @OF.autobind
+    async onClickAbandon() {
+        if (this.props.chatSession.current !== null) {
+            const deleteAssociatedLogDialog = this.state.hasChatActivity
+            await this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId, deleteAssociatedLogDialog)
+        }
+
+        this.props.onClose()
     }
 
     // Force timeout of the session
+    @OF.autobind
     onClickExpire() {
         if (this.props.chatSession.current !== null) {
             this.props.editChatSessionExpireThunkAsync(this.props.app.appId, this.props.chatSession.current.sessionId)
-            this.setState({isSessionEndModalOpen: true})
+            this.setState({ isSessionEndModalOpen: true })
         }
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
-        return renderActivity(activityProps, children, setRef, null, EditDialogType.LOG_ORIGINAL)
+        return renderActivity(activityProps, children, setRef, null, EditDialogType.LOG_ORIGINAL, false)
     }
 
     render() {
@@ -70,7 +92,11 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                                 isOpen={this.props.open && this.props.error == null}
                                 app={this.props.app}
                                 history={[]}
-                                onPostActivity={() => { }}
+                                onPostActivity={() => {
+                                    if (!this.state.hasChatActivity) {
+                                        this.setState({ hasChatActivity: true })
+                                    }
+                                }}
                                 onSelectActivity={() => { }}
                                 hideInput={false}
                                 focusInput={true}
@@ -81,42 +107,36 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                 </div>
                 <div className="cl-modal_footer cl-modal_footer--border">
                     <div className="cl-modal-buttons">
-                        <div className="cl-modal-buttons_secondary"/>
+                        <div className="cl-modal-buttons_secondary" />
                         <div className="cl-modal-buttons_primary">
-                            <PrimaryButton
+                            <OF.PrimaryButton
                                 data-testid="chat-session-modal-done-testing-button"
-                                onClick={() => this.onClickDone()}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Done Testing'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT,
-                                    defaultMessage: 'Done Testing'
-                                })}
+                                onClick={this.onClickDone}
+                                ariaDescription={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_PRIMARYBUTTON_ARIADESCRIPTION)}
+                                text={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_PRIMARYBUTTON_TEXT)}
+                                iconProps={{ iconName: 'Accept' }}
                             />
-                            <DefaultButton
+                            <OF.DefaultButton
                                 data-testid="chat-session-modal-session-timeout-button"
-                                onClick={() => this.onClickExpire()}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION,
-                                    defaultMessage: 'Expire Session'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT,
-                                    defaultMessage: 'Expire Session'
-                                })}
+                                onClick={this.onClickExpire}
+                                ariaDescription={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_EXPIREBUTTON_ARIADESCRIPTION)}
+                                text={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT)}
+                            />
+                            <OF.DefaultButton
+                                data-testid="edit-dialog-modal-abandon-delete-button"
+                                className="cl-button-delete"
+                                onClick={this.onClickAbandon}
+                                ariaDescription={Util.formatMessageId(intl, FM.BUTTON_ABANDON)}
+                                text={Util.formatMessageId(intl, FM.BUTTON_ABANDON)}
+                                iconProps={{ iconName: 'Delete' }}
                             />
                         </div>
                     </div>
                 </div>
                 <ConfirmCancelModal
                     open={this.state.isSessionEndModalOpen}
-                    onOk={() =>  this.setState({isSessionEndModalOpen: false})}
-                    title={intl.formatMessage({
-                        id: FM.CHATSESSIONMODAL_TIMEOUT_TITLE,
-                        defaultMessage: 'On the next turn the EndSession callback will be called and a new Session startedd'
-                    })}
+                    onOk={() => this.setState({ isSessionEndModalOpen: false })}
+                    title={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_TIMEOUT_TITLE)}
                 />
             </Modal>
         );
@@ -125,7 +145,8 @@ class SessionWindow extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         deleteChatSessionThunkAsync: actions.chat.deleteChatSessionThunkAsync,
-        editChatSessionExpireThunkAsync: actions.chat.editChatSessionExpireThunkAsync
+        editChatSessionExpireThunkAsync: actions.chat.editChatSessionExpireThunkAsync,
+        deleteLogDialogThunkAsync: actions.log.deleteLogDialogThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -135,7 +156,6 @@ const mapStateToProps = (state: State) => {
 
     return {
         chatSession: state.chatSessions,
-        user: state.user.user,
         error: state.error.title
     }
 }

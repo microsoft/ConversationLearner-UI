@@ -2,33 +2,20 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as OF from 'office-ui-fabric-react'
 import { PackageReference } from '@conversationlearner/models'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
-import { injectIntl, InjectedIntlProps, defineMessages, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../FormattedMessageId'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 import * as TC from '../tipComponents'
 import * as ToolTips from '../ToolTips/ToolTips'
-
-const messages = defineMessages({
-    fieldErrorRequired: {
-        id: FM.APPCREATOR_FIELDERROR_REQUIREDVALUE,
-        defaultMessage: 'Required Value'
-    },
-    fieldErrorAlphanumeric: {
-        id: FM.APPCREATOR_FIELDERROR_ALPHANUMERIC,
-        defaultMessage: 'Tag name may only contain alphanumeric characters'
-    },
-    fieldErrorDistinct: {
-        id: FM.APPCREATOR_FIELDERROR_DISTINCT,
-        defaultMessage: 'Name is already in use.'
-    }
-})
+import * as Util from '../../Utils/util'
 
 interface ComponentState {
     tagNameVal: string
@@ -53,7 +40,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
             tagNameVal: text
         })
     }
-    
+
     @OF.autobind
     onClickCancel() {
         this.props.onCancel()
@@ -61,14 +48,14 @@ class PackageCreator extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickCreate() {
-        this.props.onSubmit(this.state.tagNameVal, this.state.isLiveVal)
+        this.props.onSubmit(this.state.tagNameVal.trim(), this.state.isLiveVal)
     }
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
     // Also has benefit of native browser validation for required fields
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
-        if (event.keyCode === 13 && this.state.tagNameVal) {
+        if (event.keyCode === 13 && (!(this.onGetNameErrorMessage(this.state.tagNameVal)).length)) {
             this.onClickCreate();
         }
     }
@@ -76,17 +63,22 @@ class PackageCreator extends React.Component<Props, ComponentState> {
     onGetNameErrorMessage(value: string): string {
         const { intl } = this.props
         if (value.length === 0) {
-            return intl.formatMessage(messages.fieldErrorRequired)
+            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_REQUIREDVALUE)
+
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
-            return intl.formatMessage(messages.fieldErrorAlphanumeric)
+            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_ALPHANUMERIC)
         }
 
         // Check that name isn't in use
-        let foundName = this.props.packageReferences.find(pr => pr.packageVersion === value)
+        const foundName = this.props.packageReferences.find(pr => pr.packageVersion === value)
         if (foundName) {
-            return intl.formatMessage(messages.fieldErrorDistinct)
+            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
+        }
+
+        if ("Master".toLowerCase() === value.toLowerCase().trim()) {
+            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
         }
 
         return ''
@@ -111,10 +103,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                 <div className="cl-page">
                     <div className="cl-modal_header">
                         <span className={OF.FontClassNames.xxLarge}>
-                            <FormattedMessage
-                                id={FM.PACKAGECREATOR_TITLE}
-                                defaultMessage="Create a new Tag"
-                            />
+                            <FormattedMessageId id={FM.PACKAGECREATOR_TITLE} />
                         </span>
                     </div>
                     <div>
@@ -130,20 +119,20 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                                 defaultMessage: 'Tag Name...'
                             })}
                             onKeyDown={key => this.onKeyDown(key)}
-                            value={this.state.tagNameVal} 
+                            value={this.state.tagNameVal}
                         />
-                    </div>    
+                    </div>
                     <div className="cl-entity-creator-checkbox">
-                            <TC.Checkbox
-                                label={intl.formatMessage({
-                                    id: FM.PACKAGECREATOR_LIVE_LABEL,
-                                    defaultMessage: 'Make Live Version'
-                                })}
-                                checked={this.state.isLiveVal}
-                                onChange={this.onToggleSetLive}
-                                tipType={ToolTips.TipType.PACKAGECREATOR_LIVE_TOGGLE}
-                            />
-                        </div>
+                        <TC.Checkbox
+                            label={intl.formatMessage({
+                                id: FM.PACKAGECREATOR_LIVE_LABEL,
+                                defaultMessage: 'Make Live Version'
+                            })}
+                            checked={this.state.isLiveVal}
+                            onChange={this.onToggleSetLive}
+                            tipType={ToolTips.TipType.PACKAGECREATOR_LIVE_TOGGLE}
+                        />
+                    </div>
                     <div className="cl-modal_footer">
                         <div className="cl-modal-buttons">
                             <div className="cl-modal-buttons_primary">
@@ -158,6 +147,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                                         id: FM.PACKAGECREATOR_CREATEBUTTON_TEXT,
                                         defaultMessage: 'Create'
                                     })}
+                                    iconProps={{ iconName: 'Add' }}
                                 />
                                 <OF.DefaultButton
                                     onClick={this.onClickCancel}
@@ -169,6 +159,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                                         id: FM.PACKAGECREATOR_CANCELBUTTON_TEXT,
                                         defaultMessage: 'Cancel'
                                     })}
+                                    iconProps={{ iconName: 'Cancel' }}
                                 />
                             </div>
                         </div>
@@ -183,7 +174,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({}, dispatch);
 }
 const mapStateToProps = (state: State) => {
-    return { }
+    return {}
 }
 
 export interface ReceivedProps {

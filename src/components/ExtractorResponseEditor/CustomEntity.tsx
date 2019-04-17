@@ -4,7 +4,7 @@
  */
 import * as React from 'react'
 import './CustomEntity.css'
-import { IconButton } from 'office-ui-fabric-react';
+import { IconButton } from 'office-ui-fabric-react'
 
 // Simulate entity component props which have children
 interface EntityComponentProps {
@@ -13,38 +13,49 @@ interface EntityComponentProps {
 
 interface Props extends EntityComponentProps {
     name: string
-    isEditing: boolean
+    isDeleteButtonOpen: boolean
     readOnly: boolean
     onClickName: () => void
     onClickDelete: () => void
 }
 
 export const CustomEntity = (props: Props) => {
-    const { name, isEditing, readOnly } = props
-    
+    const { name, isDeleteButtonOpen, readOnly } = props
+
     return (
-        <span className={`cl-entity-node cl-entity-node--custom ${isEditing ? 'cl-entity-node--is-editing' : ''} ${readOnly ? 'cl-entity-node--read-only' : ''}`}>
+        <span className={`cl-entity-node cl-entity-node--custom ${isDeleteButtonOpen ? 'cl-entity-node--is-editing' : ''} ${readOnly ? 'cl-entity-node--read-only' : ''}`}>
             <div className="cl-entity-node-indicator noselect">
                 <div className="cl-entity-node-indicator__mincontent">
                     <div className="cl-entity-node-indicator__controls">
-                        {isEditing &&
+                        {isDeleteButtonOpen &&
                             <IconButton
                                 className="ms-Button--headstone"
                                 iconProps={{ iconName: 'Delete' }}
                                 onClick={props.onClickDelete}
                                 title="Unselect Entity"
+                                data-testid="entity-extractor-button-remove-label"
                             />
                         }
                     </div>
                     <div className="cl-entity-node-indicator__name noselect" spellCheck={false}>
-                        <button type="button" data-testid="custom-entity-name-button" onClick={props.onClickName} tabIndex={-1}>
+                        <button
+                            className={isDeleteButtonOpen ? "cl-button-delete-open" : ""}
+                            type="button"
+                            data-testid="custom-entity-name-button"
+                            onClick={props.onClickName}
+                            tabIndex={-1}
+                        >
                             {name}
                         </button>
                     </div>
                 </div>
                 <div className='cl-entity-node-indicator__bracket' />
             </div>
-            <span className="cl-entity-node__text" onClick={props.onClickName}>
+            <span
+                className={`cl-entity-node__text${isDeleteButtonOpen ? " noselect" : ""}`}
+                onClick={props.onClickName}
+                role="button"
+            >
                 {props.children}
             </span>
         </span>

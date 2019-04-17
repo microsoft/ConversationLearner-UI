@@ -3,79 +3,119 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { IOption, IPosition, MatchedOption } from './models'
+import { IOption, IPosition } from './models'
 import FuseMatch from './FuseMatch'
 import './EntityPicker.css'
+import * as OF from 'office-ui-fabric-react'
+import { usePicker } from './usePicker'
 
-interface MenuProps {
-    highlightIndex: number
-    isOverlappingOtherEntities: boolean
+interface Props {
+    /** 
+     * This is kind of a one-off property for the scenario when we want the picker to show a warning message, although
+     * it was easier than showing a completely different component
+     */
     isVisible: boolean
-    matchedOptions: MatchedOption<IOption>[]
+    options: IOption[]
     maxDisplayedOptions: number
-    onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => void
-    onChangeSearchText: (value: string) => void
-    onClickOption: (o: IOption) => void
-    onClickNewEntity: (entityTypeFilter: string) => void
-    position: IPosition
-    menuRef: any
-    searchText: string
-    value: any, 
+    value: any
     entityTypeFilter: string
+
+    onClickNewEntity: (entityTypeFiler: string) => void
+    onSelectOption: (o: IOption) => void
+
+    isOverlappingOtherEntities: boolean
+    position: IPosition | null
 }
 
-export default class EntityPicker extends React.Component<MenuProps> {
-    render() {
-        const style: any = {
-            left: this.props.isVisible ? `${this.props.position.left}px` : null,
-            bottom: this.props.isVisible ? `${this.props.position.bottom}px` : null
-        }
-        return (
-            <div
-                className={`custom-toolbar ${this.props.isVisible ? "custom-toolbar--visible" : ""}`}
-                onKeyDown={this.props.onKeyDown}
-                ref={this.props.menuRef}
-                style={style}
-            >
-                {this.props.isOverlappingOtherEntities
-                    ? <div className="custom-toolbar__warning">Cannot add overlapping entities.<br />Remove the entity or change the selection.</div>
-                    : <React.Fragment>
-                        <button
-                            type="button"
-                            tabIndex={-1}
-                            onClick={() => this.props.onClickNewEntity(this.props.entityTypeFilter)}
-                            className="custom-toolbar__new-entity-button"
-                        >
-                            New Entity
-                        </button>
-                        <div className="custom-toolbar__search">
-                            <label htmlFor="toolbar-input">Search for entities:</label>
-                            <input
-                                data-testid="entity-picker-entity-search"
-                                id="toolbar-input"
-                                type="text"
-                                placeholder="Search input"
-                                value={this.props.searchText}
-                                className="custom-toolbar__input"
-                                onChange={event => this.props.onChangeSearchText(event.target.value)}
-                            />
-                        </div>
-                        {this.props.matchedOptions.length !== 0
-                            && <ul className="custom-toolbar__results">
-                                {this.props.matchedOptions.map((matchedOption, i) =>
-                                    <li
-                                        key={matchedOption.original.id}
-                                        onClick={() => this.props.onClickOption(matchedOption.original)}
-                                        className={`custom-toolbar__result ${this.props.highlightIndex === i ? 'custom-toolbar__result--highlight' : ''}`}
-                                    >
-                                        <FuseMatch matches={matchedOption.matchedStrings} />
-                                    </li>
-                                )}
+const scrollHighlightedElementIntoView = (resultsElement: HTMLDivElement) => {
+    const selectedElement = resultsElement
+        ? resultsElement.querySelector('.custom-toolbar__result--highlight') as HTMLUListElement
+        : null
 
-                            </ul>}
-                    </React.Fragment>
-                }
-            </div>
-        )
+    if (selectedElement) {
+        setTimeout(() => {
+            selectedElement.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest"
+            })
+        }, 0)
     }
 }
+
+export const EntityPicker = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
+    const resultsRef = React.useRef<HTMLDivElement>(null)
+    const { searchText, setSearchText, onKeyDown, matchedOptions, onClickOption, highlightIndex, resetHighlighIndex } = usePicker(
+        props.options,
+        props.maxDisplayedOptions,
+        props.onSelectOption,
+    )
+
+    React.useEffect(() => {
+        if (resultsRef.current) {
+            scrollHighlightedElementIntoView(resultsRef.current)
+        }
+    }, [highlightIndex, resultsRef.current])
+
+    React.useEffect(() => {
+        if (props.isVisible === false) {
+            setSearchText('')
+            resetHighlighIndex()
+        }
+    }, [props.isVisible])
+
+    const style = {
+        left: (props.position && props.isVisible) ? `${props.position.left}px` : undefined,
+        top: (props.position && props.isVisible) ? `${props.position.top}px` : undefined,
+        height: !props.isOverlappingOtherEntities ? "auto" : "4em",
+        marginBottom: !props.isOverlappingOtherEntities ? "0" : "1em"
+    }
+
+    if (props.isOverlappingOtherEntities) {
+        return null
+    }
+
+    return (
+        <div
+            className={`custom-toolbar ${props.isVisible ? "custom-toolbar--visible" : ""}`}
+            onKeyDown={onKeyDown}
+            ref={ref}
+            style={style}
+            role="button"
+        >
+            <div className="custom-toolbar__search">
+                <input
+                    data-testid="entity-picker-entity-search"
+                    id="toolbar-input"
+                    type="text"
+                    placeholder="Search for entities"
+                    value={searchText}
+                    className="custom-toolbar__input"
+                    onChange={event => setSearchText(event.target.value)}
+                />
+            </div>
+            <OF.PrimaryButton
+                data-testid="entity-picker-button-new"
+                tabIndex={-1}
+                onClick={() => props.onClickNewEntity(props.entityTypeFilter)}
+                text="New Entity"
+                iconProps={{ iconName: 'Add' }}
+            />
+            <div className="custom-toolbar__results" ref={resultsRef}>
+                {matchedOptions.length === 0
+                    ? <div className="custom-toolbar__result">No matching entities</div>
+                    : matchedOptions.map((matchedOption, i) =>
+                        <div
+                            key={matchedOption.original.id}
+                            onClick={() => onClickOption(matchedOption.original)}
+                            className={`custom-toolbar__result ${highlightIndex === i ? 'custom-toolbar__result--highlight' : ''}`}
+                            role="button"
+                        >
+                            <FuseMatch matches={matchedOption.matchedStrings} />
+                        </div>
+                    )}
+            </div>
+        </div>
+    )
+})
+
+export default EntityPicker

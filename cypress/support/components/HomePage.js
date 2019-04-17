@@ -3,38 +3,42 @@
  * Licensed under the MIT License.
  */
 
-export function Visit()                         { cy.visit('http://localhost:5050') }
-export function NavigateToModelPage(name)       { cy.Get('button.root-65').ExactMatch(`${name}`).Click() }
-export function ClickNewModelButton()           { cy.Get('[data-testid="model-list-create-new-button"]').Click() }
-export function ClickImportModelButton()        { cy.Get('[data-testid="model-list-import-model-button"]').Click() }
-export function TypeModelName(name)             { cy.Get('[data-testid="model-creator-input-name"]').type(name) }
-export function ClickSubmitButton()             { cy.Get('[data-testid="model-creator-submit-button"]').Click() }
+import * as modelPage from '../components/ModelPage'
+import * as settings from '../components/Settings'
+import * as helpers from '../Helpers'
 
-export function UploadImportModelFile(name)     { cy.UploadFile(name, `[data-testid=model-creator-import-file-picker] > div > input[type="file"]`)}
+export function Visit() { return cy.visit('http://localhost:5050'); VerifyPageTitle() }
+export function VerifyPageTitle() { return cy.Get('[data-testid="model-list-title"]').contains('Create and manage your Conversation Learner models').should('be.visible') }
+export function NavigateToModelPage(name) { return cy.Get('[data-testid="model-list-model-name"]').ExactMatch(`${name}`).Click() }
+export function ClickNewModelButton() { return cy.Get('[data-testid="model-list-create-new-button"]').Click() }
+export function ClickImportModelButton() { return cy.Get('[data-testid="model-list-import-model-button"]').Click() }
+export function TypeModelName(name) { return cy.Get('[data-testid="model-creator-input-name"]').type(name) }
+export function ClickSubmitButton() { return cy.Get('[data-testid="model-creator-submit-button"]').Click() }
 
-export function ClickDeleteModelButton(row)     { cy.Get(`[data-list-index="${row}"] > .ms-FocusZone > .ms-DetailsRow-fields`).find('i[data-icon-name="Delete"]').Click() }
-export function ClickConfirmButton(func)        { cy.Get('.ms-Dialog-main').contains('Confirm').Click().then(() => { func() })}
+export function UploadImportModelFile(name) { return cy.UploadFile(name, `[data-testid="model-creator-import-file-picker"] > div > input[type="file"]`) }
 
-export function GetModelListRowCountThen(func) 
-{
-  cy.Get('[data-automationid="DetailsList"] > [role="grid"]')
-  .then((gridElement) => { var rowCount = +gridElement.attr('aria-rowcount') -1; return rowCount })
-  .then((rowCount) => { func(rowCount) })
+export function ClickDeleteModelButton(row) { return cy.Get(`[data-list-index="${row}"] > .ms-FocusZone > .ms-DetailsRow-fields`).find('i[data-icon-name="Delete"]').Click() }
+export function ClickConfirmButton() { return cy.Get('.ms-Dialog-main').contains('Confirm').Click() }
+
+export function GetModelListRowCount() {
+  return cy.Get('[data-automationid="DetailsList"] > [role="grid"]')
+    .then(gridElement => { 
+      const rowCount = +gridElement.attr('aria-rowcount') - 1
+      return rowCount 
+    })
 }
 
-
-
-
-
-// data-testid="model-list-model-name"
-// data-testid="model-list-is-editing"
-// data-testid="model-list-is-live"
-// data-testid="model-list-is-logging-on"
-// data-testid="model-list-last-modified-time"
-// data-testid="model-list-created-date-time"
-// data-testid="model-list-locale"
-// data-testid="model-list-delete-button"
-// data-testid="model-list-import-tutorials-button"
-// data-testid="model-creator-input-name"
-// data-testid="model-creator-button-submit"
-// data-testid="model-creator-cancel-submit"
+export function GetModelNameIdList() {
+  cy.Enqueue(() => {
+    let listToReturn = []
+    const elements = Cypress.$('[data-testid="model-list-model-name"]')
+    for (let i = 0; i < elements.length; i++) {
+      const modelName = helpers.TextContentWithoutNewlines(elements[i])
+      const modelId = elements[i].getAttribute('data-model-id')
+      listToReturn.push({ name: modelName, id: modelId })
+      helpers.ConLog('GetModelNameIdList', `modelName: ${modelName} - modelId: ${modelId}`)
+    }
+    helpers.ConLog('GetModelNameIdList', `Returning a list of ${listToReturn.length} models`)
+    return listToReturn
+  })
+}

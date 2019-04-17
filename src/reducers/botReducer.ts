@@ -6,6 +6,7 @@ import { ActionObject, BotState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import * as CLM from '@conversationlearner/models'
+import produce from 'immer'
 
 const initialState: BotState = {
     botInfo: null,
@@ -15,16 +16,12 @@ const initialState: BotState = {
     browserId: CLM.ModelUtils.generateGUID()
 };
 
-const botReducer: Reducer<BotState> = (state = initialState, action: ActionObject): BotState => {
+const botReducer: Reducer<BotState> = produce((state: BotState, action: ActionObject) => {
     switch (action.type) {
         case AT.FETCH_BOTINFO_FULFILLED:
-            return {
-                ...state,
-                botInfo: action.botInfo,
-                browserId: action.browserId
-            }
-        default:
-            return state
+            state.botInfo = action.botInfo
+            state.browserId = action.browserId
+            return
     }
-}
+}, initialState)
 export default botReducer

@@ -27,7 +27,7 @@ describe('Poller', () => {
 
         expect(onExpiredMock.mock.calls.length).toBe(1)
         expect(onUpdateMock.mock.calls.length).toBeGreaterThanOrEqual(3)
-    }) 
+    })
 
     test('poll should invoke request, isResolved, and onUpdate for each interval', async () => {
         const requestMock = jest.fn(async () => {
@@ -49,9 +49,9 @@ describe('Poller', () => {
         const poller1 = new poller.Poller({ interval: 100 })
         await poller1.addPoll(pollConfig)
 
-        expect(requestMock.mock.calls.length).toBe(4)
-        expect(isResolvedMock.mock.calls.length).toBe(4)
-        expect(onUpdateMock.mock.calls.length).toBe(4)
+        expect(requestMock.mock.calls.length).toBeGreaterThanOrEqual(4)
+        expect(isResolvedMock.mock.calls.length).toBeGreaterThanOrEqual(4)
+        expect(onUpdateMock.mock.calls.length).toBeGreaterThanOrEqual(4)
     })
 
     test('poll should stop polling after isResolved returns true', async () => {
@@ -83,8 +83,8 @@ describe('Poller', () => {
                 return 0
             },
             isResolved: n => false,
-            onExpired: () => {},
-            onUpdate: () => {}
+            onExpired: () => { },
+            onUpdate: () => { }
         }
 
         const pollConfig2: poller.IPollConfig<number> = {
@@ -94,8 +94,8 @@ describe('Poller', () => {
                 return 0
             },
             isResolved: n => false,
-            onExpired: () => {},
-            onUpdate: () => {}
+            onExpired: () => { },
+            onUpdate: () => { }
         }
 
         const now = new Date().getTime()
@@ -103,11 +103,12 @@ describe('Poller', () => {
         const p1 = poller1.addPoll(pollConfig1)
         await delay(200)
         void poller1.addPoll(pollConfig2)
+        // Will expire after 600ms (delay of 200ms and added new poll with same id to extend expiration time by another 400)
         await p1
         const after = new Date().getTime()
 
-        // 200 + 400
-        expect(after - now).toBeGreaterThanOrEqual(600)
+        // 200 + 400 (should be 600 but make 590 since javascript timers can be skewed by couple milliseconds)
+        expect(after - now).toBeGreaterThanOrEqual(590)
     })
 
     test('calling poll with different id should NOT extend existing polls', async () => {
@@ -118,8 +119,8 @@ describe('Poller', () => {
                 return 0
             },
             isResolved: n => false,
-            onExpired: () => {},
-            onUpdate: () => {}
+            onExpired: () => { },
+            onUpdate: () => { }
         }
 
         const pollConfig2: poller.IPollConfig<number> = {
@@ -129,8 +130,8 @@ describe('Poller', () => {
                 return 0
             },
             isResolved: n => false,
-            onExpired: () => {},
-            onUpdate: () => {}
+            onExpired: () => { },
+            onUpdate: () => { }
         }
 
         const poller1 = new poller.Poller({ interval: 100 })
@@ -142,8 +143,8 @@ describe('Poller', () => {
 
         await p1 // Will still resolve after 400 expiration
         const after = new Date().getTime()
-        
-        expect(after - now).toBeGreaterThanOrEqual(400)
+
+        expect(after - now).toBeLessThanOrEqual(500)
     })
 
     test('poll removePoll should remove from list of polls preventing further polling', async () => {

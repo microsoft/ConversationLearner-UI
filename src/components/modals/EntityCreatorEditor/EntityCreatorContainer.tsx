@@ -3,49 +3,40 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../../Utils/util'
+import * as CLM from '@conversationlearner/models'
 import { returntypeof } from 'react-redux-typescript'
 import actions from '../../../actions'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import * as OF from 'office-ui-fabric-react'
 import { State, PreBuiltEntities } from '../../../types'
 import { CLDropdownOption } from '../CLDropDownOption'
-import * as CLM from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
-import { defineMessages, injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
+import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import Component from './EntityCreatorComponent'
 
-const messages = defineMessages({
-    fieldErrorRequired: {
-        id: FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE,
-        defaultMessage: 'Required Value'
-    },
-    fieldErrorAlphanumeric: {
-        id: FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC,
-        defaultMessage: 'Entity name may only contain alphanumeric characters with no spaces.'
-    },
-    fieldErrorDistinct: {
-        id: FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT,
-        defaultMessage: 'Name is already in use.'
-    }
-})
+const entityNameMaxLength = 30
+const prebuiltPrefix = 'builtin-'
 
 const initState: ComponentState = {
     entityNameVal: '',
     entityTypeVal: '',
+    entityResolverVal: '',
     isPrebuilt: false,
     isMultivalueVal: false,
     isNegatableVal: false,
-    isProgrammaticVal: false,
     isEditing: false,
-    isAlwaysTag: false,
+    enumValues: [],
     title: '',
     hasPendingChanges: false,
     isConfirmEditModalOpen: false,
     isConfirmDeleteModalOpen: false,
+    needPrebuiltWarning: null,
     isDeleteErrorModalOpen: false,
+    deleteEnumCheck: null,
     showValidationWarning: false,
     newOrEditedEntity: null
 }
@@ -53,63 +44,62 @@ const initState: ComponentState = {
 interface ComponentState {
     entityNameVal: string
     entityTypeVal: string
+    entityResolverVal: string,
     isPrebuilt: boolean
     isMultivalueVal: boolean
     isNegatableVal: boolean
-    isProgrammaticVal: boolean
     isEditing: boolean
-    isAlwaysTag: boolean
+    enumValues: (CLM.EnumValue | null)[]
     title: string
     hasPendingChanges: boolean
     isConfirmEditModalOpen: boolean,
     isConfirmDeleteModalOpen: boolean,
+    needPrebuiltWarning: string | null,
     isDeleteErrorModalOpen: boolean,
+    deleteEnumCheck: CLM.EnumValue | null,
     showValidationWarning: boolean,
     newOrEditedEntity: CLM.EntityBase | null
 }
 
+export const getPrebuiltEntityName = (preBuiltType: string): string => {
+    return `${prebuiltPrefix}${preBuiltType.toLowerCase()}`
+}
+
 class Container extends React.Component<Props, ComponentState> {
     staticEntityOptions: CLDropdownOption[]
+    staticResolverOptions: CLDropdownOption[]
     entityOptions: CLDropdownOption[]
-
-    static GetPrebuiltEntityName(preBuiltType: string): string {
-        return `builtin-${preBuiltType.toLowerCase()}`
-    }
+    resolverOptions: CLDropdownOption[]
 
     constructor(props: Props) {
         super(props)
-        this.state = { ...initState, entityTypeVal: this.NEW_ENTITY }
+        this.state = { ...initState, entityTypeVal: CLM.EntityType.LUIS, entityResolverVal: this.NONE_RESOLVER }
         this.staticEntityOptions = this.getStaticEntityOptions(this.props.intl)
-    }
-
-    get NEW_ENTITY(): string {
-        return this.props.intl.formatMessage({
-            id: FM.ENTITYCREATOREDITOR_ENTITYOPTION_NEW,
-            defaultMessage: 'custom trained'
-        });
-    }
-
-    get PROGRAMMATIC_ENTITY(): string {
-        return this.props.intl.formatMessage({
-            id: FM.ENTITYCREATOREDITOR_ENTITYOPTION_PROG, 
-            defaultMessage: 'programmatic'
-        })
+        this.staticResolverOptions = this.getStaticResolverOptions(this.props.intl)
     }
 
     getStaticEntityOptions(intl: InjectedIntl): CLDropdownOption[] {
         return [
             {
-                key: this.NEW_ENTITY,
-                text: this.NEW_ENTITY,
+                key: CLM.EntityType.LUIS,
+                text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_LUIS),
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             },
             {
-                key: this.PROGRAMMATIC_ENTITY,
-                text: this.PROGRAMMATIC_ENTITY,
+                key: CLM.EntityType.LOCAL,
+                text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_PROG),
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             },
+            /*
+            {
+                key: CLM.EntityType.ENUM,
+                text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM),
+                itemType: OF.DropdownMenuItemType.Normal,
+                style: 'clDropdown--command'
+            }
+            */
             {
                 key: 'divider',
                 text: '-',
@@ -121,6 +111,24 @@ class Container extends React.Component<Props, ComponentState> {
                 text: 'Pre-Trained',
                 itemType: OF.DropdownMenuItemType.Header,
                 style: 'clDropdown--normal'
+            }
+        ]
+    }
+
+    get NONE_RESOLVER(): string {
+        return this.props.intl.formatMessage({
+            id: FM.ENTITYCREATOREDITOR_ENTITY_RESOLVEROPTION_NONE,
+            defaultMessage: 'none'
+        });
+    }
+
+    getStaticResolverOptions(intl: InjectedIntl): CLDropdownOption[] {
+        return [
+            {
+                key: this.NONE_RESOLVER,
+                text: this.NONE_RESOLVER,
+                itemType: OF.DropdownMenuItemType.Normal,
+                style: 'clDropdown--command'
             }
         ]
     }
@@ -144,8 +152,9 @@ class Container extends React.Component<Props, ComponentState> {
                     }))
 
             if (nextProps.entity === null) {
-                // User can create multiple built-in entities with different names
-                this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
+                const filteredPreBuiltOptions = localePreBuiltOptions.filter(entityOption => !nextProps.entities.some(e => !e.doNotMemorize && e.entityType === entityOption.key))
+                this.entityOptions = [...this.staticEntityOptions, ...filteredPreBuiltOptions]
+                this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
 
                 this.setState({
                     ...initState,
@@ -153,45 +162,42 @@ class Container extends React.Component<Props, ComponentState> {
                         id: FM.ENTITYCREATOREDITOR_TITLE_CREATE,
                         defaultMessage: 'Create an Entity'
                     }),
-                    entityTypeVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS ? nextProps.entityTypeFilter : this.NEW_ENTITY
+                    entityTypeVal: CLM.EntityType.LUIS,
+                    entityResolverVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS ? nextProps.entityTypeFilter : this.NONE_RESOLVER,
+                    enumValues: this.initEnumValues(undefined)
                 });
             } else {
                 this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
-                let entityType = nextProps.entity.entityType
-                let isProgrammatic = false
-                let isPrebuilt = false
-                
-                if (entityType !== CLM.EntityType.LUIS 
-                    && entityType !== CLM.EntityType.LOCAL 
-                    && nextProps.entity.entityName === Container.GetPrebuiltEntityName(entityType)) {
-                    isPrebuilt = true
-                }
-
-                if (entityType === CLM.EntityType.LUIS) {
-                    entityType = this.NEW_ENTITY;
-                } else if (entityType === CLM.EntityType.LOCAL) {
-                    entityType = this.PROGRAMMATIC_ENTITY
-                    isProgrammatic = true
-                }
-
-                let isMemorizable = !nextProps.entity.doNotMemorize
+                this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
+                const entityType = nextProps.entity.entityType
+                const isPrebuilt = CLM.isPrebuilt(nextProps.entity)
+                const resolverType = nextProps.entity.resolverType === null ? this.NONE_RESOLVER : nextProps.entity.resolverType
 
                 this.setState({
                     entityNameVal: nextProps.entity.entityName,
                     entityTypeVal: entityType,
+                    entityResolverVal: resolverType,
                     isPrebuilt: isPrebuilt,
                     isMultivalueVal: nextProps.entity.isMultivalue,
                     isNegatableVal: nextProps.entity.isNegatible,
-                    isProgrammaticVal: isProgrammatic,
                     isEditing: true,
                     title: nextProps.intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
                         defaultMessage: 'Edit Entity'
                     }),
-                    isAlwaysTag: isPrebuilt && isMemorizable
+                    enumValues: this.initEnumValues(nextProps.entity.enumValues)
                 })
             }
         }
+    }
+
+    initEnumValues(enumValues: CLM.EnumValue[] | undefined): (CLM.EnumValue | null)[] {
+        if (!enumValues) {
+            return Array(CLM.MAX_ENUM_VALUES).fill(null)
+        }
+        const enumClone = Util.deepCopy(enumValues)
+        const remaining = Array(CLM.MAX_ENUM_VALUES - enumValues.length).fill(null)
+        return [...enumClone, ...remaining]
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
@@ -201,10 +207,16 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         const isNameChanged = this.state.entityNameVal !== entity.entityName
-        const isProgrammaticChanged = this.state.isProgrammaticVal !== (entity.entityType === CLM.EntityType.LOCAL)
         const isMultiValueChanged = this.state.isMultivalueVal !== entity.isMultivalue
         const isNegatableChanged = this.state.isNegatableVal !== entity.isNegatible
-        const hasPendingChanges = isNameChanged || isProgrammaticChanged || isMultiValueChanged || isNegatableChanged
+        const isResolverChanged = entity.entityType === CLM.EntityType.LUIS && this.state.entityResolverVal !== entity.resolverType
+        let hasPendingEnumChanges = false
+        if (entity.entityType === CLM.EntityType.ENUM) {
+            const newEnums = this.state.enumValues.filter(v => v !== null) as CLM.EnumValue[]
+            const oldEnums = entity.enumValues || [] 
+            hasPendingEnumChanges = !this.areEnumsIdentical(newEnums, oldEnums)
+        }
+        const hasPendingChanges = isNameChanged || isMultiValueChanged || isNegatableChanged || isResolverChanged || hasPendingEnumChanges
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
             this.setState({
@@ -213,22 +225,35 @@ class Container extends React.Component<Props, ComponentState> {
         }
     }
 
+    areEnumsIdentical(newEnums: CLM.EnumValue[], oldEnums: CLM.EnumValue[]): boolean {
+        // If any new enums, or old ones changed or deleted
+        return newEnums.every(ev => ev.enumValueId !== undefined) &&
+            oldEnums.every(oldEnum => {
+            const newEnum = newEnums.find(ne => ne.enumValueId === oldEnum.enumValueId)
+            return (newEnum !== undefined && newEnum.enumValue === oldEnum.enumValue)
+        })
+    }
+
+    existingEnumId(value: string): string | undefined {
+        if (!this.props.entity || !this.props.entity.enumValues) {
+            return undefined
+        }
+        const enumEntity = this.props.entity.enumValues.find(e => e && e.enumValue === value)
+        return enumEntity ? enumEntity.enumValueId : undefined
+    }
+
     convertStateToEntity(state: ComponentState): CLM.EntityBase {
         let entityName = this.state.entityNameVal
-        let entityType = this.state.entityTypeVal
+        const entityType = this.state.entityTypeVal
+        const resolverType = this.state.entityResolverVal
         if (this.state.isPrebuilt) {
-            entityName = Container.GetPrebuiltEntityName(entityType)
+            entityName = getPrebuiltEntityName(entityType)
         }
 
-        if (this.state.isProgrammaticVal || this.state.entityTypeVal === this.PROGRAMMATIC_ENTITY) {
-            entityType = CLM.EntityType.LOCAL
-        } else if (this.state.entityTypeVal === this.NEW_ENTITY) {
-            entityType = CLM.EntityType.LUIS
-        }
-        
-        const newOrEditedEntity = {
+        const newOrEditedEntity: CLM.EntityBase = {
             entityId: undefined!,
             entityName,
+            resolverType: resolverType,
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
             isMultivalue: this.state.isMultivalueVal,
@@ -239,9 +264,12 @@ class Container extends React.Component<Props, ComponentState> {
             version: null,
             packageCreationId: null,
             packageDeletionId: null,
-            doNotMemorize: this.state.isPrebuilt ? !this.state.isAlwaysTag : null
-        } as CLM.EntityBase
+            doNotMemorize: this.state.isPrebuilt
+        }
 
+        if (entityType === CLM.EntityType.ENUM) {
+            newOrEditedEntity.enumValues = this.state.enumValues.filter(v => v) as CLM.EnumValue[]
+        }
         // Set entity id if we're editing existing id.
         if (this.state.isEditing && this.props.entity) {
             newOrEditedEntity.entityId = this.props.entity.entityId
@@ -258,27 +286,53 @@ class Container extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onClickSaveCreate() {
         const newOrEditedEntity = this.convertStateToEntity(this.state)
+
+        const needPrebuildWarning = this.newPrebuilt(newOrEditedEntity)
+        let needValidationWarning = false
+
+        // If editing check for validation errors
+        if (this.state.isEditing) {
+            const appId = this.props.app.appId
+            const isMultiValueChanged = this.props.entity ? newOrEditedEntity.isMultivalue !== this.props.entity.isMultivalue : false
+            const isNegatableChanged = this.props.entity ? newOrEditedEntity.isNegatible !== this.props.entity.isNegatible : false
+            const invalidTrainingDialogIds = await (this.props.fetchEntityEditValidationThunkAsync(appId, this.props.editingPackageId, newOrEditedEntity) as any as Promise<string[]>)
+            needValidationWarning = (isMultiValueChanged || isNegatableChanged || (invalidTrainingDialogIds && invalidTrainingDialogIds.length > 0))
+        }
+
+        if (needPrebuildWarning || needValidationWarning) {
+            this.setState(
+                {
+                    isConfirmEditModalOpen: needValidationWarning,
+                    showValidationWarning: needValidationWarning,
+                    needPrebuiltWarning: needPrebuildWarning,
+                    newOrEditedEntity: newOrEditedEntity
+                })
+        }
+        // Save and close
+        else {
+            this.saveAndClose(newOrEditedEntity)
+        }
+    }
+
+    @OF.autobind
+    onClosePrebuiltWarning(): void {
+        this.setState({
+            showValidationWarning: false
+        })
+        if (this.state.newOrEditedEntity) {
+            this.saveAndClose(this.state.newOrEditedEntity)
+        }
+    }
+
+    saveAndClose(newOrEditedEntity: CLM.EntityBase) {
         const appId = this.props.app.appId
-        
-        // If not editing (creating a new entity) simply create it and close
-        // Otherwise request validation of changes from server to determine if confirmation dialog should be opened
+
         if (!this.state.isEditing) {
             this.props.createEntityThunkAsync(appId, newOrEditedEntity)
             this.props.handleClose()
             return
         }
-        
-        const isMultiValueChanged = this.props.entity ? newOrEditedEntity.isMultivalue !== this.props.entity.isMultivalue : false
-        const isNegatableChanged =  this.props.entity ? newOrEditedEntity.isNegatible !== this.props.entity.isNegatible : false
-        const invalidTrainingDialogIds = await (this.props.fetchEntityEditValidationThunkAsync(appId, this.props.editingPackageId, newOrEditedEntity) as any as Promise<string[]>)
-        if (isMultiValueChanged || isNegatableChanged || (invalidTrainingDialogIds && invalidTrainingDialogIds.length > 0)) {
-            this.setState(
-            {
-                isConfirmEditModalOpen: true,
-                showValidationWarning: true,
-                newOrEditedEntity: newOrEditedEntity
-            })
-        } else {
+        else {
             // We know props.entity is valid because we're not editing
             this.props.editEntityThunkAsync(appId, newOrEditedEntity, this.props.entity!)
             this.props.handleClose()
@@ -294,23 +348,67 @@ class Container extends React.Component<Props, ComponentState> {
             entityNameVal: text
         })
     }
-    
+
     onChangedType = (obj: CLDropdownOption) => {
-        const isBuiltInType = obj.text !== this.NEW_ENTITY && obj.text !== this.PROGRAMMATIC_ENTITY 
-        const isProgrammaticVal = obj.text === this.PROGRAMMATIC_ENTITY
-        const isPrebuilt = this.state.entityNameVal === Container.GetPrebuiltEntityName(this.state.entityTypeVal) && isBuiltInType        
+        const isPrebuilt = obj.key !== CLM.EntityType.LUIS && obj.key !== CLM.EntityType.LOCAL && obj.key !== CLM.EntityType.ENUM
         const isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal
         const isMultivalueVal = this.state.isMultivalueVal
 
+        const entityTypeVal = isPrebuilt ? obj.text : obj.key as string
         this.setState(prevState => ({
             isPrebuilt,
             isMultivalueVal,
             isNegatableVal,
-            isProgrammaticVal,
-            entityTypeVal: obj.text,
-            entityNameVal: isPrebuilt ? Container.GetPrebuiltEntityName(obj.text) : prevState.entityNameVal, 
-            
+            entityTypeVal,
+            entityNameVal: isPrebuilt ? getPrebuiltEntityName(obj.text) : prevState.isPrebuilt ? "" : prevState.entityNameVal,
         }))
+    }
+
+    onDeleteEnum = (enumValue: CLM.EnumValue) => {
+        if (this.isEnumRequiredForActions(enumValue)) {
+            this.setState({
+                deleteEnumCheck: enumValue
+            })
+            return
+        }
+        else {
+            this.deleteEnum(enumValue)
+        }
+    }
+
+    onChangedEnum = (index: number, value: string) => {
+        const enumValuesObjs = [...this.state.enumValues]
+        const newValue = value.toUpperCase().trim()
+        const enumValueObj = enumValuesObjs[index]
+
+        if (newValue.length > 0) {    
+            // Create new EnumValue if needed 
+            if (!enumValueObj) {
+                enumValuesObjs[index] = { enumValue: newValue }
+            }
+            // Otherwise set
+            else {
+                enumValueObj.enumValue = newValue
+            }
+        }
+        else if (enumValueObj) {
+            // If existing enum leave blank so error shows
+            if (enumValueObj.enumValueId)  {
+                enumValueObj.enumValue = ""
+            }
+            // Otherwise just remove the entry
+            else {
+                enumValuesObjs[index] = null
+            }
+        }
+        this.setState({
+            enumValues: enumValuesObjs
+        })
+    }
+    onChangeResolverType = (obj: CLDropdownOption) => {
+        this.setState({
+            entityResolverVal: obj.text
+        })
     }
     onChangeMultivalue = () => {
         this.setState(prevState => ({
@@ -323,40 +421,70 @@ class Container extends React.Component<Props, ComponentState> {
         }))
     }
 
-    onChangeAlwaysTag = () => {
-        this.setState(prevState => ({
-            entityNameVal: prevState.isPrebuilt ? "" : Container.GetPrebuiltEntityName(prevState.entityTypeVal), 
-            isPrebuilt: !prevState.isPrebuilt, 
-            isAlwaysTag: !prevState.isAlwaysTag
-        }))
-    }
-
     onGetNameErrorMessage = (value: string): string => {
         const { intl } = this.props
 
         if (value.length === 0) {
-            return intl.formatMessage(messages.fieldErrorRequired)
+            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE)
+        }
+
+        if (value.length > entityNameMaxLength) {
+            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_MAX_LENGTH)
         }
 
         if (!/^[a-zA-Z0-9-]+$/.test(value)) {
-            return intl.formatMessage(messages.fieldErrorAlphanumeric)
+            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC)
         }
 
         // Check that name isn't in use
         if (!this.state.isEditing) {
-            let foundEntity = this.props.entities.find(e => e.entityName === this.state.entityNameVal);
+            const foundEntity = this.props.entities.find(e => e.entityName === this.state.entityNameVal);
             if (foundEntity) {
-                if(foundEntity.entityType !== CLM.EntityType.LOCAL 
-                    && foundEntity.entityType !== CLM.EntityType.LUIS 
-                    && foundEntity.entityName === Container.GetPrebuiltEntityName(foundEntity.entityType)
-                    && typeof foundEntity.doNotMemorize !== 'undefined' 
-                    && foundEntity.doNotMemorize) {             
-                        return ''
-                    }
-                return intl.formatMessage(messages.fieldErrorDistinct)
+                if (CLM.isPrebuilt(foundEntity)
+                    && typeof foundEntity.doNotMemorize !== 'undefined'
+                    && foundEntity.doNotMemorize) {
+                    return ''
+                }
+                return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT)
             }
         }
-        return '';
+
+        if (!this.state.isPrebuilt && (value.toLowerCase().substring(0, prebuiltPrefix.length) === prebuiltPrefix)) {
+            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED)
+        }
+
+        return ''
+    }
+
+    onGetEnumErrorMessage = (enumValue: CLM.EnumValue | null): string => {
+
+        if (!enumValue) {
+            return ''
+        }
+
+        const { intl } = this.props
+
+        if (enumValue.enumValue.length === 0) {
+            // Existing enumvalue can't be blank
+            return enumValue.enumValueId ? Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK) : ""
+        }
+
+        if (!/^[a-zA-Z0-9-]+$/.test(enumValue.enumValue)) {
+            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC)
+        }
+
+        if (this.state.enumValues.filter(v => v && v.enumValue === enumValue.enumValueId).length > 1) {
+            Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT) 
+        }
+
+        return ''
+    }
+
+    isEnumDuplicate = (value: string): boolean => {
+        if (!value) {
+            return false
+        }
+        return (this.state.enumValues.filter(v => v && v.enumValue === value).length > 1)
     }
 
     onKeyDownName = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -367,17 +495,17 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     getDisqualifiedActions(): CLM.ActionBase[] {
-        const { actions, entity } = this.props
+        const { actions: allActions, entity } = this.props
         return !entity
             ? []
-            : actions.filter(a => a.negativeEntities.some(id => id === entity.entityId))
+            : allActions.filter(a => a.negativeEntities.some(id => id === entity.entityId))
     }
 
     getRequiredActions(): CLM.ActionBase[] {
-        const { actions, entity } = this.props
+        const { actions: allActions, entity } = this.props
         return !entity
             ? []
-            : actions.filter(a => a.requiredEntities.find(id => id === entity.entityId))
+            : allActions.filter(a => a.requiredEntities.find(id => id === entity.entityId))
     }
 
     onRenderOption = (option: CLDropdownOption): JSX.Element => {
@@ -393,17 +521,32 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     isRequiredForActions(): boolean {
-        const { actions, entity } = this.props
+        const { actions: allActions, entity } = this.props
         return !entity
             ? false
-            : actions.some(a => [...a.requiredEntitiesFromPayload, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(entity.entityId))
+            : allActions.some(a => [...a.requiredEntitiesFromPayload, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(entity.entityId))
+    }
+
+    isEnumRequiredForActions(enumValue: CLM.EnumValue): boolean {
+        const { actions: allActions, entity } = this.props
+        if (!entity) {
+            return false
+        }
+
+        return allActions.some(a => {
+            return [...a.requiredConditions, ...a.negativeConditions]
+                .filter(condition => 
+                    condition.entityId === entity.entityId && 
+                    condition.valueId === enumValue.enumValueId)
+                .length > 0
+        })
     }
 
     isUsedByActions(): boolean {
-        const { actions, entity } = this.props
+        const { actions: allActions, entity } = this.props
         return !entity
             ? false
-            : actions.some(a => [...a.negativeEntities, ...a.requiredEntities, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(entity.entityId))
+            : allActions.some(a => [...a.negativeEntities, ...a.requiredEntities, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(entity.entityId))
     }
 
     isUsedByTrainingDialogs(): boolean {
@@ -414,7 +557,7 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickDelete() {
+    async onClickDelete() {
         // Check if used by actions (ok if used by TrainDialogs)
         if (this.isRequiredForActions()) {
             this.setState({
@@ -428,17 +571,17 @@ class Container extends React.Component<Props, ComponentState> {
             return
         }
 
-        ((this.props.fetchEntityDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.entity.entityId) as any) as Promise<string[]>)
-            .then(invalidTrainingDialogIds => {
-                this.setState({
-                    isConfirmDeleteModalOpen: true,
-                    showValidationWarning: invalidTrainingDialogIds.length > 0
-                });
+        try {
+            const invalidTrainingDialogIds = await ((this.props.fetchEntityDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.entity.entityId) as any) as Promise<string[]>)
+            this.setState({
+                isConfirmDeleteModalOpen: true,
+                showValidationWarning: invalidTrainingDialogIds.length > 0
             })
-            .catch(error => {
-                console.warn(`Error when attempting to validate delete: `, error)
-            }
-        )
+        }
+        catch (e) {
+            const error = e as Error
+            console.warn(`Error when attempting to validate delete: `, error)
+        }
     }
 
     @OF.autobind
@@ -446,6 +589,23 @@ class Container extends React.Component<Props, ComponentState> {
         this.setState({
             isConfirmDeleteModalOpen: false,
             isDeleteErrorModalOpen: false
+        })
+    }
+
+    @OF.autobind
+    onCancelEnumDelete() {
+        this.setState({
+            deleteEnumCheck: null
+        })
+    }
+
+    @OF.autobind
+    onConfirmEnumDelete() {
+        if (this.state.deleteEnumCheck) {
+            this.deleteEnum(this.state.deleteEnumCheck)
+        }
+        this.setState({
+            deleteEnumCheck: null
         })
     }
 
@@ -472,6 +632,35 @@ class Container extends React.Component<Props, ComponentState> {
         })
     }
 
+    newPrebuilt(newOrEditedEntity: CLM.EntityBase): string | null {
+        // Check resolvers
+        if (newOrEditedEntity.resolverType && newOrEditedEntity.resolverType !== "none") {
+
+            const resolverType = newOrEditedEntity.resolverType
+            const existingBuiltIn = this.props.entities.find(e =>
+                e.resolverType === resolverType ||
+                e.entityType === resolverType)
+
+            if (!existingBuiltIn) {
+                return resolverType
+            }
+        }
+
+        // Check prebuilts
+        if (this.state.isPrebuilt) {
+
+            // If a prebuilt - entity name is prebuilt name
+            const existingBuiltIn = this.props.entities.find(e =>
+                e.resolverType === newOrEditedEntity.entityType ||
+                e.entityType === newOrEditedEntity.entityType)
+
+            if (!existingBuiltIn) {
+                return newOrEditedEntity.entityName
+            }
+        }
+        return null
+    }
+
     @OF.autobind
     onConfirmEdit() {
         if (!this.state.newOrEditedEntity) {
@@ -479,14 +668,14 @@ class Container extends React.Component<Props, ComponentState> {
             return
         }
 
-        const entity = {...this.state.newOrEditedEntity}
         this.setState({
             isConfirmEditModalOpen: false,
             newOrEditedEntity: null
         })
 
-        this.props.editEntityThunkAsync(this.props.app.appId, entity, this.props.entity!)
-        this.props.handleClose()
+        if (!this.state.needPrebuiltWarning) {
+            this.saveAndClose(this.state.newOrEditedEntity)
+        }
     }
 
     @OF.autobind
@@ -495,30 +684,44 @@ class Container extends React.Component<Props, ComponentState> {
         history.push(`/home/${this.props.app.appId}/trainDialogs`, { app: this.props.app, entityFilter: this.props.entity })
     }
 
+    isSaveDisabled() {
+        if (this.state.entityTypeVal === CLM.EntityType.ENUM) {
+            // Enum must have at least 2 values
+            const values = this.state.enumValues.filter(v => v)
+            if (values.length < 2) {
+                return true
+            }
+            const invalid = this.state.enumValues.filter(v => v && (this.onGetEnumErrorMessage(v) || this.isEnumDuplicate(v.enumValue)))
+            if (invalid.length > 0) {
+                return true
+            }
+        }
+        return (this.onGetNameErrorMessage(this.state.entityNameVal) !== '')
+    }
+
     render() {
         const { intl } = this.props
         // const isEntityInUse = this.state.isEditing && this.isInUse()
-        const isTypeDisabled = this.state.isEditing
 
         const title = this.props.entity
             ? this.props.entity.entityName
             : this.state.title
 
         const name = this.state.isPrebuilt
-            ? Container.GetPrebuiltEntityName(this.state.entityTypeVal)
+            ? getPrebuiltEntityName(this.state.entityTypeVal)
             : this.state.entityNameVal
 
-        const isSaveButtonDisabled = (this.onGetNameErrorMessage(this.state.entityNameVal) !== '')
+        const isSaveButtonDisabled = this.isSaveDisabled()
             || (!!this.props.entity && !this.state.hasPendingChanges)
-        
+
         return <Component
             open={this.props.open}
             title={title}
             intl={intl}
             entityOptions={this.entityOptions}
-            
-            selectedTypeKey={this.state.entityTypeVal}
-            isTypeDisabled={isTypeDisabled || this.props.entityTypeFilter != null}
+
+            entityTypeKey={this.state.entityTypeVal}
+            isTypeDisabled={this.state.isEditing || this.props.entityTypeFilter != null}
             onChangedType={this.onChangedType}
 
             name={name}
@@ -527,13 +730,11 @@ class Container extends React.Component<Props, ComponentState> {
             onChangedName={this.onChangedName}
             onKeyDownName={this.onKeyDownName}
 
-            isProgrammatic={this.state.isProgrammaticVal}
             isMultiValue={this.state.isMultivalueVal}
             isMultiValueDisabled={false}
             onChangeMultiValue={this.onChangeMultivalue}
 
             isNegatable={this.state.isNegatableVal}
-            isNegatableDisabled={this.state.isPrebuilt}
             onChangeNegatable={this.onChangeReversible}
 
             isEditing={this.state.isEditing}
@@ -544,7 +745,7 @@ class Container extends React.Component<Props, ComponentState> {
 
             isSaveButtonDisabled={isSaveButtonDisabled}
             onClickSaveCreate={this.onClickSaveCreate}
-        
+
             onClickCancel={this.onClickCancel}
 
             isConfirmDeleteModalOpen={this.state.isConfirmDeleteModalOpen}
@@ -560,17 +761,32 @@ class Container extends React.Component<Props, ComponentState> {
 
             showValidationWarning={this.state.showValidationWarning}
 
-            isAlwaysTagged={this.state.isPrebuilt && this.state.isAlwaysTag}
-            isAlwaysTagDisabled={this.state.entityTypeVal === this.PROGRAMMATIC_ENTITY 
-                || this.state.entityTypeVal === this.NEW_ENTITY 
-                || this.state.isEditing 
-                // disable always extract check box if built-in entity with doNotMemorize == false exist
-                || typeof this.props.entities.find(e => 
-                    e.entityType !== CLM.EntityType.LOCAL 
-                    && e.entityType !== CLM.EntityType.LUIS 
-                    && !e.doNotMemorize && e.entityName === Container.GetPrebuiltEntityName(this.state.entityTypeVal)) !== 'undefined'}
-            onAlwaysTagChange={this.onChangeAlwaysTag}
+            needPrebuiltWarning={this.state.needPrebuiltWarning}
+            onClosePrebuiltWarning={this.onClosePrebuiltWarning}
+
+            selectedResolverKey={this.state.entityResolverVal}
+            resolverOptions={this.resolverOptions}
+            onResolverChanged={this.onChangeResolverType}
+
+            enumValues={this.state.enumValues}
+            onChangedEnum={this.onChangedEnum}
+            onGetEnumErrorMessage={this.onGetEnumErrorMessage}
+            onDeleteEnum={this.onDeleteEnum}
+            onCancelEnumDelete={this.onCancelEnumDelete}
+            onConfirmEnumDelete={this.onConfirmEnumDelete}
+            deleteEnumCheck={this.state.deleteEnumCheck}
         />
+    }
+
+    private deleteEnum(enumValue: CLM.EnumValue): void {
+        const index = this.state.enumValues.indexOf(enumValue)
+        if (index >= 0) {
+            const enumValues = [...this.state.enumValues]
+            enumValues[index] = null
+            this.setState({enumValues})
+        } else {
+            console.error(`DeleteEnum: Invalid Index`)
+        }
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
@@ -606,6 +822,3 @@ const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
 export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(Container)))
-export const getPrebuiltEntityName = (entityType: string): string => {
-    return Container.GetPrebuiltEntityName(entityType)
-}

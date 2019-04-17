@@ -12,12 +12,14 @@ interface EntityComponentProps {
 
 interface Props extends EntityComponentProps {
     name: string
+    showSelect: boolean
 }
 
 export const PreBuiltEntity = (props: Props) => {
-    const { name } = props
+    const { name, showSelect } = props
+    const className = showSelect ? "cl-entity-node cl-entity-node--prebuilt" : "cl-entity-node cl-entity-node--custom"
     return (
-        <span className="cl-entity-node cl-entity-node--prebuilt">
+        <span className={className}>
             <div className="cl-entity-node-indicator noselect">
                 <div className="cl-entity-node-indicator__mincontent">
                     <div className="cl-entity-node-indicator__name">

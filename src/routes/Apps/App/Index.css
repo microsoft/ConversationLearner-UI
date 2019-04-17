@@ -5,10 +5,15 @@
 }
 .cl-app-title {
     padding-bottom: 0.9rem;
+    word-break: break-all;
 }
 
 .cl-app-tag-status {
     padding: 0.125em 0 0.5em;
+}
+
+.cl-app-page .cl-training-status {
+    margin-bottom: 1em;
 }
 
 .cl-page {
