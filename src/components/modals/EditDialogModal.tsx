@@ -3,34 +3,34 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { returntypeof } from 'react-redux-typescript'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as DialogUtils from '../../Utils/dialogUtils'
-import { formatMessageId, equal, deepCopy } from '../../Utils/util'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { State } from '../../types'
-import actions from '../../actions'
-import Webchat, { renderActivity } from '../Webchat'
-import { TooltipHost, DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip'
 import * as BotChat from '@conversationlearner/webchat'
-import { EditDialogAdmin, EditDialogType, EditState } from '.'
-import * as CLM from '@conversationlearner/models'
-import { Activity } from 'botframework-directlinejs'
-import { SelectionType } from '../../types/const'
+import actions from '../../actions'
+import HelpIcon from '../HelpIcon'
 import AddButtonInput from './AddButtonInput'
 import AddScoreButton from './AddButtonScore'
 import DisabledInputButtom from './DisabledInputButton'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import FormattedMessageId from '../FormattedMessageId'
+import Webchat, { renderActivity } from '../Webchat'
+import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
+import { formatMessageId, equal, deepCopy } from '../../Utils/util'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
+import { State } from '../../types'
+import { TooltipHost, DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip'
+import { EditDialogAdmin, EditDialogType, EditState } from '.'
+import { Activity } from 'botframework-directlinejs'
+import { SelectionType } from '../../types/const'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { FM } from '../../react-intl-messages'
-import HelpIcon from '../HelpIcon'
 import { TipType } from '../ToolTips/ToolTips'
 import { renderReplayError } from '../../Utils/RenderReplayError'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
@@ -38,6 +38,7 @@ interface ComponentState {
     isUserInputModalOpen: boolean
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
+    isSaveConflictModalOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
     hasEndSession: boolean
@@ -53,6 +54,7 @@ const initialState: ComponentState = {
     isUserInputModalOpen: false,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
+    isSaveConflictModalOpen: false,
     selectedActivity: null,
     webchatKey: 0,
     hasEndSession: false,
@@ -127,6 +129,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickAddUserInput(selectionType: SelectionType) {
+        // TEMP: until server can exclude label conflicts with self
+        if (this.showInternalLabelConflict()) {   
+            return
+        }
         if (this.state.selectedActivity) {
             if (this.canReplay(this.state.selectedActivity)) {
                 this.setState({
@@ -144,6 +150,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickAddScore(activity: BotChat.Activity, selectionType: SelectionType) {
+        // TEMP: until server can exclude label conflicts with self
+        if (this.showInternalLabelConflict()) {   
+            return
+        }
         if (this.canReplay(activity)) {
             if (activity && this.state.currentTrainDialog) {
                 const isLastActivity = activity === this.props.history[this.props.history.length - 1]
@@ -238,6 +248,25 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
+    onSaveConflictSave() {
+        // Save the dialog
+        this.onClickSave()
+        this.setState({
+            isSaveConflictModalOpen: false
+        })
+    }
+
+    @OF.autobind
+    onSaveConflictCancel() {
+        // Increment webchat key to reset and clear last input
+        // Forces redraw of webchat from TrainDialog (which hasn't been updated yet)
+        this.setState({
+            isSaveConflictModalOpen: false,
+            webchatKey: this.state.webchatKey + 1
+        })
+    }
+
+    @OF.autobind
     onSubmitBranch(userInput: string) {
         this.setState({
             isUserBranchModalOpen: false
@@ -303,11 +332,27 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             }
             // Otherwise continue
             else {
+                // TEMP: until server can exclude label conflicts with self
+                if (this.showInternalLabelConflict()) {   
+                    return
+                }
                 await this.props.onContinueDialog(newTrainDialog, userInput)
             }
         }
     }
 
+    // TEMP: until server can exclude label conflicts with self, we need
+    // to check for them and force save before we can add a turn 
+    showInternalLabelConflict(): boolean {
+        if (this.props.originalTrainDialog && this.state.currentTrainDialog) {
+            const conflict = DialogUtils.hasInternalLabelConflict(this.props.originalTrainDialog, this.state.currentTrainDialog)
+            if (conflict) {
+                this.setState({isSaveConflictModalOpen: true})
+                return true
+            }
+        }
+        return false
+    }
     onWebChatSelectActivity(activity: Activity) {
         this.setState({
             selectedActivity: activity
@@ -958,7 +1003,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     app={this.props.app}
                                     editingPackageId={this.props.editingPackageId}
                                     editingLogDialogId={this.props.editingLogDialogId}
-                                    originalTrainDialogId={this.props.originalTrainDialogId}
+                                    originalTrainDialogId={this.props.originalTrainDialog ? this.props.originalTrainDialog.trainDialogId : null}
                                     editType={this.props.editType}
                                     editState={this.props.editState}
                                     trainDialog={this.props.trainDialog}
@@ -1071,6 +1116,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onClose={this.props.onAbortConflictResolution}
                     onAccept={this.props.onAcceptConflictResolution}
                 />
+                <ConfirmCancelModal
+                    open={this.state.isSaveConflictModalOpen}
+                    title={formatMessageId(intl, FM.EDITDIALOGMODAL_SAVECONFLICT_TITLE)}
+                    onCancel={this.onSaveConflictCancel}
+                    onOk={this.onSaveConflictSave}
+                />
             </Modal>
         );
     }
@@ -1099,7 +1150,7 @@ export interface ReceivedProps {
     // Current train dialog being edited
     trainDialog: CLM.TrainDialog
     // Train Dialog that this edit originally came from
-    originalTrainDialogId: string | null
+    originalTrainDialog: CLM.TrainDialog | null
     // If editing a log dialog, this was the source
     editingLogDialogId: string | null
     history: Activity[]
@@ -1122,7 +1173,6 @@ export interface ReceivedProps {
     // Add a new train dialog to the Model (when EditDialogType === NEW)
     onCreateDialog: (newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) => void
     onDeleteDialog: () => void
-
     conflictPairs: ConflictPair[]
     onAcceptConflictResolution: (conflictPairs: ConflictPair[]) => Promise<void>
     onAbortConflictResolution: () => void

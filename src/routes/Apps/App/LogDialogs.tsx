@@ -497,8 +497,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 // Delete the teach session w/o saving
                 await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
             }
-
-            const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput) as any) as Promise<CLM.TeachWithHistory>)
+            const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput, null) as any) as Promise<CLM.TeachWithHistory>)
 
             // Update currentTrainDialog with tags and description
             const currentTrainDialog = this.state.currentTrainDialog ? {
@@ -986,7 +985,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isEditDialogModalOpen}
                     trainDialog={this.state.currentTrainDialog!}
                     editingLogDialogId={this.state.currentLogDialogId}
-                    originalTrainDialogId={null}
+                    originalTrainDialog={null}
                     history={this.state.history}
                     initialSelectedActivityIndex={this.state.selectedHistoryIndex}
                     editType={this.state.editType}
