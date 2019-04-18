@@ -407,13 +407,13 @@ const trainDialogReplayFulfilled = (trainDialog: CLM.TrainDialog): ActionObject 
 // --------------------------
 // fetchTextVariationConflict
 // --------------------------
-export const fetchTextVariationConflictThunkAsync = (appId: string, trainDialogId: string, textVariation: CLM.TextVariation, filteredDialogId: string | null) => {
+export const fetchTextVariationConflictThunkAsync = (appId: string, trainDialogId: string, textVariation: CLM.TextVariation, excludeConflictCheckId: string | null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC)
         dispatch(fetchTextVariationConflictAsync(appId, trainDialogId, textVariation))
 
         try {
-            const conflict = await clClient.fetchTextVariationConflict(appId, trainDialogId, textVariation, filteredDialogId)
+            const conflict = await clClient.fetchTextVariationConflict(appId, trainDialogId, textVariation, excludeConflictCheckId)
             dispatch(fetchTextVariationConflictFulfilled(conflict))
             return conflict
         }

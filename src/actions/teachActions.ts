@@ -80,13 +80,13 @@ const createTeachSessionFromHistoryRejected = (): ActionObject =>
         type: AT.CREATE_TEACH_SESSION_FROMHISTORY_REJECTED
     })
 
-export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string, initialUserInput: CLM.UserInput | null, filteredDialogId: string | null) => {
+export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string, initialUserInput: CLM.UserInput | null, excludeConflictCheckId: string | null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC)
         dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
 
         try {
-            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, initialUserInput, userName, userId, filteredDialogId)
+            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, initialUserInput, userName, userId, excludeConflictCheckId)
             dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
             return teachWithHistory
         }
@@ -230,7 +230,7 @@ const runExtractorFulfilled = (appId: string, sessionId: string, uiExtractRespon
     }
 }
 
-export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput, filteredDialog: string | null) => {
+export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput, excludeConflictCheckId: string | null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.RUN_EXTRACTOR_ASYNC)
         dispatch(runExtractorAsync(appId, extractType, sessionId, turnIndex, userInput))
@@ -240,7 +240,7 @@ export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogTyp
 
             switch (extractType) {
                 case CLM.DialogType.TEACH:
-                    uiExtractResponse = await clClient.teachSessionAddExtractStep(appId, sessionId, userInput, filteredDialog)
+                    uiExtractResponse = await clClient.teachSessionAddExtractStep(appId, sessionId, userInput, excludeConflictCheckId)
                     break;
                 case CLM.DialogType.TRAINDIALOG:
                     if (turnIndex === null) {
