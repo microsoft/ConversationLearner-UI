@@ -68,13 +68,20 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
+        // Don't look for conflict on the dialog that I'm editing (as checked above)
+        const ignoreDialogId = this.props.originalTrainDialogId
+            ? this.props.originalTrainDialogId
+            : this.props.sourceTrainDialog
+            ? this.props.sourceTrainDialog.trainDialogId
+            : null
+
         // Next against other TrainDialogs
         for (const changedTextVariation of changedTextVariations) {
             const conflict = await this.props.fetchTextVariationConflictThunkAsync(
                 this.props.app.appId,
                 this.props.teachSession.teach!.trainDialogId,
                 changedTextVariation,
-                this.props.originalTrainDialogId)
+                ignoreDialogId)
             if (conflict) {
                 return true
             }
