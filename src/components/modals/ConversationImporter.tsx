@@ -15,6 +15,7 @@ import { FilePicker } from 'react-file-picker'
 import { setErrorDisplay } from '../../actions/displayActions'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import * as CLM from '@conversationlearner/models'
+import { nullRender } from '@uifabric/utilities';
 
 interface ComponentState {
     file: File | null
@@ -52,8 +53,10 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
             sourceLogDialogId: undefined!,
             initialFilledEntities: [],
             rounds: [],
+            tags: [], 
+            description: '',
             createdDateTime: Date.now().toString(),  
-            lastModifiedDateTime: Date.now().toString()  
+            lastModifiedDateTime: Date.now().toString() 
         }
         let isUser: boolean = true
         let curRound: CLM.TrainRound | null = null
