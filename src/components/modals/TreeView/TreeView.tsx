@@ -62,15 +62,15 @@ class TreeView extends React.Component<Props, ComponentState> {
             this.updateTree()
         }
         if (this.state.treeContainer) {
-        if (!this.state.translateX || (this.state.selectedNode !== prevState.selectedNode)) {
-            if (this.state.selectedNode) {
-                this.setState({translateX: NODE_WIDTH})
-            }
-            else {
-                    const dimensions = this.state.treeContainer.getBoundingClientRect();
-                    this.setState({
-                        translateX: dimensions.width / 2.5,
-                    })
+            if (!this.state.translateX || (this.state.selectedNode !== prevState.selectedNode)) {
+                if (this.state.selectedNode) {
+                    this.setState({translateX: NODE_WIDTH})
+                }
+                else {
+                        const dimensions = this.state.treeContainer.getBoundingClientRect();
+                        this.setState({
+                            translateX: dimensions.width / 2.5,
+                        })
                 }
             }
         }
@@ -415,7 +415,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                                     canEdit={false}
                                     selectedNode={this.state.selectedNode}
                                     generateActionDescriptions={this.generateActionDescriptions}
-                                    onExpandoClick={()=>{}}
+                                    onExpandoClick={() => {}}
                                     onOpenTrainDialog={this.openTrainDialog}
                                 />
                                 <div className='cl-modal_footer cl-modal-buttons'>

@@ -156,7 +156,7 @@
 }
 
 .cl-treeview-expandButton {
-  position: absolute;
+  position: absolute !important;
   z-index: 100;
 }
 
