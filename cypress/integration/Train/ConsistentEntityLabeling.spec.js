@@ -94,5 +94,5 @@ describe('Tag And Frog - Train', () => {
       train.Save()
     })
   })
-    // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog2.cl'
+    // Manually EXPORT this to fixtures folder and name it 'z-CnstntEntLabel.cl'
 })

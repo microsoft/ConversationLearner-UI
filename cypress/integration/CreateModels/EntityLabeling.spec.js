@@ -12,13 +12,12 @@ import * as memoryTableComponent from '../../support/components/MemoryTableCompo
 import * as common from '../../support/Common'
 import * as helpers from '../../support/Helpers'
 
-describe('Tag And Frog - Create Model', () => {
+describe('Entity Labeling - Create Model', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   context('Create', () => {
     it('Create a model to test against', () => {
-      // models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
-      models.CreateNewModel('z-tagAndFrog')
+      models.CreateNewModel('z-entityLabeling')
     })
 
     it('Create a Multivalue Entity', () => {
@@ -93,6 +92,6 @@ describe('Tag And Frog - Create Model', () => {
       train.Save()
     })
 
-    // Manually EXPORT this to fixtures folder and name it 'z-tagAndFrog.cl'
+    // Manually EXPORT this to fixtures folder and name it 'z-entityLabeling.cl'
   })
 })

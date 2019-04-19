@@ -9,14 +9,14 @@ import * as scorerModal from '../../support/components/ScorerModal'
 import * as train from '../../support/Train'
 import * as helpers from '../../support/Helpers'
 
-describe('Tag and Frog - Edit And Branching', () => {
+describe('Consistent Entity Labeling - Edit And Branching', () => {
   const textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
 
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {
-      models.ImportModel('z-tagAndFrog2', 'z-tagAndFrog2.cl')
+      models.ImportModel('z-CnstntEntLabel', 'z-tagAndFrog2.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
