@@ -15,7 +15,7 @@ describe("What's Your Name - Log", () => {
 
   context('Setup', () => {
     it('Should import a model to test against, navigate to Log Dialogs view and wait for training status to complete', () => {
-      models.ImportModel('z-logMyName', 'z-nameTrained.cl')
+      models.ImportModel('z-logMyName', 'z-learnedEntLabel.cl')
       modelPage.NavigateToLogDialogs()
       cy.WaitForTrainingStatusCompleted()
     })

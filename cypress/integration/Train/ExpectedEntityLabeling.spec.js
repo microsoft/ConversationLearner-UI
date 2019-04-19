@@ -11,12 +11,12 @@ import * as train from '../../support/Train'
 import * as common from '../../support/Common'
 import * as helpers from '../../support/Helpers'
 
-describe("'What's Your Name - Train", () => {
+describe('Expected Entity Labeling - Train', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
     it('Should import a model to test against, navigate to Train Dialogs view and wait for training status to complete', () => {
-      models.ImportModel('z-whatsYourName', 'z-whatsYourName.cl')
+      models.ImportModel('z-expectedEntLabel', 'z-whatsYourName.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
@@ -66,5 +66,5 @@ describe("'What's Your Name - Train", () => {
       train.Save()
     })
   })
-  // Manually EXPORT this to fixtures folder and name it 'z-myNameIs.cl'
+  // Manually EXPORT this to fixtures folder and name it 'z-expectedEntLabel.cl'
 })

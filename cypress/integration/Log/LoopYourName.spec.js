@@ -16,7 +16,7 @@ describe("Loop What's Your Name - Log", () => {
   const maxIterationsToRun = 50
   context('Setup', () => {
     it('Should import model, navigate to Log Dialogs and wait for training status to complete', () => {
-      models.ImportModel('z-logMyName', 'z-nameTrained.cl')
+      models.ImportModel('z-logMyName', 'z-learnedEntLabel.cl')
       modelPage.NavigateToLogDialogs()
       cy.WaitForTrainingStatusCompleted()
     })

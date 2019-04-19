@@ -14,7 +14,7 @@ describe('Basic Branching', () => {
   
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {
-      models.ImportModel('z-branching', 'z-nameTrained.cl')
+      models.ImportModel('z-branching', 'z-learnedEntLabel.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })

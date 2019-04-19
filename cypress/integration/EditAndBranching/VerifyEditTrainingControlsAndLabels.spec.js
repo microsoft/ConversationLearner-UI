@@ -14,7 +14,7 @@ describe('Verify Edit Training Controls And Labels - EditAndBranching', () => {
 
   context('Setup', () => {
     it('Should import a model to test against and navigate to the Train Dialogs', () => {
-      models.ImportModel('z-editContols', 'z-nameTrained.cl')
+      models.ImportModel('z-editContols', 'z-learnedEntLabel.cl')
       modelPage.NavigateToTrainDialogs()
     })
   })

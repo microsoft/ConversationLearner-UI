@@ -11,17 +11,17 @@ import * as train from '../../support/Train'
 import * as common from '../../support/Common'
 import * as helpers from '../../support/Helpers'
 
-describe('My Name Is - Train Dialog', () => {
+describe('Learned Entity Labeling - Train Dialog', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {
-      models.ImportModel('z-myNameIs', 'z-myNameIs.cl')
+      models.ImportModel('z-learnedEntLabel', 'z-expectedEntLabel.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
   })
-  
+
   context('Train Dialog', () => {
     it('Should create a new Train Dialog', () => {
       train.CreateNewTrainDialog()
@@ -98,5 +98,5 @@ describe('My Name Is - Train Dialog', () => {
       train.Save()
     })
   })
-  // Manually EXPORT this to fixtures folder and name it 'z-nameTrained.cl'
+  // Manually EXPORT this to fixtures folder and name it 'z-learnedEntLabel.cl'
 })

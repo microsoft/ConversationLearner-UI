@@ -16,7 +16,7 @@ describe('Consistent Entity Labeling - Edit And Branching', () => {
   
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {
-      models.ImportModel('z-CnstntEntLabel', 'z-tagAndFrog2.cl')
+      models.ImportModel('z-cnstntEntLabel', 'z-cnstntEntLabel.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })

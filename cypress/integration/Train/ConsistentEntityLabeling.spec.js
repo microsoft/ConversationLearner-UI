@@ -9,7 +9,7 @@ import * as train from '../../support/Train'
 import * as common from '../../support/Common'
 import * as helpers from '../../support/Helpers'
 
-describe('Tag And Frog - Train', () => {
+describe('Consistent Entity Labeling - Train', () => {
   // TODO: Need to add another test case or expand this one so that tagging something
   //       that was NOT tagged in another instance causes the UI to complain.
   const textEntityPairs = [{ text: 'Tag', entity: 'multi' }, { text: 'Frog', entity: 'multi' }]
@@ -18,7 +18,7 @@ describe('Tag And Frog - Train', () => {
   
   context('Setup', () => {
     it('Should import a model, wait for training to complete and start a new Train Dialog', () => {
-      models.ImportModel('z-tagAndFrog', 'z-tagAndFrog.cl')
+      models.ImportModel('z-cnstntEntLabel', 'z-entityLabeling.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
       train.CreateNewTrainDialog()
@@ -94,5 +94,5 @@ describe('Tag And Frog - Train', () => {
       train.Save()
     })
   })
-    // Manually EXPORT this to fixtures folder and name it 'z-CnstntEntLabel.cl'
+    // Manually EXPORT this to fixtures folder and name it 'z-cnstntEntLabel.cl'
 })
