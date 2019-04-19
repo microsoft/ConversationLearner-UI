@@ -534,6 +534,9 @@ export enum FM {
     TRAINDIALOGS_FILTERING_ACTIONS_LABEL = 'TrainDialogs.FilteringActions.Label',
     TRAINDIALOGS_FILTERING_ACTIONS = 'TrainDialogs.FilteringActions',
 
+    // TreeView
+    TREEVIEW_TOGGLE_FULLSCREEN = 'TreeView.ToggleFullScreen',
+
     // Tutorial Importer
     TUTORIALIMPORTER_TITLE = 'TutorialImporter.Title',
 
@@ -897,6 +900,9 @@ export default {
         [FM.TRAINDIALOGS_FILTERING_ENTITIES]: 'All entities',
         [FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL]: 'Filter by Actions:',
         [FM.TRAINDIALOGS_FILTERING_ACTIONS]: 'All actions',
+
+        // TreeView
+        [FM.TREEVIEW_TOGGLE_FULLSCREEN]: 'Toggle Fullscreen',
 
         // Tutorial Importer
         [FM.TUTORIALIMPORTER_TITLE]: 'Tutorials',
