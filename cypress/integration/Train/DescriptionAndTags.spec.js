@@ -3,12 +3,12 @@ import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
 import * as helpers from '../../support/Helpers'
 
-describe('Scenario and Tags - Train Dialog', () => {
+describe('Description and Tags - Train Dialog', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   it('Imports a model to test against', () => {
     // import the saved model for tags and description testing
-    models.ImportModel('z-ScenarioAndTag', 'z-whatsYourName.cl')
+    models.ImportModel('z-Description-Tags', 'z-whatsYourName.cl')
   })
 
   context('Train Dialogs', () => {

@@ -92,7 +92,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
                 isBlocking={true}
             >
 
-                <div className='cl-modal_header'>
+                <div className='cl-modal_header' data-testid="merge-modal-title">
                     <span className={OF.FontClassNames.xxLarge}>
                         {Util.formatMessageId(intl, FM.MERGE_TITLE)}
                     </span>
