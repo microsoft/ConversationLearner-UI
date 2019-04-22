@@ -11,7 +11,7 @@ const authoringKeys =
 //let randomIndex = new Date().getTime() % 5
 
 let circleCiBuildNumber = +process.env.CIRCLE_BUILD_NUM
-let randomIndex = (circleCiBuildNumber % 10) / 2
+let randomIndex = Math.floor((circleCiBuildNumber % 10) / 2)
 let luisAuthoringKey = authoringKeys[randomIndex]
 
 console.log(`export LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`)
