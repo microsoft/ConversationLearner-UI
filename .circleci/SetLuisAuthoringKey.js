@@ -1,3 +1,10 @@
+const fs = require('fs')
+
+let circleCiBuildNumber = +process.env.CIRCLE_BUILD_NUM
+let randomIndex = (circleCiBuildNumber % 10) / 2
+
+fs.writeFileSync('results/temp.txt', `CIRCLE_BUILD_NUM=${circleCiBuildNumber} - randomIndex=${randomIndex}`)
+
 const authoringKeys =
 [
   process.env.LUIS_AUTHORING_KEY_ALT_1,
@@ -8,7 +15,8 @@ const authoringKeys =
 ]
 
 // Randomly pick an authoring key from the array.
-var randomIndex = new Date().getTime() % 5
-var luisAuthoringKey = authoringKeys[randomIndex]
+//let randomIndex = new Date().getTime() % 5
+let luisAuthoringKey = authoringKeys[randomIndex]
 
 console.log(`export LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`)
+
