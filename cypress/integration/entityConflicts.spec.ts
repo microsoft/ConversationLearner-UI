@@ -1,14 +1,8 @@
-/// <reference types="Cypress" />
-
-import * as entity from '../support/Entities'
 import * as models from '../support/Models'
 import * as model from '../support/components/ModelPage'
-import * as action from '../support/Actions'
-import * as actions from '../support/components/ActionsGrid'
 import * as trainDialog from '../support/Train'
 import * as logDialogs from '../support/components/LogDialogsGrid'
 import * as logDialog from '../support/components/LogDialogModal'
-import * as homePage from '../support/components/HomePage'
 
 const testSelectors = {
     common: {

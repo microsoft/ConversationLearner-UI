@@ -1,5 +1,3 @@
-/// <reference types="Cypress" />
-
 const testSelectors = {
     common: {
         spinner: '.cl-spinner',
@@ -42,7 +40,6 @@ const testSelectors = {
     }
 }
 
-
 const testConstants = {
     keys: {
         tab: 9,
@@ -60,14 +57,14 @@ const testConstants = {
     }
 }
 
-function pressKey(keyCode) {
+function pressKey(keyCode: number) {
     cy.get('body').trigger('keydown', {
         keyCode,
         which: keyCode
     })
 }
 
-function verifyWordIsLabeled(word, entityName) {
+function verifyWordIsLabeled(word: string, entityName: string) {
     cy.get('.cl-entity-node--custom')
         .contains('.cl-entity-node--custom', word)
         .find('.cl-entity-node-indicator')
@@ -83,13 +80,14 @@ describe('EntityPicker', () => {
             word2: 'word2',
             word3: 'word3',
             word4: 'word4',
+            phrase: 'Default phrase'
         }
         testData.phrase = `Phrase start ${testData.word1} ${testData.word2} ${testData.word3} ${testData.word4} end.`
 
         before(() => {
             cy.visit('http://localhost:3000')
 
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner })
+            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
 
             // Create model
@@ -102,7 +100,7 @@ describe('EntityPicker', () => {
             cy.get(testSelectors.models.submit)
                 .click()
 
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner })
+            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
 
             cy.get(testSelectors.model.navTrainDialogs)
@@ -114,6 +112,9 @@ describe('EntityPicker', () => {
             cy.get(testSelectors.trainDialog.inputWebChat)
                 .type(`${testData.phrase}{enter}`)
 
+            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                .should('not.exist')
+
             cy.wait(500)
         })
 
@@ -122,7 +123,7 @@ describe('EntityPicker', () => {
         })
 
         after(() => {
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner })
+            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
 
             cy.get(testSelectors.trainDialog.buttonAbandon)
@@ -178,8 +179,9 @@ describe('EntityPicker', () => {
                 .contains(testData.entity1)
                 .should('have.length', 1)
 
-            // TODO: Remove
-            cy.WaitForStableDOM()
+                // TODO: Remove
+                // @ts-ignore
+                cy.WaitForStableDOM()
 
             cy.get(testSelectors.extractionEditor.overlay)
                 .click()
@@ -230,13 +232,14 @@ describe('EntityPicker', () => {
                 'youEntity',
             ],
             entitySearchPrefix: 'Ent',
+            phrase: 'Default phrase',
         }
         testData.phrase = `Phrase start ${testData.word1} ${testData.word2} ${testData.word3} ${testData.word4} end.`
 
         before(() => {
             cy.visit('http://localhost:3000')
 
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner })
+            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
 
             cy.get(testSelectors.models.buttonImport)
@@ -248,12 +251,14 @@ describe('EntityPicker', () => {
             cy.get(testSelectors.models.buttonLocalFile)
                 .click()
 
-            cy.UploadFile(testData.modelFile, testSelectors.models.inputFile)
+                // TODO: Add types
+                // @ts-ignore
+                cy.UploadFile(testData.modelFile, testSelectors.models.inputFile)
 
             cy.get(testSelectors.models.submit)
                 .click()
 
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner })
+            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
 
             cy.get(testSelectors.model.navTrainDialogs)
@@ -265,12 +270,12 @@ describe('EntityPicker', () => {
             cy.get(testSelectors.trainDialog.inputWebChat)
                 .type(`${testData.phrase}{enter}`)
 
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner })
+            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
         })
 
         after(() => {
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner })
+            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
 
             cy.get(testSelectors.trainDialog.buttonAbandon)
@@ -413,7 +418,7 @@ describe('EntityPicker', () => {
             before(() => {
                 cy.reload()
 
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner })
+                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
                 cy.get(testSelectors.trainDialogs.buttonNew)
@@ -422,7 +427,7 @@ describe('EntityPicker', () => {
                 cy.get(testSelectors.trainDialog.inputWebChat)
                     .type(`${testData.phrase}{enter}`)
 
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner })
+                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
                 cy.get('body')

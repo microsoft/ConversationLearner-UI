@@ -4,12 +4,13 @@
         "baseUrl": "../node_modules",
         "target": "es5",
         "lib": [
-            "es5",
+            "es2018",
             "dom"
         ],
         "types": [
             "cypress"
         ],
+        "keyofStringsOnly": true
     },
     "include": [
         "**/*.ts"
