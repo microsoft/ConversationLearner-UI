@@ -469,7 +469,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         const actionStub = 
             senderType === CLM.SenderType.Bot ?
-            curRound.scorerSteps[scoreIndex].actionStub : undefined
+            curRound.scorerSteps[scoreIndex].stubText : undefined
 
         const hideBranch =  
             !canBranch || 
@@ -1121,6 +1121,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         initialText={this.state.actionCreatorText}
                         open={true}
                         action={null}
+                        actions={this.props.actions}
                         handleClose={() => {
                             this.setState({actionCreatorText: null})
                         }}//LARSthis.onClickCancelActionEditor()}

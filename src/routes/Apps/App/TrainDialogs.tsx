@@ -883,9 +883,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     onSubmitImportConversation(trainDialog: CLM.TrainDialog): void {
         this.setState({
             isConversationImportOpen: false,
-            originalTrainDialogId: trainDialog.trainDialogId
+            originalTrainDialog: trainDialog
         })
-        this.onClickTrainDialogItem(trainDialog, EditDialogType.LOG_ORIGINAL)
+        this.onClickTrainDialogItem(trainDialog)
     }
 
     async onCloseEditDialogModal(reload: boolean = false) {

@@ -15,7 +15,6 @@ import { FilePicker } from 'react-file-picker'
 import { setErrorDisplay } from '../../actions/displayActions'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import * as CLM from '@conversationlearner/models'
-import { nullRender } from '@uifabric/utilities';
 
 interface ComponentState {
     file: File | null
@@ -83,7 +82,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                     maskedActions: []
                 }
                 let scorerStep: CLM.TrainScorerStep = {
-                    actionStub: l.text,
+                    stubText: l.text,
                     input: scoreInput,
                     labelAction: "NEW",
                     logicResult: undefined,
@@ -120,7 +119,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
             }
             catch (e) {
                 const error = e as Error
-                this.props.setErrorDisplay(ErrorType.Error, error.message, ["Invalid file contents"], AT.CREATE_APPLICATION_ASYNC)
+                this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", AT.CREATE_APPLICATION_ASYNC)
             }
         }
         reader.readAsText(this.state.file)
@@ -147,7 +146,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                         <FilePicker
                           //  extensions={['cl']}
                             onChange={this.onChangeFile}
-                            onError={(error: string) => this.props.setErrorDisplay(ErrorType.Error, error, [], null)}
+                            onError={(error: string) => this.props.setErrorDisplay(ErrorType.Error, error, "", null)}
                             maxSize={300}
                         >
                             <div className="cl-action-creator-file-picker">
