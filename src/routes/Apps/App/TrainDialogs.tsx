@@ -1073,6 +1073,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 // TODO: This next line has no visible affect on the DOM, but test automation needs it!
                                 data-testid="train-dialogs-input-search"
                                 id="train-dialogs-input-search"
+                                value={this.state.searchValue}
                                 className={OF.FontClassNames.medium}
                                 onChange={(newValue) => this.onChangeSearchString(newValue)}
                                 onSearch={(newValue) => this.onChangeSearchString(newValue)}
