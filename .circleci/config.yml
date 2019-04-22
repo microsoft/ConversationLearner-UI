@@ -56,8 +56,6 @@ jobs:
             - ~/.npm
             - ~/.cache
 
-      - run: node .circleci/temp.js
-      
       # Randomly pick 1 out of 5 LUIS Authoring Keys and set the BASH_ENV with it.
       - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
 
