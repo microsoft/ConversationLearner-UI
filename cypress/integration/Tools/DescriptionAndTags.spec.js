@@ -3,7 +3,7 @@ import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
 import * as helpers from '../../support/Helpers'
 
-describe.skip('Description and Tags - Train Dialog', () => {
+describe('Description and Tags - Train Dialog', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   it('Imports a model to test against', () => {

@@ -3,11 +3,11 @@
  * Licensed under the MIT License.
 */
 
-import * as models from '../../support/Models'
-import * as modelPage from '../../support/components/ModelPage'
-import * as scorerModal from '../../support/components/ScorerModal'
-import * as train from '../../support/Train'
-import * as helpers from '../../support/Helpers'
+import * as models from '../../../support/Models'
+import * as modelPage from '../../../support/components/ModelPage'
+import * as scorerModal from '../../../support/components/ScorerModal'
+import * as train from '../../../support/Train'
+import * as helpers from '../../../support/Helpers'
 
 describe('Basic Branching', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)

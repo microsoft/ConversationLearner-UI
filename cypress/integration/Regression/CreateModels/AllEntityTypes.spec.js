@@ -3,9 +3,9 @@
  * Licensed under the MIT License.
 */
 
-import * as models from '../../support/Models'
-import * as entities from '../../support/Entities'
-import * as helpers from '../../support/Helpers'
+import * as models from '../../../support/Models'
+import * as entities from '../../../support/Entities'
+import * as helpers from '../../../support/Helpers'
 
 describe('All Entity Types - CreateModels', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)

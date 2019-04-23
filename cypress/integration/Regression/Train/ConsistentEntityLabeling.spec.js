@@ -3,11 +3,11 @@
  * Licensed under the MIT License.
 */
 
-import * as models from '../../support/Models'
-import * as modelPage from '../../support/components/ModelPage'
-import * as train from '../../support/Train'
-import * as common from '../../support/Common'
-import * as helpers from '../../support/Helpers'
+import * as models from '../../../support/Models'
+import * as modelPage from '../../../support/components/ModelPage'
+import * as train from '../../../support/Train'
+import * as common from '../../../support/Common'
+import * as helpers from '../../../support/Helpers'
 
 describe('Consistent Entity Labeling - Train', () => {
   // TODO: Need to add another test case or expand this one so that tagging something
