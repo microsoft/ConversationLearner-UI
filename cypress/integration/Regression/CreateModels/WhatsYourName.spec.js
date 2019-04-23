@@ -3,11 +3,11 @@
  * Licensed under the MIT License.
 */
 
-import * as models from '../../support/Models'
-import * as entities from '../../support/Entities'
-import * as actions from '../../support/Actions'
-import * as common from '../../support/Common'
-import * as helpers from '../../support/Helpers'
+import * as models from '../../../support/Models'
+import * as entities from '../../../support/Entities'
+import * as actions from '../../../support/Actions'
+import * as common from '../../../support/Common'
+import * as helpers from '../../../support/Helpers'
 
 describe("What's Your Name - CreateModels", () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)

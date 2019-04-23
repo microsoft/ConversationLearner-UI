@@ -3,13 +3,15 @@
  * Licensed under the MIT License.
 */
 
-import * as models from '../../support/Models'
+import * as models from '../../../support/Models'
 import * as helpers from '../../support/Helpers'
 
 describe('Bot Model Mismatch - ErrorHandling', () => {
+  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+
   context('Setup', () => {
     it('Should import a model to test against', () => {
-      models.ImportModel('z-wrongBot', 'z-botModelMismatch.cl') // 'z-botModelMismatch' is too long of a name.
+      models.ImportModel('z-wrongBot', 'z-botModelMismatch.cl')
     })
   })
 

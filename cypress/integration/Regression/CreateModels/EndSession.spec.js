@@ -3,12 +3,12 @@
  * Licensed under the MIT License.
 */
 
-import * as models from '../../support/Models'
-import * as modelPage from '../../support/components/ModelPage'
-import * as actions from '../../support/Actions'
-import * as train from '../../support/Train'
-import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
-import * as helpers from '../../support/Helpers'
+import * as models from '../../../support/Models'
+import * as modelPage from '../../../support/components/ModelPage'
+import * as actions from '../../../support/Actions'
+import * as train from '../../../support/Train'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
+import * as helpers from '../../../support/Helpers'
 
 const preliminaryTrainingDescription = 'Preliminary Training to cause some expected behaviors in future Train Dialogs'
 
