@@ -97,6 +97,13 @@
   background-color: var(--cl-color-user-train) !important;
 }
 
+.cl-treeview-cl-treeview-footerButton-pin--selected {
+    border-color: #ffff00;
+    border-width: 5px;
+    border-style: none solid solid solid;
+    box-sizing: content-box;
+}
+
 .cl-treeview-userInput:hover {
   text-decoration: underline
 }
