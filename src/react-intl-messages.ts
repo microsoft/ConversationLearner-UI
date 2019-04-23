@@ -168,6 +168,13 @@ export enum FM {
     DASHBOARD_TITLE = 'Dashboard.title',
     DASHBOARD_SUBTITLE = 'Dashboard.subtitle',
 
+    // DialogMetadata
+    DIALOGMETADATA_TAGS_LABEL = 'DialogMetadata.Tags.label',
+    DIALOGMETADATA_DESCRIPTION_LABEL = 'DialogMetadata.Description.label',
+    DIALOGMETADATA_DESCRIPTION_PLACEHOLDER = 'DialogMetadata.Description.placeholder',
+    DIALOGMETADATA_USERINPUT_LABEL = 'DialogMetadata.UserInput.label',
+    DIALOGMETADATA_ALTINPUT_LABEL = 'DialogMetadata.AltInput.label',
+
     // DemoImporter
     DEMOIMPORT_TITLE = 'DemoImporter.title',
     DEMOIMPORT_BUTTON_ARIADESCRIPTION = 'DemoImporter.button.ariaDescription',
@@ -405,13 +412,9 @@ export enum FM {
     SETTINGS_MODEL_VERSIONS_DESCRIPTION = 'Settings.modelVersionsDescription',
 
     // Tags and Description
-    DIALOGMETADATA_TAGS_LABEL = 'DialogMetadata.Tags.label',
     TAGSINPUT_ADD = 'TagsInput.add',
     TAGSINPUT_ERROR_DUPLICATE = 'TagsInput.error.duplicate',
     TAGSINPUT_READONLY_EMPTY = 'TagsReadOnly.empty',
-    DIALOGMETADATA_DESCRIPTION_LABEL = 'DialogMetadata.Description.label',
-    DIALOGMETADATA_DESCRIPTION_PLACEHOLDER = 'DialogMetadata.Description.placeholder',
-    DIALOGMETADATA_USERINPUT_LABEL = 'DialogMetadata.UserInput.label',
 
     // TeachSessionAdmin
     TEACHSESSIONADMIN_DIALOGMODE_USER = 'TeachSessionAdmin.dialogMode.user',
@@ -951,6 +954,7 @@ export default {
         [FM.DIALOGMETADATA_DESCRIPTION_LABEL]: 'Description',
         [FM.DIALOGMETADATA_DESCRIPTION_PLACEHOLDER]: 'Click to add description',
         [FM.DIALOGMETADATA_USERINPUT_LABEL]: 'User Input',
+        [FM.DIALOGMETADATA_ALTINPUT_LABEL]: 'Alt Input',
 
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
@@ -1046,7 +1050,7 @@ export default {
         [FM.MERGE_BUTTON_MERGE]: 'Merge',
         [FM.MERGE_BUTTON_SAVE]: 'Save As Is',
         [FM.MERGE_LABEL_MERGED]: 'Merged Dialog',
-        [FM.MERGE_LABEL_SAVED]: 'Saved Dialog',
+        [FM.MERGE_LABEL_SAVED]: 'This Dialog',
         [FM.MERGE_LABEL_EQUIVALENT]: 'Equivalent Dialog',
 
         // PackageCreator
