@@ -62,15 +62,15 @@ class TreeView extends React.Component<Props, ComponentState> {
             this.updateTree()
         }
         if (this.state.treeContainer) {
-        if (!this.state.translateX || (this.state.selectedNode !== prevState.selectedNode)) {
-            if (this.state.selectedNode) {
-                this.setState({translateX: NODE_WIDTH})
-            }
-            else {
-                    const dimensions = this.state.treeContainer.getBoundingClientRect();
-                    this.setState({
-                        translateX: dimensions.width / 2.5,
-                    })
+            if (!this.state.translateX || (this.state.selectedNode !== prevState.selectedNode)) {
+                if (this.state.selectedNode) {
+                    this.setState({translateX: NODE_WIDTH})
+                }
+                else {
+                        const dimensions = this.state.treeContainer.getBoundingClientRect();
+                        this.setState({
+                            translateX: dimensions.width / 2.5,
+                        })
                 }
             }
         }
@@ -112,10 +112,23 @@ class TreeView extends React.Component<Props, ComponentState> {
         return { name: "start", attributes: undefined, children: [], trainDialogIds: []}
     }
 
+    // Is selected node still valid (user may have deleted the train dialog)
+    isSelectedNodeValid(): boolean {
+        if (!this.state.selectedNode) {
+            return false
+        }
+        for (let trainDialogId of this.state.selectedNode.trainDialogIds) {
+            if (this.props.trainDialogs.find(td => td.trainDialogId === trainDialogId)) {
+                return true
+            }
+        }
+        return false
+    }
+
     updateTree() {
         let tree = this.makeRoot()
         if (this.props.trainDialogs.length > 0) {
-            if (this.state.selectedNode) {
+            if (this.state.selectedNode && this.isSelectedNodeValid()) {
                 let filter = this.state.selectedNode
                 let selected = this.props.trainDialogs.filter(td => filter.trainDialogIds.includes(td.trainDialogId))
                 selected.forEach(td => this.addTrainDialog(tree, td))
@@ -415,7 +428,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                                     canEdit={false}
                                     selectedNode={this.state.selectedNode}
                                     generateActionDescriptions={this.generateActionDescriptions}
-                                    onExpandoClick={()=>{}}
+                                    onExpandoClick={() => {}}
                                     onOpenTrainDialog={this.openTrainDialog}
                                 />
                                 <div className='cl-modal_footer cl-modal-buttons'>

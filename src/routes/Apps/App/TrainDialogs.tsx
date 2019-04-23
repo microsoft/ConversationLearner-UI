@@ -1021,22 +1021,22 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             className="cl-rotate"
                             iconProps={{ iconName: 'AlignJustify' }}
                             onClick={this.onCloseTreeView}
-                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                            text={"List View"}//TODO
+                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_LISTVIEW_BUTTON)}
+                            text={Util.formatMessageId(intl, FM.TRAINDIALOGS_LISTVIEW_BUTTON)}
                         />
                         :
                         <OF.DefaultButton
                             className="cl-rotate"
                             iconProps={{ iconName: 'BranchFork2' }}
                             onClick={this.onOpenTreeView}
-                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                            text={"Tree View"}//TODO
+                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}                      
+                            text={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
                         />
                     }
                 </div>
 
                 <TreeView
-                    open={this.state.isTreeViewModalOpen && !this.state.isEditDialogModalOpen && !teachSession}
+                    open={this.state.isTreeViewModalOpen}
                     app={this.props.app}
                     originalTrainDialogId={this.state.originalTrainDialog ? this.state.originalTrainDialog.trainDialogId : null}
                     sourceTrainDialog={this.state.currentTrainDialog}
@@ -1073,6 +1073,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 // TODO: This next line has no visible affect on the DOM, but test automation needs it!
                                 data-testid="train-dialogs-input-search"
                                 id="train-dialogs-input-search"
+                                value={this.state.searchValue}
                                 className={OF.FontClassNames.medium}
                                 onChange={(newValue) => this.onChangeSearchString(newValue)}
                                 onSearch={(newValue) => this.onChangeSearchString(newValue)}
