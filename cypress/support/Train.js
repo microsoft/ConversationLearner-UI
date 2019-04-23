@@ -357,13 +357,6 @@ function VerifyChatTurnInternal(expectedTurnCount, turnIndex, doVerification) {
   })
 }
 
-
-
-
-
-
-
-
 export function CreateNewTrainDialog() {
   cy.Enqueue(() => {
     const turns = trainDialogsGrid.GetTurns()
@@ -627,3 +620,4 @@ export function EditTrainingNEW(scenario, tags) {
     throw `Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${scenario}' -- tags: ${tags}`
   })
 }
+
