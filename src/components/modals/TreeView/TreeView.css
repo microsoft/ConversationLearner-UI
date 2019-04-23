@@ -82,7 +82,7 @@
   bottom: unset;
   height: 18px;
   color: #ffffff;
-  background-color: var(--cl-color-user-train);
+  background-color: var(--cl-color-user-train) !important;
 }
 
 .cl-treeview-moreButton-scorer {
@@ -94,7 +94,7 @@
   bottom: unset;
   height: 18px;
   color: #ffffff;
-  background-color: var(--cl-color-user-train);
+  background-color: var(--cl-color-user-train) !important;
 }
 
 .cl-treeview-userInput:hover {

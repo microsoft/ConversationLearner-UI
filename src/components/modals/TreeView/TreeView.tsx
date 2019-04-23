@@ -112,10 +112,23 @@ class TreeView extends React.Component<Props, ComponentState> {
         return { name: "start", attributes: undefined, children: [], trainDialogIds: []}
     }
 
+    // Is selected node still valid (user may have deleted the train dialog)
+    isSelectedNodeValid(): boolean {
+        if (!this.state.selectedNode) {
+            return false
+        }
+        for (let trainDialogId of this.state.selectedNode.trainDialogIds) {
+            if (this.props.trainDialogs.find(td => td.trainDialogId === trainDialogId)) {
+                return true
+            }
+        }
+        return false
+    }
+
     updateTree() {
         let tree = this.makeRoot()
         if (this.props.trainDialogs.length > 0) {
-            if (this.state.selectedNode) {
+            if (this.state.selectedNode && this.isSelectedNodeValid()) {
                 let filter = this.state.selectedNode
                 let selected = this.props.trainDialogs.filter(td => filter.trainDialogIds.includes(td.trainDialogId))
                 selected.forEach(td => this.addTrainDialog(tree, td))
