@@ -175,7 +175,7 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
                         />}
                 </div>
                     <OF.IconButton 
-                        className="cl-treeview-footerButton cl-treeview-cl-treeview-footerButton-pin"
+                        className={`cl-treeview-footerButton cl-treeview-cl-treeview-footerButton-pin${isNodeelected ? ` cl-treeview-cl-treeview-footerButton-pin--selected` : ''}`}
                         iconProps={{ iconName: isNodeelected ? 'PinnedFill' : 'Pin' }}
                         onClick={() => this.onClickPin(treeNode)}
                         ariaDescription="Pin Node"
