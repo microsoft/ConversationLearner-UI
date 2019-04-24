@@ -12,8 +12,8 @@ import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 
 describe('zTemp', () => {
   it('Temporary Experimental Test', () => {
+    helpers.ConLog('zTemp', Cypress.env(CIRCLE_BUILD_NUM))
     homePage.Visit()
-    cy.WaitTillNChangesOccur(2)
     homePage.GetModelListRowCount()
   })
 
