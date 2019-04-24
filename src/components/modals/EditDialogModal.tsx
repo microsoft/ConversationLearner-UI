@@ -23,6 +23,7 @@ import AddButtonInput from './AddButtonInput'
 import AddScoreButton from './AddButtonScore'
 import DisabledInputButtom from './DisabledInputButton'
 import ConfirmCancelModal from './ConfirmCancelModal'
+import TeachSessionInitState from './TeachSessionInitState'
 import UserInputModal from './UserInputModal'
 import { FM } from '../../react-intl-messages'
 import HelpIcon from '../HelpIcon'
@@ -37,6 +38,7 @@ interface ComponentState {
     actionCreatorText: string | null
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
+    isCreateStubOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
     currentTrainDialog: CLM.TrainDialog | null
@@ -50,6 +52,7 @@ const initialState: ComponentState = {
     actionCreatorText: null,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
+    isCreateStubOpen: false,
     selectedActivity: null,
     webchatKey: 0,
     currentTrainDialog: null,
@@ -150,6 +153,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    //---- BRANCH ----
     @OF.autobind
     onClickBranch() {
         if (this.canReplay(this.state.selectedActivity!)) {
@@ -182,12 +186,65 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    //---- API STUBS ----
+    @OF.autobind
+    onClickAPIStub() {
+        this.setState({
+            isCreateStubOpen: true
+        })
+    }
+    
+    @OF.autobind
+    async onCloseCreateAPIStub(filledEntityMap?: CLM.FilledEntityMap) {
+        this.setState({
+            isCreateStubOpen: false
+        })
+
+        if (!this.state.selectedActivity) {
+            console.log('Warning: No Activity Selected')
+            return
+        }
+
+        if (filledEntityMap) {
+
+            // Generate stub
+            let scoredAction: CLM.ScoredAction = {
+                actionId: undefined!,
+                payload: "",
+                isTerminal: false,
+                actionType: CLM.ActionTypes.API_LOCAL,
+                score: 1
+            }
+            let scoreInput: CLM.ScoreInput = {
+                filledEntities: [],
+                context: {},
+                maskedActions: []
+            }
+            let scorerStep: CLM.TrainScorerStep = {
+                stubFilledEntities: filledEntityMap.FilledEntities(),
+                input: scoreInput,
+                labelAction: "NEW",
+                logicResult: undefined!,
+                scoredAction: scoredAction
+            }
+
+            await this.props.onInsertAction(this.props.trainDialog, this.state.selectedActivity, SelectionType.NEXT, scorerStep)           
+        }
+    }
+
+    //---- ABANDON ----
     @OF.autobind
     onClickAbandon() {
         this.setState({
             isConfirmAbandonOpen: true
         })
+    }
 
+    @OF.autobind
+    onClickAbandonCancel() {
+        this.setState({
+            isConfirmAbandonOpen: false
+        })
     }
 
     // User is continuing the train dialog by typing something new
@@ -208,6 +265,47 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             // Allow webchat to scroll to bottom 
             this.props.clearWebchatScrollPosition()
             this.props.onContinueDialog(newTrainDialog, initialUserInput) 
+        }
+    }
+
+    @OF.autobind
+    async onReplaceStubAction(action: CLM.ActionBase) {
+        if (!this.state.selectedActivity) {
+            console.log('Warning: No Activity Selected')
+            return
+        }
+        this.setState({actionCreatorText: null})
+       
+        let newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
+
+        if (newAction) {
+            const clData: CLM.CLChannelData = this.state.selectedActivity.channelData.clData
+            const roundIndex = clData.roundIndex
+            const scoreIndex = clData.scoreIndex || 0
+            const curRound = this.props.trainDialog.rounds[roundIndex!]
+
+            if (curRound !== undefined) {
+                const scorerStep = curRound.scorerSteps[scoreIndex]
+                if (scorerStep !== undefined) {
+
+                    let scoredAction: CLM.ScoredAction = {
+                        actionId: action.actionId,
+                        payload: action.payload,
+                        isTerminal: action.isTerminal,
+                        actionType: action.actionType,
+                        score: undefined!
+                    }
+
+                    let trainScorerStep: CLM.TrainScorerStep = {
+                        input: scorerStep.input,
+                        labelAction: action.actionId,
+                        logicResult: scorerStep.logicResult,
+                        scoredAction: scoredAction
+                    }
+
+                    this.onChangeAction(trainScorerStep);
+                }
+            }
         }
     }
 
@@ -323,9 +421,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             curRound.scorerSteps.length === 0 ||
             (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)
 
-        const actionStub = 
+        const stubText = 
             senderType === CLM.SenderType.Bot ?
-            curRound.scorerSteps[scoreIndex].actionStub : undefined
+            curRound.scorerSteps[scoreIndex].stubText : undefined
 
         const hideBranch =  
                 !canBranch || 
@@ -357,12 +455,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         ariaDescription="Delete Turn"
                     />
                 }
-                {actionStub &&
+                {stubText &&
                     <OF.IconButton
                         className={`cl-wc-addaction`}
                         iconProps={{ iconName: 'CircleAdditionSolid' }}
                         onClick={() => {
-                            this.setState({actionCreatorText: actionStub})
+                            this.setState({actionCreatorText: stubText})
                         }}
                         ariaDescription="Delete Turn"
                     />
@@ -411,9 +509,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         // Disable if last round's last scorer step isn't terminal
         const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
-        const lastAction = this.props.actions.find(a => a.actionId === lastScorerStep.labelAction)
-        if (!lastAction || !lastAction.isTerminal) {
-            return true
+        if (!lastScorerStep.stubFilledEntities) {
+            const lastAction = this.props.actions.find(a => a.actionId === lastScorerStep.labelAction)
+            if (!lastAction || !lastAction.isTerminal) {
+                return true
+            }
         }
         return false
     }
@@ -434,13 +534,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return true
         }
         return false
-    }
-
-    @OF.autobind
-    onClickAbandonCancel() {
-        this.setState({
-            isConfirmAbandonOpen: false
-        })
     }
 
     @OF.autobind
@@ -824,6 +917,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onChangeAction={(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
+                                    onCreateAPIStub={this.onClickAPIStub}
                                 />
                             </div>
                             {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay"/>} 
@@ -926,11 +1020,15 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         action={null}
                         handleClose={() => {
                             this.setState({actionCreatorText: null})
-                        }}//LARSthis.onClickCancelActionEditor()}
+                        }}
                         // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete 
                         handleDelete={action => { }}
-                        handleEdit={() => {}}//LARS{action => this.onClickSubmitActionEditor(action)}
+                        handleEdit={this.onReplaceStubAction}
                     />}
+                <TeachSessionInitState
+                    isOpen={this.state.isCreateStubOpen}
+                    handleClose={this.onCloseCreateAPIStub}
+                />
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
                     titleFM={FM.USERINPUT_ADD_TITLE}
@@ -951,7 +1049,8 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
-        clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition
+        clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
+        createActionThunkAsync: actions.action.createActionThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -978,7 +1077,7 @@ export interface ReceivedProps {
     editType: EditDialogType
     // If starting with activity selected
     initialSelectedActivityIndex: number | null
-    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, selectionType: SelectionType) => any
+    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, selectionType: SelectionType, newScorerStep?: CLM.TrainScorerStep) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => any

@@ -80,7 +80,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                     maskedActions: []
                 }
                 let scorerStep: CLM.TrainScorerStep = {
-                    actionStub: l.text,
+                    stubText: l.text,
                     input: scoreInput,
                     labelAction: "NEW",
                     logicResult: undefined,

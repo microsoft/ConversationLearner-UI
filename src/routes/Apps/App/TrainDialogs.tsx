@@ -478,7 +478,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, selectionType: SelectionType) {
+    async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, selectionType: SelectionType, newScorerStep?: CLM.TrainScorerStep) {
 
         try {
             const clData: CLM.CLChannelData = selectedActivity.channelData.clData
@@ -509,30 +509,36 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex);
             }
 
-            // Get a score for this step
-            let uiScoreResponse = await ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, history) as any) as Promise<CLM.UIScoreResponse>)
+            let scorerStep = newScorerStep
 
-            if (!uiScoreResponse.scoreResponse) {
-                throw new Error("Empty Score REsponse")
-            }
+            // If no action given score to get action
+            if (!scorerStep) {
+                // Get a score for this step
+                let uiScoreResponse = await ((this.props.scoreFromHistoryThunkAsync(this.props.app.appId, history) as any) as Promise<CLM.UIScoreResponse>)
 
-            // Find top scoring Action
-            let insertedAction = this.getBestAction(uiScoreResponse.scoreResponse)
+                if (!uiScoreResponse.scoreResponse) {
+                    throw new Error("Empty Score REsponse")
+                }
 
-            // None were qualified so pick the first (will show in UI as invalid)
-            if (!insertedAction && uiScoreResponse.scoreResponse.unscoredActions[0]) {
-                let scoredAction = {...uiScoreResponse.scoreResponse.unscoredActions[0], score: 1}
-                delete scoredAction.reason
-                insertedAction = scoredAction
-            }
-            if (!insertedAction) {
-                throw new Error("Unable to find an action")
-            }
+                // Find top scoring Action
+                let insertedAction = this.getBestAction(uiScoreResponse.scoreResponse)
 
-            let scorerStep = {
-                input: uiScoreResponse.scoreInput,
-                labelAction: insertedAction.actionId,
-                scoredAction: insertedAction
+                // None were qualified so pick the first (will show in UI as invalid)
+                if (!insertedAction && uiScoreResponse.scoreResponse.unscoredActions[0]) {
+                    let scoredAction = {...uiScoreResponse.scoreResponse.unscoredActions[0], score: 1}
+                    delete scoredAction.reason
+                    insertedAction = scoredAction
+                }
+                if (!insertedAction) {
+                    throw new Error("Unable to find an action")
+                }
+            
+                scorerStep = {
+                    input: uiScoreResponse.scoreInput!,
+                    labelAction: insertedAction.actionId,
+                    scoredAction: insertedAction,
+                    logicResult: undefined!
+                }
             }
 
             // Insert new Action into Full TrainDialog
@@ -1299,7 +1305,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     initialSelectedActivityIndex={this.state.selectedActivityIndex}
                     editType={this.state.editType}
                     onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
-                    onInsertAction={(trainDialog, activity, selectionType) => this.onInsertAction(trainDialog, activity, selectionType)}
+                    onInsertAction={this.onInsertAction}
                     onInsertInput={(trainDialog, activity, userInput, selectionType) => this.onInsertInput(trainDialog, activity, userInput, selectionType)} 
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}

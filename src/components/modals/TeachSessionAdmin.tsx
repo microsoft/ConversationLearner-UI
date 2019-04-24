@@ -456,6 +456,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 scoreInput={renderData.scoreInput}
                                 memories={renderData.memories}
                                 onActionSelected={this.onActionScorerSubmit}
+                                onCreateAPIStub={() => {}}  // LARS todo
                             />
                         }
                     </div>

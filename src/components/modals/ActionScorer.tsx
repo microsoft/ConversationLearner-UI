@@ -20,6 +20,7 @@ import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 
 const ACTION_BUTTON = 'action_button'
+const STUB_BUTTON = 'stub_button'
 const MISSING_ACTION = 'missing_action'
 
 interface IRenderableColumn extends OF.IColumn {
@@ -541,6 +542,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         return true;
     }
+
     calculateReason(unscoredAction: CLM.UnscoredAction): CLM.ScoreReason {
 
         if (!unscoredAction.reason || unscoredAction.reason === CLM.ScoreReason.NotCalculated) {
@@ -561,6 +563,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     isMasked(actionId: string): boolean {
         return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
     }
+
     renderItemColumn(action: CLM.ScoredBase, index: number, column: IRenderableColumn) {
         // Null is action create button
         if (action.actionId === ACTION_BUTTON) {
@@ -569,13 +572,33 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 const ref = (index === 0)
                     ? ((r: any) => { this.primaryScoreButton = r })
                     : undefined;
-                return (
+                return ( 
                     <OF.PrimaryButton
                         data-testid="action-scorer-add-action-button"
                         onClick={this.handleOpenActionModal}
-                        ariaDescription='Cancel'
+                        ariaDescription='Create Action'
                         text='Action'
                         iconProps={{ iconName: 'CirclePlus' }}
+                        componentRef={ref}
+                    />
+                )
+            } else {
+                return '';
+            }
+        }
+        else if (action.actionId === STUB_BUTTON) {
+            if (column.key === 'select') {
+                // Will focus on new action button if no scores
+                const ref = (index === 0)
+                    ? ((r: any) => { this.primaryScoreButton = r })
+                    : undefined;
+                return ( 
+                    <OF.PrimaryButton
+                        data-testid="action-scorer-add-action-button"
+                        onClick={this.props.onCreateAPIStub}
+                        ariaDescription='Create API Stub'
+                        text='API'
+                        iconProps={{ iconName: 'EditSolid12' }}
                         componentRef={ref}
                     />
                 )
@@ -677,6 +700,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // If editing allowed and Action creation button
         if (scoredItems && !this.props.autoTeach && this.props.canEdit) {
             scoredItems.push(this.makeDummyItem(ACTION_BUTTON, 0));
+            scoredItems.push(this.makeDummyItem(STUB_BUTTON, 0));
         }
 
         // Add null for action createtion button at end
@@ -751,6 +775,7 @@ export interface ReceivedProps {
     canEdit: boolean
     hideScore: boolean,
     onActionSelected: (trainScorerStep: CLM.TrainScorerStep) => void,
+    onCreateAPIStub: () => void
 }
 
 const mapDispatchToProps = (dispatch: any) => {

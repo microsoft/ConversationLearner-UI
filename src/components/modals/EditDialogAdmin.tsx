@@ -482,6 +482,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 scoreInput={renderData.scoreInput}
                                 memories={renderData.memories}
                                 onActionSelected={this.props.onChangeAction}
+                                onCreateAPIStub={this.props.onCreateAPIStub}
                             />
                         </div>
                     </div>
@@ -526,6 +527,7 @@ export interface ReceivedProps {
     onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
     onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void                            
     onPendingStatusChanged: (changed: boolean) => void
+    onCreateAPIStub: () => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
