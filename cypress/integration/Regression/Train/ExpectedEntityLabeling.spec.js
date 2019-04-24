@@ -20,7 +20,7 @@ describe('Expected Entity Labeling - Train', () => {
 
   context('Setup', () => {
     it('Should import a model to test against, navigate to Train Dialogs view and wait for training status to complete', () => {
-      models.ImportModel('z-expectedEntLabel', 'z-whatsYourName.cl')
+      models.ImportModel('z-expectedEntLabl', 'z-whatsYourName.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
@@ -70,5 +70,5 @@ describe('Expected Entity Labeling - Train', () => {
       train.Save()
     })
   })
-  // Manually EXPORT this to fixtures folder and name it 'z-expectedEntLabel.cl'
+  // Manually EXPORT this to fixtures folder and name it 'z-expectedEntLabl.cl'
 })

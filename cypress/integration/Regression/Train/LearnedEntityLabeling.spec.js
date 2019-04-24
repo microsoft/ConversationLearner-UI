@@ -20,7 +20,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
 
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {
-      models.ImportModel('z-learnedEntLabel', 'z-expectedEntLabel.cl')
+      models.ImportModel('z-learnedEntLabel', 'z-expectedEntLabl.cl')
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
     })
