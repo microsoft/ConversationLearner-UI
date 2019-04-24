@@ -37,6 +37,7 @@ interface ComponentState {
     translateX: number | null,
     treeContainer: any,
     treeElement: any,
+    fullScreen: boolean,
     showBanner: boolean,
 }
 
@@ -49,6 +50,7 @@ class TreeView extends React.Component<Props, ComponentState> {
         translateX: null,
         treeContainer: null,
         treeElement: null,
+        fullScreen: false,
         showBanner: true
     }
 
@@ -56,16 +58,19 @@ class TreeView extends React.Component<Props, ComponentState> {
         if (this.props.open && !prevProps.open) {
             this.updateTree()
         }
+        if (this.props.trainDialogs !== prevProps.trainDialogs) {
+            this.updateTree()
+        }
         if (this.state.treeContainer) {
-        if (!this.state.translateX || (this.state.selectedNode !== prevState.selectedNode)) {
-            if (this.state.selectedNode) {
-                this.setState({translateX: NODE_WIDTH})
-            }
-            else {
-                    const dimensions = this.state.treeContainer.getBoundingClientRect();
-                    this.setState({
-                        translateX: dimensions.width / 2.5,
-                    })
+            if (!this.state.translateX || (this.state.selectedNode !== prevState.selectedNode)) {
+                if (this.state.selectedNode) {
+                    this.setState({translateX: NODE_WIDTH})
+                }
+                else {
+                        const dimensions = this.state.treeContainer.getBoundingClientRect();
+                        this.setState({
+                            translateX: dimensions.width / 2.5,
+                        })
                 }
             }
         }
@@ -103,19 +108,27 @@ class TreeView extends React.Component<Props, ComponentState> {
         this.setState({showBanner: false})
     }
 
-    @OF.autobind
-    onClickCancel() {
-        this.props.onCancel()
-    }
-
     makeRoot(): TreeNode {
         return { name: "start", attributes: undefined, children: [], trainDialogIds: []}
+    }
+
+    // Is selected node still valid (user may have deleted the train dialog)
+    isSelectedNodeValid(): boolean {
+        if (!this.state.selectedNode) {
+            return false
+        }
+        for (let trainDialogId of this.state.selectedNode.trainDialogIds) {
+            if (this.props.trainDialogs.find(td => td.trainDialogId === trainDialogId)) {
+                return true
+            }
+        }
+        return false
     }
 
     updateTree() {
         let tree = this.makeRoot()
         if (this.props.trainDialogs.length > 0) {
-            if (this.state.selectedNode) {
+            if (this.state.selectedNode && this.isSelectedNodeValid()) {
                 let filter = this.state.selectedNode
                 let selected = this.props.trainDialogs.filter(td => filter.trainDialogIds.includes(td.trainDialogId))
                 selected.forEach(td => this.addTrainDialog(tree, td))
@@ -331,15 +344,41 @@ class TreeView extends React.Component<Props, ComponentState> {
         this.setState({treeContainer})
     }
 
+    @OF.autobind
+    toggleFullScreen(): void {
+        this.setState({fullScreen: !this.state.fullScreen})
+    }
+
     render() {
         const { intl } = this.props
+
+        if (!this.props.open) {
+            return null
+        }
+
         return (
-            <Modal
-                isOpen={this.props.open}
-                onDismiss={() => this.onClickCancel()}
-                isBlocking={false}
-                containerClassName='cl-modal cl-treeview-fullscreen'
-            >
+            <div className={this.state.fullScreen ? "cl-treeview-fullscreen" : ""}>
+                <OF.DefaultButton
+                    className="cl-treeview-expandButton"
+                    iconProps={this.state.fullScreen ? {iconName: "MiniContract"} : {iconName: "MiniExpand"}}
+                    onClick={this.toggleFullScreen}
+                    ariaDescription={Util.formatMessageId(intl, FM.TREEVIEW_TOGGLE_FULLSCREEN)}
+                />
+                {this.state.showBanner &&
+                    <OF.MessageBar
+                        className="cl-treeview-messageBar"
+                        isMultiline={true}
+                        onDismiss={() => this.dismissBanner()}
+                        dismissButtonAriaLabel='Close'
+                        messageBarType={OF.MessageBarType.success}
+                    >
+                        [Experimental Feature] We're experimenting with a tree view to help visualize your train dialogs. 
+                        <a href={`mailto: conversation-learner@microsoft.com?subject=[Feedback] Tree View`} role='button'>
+                            Send us
+                        </a>
+                        <span> your suggestions on how this view can better help you!</span>
+                    </OF.MessageBar>
+                }
                 <div className="cl-treeview-parentContainer">
                     <div className="cl-treeview-columnRight">
                         <div 
@@ -376,21 +415,6 @@ class TreeView extends React.Component<Props, ComponentState> {
                                     transitionDuration={0}
                                 /> 
                             }
-                            {this.state.showBanner &&
-                                <OF.MessageBar
-                                    className="cl-treeview-messageBar"
-                                    isMultiline={true}
-                                    onDismiss={() => this.dismissBanner()}
-                                    dismissButtonAriaLabel='Close'
-                                    messageBarType={OF.MessageBarType.success}
-                                >
-                                    [Experimental Feature] We're experimenting with a tree view to help visualize your train dialogs. 
-                                    <a href={`mailto: conversation-learner@microsoft.com?subject=[Feedback] Tree View`} role='button'>
-                                        Send us
-                                    </a>
-                                    <span> your suggestions on how this view can better help you!</span>
-                                </OF.MessageBar>
-                            }
                         </div>
                     </div>
                     {this.state.expandedNode &&
@@ -404,7 +428,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                                     canEdit={false}
                                     selectedNode={this.state.selectedNode}
                                     generateActionDescriptions={this.generateActionDescriptions}
-                                    onExpandoClick={()=>{}}
+                                    onExpandoClick={() => {}}
                                     onOpenTrainDialog={this.openTrainDialog}
                                 />
                                 <div className='cl-modal_footer cl-modal-buttons'>
@@ -420,14 +444,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                         </Modal>
                     }
                 </div>
-                <div className='cl-treeview-closeButton'>
-                    <OF.DefaultButton
-                        onClick={this.onClickCancel}
-                        ariaDescription={Util.formatMessageId(intl, FM.BUTTON_CLOSE)}
-                        text={Util.formatMessageId(intl, FM.BUTTON_CLOSE)}
-                    />
-                </div>
-            </Modal>
+            </div>
         )
     }
 }
@@ -451,9 +468,9 @@ export interface ReceivedProps {
     editingPackageId: string,
     editState: EditState,
      // Is it new, from a TrainDialog or LogDialog
-     editType: EditDialogType,
+    editType: EditDialogType,
      // When editing and existing log or train dialog
-     sourceTrainDialog: CLM.TrainDialog | null
+    sourceTrainDialog: CLM.TrainDialog | null
     // Train Dialog that this edit originally came from (not same as sourceTrainDialog)
     originalTrainDialogId: string | null,
                     

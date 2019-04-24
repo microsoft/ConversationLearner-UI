@@ -16,36 +16,41 @@ describe('Tag and Frog - Edit And Branching', () => {
   
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {
-    models.ImportModel('z-tagAndFrog2', 'z-tagAndFrog2.cl')
-    modelPage.NavigateToTrainDialogs()
-    cy.WaitForTrainingStatusCompleted()
+      models.ImportModel('z-tagAndFrog2', 'z-tagAndFrog2.cl')
+      modelPage.NavigateToTrainDialogs()
+      cy.WaitForTrainingStatusCompleted()
     })
   })
 
   context('Edit Train Dialog', () => {
-    it('Should remove two entity labels from alternative input', () => {
+    it('Should edit the training and verify the entities are labeled', () => {
       train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
       train.SelectChatTurnExactMatch('This is Tag.')
 
       train.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
       train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
       train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
+    })
 
+    it('Should remove two entity labels from alternative input', () => {
       train.RemoveEntityLabel('Tag', 'multi', 1)
       train.RemoveEntityLabel('Frog', 'multi', 2)
     })
-
     
-    it('Should verify user cannot submit changes without accepting auto-re-labling of those two entity labels in the alternative input', () => {
+    it('Should verify user cannot submit changes without accepting auto-re-labling of the 1st alternative input that we changed', () => {
       train.ClickSubmitChangesButton()
       train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
       train.ClickSubmitChangesButton()
       train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+    })
 
+    it('Should verify user cannot submit changes without accepting auto-re-labling of the 2nd alternative input that we changed', () => {
       train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
       train.ClickSubmitChangesButton()
       train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+    })
 
+    it('Should abandon the changes', () => {
       train.AbandonDialog()
     })
   })

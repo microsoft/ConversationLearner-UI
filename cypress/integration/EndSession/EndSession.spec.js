@@ -34,6 +34,11 @@ describe('End Session', () => {
       train.SelectEndSessionAction('Goodbye')
     })
 
+    it('Should verify that the user has no way to add another turn after the EndSession turn', () => {
+      train.VerifyScoreActionsButtonIsMissing()
+      train.VerifyTypeYourMessageIsMissing()
+    })
+
     it('End Session Score Action should be disabled for 1st Bot turn', () => {
       train.SelectChatTurnExactMatch('Hello')
       scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')

@@ -13,6 +13,7 @@ import AddButtonInput from './AddButtonInput'
 import AddScoreButton from './AddButtonScore'
 import DisabledInputButtom from './DisabledInputButton'
 import ConfirmCancelModal from './ConfirmCancelModal'
+import TeachSessionInitState from './TeachSessionInitState'
 import UserInputModal from './UserInputModal'
 import FormattedMessageId from '../FormattedMessageId'
 import Webchat, { renderActivity } from '../Webchat'
@@ -39,6 +40,7 @@ interface ComponentState {
     newActionText?: string
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
+    isCreateStubOpen: boolean
     isSaveConflictModalOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
@@ -56,6 +58,7 @@ const initialState: ComponentState = {
     newActionText: undefined,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
+    isCreateStubOpen: false,
     isSaveConflictModalOpen: false,
     selectedActivity: null,
     webchatKey: 0,
@@ -228,6 +231,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    //---- BRANCH ----
     @OF.autobind
     onClickBranch() {
         if (this.canReplay(this.state.selectedActivity!)) {
@@ -284,12 +288,65 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    //---- API STUBS ----
+    @OF.autobind
+    onClickAPIStub() {
+        this.setState({
+            isCreateStubOpen: true
+        })
+    }
+    
+    @OF.autobind
+    async onCloseCreateAPIStub(filledEntityMap?: CLM.FilledEntityMap) {
+        this.setState({
+            isCreateStubOpen: false
+        })
+
+        if (!this.state.selectedActivity) {
+            console.log('Warning: No Activity Selected')
+            return
+        }
+
+        if (filledEntityMap) {
+
+            // Generate stub
+            let scoredAction: CLM.ScoredAction = {
+                actionId: undefined!,
+                payload: "",
+                isTerminal: false,
+                actionType: CLM.ActionTypes.API_LOCAL,
+                score: 1
+            }
+            let scoreInput: CLM.ScoreInput = {
+                filledEntities: [],
+                context: {},
+                maskedActions: []
+            }
+            let scorerStep: CLM.TrainScorerStep = {
+                stubFilledEntities: filledEntityMap.FilledEntities(),
+                input: scoreInput,
+                labelAction: "NEW",
+                logicResult: undefined!,
+                scoredAction: scoredAction
+            }
+
+            await this.props.onInsertAction(this.props.trainDialog, this.state.selectedActivity, SelectionType.NEXT, scorerStep)           
+        }
+    }
+
+    //---- ABANDON ----
     @OF.autobind
     onClickAbandon() {
         this.setState({
             isConfirmAbandonOpen: true
         })
+    }
 
+    @OF.autobind
+    onClickAbandonCancel() {
+        this.setState({
+            isConfirmAbandonOpen: false
+        })
     }
 
     // User is continuing the train dialog by typing something new
@@ -339,6 +396,47 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     return
                 }
                 await this.props.onContinueDialog(newTrainDialog, userInput)
+            }
+        }
+    }
+
+    @OF.autobind
+    async onReplaceStubAction(action: CLM.ActionBase) {
+        if (!this.state.selectedActivity) {
+            console.log('Warning: No Activity Selected')
+            return
+        }
+        this.setState({actionCreatorText: null})
+
+        let newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
+
+        if (newAction) {
+            const clData: CLM.CLChannelData = this.state.selectedActivity.channelData.clData
+            const roundIndex = clData.roundIndex
+            const scoreIndex = clData.scoreIndex || 0
+            const curRound = this.props.trainDialog.rounds[roundIndex!]
+
+            if (curRound !== undefined) {
+                const scorerStep = curRound.scorerSteps[scoreIndex]
+                if (scorerStep !== undefined) {
+
+                    let scoredAction: CLM.ScoredAction = {
+                        actionId: action.actionId,
+                        payload: action.payload,
+                        isTerminal: action.isTerminal,
+                        actionType: action.actionType,
+                        score: undefined!
+                    }
+
+                    let trainScorerStep: CLM.TrainScorerStep = {
+                        input: scorerStep.input,
+                        labelAction: action.actionId,
+                        logicResult: scorerStep.logicResult,
+                        scoredAction: scoredAction
+                    }
+
+                    this.onChangeAction(trainScorerStep);
+                }
             }
         }
     }
@@ -486,7 +584,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             senderType !== CLM.SenderType.User ||
             (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)
 
-        const actionStub = 
+        const stubText = 
             senderType === CLM.SenderType.Bot ?
             curRound.scorerSteps[scoreIndex].stubText : undefined
 
@@ -531,12 +629,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         ariaDescription="Delete Turn"
                     />
                 }
-                {actionStub &&
+                {stubText &&
                     <OF.IconButton
                         className={`cl-wc-addaction`}
                         iconProps={{ iconName: 'CircleAdditionSolid' }}
                         onClick={() => {
-                            this.setState({newActionText: actionStub})
+                            this.setState({newActionText: stubText})
                         }}
                         ariaDescription="Delete Turn"
                     />
@@ -579,11 +677,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
-        const lastAction = this.props.actions.find(a => a.actionId === lastScorerStep.labelAction)
-
-        // Disable if last round's last scorer step isn't terminal
-        if (!lastAction || !lastAction.isTerminal) {
-            return true
+        if (!lastScorerStep.stubFilledEntities) {
+            const lastAction = this.props.actions.find(a => a.actionId === lastScorerStep.labelAction)
+            // Disable if last round's last scorer step isn't terminal
+            if (!lastAction || !lastAction.isTerminal) {
+                return true
+            }
         }
 
         return false
@@ -605,13 +704,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return true
         }
         return false
-    }
-
-    @OF.autobind
-    onClickAbandonCancel() {
-        this.setState({
-            isConfirmAbandonOpen: false
-        })
     }
 
     @OF.autobind
@@ -1050,6 +1142,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
                                     newActionText={this.state.newActionText}
+                                    onCreateAPIStub={this.onClickAPIStub}
+
                                     allUniqueTags={this.props.allUniqueTags}
                                     tags={this.state.tags}
                                     onAddTag={this.onAddTag}
@@ -1134,6 +1228,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         title={this.state.cantReplayMessage ? formatMessageId(intl, this.state.cantReplayMessage) : ""}
                     />
                 }
+                <TeachSessionInitState
+                    isOpen={this.state.isCreateStubOpen}
+                    handleClose={this.onCloseCreateAPIStub}
+                />
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
                     titleFM={FM.USERINPUT_ADD_TITLE}
@@ -1169,6 +1267,7 @@ const mapDispatchToProps = (dispatch: any) => {
         trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
+        createActionThunkAsync: actions.action.createActionThunkAsync,
         setErrorDismissCallback: actions.display.setErrorDismissCallback
     }, dispatch);
 }

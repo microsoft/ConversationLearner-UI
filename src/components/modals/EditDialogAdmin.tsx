@@ -506,6 +506,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 memories={renderData.memories}
                                 onActionSelected={this.props.onChangeAction}
                                 onActionCreatorClosed={this.props.onActionCreatorClosed}
+                                onCreateAPIStub={this.props.onCreateAPIStub}
                             />
                         </div>
                     </div>
@@ -554,8 +555,9 @@ export interface ReceivedProps {
     onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void
     onPendingStatusChanged: (changed: boolean) => void
     onActionCreatorClosed: () => void
+    onCreateAPIStub: () => void
+    
     allUniqueTags: string[]
-
     tags: string[]
     onAddTag: (tag: string) => void
     onRemoveTag: (tag: string) => void
