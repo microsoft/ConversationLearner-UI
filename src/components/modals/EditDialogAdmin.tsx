@@ -498,12 +498,14 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 isEndSessionAvailable={!hasEndSession && this.props.isLastActivitySelected}
                                 dialogType={CLM.DialogType.TRAINDIALOG}
                                 autoTeach={false}
+                                newActionText={this.props.newActionText}
                                 dialogMode={renderData.dialogMode}
                                 scoreResponse={renderData.scoreResponse}
                                 scoreInput={renderData.scoreInput}
                                 selectedActionId={undefined}  // Will always be first one when editing
                                 memories={renderData.memories}
                                 onActionSelected={this.props.onChangeAction}
+                                onActionCreatorClosed={this.props.onActionCreatorClosed}
                             />
                         </div>
                     </div>
@@ -535,20 +537,23 @@ interface ComponentState {
 }
 
 export interface ReceivedProps {
-    app: CLM.AppBase,
-    editingPackageId: string,
-    trainDialog: CLM.TrainDialog,
+    app: CLM.AppBase
+    editingPackageId: string
+    trainDialog: CLM.TrainDialog
     // If editing a log dialog, this was the source
     editingLogDialogId: string | null
     // Train Dialog that this edit originally came from
-    originalTrainDialogId: string | null,
-    selectedActivity: Activity | null,
-    isLastActivitySelected: boolean,
-    editState: EditState,
-    editType: EditDialogType,
-    onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
+    originalTrainDialogId: string | null
+    selectedActivity: Activity | null
+    isLastActivitySelected: boolean
+    editState: EditState
+    editType: EditDialogType
+    // If creating an action with a pre-filled text value
+    newActionText?: string
+    onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void
     onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void
     onPendingStatusChanged: (changed: boolean) => void
+    onActionCreatorClosed: () => void
     allUniqueTags: string[]
 
     tags: string[]

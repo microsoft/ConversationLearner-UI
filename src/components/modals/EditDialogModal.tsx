@@ -7,7 +7,6 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import * as BotChat from '@conversationlearner/webchat'
-import ActionCreatorEditor from '../modals/ActionCreatorEditor'
 import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
 import AddButtonInput from './AddButtonInput'
@@ -37,7 +36,7 @@ interface ComponentState {
     isConfirmAbandonOpen: boolean
     cantReplayMessage: FM | null
     isUserInputModalOpen: boolean
-    actionCreatorText: string | null
+    newActionText?: string
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
     isSaveConflictModalOpen: boolean
@@ -54,7 +53,7 @@ const initialState: ComponentState = {
     isConfirmAbandonOpen: false,
     cantReplayMessage: null,
     isUserInputModalOpen: false,
-    actionCreatorText: null,
+    newActionText: undefined,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
     isSaveConflictModalOpen: false,
@@ -358,8 +357,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
     onWebChatSelectActivity(activity: Activity) {
         this.setState({
-            selectedActivity: activity
+            selectedActivity: activity,
         })
+
+        const stubText = this.actionStubText(activity)
+        if (!stubText) {
+            this.setState({newActionText: undefined})
+        }
     }
 
     onPendingStatusChanged(changed: boolean) {
@@ -431,6 +435,21 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
         return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType, this.state.selectedActivity != null)
+    }
+
+    actionStubText(activity: Activity): string | undefined {
+        const clData: CLM.CLChannelData = activity.channelData.clData
+        const senderType = clData.senderType
+        const scoreIndex = clData.scoreIndex || 0
+        const roundIndex = clData.roundIndex
+
+        const curRound = this.props.trainDialog.rounds[roundIndex!]
+
+        if (!curRound || senderType !== CLM.SenderType.Bot) {
+            return undefined
+        }
+
+        return curRound.scorerSteps[scoreIndex].stubText
     }
 
     @OF.autobind
@@ -517,7 +536,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         className={`cl-wc-addaction`}
                         iconProps={{ iconName: 'CircleAdditionSolid' }}
                         onClick={() => {
-                            this.setState({actionCreatorText: actionStub})
+                            this.setState({newActionText: actionStub})
                         }}
                         ariaDescription="Delete Turn"
                     />
@@ -1030,7 +1049,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onChangeAction={(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
-
+                                    newActionText={this.state.newActionText}
                                     allUniqueTags={this.props.allUniqueTags}
                                     tags={this.state.tags}
                                     onAddTag={this.onAddTag}
@@ -1038,6 +1057,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
                                     description={this.state.description}
                                     onChangeDescription={this.onChangeDescription}
+                                    onActionCreatorClosed={() => this.setState({newActionText: undefined})}
                                 />
                             </div>
                             {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay" />}
@@ -1114,21 +1134,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         title={this.state.cantReplayMessage ? formatMessageId(intl, this.state.cantReplayMessage) : ""}
                     />
                 }
-                {this.state.actionCreatorText &&
-                    <ActionCreatorEditor
-                        app={this.props.app}
-                        editingPackageId={this.props.editingPackageId}
-                        initialText={this.state.actionCreatorText}
-                        open={true}
-                        action={null}
-                        actions={this.props.actions}
-                        handleClose={() => {
-                            this.setState({actionCreatorText: null})
-                        }}//LARSthis.onClickCancelActionEditor()}
-                        // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete 
-                        handleDelete={action => { }}
-                        handleEdit={() => {}}//LARS{action => this.onClickSubmitActionEditor(action)}
-                    />}
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
                     titleFM={FM.USERINPUT_ADD_TITLE}

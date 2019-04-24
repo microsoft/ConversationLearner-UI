@@ -308,8 +308,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        if (this.props.initialText) {
-            let values = Plain.deserialize(this.props.initialText)
+        if (this.props.newActionText) {
+            let values = Plain.deserialize(this.props.newActionText)
             this.onChangePayloadEditor(values, TEXT_SLOT)
         }
     }
@@ -457,6 +457,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
 
         this.setState(prevState => nextState)
+
+        // Set initial text value (used for dummy import actions)
+        if (nextProps.open === true && this.props.open === false) { 
+            if (nextProps.newActionText) {
+                let values = Plain.deserialize(nextProps.newActionText)
+                this.onChangePayloadEditor(values, TEXT_SLOT)
+            }
+        }
     }
 
     areSlateValuesChanged(slateValuesMap: SlateValueMap, prevSlateValuesMap: SlateValueMap) {
@@ -1524,7 +1532,7 @@ export interface ReceiveProps {
     open: boolean
     action: CLM.ActionBase | null
     actions: CLM.ActionBase[]
-    initialText?: string
+    newActionText?: string
     handleEdit: (action: CLM.ActionBase) => void
     handleClose: () => void
     handleDelete: (action: CLM.ActionBase) => void

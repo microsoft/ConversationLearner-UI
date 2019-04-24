@@ -1051,6 +1051,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         componentRef={component => this.newTeachSessionButton = component!}
                         iconProps={{ iconName: 'Add' }}
                     />
+                    <OF.PrimaryButton
+                        iconProps={{
+                            iconName: "Add"
+                        }}
+                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                        onClick={() => this.onClickImportConversation()}
+                        ariaDescription="Import"
+                        text="Import"
+                    />
                     {
                         <OF.DefaultButton
                             className="cl-rotate"
@@ -1074,15 +1083,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 onClick={() => this.onClickNewTeachSession()}
                                 ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                                 text={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
-                            />
-                            <OF.PrimaryButton
-                                iconProps={{
-                                    iconName: "Add"
-                                }}
-                                disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
-                                onClick={() => this.onClickImportConversation()}
-                                ariaDescription="Import"
-                                text="Import"
                             />
                         </div>
                     </div>

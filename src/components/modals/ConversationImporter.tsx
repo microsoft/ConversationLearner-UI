@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react';
+import * as BB from 'botbuilder'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -15,6 +16,7 @@ import { FilePicker } from 'react-file-picker'
 import { setErrorDisplay } from '../../actions/displayActions'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import * as CLM from '@conversationlearner/models'
+import { ActionTypes } from '@conversationlearner/models';
 
 interface ComponentState {
     file: File | null
@@ -39,10 +41,19 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
         this.props.onCancel()
     }
 
-    onImport(object: any): void {
-        let firstKey = Object.keys(object)[0]
-        let firstObj = object[firstKey]
-        let log = firstObj.log
+    findActionByText(text: string): CLM.ActionBase | undefined {
+        return this.props.actions.find(action =>
+            {
+                if (action.actionType === ActionTypes.TEXT) {
+                    const textAction = new CLM.TextAction(action)
+                    const actionText = textAction.renderValue(new Map<string, string>())
+                    return text === actionText
+                }
+                return false
+            })
+    }
+
+    onImport(transcript: BB.Activity[]): void {
 
         let trainDialog: CLM.TrainDialog = {
             trainDialogId: undefined!,
@@ -57,39 +68,42 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
             createdDateTime: Date.now().toString(),  
             lastModifiedDateTime: Date.now().toString() 
         }
-        let isUser: boolean = true
+
         let curRound: CLM.TrainRound | null = null
-        log.forEach((l: any) => {
-            if (isUser) {
-                let textVariation: CLM.TextVariation = {
-                    text: l.text,
-                    labelEntities: []
+        transcript.forEach((activity: BB.Activity) => {
+            // TODO: Handle conversation updates
+            if (activity.type === "message") {
+                if (activity.from.role === "user") {
+                    let textVariation: CLM.TextVariation = {
+                        text: activity.text,
+                        labelEntities: []
+                    }
+                    let extractorStep: CLM.TrainExtractorStep = {
+                        textVariations: [textVariation]
+                    }
+                    curRound = {
+                        extractorStep,
+                        scorerSteps: []
+                    }
+                    trainDialog.rounds.push(curRound)
                 }
-                let extractorStep: CLM.TrainExtractorStep = {
-                    textVariations: [textVariation]
+                else {
+                    let scoreInput: CLM.ScoreInput = {
+                        filledEntities: [],
+                        context: {},
+                        maskedActions: []
+                    }
+                    const action = this.findActionByText(activity.text)
+                    let scorerStep: CLM.TrainScorerStep = {
+                        stubText: action ? undefined : activity.text,
+                        input: scoreInput,
+                        labelAction: action ? action.actionId : "NEW",
+                        logicResult: undefined,
+                        scoredAction: undefined
+                    }
+
+                    curRound!.scorerSteps.push(scorerStep)
                 }
-                curRound = {
-                    extractorStep,
-                    scorerSteps: []
-                }
-                trainDialog.rounds.push(curRound)
-                isUser = false
-            }
-            else {
-                let scoreInput: CLM.ScoreInput = {
-                    filledEntities: [],
-                    context: {},
-                    maskedActions: []
-                }
-                let scorerStep: CLM.TrainScorerStep = {
-                    stubText: l.text,
-                    input: scoreInput,
-                    labelAction: "NEW",
-                    logicResult: undefined,
-                    scoredAction: undefined
-                }
-                curRound!.scorerSteps.push(scorerStep)
-                isUser = true
             }
         })
 
@@ -114,6 +128,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                 if (typeof reader.result !== 'string') {
                     throw new Error("String Expected")
                 }
+                
                 const source = JSON.parse(reader.result)
                 this.onImport(source);
             }
@@ -217,7 +232,8 @@ const mapDispatchToProps = (dispatch: any) => {
 }
 const mapStateToProps = (state: State) => {
     return {
-        apps: state.apps.all
+        apps: state.apps.all,
+        actions: state.actions
     }
 }
 

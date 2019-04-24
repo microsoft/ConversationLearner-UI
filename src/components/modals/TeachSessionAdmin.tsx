@@ -424,6 +424,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 selectedActionId={renderData.selectedActionId}
                                 memories={renderData.memories}
                                 onActionSelected={this.onActionScorerSubmit}
+                                onActionCreatorClosed={() => {}}
                             />
                         }
                     </div>

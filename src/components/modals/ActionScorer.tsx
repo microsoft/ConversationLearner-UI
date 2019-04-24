@@ -249,7 +249,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 }
 
 interface ComponentState {
-    actionModalOpen: boolean
+    actionCreatorModalOpen: boolean
     columns: OF.IColumn[],
     scoredItems: CLM.ScoredBase[],
     sortColumn: IRenderableColumn
@@ -267,7 +267,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         const columns = getColumns(this.props.intl)
         this.state = {
-            actionModalOpen: false,
+            actionCreatorModalOpen: false,
             columns,
             scoredItems: [],
             sortColumn: columns[2], // "score"
@@ -284,6 +284,11 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             this.setState({
                 haveEdited: false,
                 scoredItems: this.getScoredItems()
+            })
+        }
+        if (this.props.newActionText !== prevProps.newActionText) {
+            this.setState({
+                actionCreatorModalOpen: this.props.newActionText !== undefined
             })
         }
     }
@@ -327,7 +332,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             const selectedActionId = bestAction.actionId;
             this.handleActionSelection(selectedActionId);
 
-        } else if (!this.state.actionModalOpen) {
+        } else if (!this.state.actionCreatorModalOpen) {
             setTimeout(this.focusPrimaryButton, 100)
         }
     }
@@ -344,12 +349,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     onClickCancelActionEditor() {
         this.setState({
-            actionModalOpen: false
+            actionCreatorModalOpen: false,
         })
+        this.props.onActionCreatorClosed()
     }
 
     async onClickSubmitActionEditor(action: CLM.ActionBase) {
         await Util.setStateAsync(this, { actionModalOpen: false })
+        this.props.onActionCreatorClosed()
 
         const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
         if (newAction
@@ -370,7 +377,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     @OF.autobind
     handleOpenActionModal() {
         this.setState({
-            actionModalOpen: true
+            actionCreatorModalOpen: true
         })
     }
 
@@ -824,9 +831,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 <ActionCreatorEditor
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
-                    open={this.state.actionModalOpen}
+                    open={this.state.actionCreatorModalOpen}
                     action={null}
                     actions={this.props.actions}
+                    newActionText={this.props.newActionText}
                     handleClose={() => this.onClickCancelActionEditor()}
                     // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete 
                     handleDelete={action => { }}
@@ -873,7 +881,9 @@ export interface ReceivedProps {
     memories: CLM.Memory[],
     canEdit: boolean,
     isEndSessionAvailable: boolean,
+    newActionText?: string 
     onActionSelected: (trainScorerStep: CLM.TrainScorerStep) => void,
+    onActionCreatorClosed: () => void
 }
 
 const mapDispatchToProps = (dispatch: any) => {
