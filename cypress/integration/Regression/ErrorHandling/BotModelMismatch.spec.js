@@ -4,7 +4,7 @@
 */
 
 import * as models from '../../../support/Models'
-import * as helpers from '../../support/Helpers'
+import * as helpers from '../../../support/Helpers'
 
 describe('Bot Model Mismatch - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
