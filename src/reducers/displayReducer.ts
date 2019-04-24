@@ -6,6 +6,7 @@ import { ActionObject, DisplayState } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import { TipType } from '../components/ToolTips/ToolTips'
+import produce from 'immer'
 
 const initialState: DisplayState = {
     displaySpinner: [],
@@ -15,29 +16,30 @@ const initialState: DisplayState = {
 };
 
 const spinnerName = (spinner: string): string => {
-    let cut = spinner.lastIndexOf("_");
+    const cut = spinner.lastIndexOf("_");
     return spinner.slice(0, cut);
-}
-const addSpinner = (spinners: string[], newSpinner: string): string[] => {
-    return spinners.concat(spinnerName(newSpinner));
 }
 
 const removeSpinner = (spinners: string[], oldSpinner: string): string[] => {
     return spinners.filter(o => o !== spinnerName(oldSpinner));
 }
 
-const displayReducer: Reducer<DisplayState> = (state = initialState, action: ActionObject): DisplayState => {
+const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, action: ActionObject) => {
     switch (action.type) {
         case AT.USER_LOGOUT:
             return { ...initialState };
-        case AT.CLEAR_BANNER: 
-            return {...state, clearedBanner: action.clearedBanner}
+        case AT.CLEAR_BANNER:
+            state.clearedBanner = action.clearedBanner
+            return
         case AT.SET_TIP_TYPE:
-            return { ...state, tipType: action.tipType };
+            state.tipType = action.tipType
+            return
         case AT.CREATE_APPLICATION_FULFILLED:
-            return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
+            state.displaySpinner = removeSpinner(state.displaySpinner, action.type)
+            return
         case AT.SET_CURRENT_APP_FULFILLED:
-            return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
+            state.displaySpinner = removeSpinner(state.displaySpinner, action.type)
+            return
         case AT.SET_ERROR_DISPLAY:
             // If I fail to load critical data, return to home page
             switch (action.actionType) {
@@ -48,19 +50,23 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
                 case AT.FETCH_ACTIONS_ASYNC:
                     return { ...initialState, displaySpinner: [] };
                 default:
-                    return { ...state, displaySpinner: [] }
+                    state.displaySpinner = []
+                    return
             }
         case AT.SET_WEBCHAT_SCROLL_POSITION:
-            return {...state, webchatScrollPosition: action.position}
+            state.webchatScrollPosition = action.position
+            return
         case AT.CLEAR_WEBCHAT_SCROLL_POSITION:
-            return {...state, webchatScrollPosition: undefined}
+            state.webchatScrollPosition = undefined
+            return
         case AT.SET_CURRENT_APP_ASYNC:
 
         case AT.CREATE_ACTION_ASYNC:
-        case AT.CREATE_APP_TAG_ASYNC: 
+        case AT.CREATE_APP_TAG_ASYNC:
         case AT.CREATE_APPLICATION_ASYNC:
         case AT.CREATE_TEACH_SESSION_ASYNC:
-        case AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC:
+        case AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC:
+        case AT.CREATE_TRAIN_DIALOG_ASYNC:
         case AT.CREATE_CHAT_SESSION_ASYNC:
         case AT.CREATE_ENTITY_ASYNC:
 
@@ -70,7 +76,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.DELETE_ENTITY_ASYNC:
         case AT.DELETE_MEMORY_ASYNC:
         // case AT.DELETE_LOG_DIALOG_ASYNC: Don't block
-        // case AT.DELETE_TEACH_SESSION_ASYNC: Don't block
+        case AT.DELETE_TEACH_SESSION_ASYNC: 
         // case AT.DELETE_TRAIN_DIALOG_ASYNC: Don't block
 
         case AT.EDIT_ACTION_ASYNC:
@@ -79,9 +85,11 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.EDIT_ENTITY_ASYNC:
         case AT.EDIT_APP_LIVE_TAG_ASYNC:
         case AT.EDIT_APP_EDITING_TAG_ASYNC:
-        
+        case AT.EDIT_TRAINDIALOG_MERGE_ASYNC:
+        case AT.EDIT_TRAINDIALOG_REPLACE_ASYNC:
+
         // case AT.EXPIRE_CHAT_SESSION_AYSNC: Don't block
-        
+
         case AT.FETCH_APPSOURCE_ASYNC:
         case AT.FETCH_ACTIONS_ASYNC:
         case AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC:
@@ -107,16 +115,19 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.GET_SCORES_ASYNC:
         case AT.RUN_SCORER_ASYNC:
         case AT.POST_SCORE_FEEDBACK_ASYNC:
-            return { ...state, displaySpinner: addSpinner(state.displaySpinner, action.type) }
-
+            state.displaySpinner.push(spinnerName(action.type))
+            return
         case AT.CREATE_ACTION_FULFILLED:
-        case AT.CREATE_APP_TAG_FULFILLED: 
+        case AT.CREATE_APP_TAG_FULFILLED:
         //case AT.CREATE_APPLICATION_FULFILLED: Handled above
         case AT.CREATE_CHAT_SESSION_REJECTED:
         case AT.CREATE_CHAT_SESSION_FULFILLED:
         case AT.CREATE_TEACH_SESSION_REJECTED:
         case AT.CREATE_TEACH_SESSION_FULFILLED:
-        case AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED:
+        case AT.CREATE_TEACH_SESSION_FROMHISTORY_FULFILLED:
+        case AT.CREATE_TEACH_SESSION_FROMHISTORY_REJECTED:
+        case AT.CREATE_TRAIN_DIALOG_FULFILLED:
+        case AT.CREATE_TRAIN_DIALOG_REJECTED:
         case AT.CREATE_ENTITY_FULFILLED:
 
         case AT.DELETE_ACTION_FULFILLED:
@@ -125,7 +136,7 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.DELETE_ENTITY_FULFILLED:
         case AT.DELETE_MEMORY_FULFILLED:
         // case AT.DELETE_LOG_DIALOG_FULFILLED: Doesn't block
-        // case AT.DELETE_TEACH_SESSION_FULFILLED: Doesn't block
+        case AT.DELETE_TEACH_SESSION_FULFILLED:
         // case AT.DELETE_TRAIN_DIALOG_FULFILLED: Doesn't block
         case AT.DELETE_TRAIN_DIALOG_REJECTED:
 
@@ -135,6 +146,8 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.EDIT_ENTITY_FULFILLED:
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:
         case AT.EDIT_APP_EDITING_TAG_FULFILLED:
+        case AT.EDIT_TRAINDIALOG_MERGE_FULFILLED:
+        case AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED:
 
         case AT.FETCH_APPSOURCE_FULFILLED:
         case AT.FETCH_ACTIONS_FULFILLED:
@@ -148,22 +161,26 @@ const displayReducer: Reducer<DisplayState> = (state = initialState, action: Act
         case AT.FETCH_ENTITIES_FULFILLED:
         case AT.FETCH_HISTORY_FULFILLED:
         case AT.FETCH_SCOREFROMHISTORY_FULFILLED:
+        case AT.FETCH_SCOREFROMHISTORY_REJECTED:
         case AT.FETCH_EXTRACTFROMHISTORY_FULFILLED:
+        case AT.FETCH_EXTRACTFROMHISTORY_REJECTED:
         case AT.FETCH_TRAIN_DIALOG_FULFILLED:
         case AT.FETCH_TRAINDIALOGREPLAY_FULFILLED:
         case AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED:
-        // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doeesn't block
+        // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doesn't block
         // case AT.FETCH_TRAIN_DIALOGS_FULFILLED: Doesn't block
         case AT.FETCH_TUTORIALS_FULFILLED:
-    
+
         case AT.COPY_APPLICATION_FULFILLED:
         case AT.RUN_EXTRACTOR_FULFILLED:
         case AT.GET_SCORES_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
-            return { ...state, displaySpinner: removeSpinner(state.displaySpinner, action.type) }
+            state.displaySpinner = removeSpinner(state.displaySpinner, action.type)
+            return
         default:
-            return state;
+            return
     }
-}
+}, initialState)
+
 export default displayReducer;

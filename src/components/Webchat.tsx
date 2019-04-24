@@ -9,30 +9,31 @@ import { connect } from 'react-redux'
 import { State } from '../types'
 import * as BotChat from '@conversationlearner/webchat'
 import * as CLM from '@conversationlearner/models'
-import { BehaviorSubject, Observable } from 'rxjs'
+import { BehaviorSubject, Observable, Subscription } from 'rxjs'
 import { Activity, Message } from 'botframework-directlinejs'
 import { EditDialogType } from './modals/.'
 import actions from '../actions'
 
 export function renderActivity(
-    activityProps: BotChat.WrappedActivityProps, 
-    children: React.ReactNode, 
+    activityProps: BotChat.WrappedActivityProps,
+    children: React.ReactNode,
     setRef: (div: HTMLDivElement | null) => void,
     renderSelected: ((activity: Activity) => JSX.Element | null) | null,
-    editType: EditDialogType
-    ): JSX.Element {
-        
-    let timeLine = <span> {activityProps.fromMe ? "User" : "Bot"}</span>;
+    editType: EditDialogType,
+    shouldRenderHighlight: boolean,
+): JSX.Element {
+
+    const timeLine = <span> {activityProps.fromMe ? "User" : "Bot"}</span>;
 
     const isLogDialog = editType === EditDialogType.LOG_ORIGINAL || editType === EditDialogType.LOG_EDITED
     const who = activityProps.fromMe ? 'me' : 'bot'
 
-    let wrapperClassName = 
+    let wrapperClassName =
         ['wc-message-wrapper',
-        (activityProps.activity as Message).attachmentLayout || 'list',
-        activityProps.onClickActivity && 'clickable'].filter(Boolean).join(' ')
+            (activityProps.activity as Message).attachmentLayout || 'list',
+            activityProps.onClickActivity && 'clickable'].filter(Boolean).join(' ')
 
-    let contentClassName = 'wc-message-content'
+    const contentClassName = 'wc-message-content'
     const clData: CLM.CLChannelData | null = activityProps.activity.channelData ? activityProps.activity.channelData.clData : null
 
     let messageColor = `wc-message-color-${activityProps.fromMe ? (isLogDialog ? 'log' : 'train') : 'bot'}`
@@ -42,30 +43,31 @@ export function renderActivity(
         if (clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
                 wrapperClassName += ` wc-border-warning-from-${who}`;
-            } 
+            }
             else { // ERROR or BLOCKING
                 wrapperClassName += ` wc-border-error-from-${who}`;
             }
             if (clData.replayError.type === CLM.ReplayErrorType.Exception) {
                 messageColor = `wc-message-color-exception`
                 messageFillColor = `wc-message-fillcolor-exception`
-            
+
             }
-        }
-        if (activityProps.selected) {
-            wrapperClassName += ` wc-message-selected`
         }
     }
 
+    if (activityProps.selected && shouldRenderHighlight) {
+        wrapperClassName += ` wc-message-selected`
+    }
+
     return (
-        <div 
-            data-activity-id={activityProps.activity.id} 
-            className={wrapperClassName} 
+        <div
+            data-activity-id={activityProps.activity.id}
+            className={wrapperClassName}
             onClick={activityProps.onClickActivity}
             role="button"
-        > 
-            <div 
-                className={`wc-message wc-message-from-${who} ${messageColor}`} 
+        >
+            <div
+                className={`wc-message wc-message-from-${who} ${messageColor}`}
                 ref={div => setRef(div)}
                 data-testid="web-chat-utterances"
             >
@@ -78,12 +80,12 @@ export function renderActivity(
                 </div>
             </div>
             {activityProps.selected && renderSelected && renderSelected(activityProps.activity)}
-            {clData && clData.validWaitAction !== undefined ? 
+            {clData && clData.validWaitAction !== undefined ?
                 (
                     <svg className="wc-message-downarrow">
-                        <polygon 
-                            className={clData.validWaitAction 
-                                ? "wc-message-downarrow-points" 
+                        <polygon
+                            className={clData.validWaitAction
+                                ? "wc-message-downarrow-points"
                                 : "wc-message-downarrow-points-red"}
                             points="0,0 50,0 25,15"
                         />
@@ -109,12 +111,13 @@ class Webchat extends React.Component<Props, {}> {
         focusInput: false
     }
 
-    private behaviorSubject: BehaviorSubject<any> | null = null;
-    private chatProps: BotChat.ChatProps | null = null;
-    private dl: BotChat.DirectLine | null = null;
+    private behaviorSubject: BehaviorSubject<any> | null = null
+    private subscription: Subscription | null = null
+    private chatProps: BotChat.ChatProps | null = null
+    private dl: BotChat.DirectLine | null = null
 
     constructor(p: any) {
-        super(p);
+        super(p)
         this.selectedActivity$ = this.selectedActivity$.bind(this)
     }
 
@@ -122,8 +125,9 @@ class Webchat extends React.Component<Props, {}> {
         if (this.dl) {
             this.dl.end();
         }
-        if (this.behaviorSubject) {
-            this.behaviorSubject.unsubscribe()
+        if (this.subscription) {
+            this.subscription.unsubscribe()
+            this.subscription = null
         }
     }
 
@@ -131,17 +135,18 @@ class Webchat extends React.Component<Props, {}> {
         if (this.props.history !== nextProps.history) {
             if (this.props.history.length > 0 || nextProps.history.length > 0) {
                 this.chatProps = null;
-                if (this.behaviorSubject) {
-                    this.behaviorSubject.unsubscribe()
+                if (this.subscription) {
+                    this.subscription.unsubscribe()
+                    this.subscription = null
                 }
             }
-        } 
+        }
     }
 
     selectedActivity$(): BehaviorSubject<any> {
         if (!this.behaviorSubject) {
             this.behaviorSubject = new BehaviorSubject<any>({});
-            this.behaviorSubject.subscribe((value) => {
+            this.subscription = this.behaviorSubject.subscribe((value) => {
                 if (value.activity) {
                     this.props.onSelectActivity(value.activity as Activity)
                 }
@@ -159,7 +164,7 @@ class Webchat extends React.Component<Props, {}> {
                 console.warn(`You attempted to set the conversation with out a valid user. name: ${user.name} id: ${user.id}`)
                 return
             }
-            
+
             this.props.setConversationIdThunkAsync(user.name, user.id, conversationId)
         }
     }
@@ -172,11 +177,14 @@ class Webchat extends React.Component<Props, {}> {
                 webSocket: false // defaults to true,
             })
 
-            const botConnection = {         
+            const botConnection = {
                 ...dl,
                 postActivity: (activity: any) => {
                     this.props.onPostActivity(activity)
-                    return this.props.disableDL ? null : dl.postActivity(activity)
+                    if (this.props.disableDL && (activity.value && activity.value['submit'])) {
+                        return Observable.empty()
+                    }
+                    return dl.postActivity(activity)
                 }
             }
 
@@ -214,7 +222,7 @@ class Webchat extends React.Component<Props, {}> {
         }
 
         // TODO: This call has side-affects and should be moved to componentDidMount
-        let chatProps = this.getChatProps();
+        const chatProps = this.getChatProps();
 
         chatProps.hideInput = this.props.hideInput
         chatProps.focusInput = this.props.focusInput
@@ -223,7 +231,8 @@ class Webchat extends React.Component<Props, {}> {
         chatProps.renderActivity = this.props.renderActivity
         chatProps.renderInput = this.props.renderInput
         chatProps.selectedActivityIndex = this.props.selectedActivityIndex
-        chatProps.highlightClassName = this.props.highlightClassName
+        chatProps.replaceActivityText = this.props.replaceActivityText
+        chatProps.replaceActivityIndex = this.props.replaceActivityIndex
 
         return (
             <div id="botchat" className="webchatwindow wc-app">
@@ -262,9 +271,10 @@ export interface ReceivedProps {
     onScrollChange?: (position: number) => void,
     renderActivity?: (props: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void) => (JSX.Element | null)
     renderInput?: () => JSX.Element | null
-    highlightClassName?: string
     // Used to select activity from outside webchat
     selectedActivityIndex?: number | null
+    replaceActivityText?: string | null
+    replaceActivityIndex?: number | null
 
 }
 

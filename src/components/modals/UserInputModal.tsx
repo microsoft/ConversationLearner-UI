@@ -2,15 +2,17 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as OF from 'office-ui-fabric-react'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../FormattedMessageId'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+import * as Util from '../../Utils/util'
 
 interface ComponentState {
     userInputVal: string
@@ -49,18 +51,19 @@ class UserInputModal extends React.Component<Props, ComponentState> {
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file
-        if (event.key === 'Enter' && this.state.userInputVal) {
+        if ((this.onGetInputErrorMessage(this.state.userInputVal) === "") && (event.key === 'Enter') && this.state.userInputVal) {
             this.onClickSubmit();
         }
     }
 
-    onGetInputErrorMessage(value: string): string {
+    onGetInputErrorMessage(value: string, max_supported = 125 /* Quarter of LUIS's 500 limit */): string {
         const { intl } = this.props
         if (value.length === 0) {
-            return intl.formatMessage({
-                id: FM.APPCREATOR_FIELDERROR_REQUIREDVALUE,
-                defaultMessage: "Required Value"
-            })
+            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_REQUIREDVALUE)
+        }
+
+        if (value.length > max_supported) {
+            return Util.formatMessageId(intl, FM.ERROR_TOOMANYCHARACTERS)
         }
 
         return ""
@@ -78,22 +81,15 @@ class UserInputModal extends React.Component<Props, ComponentState> {
             >
                 <div className='cl-modal_header'>
                     <span className={OF.FontClassNames.xxLarge}>
-                        {                    
-                        <FormattedMessage
-                            id={this.props.titleFM}
-                            defaultMessage="Add User Input"
-                        />}
+                        {<FormattedMessageId id={this.props.titleFM} />}
                     </span>
                 </div>
                 <div className="cl-action-creator-fieldset">
                     <OF.TextField
-                        data-testid="app-create-input-name"
+                        data-testid="user-input-modal-new-message-input"
                         onGetErrorMessage={value => this.onGetInputErrorMessage(value)}
                         onChanged={text => this.userInputChanged(text)}
-                        placeholder={intl.formatMessage({
-                            id: FM.USERINPUT_PLACEHOLDER,
-                            defaultMessage: "User Input..."
-                        })}
+                        placeholder={Util.formatMessageId(intl, FM.USERINPUT_PLACEHOLDER)}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.userInputVal}
                     />
@@ -102,30 +98,20 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary" />
                         <div className="cl-modal-buttons_primary">
-                            
-                                <OF.PrimaryButton
-                                    disabled={invalidName}
-                                    data-testid="app-create-button-submit"
-                                    onClick={this.onClickSubmit}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Create'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.APPCREATOR_CREATEBUTTON_TEXT,
-                                        defaultMessage: 'Create'
-                                    })}
-                                />
+
+                            <OF.PrimaryButton
+                                disabled={invalidName}
+                                data-testid="app-create-button-submit"
+                                onClick={this.onClickSubmit}
+                                ariaDescription={Util.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION)}
+                                text={Util.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_TEXT)}
+                                iconProps={{ iconName: 'Accept' }}
+                            />
                             <OF.DefaultButton
                                 onClick={this.onClickCancel}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.BUTTON_CANCEL,
-                                    defaultMessage: 'Cancel'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.BUTTON_CANCEL,
-                                    defaultMessage: 'Cancel'
-                                })}
+                                ariaDescription={Util.formatMessageId(intl, FM.BUTTON_CANCEL)}
+                                text={Util.formatMessageId(intl, FM.BUTTON_CANCEL)}
+                                iconProps={{ iconName: 'Cancel' }}
                             />
                         </div>
                     </div>

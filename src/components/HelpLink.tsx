@@ -2,13 +2,13 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { State } from '../types';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { State } from '../types'
 import { setTipType } from '../actions/displayActions'
-import { TipType } from './ToolTips/ToolTips';
+import { TipType } from './ToolTips/ToolTips'
 
 class HelpLink extends React.Component<Props, {}> {
     render() {

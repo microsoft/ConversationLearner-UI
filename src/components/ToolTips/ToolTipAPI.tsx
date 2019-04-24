@@ -2,7 +2,7 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
+import * as React from 'react'
 import HelpLink from '../HelpLink'
 import { TipType } from './ToolTips'
 
@@ -38,7 +38,7 @@ const logicOnly =
         name: "ClearEntities",
         logic: async (memoryManager: ClientMemoryManager) => {
             // Clear "number" entity
-            memoryManager.ForgetEntity("number");
+            memoryManager.Delete("number");
         }
     })`;
 
@@ -49,9 +49,9 @@ const apiCorrect =
             var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
     
             // CORRECT
-            // RememberEntity called before APICallback has returned
-            let response = await requestpromise(options)
-            memoryManager.RememberEntity("RandomMessage", response.body);
+            // Set called before APICallback has returned
+            const response = await requestpromise(options)
+            memoryManager.Set("RandomMessage", response.body);
         },
         render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
             return logicResult.body
@@ -65,9 +65,9 @@ const apiWrong =
             var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
     
             // !!WRONG!!
-            // RememberEntity call will happen after the APICallback has returned
+            // Set call will happen after the APICallback has returned
             request(options, (error:any, response:any, body:any) => {
-                memoryManager.RememberEntity("RandomMessage", response.body);   // BAD
+                memoryManager.Set("RandomMessage", response.body);   // BAD
             })
         },
         render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
@@ -75,46 +75,46 @@ const apiWrong =
         }
     })`;
 
-    const resultAsEntity =
+const resultAsEntity =
     `cl.AddCallback({
         name: "ResultAsEntity",
-        logic: async (memoryManager : ClientMemoryManager) => {
+        logic: async (memoryManager) => {
             var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
-            let response = await requestpromise(options)
-            memoryManager.RememberEntity("RandomMessage", response.body);
+            const response = await requestpromise(options)
+            memoryManager.Set("RandomMessage", response.body.title);
         },
-        render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
-            let value = memoryManager.EntityValue("RandomMessage")
+        render: async (logicResult, memoryManager) => {
+            const value = memoryManager.Get("RandomMessage", ClientMemoryManager.AS_STRING)
             return value || ""
         }
     })`;
 
-    const resultPassed =
+const resultPassed =
     `cl.AddCallback({
         name: "ResultAsLogicResult",
-        logic: async (memoryManager : ClientMemoryManager) => {
+        logic: async (memoryManager) => {
             var options = { method: 'GET', uri: 'https://jsonplaceholder.typicode.com/posts/1', json: true }
-            let response = await requestpromise(options)
-            memoryManager.RememberEntity("RandomMessage", response.body);
+            const response = await requestpromise(options)
+            return response.body
         },
-        render: async (logicResult: any, memoryManager: ReadOnlyClientMemoryManager, ...args: string[]) => {
-            return logicResult.body
+        render: async (logicResult) => {
+            return \`Title: \${logicResult.title}\`
         }
     })`;
-    
+
 export function renderAPIPage1(): JSX.Element {
     return (
         <div>
             <div>API Callback can be used to impliment business logic in your Bot</div>
             <div><br /><b>API callbacks are divided into two parts:</b></div>
             <ol>
-            <li>A 'logic' callback in which Entity values can be set and external APIs can be called</li>
-            <li>A 'render' callback which generates Bot output, and can only read Entity values</li>
+                <li>A 'logic' callback in which Entity values can be set and external APIs can be called</li>
+                <li>A 'render' callback which generates Bot output, and can only read Entity values</li>
             </ol>
             <ul>
-            <li>API callback can contain a 'logic' callback, a 'render' callback or both</li>
-            <li>When displaying an existing Dialog, in the CL editor, only the 'render' callback will be called using saved values from the 'logic' callback.</li>
-            <li>When editing an existing Dialog, the 'logic' callback will be invoked</li>
+                <li>API callback can contain a 'logic' callback, a 'render' callback or both</li>
+                <li>When displaying an existing Dialog, in the CL editor, only the 'render' callback will be called using saved values from the 'logic' callback.</li>
+                <li>When editing an existing Dialog, the 'logic' callback will be invoked</li>
             </ul>
             <b>Example that has only a 'render' callback that takes two arguments and displays text to user</b>
             <pre>{renderOnlyText}</pre>
@@ -124,6 +124,7 @@ export function renderAPIPage1(): JSX.Element {
             <pre>{logicOnly}</pre>
             <div><br /><HelpLink label="Data Passing: 'logic' -> 'render'" tipType={TipType.ACTION_API2} /></div>
             <div><HelpLink label="Making external API calls" tipType={TipType.ACTION_API3} /></div>
+            <div><HelpLink label="Memory Manager" tipType={TipType.MEMORY_MANAGER} /></div>
         </div>
     )
 }
@@ -155,7 +156,7 @@ export function renderAPIPage3(): JSX.Element {
     return (
         <div>
             <div><b>Making external API calls</b></div>
-            <div><br/>CL expects the 'logic' callbacks to await any asynchronous results<br/></div>
+            <div><br />CL expects the 'logic' callbacks to await any asynchronous results<br /></div>
             <b>CORRECT way to do a request</b>
             <pre>{apiCorrect}</pre>
             <b>!!WRONG!! way to do an request</b>

@@ -3,13 +3,14 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { AppCreator as AppCreatorModal, TutorialImporterModal, ConfirmCancelModal } from '../../components/modals'
-import * as OF from 'office-ui-fabric-react';
+import { AppCreator as AppCreatorModal, TutorialImporterModal } from '../../components/modals'
+import * as OF from 'office-ui-fabric-react'
 import { AppBase, AppDefinition } from '@conversationlearner/models'
-import { InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../../components/FormattedMessageId'
+import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import * as util from '../../Utils/util'
-import { User, AppCreatorType } from '../../types';
+import * as Util from '../../Utils/util'
+import { User, AppCreatorType } from '../../types'
 import * as moment from 'moment'
 
 export interface ISortableRenderableColumn extends OF.IColumn {
@@ -21,16 +22,13 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
     return [
         {
             key: 'appName',
-            name: intl.formatMessage({
-                id: FM.APPSLIST_COLUMN_NAME,
-                defaultMessage: 'Name'
-            }),
+            name: Util.formatMessageId(intl, FM.APPSLIST_COLUMN_NAME),
             fieldName: 'appName',
             minWidth: 100,
             maxWidth: 200,
             isResizable: true,
             getSortValue: app => app.appName,
-            render: (app, props) => <span className={OF.FontClassNames.mediumPlus}><OF.Link onClick={() => props.onClickApp(app)} data-testid="model-list-model-name">{app.appName}</OF.Link></span>
+            render: (app, props) => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-model-name" data-model-id={app.appId}>{app.appName}</span>
         },
         {
             key: 'isEditing',
@@ -62,7 +60,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             isResizable: true,
             getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
             render: (app) => {
-                const packageReference = util.packageReferences(app).find(pv => pv.packageId === app.livePackageId)
+                const packageReference = Util.packageReferences(app).find(pv => pv.packageId === app.livePackageId)
                 if (!packageReference) {
                     throw new Error(`Could not find package reference by id: ${app.livePackageId}`)
                 }
@@ -72,49 +70,37 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
         },
         {
             key: 'isLoggingOn',
-            name: intl.formatMessage({
-                id: FM.APPSLIST_COLUMNS_LOGGING,
-                defaultMessage: 'Logging Enabled'
-            }),
+            name: Util.formatMessageId(intl, FM.APPSLIST_COLUMNS_LOGGING),
             fieldName: 'isloggingon',
             minWidth: 100,
             maxWidth: 200,
             isResizable: true,
             getSortValue: app => (app.metadata.isLoggingOn !== false) ? 'a' : 'b',
-            render: (app) => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="cl-icon" data-testid="model-list-is-logging-on"/>
+            render: (app) => <OF.Icon iconName={(app.metadata.isLoggingOn !== false) ? "CheckMark" : "Remove"} className="cl-icon" data-testid="model-list-is-logging-on" />
         },
         {
             key: 'lastModifiedDateTime',
-            name: intl.formatMessage({
-                id: FM.APPSLIST_COLUMNS_LAST_MODIFIED_DATE_TIME,
-                defaultMessage: 'Last Modified'
-            }),
+            name: Util.formatMessageId(intl, FM.APPSLIST_COLUMNS_LAST_MODIFIED_DATE_TIME),
             fieldName: 'lastModifiedDateTime',
             minWidth: 100,
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => moment(app.lastModifiedDateTime).format(`YYYYMMDDHHmmSS`),
-            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-last-modified-time">{moment(app.lastModifiedDateTime).format('L')}</span>
+            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-last-modified-time">{Util.earlierDateOrTimeToday(app.lastModifiedDateTime)}</span>
         },
         {
             key: 'createdDateTime',
-            name: intl.formatMessage({
-                id: FM.APPSLIST_COLUMNS_CREATED_DATE_TIME,
-                defaultMessage: 'Created'
-            }),
+            name: Util.formatMessageId(intl, FM.APPSLIST_COLUMNS_CREATED_DATE_TIME),
             fieldName: 'createdDateTime',
             minWidth: 100,
             maxWidth: 100,
             isResizable: false,
             getSortValue: app => moment(app.createdDateTime).format(`YYYYMMDDHHmmSS`),
-            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-created-date-time">{moment(app.createdDateTime).format('L')}</span>
+            render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-created-date-time">{Util.earlierDateOrTimeToday(app.createdDateTime)}</span>
         },
         {
             key: 'locale',
-            name: intl.formatMessage({
-                id: FM.APPSLIST_COLUMNS_LOCALE,
-                defaultMessage: 'Locale'
-            }),
+            name: Util.formatMessageId(intl, FM.APPSLIST_COLUMNS_LOCALE),
             fieldName: 'locale',
             minWidth: 100,
             maxWidth: 100,
@@ -122,19 +108,6 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
             getSortValue: app => app.locale,
             render: app => <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-locale">{app.locale}</span>
         },
-        {
-            key: 'actions',
-            name: intl.formatMessage({
-                id: FM.APPSLIST_COLUMNS_ACTIONS,
-                defaultMessage: 'Actions'
-            }),
-            fieldName: 'appId',
-            minWidth: 100,
-            maxWidth: 100,
-            isResizable: false,
-            getSortValue: app => 0,
-            render: (app, props) => <a onClick={() => props.onClickDeleteApp(app)} data-testid="model-list-delete-button"><OF.Icon iconName="Delete" className="cl-icon" />&nbsp;&nbsp;</a>
-        }
     ]
 }
 
@@ -143,17 +116,11 @@ interface Props extends InjectedIntlProps {
     apps: AppBase[]
     activeApps: { [appId: string]: string }
     onClickApp: (app: AppBase) => void
-    onClickDeleteApp: (app: AppBase) => void
 
     isAppCreateModalOpen: boolean
     onSubmitAppCreateModal: (app: AppBase, source: AppDefinition | undefined) => void
     onCancelAppCreateModal: () => void
     appCreatorType: AppCreatorType
-
-    isConfirmDeleteAppModalOpen: boolean
-    onCancelDeleteModal: () => void
-    onConfirmDeleteApp: () => void
-    appToDelete: AppBase | null
 
     onClickCreateNewApp: () => void
     onClickImportApp: () => void
@@ -199,7 +166,7 @@ export class Component extends React.Component<Props, ComponentState> {
             sortedApps = apps.concat([]).sort((a, b) => {
                 const firstValue = ifStringReturnLowerCase(sortColumn.getSortValue(a))
                 const secondValue = ifStringReturnLowerCase(sortColumn.getSortValue(b))
-    
+
                 if (sortColumn.isSortedDescending) {
                     return firstValue > secondValue ? -1 : 1;
                 } else {
@@ -207,12 +174,12 @@ export class Component extends React.Component<Props, ComponentState> {
                 }
             });
         }
-    
+
         return sortedApps;
     }
 
     onClickColumnHeader = (event: any, column: ISortableRenderableColumn) => {
-        let { columns } = this.state;
+        const { columns } = this.state;
         this.setState({
             columns: columns.map(col => {
                 col.isSorted = false;
@@ -226,81 +193,73 @@ export class Component extends React.Component<Props, ComponentState> {
         });
     }
 
-    render () {
+    render() {
         const props = this.props
         const apps = this.getSortedApplications(this.state.sortColumn, props.apps);
 
         return <div className="cl-page">
-            <span className={OF.FontClassNames.mediumPlus}>
-                <FormattedMessage
-                    id={FM.APPSLIST_SUBTITLE}
-                    defaultMessage="Create and Manage your Conversation Learner applications..."
-                />
+            <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-title">
+                <FormattedMessageId id={FM.APPSLIST_SUBTITLE} />
             </span>
             <div className="cl-buttons-row">
                 <OF.PrimaryButton
                     data-testid="model-list-create-new-button"
                     onClick={props.onClickCreateNewApp}
-                    ariaDescription={props.intl.formatMessage({
-                        id: FM.APPSLIST_CREATEBUTTONARIADESCRIPTION,
-                        defaultMessage: 'Create a New Model'
-                    })}
-                    text={props.intl.formatMessage({
-                        id: FM.APPSLIST_CREATEBUTTONTEXT,
-                        defaultMessage: 'New Model'
-                    })}
+                    ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEBUTTONARIADESCRIPTION)}
+                    text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEBUTTONTEXT)}
+                    iconProps={{ iconName: 'Add' }}
                 />
                 <OF.DefaultButton
                     data-testid="model-list-import-model-button"
                     onClick={props.onClickImportApp}
-                    ariaDescription={props.intl.formatMessage({
-                        id: FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION,
-                        defaultMessage: 'Import Model'
-                    })}
-                    text={props.intl.formatMessage({
-                        id: FM.APPSLIST_IMPORTAPP_BUTTONTEXT,
-                        defaultMessage: 'Import Model'
-                    })}
+                    ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION)}
+                    text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONTEXT)}
+                    iconProps={{ iconName: 'DownloadDocument' }}
                 />
-                {!util.isDemoAccount(props.user.id) &&
+                {!Util.isDemoAccount(props.user.id) &&
                     <OF.DefaultButton
                         data-testid="model-list-import-tutorials-button"
                         onClick={props.onClickImportDemoApps}
-                        ariaDescription={props.intl.formatMessage({
-                            id: FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION,
-                            defaultMessage: 'Import Demo Applicaitons'
-                        })}
-                        text={props.intl.formatMessage({
-                            id: FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT,
-                            defaultMessage: 'Import Tutorials'
-                        })}
+                        ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION)}
+                        text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT)}
+                        iconProps={{ iconName: 'CloudDownload' }}
                     />
-                }  
+                }
             </div>
-            <OF.DetailsList
-                className={OF.FontClassNames.mediumPlus}
-                items={apps}
-                columns={this.state.columns}
-                checkboxVisibility={OF.CheckboxVisibility.hidden}
-                onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
-                onColumnHeaderClick={this.onClickColumnHeader}
-            />
+            {apps.length === 0
+                ? <div className="cl-page-placeholder">
+                    <div className="cl-page-placeholder__content">
+                        <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>{Util.formatMessageId(props.intl, FM.APPSLIST_EMPTY_TEXT)}</div>
+                        <OF.PrimaryButton
+                            iconProps={{
+                                iconName: "Add"
+                            }}
+                            onClick={props.onClickCreateNewApp}
+                            ariaDescription={this.props.intl.formatMessage({
+                                id: FM.APPSLIST_CREATEBUTTONARIADESCRIPTION,
+                                defaultMessage: 'Create a New Model'
+                            })}
+                            text={this.props.intl.formatMessage({
+                                id: FM.APPSLIST_CREATEBUTTONTEXT,
+                                defaultMessage: 'Create a New Model'
+                            })}
+                        />
+                    </div>
+                </div>
+                : <OF.DetailsList
+                    className={OF.FontClassNames.mediumPlus}
+                    items={apps}
+                    columns={this.state.columns}
+                    checkboxVisibility={OF.CheckboxVisibility.hidden}
+                    onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
+                    onColumnHeaderClick={this.onClickColumnHeader}
+                    onActiveItemChanged={app => this.props.onClickApp(app)}
+                />}
             <AppCreatorModal
                 open={props.isAppCreateModalOpen}
                 onSubmit={props.onSubmitAppCreateModal}
                 onCancel={props.onCancelAppCreateModal}
                 creatorType={props.appCreatorType}
-            />
-            <ConfirmCancelModal
-                open={props.isConfirmDeleteAppModalOpen}
-                onCancel={props.onCancelDeleteModal}
-                onConfirm={props.onConfirmDeleteApp}
-                title={props.intl.formatMessage({
-                    id: FM.APPSLIST_CONFIRMCANCELMODALTITLE,
-                    defaultMessage: 'Are you sure you want to delete this model? {appName}'
-                }, {
-                    appName: props.appToDelete ? props.appToDelete.appName : ''
-                })}
             />
             <TutorialImporterModal
                 open={props.isImportTutorialsOpen}

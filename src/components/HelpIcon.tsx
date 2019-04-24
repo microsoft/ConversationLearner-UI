@@ -2,21 +2,20 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { State } from '../types';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { State } from '../types'
 import { setTipType } from '../actions/displayActions'
-import { TipType } from './ToolTips/ToolTips';
-import { IconButton } from 'office-ui-fabric-react';
+import { TipType } from './ToolTips/ToolTips'
+import { IconButton } from 'office-ui-fabric-react'
 
 class HelpIcon extends React.Component<Props, {}> {
     render() {
-        let className = `cl-icon cl-icon--short ${this.props.customStyle || null}`
         return (
             <IconButton
-                className={className}
+                className={`cl-icon cl-icon--short ${this.props.customClass || 'cl-icon-whitebackground'}`}
                 iconProps={{ iconName: this.props.iconName || 'Info' }}
                 onClick={() => { this.props.setTipType(this.props.tipType) }}
                 title="More Information"
@@ -24,6 +23,7 @@ class HelpIcon extends React.Component<Props, {}> {
         )
     }
 }
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setTipType
@@ -37,7 +37,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
 export interface ReceivedProps {
     tipType: TipType,
     iconName?: string
-    customStyle?: string
+    customClass?: string
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

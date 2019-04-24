@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import actions from '../actions'
 import { State } from '../types'
 import { bindActionCreators } from 'redux'
-import { FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../components/FormattedMessageId'
 import { FM } from '../react-intl-messages'
 import * as OF from 'office-ui-fabric-react'
 import './Settings.css'
@@ -29,17 +29,11 @@ class Settings extends React.Component<Props> {
         return (
             <div className="cl-page">
                 <div data-testid="settings-title-2" className={OF.FontClassNames.superLarge}>
-                    <FormattedMessage
-                        id={FM.PROFILE_SETTINGS_TITLE}
-                        defaultMessage="Settings"
-                    />
+                    <FormattedMessageId id={FM.PROFILE_SETTINGS_TITLE} />
                 </div>
                 <div>
                     <OF.Label>
-                        <FormattedMessage
-                            id={FM.PROFILE_SETTINGS_BOT_PORT}
-                            defaultMessage="SDK Port"
-                        />
+                        <FormattedMessageId id={FM.PROFILE_SETTINGS_BOT_PORT} />
                     </OF.Label>
                     <input
                         className="cl-input"
@@ -49,17 +43,15 @@ class Settings extends React.Component<Props> {
                         value={this.props.settings.botPort}
                         onChange={this.onChangeSdkPort}
                     />
-                    <div className="cl-input-warning">
+                    <div className="cl-input-warning cl-label">
                         <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
-                        <FormattedMessage
-                            id={FM.PROFILE_SETTINGS_BOT_PORT_WARNING}
-                            defaultMessage="Only change this value if you know what you are doing. This value must match the PORT that your SDK is listening on."
-                        />
+                        <FormattedMessageId id={FM.PROFILE_SETTINGS_BOT_PORT_WARNING} />
                     </div>
                     <div>
                         <OF.PrimaryButton
                             text="Reset"
                             ariaDescription="Reset"
+                            iconProps={{ iconName: 'Undo' }}
                             onClick={this.reset}
                         />
                     </div>

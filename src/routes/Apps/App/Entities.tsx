@@ -2,18 +2,20 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import * as OF from 'office-ui-fabric-react';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import * as OF from 'office-ui-fabric-react'
 import { EntityCreatorEditor } from '../../../components/modals'
 import actions from '../../../actions'
-import { State } from '../../../types';
+import { State } from '../../../types'
 import { onRenderDetailsHeader } from '../../../components/ToolTips/ToolTips'
 import { AppBase, EntityBase, EntityType } from '@conversationlearner/models'
 import { FM } from '../../../react-intl-messages'
-import { injectIntl, InjectedIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
+import FormattedMessageId from '../../../components/FormattedMessageId'
+import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
+import * as Util from '../../../Utils/util'
 import * as moment from 'moment'
 
 interface IRenderableColumn extends OF.IColumn {
@@ -47,22 +49,51 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 180,
             isResizable: true,
             getSortValue: entity => {
-                let display = (entity.entityType === EntityType.LOCAL || entity.entityType === EntityType.LUIS)
-                    ? 'CUSTOM' : entity.entityType;
-                return display.toLowerCase();
+                return entity.entityType.toLowerCase();
             },
             render: entity => {
                 let display = entity.entityType
-                if (display === EntityType.LOCAL) { 
+                if (display === EntityType.LOCAL) {
                     display = "PROGRAMMATIC"
                 }
                 else if (display === EntityType.LUIS) {
                     display = "CUSTOM"
                 }
+                else if (display === EntityType.ENUM) {
+                    display = "ENUM"
+                }
                 return (
-                <span className={OF.FontClassNames.mediumPlus}>
-                    {display}
-                </span>)}
+                    <span className={OF.FontClassNames.mediumPlus}>
+                        {display}
+                    </span>)
+            }
+        },
+        {
+            key: 'entityResolver',
+            name: intl.formatMessage({
+                id: FM.ENTITIES_COLUMNS_RESOLVER,
+                defaultMessage: 'Resolver Type'
+            }),
+            fieldName: 'entityResolver',
+            minWidth: 180,
+            maxWidth: 180,
+            isResizable: true,
+            getSortValue: entity => {
+                const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType;
+                return display.toLowerCase();
+            },
+            render: entity => {
+                const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType
+                if (display.toLowerCase() === "none") {
+                    return (
+                        <OF.Icon iconName="Remove" className="cl-icon" />
+                    )
+                }
+                return (
+                    <span className={OF.FontClassNames.mediumPlus}>
+                        {display}
+                    </span>)
+            }
         },
         {
             key: 'isBucketable',
@@ -100,7 +131,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             isResizable: false,
             getSortValue: entity => moment(entity.createdDateTime).valueOf().toString(),
-            render: entity => <span className={OF.FontClassNames.mediumPlus}>{moment(entity.createdDateTime).format('L')}</span>
+            render: entity => <span className={OF.FontClassNames.mediumPlus}>{Util.earlierDateOrTimeToday(entity.createdDateTime)}</span>
         }
     ]
 }
@@ -119,7 +150,7 @@ class Entities extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        let columns = getColumns(this.props.intl);
+        const columns = getColumns(this.props.intl);
         this.state = {
             searchValue: '',
             createEditModalOpen: false,
@@ -135,10 +166,12 @@ class Entities extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     handleDelete(entity: EntityBase) {
-        this.props.deleteEntityThunkAsync(this.props.app.appId, entity)
         this.setState({
-            createEditModalOpen: false
+            createEditModalOpen: false,
+            entitySelected: null
         })
+        this.props.deleteEntityThunkAsync(this.props.app.appId, entity)
+        setTimeout(() => this.newEntityButton.focus(), 1000)
     }
 
     @OF.autobind
@@ -171,8 +204,8 @@ class Entities extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
-        let { columns } = this.state;
-        let isSortedDescending = !clickedColumn.isSortedDescending;
+        const { columns } = this.state;
+        const isSortedDescending = !clickedColumn.isSortedDescending;
 
         // Reset the items and columns to match the state.
         this.setState({
@@ -188,11 +221,11 @@ class Entities extends React.Component<Props, ComponentState> {
     @OF.autobind
     getFilteredAndSortedEntities(): EntityBase[] {
         //runs when user changes the text or sort
-        let lcString = this.state.searchValue.toLowerCase();
-        let filteredEntities = this.props.entities.filter(e => {
-            let nameMatch = e.entityName.toLowerCase().includes(lcString);
-            let typeMatch = e.entityType.toLowerCase().includes(lcString);
-            let match = nameMatch || typeMatch
+        const lcString = this.state.searchValue.toLowerCase();
+        const filteredEntities = this.props.entities.filter(e => {
+            const nameMatch = e.entityName.toLowerCase().includes(lcString);
+            const typeMatch = e.entityType.toLowerCase().includes(lcString);
+            const match = nameMatch || typeMatch
             return match && !e.positiveId && !e.doNotMemorize;
         })
 
@@ -217,7 +250,7 @@ class Entities extends React.Component<Props, ComponentState> {
     @OF.autobind
     onChange(newValue: string) {
         // runs when user changes the text 
-        let lcString = newValue.toLowerCase();
+        const lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
         })
@@ -229,17 +262,11 @@ class Entities extends React.Component<Props, ComponentState> {
         return (
             <div className="cl-page">
                 <span data-testid="entities-title" className={OF.FontClassNames.xxLarge}>
-                    <FormattedMessage
-                        id={FM.ENTITIES_TITLE}
-                        defaultMessage="Entities"
-                    />
+                    <FormattedMessageId id={FM.ENTITIES_TITLE} />
                 </span>
                 {this.props.editingPackageId === this.props.app.devPackageId ?
                     <span className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessage
-                            id={FM.ENTITIES_SUBTITLE}
-                            defaultMessage="Entities hold values from the user or are set by code, and are stored in the bot's memory to track state"
-                        />
+                        <FormattedMessageId id={FM.ENTITIES_SUBTITLE} />
                     </span>
                     :
                     <span className="cl-errorpanel">Editing is only allowed in Master Tag</span>
@@ -257,6 +284,7 @@ class Entities extends React.Component<Props, ComponentState> {
                             id: FM.ENTITIES_CREATEBUTTONTEXT,
                             defaultMessage: 'New Entity'
                         })}
+                        iconProps={{ iconName: 'Add' }}
                         componentRef={component => this.newEntityButton = component!}
                     />
                 </div>

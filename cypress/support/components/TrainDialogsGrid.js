@@ -3,39 +3,53 @@
  * Licensed under the MIT License.
  */
 
+import * as helpers from '../Helpers'
+
 // Path to product code: ConversationLearner-UI\src\routes\Apps\App\TrainDialogs.tsx
-export function VerifyPageTitle()                 { cy.Get('[data-testid="train-dialogs-title"]').contains('Train Dialogs') }
-export function CreateNewTrainDialog()            { cy.Get('[data-testid="button-new-train-dialog"]').Click()}
-export function SearchBox()                       { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
-export function EntityDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-entity"]')}
-export function ActionDropDownFilter()            { cy.Get('[data-testid="dropdown-filter-by-action"]')}
+export function VerifyPageTitle() { cy.Get('[data-testid="train-dialogs-title"]').contains('Train Dialogs').should('be.visible') }
+export function CreateNewTrainDialog() { cy.Get('[data-testid="button-new-train-dialog"]').Click() }
+export function SearchBox() { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
+export function EntityDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-entity"]') }
+export function ActionDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-action"]') }
+export function ClickTraining(row) { cy.Get('[data-testid="train-dialogs-description"]').then(elements => { cy.wrap(elements[row]).Click() }) }
 
-// Workaround:   Wanted to do this the first way, but it does not work due to the variable
-//               being passed in at the time cy.Get command is queued and not at the time
-//               that the command is run.
-//export function GridIsReady(expectedCount)        { cy.Get('[data-testid="train-dialogs-turns"]').should('have.length', expectedCount)}
-export function GridIsReady(countValidationFunc)  { cy.Get('[data-testid="train-dialogs-turns"]').should(countValidationFunc) }
-
-// These functions circumvent the Cypress retry logic by using jQuery
-export function GetFirstInputs()                  { return StringArrayFromInnerHtml('[data-testid="train-dialogs-first-input"]')}
-export function GetLastInputs()                   { return StringArrayFromInnerHtml('[data-testid="train-dialogs-last-input"]')}
-export function GetLastResponses()                { return StringArrayFromInnerHtml('[data-testid="train-dialogs-last-response"]')}
-export function GetTurns()                        { return NumericArrayFromInnerHtml('[data-testid="train-dialogs-turns"]') }
-export function GetLastModifiedDates()            { return StringArrayFromInnerHtml('[data-testid="train-dialogs-last-modified"]')}
-export function GetCreatedDates()                 { return StringArrayFromInnerHtml('[data-testid="train-dialogs-created"]')}
-
-export function StringArrayFromInnerHtml(selector) 
-{ 
-  var elements = Cypress.$(selector)
-  var returnValues = new Array()
-  for (var i = 0; i < elements.length; i++) { returnValues.push(elements[i].innerHTML) }
-  return returnValues
+export function WaitForGridReadyThen(expectedRowCount, functionToRunAfterGridIsReady) {
+  cy.Get('[data-testid="train-dialogs-turns"]', { timeout: 10000 })
+    .should(elements => { expect(elements).to.have.length(expectedRowCount) })
+    .then(() => { functionToRunAfterGridIsReady() })
 }
 
-export function NumericArrayFromInnerHtml(selector) 
-{ 
-  var elements = Cypress.$(selector)
-  var returnValues = new Array()
-  for (var i = 0; i < elements.length; i++) { returnValues.push(Number(elements[i].innerHTML)) }
-  return returnValues
+// These functions circumvent the Cypress retry logic by using jQuery
+export function GetFirstInputs() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-first-input"]') }
+export function GetLastInputs() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-last-input"]') }
+export function GetLastResponses() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-last-response"]') }
+export function GetTurns() { return helpers.NumericArrayFromElementText('[data-testid="train-dialogs-turns"]') }
+export function GetLastModifiedDates() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-last-modified"]') }
+export function GetCreatedDates() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-created"]') }
+
+export function GetTags() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-tags"]') }
+export function GetDescription() { return helpers.StringArrayFromElementText('[data-testid="train-dialogs-description"]') }
+
+export function VerifyErrorIconForTrainGridRow(rowIndex) { cy.Get(`div.ms-List-cell[data-list-index="${rowIndex}"]`).find('[data-testid="train-dialogs-validity-indicator"]') }
+
+export function VerifyDescriptionForRow(row, description) { cy.Get(`div[data-item-index=${row}][data-automationid="DetailsRow"]`).find('span[data-testid="train-dialogs-description"]').contains(description) }
+
+export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastInput, lastResponse) {
+  const funcName = `VerifyIncidentTriangleFoundInTrainDialogsGrid(${firstInput}, ${lastInput}, ${lastResponse})`
+  cy.Enqueue(() => {
+    const firstInputs = GetFirstInputs()
+    const lastInputs = GetLastInputs()
+    const lastResponses = GetLastResponses()
+
+    helpers.ConLog(funcName, `Before Loop of ${firstInputs.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
+
+    for (let i = 0; i < firstInputs.length; i++) {
+      if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse) {
+        helpers.ConLog(funcName, `Found it at Index: ${i} - ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
+        VerifyErrorIconForTrainGridRow(i)
+        return
+      }
+    }
+    throw `Can't Find Training to Verify it contains errors. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`
+  })
 }

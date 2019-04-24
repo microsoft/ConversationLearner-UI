@@ -6,10 +6,9 @@ import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
-import * as ClientFactory from '../services/clientFactory' 
+import * as ClientFactory from '../services/clientFactory'
 import { AxiosError } from 'axios'
 import { BotInfo } from '@conversationlearner/models'
-
 
 const fetchBotInfoAsync = (browserId: string, appId?: string): ActionObject => {
     return {
@@ -38,7 +37,7 @@ export const fetchBotInfoThunkAsync = (browserId: string, appId?: string) => {
             return botInfo
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.FETCH_BOTINFO_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_BOTINFO_ASYNC))
             throw error
         }
     }

@@ -1,0 +1,16 @@
+.cl-borderless-text-input {
+    display: block;
+    font-size: inherit;
+    border: 1px solid transparent;
+    padding: 0.125em 0.375em;
+    outline: none;
+    background-color: transparent;
+}
+
+.cl-borderless-text-input:hover:not(:focus):not(:read-only) {
+    border-color: var(--color-neutralQuaternary);
+}
+
+.cl-borderless-text-input:focus:not(:read-only) {
+    border-color: var(--color-themeSecondary);
+}

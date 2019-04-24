@@ -2,34 +2,20 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
+import * as CLM from '@conversationlearner/models'
+import * as ClientFactory from '../services/clientFactory'
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Dispatch } from 'redux'
-import * as ClientFactory from '../services/clientFactory'
 import { setErrorDisplay } from './displayActions'
-import * as CLM from '@conversationlearner/models'
-import { AxiosError } from 'axios';
-import { deleteTrainDialogThunkAsync, fetchAllTrainDialogsThunkAsync } from './trainActions'
-import { fetchApplicationTrainingStatusThunkAsync } from './appActions';
+import { AxiosError } from 'axios'
+import { fetchAllTrainDialogsThunkAsync } from './trainActions'
+import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
+import { EntityLabelConflictError } from '../types/errors'
 
-export const createTeachSessionThunkAsync = (appId: string, initialFilledEntities: CLM.FilledEntity[] = []) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
-        dispatch(createTeachSessionAsync())
-
-        try {
-            const teachResponse = await clClient.teachSessionCreate(appId, initialFilledEntities)
-            dispatch(createTeachSessionFulfilled(teachResponse))
-            return teachResponse
-        }
-        catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_TEACH_SESSION_ASYNC))
-            dispatch(createTeachSessionRejected())
-            throw error
-        }
-    }
-}
+// --------------------------
+// createTeachSession
+// --------------------------
 const createTeachSessionAsync = (): ActionObject =>
     ({
         type: AT.CREATE_TEACH_SESSION_ASYNC
@@ -40,37 +26,40 @@ const createTeachSessionRejected = (): ActionObject =>
         type: AT.CREATE_TEACH_SESSION_REJECTED
     })
 
-const createTeachSessionFulfilled = (teachResponse: CLM.TeachResponse): ActionObject =>
+const createTeachSessionFulfilled = (teachResponse: CLM.TeachResponse, memories: CLM.Memory[]): ActionObject =>
     ({
         type: AT.CREATE_TEACH_SESSION_FULFILLED,
-        teachSession: teachResponse as CLM.Teach
+        teachSession: teachResponse as CLM.Teach,
+        memories
     })
 
-// --------------------------
-// TeachSessionFromHistory
-// --------------------------
-export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string, initialUserInput: CLM.UserInput | null = null) => {
+export const createTeachSessionThunkAsync = (appId: string, initialEntityMap: CLM.FilledEntityMap | null = null) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC)
-        dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
+        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_ASYNC)
+        dispatch(createTeachSessionAsync())
 
         try {
-            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, initialUserInput, userName, userId)
-            dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
-            return teachWithHistory
+            const initialFilledEntities = initialEntityMap ? initialEntityMap.FilledEntities() : []
+            const initialMemory = initialEntityMap ? initialEntityMap.ToMemory() : []
+            const teachResponse = await clClient.teachSessionCreate(appId, initialFilledEntities)
+            dispatch(createTeachSessionFulfilled(teachResponse, initialMemory))
+            return teachResponse
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TEACH_SESSION_ASYNC))
             dispatch(createTeachSessionRejected())
             throw error
         }
     }
 }
 
+// --------------------------
+// TeachSessionFromHistory
+// --------------------------
 const createTeachSessionFromHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
     return {
-        type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
+        type: AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC,
         appId: appId,
         userName: userName,
         userId: userId,
@@ -81,85 +70,113 @@ const createTeachSessionFromHistoryAsync = (appId: string, trainDialog: CLM.Trai
 const createTeachSessionFromHistoryFulfilled = (teachWithHistory: CLM.TeachWithHistory): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
-        type: AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED,
+        type: AT.CREATE_TEACH_SESSION_FROMHISTORY_FULFILLED,
         teachWithHistory: teachWithHistory
+    }
+}
+
+const createTeachSessionFromHistoryRejected = (): ActionObject =>
+    ({
+        type: AT.CREATE_TEACH_SESSION_FROMHISTORY_REJECTED
+    })
+
+export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string, initialUserInput: CLM.UserInput | null, filteredDialogId: string | null) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC)
+        dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
+
+        try {
+            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, initialUserInput, userName, userId, filteredDialogId)
+            dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
+            return teachWithHistory
+        }
+        catch (e) {
+            dispatch(createTeachSessionFromHistoryRejected())
+            
+            const error = e as AxiosError
+            if (error.response && error.response.status === 409) {
+                const textVariations: CLM.TextVariation[] = error.response.data.reason
+                const conflictError = new EntityLabelConflictError(error.message, textVariations)
+                throw conflictError
+            }
+
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC))
+            throw error
+        }
     }
 }
 
 // --------------------------
 // DeleteTeachSession
 // --------------------------
-export const deleteTeachSessionThunkAsync = (
-    key: string,
-    teachSession: CLM.Teach,
-    app: CLM.AppBase,
-    packageId: string,
-    save: boolean,
-    sourceTrainDialogId: string | null,
-    sourceLogDialogId: string | null) => {
-    return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteTeachSessionAsync(key, teachSession, app.appId, save))
-        const clClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
-
-        try {
-            await clClient.teachSessionDelete(app.appId, teachSession, save);
-            dispatch(deleteTeachSessionFulfilled(key, teachSession, sourceLogDialogId, app.appId));
-
-            // If saving to a TrainDialog, delete any source TrainDialog (LogDialogs not deleted)
-            if (save && sourceTrainDialogId) {
-                await dispatch(deleteTrainDialogThunkAsync(key, app, sourceTrainDialogId));
-            }
-
-            dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
-            dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
-            return true;
-        } catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_TRAIN_DIALOG_REJECTED))
-            dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
-            return false;
-        }
-    }
-}
-
-const deleteTeachSessionAsync = (key: string, teachSession: CLM.Teach, appId: string, save: boolean): ActionObject => {
+const deleteTeachSessionAsync = (teachSession: CLM.Teach, appId: string, save: boolean): ActionObject => {
     return {
         type: AT.DELETE_TEACH_SESSION_ASYNC,
-        key: key,
         teachSession: teachSession,
         appId: appId,
         save: save
     }
 }
 
-const deleteTeachSessionFulfilled = (key: string, teachSession: CLM.Teach, sourceLogDialogId: string | null, appId: string): ActionObject => {
+const deleteTeachSessionFulfilled = (teachSession: CLM.Teach, newTrainDialog: CLM.TrainDialog | null, sourceTrainDialogId: string | null): ActionObject => {
     return {
         type: AT.DELETE_TEACH_SESSION_FULFILLED,
-        key: key,
-        appId: appId,
         teachSessionGUID: teachSession.teachId,
-        trainDialogId: teachSession.trainDialogId,
-        sourceLogDialogId: sourceLogDialogId
+        newTrainDialog,
+        sourceTrainDialogId
     }
 }
 
-export const deleteMemoryThunkAsync = (key: string, currentAppId: string) => {
+const updateSourceLogDialog = (trainDialogId: string, sourceLogDialogId: string): ActionObject => {
+    return {
+        type: AT.UPDATE_SOURCE_LOG_DIALOG,
+        trainDialogId,
+        sourceLogDialogId
+    }
+}
+
+export const clearTeachSession = (): ActionObject => {
+    return {
+        type: AT.CLEAR_TEACH_SESSION
+    }
+}
+
+export const deleteTeachSessionThunkAsync = (
+    teachSession: CLM.Teach,
+    app: CLM.AppBase,
+    save: boolean = false,
+    sourceLogDialogId: string | null = null,
+    sourceTrainDialogId: string | null = null
+) => {
     return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteMemoryAsync(key, currentAppId))
-        const clClient = ClientFactory.getInstance(AT.DELETE_MEMORY_ASYNC)
+        dispatch(deleteTeachSessionAsync(teachSession, app.appId, save))
+        const clClient = ClientFactory.getInstance(AT.DELETE_TEACH_SESSION_ASYNC)
 
         try {
-            await clClient.memoryDelete(currentAppId);
-            dispatch(deleteMemoryFulfilled());
-            return true;
+            await clClient.teachSessionDelete(app.appId, teachSession, save)
+            if (sourceLogDialogId) {
+                // Will hide converted log dialog from the UI
+                dispatch(updateSourceLogDialog(teachSession.trainDialogId, sourceLogDialogId))
+            }
+
+            // If saving return the new train dialog
+            const newTrainDialog = save ? await clClient.trainDialog(app.appId, teachSession.trainDialogId) : null
+            dispatch(deleteTeachSessionFulfilled(teachSession, newTrainDialog, sourceTrainDialogId));
+            return newTrainDialog
+
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_MEMORY_ASYNC))
-            return false;
+            dispatch(clearTeachSession())
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TRAIN_DIALOG_ASYNC))
+            dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
+            throw error
         }
     }
 }
 
+// --------------------------
+// deleteMemory
+// --------------------------
 const deleteMemoryAsync = (key: string, currentAppId: string): ActionObject => {
     return {
         type: AT.DELETE_MEMORY_ASYNC,
@@ -173,49 +190,26 @@ const deleteMemoryFulfilled = (): ActionObject => {
         type: AT.DELETE_MEMORY_FULFILLED
     }
 }
-
-// --------------------------
-// RunExtractor
-// --------------------------
-export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput, filteredDialog: string | null) => {
+export const deleteMemoryThunkAsync = (key: string, currentAppId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.RUN_EXTRACTOR_ASYNC)
-        dispatch(runExtractorAsync(appId, extractType, sessionId, turnIndex, userInput))
+        dispatch(deleteMemoryAsync(key, currentAppId))
+        const clClient = ClientFactory.getInstance(AT.DELETE_MEMORY_ASYNC)
 
         try {
-            let uiExtractResponse: CLM.UIExtractResponse | null = null 
-
-            switch (extractType) {
-                case CLM.DialogType.TEACH:
-                    uiExtractResponse = await clClient.teachSessionAddExtractStep(appId, sessionId, userInput, filteredDialog)
-                  break;
-                case CLM.DialogType.TRAINDIALOG:
-                    if (turnIndex === null) {
-                        throw new Error(`Run extractor was called for a train dialog, but turnIndex was null. This should not be possible. Please open an issue.`)
-                    }
-                    uiExtractResponse = await clClient.trainDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
-                  break;
-                case CLM.DialogType.LOGDIALOG:
-                    if (turnIndex === null) {
-                        throw new Error(`Run extractor was called for a log dialog, but turnIndex was null. This should not be possible. Please open an issue.`)
-                    }
-                    uiExtractResponse = await clClient.logDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
-                  break;
-                default:
-                  throw new Error(`Could not handle unknown extract type: ${extractType}`)
-              }
-
-            dispatch(runExtractorFulfilled(appId, sessionId, uiExtractResponse))
-            return uiExtractResponse
-        }
-        catch (e) {
+            await clClient.memoryDelete(currentAppId);
+            dispatch(deleteMemoryFulfilled());
+            return true;
+        } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.RUN_EXTRACTOR_ASYNC))
-            throw error
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_MEMORY_ASYNC))
+            return false;
         }
     }
 }
 
+// --------------------------
+// RunExtractor
+// --------------------------
 const runExtractorAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput): ActionObject => {
     return {
         type: AT.RUN_EXTRACTOR_ASYNC,
@@ -235,6 +229,46 @@ const runExtractorFulfilled = (appId: string, sessionId: string, uiExtractRespon
         uiExtractResponse: uiExtractResponse
     }
 }
+
+export const runExtractorThunkAsync = (appId: string, extractType: CLM.DialogType, sessionId: string, turnIndex: number | null, userInput: CLM.UserInput, filteredDialog: string | null) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.RUN_EXTRACTOR_ASYNC)
+        dispatch(runExtractorAsync(appId, extractType, sessionId, turnIndex, userInput))
+
+        try {
+            let uiExtractResponse: CLM.UIExtractResponse | null = null
+
+            switch (extractType) {
+                case CLM.DialogType.TEACH:
+                    uiExtractResponse = await clClient.teachSessionAddExtractStep(appId, sessionId, userInput, filteredDialog)
+                    break;
+                case CLM.DialogType.TRAINDIALOG:
+                    if (turnIndex === null) {
+                        throw new Error(`Run extractor was called for a train dialog, but turnIndex was null. This should not be possible. Please open an issue.`)
+                    }
+                    uiExtractResponse = await clClient.trainDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
+                    break;
+                case CLM.DialogType.LOGDIALOG:
+                    if (turnIndex === null) {
+                        throw new Error(`Run extractor was called for a log dialog, but turnIndex was null. This should not be possible. Please open an issue.`)
+                    }
+                    uiExtractResponse = await clClient.logDialogsUpdateExtractStep(appId, sessionId, turnIndex, userInput)
+                    break;
+                default:
+                    throw new Error(`Could not handle unknown extract type: ${extractType}`)
+            }
+
+            dispatch(runExtractorFulfilled(appId, sessionId, uiExtractResponse))
+            return uiExtractResponse
+        }
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.RUN_EXTRACTOR_ASYNC))
+            throw error
+        }
+    }
+}
+
 //---------------------------------------------------------
 // User makes an update to an extract response
 export const updateExtractResponse = (extractResponse: CLM.ExtractResponse): ActionObject => {
@@ -269,24 +303,6 @@ export const clearExtractConflict = (): ActionObject => {
 // --------------------------
 // GetScores
 // --------------------------
-export const getScoresThunkAsync = (key: string, appId: string, sessionId: string, scoreInput: CLM.ScoreInput) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.GET_SCORES_ASYNC)
-        dispatch(getScoresAsync(key, appId, sessionId, scoreInput))
-
-        try {
-            let uiScoreResponse = await clClient.teachSessionRescore(appId, sessionId, scoreInput)
-            dispatch(getScoresFulfilled(key, appId, sessionId, uiScoreResponse))
-            return uiScoreResponse
-        }
-        catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.GET_SCORES_ASYNC))
-            throw error
-        }
-    }
-}
-
 const getScoresAsync = (key: string, appId: string, sessionId: string, scoreInput: CLM.ScoreInput): ActionObject =>
     ({
         type: AT.GET_SCORES_ASYNC,
@@ -304,29 +320,27 @@ const getScoresFulfilled = (key: string, appId: string, sessionId: string, uiSco
         sessionId,
         uiScoreResponse,
     })
-
-// --------------------------
-// RunScorer
-// --------------------------
-export const runScorerThunkAsync = (key: string, appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput) => {
+export const getScoresThunkAsync = (key: string, appId: string, sessionId: string, scoreInput: CLM.ScoreInput) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.RUN_SCORER_ASYNC)
-        dispatch(runScorerAsync(key, appId, teachId, uiScoreInput))
+        const clClient = ClientFactory.getInstance(AT.GET_SCORES_ASYNC)
+        dispatch(getScoresAsync(key, appId, sessionId, scoreInput))
 
         try {
-            let uiScoreResponse =  await clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
-            dispatch(runScorerFulfilled(key, appId, teachId, uiScoreResponse))
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+            const uiScoreResponse = await clClient.teachSessionRescore(appId, sessionId, scoreInput)
+            dispatch(getScoresFulfilled(key, appId, sessionId, uiScoreResponse))
             return uiScoreResponse
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.RUN_SCORER_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.GET_SCORES_ASYNC))
             throw error
-         }
+        }
     }
 }
 
+// --------------------------
+// RunScorer
+// --------------------------
 const runScorerAsync = (key: string, appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput): ActionObject => {
     return {
         type: AT.RUN_SCORER_ASYNC,
@@ -345,38 +359,28 @@ const runScorerFulfilled = (key: string, appId: string, teachId: string, uiScore
         uiScoreResponse
     }
 }
-
-// --------------------------
-// PostScorerFeedback
-// --------------------------
-export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId: string, uiTrainScorerStep: CLM.UITrainScorerStep, waitForUser: boolean, uiScoreInput: CLM.UIScoreInput) => {
+export const runScorerThunkAsync = (key: string, appId: string, teachId: string, uiScoreInput: CLM.UIScoreInput) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.POST_SCORE_FEEDBACK_ASYNC)
-        dispatch(postScorerFeedbackAsync(key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput))
+        const clClient = ClientFactory.getInstance(AT.RUN_SCORER_ASYNC)
+        dispatch(runScorerAsync(key, appId, teachId, uiScoreInput))
 
         try {
-            let uiPostScoreResponse = await clClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
-
-            if (!waitForUser) {
-                // Don't re-send predicted entities on subsequent score call
-                uiScoreInput.extractResponse.predictedEntities = [];
-               //LARS todo -  force end task to always be wait
-                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, CLM.DialogMode.Scorer, uiPostScoreResponse, uiScoreInput))     
-            }
-            else {
-                let dialogMode = uiPostScoreResponse.isEndTask ? CLM.DialogMode.EndSession : CLM.DialogMode.Wait
-                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, dialogMode, uiPostScoreResponse, null))
-            }
-            return uiPostScoreResponse
+            const uiScoreResponse = await clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
+            dispatch(runScorerFulfilled(key, appId, teachId, uiScoreResponse))
+            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
+            return uiScoreResponse
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.POST_SCORE_FEEDBACK_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.RUN_SCORER_ASYNC))
             throw error
         }
     }
 }
 
+// --------------------------
+// PostScorerFeedback
+// --------------------------
 const postScorerFeedbackAsync = (key: string, appId: string, teachId: string, uiTrainScorerStep: CLM.UITrainScorerStep, waitForUser: boolean, uiScoreInput: CLM.UIScoreInput): ActionObject => {
     return {
         type: AT.POST_SCORE_FEEDBACK_ASYNC,
@@ -402,6 +406,33 @@ const postScorerFeedbackFulfilled = (key: string, appId: string, teachId: string
     }
 }
 
+export const postScorerFeedbackThunkAsync = (key: string, appId: string, teachId: string, uiTrainScorerStep: CLM.UITrainScorerStep, waitForUser: boolean, uiScoreInput: CLM.UIScoreInput) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.POST_SCORE_FEEDBACK_ASYNC)
+        dispatch(postScorerFeedbackAsync(key, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput))
+
+        try {
+            const uiPostScoreResponse = await clClient.teachSessionAddScorerStep(appId, teachId, uiTrainScorerStep)
+
+            if (!waitForUser) {
+                // Don't re-send predicted entities on subsequent score call
+                uiScoreInput.extractResponse.predictedEntities = [];
+                // TODO: Force end task to always be wait
+                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, CLM.DialogMode.Scorer, uiPostScoreResponse, uiScoreInput))
+            }
+            else {
+                const dialogMode = uiPostScoreResponse.isEndTask ? CLM.DialogMode.EndSession : CLM.DialogMode.Wait
+                dispatch(postScorerFeedbackFulfilled(key, appId, teachId, dialogMode, uiPostScoreResponse, null))
+            }
+            return uiPostScoreResponse
+        }
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.POST_SCORE_FEEDBACK_ASYNC))
+            throw error
+        }
+    }
+}
 // --------------------------
 // ToggleAutoTeach
 // --------------------------

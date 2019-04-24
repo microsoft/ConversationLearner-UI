@@ -52,8 +52,10 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
             sourceLogDialogId: undefined!,
             initialFilledEntities: [],
             rounds: [],
+            tags: [], 
+            description: '',
             createdDateTime: Date.now().toString(),  
-            lastModifiedDateTime: Date.now().toString()  
+            lastModifiedDateTime: Date.now().toString() 
         }
         let isUser: boolean = true
         let curRound: CLM.TrainRound | null = null
@@ -117,7 +119,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
             }
             catch (e) {
                 const error = e as Error
-                this.props.setErrorDisplay(ErrorType.Error, error.message, ["Invalid file contents"], AT.CREATE_APPLICATION_ASYNC)
+                this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", AT.CREATE_APPLICATION_ASYNC)
             }
         }
         reader.readAsText(this.state.file)
@@ -144,7 +146,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                         <FilePicker
                           //  extensions={['cl']}
                             onChange={this.onChangeFile}
-                            onError={(error: string) => this.props.setErrorDisplay(ErrorType.Error, error, [], null)}
+                            onError={(error: string) => this.props.setErrorDisplay(ErrorType.Error, error, "", null)}
                             maxSize={300}
                         >
                             <div className="cl-action-creator-file-picker">

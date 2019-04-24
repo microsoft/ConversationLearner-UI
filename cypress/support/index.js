@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 
+import './PersistentLogs'
 import './MonitorDocumentChanges.js'
 import './commands.js'
 import './Train.js'
@@ -15,8 +16,5 @@ import './components/LogDialogsGrid.js'
 import './components/LogDialogModal.js'
 import './components/ModelPage.js'
 import './components/ScorerModal.js'
-import './components/EditDialogModal.js'
 import './components/TrainDialogsGrid.js'
 import './Helpers.js'
-
-require('../support/Train').OneTimeInitialization()

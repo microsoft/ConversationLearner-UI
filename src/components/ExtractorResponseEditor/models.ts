@@ -33,6 +33,7 @@ export interface IOption {
     id: string
     name: string
     type: string
+    resolverType: string | null
 }
 
 export interface IGenericEntity<T> {
@@ -46,6 +47,7 @@ export interface IGenericEntityData<T> {
     text: string
     displayName: string
     original: T
+    showSelect?: boolean
 }
 
 export enum NodeType {
@@ -86,4 +88,10 @@ export interface MatchedOption<T> {
 export interface MatchedString {
     text: string
     matched: boolean
+}
+
+export enum ExtractorStatus {
+    ERROR = 'ERROR',
+    WARNING = 'WARNING',
+    OK = 'OK'
 }

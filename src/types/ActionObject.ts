@@ -2,54 +2,56 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import {
-    AppBase, Banner,
-    BotInfo, 
-    AppDefinition,
-    EntityBase,
-    ActionBase, TeachWithHistory,
-    TrainDialog, LogDialog, Session, Teach, ScoreInput,
-    UserInput, ExtractResponse, DialogType,
-    UIExtractResponse, UITrainScorerStep, DialogMode,
-    UIPostScoreResponse, UIScoreInput, UIScoreResponse, UIAppList, TrainingStatus, AppDefinitionChange, TextVariation
-} from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
+import { PartialTrainDialog } from '../types/models'
 import { TipType } from '../components/ToolTips/ToolTips'
 import { ErrorType } from './const'
 import { AT } from './ActionTypes'
 
 export type UpdateAction = {
     type: AT.EDIT_APPLICATION_ASYNC,
-    app: AppBase,
+    app: CLM.AppBase,
 } | {
     type: AT.EDIT_APPLICATION_FULFILLED,
-    app: AppBase,
+    app: CLM.AppBase,
 } | {
     type: AT.EDIT_APPSOURCE_ASYNC,
     appId: string,
-    source: AppDefinition,
+    source: CLM.AppDefinition,
 } | {
     type: AT.EDIT_APPSOURCE_FULFILLED
 } | {
     type: AT.EDIT_ENTITY_ASYNC,
     appId: string,
-    entity: EntityBase,
+    entity: CLM.EntityBase,
 } | {
     type: AT.EDIT_ENTITY_FULFILLED,
-    entity: EntityBase,
+    entity: CLM.EntityBase,
 } | {
     type: AT.EDIT_ACTION_ASYNC,
-    action: ActionBase,
+    action: CLM.ActionBase,
     appId: string
 } | {
     type: AT.EDIT_ACTION_FULFILLED,
-    action: ActionBase
+    action: CLM.ActionBase
 } | {
     type: AT.EDIT_TRAINDIALOG_ASYNC,
     appId: string,
-    trainDialog: TrainDialog
+    trainDialog: PartialTrainDialog
 } | {
     type: AT.EDIT_TRAINDIALOG_FULFILLED,
-    trainDialog: TrainDialog
+    appId: string,
+    trainDialog: PartialTrainDialog
+} | {
+    type: AT.EDIT_TRAINDIALOG_MERGE_ASYNC
+} | {
+    type: AT.EDIT_TRAINDIALOG_MERGE_FULFILLED
+} | {
+    type: AT.EDIT_TRAINDIALOG_REPLACE_ASYNC
+} | {
+    type: AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED,
+    updatedTrainDialog: CLM.TrainDialog,
+    deletedTrainDialogId: string | null
 } | {
     type: AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC,
     appId: string,
@@ -60,7 +62,7 @@ export type UpdateAction = {
     appId: string
 } | {
     type: AT.EDIT_APP_LIVE_TAG_FULFILLED,
-    app: AppBase
+    app: CLM.AppBase
 } | {
     type: AT.EDIT_APP_EDITING_TAG_ASYNC,
     packageId: string,
@@ -77,10 +79,10 @@ export type UpdateAction = {
 
 export type DisplayAction = {
     type: AT.SET_CURRENT_APP_ASYNC,
-    app: AppBase,
+    app: CLM.AppBase,
 } | {
     type: AT.SET_CURRENT_APP_FULFILLED,
-    app: AppBase
+    app: CLM.AppBase
 } | {
     type: AT.SET_CONVERSATION_ID_ASYNC,
     userName: string,
@@ -95,8 +97,12 @@ export type DisplayAction = {
     type: AT.SET_ERROR_DISPLAY,
     errorType: ErrorType,
     title: string | null,
-    messages: string[],
+    message: string,
     actionType: AT | null
+} | {
+    // fuction to call when error display is closeed
+    type: AT.SET_ERROR_DISMISS_CALLBACK
+    closeCallback: (() => void) | null
 } | {
     type: AT.SET_WEBCHAT_SCROLL_POSITION,
     position: number
@@ -104,8 +110,8 @@ export type DisplayAction = {
     type: AT.CLEAR_WEBCHAT_SCROLL_POSITION
 } | {
     type: AT.CLEAR_BANNER
-    clearedBanner: Banner,
-}| {
+    clearedBanner: CLM.Banner,
+} | {
     type: AT.CLEAR_ERROR_DISPLAY
 } | {
     type: AT.UPDATE_OPERATION_FULFILLED
@@ -122,11 +128,11 @@ export type DisplayAction = {
 export type SourceAction = {
     type: AT.SOURCE_SET_UPDATED_APP_DEFINITION,
     appId: string,
-    appDefinitionChange: AppDefinitionChange
+    appDefinitionChange: CLM.AppDefinitionChange
 } | {
     type: AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION,
     appId: string,
-    updatedAppDefinition: AppDefinition
+    updatedAppDefinition: CLM.AppDefinition
 }
 
 export type FetchAction = {
@@ -135,7 +141,7 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED,
     appId: string,
-    trainingStatus: TrainingStatus
+    trainingStatus: CLM.TrainingStatus
 } | {
     type: AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED,
     appId: string
@@ -148,7 +154,7 @@ export type FetchAction = {
     appId?: string
 } | {
     type: AT.FETCH_BOTINFO_FULFILLED,
-    botInfo: BotInfo,
+    botInfo: CLM.BotInfo,
     browserId: string
 } | {
     type: AT.FETCH_ENTITIES_ASYNC,
@@ -169,45 +175,45 @@ export type FetchAction = {
     trainDialogId: string
 } | {
     type: AT.FETCH_TRAIN_DIALOG_FULFILLED,
-    trainDialog: TrainDialog,
+    trainDialog: CLM.TrainDialog,
     replaceLocal: boolean
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
     appId: string
 } | {
     type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
-    allTrainDialogs: TrainDialog[],
+    allTrainDialogs: CLM.TrainDialog[],
 } | {
     type: AT.FETCH_HISTORY_ASYNC,
     appId: string,
     userName: string,
     userId: string,
-    trainDialog: TrainDialog
+    trainDialog: CLM.TrainDialog
 } | {
     type: AT.FETCH_HISTORY_FULFILLED,
-    teachWithHistory: TeachWithHistory,
+    teachWithHistory: CLM.TeachWithHistory,
 } | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
     appId: string,
     packageId: string
 } | {
     type: AT.FETCH_LOG_DIALOGS_FULFILLED,
-    allLogDialogs: LogDialog[],
+    allLogDialogs: CLM.LogDialog[],
 } | {
     type: AT.FETCH_APPLICATIONS_FULFILLED,
-    uiAppList: UIAppList,
+    uiAppList: CLM.UIAppList,
 } | {
     type: AT.FETCH_ENTITIES_FULFILLED,
-    allEntities: EntityBase[],
+    allEntities: CLM.EntityBase[],
 } | {
     type: AT.FETCH_APPSOURCE_FULFILLED,
-    appDefinition: AppDefinition
+    appDefinition: CLM.AppDefinition
 } | {
     type: AT.FETCH_ACTIONS_FULFILLED,
-    allActions: ActionBase[]
+    allActions: CLM.ActionBase[]
 } | {
     type: AT.FETCH_CHAT_SESSIONS_FULFILLED,
-    allSessions: Session[]
+    allSessions: CLM.Session[]
 } | {
     type: AT.FETCH_PROFILE_ASYNC
 } | {
@@ -223,7 +229,7 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC,
     appId: string,
-    packageId: string, 
+    packageId: string,
     actionId: string
 } | {
     type: AT.FETCH_ACTION_DELETE_VALIDATION_FULFILLED
@@ -231,82 +237,86 @@ export type FetchAction = {
     type: AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC,
     appId: string,
     packageId: string,
-    entity: EntityBase
+    entity: CLM.EntityBase
 } | {
     type: AT.FETCH_ENTITY_EDIT_VALIDATION_FULFILLED
 } | {
     type: AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC,
     appId: string,
     packageId: string,
-    action: ActionBase
+    action: CLM.ActionBase
 } | {
     type: AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED
 } | {
     type: AT.FETCH_SCOREFROMHISTORY_ASYNC,
     appId: string,
-    trainDialog: TrainDialog
+    trainDialog: CLM.TrainDialog
 } | {
     type: AT.FETCH_SCOREFROMHISTORY_FULFILLED,
-    uiScoreResponse: UIScoreResponse
+    uiScoreResponse: CLM.UIScoreResponse
+} | {
+    type: AT.FETCH_SCOREFROMHISTORY_REJECTED
 } | {
     type: AT.FETCH_EXTRACTFROMHISTORY_ASYNC,
     appId: string,
-    trainDialog: TrainDialog,
-    userInput: UserInput
+    trainDialog: CLM.TrainDialog,
+    userInput: CLM.UserInput
 } | {
     type: AT.FETCH_EXTRACTFROMHISTORY_FULFILLED,
-    extractResponse: ExtractResponse
+    extractResponse: CLM.ExtractResponse
+} | {
+    type: AT.FETCH_EXTRACTFROMHISTORY_REJECTED
 } | {
     type: AT.FETCH_TRAINDIALOGREPLAY_ASYNC,
     appId: string,
-    trainDialog: TrainDialog
+    trainDialog: CLM.TrainDialog
 } | {
     type: AT.FETCH_TRAINDIALOGREPLAY_FULFILLED,
-    trainDialog: TrainDialog
+    trainDialog: CLM.TrainDialog
 } | {
     type: AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC,
     appId: string,
     trainDialogId: string,
-    textVariation: TextVariation
+    textVariation: CLM.TextVariation
 } | {
     type: AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED,
-    extractResponse: ExtractResponse | null
+    extractResponse: CLM.ExtractResponse | null
 } | {
     type: AT.SET_TEXTVARIATION_CONFLICT,
-    extractResponse: ExtractResponse
+    extractResponse: CLM.ExtractResponse
 } | {
     type: AT.FETCH_TUTORIALS_ASYNC,
     userId: string
 } | {
     type: AT.FETCH_TUTORIALS_FULFILLED,
-    tutorials: AppBase[]
+    tutorials: CLM.AppBase[]
 }
 
 export type CreateAction = {
     type: AT.CREATE_APPLICATION_ASYNC,
     userId: string,
-    app: AppBase,
+    app: CLM.AppBase,
 } | {
     type: AT.COPY_APPLICATION_ASYNC,
-    srcUserId: string, 
+    srcUserId: string,
     destUserId: string,
     appId: string
 } | {
     type: AT.COPY_APPLICATION_FULFILLED
 } | {
     type: AT.CREATE_ENTITY_ASYNC,
-    entity: EntityBase,
+    entity: CLM.EntityBase,
     appId: string
 } | {
     type: AT.CREATE_ENTITY_FULFILLED,
-    entity: EntityBase
+    entity: CLM.EntityBase
 } | {
     type: AT.CREATE_ACTION_ASYNC,
-    action: ActionBase,
+    action: CLM.ActionBase,
     appId: string
 } | {
     type: AT.CREATE_ACTION_FULFILLED,
-    action: ActionBase
+    action: CLM.ActionBase
 } | {
     type: AT.CREATE_APP_TAG_ASYNC,
     tagName: string,
@@ -314,43 +324,48 @@ export type CreateAction = {
     appId: string
 } | {
     type: AT.CREATE_APP_TAG_FULFILLED,
-    app: AppBase
+    app: CLM.AppBase
 } | {
     type: AT.CREATE_TRAIN_DIALOG_ASYNC,
     appId: string,
-    trainDialog: TrainDialog  
+    trainDialog: CLM.TrainDialog
 } | {
     type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
-    trainDialog: TrainDialog,
+    trainDialog: CLM.TrainDialog,
+} | {
+    type: AT.CREATE_TRAIN_DIALOG_REJECTED
 } | {
     type: AT.CREATE_LOG_DIALOG,
-    logDialog: LogDialog,
+    logDialog: CLM.LogDialog,
 } | {
     type: AT.CREATE_APPLICATION_FULFILLED,
-    app: AppBase
+    app: CLM.AppBase
 } | {
     type: AT.CREATE_CHAT_SESSION_ASYNC
 } | {
     type: AT.CREATE_CHAT_SESSION_REJECTED
 } | {
     type: AT.CREATE_CHAT_SESSION_FULFILLED,
-    session: Session
+    session: CLM.Session
 } | {
     type: AT.CREATE_TEACH_SESSION_ASYNC
 } | {
     type: AT.CREATE_TEACH_SESSION_REJECTED
-}| {
-    type: AT.CREATE_TEACH_SESSION_FULFILLED,
-    teachSession: Teach
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC,
+    type: AT.CREATE_TEACH_SESSION_FULFILLED,
+    teachSession: CLM.Teach,
+    memories: CLM.Memory[]
+} | {
+    type: AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC,
     appId: string,
     userName: string,
     userId: string,
-    trainDialog: TrainDialog
+    trainDialog: CLM.TrainDialog
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROMHISTORYFULFILLED,
-    teachWithHistory: TeachWithHistory
+    type: AT.CREATE_TEACH_SESSION_FROMHISTORY_FULFILLED,
+    teachWithHistory: CLM.TeachWithHistory
+} | {
+    type: AT.CREATE_TEACH_SESSION_FROMHISTORY_REJECTED
 }
 
 export type DeleteAction = {
@@ -387,8 +402,7 @@ export type DeleteAction = {
 | DeleteLogDialogRejectedAction
 | {
     type: AT.DELETE_CHAT_SESSION_ASYNC,
-    key: string,
-    session: Session,
+    session: CLM.Session,
     appId: string,
     packageId: string
 } | {
@@ -396,18 +410,17 @@ export type DeleteAction = {
     sessionId: string,
 } | {
     type: AT.DELETE_TEACH_SESSION_ASYNC,
-    key: string,
-    teachSession: Teach,
+    teachSession: CLM.Teach,
     appId: string,
     save: boolean
 } | {
     type: AT.DELETE_TEACH_SESSION_FULFILLED,
     teachSessionGUID: string,
-    sourceLogDialogId: string | null,
-    trainDialogId: string,
-    key: string,
-    appId: string,
-}| {
+    newTrainDialog: CLM.TrainDialog | null,
+    sourceTrainDialogId: string | null
+} | {
+    type: AT.CLEAR_TEACH_SESSION
+} | {
     type: AT.DELETE_MEMORY_ASYNC,
     key: string,
     appId: string
@@ -433,66 +446,70 @@ export type DeleteLogDialogRejectedAction = {
 export type TeachAction = {
     type: AT.RUN_EXTRACTOR_ASYNC,
     appId: string,
-    extractType: DialogType,
+    extractType: CLM.DialogType,
     turnIndex: number | null,
     sessionId: string,
-    userInput: UserInput
+    userInput: CLM.UserInput
 } | {
     type: AT.RUN_EXTRACTOR_FULFILLED,
     appId: string,
     sessionId: string,
-    uiExtractResponse: UIExtractResponse
+    uiExtractResponse: CLM.UIExtractResponse
 } | {
     type: AT.UPDATE_EXTRACT_RESPONSE,
-    extractResponse: ExtractResponse
+    extractResponse: CLM.ExtractResponse
+} | {
+    type: AT.UPDATE_SOURCE_LOG_DIALOG,
+    sourceLogDialogId: string,
+    trainDialogId: string
 } | {
     type: AT.REMOVE_EXTRACT_RESPONSE,
-    extractResponse: ExtractResponse
+    extractResponse: CLM.ExtractResponse
 } | {
     type: AT.CLEAR_EXTRACT_RESPONSES
 } | {
     type: AT.CLEAR_EXTRACT_CONFLICT
-}| {
+} | {
     type: AT.GET_SCORES_ASYNC,
     key: string,
     appId: string,
     sessionId: string,
-    scoreInput: ScoreInput
+    scoreInput: CLM.ScoreInput
 } | {
     type: AT.GET_SCORES_FULFILLED,
     key: string,
     appId: string,
     sessionId: string,
-    uiScoreResponse: UIScoreResponse
+    uiScoreResponse: CLM.UIScoreResponse
 } | {
     type: AT.RUN_SCORER_ASYNC,
     key: string,
     appId: string,
     sessionId: string,
-    uiScoreInput: UIScoreInput
+    uiScoreInput: CLM.UIScoreInput
 } | {
     type: AT.RUN_SCORER_FULFILLED,
     key: string,
     appId: string,
     sessionId: string,
-    uiScoreResponse: UIScoreResponse
+    uiScoreResponse: CLM.UIScoreResponse
 } | {
     type: AT.POST_SCORE_FEEDBACK_ASYNC,
     key: string,
     appId: string,
     sessionId: string,
-    uiTrainScorerStep: UITrainScorerStep,
-    uiScoreInput: UIScoreInput
+    uiTrainScorerStep: CLM.UITrainScorerStep,
+    uiScoreInput: CLM.UIScoreInput
     waitForUser: boolean
 } | {
     type: AT.POST_SCORE_FEEDBACK_FULFILLED,
     key: string,
     appId: string,
     sessionId: string,
-    dialogMode: DialogMode,
-    uiPostScoreResponse: UIPostScoreResponse,
+    dialogMode: CLM.DialogMode,
+    uiPostScoreResponse: CLM.UIPostScoreResponse,
     // TODO: Why allow null here? Just make different Action
-    uiScoreInput: UIScoreInput | null
+    uiScoreInput: CLM.UIScoreInput | null
 } | {
     type: AT.TOGGLE_AUTO_TEACH,
     autoTeach: boolean

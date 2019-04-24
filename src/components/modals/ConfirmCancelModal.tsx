@@ -3,10 +3,12 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { PrimaryButton, DefaultButton, Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react'
+import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
+import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
+// Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
 interface ReceivedProps {
     onConfirm?: Function | null
     onCancel?: Function | null
@@ -25,11 +27,11 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
         throw new Error("Must have cancel or ok callback")
     }
     return (
-        <Dialog
+        <OF.Dialog
             hidden={!props.open}
             onDismiss={() => onDismiss()}
             dialogContentProps={{
-                type: DialogType.normal,
+                type: OF.DialogType.normal,
                 title: props.title
             }}
             modalProps={{
@@ -37,48 +39,45 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
             }}
         >
             {typeof props.message === 'function' && props.message()}
-            <DialogFooter>
+            <OF.DialogFooter>
                 {props.onConfirm &&
-                    <PrimaryButton
+                    <OF.PrimaryButton
                         onClick={() => {
                             if (props.onConfirm) {
                                 props.onConfirm()
                             }
                         }}
-                        text={intl.formatMessage({
-                            id: FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT,
-                            defaultMessage: 'Confirm'
-                        })}
+                        text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT)}
+                        iconProps={{ iconName: 'Accept' }}
+                        data-testid="confirm-cancel-modal-accept"
                     />
                 }
                 {props.onCancel &&
-                    <DefaultButton
+                    <OF.DefaultButton
                         onClick={() => {
                             if (props.onCancel) {
                                 props.onCancel()
                             }
                         }}
-                        text={intl.formatMessage({
-                            id: FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT,
-                            defaultMessage: 'Cancel'
-                        })}
+                        text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT)}
+                        iconProps={{ iconName: 'Cancel' }}
+                        data-testid="confirm-cancel-modal-cancel"
                     />
                 }
                 {props.onOk &&
-                    <DefaultButton
+                    <OF.DefaultButton
                         onClick={() => {
                             if (props.onOk) {
                                 props.onOk()
                             }
                         }}
-                        text={intl.formatMessage({
-                            id: FM.BUTTON_OK,
-                            defaultMessage: 'Cancel'
-                        })}
+                        text={formatMessageId(intl, FM.BUTTON_OK)}
+                        iconProps={{ iconName: 'Accept' }}
+                        data-testid="confirm-cancel-modal-ok"
                     />
                 }
-            </DialogFooter>
-        </Dialog>
+            </OF.DialogFooter>
+        </OF.Dialog>
     )
 }
 export default injectIntl(ConfirmCancelModal)

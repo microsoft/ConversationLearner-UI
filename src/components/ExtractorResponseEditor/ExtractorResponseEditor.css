@@ -2,6 +2,15 @@
     position: relative;
     border: 1px solid rgba(0,0,0,0.25);
 }
+
+.entity-labeler-overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 2;
+    background-color: rgba(0,0,0,0.025);
+}
+
 .entity-labeler__title {
     color: rgba(0,0,0,0.5);
     padding: 1em 0 0 1em;
@@ -19,8 +28,13 @@
 .entity-labeler__custom-editor--read-only {
     background-color: rgba(0,0,0,0.025);
 }
+
 .entity-labeler__custom-editor--error {
-    border-color: red;
+    border-color: var(--cl-color-error);
+}
+
+.entity-labeler__custom-editor--warning {
+    border-color: var(--cl-color-warning);
 }
 
 .entity-labeler__prebuilt-editors {

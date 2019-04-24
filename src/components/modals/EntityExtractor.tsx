@@ -3,27 +3,30 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as Util from '../../Utils/util'
+import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react'
+import * as ToolTips from '../ToolTips/ToolTips'
+import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
+import ExtractConflictModal from './ExtractConflictModal'
+import actions from '../../actions'
+import HelpIcon from '../HelpIcon'
+import EntityCreatorEditor from './EntityCreatorEditor'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { EditDialogType } from '.'
+import { FM } from '../../react-intl-messages'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { setStateAsync } from '../../Utils/util'
-import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react'
-import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
-import ExtractConflictModal from './ExtractConflictModal'
-import EntityCreatorEditor from './EntityCreatorEditor'
-import actions from '../../actions'
-import * as ToolTips from '../ToolTips/ToolTips'
-import HelpIcon from '../HelpIcon'
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
-import { EditDialogType } from '.'
-import { FM } from '../../react-intl-messages'
+import { setStateAsync, formatMessageId } from '../../Utils/util'
 import './EntityExtractor.css'
 
 interface ExtractResponseForDisplay {
     extractResponse: CLM.ExtractResponse
     isValid: boolean
+    duplicateEntityNames: string[]
+    isPickerVisible: boolean
 }
 
 interface ComponentState {
@@ -38,6 +41,7 @@ interface ComponentState {
     savedRoundIndex: number
     textVariationValue: string
     newTextVariations: CLM.TextVariation[]
+    activePickerText: string | null
 }
 
 // TODO: Need to re-define TextVariation / ExtractResponse class defs so we don't need
@@ -55,11 +59,12 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             savedExtractResponses: [],
             savedRoundIndex: 0,
             textVariationValue: '',
-            newTextVariations: [], 
-            entityTypeFilter: CLM.EntityType.LUIS
+            newTextVariations: [],
+            entityTypeFilter: CLM.EntityType.LUIS,
+            activePickerText: null
         }
     }
-    
+
     componentDidMount() {
         this.setState({ newTextVariations: this.props.originalTextVariations })
         setTimeout(this.focusPrimaryButton, 100)
@@ -79,7 +84,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // If I'm switching my round or have added/removed text variations
         if (this.props.teachId !== newProps.teachId ||
             this.props.roundIndex !== newProps.roundIndex ||
-            this.props.originalTextVariations.length !== newProps.originalTextVariations.length) {
+            JSON.stringify(this.props.originalTextVariations) !== JSON.stringify(newProps.originalTextVariations)) {
 
             let nextState: Pick<ComponentState, any> = {
                 newTextVariations: [...newProps.originalTextVariations],
@@ -95,15 +100,18 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             }
 
             this.setState(nextState)
-            this.props.clearExtractResponses();  
+            this.props.clearExtractResponses();
         }
     }
-  
+
     @OF.autobind
     onEntityConflictModalAbandon() {
         this.setState({
             isPendingSubmit: true
         })
+        if (this.props.onPendingStatusChanged) {
+            this.props.onPendingStatusChanged(true)
+        }
         this.props.clearExtractConflict()
     }
 
@@ -139,6 +147,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             entityTypeFilter: entityTypeFilter
         })
     }
+
+    @OF.autobind
+    onOpenPicker(extractResponse: CLM.ExtractResponse): void {
+        this.setState({ activePickerText: extractResponse.text })
+    }
+
+    @OF.autobind
+    onClosePicker(extractResponse: CLM.ExtractResponse, onlyCloseOthers: boolean): void {
+        if (!onlyCloseOthers || extractResponse.text !== this.state.activePickerText) {
+            this.setState({ activePickerText: null })
+        }
+    }
+
     handleCloseWarning() {
         this.setState({
             warningOpen: false
@@ -149,19 +170,58 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             warningOpen: true
         })
     }
+
+    withoutPreBuilts(preditedEntities: CLM.PredictedEntity[]): CLM.PredictedEntity[] {
+        return preditedEntities.filter(pe => {
+            const entity = this.props.entities.find(e => e.entityId === pe.entityId)
+            if (entity) {
+                return !entity.doNotMemorize
+            }
+            console.log('Missing Entity')
+            return false
+        })
+    }
+
+    // Return list of non-multivalue entity names that have been labelled more than once
+    duplicateEntityNames(extractResponse: CLM.ExtractResponse): string[] {
+        const extractEntities = this.withoutPreBuilts(extractResponse.predictedEntities)
+
+        // Get list of entity ids that are tagged more than once
+        const multiEntityIds = extractEntities.map(pe => pe.entityId)
+            .filter(entityId => {
+                return extractEntities.filter(pe => pe.entityId === entityId).length > 1
+            })
+
+        // If any aren't multi-value they are duplicate labels
+        const duplicateEntityNames: string[] = []
+        for (const entityId of multiEntityIds) {
+            let entity = this.props.entities.find(e => e.entityId === entityId)
+            if (entity && !entity.isMultivalue) {
+                duplicateEntityNames.push(entity.entityName)
+            }
+        }
+        return [...new Set(duplicateEntityNames)]
+    }
+
     // Returns true if predicted entities match
     isValid(primaryResponse: CLM.ExtractResponse, extractResponse: CLM.ExtractResponse): boolean {
-        let missing = primaryResponse.predictedEntities.filter(item =>
-            !extractResponse.predictedEntities.find(er => item.entityId === er.entityId));
+        // Ignore prebuilts that aren't resolvers
+        const primaryEntities = this.withoutPreBuilts(primaryResponse.predictedEntities)
+        const extractEntities = this.withoutPreBuilts(extractResponse.predictedEntities)
+
+        let missing = primaryEntities.filter(item =>
+            !extractEntities.find(er => item.entityId === er.entityId));
 
         if (missing.length > 0) {
             return false;
         }
-        missing = extractResponse.predictedEntities.filter(item =>
-            !primaryResponse.predictedEntities.find(er => item.entityId === er.entityId));
+
+        missing = extractEntities.filter(item =>
+            !primaryEntities.find(er => item.entityId === er.entityId));
         if (missing.length > 0) {
             return false;
         }
+
         return true;
     }
 
@@ -172,7 +232,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
      */
     allValid(extractResponses: CLM.ExtractResponse[]): boolean {
         const primaryExtractResponse = extractResponses[0]
-        return extractResponses.every(extractResponse => (extractResponse === primaryExtractResponse) ? true : this.isValid(primaryExtractResponse, extractResponse))
+        return extractResponses.every(extractResponse => (extractResponse === primaryExtractResponse)
+            ? true
+            : this.isValid(primaryExtractResponse, extractResponse)
+            && this.duplicateEntityNames(extractResponse).length === 0)
     }
 
     // Return merge of extract responses and text variations
@@ -207,13 +270,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         if (this.props.onPendingStatusChanged) {
             this.props.onPendingStatusChanged(false)
         }
-        
+
         this.submitExtractions(this.allResponses(), this.props.roundIndex)
     }
 
     submitExtractions(allResponses: CLM.ExtractResponse[], roundIndex: number | null): void {
         const primaryExtractResponse = allResponses[0]
-        
+
         if (!this.allValid(allResponses)) {
             this.handleOpenWarning()
             return
@@ -251,13 +314,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     onRemoveExtractResponse(extractResponse: CLM.ExtractResponse): void {
 
         // First look for match in extract responses
-        let foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text);
+        const foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text);
         if (foundResponse) {
             this.props.removeExtractResponse(foundResponse);
             this.setState({ isPendingSubmit: true });
         } else {
             // Otherwise change is in text variation
-            let newVariations = this.state.newTextVariations
+            const newVariations = this.state.newTextVariations
                 .filter(v => v.text !== extractResponse.text);
             this.setState({
                 newTextVariations: newVariations,
@@ -273,19 +336,19 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onUpdateExtractResponse(extractResponse: CLM.ExtractResponse): Promise<void> {
         // First look for match in extract responses
-        let foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text)
+        const foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text)
         if (foundResponse) {
             await this.props.updateExtractResponse(extractResponse)
             await setStateAsync(this, { isPendingSubmit: true })
         } else {
             // Replace existing text variation (if any) with new one and maintain ordering
-            let index = this.state.newTextVariations.findIndex((v: CLM.TextVariation) => v.text === extractResponse.text)
+            const index = this.state.newTextVariations.findIndex((v: CLM.TextVariation) => v.text === extractResponse.text)
             if (index < 0) {
                 // Should never happen, but protect just in case
                 return
             }
-            let newVariation = CLM.ModelUtils.ToTextVariation(extractResponse)
-            let newVariations = [...this.state.newTextVariations]
+            const newVariation = CLM.ModelUtils.ToTextVariation(extractResponse)
+            const newVariations = [...this.state.newTextVariations]
             newVariations[index] = newVariation
             await setStateAsync(this, {
                 newTextVariations: newVariations,
@@ -314,7 +377,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onSubmitTextVariation() {
-        let text = this.state.textVariationValue.trim();
+        const text = this.state.textVariationValue.trim();
         if (text.length === 0) {
             return
         }
@@ -322,10 +385,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         if (this.props.extractType !== CLM.DialogType.TEACH && this.props.roundIndex === null) {
             throw new Error(`You attempted to submit text variation but roundIndex was null. This is likely a problem with the code. Please open an issue.`)
         }
-        
+
         let extractType = this.props.extractType
         // Can't extract on running teach session on existing round
-        if (this.props.roundIndex !== null) { 
+        if (this.props.roundIndex !== null) {
             if (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.LOG_EDITED) {
                 extractType = CLM.DialogType.LOGDIALOG
             }
@@ -369,8 +432,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
 
         // Don't show edit components when in auto TEACH or on score step
-        const canEdit = (!this.props.autoTeach && this.props.dialogMode === CLM.DialogMode.Extractor && this.props.canEdit) 
-        
+        const canEdit = (!this.props.autoTeach && this.props.dialogMode === CLM.DialogMode.Extractor && this.props.canEdit)
+
         // I'm editing an existing round if I'm not in Teach or have selected a round
         const editingRound = canEdit && (this.props.extractType !== CLM.DialogType.TEACH || this.props.roundIndex !== null)
 
@@ -380,67 +443,80 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             .map<ExtractResponseForDisplay>(extractResponse =>
                 ({
                     extractResponse,
-                    isValid: this.isValid(primaryExtractResponse, extractResponse)
+                    isValid: this.isValid(primaryExtractResponse, extractResponse),
+                    duplicateEntityNames: this.duplicateEntityNames(extractResponse),
+                    isPickerVisible: this.state.activePickerText === extractResponse.text
                 }))
         const allExtractResponsesValid = extractResponsesForDisplay.every(e => e.isValid)
 
+        // Need to save this to separate variable for typescript control flow
+        const extractConflict = this.props.extractConflict
+        const attemptedExtractResponse = extractConflict && allResponses.find(e => e.text.toLowerCase() === extractConflict.text.toLowerCase())
+
         return (
             <div className="entity-extractor">
-                <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus}`}>
-                    <FormattedMessage
-                        id={FM.TOOLTIP_ENTITY_EXTRACTOR_HELP}
-                        defaultMessage="Select text to label it as an entity."
-                    />
+                <OF.Label className={`entity-extractor-help-text ${OF.FontClassNames.smallPlus} cl-label`}>
+                    {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_HELP)}
                     <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_HELP} />
                 </OF.Label>
-                {extractResponsesForDisplay.map(({ isValid, extractResponse }, key) => {
+                {extractResponsesForDisplay.map(({ isValid, duplicateEntityNames, extractResponse, isPickerVisible }, key) => {
                     return <div key={key} className={`editor-container ${OF.FontClassNames.mediumPlus}`}>
                         <ExtractorResponseEditor.EditorWrapper
                             render={(editorProps, onChangeCustomEntities) =>
                                 <ExtractorResponseEditor.Editor
                                     readOnly={!canEdit}
-                                    isValid={isValid}
+                                    isPickerVisible={isPickerVisible}
+                                    status={
+                                        !isValid
+                                            ? ExtractorResponseEditor.Models.ExtractorStatus.ERROR
+                                            : duplicateEntityNames.length > 0
+                                                ? ExtractorResponseEditor.Models.ExtractorStatus.WARNING
+                                                : ExtractorResponseEditor.Models.ExtractorStatus.OK
+                                    }
                                     entities={this.props.entities}
                                     {...editorProps}
 
                                     onChangeCustomEntities={onChangeCustomEntities}
                                     onClickNewEntity={this.onNewEntity}
+                                    onOpenPicker={() => this.onOpenPicker(extractResponse)}
+                                    onClosePicker={(onlyCloseOthers: boolean = false) => this.onClosePicker(extractResponse, onlyCloseOthers)}
                                 />
                             }
                             entities={this.props.entities}
                             extractorResponse={extractResponse}
                             onChange={this.onUpdateExtractResponse}
                         />
-                        {(key !== 0) && <div className="editor-container__icons">
-                            <button type="button" className={`editor-button-delete ${OF.FontClassNames.large}`} onClick={() => this.onRemoveExtractResponse(extractResponse)}>
-                                <OF.Icon iconName="Delete" />
-                            </button>
-                            {!isValid && ToolTips.wrap(
-                                <OF.Icon iconName="IncidentTriangle" className="editor-button-invalid" />,
-                                ToolTips.TipType.ENTITY_EXTRACTOR_WARNING)}
-                        </div>}
-                        {!isValid && <div className="ms-TextField-errorMessage css-84 errorMessage_20d9206e">
-                            <FormattedMessage id={FM.TOOLTIP_ENTITY_EXTRACTOR_WARNING} defaultMessage="Text Variations must contain the same detected Entities as the primary input text." />
-                        </div>}
+                        {(key !== 0)
+                            ? <div className="editor-container__icons">
+                                <button
+                                    type="button"
+                                    className={`editor-button-delete ${OF.FontClassNames.large}`}
+                                    onClick={() => this.onRemoveExtractResponse(extractResponse)}
+                                >
+                                    <OF.Icon iconName="Delete" />
+                                </button>
+                            </div>
+                            : <div />}
+                        {!isValid &&
+                            <div className="cl-error-message-label">
+                                {Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_MATCH_WARNING)}
+                            </div>
+                        }
+                        {isValid && duplicateEntityNames.length > 0 &&
+                            <div className='cl-label'>
+                                <OF.Icon
+                                    className={`cl-icon cl-color-warning`}
+                                    iconName="IncidentTriangle"
+                                />
+                                <div className="cl-error-message-label cl-error-message-label--dark">
+                                    {`${Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_DUPE_WARNING1)}${duplicateEntityNames.join(', ')}${Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_DUPE_WARNING2)}`}
+                                </div>
+                            </div>
+                        }
                     </div>
                 })}
                 {canEdit &&
-                    <div className='cl-textfield--withButton editor-alt-offset'>
-                        <OF.TextField
-                            data-testid="entity-extractor-alternative-input-text"
-                            value={this.state.textVariationValue}
-                            onChanged={this.onChangeTextVariation}
-                            placeholder={this.props.intl.formatMessage({
-                                id: FM.TEXTVARIATION_PLACEHOLDER,
-                                defaultMessage: "Add alternative input..."
-                            })}
-                            onKeyPress={(event) => {
-                                if (event.key === 'Enter') {
-                                    this.onSubmitTextVariation()
-                                    event.preventDefault()
-                                }
-                            }}
-                        />
+                    <div className='cl-textfield--withLeftButton editor-alt-offset'>
                         <OF.PrimaryButton
                             data-testid="entity-extractor-add-alternative-input-button"
                             className='cl-button--inline'
@@ -449,39 +525,56 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             ariaDescription={'Add'}
                             text={'Add'}
                             componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                            iconProps={{ iconName: 'Add' }}
                         />
-                </div>}
-                {editingRound &&
-                    <div className="cl-buttons-row">
-                        <OF.PrimaryButton
-                            disabled={!this.state.isPendingSubmit 
-                                || !allExtractResponsesValid 
-                                || this.state.pendingVariationChange}
-                            onClick={this.onClickSubmitExtractions}
-                            ariaDescription={'Submit Changes'}
-                            text={'Submit Changes'}
-                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                        <OF.TextField
+                            data-testid="entity-extractor-alternative-input-text"
+                            value={this.state.textVariationValue}
+                            onChanged={this.onChangeTextVariation}
+                            placeholder={formatMessageId(this.props.intl, FM.TEXTVARIATION_PLACEHOLDER)}
+                            onKeyPress={(event) => {
+                                if (event.key === 'Enter') {
+                                    this.onSubmitTextVariation()
+                                    event.preventDefault()
+                                }
+                            }}
                         />
-                        <OF.PrimaryButton
-                            disabled={!this.state.isPendingSubmit}
-                            onClick={this.onClickUndoChanges}
-                            ariaDescription="Undo Changes"
-                            text="Undo"
-                        />
-                    </div>
-                }
-                {!editingRound &&
-                    <div className="cl-buttons-row">
-                        <OF.PrimaryButton
-                            data-testid="entity-extractor-score-actions-button"
-                            disabled={!allExtractResponsesValid || this.state.pendingVariationChange}
+                        <HelpIcon tipType={ToolTips.TipType.ENTITY_EXTRACTOR_TEXTVARIATION} />
+                    </div>}
+
+                <div className="cl-buttons-row">
+                    {editingRound
+                        ? <>
+                            <OF.PrimaryButton
+                                data-testid="submit-changes-button"
+                                disabled={!this.state.isPendingSubmit
+                                    || !allExtractResponsesValid
+                                    || this.state.pendingVariationChange}
+                                onClick={this.onClickSubmitExtractions}
+                                ariaDescription={'Submit Changes'}
+                                text={'Submit Changes'}
+                                componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                                iconProps={{ iconName: 'Accept' }}
+                            />
+                            <OF.PrimaryButton
+                                disabled={!this.state.isPendingSubmit}
+                                onClick={this.onClickUndoChanges}
+                                ariaDescription="Undo Changes"
+                                text="Undo"
+                                iconProps={{ iconName: 'Undo' }}
+                            />
+                        </>
+                        : <OF.PrimaryButton
+                            data-testid="score-actions-button"
+                            disabled={!allExtractResponsesValid || this.state.pendingVariationChange || !canEdit}
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Score Actions'}
                             text={'Score Actions'}
                             componentRef={(ref: any) => { this.doneExtractingButton = ref }}
                         />
-                    </div>
-                }
+                    }
+                </div>
+
                 <div className="cl-dialog-admin__dialogs">
                     <EntityCreatorEditor
                         data-testid="entity-extractor-editor"
@@ -490,7 +583,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         open={this.state.entityModalOpen}
                         entity={null}
                         handleClose={this.entityEditorHandleClose}
-                        handleDelete={() => {}}
+                        handleDelete={() => { }}
                         entityTypeFilter={this.state.entityTypeFilter as any}
                     />
                     <OF.Dialog
@@ -498,7 +591,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         hidden={!this.state.warningOpen}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
-                            title: 'Text variations must all have same tagged entities.'
+                            title: Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_DLG_SAMETAGGED)
                         }}
                         modalProps={{
                             isBlocking: false
@@ -513,7 +606,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         hidden={this.state.savedExtractResponses.length === 0}
                         dialogContentProps={{
                             type: OF.DialogType.normal,
-                            title: 'Do you want to save your Entity Detection changes?'
+                            title: Util.formatMessageId(this.props.intl, FM.TOOLTIP_ENTITY_EXTRACTOR_DLG_SAVECHANGES)
                         }}
                         modalProps={{
                             isBlocking: true
@@ -524,10 +617,11 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton onClick={() => this.onClickSaveCheckNo()} text='No' />
                         </OF.DialogFooter>
                     </OF.Dialog>
-                    {this.props.extractConflict &&
-                        <ExtractConflictModal
+                    {(this.props.extractConflict && attemptedExtractResponse)
+                        && <ExtractConflictModal
                             open={true}
                             entities={this.props.entities}
+                            attemptedExtractResponse={attemptedExtractResponse}
                             extractResponse={this.props.extractConflict}
                             onClose={this.onEntityConflictModalAbandon}
                             onAccept={this.onEntityConflictModalAccept}
@@ -540,10 +634,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        updateExtractResponse : actions.teach.updateExtractResponse,
-        removeExtractResponse : actions.teach.removeExtractResponse,
-        runExtractorThunkAsync : actions.teach.runExtractorThunkAsync,
-        clearExtractResponses : actions.teach.clearExtractResponses,
+        updateExtractResponse: actions.teach.updateExtractResponse,
+        removeExtractResponse: actions.teach.removeExtractResponse,
+        runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
+        clearExtractResponses: actions.teach.clearExtractResponses,
         clearExtractConflict: actions.teach.clearExtractConflict
     }, dispatch);
 }

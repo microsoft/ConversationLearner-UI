@@ -16,15 +16,16 @@ interface EntityComponentProps {
 }
 
 interface Props extends EntityComponentProps {
+    onDeleteButtonVisible: (isOpen: boolean) => {}
 }
 
 interface State {
-    isEditing: boolean
+    isDeleteButtonOpen: boolean
 }
 
 export class CustomEntityContainer extends React.Component<Props, State> {
     state: State = {
-        isEditing: false
+        isDeleteButtonOpen: false
     }
 
     onClickName = () => {
@@ -32,9 +33,10 @@ export class CustomEntityContainer extends React.Component<Props, State> {
             return
         }
 
-        this.setState(prevState => ({
-            isEditing: !prevState.isEditing
-        }))
+        const isDeleteButtonOpen = !this.state.isDeleteButtonOpen
+
+        this.setState({isDeleteButtonOpen})
+        this.props.onDeleteButtonVisible(isDeleteButtonOpen)
     }
 
     onClickDelete = () => {
@@ -43,8 +45,9 @@ export class CustomEntityContainer extends React.Component<Props, State> {
         }
         
         this.setState({
-            isEditing: false
+            isDeleteButtonOpen: false
         })
+        this.props.onDeleteButtonVisible(false)
 
         this.props.editor.change((change: any) => {
             change.unwrapInlineByKey(this.props.node.key, this.props.node.type)
@@ -57,7 +60,7 @@ export class CustomEntityContainer extends React.Component<Props, State> {
 
         return (
             <CustomEntity
-                isEditing={this.state.isEditing}
+                isDeleteButtonOpen={this.state.isDeleteButtonOpen}
                 name={displayName}
                 onClickName={this.onClickName}
                 onClickDelete={this.onClickDelete}

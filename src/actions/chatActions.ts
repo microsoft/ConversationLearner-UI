@@ -7,9 +7,9 @@ import { AT } from '../types/ActionTypes'
 import { Session, AppBase, FilledEntity } from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
-import * as ClientFactory from '../services/clientFactory' 
+import * as ClientFactory from '../services/clientFactory'
 import { AxiosError } from 'axios'
-import { fetchAllLogDialogsThunkAsync } from './logActions'
+import { fetchAllLogDialogsThunkAsync, deleteLogDialogThunkAsync } from './logActions'
 
 // --------------------------
 // CreateChatSession
@@ -26,7 +26,7 @@ export const createChatSessionThunkAsync = (appId: string, packageId: string, sa
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.CREATE_CHAT_SESSION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_CHAT_SESSION_ASYNC))
             throw error
         }
     }
@@ -46,28 +46,33 @@ const createChatSessionFulfilled = (session: Session): ActionObject =>
 // --------------------------
 // DeleteChatSession
 // --------------------------
-export const deleteChatSessionThunkAsync = (key: string, session: Session, app: AppBase, packageId: string) => {
+export const deleteChatSessionThunkAsync = (session: Session, app: AppBase, packageId: string, deleteAssociatedLogDialog: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteChatSessionAsync(key, session, app.appId, packageId))
+        dispatch(deleteChatSessionAsync(session, app.appId, packageId))
         const clClient = ClientFactory.getInstance(AT.DELETE_CHAT_SESSION_ASYNC)
 
         try {
-            await clClient.chatSessionsDelete(app.appId, session.sessionId);
+            await clClient.chatSessionsDelete(app.appId);
             dispatch(deleteChatSessionFulfilled(session.sessionId));
-            dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
+
+            if (deleteAssociatedLogDialog) {
+                dispatch(deleteLogDialogThunkAsync(app, session.logDialogId, packageId))
+            }
+            else {
+                dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
+            }
             return true;
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.DELETE_CHAT_SESSION_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_CHAT_SESSION_ASYNC))
             return false;
         }
     }
 }
 
-const deleteChatSessionAsync = (key: string, session: Session, appId: string, packageId: string): ActionObject => {
+const deleteChatSessionAsync = (session: Session, appId: string, packageId: string): ActionObject => {
     return {
         type: AT.DELETE_CHAT_SESSION_ASYNC,
-        key: key,
         session: session,
         appId: appId,
         packageId: packageId
@@ -91,15 +96,15 @@ const editChatSessionExpireAsync = (appId: string, sessionId: string): ActionObj
 
 export const editChatSessionExpireThunkAsync = (appId: string, sessionId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.EDIT_APP_LIVE_TAG_ASYNC)
+        const clClient = ClientFactory.getInstance(AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC)
         dispatch(editChatSessionExpireAsync(appId, sessionId))
 
         try {
-            await clClient.chatSessionsExpire(appId, sessionId)
+            await clClient.chatSessionsExpire(appId)
         }
         catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? [JSON.stringify(error.response, null, '  ')] : [], AT.EDIT_APP_LIVE_TAG_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.EDIT_CHAT_SESSION_EXPIRE_ASYNC))
             throw error
         }
     }

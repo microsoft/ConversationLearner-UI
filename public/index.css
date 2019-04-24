@@ -14,17 +14,6 @@ html {
 * {
   box-sizing: border-box;
 }
-.cl-button--right {
-  float: right;
-}
-.cl-button--widemargin {
-  margin: 20px;
-}
-.cl-button--hidden {
-  width: 1px;
-  height: 1px;
-  opacity: 0.0;
-}
 
 .cl-button--inline {
   margin-left: -1px;
@@ -46,28 +35,25 @@ html {
   position: relative;
 }
 
-.cl-textfield--withButton {
+.cl-textfield--withLeftButton {
   display: grid;
-  grid-template: auto / 1fr auto auto;
-  grid-auto-columns: min-content;
+  grid-template-columns: 0fr auto 0fr;
+  grid-column-gap: 0.5em;
+  margin-top:1em;
 }
 
-.cl-textfield--inline {
+.cl-panelimage {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  display: block;
+}
+
+.cl-input--inline {
   display: inline-block;
+  width: 300px;
 }
 
 .cl-wc-disabled {
   pointer-events: none;
-}
-
-.cl-callout {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 400;
-  color: #333333;
-  padding: 18px 24px 12px;
-  font-weight: 300;
-  max-width: 300px;
 }
 
 .cl-errorpanel {
@@ -83,6 +69,10 @@ html {
   color: var(--color-alert);
 }
 
+.cl-text--success {
+  color: var(--color-success);
+}
+
 .cl-action {
   border: none;
   background: none;
@@ -91,17 +81,12 @@ html {
   cursor: pointer;
 }
 
+.cl-payloadrenderer-session-primary {
+  font-style: italic;
+}
+
 .cl-icon {
   color: var(--color-themePrimary) !important;
-}
-
-.cl-icon--transparent {
-  background-color:transparent !important;
-  color: #ffffff !important;
-}
-
-.cl-icon--transparentdark {
-  background-color:transparent !important;
 }
 
 .cl-icon--short {
@@ -117,6 +102,36 @@ html {
 @keyframes cl-icon-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+.cl-icon-whitebackground {
+  color:rgb(16, 110, 190) !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-whitebackground:hover {
+  color:#ff0000 !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-orangebackground {
+  color:#c9c9c9 !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-orangebackground:hover {
+  color:rgb(255, 255, 0) !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-redbackground {
+  color:rgb(255, 159, 159) !important;
+  background-color:transparent !important;
+}
+
+.cl-icon-redbackground:hover {
+  color:rgb(255, 255, 0) !important;
+  background-color:transparent !important;
 }
 
 .cl-icon[data-icon-name="Warning"] {
@@ -143,12 +158,18 @@ html {
 .cl-icon[data-icon-name="Delete"] {
   font-size: 16px;
   vertical-align: middle;
-  color: var(--color-red) !important;
 }
 
 .cl-icon[data-icon-name="IncidentTriangle"] {
   padding-left: 5px;
   padding-right: 5px;
+}
+
+.cl-input-warning {
+  color: var(--cl-color-error);
+  padding: 0px;
+  margin: 0px;
+  font-size: 12px;
 }
 
 .cl-color-warning {
@@ -185,10 +206,6 @@ html {
   color: var(--color-themePrimary) !important;
 }
 
-.ms-Button-icon:not(:disabled):hover {
-  color: var(--color-themeDark) !important;
-}
-
 .ms-Button-icon[data-icon-name="CommentAdd"] {
   font-size: 18px !important;
 }
@@ -212,10 +229,8 @@ html {
   background-color: transparent !important;
 }
 
-
-
-.ms-Button-icon[data-icon-name="Delete"]:not(:disabled) {
-  color: var(--color-red);
+.ms-Button--icon.cl-icon-plain {
+  background-color: transparent !important;
 }
 
 .ms-Button-icon[data-icon-name="EditSolidMirrored12"] {
@@ -236,8 +251,12 @@ html {
   background: transparent !important
 }
 
-
 .ms-Button-icon[data-icon-name="MessageFill"]:not(:disabled):hover {
+  color: var(--color-red) !important;
+  background: transparent !important
+}
+
+.ms-Button-icon[data-icon-name="AddTo"]:not(:disabled):hover {
   color: var(--color-red) !important;
   background: transparent !important
 }
@@ -259,18 +278,14 @@ html {
     margin-bottom: 15px;
 }
 
-i[data-icon-name="Delete"] {
-  color: var(--color-red) !important;
-}
-
-i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
+i[data-icon-name="Delete"]:hover, 
+i[data-icon-name="Edit"]:hover {
   cursor: pointer;
 }
 
 .cl-tip.ms-Checkbox{
   display: inline-block;
 }
-
 
 .cl-font--emphasis 
 {
@@ -379,6 +394,16 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   bottom: -8px;
   z-index: 1000;
   right: 166px;
+}
+
+.cl-icon-plain {
+  border: none !important;
+  background-color: transparent !important;
+  color: var(--color-themePrimary);
+}
+
+.cl-icon-plain:hover {
+  color: var(--color-red);
 }
 
 /* botframework-webchat component override */
@@ -547,6 +572,19 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   /* background-color: var(--color-blueMid); */
 }
 
+.cl-debug-marker {
+  width: 1px;
+  height: 2px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background-color: #000000;
+}
+
+.cl-dialog-title {
+  margin-right: 1em;
+}
+
 .cl-dialog-title i[role="presentation"] {
   margin: -0.4em 0.5em -0.4em 0;
   padding: 0.4em 0.3em 0.4em 0.5em;
@@ -561,14 +599,14 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   background-color: var(--color-magentaDark);
 }
 
-.cl-dropdownWithButton-dropdown {
+.cl-inputWithButton-input {
   display: grid;
   grid-template: auto / 1fr auto auto;
   grid-auto-columns: min-content;
   grid-gap: 0.1em;
 }
 
-.cl-dropdownWithButton-button {
+.cl-inputWithButton-button {
   width: 30px !important;
   min-width: 30px !important;
   align-self: end;
@@ -694,14 +732,18 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   margin-right: 5px;
 }
 */
-.ms-Button--primary.is-disabled, .ms-Button--primary:disabled {
+.ms-Button--primary.is-disabled,
+.ms-Button--primary:disabled {
   background-color: var(--color-neutralTertiary) !important;
+  color: var(--color-neutralSecondary) !important;
+}
+.ms-Button--primary.is-disabled .ms-Button-icon {
   color: var(--color-neutralSecondary) !important;
 }
 
 /** TODO: Remove usage of !important */
 .ms-Button--primary:not(:disabled) {
-  background-color: var(--color-themePrimary) !important;
+  background-color: var(--color-themePrimary);
   border: 1px solid var(--color-themePrimary) !important;
   color: white !important;
 }
@@ -790,10 +832,19 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   color: 1px solid var(--color-neutralQuaternary) !important;
 }
 
+.cl-rotate i {
+  transform: rotateX(180deg);
+}
+
 /** Log Dialog Admin */
 .cl-dialog-admin {
   display: grid;
   grid-gap: 0.8em;
+}
+.cl-dialog-admin__header {
+  display: grid;
+  grid-template: auto / max-content minmax(min-content, 1fr) minmax(214px, max-content);
+  grid-gap: 1rem;
 }
 .cl-dialog-admin__content {
   display: grid;
@@ -853,9 +904,6 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   background: #ffe0e0;
 }
 
-.cl-ux-flexpanel {
-}
-
 .cl-ux-flexpanel--primary {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -874,8 +922,37 @@ i[data-icon-name="Delete"]:hover, i[data-icon-name="Edit"]:hover{
   text-align:right;
 }
 
-.cl-ux-gutter {
-  position:fixed;
-  bottom:1em;
+.cl-ux-opaque {
+  background-color:#ffffff;
+
+}
+.cl-ux-shadowed {
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid #aaaaaa !important;
+
 }
 
+.cl-error-message-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: #a80000;
+  margin: 0;
+  padding-top: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  margin-top:0.15em;
+  margin-bottom:1em;
+}
+
+.cl-error-message-label--dark {
+  color: var(--color-neutralSecondaryAlt);
+  display: inline-block;
+}
+
+.cl-float-left {
+  float: left;
+}

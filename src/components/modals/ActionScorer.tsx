@@ -3,21 +3,23 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react';
+import * as ActionPayloadRenderers from '../actionPayloadRenderers'
+import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react';
+import * as Util from '../../Utils/util'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { State } from '../../types'
-import * as CLM from '@conversationlearner/models'
 import { createActionThunkAsync } from '../../actions/actionActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
-import * as OF from 'office-ui-fabric-react';
 import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import * as Util from '../../Utils/util'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
-import * as ActionPayloadRenderers from '../actionPayloadRenderers'
+import ConfirmCancelModal from './ConfirmCancelModal'
+import './ActionScorer.css'
 
 const ACTION_BUTTON = 'action_button'
 const STUB_BUTTON = 'stub_button'
@@ -28,7 +30,7 @@ interface IRenderableColumn extends OF.IColumn {
     render: (x: CLM.ScoredBase, component: ActionScorer, index: number) => React.ReactNode
 }
 
-function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[] {
+function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
             key: 'select',
@@ -40,8 +42,19 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             getSortValue: action => action.actionId,
             render: (action, component, index) => {
 
-                const selected = (component.props.dialogType !== CLM.DialogType.TEACH && index === 0)
-                const buttonText = selected ? 'Selected' : 'Select'
+                // If I'm not in Teach or clicked on history item, highlight selected
+                let selected = false
+                if (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected) {
+                    // If no selected actionId, first item is selected one
+                    if (!component.props.selectedActionId && index === 0) {
+                        selected = true
+                    }
+                    else if (component.props.selectedActionId === action.actionId) {
+                        selected = true
+                    }
+                }
+
+                const buttonText = Util.formatMessageId(intl, selected ? FM.BUTTON_SELECTED : FM.BUTTON_SELECT)
                 if (!component.props.canEdit) {
                     return (
                         <OF.PrimaryButton
@@ -54,13 +67,25 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                 }
 
                 const isAvailable = component.isUnscoredActionAvailable(action as CLM.UnscoredAction)
-                if (!isAvailable || selected) {
+                if (!isAvailable) {
                     return (
                         <OF.PrimaryButton
                             data-testid="action-scorer-button-no-click"
-                            disabled={true}
+                            disabled={!isAvailable}
                             ariaDescription={buttonText}
                             text={buttonText}
+                        />
+                    )
+                }
+                else if (selected) {
+                    return (
+                        <OF.PrimaryButton
+                            className="ms-Button--selected"
+                            data-testid="action-scorer-button-selected"
+                            disabled={!isAvailable}
+                            ariaDescription={buttonText}
+                            text={buttonText}
+                            onClick={component.showAlreadySelectedPopUp}
                         />
                     )
                 }
@@ -82,10 +107,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         },
         {
             key: 'actionResponse',
-            name: intl.formatMessage({
-                id: FM.ACTIONSCORER_COLUMNS_RESPONSE,
-                defaultMessage: 'Response'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_RESPONSE),
             fieldName: 'actionResponse',
             minWidth: 100,
             maxWidth: 500,
@@ -94,7 +116,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
             getSortValue: () => '',
             render: (action: CLM.ActionBase, component) => {
                 const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
-                    
+
                 if (action.actionType === CLM.ActionTypes.TEXT) {
                     const textAction = new CLM.TextAction(action)
                     return (
@@ -106,14 +128,15 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                         />)
                 }
                 else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
-                    // TODO: Find better way to handle this with CodeActionRenderer?
                     const apiAction = new CLM.ApiAction(action)
+                    const callback = component.props.botInfo.callbacks.find(t => t.name === apiAction.name)
                     return (
                         <ActionPayloadRenderers.ApiPayloadRendererContainer
                             data-testid="action-scorer-action-api"
                             apiAction={apiAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
+                            callback={callback}
                         />)
                 }
                 else if (action.actionType === CLM.ActionTypes.CARD) {
@@ -144,13 +167,10 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         },
         {
             key: 'actionScore',
-            name: hideScore ? '' : intl.formatMessage({
-                                        id: FM.ACTIONSCORER_COLUMNS_SCORE,
-                                        defaultMessage: 'Score'
-                                    }),
+            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_SCORE),
             fieldName: 'score',
-            minWidth: hideScore ? 1 : 80,
-            maxWidth: hideScore ? 1 : 80,
+            minWidth: 80,
+            maxWidth: 80,
             isResizable: true,
             isSorted: true,
             isSortedDescending: true,
@@ -165,7 +185,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                     if (scoredBase['reason'] === CLM.ScoreReason.NotAvailable) {
                         return -100;
                     } else {
-                        let isAvailable = component.isUnscoredActionAvailable(scoredBase as CLM.UnscoredAction);
+                        const isAvailable = component.isUnscoredActionAvailable(scoredBase as CLM.UnscoredAction);
                         return isAvailable
                             ? -1
                             : -10
@@ -175,24 +195,16 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
                 return score
             },
             render: (action, component) => {
-                if (component.props.hideScore) {
-                    return null;
-                }
                 let fieldContent: number | string = (action as CLM.ScoredAction).score
                 if (fieldContent) {
-                    // No scores in TrainDialogs
-                    if (component.props.dialogType === CLM.DialogType.TRAINDIALOG) {
-                        fieldContent = '';
-                    } else {
-                        fieldContent = `${(fieldContent as number * 100).toFixed(1)}%`
-                    }
+                    fieldContent = `${(fieldContent as number * 100).toFixed(1)}%`
                 } else if (component.isMasked(action.actionId)) {
                     fieldContent = "Masked"
                 } else {
-                    let isAvailable = component.isUnscoredActionAvailable(action as CLM.UnscoredAction);
+                    const isAvailable = component.isUnscoredActionAvailable(action as CLM.UnscoredAction);
                     if (isAvailable) {
-                        fieldContent = (component.props.dialogType !== CLM.DialogType.TEACH) ?
-                            'Unknown' : "Training...";
+                        fieldContent = (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected)
+                            ? '-' : "Training...";
                     }
                     else {
                         fieldContent = "Disqualified";
@@ -203,10 +215,7 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         },
         {
             key: 'actionEntities',
-            name: intl.formatMessage({
-                id: FM.ACTIONSCORER_COLUMNS_ENTITIES,
-                defaultMessage: 'Entities'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_ENTITIES),
             fieldName: 'entities',
             minWidth: 100,
             maxWidth: 300,
@@ -216,26 +225,20 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
         },
         {
             key: 'isTerminal',
-            name: intl.formatMessage({
-                id: FM.ACTIONSCORER_COLUMNS_ISTERMINAL,
-                defaultMessage: 'Wait'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_ISTERMINAL),
             fieldName: 'isTerminal',
             minWidth: 50,
             maxWidth: 50,
             isResizable: true,
             getSortValue: action => action.isTerminal ? 1 : -1,
-            render: action => <OF.Icon 
-                iconName={(action.isTerminal ? "CheckMark" : "Remove")} 
-                className={`cl-icon${action.isTerminal ? " checkIcon" : " notFoundIcon"}`} 
+            render: action => <OF.Icon
+                iconName={(action.isTerminal ? "CheckMark" : "Remove")}
+                className={`cl-icon${action.isTerminal ? " checkIcon" : " notFoundIcon"}`}
             />
         },
         {
             key: 'actionType',
-            name: intl.formatMessage({
-                id: FM.ACTIONSCORER_COLUMNS_TYPE,
-                defaultMessage: 'Type'
-            }),
+            name: Util.formatMessageId(intl, FM.ACTIONSCORER_COLUMNS_TYPE),
             fieldName: 'actionType',
             minWidth: 80,
             maxWidth: 80,
@@ -248,51 +251,49 @@ function getColumns(intl: InjectedIntl, hideScore: boolean): IRenderableColumn[]
 
 interface ComponentState {
     actionModalOpen: boolean
-    columns: OF.IColumn[]
+    columns: OF.IColumn[],
+    scoredItems: CLM.ScoredBase[],
     sortColumn: IRenderableColumn
     haveEdited: boolean
     cardViewerAction: CLM.ActionBase | null
     cardViewerShowOriginal: boolean
+    isAlreadySelectedOpen: boolean
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
-    primaryScoreButton: any = null;
+    primaryScoreButton: OF.IButton | null = null;
 
     constructor(p: Props) {
         super(p);
 
-        const columns = getColumns(this.props.intl, this.props.hideScore)
+        const columns = getColumns(this.props.intl)
         this.state = {
             actionModalOpen: false,
             columns,
+            scoredItems: [],
             sortColumn: columns[2], // "score"
             haveEdited: false,
             cardViewerAction: null,
-            cardViewerShowOriginal: false
+            cardViewerShowOriginal: false,
+            isAlreadySelectedOpen: false
         };
-        this.handleActionSelection = this.handleActionSelection.bind(this);
-        this.handleDefaultSelection = this.handleDefaultSelection.bind(this);
-        this.handleOpenActionModal = this.handleOpenActionModal.bind(this);
-        this.renderItemColumn = this.renderItemColumn.bind(this);
-        this.onColumnClick = this.onColumnClick.bind(this);
-        this.focusPrimaryButton = this.focusPrimaryButton.bind(this);
     }
-    componentWillReceiveProps(newProps: Props) {
-        if (this.props.scoreResponse !== newProps.scoreResponse) {
+
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.scoreResponse !== prevProps.scoreResponse) {
+            this.autoSelect()
             this.setState({
-                haveEdited: false
+                haveEdited: false,
+                scoredItems: this.getScoredItems()
             })
         }
     }
-    // TODO: Why invoke autoSelect on both Update and DidUpdate?!
-    componentUpdate() {
-        this.autoSelect();
-    }
-    componentDidUpdate() {
-        this.autoSelect();
-    }
+
     componentDidMount() {
         this.autoSelect();
+        this.setState({
+            scoredItems: this.getScoredItems()
+        })
     }
 
     onClickViewCard(action: CLM.ActionBase, cardViewerShowOriginal: boolean) {
@@ -331,6 +332,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             setTimeout(this.focusPrimaryButton, 100)
         }
     }
+
+    @OF.autobind
     focusPrimaryButton(): void {
         if (this.primaryScoreButton) {
             this.primaryScoreButton.focus();
@@ -348,25 +351,33 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     async onClickSubmitActionEditor(action: CLM.ActionBase) {
         await Util.setStateAsync(this, { actionModalOpen: false })
-       
-        let newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
 
-        if (newAction) {
+        const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
+        if (newAction
+            && (
+                newAction.actionType === CLM.ActionTypes.END_SESSION
+                    ? this.props.isEndSessionAvailable
+                    : true
+            )
+        ) {
             // See if new action is available, then take it
-            let isAvailable = this.isAvailable(newAction);
+            const isAvailable = this.isAvailable(newAction);
             if (isAvailable) {
                 this.handleActionSelection(newAction.actionId);
             }
         }
     }
 
+    @OF.autobind
     handleOpenActionModal() {
         this.setState({
             actionModalOpen: true
         })
     }
+
+    @OF.autobind
     onColumnClick(event: any, column: any) {
-        let { columns } = this.state;
+        const { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
 
         // If we've sorted this column, flip it.
@@ -389,6 +400,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         });
     }
 
+    @OF.autobind
     handleDefaultSelection() {
         // Look for a valid action
         let actionId = null
@@ -396,7 +408,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         if (scoreResponse.scoredActions && scoreResponse.scoredActions.length > 0) {
             actionId = scoreResponse.scoredActions[0].actionId;
         } else if (scoreResponse.unscoredActions) {
-            for (let unscoredAction of scoreResponse.unscoredActions) {
+            for (const unscoredAction of scoreResponse.unscoredActions) {
                 if (unscoredAction.reason === CLM.ScoreReason.NotScorable) {
                     actionId = unscoredAction.actionId;
                     break;
@@ -407,11 +419,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             this.handleActionSelection(actionId);
         }
     }
+
+    @OF.autobind
     handleActionSelection(actionId: string) {
         const { scoredActions, unscoredActions } = this.props.scoreResponse
         let scoredAction = scoredActions.find(a => a.actionId === actionId);
         if (!scoredAction) {
-            let unscoredAction = unscoredActions.find(a => a.actionId === actionId);
+            const unscoredAction = unscoredActions.find(a => a.actionId === actionId);
             if (unscoredAction) {
                 const { reason, ...scoredBase } = unscoredAction
                 // This is hack to create scored action without a real score
@@ -445,7 +459,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             throw new Error(`Scored action could not be found in list of available actions`)
         }
 
-        let trainScorerStep: CLM.TrainScorerStep = {
+        const trainScorerStep: CLM.TrainScorerStep = {
             input: this.props.scoreInput,
             labelAction: actionId,
             logicResult: undefined,
@@ -456,30 +470,46 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.props.onActionSelected(trainScorerStep);
     }
 
-    // Check if entity is in memory and return it's name 
-    entityInMemory(entityId: string): { match: boolean, name: string } {
-        let entity = this.props.entities.filter(e => e.entityId === entityId)[0];
+    isConditionMet(condition: CLM.Condition): { match: boolean, name: string } {
+        const entity = this.props.entities.filter(e => e.entityId === condition.entityId)[0];
 
         // If entity is null - there's a bug somewhere
         if (!entity) {
             return { match: false, name: 'ERROR' };
         }
 
-        let memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
-        return { match: (memory != null), name: entity.entityName };
+        const enumValue = entity.enumValues && entity.enumValues.find(ev => ev.enumValueId === condition.valueId)
+        const memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
+        const match = memory !== undefined
+            && memory.entityValues[0]
+            && memory.entityValues[0].enumValueId === condition.valueId
+        return { match, name: `${entity.entityName} = ${enumValue ? enumValue.enumValue : "NOT FOUND"}` };
+    }
+
+    // Check if entity is in memory and return it's name 
+    entityInMemory(entityId: string): { match: boolean, name: string } {
+        const entity = this.props.entities.filter(e => e.entityId === entityId)[0];
+
+        // If entity is null - there's a bug somewhere
+        if (!entity) {
+            return { match: false, name: 'ERROR' };
+        }
+
+        const memory = this.props.memories.filter(m => m.entityName === entity.entityName)[0];
+        return { match: (memory !== undefined), name: entity.entityName };
     }
 
     renderEntityRequirements(actionId: string) {
-        let action = this.props.actions.filter(a => a.actionId === actionId)[0];
+        const action = this.props.actions.filter(a => a.actionId === actionId)[0];
 
         // If action is null - there's a bug somewhere
         if (!action) {
-            return <div>ERROR: Missing Action</div>;
+            return <div>ERROR: Missing Action</div>
         }
 
-        let items = [];
-        for (let entityId of action.requiredEntities) {
-            let found = this.entityInMemory(entityId);
+        const items = [];
+        for (const entityId of action.requiredEntities) {
+            const found = this.entityInMemory(entityId)
             items.push({
                 name: found.name,
                 neg: false,
@@ -488,8 +518,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     : 'cl-entity cl-entity--mismatch',
             });
         }
-        for (let entityId of action.negativeEntities) {
-            let found = this.entityInMemory(entityId);
+        for (const entityId of action.negativeEntities) {
+            const found = this.entityInMemory(entityId)
             items.push({
                 name: found.name,
                 neg: true,
@@ -497,6 +527,30 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     ? 'cl-entity cl-entity--mismatch'
                     : 'cl-entity cl-entity--match',
             });
+        }
+        if (action.requiredConditions) {
+            for (const condition of action.requiredConditions) {
+                const result = this.isConditionMet(condition)
+                items.push({
+                    name: result.name,
+                    neg: false,
+                    type: result.match
+                        ? 'cl-entity cl-entity--match'
+                        : 'cl-entity cl-entity--mismatch',
+                });
+            }
+        }
+        if (action.negativeConditions) {
+            for (const condition of action.negativeConditions) {
+                const result = this.isConditionMet(condition)
+                items.push({
+                    name: result.name,
+                    neg: true,
+                    type: result.match
+                        ? 'cl-entity cl-entity--mismatch'
+                        : 'cl-entity cl-entity--match',
+                });
+            }
         }
         return (
             <OF.List
@@ -509,6 +563,21 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     isUnscoredActionAvailable(action: CLM.UnscoredAction): boolean {
+        // Can't add an end session action if one has already been added
+        if (action.actionType === CLM.ActionTypes.END_SESSION && !this.props.isEndSessionAvailable) {
+
+            // If selected action is EndSession, it's ok to replace it with another EndSession
+            // If no selected actionId, first item is selected one
+            const selectedActionId = this.props.selectedActionId || (this.state.scoredItems.length > 0 ? this.state.scoredItems[0].actionId : null) 
+            if (selectedActionId) {
+                let selectedAction = this.props.actions.find(a => a.actionId === selectedActionId)
+                if (selectedAction && selectedAction.actionType === CLM.ActionTypes.END_SESSION) {
+                    return true
+                }
+                
+            }
+            return false
+        }
         if (action.reason === CLM.ScoreReason.NotAvailable) {
             return false;
         } else {
@@ -518,7 +587,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     // Returns true if ActionId is available in actions
     isActionIdAvailable(actionId: string): boolean {
-        let action = this.props.actions.find(a => a.actionId === actionId);
+        const action = this.props.actions.find(a => a.actionId === actionId);
         if (!action) {
             return false;
         }
@@ -528,16 +597,32 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     // Returns true if Action is available given Entities in Memory
     isAvailable(action: CLM.ActionBase): boolean {
 
-        for (let entityId of action.requiredEntities) {
-            let found = this.entityInMemory(entityId);
+        for (const entityId of action.requiredEntities) {
+            const found = this.entityInMemory(entityId)
             if (!found.match) {
-                return false;
+                return false
             }
         }
-        for (let entityId of action.negativeEntities) {
-            let found = this.entityInMemory(entityId);
+        for (const entityId of action.negativeEntities) {
+            const found = this.entityInMemory(entityId)
             if (found.match) {
-                return false;
+                return false
+            }
+        }
+        if (action.requiredConditions) {
+            for (const condition of action.requiredConditions) {
+                const result = this.isConditionMet(condition)
+                if (!result.match) {
+                    return false
+                }
+            }
+        }
+        if (action.negativeConditions) {
+            for (const condition of action.negativeConditions) {
+                const result = this.isConditionMet(condition)
+                if (result.match) {
+                    return false
+                }
             }
         }
         return true;
@@ -545,16 +630,18 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     calculateReason(unscoredAction: CLM.UnscoredAction): CLM.ScoreReason {
 
-        if (!unscoredAction.reason || unscoredAction.reason === CLM.ScoreReason.NotCalculated) {
+        if (this.props.dialogType !== CLM.DialogType.TEACH
+            || !unscoredAction.reason
+            || unscoredAction.reason === CLM.ScoreReason.NotCalculated) {
 
-            let action = this.props.actions.filter((a: CLM.ActionBase) => a.actionId === unscoredAction.actionId)[0];
+            const action = this.props.actions.filter((a: CLM.ActionBase) => a.actionId === unscoredAction.actionId)[0];
 
             // If action is null - there's a bug somewhere
             if (!action) {
                 return CLM.ScoreReason.NotAvailable;
             }
 
-            let isAvailable = this.isAvailable(action);
+            const isAvailable = this.isAvailable(action);
             return isAvailable ? CLM.ScoreReason.NotScorable : CLM.ScoreReason.NotAvailable;
         }
         return unscoredAction.reason as CLM.ScoreReason;
@@ -564,13 +651,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
     }
 
+    @OF.autobind
     renderItemColumn(action: CLM.ScoredBase, index: number, column: IRenderableColumn) {
         // Null is action create button
         if (action.actionId === ACTION_BUTTON) {
             if (column.key === 'select') {
                 // Will focus on new action button if no scores
                 const ref = (index === 0)
-                    ? ((r: any) => { this.primaryScoreButton = r })
+                    ? (r: OF.IButton) => { this.primaryScoreButton = r }
                     : undefined;
                 return ( 
                     <OF.PrimaryButton
@@ -583,7 +671,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     />
                 )
             } else {
-                return '';
+                return ''
             }
         }
         else if (action.actionId === STUB_BUTTON) {
@@ -609,7 +697,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Handle deleted actions
         else if (action.actionId === MISSING_ACTION) {
             if (column.key === 'select') {
-                let buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && index === 0) ? "Selected" : "Select";
+                const buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && index === 0) ? "Selected" : "Select";
                 return (
                     <OF.PrimaryButton
                         disabled={true}
@@ -624,7 +712,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 return column.render(action as CLM.ScoredBase, this, index)
             }
             else {
-                return '';
+                return ''
             }
         }
 
@@ -651,9 +739,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         // Need to reassemble to scored item has full action info and reason
         scoredItems = scoredItems.map(e => {
-            let action = this.props.actions.find(ee => ee.actionId === e.actionId);
-            let score = (e as CLM.ScoredAction).score;
-            let reason = score ? null : this.calculateReason(e as CLM.UnscoredAction);
+            const action = this.props.actions.find(ee => ee.actionId === e.actionId);
+            const score = (e as CLM.ScoredAction).score;
+            const reason = score ? null : this.calculateReason(e as CLM.UnscoredAction);
             if (action) {
                 return { ...action, reason: reason, score: score }
             }
@@ -690,7 +778,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 else if (typeof firstValue === 'number' && typeof secondValue === 'number') {
                     isFirstGreaterThanSecond = firstValue - secondValue
                 }
-                
+
                 return sortColumn.isSortedDescending
                     ? isFirstGreaterThanSecond * -1
                     : isFirstGreaterThanSecond
@@ -698,7 +786,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
 
         // If editing allowed and Action creation button
-        if (scoredItems && !this.props.autoTeach && this.props.canEdit) {
+        if (!this.props.autoTeach && this.props.canEdit) {
             scoredItems.push(this.makeDummyItem(ACTION_BUTTON, 0));
             scoredItems.push(this.makeDummyItem(STUB_BUTTON, 0));
         }
@@ -714,13 +802,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             return null;
         }
 
-        const scores: CLM.ScoredBase[] = this.getScoredItems()
+        const { intl } = this.props
         let template: CLM.Template | undefined
         let renderedActionArguments: CLM.RenderedActionArgument[] = []
         if (this.state.cardViewerAction) {
             const cardAction = new CLM.CardAction(this.state.cardViewerAction)
             const entityMap = Util.getDefaultEntityMap(this.props.entities)
-            template = this.props.templates.find((t) => t.name === cardAction.templateName)
+            template = this.props.botInfo.templates.find((t) => t.name === cardAction.templateName)
             renderedActionArguments = this.state.cardViewerShowOriginal
                 ? cardAction.renderArguments(entityMap, { preserveOptionalNodeWrappingCharacters: true })
                 : cardAction.renderArguments(Util.createEntityMapFromMemories(this.props.entities, this.props.memories), { fallbackToOriginal: true })
@@ -728,24 +816,40 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         return (
             <div>
-                <OF.DetailsList
-                    className={OF.FontClassNames.mediumPlus}
-                    items={scores}
-                    columns={this.state.columns}
-                    checkboxVisibility={OF.CheckboxVisibility.hidden}
-                    onRenderItemColumn={this.renderItemColumn}
-                    onColumnHeaderClick={this.onColumnClick}
-                    onRenderDetailsHeader={(
-                        detailsHeaderProps: OF.IDetailsHeaderProps,
-                        defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
-                        onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
-                />
+                {this.state.scoredItems.length === 1 && (!this.props.autoTeach && this.props.canEdit)
+                    ? <div className="cl-action-scorer-placeholder">
+                        <div className={`cl-action-scorer-placeholder__description`}>
+                            <h1 className={OF.FontClassNames.xxLarge}>Create an Action</h1>
+                            <p>You're bot does not have any actions.<br />It needs at least one action to continue building this training dialog.</p>
+                        </div>
+                        <div>
+                            <OF.PrimaryButton
+                                text="Create Action"
+                                iconProps={{ iconName: 'Add' }}
+                                onClick={this.handleOpenActionModal}
+                            />
+                        </div>
+                    </div>
+                    : <OF.DetailsList
+                        className={OF.FontClassNames.mediumPlus}
+                        items={this.state.scoredItems}
+                        columns={this.state.columns}
+                        checkboxVisibility={OF.CheckboxVisibility.hidden}
+                        onRenderItemColumn={this.renderItemColumn}
+                        onColumnHeaderClick={this.onColumnClick}
+                        onRenderDetailsHeader={(
+                            detailsHeaderProps: OF.IDetailsHeaderProps,
+                            defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
+                            onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
+                    />
+                }
 
                 <ActionCreatorEditor
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
                     open={this.state.actionModalOpen}
                     action={null}
+                    actions={this.props.actions}
                     handleClose={() => this.onClickCancelActionEditor()}
                     // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete 
                     handleDelete={action => { }}
@@ -758,22 +862,40 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     actionArguments={renderedActionArguments}
                     hideUndefined={true}
                 />
+                <ConfirmCancelModal
+                    data-testid="popup-already-selected"
+                    open={this.state.isAlreadySelectedOpen}
+                    onOk={this.onCloseAlreadySelectedPopUp}
+                    title={Util.formatMessageId(intl, FM.LOGDIALOGS_ALREADYSELECTED)}
+                />
             </div>
         )
+    }
+
+    @OF.autobind
+    showAlreadySelectedPopUp() {
+        this.setState({ isAlreadySelectedOpen: true })
+    }
+
+    @OF.autobind
+    onCloseAlreadySelectedPopUp() {
+        this.setState({ isAlreadySelectedOpen: false })
     }
 }
 
 export interface ReceivedProps {
     app: CLM.AppBase
     editingPackageId: string,
+    historyItemSelected: boolean,
     dialogType: CLM.DialogType,  // LARS = make this not train dialog specific
     autoTeach: boolean,
     dialogMode: CLM.DialogMode,
     scoreResponse: CLM.ScoreResponse,
     scoreInput: CLM.ScoreInput,
+    selectedActionId: string | undefined,
     memories: CLM.Memory[],
-    canEdit: boolean
-    hideScore: boolean,
+    canEdit: boolean,
+    isEndSessionAvailable: boolean,
     onActionSelected: (trainScorerStep: CLM.TrainScorerStep) => void,
     onCreateAPIStub: () => void
 }
@@ -793,7 +915,7 @@ const mapStateToProps = (state: State, ownProps: any) => {
         user: state.user.user,
         entities: state.entities,
         actions: state.actions,
-        templates: state.bot.botInfo.templates
+        botInfo: state.bot.botInfo
     }
 }
 

@@ -2,30 +2,33 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { State } from '../../types'
-import actions from '../../actions'
-import * as CLM from '@conversationlearner/models'
-import { EditDialogType } from '../../components/modals'
-import ActionScorer from './ActionScorer';
-import EntityExtractor from './EntityExtractor';
-import MemoryTable from './MemoryTable';
-import { FM } from '../../react-intl-messages'
+import * as React from 'react'
 import * as DialogUtils from '../../Utils/dialogUtils'
-import { TeachSessionState } from '../../types/StateTypes'
-import TrainingStatusContainer from '../TrainingStatusContainer'
 import * as OF from 'office-ui-fabric-react'
-import { injectIntl, InjectedIntlProps, FormattedMessage } from 'react-intl'
-import './TeachSessionAdmin.css'
+import * as CLM from '@conversationlearner/models'
+import actions from '../../actions'
+import DialogMetadata from './DialogMetadata'
+import ActionScorer from './ActionScorer'
+import EntityExtractor from './EntityExtractor'
+import MemoryTable from './MemoryTable'
+import TrainingStatusContainer from '../TrainingStatusContainer'
+import FormattedMessageId from '../FormattedMessageId'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { State } from '../../types'
+import { EditDialogType } from '../../components/modals'
+import { FM } from '../../react-intl-messages'
+import { TeachSessionState } from '../../types/StateTypes'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface RoundLookup {
     textVariations?: CLM.TextVariation[] | null
     uiScoreResponse?: CLM.UIScoreResponse | null
+    selectedActionId?: string
     memories?: CLM.Memory[]
 }
+
 interface ComponentState {
     isScoresRefreshVisible: boolean
     turnLookup: RoundLookup[]
@@ -42,22 +45,22 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
     async hasConflicts(textVariations: CLM.TextVariation[]): Promise<boolean> {
 
         // Generate list of textVariations that have changed
-         const renderData = this.getRenderData()
-         const originalTextVariations = renderData.textVariations
-         let changedTextVariations: CLM.TextVariation[] = []
-         textVariations.map(tv => {
-             const found = originalTextVariations.find(otv => CLM.ModelUtils.areEqualTextVariations(tv, otv))
-             if (!found) {
-                 changedTextVariations.push(tv)
-             }
-         })
-  
+        const renderData = this.getRenderData()
+        const originalTextVariations = renderData.textVariations
+        const changedTextVariations: CLM.TextVariation[] = []
+        textVariations.map(tv => {
+            const found = originalTextVariations.find(otv => CLM.ModelUtils.areEqualTextVariations(tv, otv))
+            if (!found) {
+                changedTextVariations.push(tv)
+            }
+        })
+
         // Check the changed ones for conflicts
 
-        // First check for internal conflics
+        // First check for internal conflicts
         if (this.props.sourceTrainDialog) {
-            for (let changedTextVariation of changedTextVariations) {
-                let extractConflict = DialogUtils.internalConflict(changedTextVariation, this.props.sourceTrainDialog, renderData.roundIndex)
+            for (const changedTextVariation of changedTextVariations) {
+                const extractConflict = DialogUtils.internalConflict(changedTextVariation, this.props.sourceTrainDialog, renderData.roundIndex)
                 if (extractConflict) {
                     this.props.setTextVariationConflict(extractConflict)
                     return true
@@ -65,23 +68,30 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-         // Next against other TrainDialogs
-         for (let changedTextVariation of changedTextVariations) {
-             let conflict = await this.props.fetchTextVariationConflictThunkAsync(
-                 this.props.app.appId, 
-                 this.props.teachSession.teach!.trainDialogId, 
-                 changedTextVariation,
-                 this.props.originalTrainDialogId)
-             if (conflict) {
-                 return true
-             }
-         }
-         return false
+        // Don't look for conflict on the dialog that I'm editing (as checked above)
+        const ignoreDialogId = this.props.originalTrainDialogId
+            ? this.props.originalTrainDialogId
+            : this.props.sourceTrainDialog
+            ? this.props.sourceTrainDialog.trainDialogId
+            : null
+
+        // Next against other TrainDialogs
+        for (const changedTextVariation of changedTextVariations) {
+            const conflict = await this.props.fetchTextVariationConflictThunkAsync(
+                this.props.app.appId,
+                this.props.teachSession.teach!.trainDialogId,
+                changedTextVariation,
+                ignoreDialogId)
+            if (conflict) {
+                return true
+            }
+        }
+        return false
     }
 
     @OF.autobind
     async onEntityExtractorSubmit(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]): Promise<void> {
-        
+
         // If I'm editing an existing round
         if (this.props.selectedActivityIndex !== null) {
 
@@ -92,7 +102,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             this.props.onEditExtraction(extractResponse, textVariations)
             return
         }
-        
+
         // Otherwise update teach session
         if (!this.props.teachSession.teach) {
             throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
@@ -108,21 +118,26 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         const appId = this.props.app.appId
         const teachId = this.props.teachSession.teach.teachId
         const uiScoreResponse: CLM.UIScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
-        
+
         if (!uiScoreResponse.extractConflict && !uiScoreResponse.botAPIError) {
-            let turnLookup = [...this.state.turnLookup]
+            const turnLookup = [...this.state.turnLookup]
             // If first turn, set offset based on existing activities
-            let turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.activityIndex - 1 : this.state.turnLookupOffset
-                    
-            turnLookup.push({textVariations, memories: [...this.props.teachSession.memories]})
-            turnLookup.push({uiScoreResponse})
+            const turnLookupOffset = this.state.turnLookup.length === 0 ? this.props.nextActivityIndex - 1 : this.state.turnLookupOffset
+
+            turnLookup.push({ textVariations, memories: [...this.props.teachSession.memories] })
+            turnLookup.push({ uiScoreResponse, memories: [...this.props.teachSession.memories] })
             this.setState({
                 isScoresRefreshVisible: true,
                 turnLookup,
                 turnLookupOffset
             })
 
-            this.props.clearExtractResponses()  
+            // Replace webchat text with markdown version where labelled entities are bold
+            const excludedEntities = this.props.entities.filter(e => e.doNotMemorize).map(e => e.entityId)
+            const userText = CLM.ModelUtils.textVariationToMarkdown(textVariations[0], excludedEntities)
+            this.props.onReplaceActivityText(userText, this.props.nextActivityIndex - 1)
+
+            this.props.clearExtractResponses()
         }
     }
 
@@ -145,16 +160,28 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         }
 
         // Send channel data to add to activity so can process when clicked on later
-        const clData: CLM.CLChannelData = { 
-            activityIndex: this.props.activityIndex,
+        const clData: CLM.CLChannelData = {
+            senderType: CLM.SenderType.Bot,
+            roundIndex: null,
+            scoreIndex: null,
+            activityIndex: this.props.nextActivityIndex,
             validWaitAction: !scoredAction.isTerminal || undefined  // Draws carrot under card if a wait action
+        }
+
+        // Store selected action in "turn lookup"
+        if (this.state.turnLookup.length > 0) {
+            const turnLookup = [...this.state.turnLookup]
+            turnLookup[this.state.turnLookup.length - 1].selectedActionId = scoredAction.actionId
+            this.setState({
+                turnLookup
+            })
         }
 
         const uiTrainScorerStep: CLM.UITrainScorerStep = {
             trainScorerStep,
             clData,
             entities: this.props.entities
-        } 
+        }
 
         const appId = this.props.app.appId;
         const teachId = this.props.teachSession.teach.teachId;
@@ -167,39 +194,25 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         } as CLM.UIScoreInput
 
         await this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput)
-         
+
         this.props.onScoredAction(scoredAction)
 
         if (!waitForUser) {
             const uiScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
-            let turnLookup = [...this.state.turnLookup]
-            turnLookup.push({uiScoreResponse})
+            const turnLookup = [...this.state.turnLookup]
+
+            // Update memory on previous turn as may have been an API call
+            const lastLookup = turnLookup[turnLookup.length - 1]
+            lastLookup.memories = [...this.props.teachSession.memories]
+
+            turnLookup.push({ uiScoreResponse, memories: [...this.props.teachSession.memories] })
+
+            // Update memory on previous turn as may have been an API call
             this.setState({
                 isScoresRefreshVisible: true,
                 turnLookup
             })
         }
-    }
-
-    onClickRefreshScores = (event: React.MouseEvent<HTMLButtonElement>) => {
-        // TODO: This is coupling knowledge about reducers populating this field after runScorer fulfilled
-        if (!this.props.teachSession.scoreInput) {
-            throw new Error(`You attempted to refresh scores but there was no previous score input to re-use.  This is likely a problem with the code. Please open an issue.`)
-        }
-        
-        if (!this.props.teachSession.teach) {
-            throw new Error(`teachSession.current must be defined but it is not. This is likely a problem with higher components. Please open an issue.`)
-        }
-
-        this.props.getScoresThunkAsync(
-            this.props.user.id,
-            this.props.app.appId,
-            this.props.teachSession.teach.teachId,
-            this.props.teachSession.scoreInput)
-
-        this.setState({
-            isScoresRefreshVisible: false
-        })
     }
 
     // Calculate round index from selectedActivityIndex
@@ -217,41 +230,42 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
     getRenderData(): DialogUtils.DialogRenderData {
 
-        // If user click on and activity
+        // If user clicked on an activity
         if (this.props.selectedActivityIndex != null) {
 
             // Offset lookup index based on pre-existing activities
-            let lookupIndex = this.props.selectedActivityIndex - this.state.turnLookupOffset
- 
+            const lookupIndex = this.props.selectedActivityIndex - this.state.turnLookupOffset
+
             if (lookupIndex >= 0) {
 
-                let turnData = this.state.turnLookup[lookupIndex]
-    
+                const turnData = this.state.turnLookup[lookupIndex]
+
                 const prevTurn = this.state.turnLookup[lookupIndex - 1]
                 const prevMemories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories! : []
                 if (turnData.uiScoreResponse) {
                     return {
-                            dialogMode: CLM.DialogMode.Scorer,
-                            scoreInput: turnData.uiScoreResponse.scoreInput,
-                            scoreResponse: turnData.uiScoreResponse.scoreResponse,
-                            memories: DialogUtils.filterDummyEntities(turnData.uiScoreResponse.memories!),
-                            prevMemories: DialogUtils.filterDummyEntities(prevMemories),
-                            extractResponses: this.props.teachSession.extractResponses,
-                            textVariations: [],
-                            roundIndex: this.roundIndex(lookupIndex)
-                        }
+                        dialogMode: CLM.DialogMode.Scorer,
+                        scoreInput: turnData.uiScoreResponse.scoreInput,
+                        scoreResponse: turnData.uiScoreResponse.scoreResponse,
+                        selectedActionId: turnData.selectedActionId,
+                        memories: turnData.memories ? DialogUtils.filterDummyEntities(turnData.memories) : [],
+                        prevMemories: DialogUtils.filterDummyEntities(prevMemories),
+                        extractResponses: this.props.teachSession.extractResponses,
+                        textVariations: [],
+                        roundIndex: this.roundIndex(lookupIndex) + this.state.turnLookupOffset
                     }
+                }
                 else if (turnData.textVariations) {
                     return {
                         dialogMode: CLM.DialogMode.Extractor,
                         extractResponses: this.props.teachSession.extractResponses,
-                        textVariations: turnData.textVariations,  
+                        textVariations: turnData.textVariations,
                         memories: turnData.memories ? DialogUtils.filterDummyEntities(turnData.memories) : [],
                         prevMemories: DialogUtils.filterDummyEntities(prevMemories),
-                        roundIndex: this.roundIndex(lookupIndex)
+                        roundIndex: this.roundIndex(lookupIndex) + this.state.turnLookupOffset
                     }
                 }
-            }   
+            }
             // Handle rendering of pre-existing activity    
             else if (this.props.historyRenderData) {
                 return this.props.historyRenderData()
@@ -284,50 +298,51 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         const renderData = this.getRenderData()
         const autoTeachWithRound = this.props.teachSession.autoTeach
-        const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL) 
+        const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL)
         const editTypeClass = isLogDialog ? 'log' : 'train'
-        
+        const isEndSessionAvailable = !this.props.selectedActivityIndex || this.props.isLastActivitySelected
+
         return (
-            <div className={`cl-dialog-admin ${OF.FontClassNames.small}`}>
-                <div className="cl-ux-flexpanel">
-                    <div className="cl-ux-flexpanel--primary">
-                        <div className="cl-ux-flexpanel--left" style={{width: '65%'}}>
-                            <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.large}`}>
-                            <OF.Icon 
-                                iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
-                            />
-                            {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+            <div className={`cl-dialog-admin`}>
+                <div className="cl-dialog-admin__header">
+                    <div className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.xxLarge}`}>
+                        <OF.Icon
+                            iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
+                        />
+                        {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                    </div>
+                    <DialogMetadata
+                        description={this.props.description}
+                        tags={this.props.tags}
+                        allUniqueTags={this.props.allUniqueTags}
+                        onChangeDescription={this.props.onChangeDescription}
+                        onAddTag={this.props.onAddTag}
+                        onRemoveTag={this.props.onRemoveTag}
+                    />
+                    <TrainingStatusContainer
+                        app={this.props.app}
+                    />
+                </div>
+                {(renderData.dialogMode === CLM.DialogMode.Extractor || renderData.dialogMode === CLM.DialogMode.Wait) &&
+                    (
+                        <div className="cl-dialog-admin__content">
+                            <div
+                                className={`cl-wc-message cl-wc-message--user cl-wc-message--${isLogDialog ? 'log' : 'train'}`}
+                            >
+                                <FormattedMessageId
+                                    data-testid="teach-session-admin-userinput"
+                                    id={FM.TEACHSESSIONADMIN_DIALOGMODE_USER}
+                                />
                             </div>
                         </div>
-                        <div className="cl-ux-flexpanel--right" style={{width: '35%', marginRight: '2em'}}>
-                            <TrainingStatusContainer
-                                app={this.props.app}
-                            />
-                        </div>
-                    </div>
-                </div>
-                {(renderData.dialogMode === CLM.DialogMode.Extractor || renderData.dialogMode === CLM.DialogMode.Wait) && 
-                    (
-                    <div className="cl-dialog-admin__content">
-                        <div 
-                            className={`cl-wc-message cl-wc-message--user cl-wc-message--${isLogDialog ? 'log' : 'train'}`}
-                        >
-                            <FormattedMessage
-                                data-testid="teach-session-admin-userinput"
-                                id={FM.TEACHSESSIONADMIN_DIALOGMODE_USER}
-                                defaultMessage="User Input"
-                            />
-                        </div>
-                    </div>
                     )
                 }
                 {renderData.dialogMode === CLM.DialogMode.Scorer && (
                     <div className="cl-dialog-admin__content">
                         <div className="cl-wc-message cl-wc-message--bot">
-                            <FormattedMessage
+                            <FormattedMessageId
                                 data-testid="teach-session-admin-botresponse"
                                 id={FM.TEACHSESSIONADMIN_DIALOGMODE_BOT}
-                                defaultMessage="Bot Response"
                             />
                         </div>
                     </div>)
@@ -335,19 +350,15 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 {renderData.dialogMode === CLM.DialogMode.EndSession && (
                     <div className="cl-dialog-admin__content">
                         <div className="cl-wc-message cl-wc-message--done">
-                            <FormattedMessage
-                                id={FM.TEACHSESSIONADMIN_DIALOGMODE_END_SESSION}
-                                defaultMessage="Session Has Ended"
-                            />
+                            <FormattedMessageId id={FM.TEACHSESSIONADMIN_DIALOGMODE_END_SESSION} />
                         </div>
                     </div>)
                 }
                 <div className="cl-dialog-admin__content">
                     <div className="cl-dialog-admin-title">
-                        <FormattedMessage
+                        <FormattedMessageId
                             data-testid="teach-session-admin-entitymemory"
                             id={FM.TEACHSESSIONADMIN_MEMORY_TITLE}
-                            defaultMessage="Entity Memory"
                         />
                     </div>
                     <div>
@@ -361,10 +372,9 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 {renderData.dialogMode === CLM.DialogMode.Extractor &&
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
-                            <FormattedMessage
+                            <FormattedMessageId
                                 data-testid="teach-session-admin-entitydetection"
                                 id={FM.TEACHSESSIONADMIN_ENTITYDETECTION_TITLE}
-                                defaultMessage="Entity Detection"
                             />
                         </div>
                         <div>
@@ -393,67 +403,25 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 {renderData.dialogMode === CLM.DialogMode.Scorer &&
                     <div className="cl-dialog-admin__content">
                         <div className="cl-dialog-admin-title">
-                            <FormattedMessage
+                            <FormattedMessageId
                                 data-testid="teach-session-admin-action"
                                 id={FM.TEACHSESSIONADMIN_ACTION_TITLE}
-                                defaultMessage="Action"
                             />
-                            {/* Consider making this a component although it's display is very custom to the location it's used in the header */}
-                            <span className="cl-training-status-inline">
-                                {this.props.app.trainingStatus === CLM.TrainingStatusCode.Completed
-                                    ? <span data-testid="teach-session-admin-train-status">
-                                        <FormattedMessage
-                                            id={FM.TEACHSESSIONADMIN_TRAINSTATUS_COMPLETED}
-                                            defaultMessage="Train Status: Completed"
-                                        /> &nbsp;
-                                        {this.state.isScoresRefreshVisible
-                                            && <span data-testid="teach-session-admin-train-status-new-scores">
-                                                <FormattedMessage
-                                                    id={FM.TEACHSESSIONADMIN_TRAINSTATUS_NEWSCORES}
-                                                    defaultMessage="New Scores Available"
-                                                /> (
-                                                <button
-                                                    type="button"
-                                                    data-testid="teach-session-admin-refresh-score-button"
-                                                    className={`cl-training-status-inline__button ${OF.FontClassNames.large}`}
-                                                    onClick={this.onClickRefreshScores}
-                                                >
-                                                    <FormattedMessage
-                                                        id={FM.TEACHSESSIONADMIN_TRAINSTATUS_REFRESH}
-                                                        defaultMessage="Refresh"
-                                                    />
-                                                </button>
-                                                )
-                                            </span>}
-                                    </span>
-                                    : (this.props.app.trainingStatus === CLM.TrainingStatusCode.Failed
-                                            ? <span data-testid="teach-session-admin-train-status">    
-                                            <FormattedMessage
-                                                id={FM.TEACHSESSIONADMIN_TRAINSTATUS_FAILED}
-                                                defaultMessage="Train Status: Failed"
-                                            />
-                                            </span>
-                                            : <span data-testid="teach-session-admin-train-status">    
-                                            <FormattedMessage
-                                                id={FM.TEACHSESSIONADMIN_TRAINSTATUS_RUNNING}
-                                                defaultMessage="Train Status: Runnning..."
-                                            />
-                                            </span>
-                                    )}
-                            </span>
                         </div>
 
                         {renderData.scoreResponse && renderData.scoreInput && (renderData.dialogMode === CLM.DialogMode.Scorer || autoTeachWithRound)
                             && <ActionScorer
                                 app={this.props.app}
                                 editingPackageId={this.props.editingPackageId}
+                                historyItemSelected={this.props.selectedActivityIndex !== null}
                                 canEdit={true}
-                                hideScore={false}
+                                isEndSessionAvailable={isEndSessionAvailable}
                                 dialogType={CLM.DialogType.TEACH}
                                 autoTeach={this.props.teachSession.autoTeach}
                                 dialogMode={renderData.dialogMode}
                                 scoreResponse={renderData.scoreResponse}
                                 scoreInput={renderData.scoreInput}
+                                selectedActionId={renderData.selectedActionId}
                                 memories={renderData.memories}
                                 onActionSelected={this.onActionScorerSubmit}
                                 onCreateAPIStub={() => {}}  // LARS todo
@@ -473,7 +441,7 @@ const mapDispatchToProps = (dispatch: any) => {
         runScorerThunkAsync: actions.teach.runScorerThunkAsync,
         setTextVariationConflict: actions.train.setTextVariationConflict,
         postScorerFeedbackThunkAsync: actions.teach.postScorerFeedbackThunkAsync,
-        clearExtractResponses : actions.teach.clearExtractResponses
+        clearExtractResponses: actions.teach.clearExtractResponses
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
@@ -491,6 +459,7 @@ export interface ReceivedProps {
     onScoredAction: (scoredAction: CLM.ScoredAction) => void;
     onEditExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onEditAction: (trainScorerStep: CLM.TrainScorerStep) => any
+    onReplaceActivityText: (userText: string, index: number) => void
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string
@@ -501,10 +470,19 @@ export interface ReceivedProps {
     editType: EditDialogType,
     initialEntities: CLM.FilledEntityMap | null,
     // Index to attach to channel data
-    activityIndex: number
+    nextActivityIndex: number
     // If user clicked on an Activity
     selectedActivityIndex: number | null
+    isLastActivitySelected: boolean,
     historyRenderData: (() => DialogUtils.DialogRenderData) | null
+    allUniqueTags: string[]
+
+    tags: string[]
+    onAddTag: (tag: string) => void
+    onRemoveTag: (tag: string) => void
+
+    description: string
+    onChangeDescription: (description: string) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

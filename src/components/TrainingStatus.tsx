@@ -3,7 +3,8 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { FormattedMessage, FormattedRelative } from 'react-intl'
+import { FormattedRelative } from 'react-intl'
+import FormattedMessageId from './FormattedMessageId'
 import { FM } from '../react-intl-messages'
 import { TooltipHost, FontClassNames } from 'office-ui-fabric-react'
 import { Icon } from 'office-ui-fabric-react/lib/Icon'
@@ -58,12 +59,13 @@ const internalStatusToUiStateMap = new Map<InternalTrainingStatus, StatusUI>([
 interface StatusUI {
     className: string
     iconName: string
-    iconLabelMessageId: string
+    iconLabelMessageId: FM
     additionalIconClasses: string
     dataTestId: string
 }
 
-export interface Props {
+// Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
+export interface ReceivedProps {
     didPollingExpire: boolean
     status: InternalTrainingStatus
     failureMessage: string | null
@@ -71,51 +73,38 @@ export interface Props {
     onClickRefresh: () => void
 }
 
-const Component: React.SFC<Props> = (props: Props) => {
+type Props = ReceivedProps
+
+const Component: React.SFC<Props> = (props) => {
     const uiState = internalStatusToUiStateMap.get(props.status)!
     return (
         <div className={`cl-training-status ${FontClassNames.mediumPlus}`} data-testid="training-status-status-group">
             <div className={`cl-training-status__icon-row ${uiState.className} ${props.didPollingExpire ? 'cl-training-status__icon-row--expired' : ''}`}>
-                <FormattedMessage
-                    id={FM.APP_TRAINING_STATUS_STATUS}
-                    defaultMessage="Status"
-                />: &nbsp;<Icon iconName={uiState.iconName} className={uiState.additionalIconClasses} />
+                <FormattedMessageId id={FM.APP_TRAINING_STATUS_STATUS} />: &nbsp;<Icon iconName={uiState.iconName} className={uiState.additionalIconClasses} />
                 &nbsp;<span className="cl-training-status__icon-label" data-testid={`${uiState.dataTestId}`}>
-                    <FormattedMessage
-                        id={uiState.iconLabelMessageId}
-                        defaultMessage="Status Placeholder"
-                    />
+                    <FormattedMessageId id={uiState.iconLabelMessageId} />
                 </span>
                 {props.status === InternalTrainingStatus.Failed && props.failureMessage
                     && <TooltipHost content={props.failureMessage}>
-                        <Icon iconName="Info" className="cl-icon" />
+                        <Icon iconName="Info" className="cl-icon" data-testid="training-status-failed" />
                     </TooltipHost>}
                 {props.didPollingExpire
                     && <TooltipHost
                         tooltipProps={{
                             onRenderContent: () =>
-                                <FormattedMessage
-                                    id={FM.APP_TRAINING_STATUS_EXPIRED}
-                                    defaultMessage="Status Placeholder"
-                                />
+                                <FormattedMessageId id={FM.APP_TRAINING_STATUS_EXPIRED} />
                         }}
                     >
-                         &nbsp;<Icon iconName="Warning" className="cl-icon" data-testid="training-status-polling-stopped-warning"/>
+                        &nbsp;<Icon iconName="Warning" className="cl-icon" data-testid="training-status-polling-stopped-warning" />
                     </TooltipHost>}
             </div>
             <div className={`cl-training-status__text-row ${FontClassNames.small}`} data-testid="training-status-last-update">
-                <FormattedMessage
-                    id={FM.APP_TRAINING_STATUS_LAST_UPDATE}
-                    defaultMessage="Last Update"
-                />: &nbsp;
+                <FormattedMessageId id={FM.APP_TRAINING_STATUS_LAST_UPDATE} />: &nbsp;
                     <span className="cl-training-status__time">
                     {props.lastUpdatedDatetime ? <FormattedRelative value={props.lastUpdatedDatetime} /> : ''}
                 </span>
                 <button className={`cl-training-status__trigger ${FontClassNames.small}`} onClick={props.onClickRefresh} data-testid="training-status-refresh-button">
-                    <FormattedMessage
-                        id={FM.APP_TRAINING_STATUS_REFRESH}
-                        defaultMessage="Refresh"
-                    />
+                    <FormattedMessageId id={FM.APP_TRAINING_STATUS_REFRESH} />
                 </button>
             </div>
         </div>

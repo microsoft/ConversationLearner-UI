@@ -2,17 +2,18 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import * as React from 'react'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { State } from '../../types'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
 import { AppBase, PackageReference } from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { createAppTagThunkAsync } from '../../actions/appActions'
-import PackageCreator from './PackageCreator';
+import PackageCreator from './PackageCreator'
 import * as util from '../../Utils/util'
+import { FM } from '../../react-intl-messages'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (packageReference: PackageReference, component: PackageTable) => React.ReactNode
@@ -91,14 +92,18 @@ class PackageTable extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        let packageReferences = util.packageReferences(this.props.app);
+        const packageReferences = util.packageReferences(this.props.app);
         return (
             <div>
                 <OF.PrimaryButton
                     onClick={this.onClickNewTag}
-                    ariaDescription='New Tag'
-                    text='New Tag'
+                    ariaDescription={util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSIONS_CREATE)}
+                    text={util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSIONS_CREATE)}
+                    iconProps={{ iconName: 'Add' }}
                 />
+                <p>
+                    {util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION)}
+                </p>
                 <PackageCreator
                     open={this.state.isPackageCreatorOpen}
                     onSubmit={this.onSubmitPackageCreator}
