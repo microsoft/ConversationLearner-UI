@@ -11,6 +11,10 @@ import * as train from '../../../support/Train'
 import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
+// This "Expected Entity Labeling" test scenario is Part 1 and
+// the "Learned Entity Labeling" test scenario is Part 2 in that 
+// it continues from where this test case left off by using the
+// model created by this test scenario.
 describe('Expected Entity Labeling - Train', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 

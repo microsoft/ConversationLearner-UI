@@ -9,7 +9,7 @@ import * as scorerModal from '../../../support/components/ScorerModal'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
-describe('Basic Branching', () => {
+describe('Branching', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   context('Setup', () => {
