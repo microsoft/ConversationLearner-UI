@@ -196,46 +196,35 @@ export function VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector(userMes
 }
 
 export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
-  const funcName = `LabelTextAsEntity(${text}, ${entity}, ${itMustNotBeLabeledYet})`
-
   function LabelIt() {
     // This actually works if text is a word or a phrase.
     cy.Get('body').trigger('Test_SelectWord', { detail: text })
     cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
   }
 
-  if (itMustNotBeLabeledYet) LabelIt()
-  else {
+  if (itMustNotBeLabeledYet) {
+    LabelIt()
+  } else {
     // First make sure it is not already labeled before trying to label it.
     cy.WaitForStableDOM()
     cy.Enqueue(() => {
-      let found = false
+      let labeledAlready = false
       const elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
-
-helpers.ConLog(funcName, `elements.length=${elements.length}`)
-for (let i = 0; i < elements.length; i++) helpers.Dump(funcName, elements[i])
-helpers.ConLog(funcName, `Now lets try elements.find...`)
 
       // If you need to find a phrase, this part of the code will fail, 
       // you will need to upgrade this code in that case.
-      let element
       for (let i = 0; i < elements.length; i++) {
-helpers.ConLog(funcName, elements[i].textContent)
         if (helpers.TextContentWithoutNewlines(elements[i]) === text) {
-          element = elements[i]
+          labeledAlready = Cypress.$(elements[i]).parents('.cl-entity-node--custom')
+                            .find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`)
+                            .length > 0
           break;
         }
       }
       
-//       const element = elements.find(element => {
-// helpers.ConLog(funcName, element.textContent)
-//         return helpers.TextContentWithoutNewlines(element) === text
-//       })
-
-      if (element) {
-        found = Cypress.$(element).parents('.cl-entity-node--custom').find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`).length == 0
+      if (!labeledAlready) {
+        LabelIt()
       }
-      if (!found) LabelIt()
     })
   }
 }
