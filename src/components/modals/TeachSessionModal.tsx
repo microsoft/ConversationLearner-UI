@@ -654,6 +654,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
                 return Util.formatMessageId(intl, FM.BUTTON_ABANDON)
             case EditDialogType.BRANCH:
                 return Util.formatMessageId(intl, FM.BUTTON_ABANDON_BRANCH)
@@ -673,6 +674,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     renderSaveText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
                 return Util.formatMessageId(intl, FM.BUTTON_SAVE)
             case EditDialogType.BRANCH:
                 return Util.formatMessageId(intl, FM.BUTTON_SAVE_BRANCH)
@@ -692,6 +694,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     renderConfirmText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
             case EditDialogType.BRANCH:
                 return Util.formatMessageId(intl, FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE)
             case EditDialogType.LOG_EDITED:

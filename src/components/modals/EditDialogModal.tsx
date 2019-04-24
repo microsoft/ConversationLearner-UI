@@ -306,7 +306,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             console.log('Warning: No Activity Selected')
             return
         }
-
+/* LARS TODO
         if (filledEntityMap) {
 
             // Generate stub
@@ -330,8 +330,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 scoredAction: scoredAction
             }
 
-            await this.props.onInsertAction(this.props.trainDialog, this.state.selectedActivity, SelectionType.NEXT, scorerStep)           
-        }
+    // LARS TODO        await this.props.onInsertAction(this.props.trainDialog, this.state.selectedActivity, SelectionType.NEXT, scorerStep)           
+    }*/
     }
 
     //---- ABANDON ----
@@ -399,7 +399,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             }
         }
     }
-
+/* LARS remove?
     @OF.autobind
     async onReplaceStubAction(action: CLM.ActionBase) {
         if (!this.state.selectedActivity) {
@@ -440,7 +440,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             }
         }
     }
-
+*/
     // TEMP: until server can exclude label conflicts with self, we need
     // to check for them and force save before we can add a turn 
     showInternalLabelConflict(): boolean {
@@ -714,6 +714,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             case EditDialogType.NEW:
                 this.props.onDeleteDialog()
                 break;
+            case EditDialogType.IMPORT:
+                this.props.onCloseModal(false) // false -> no need to reload original
+                break;
             case EditDialogType.BRANCH:
                 this.props.onCloseModal(false) // false -> no need to reload original
                 break;
@@ -740,6 +743,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
                 return formatMessageId(intl, FM.BUTTON_ABANDON)
             case EditDialogType.BRANCH:
                 return formatMessageId(intl, FM.BUTTON_ABANDON_BRANCH)
@@ -763,6 +767,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
             case EditDialogType.BRANCH:
             case EditDialogType.LOG_EDITED:
             case EditDialogType.TRAIN_EDITED:
@@ -773,6 +778,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 return dialogChanged
                     ? "Cancel"
                     : "Delete"
+            default:
+                return ""
         }
     }
 
@@ -832,6 +839,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
             case EditDialogType.BRANCH:
                 this.props.onCreateDialog(trainDialog, trainDialogValidity)
                 break;
@@ -878,6 +886,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         switch (this.props.editType) {
             // Save buttons
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
             case EditDialogType.BRANCH:
             case EditDialogType.LOG_EDITED:
             case EditDialogType.TRAIN_EDITED:
@@ -896,6 +905,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
                 return formatMessageId(intl, FM.BUTTON_SAVE)
             case EditDialogType.BRANCH:
                 return formatMessageId(intl, FM.BUTTON_SAVE_BRANCH)
@@ -919,6 +929,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
             case EditDialogType.BRANCH:
             case EditDialogType.LOG_EDITED:
             case EditDialogType.TRAIN_EDITED:
@@ -929,6 +940,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 return dialogChanged
                     ? "Accept"
                     : "Cancel"
+            default:
+                return ""
         }
     }
 
@@ -942,6 +955,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             case EditDialogType.NEW:
             case EditDialogType.BRANCH:
                 return formatMessageId(intl, FM.EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE)
+            case EditDialogType.IMPORT:
+                return formatMessageId(intl, FM.EDITDIALOGMODAL_CONFIRMABANDON_IMPORT_TITLE)
             case EditDialogType.LOG_EDITED:
                 return formatMessageId(intl, FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE)
             case EditDialogType.LOG_ORIGINAL:

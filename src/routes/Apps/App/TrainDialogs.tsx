@@ -360,7 +360,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     sourceTrainDialogId(): string | null {
         if (this.state.currentTrainDialog 
             && this.state.editType !== EditDialogType.BRANCH
-            && this.state.editType !== EditDialogType.NEW) {
+            && this.state.editType !== EditDialogType.NEW
+            && this.state.editType !== EditDialogType.IMPORT) {
                 return this.state.currentTrainDialog.trainDialogId
             }
         return null
@@ -696,7 +697,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.fetchHistoryThunkAsync as any
             )
 
-            const editType = (editDialogType !== EditDialogType.NEW && editDialogType !== EditDialogType.BRANCH) 
+            const editType = 
+                (editDialogType !== EditDialogType.NEW && 
+                editDialogType !== EditDialogType.BRANCH &&
+                editDialogType !== EditDialogType.IMPORT) 
                 ? EditDialogType.TRAIN_EDITED 
                 : editDialogType
 
@@ -727,8 +731,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             const conflictIgnoreId = this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null
             const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput, conflictIgnoreId) as any) as Promise<CLM.TeachWithHistory>)
 
-            const editType = (this.state.editType !== EditDialogType.NEW && this.state.editType !== EditDialogType.BRANCH) ?
-                EditDialogType.TRAIN_EDITED : this.state.editType
+            const editType = 
+                (this.state.editType !== EditDialogType.NEW && 
+                this.state.editType !== EditDialogType.BRANCH &&
+                this.state.editType !== EditDialogType.IMPORT) 
+                ? EditDialogType.TRAIN_EDITED : this.state.editType
 
             // Update currentTrainDialog with tags and description
             const currentTrainDialog = this.state.currentTrainDialog ? {
@@ -821,11 +828,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async openTrainDialog(trainDialog: CLM.TrainDialog, roundIndex: number, scoreIndex: number | null) {
 
         const selectedActivityIndex = DialogUtils.activityIndexFromRound(trainDialog, roundIndex, scoreIndex) || null
-        this.onClickTrainDialogItem(trainDialog, selectedActivityIndex)
+        this.onClickTrainDialogItem(trainDialog, EditDialogType.TRAIN_ORIGINAL, selectedActivityIndex)
     }
 
     @OF.autobind
-    async onClickTrainDialogItem(trainDialog: CLM.TrainDialog, selectedActivityIndex: number | null = null) {
+    async onClickTrainDialogItem(trainDialog: CLM.TrainDialog, editType: EditDialogType = EditDialogType.TRAIN_ORIGINAL, selectedActivityIndex: number | null = null) {
         this.props.clearWebchatScrollPosition()
         const trainDialogWithDefinitions: CLM.TrainDialog = {
             ...trainDialog,
@@ -853,7 +860,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: trainDialog,
                 originalTrainDialog: this.state.currentTrainDialog,
-                editType: EditDialogType.TRAIN_ORIGINAL,
+                editType,
                 isEditDialogModalOpen: true,
                 selectedActivityIndex
             })
@@ -884,7 +891,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isConversationImportOpen: false,
             originalTrainDialog: trainDialog
         })
-        this.onClickTrainDialogItem(trainDialog)
+        this.onClickTrainDialogItem(trainDialog, EditDialogType.IMPORT)
     }
 
     async onCloseEditDialogModal(reload: boolean = false) {
