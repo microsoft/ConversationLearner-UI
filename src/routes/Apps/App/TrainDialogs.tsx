@@ -855,7 +855,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 originalTrainDialog: this.state.currentTrainDialog,
                 editType: EditDialogType.TRAIN_ORIGINAL,
                 isEditDialogModalOpen: true,
-                isTreeViewModalOpen: false,
                 selectedActivityIndex
             })
         }
@@ -1051,19 +1050,39 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         componentRef={component => this.newTeachSessionButton = component!}
                         iconProps={{ iconName: 'Add' }}
                     />
-                    {
+                    {this.state.isTreeViewModalOpen ?
+                        <OF.DefaultButton
+                            className="cl-rotate"
+                            iconProps={{ iconName: 'AlignJustify' }}
+                            onClick={this.onCloseTreeView}
+                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_LISTVIEW_BUTTON)}
+                            text={Util.formatMessageId(intl, FM.TRAINDIALOGS_LISTVIEW_BUTTON)}
+                        />
+                        :
                         <OF.DefaultButton
                             className="cl-rotate"
                             iconProps={{ iconName: 'BranchFork2' }}
                             onClick={this.onOpenTreeView}
-                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                            text={"Tree View"}
+                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}                      
+                            text={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
                         />
                     }
                 </div>
 
-                {trainDialogs.length === 0
-                    ? <div className="cl-page-placeholder">
+                <TreeView
+                    open={this.state.isTreeViewModalOpen}
+                    app={this.props.app}
+                    originalTrainDialogId={this.state.originalTrainDialog ? this.state.originalTrainDialog.trainDialogId : null}
+                    sourceTrainDialog={this.state.currentTrainDialog}
+                    editType={this.state.editType}
+                    editState={editState}
+                    editingPackageId={this.props.editingPackageId}
+                    onCancel={this.onCloseTreeView}
+                    openTrainDialog={this.openTrainDialog}
+                />
+
+                {trainDialogs.length === 0  &&
+                    <div className="cl-page-placeholder">
                         <div className="cl-page-placeholder__content">
                             <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Train Dialog</div>
                             <OF.PrimaryButton
@@ -1086,7 +1105,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             />
                         </div>
                     </div>
-                    : <React.Fragment>
+                }
+                {!this.state.isTreeViewModalOpen && trainDialogs.length !== 0 &&
+                    <React.Fragment>
                         <div>
                             <OF.Label htmlFor="train-dialogs-input-search" className={OF.FontClassNames.medium}>
                                 Search:
@@ -1095,6 +1116,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 // TODO: This next line has no visible affect on the DOM, but test automation needs it!
                                 data-testid="train-dialogs-input-search"
                                 id="train-dialogs-input-search"
+                                value={this.state.searchValue}
                                 className={OF.FontClassNames.medium}
                                 onChange={(newValue) => this.onChangeSearchString(newValue)}
                                 onSearch={(newValue) => this.onChangeSearchString(newValue)}
@@ -1226,17 +1248,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     conflictPairs={[]}
                     onAbortConflictResolution={() => { }}
                     onAcceptConflictResolution={async () => { }}
-                />
-                <TreeView
-                    open={(this.state.isTreeViewModalOpen)}
-                    app={this.props.app}
-                    originalTrainDialogId={this.state.originalTrainDialog ? this.state.originalTrainDialog.trainDialogId : null}
-                    sourceTrainDialog={this.state.currentTrainDialog}
-                    editType={this.state.editType}
-                    editState={editState}
-                    editingPackageId={this.props.editingPackageId}
-                    onCancel={this.onCloseTreeView}
-                    openTrainDialog={this.openTrainDialog}
                 />
                 {this.state.isConversationImportOpen && 
                     <ConversationImporter
