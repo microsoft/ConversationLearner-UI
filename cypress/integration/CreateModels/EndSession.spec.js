@@ -6,7 +6,6 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as actions from '../../support/Actions'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as train from '../../support/Train'
 import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 import * as helpers from '../../support/Helpers'
@@ -37,18 +36,18 @@ describe('End Session - Create Model', () => {
 
     it('Should train model to respond to "Hi"', () => {
       train.TypeYourMessage('Hi')
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       train.SelectAction('Hello')
     })
 
     it('Should train model to respond to "Yo"', () => {
       train.TypeYourMessage('Yo')
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       train.SelectAction('Okay')
     })
     
     it('Should add a description and save the Train Dialog', () => {
-      editDialogModal.TypeDescription(preliminaryTrainingDescription)
+      train.TypeDescription(preliminaryTrainingDescription)
       train.Save()
     })
 
@@ -58,17 +57,17 @@ describe('End Session - Create Model', () => {
     it('Should be able to edit the training that we just saved and find the description we gave it', () => {
       cy.WaitForTrainingStatusCompleted()
       train.EditTraining('Hi', 'Yo', 'Okay')
-      editDialogModal.VerifyDescription(preliminaryTrainingDescription)
+      train.VerifyDescription(preliminaryTrainingDescription)
     })
 
     it('Should train model to respond to "Bye"', () => {
       train.TypeYourMessage('Bye')
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       train.SelectEndSessionAction('Goodbye')
     })
 
-    it('Verify that the selecting the EndSession Bot response did not remove the description', () => {
-      editDialogModal.VerifyDescription(preliminaryTrainingDescription)
+    it('Verify that selecting the EndSession Bot response did not remove the description', () => {
+      train.VerifyDescription(preliminaryTrainingDescription)
     })
 
     it('Should save the Train Dialog and verifies that we still have only 1 Train Dialog and that the description persisted', () => {
@@ -85,13 +84,13 @@ describe('End Session - Create Model', () => {
 
     it('Should train model to respond to "Yo"', () => {
       train.TypeYourMessage('Yo')
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       train.SelectAction('Okay')
     })
     
     it('Should train model to respond to "Bye"', () => {
       train.TypeYourMessage('Bye')
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       train.SelectEndSessionAction('Goodbye')
     })
 

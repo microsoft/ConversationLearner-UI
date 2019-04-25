@@ -7,43 +7,84 @@ import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as scorerModal from '../../support/components/ScorerModal'
 import * as train from '../../support/Train'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as common from '../../support/Common'
+import * as helpers from '../../support/Helpers'
 
-describe('Train', () => {
-  it('Wait vs Non-Wait Actions', () => {
-    models.ImportModel('z-waitNoWait', 'z-waitNoWait.cl')
+describe('Wait vs Non Wait Actions - Train', () => {
+  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
-    modelPage.NavigateToTrainDialogs()
-    cy.WaitForTrainingStatusCompleted()
+  context('Setup', () => {
+    it('Should import a model to test against, navigate to Train Dialogs view and wait for training status to complete', () => {
+      models.ImportModel('z-waitNoWait', 'z-waitNoWait.cl')
+      modelPage.NavigateToTrainDialogs()
+      cy.WaitForTrainingStatusCompleted()
+    })
+  })
 
-    train.CreateNewTrainDialog()
+  context('Train - 1st Round', () => {
+    it('Should create a new Train Dialog', () => {
+      train.CreateNewTrainDialog()
+    })
 
-    train.TypeYourMessage('Hello')
-    editDialogModal.ClickScoreActionsButton()
-    scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
-    scorerModal.VerifyContainsEnabledAction('Cows say moo!')
-    scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
-    train.SelectAction('Which animal would you like?')
+    it('Should type a user message and click the Score Actions button', () => {
+      train.TypeYourMessage('Hello')
+      train.ClickScoreActionsButton()
+    })
+      
+    it('Should verify all 3 actions are enabled', () => {
+      scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
+      scorerModal.VerifyContainsEnabledAction('Cows say moo!')
+      scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
+    })
 
-    train.TypeYourMessage('Cow')
-    editDialogModal.ClickScoreActionsButton()
-    scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
-    scorerModal.VerifyContainsEnabledAction('Cows say moo!')
-    scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
-    train.SelectAction('Cows say moo!')
+    it('Should select a wait Action for the Bot Response', () => {
+      train.SelectAction('Which animal would you like?')
+    })
+  })
 
-    train.SelectAction('Which animal would you like?')
+  context('Train - 2nd Round', () => {
+    it('Should type another user message and click the Score Actions button', () => {
+      train.TypeYourMessage('Cow')
+      train.ClickScoreActionsButton()
+    })
 
-    train.TypeYourMessage('Duck')
-    editDialogModal.ClickScoreActionsButton()
-    scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
-    scorerModal.VerifyContainsEnabledAction('Cows say moo!')
-    scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
-    train.SelectAction(common.ducksSayQuack)
+    it('Should verify 3 actions are enabled', () => {
+      scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
+      scorerModal.VerifyContainsEnabledAction('Cows say moo!')
+      scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
+    })
 
-    train.SelectAction('Which animal would you like?')
+    it('Should select a non-wait Action for the Bot Response', () => {
+      train.SelectAction('Cows say moo!')
+    })
 
-    train.Save()
+    it('Should select a wait Action for the Bot Response which also verifies that the non-wait Action worked as expected', () => {
+      train.SelectAction('Which animal would you like?')
+    })
+  })
+
+  context('Train - 3rd Round', () => {
+    it('Should type another user message and click the Score Actions button', () => {
+      train.TypeYourMessage('Duck')
+      train.ClickScoreActionsButton()
+    })
+
+    it('Should verify 3 actions are enabled', () => {
+      scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
+      scorerModal.VerifyContainsEnabledAction('Cows say moo!')
+      scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
+    })
+
+    it('Should select a non-wait Action for the Bot Response', () => {
+      train.SelectAction(common.ducksSayQuack)
+    })
+
+    it('Should select a wait Action for the Bot Response which also verifies that the non-wait Action worked as expected', () => {
+      train.SelectAction('Which animal would you like?')
+    })
+
+    it('Should save the training and verify that it appears in the grid', () => {
+      train.Save()
+    })
   })
 })

@@ -5,7 +5,7 @@
 import * as CLM from '@conversationlearner/models'
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
-import { deepCopy } from './util'
+import { deepCopy, getDefaultEntityMap } from './util'
 import { Activity } from 'botframework-directlinejs'
 import TagsReadOnly from '../components/TagsReadOnly'
 
@@ -169,6 +169,21 @@ export function trainDialogLastInput(trainDialog: CLM.TrainDialog): string | voi
     }
 }
 
+export function trainDialogLastResponse(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): string | void {
+    // Find last action of last scorer step of last round
+    // If found, return payload, otherwise return not found icon
+    if (trainDialog.rounds && trainDialog.rounds.length > 0) {
+        const scorerSteps = trainDialog.rounds[trainDialog.rounds.length - 1].scorerSteps;
+        if (scorerSteps.length > 0) {
+            const actionId = scorerSteps[scorerSteps.length - 1].labelAction;
+            const action = actions.find(a => a.actionId === actionId);
+            if (action) {
+                return CLM.ActionBase.GetPayload(action, getDefaultEntityMap(entities))
+            }
+        }
+    }
+}
+
 export function trainDialogRenderTags(trainDialog: CLM.TrainDialog): React.ReactNode {
     return (
         <span className={`${OF.FontClassNames.mediumPlus}`} data-testid="train-dialogs-tags">
@@ -181,6 +196,21 @@ export function trainDialogRenderTags(trainDialog: CLM.TrainDialog): React.React
 
 export function trainDialogRenderDescription(trainDialog: CLM.TrainDialog): React.ReactNode {
     return trainDialog.description ? <i>{trainDialog.description}</i> : dialogSampleInput(trainDialog)
+}
+
+export function cleanTrainDialog(trainDialog: CLM.TrainDialog) {
+    // Remove actionless dummy step (used for rendering) if they exist
+    for (const round of trainDialog.rounds) {
+        if (round.scorerSteps.length > 0 && round.scorerSteps[0].labelAction === undefined) {
+            round.scorerSteps = []
+        }
+    }
+    // Remove empty filled entities (used for rendering) if they exist
+    for (const round of trainDialog.rounds) {
+        for (const scorerStep of round.scorerSteps) {
+            scorerStep.input.filledEntities = scorerStep.input.filledEntities.filter(fe => fe.values.length > 0)
+        }
+    }
 }
 
 function doesScorerStepMatch(scorerStep1: CLM.TrainScorerStep, scorerStep2: CLM.TrainScorerStep): boolean {
@@ -201,26 +231,62 @@ function doesScorerStepMatch(scorerStep1: CLM.TrainScorerStep, scorerStep2: CLM.
     return true
 }
 
+// TEMP: Returns true if edited dialog has inconsistent labelling
+// with the original train dialog.  Needed temporarily until server
+// support dialog continuation that excludes original train dialog from conflict test
+export function hasInternalLabelConflict(originalTrainDialog: CLM.TrainDialog, newTrainDialog: CLM.TrainDialog): boolean {
+    if (!originalTrainDialog) {
+        return false
+    }
+
+    let originalExtractorSteps = originalTrainDialog.rounds.reduce((acc, round) => {
+        return [...acc, ...round.extractorStep.textVariations]
+    }, []);
+
+    let newExtractorSteps = newTrainDialog.rounds.reduce((acc, round) => {
+        return [...acc, ...round.extractorStep.textVariations]
+    }, []);
+
+    // Only need to check one as train dialogs have self-consistent labelling, so make unique
+    originalExtractorSteps = originalExtractorSteps.filter((item, i, ar) => ar.findIndex(es => es.text === item.text) === i)
+    newExtractorSteps = newExtractorSteps.filter((item, i, ar) => ar.findIndex(es => es.text === item.text) === i)
+    
+    for (let newVariation of newExtractorSteps) {
+        const sourceVariation = originalExtractorSteps.find(tv => tv.text === newVariation.text)
+        if (sourceVariation) {
+            if (!doLabelledEntitiesMatch(newVariation.labelEntities, sourceVariation.labelEntities)) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
+function doLabelledEntitiesMatch(labelEntities1: CLM.LabeledEntity[], labelEntities2: CLM.LabeledEntity[]): boolean {
+
+        // Get unique ids
+        const entityIds1 = labelEntities1.map(le => le.entityId).filter((item, i, ar) => ar.indexOf(item) === i)
+        const entityIds2 = labelEntities2.map(le => le.entityId).filter((item, i, ar) => ar.indexOf(item) === i)
+    
+        if (entityIds1.length !== entityIds2.length) {
+            return false
+        }
+    
+        if (entityIds1.filter(entityId => entityIds2.indexOf(entityId) < 0).length > 0) {
+            return false
+        }
+        if (entityIds2.filter(entityId => entityIds1.indexOf(entityId) < 0).length > 0) {
+            return false
+        }
+        return true
+}
+
 function doesExtractorStepMatch(extractorStep1: CLM.TrainExtractorStep, extractorStep2: CLM.TrainExtractorStep): boolean {
     // Only need to test the 1st Text Variation as they are equivalent w/in a round
     const labelEntities1 = extractorStep1.textVariations[0].labelEntities
     const labelEntities2 = extractorStep2.textVariations[0].labelEntities
 
-    // Get unique ids
-    const entityIds1 = labelEntities1.map(le => le.entityId).filter((item, i, ar) => ar.indexOf(item) === i)
-    const entityIds2 = labelEntities2.map(le => le.entityId).filter((item, i, ar) => ar.indexOf(item) === i)
-
-    if (entityIds1.length !== entityIds2.length) {
-        return false
-    }
-
-    if (entityIds1.filter(entityId => entityIds2.indexOf(entityId) < 0).length > 0) {
-        return false
-    }
-    if (entityIds2.filter(entityId => entityIds1.indexOf(entityId) < 0).length > 0) {
-        return false
-    }
-    return true
+    return doLabelledEntitiesMatch(labelEntities1, labelEntities2)
 }
 
 function doesRoundMatch(round1: CLM.TrainRound, round2: CLM.TrainRound, isLastRound: boolean): boolean {

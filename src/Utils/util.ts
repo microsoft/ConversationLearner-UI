@@ -148,3 +148,14 @@ export function deepCopy<T>(obj: T): T {
 
     throw new Error("Unknown Type");
 }
+
+export const returnStringWhenError = (s: string) => {
+    return <T>(f: () => T): T | string => {
+        try {
+            return f()
+        }
+        catch (err) {
+            return s
+        }
+    }
+}

@@ -118,7 +118,7 @@ export const fetchTrainDialogThunkAsync = (appId: string, trainDialogId: string,
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRAIN_DIALOG_ASYNC))
-            return null;
+            throw e;
         }
     }
 }
@@ -294,7 +294,7 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
                 }
             }
             
-            // TODO: Make more efficient by deleteing and loading only changed ones
+            // TODO: Make more efficient by deleting and loading only changed ones
             dispatch(fetchAllTrainDialogsThunkAsync(appId));
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             dispatch(trainDialogMergeFulfilled())
@@ -540,7 +540,7 @@ export const fetchHistoryThunkAsync = (appId: string, trainDialog: CLM.TrainDial
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_HISTORY_ASYNC))
-            return null;
+            throw e
         }
     }
 }

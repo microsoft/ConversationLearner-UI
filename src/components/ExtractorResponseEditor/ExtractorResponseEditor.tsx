@@ -3,37 +3,39 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { Editor } from 'slate-react'
-import Plain from 'slate-plain-serializer'
 import * as OF from 'office-ui-fabric-react'
-import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType, IGenericEntityData } from './models'
-import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValueUsingTokenData, getSelectedText } from './utilities'
+import * as CLM from '@conversationlearner/models'
+import Plain from 'slate-plain-serializer'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
-import EntityPicker from './EntityPickerContainer'
-import './ExtractorResponseEditor.css'
+import EntityPicker from './EntityPicker'
 import TokenNode from './TokenNode'
-import { EntityType, EntityBase } from '@conversationlearner/models'
+import { Editor } from 'slate-react'
 import { Expando } from '../modals'
+import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType, IGenericEntityData, ExtractorStatus } from './models'
+import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValueUsingTokenData, getSelectedText } from './utilities'
+import './ExtractorResponseEditor.css'
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any
 
 interface Props {
     readOnly: boolean
-    isValid: boolean
+    status: ExtractorStatus,
     options: IOption[]
     text: string
-    entities: EntityBase[]
+    entities: CLM.EntityBase[]
     customEntities: IGenericEntity<any>[]
-    onChangeCustomEntities: (customEntities: IGenericEntity<any>[], entities: EntityBase[]) => void
+    onChangeCustomEntities: (customEntities: IGenericEntity<any>[], entities: CLM.EntityBase[]) => void
     preBuiltEntities: IGenericEntity<any>[]
     onClickNewEntity: (entityTypeFilter: string) => void
+    isPickerVisible: boolean,
+    onOpenPicker: () => void
+    onClosePicker: (onlyCloseOthers?: boolean) => void
 }
 
 interface State {
     isSelectionOverlappingOtherEntities: boolean
-    isMenuVisible: boolean
     isDeleteButtonVisible: boolean
     isPreBuiltExpandoOpen: boolean
     menuPosition: IPosition | null
@@ -44,7 +46,6 @@ interface State {
 
 const initialState: Readonly<State> = {
     isSelectionOverlappingOtherEntities: false,
-    isMenuVisible: false,
     isDeleteButtonVisible: false,
     isPreBuiltExpandoOpen: true,
     menuPosition: {
@@ -70,17 +71,13 @@ const externalChangeOperations = ['insert_node', 'remove_node']
  * however internally it stores as generic options list and a Slate.js value object.
  */
 class ExtractorResponseEditor extends React.Component<Props, State> {
-    tokenMenu: HTMLElement
-    menu: HTMLElement
-    editor: React.RefObject<any>
+    menuRef = React.createRef<HTMLDivElement>()
+    editor = React.createRef<any>();
 
     constructor(props: Props) {
         super(props)
 
-        this.editor = React.createRef();
-
         const preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
-
         this.state = {
             ...initialState,
             value: convertEntitiesAndTextToTokenizedEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType),
@@ -147,13 +144,13 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             this.setState({
                 value: convertEntitiesAndTextToTokenizedEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
                 preBuiltEditorValues: nextProps.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(nextProps.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType)),
-                isMenuVisible: false,
                 isSelectionOverlappingOtherEntities: false
             })
+            this.props.onClosePicker()
         }
     }
 
-    getNextPickerProps = (value: SlateValue, menu: HTMLElement): IEntityPickerProps | void => {
+    getNextPickerProps = (value: SlateValue, menu: HTMLElement | null): IEntityPickerProps | void => {
         const hideMenu: IEntityPickerProps = {
             isOverlappingOtherEntities: false,
             isVisible: false,
@@ -217,7 +214,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                 const builtInEntityId = builtInEntity.data.option.id
                 const builtInEntityDef = this.props.entities.find(e => e.entityId === builtInEntityId)
                 if (builtInEntityDef) {
-                    builtInTypeFilter = builtInEntityDef.entityType  
+                    builtInTypeFilter = builtInEntityDef.entityType
                 }
             }
         }
@@ -230,30 +227,31 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
     }
 
-    // If user clicks on a single character, ohChange gets called with empty item.  This changes the
-    // selection to pick the charater
+    // If user clicks on a single character, onChange gets called with empty item.  This changes the
+    // selection to pick the character
     onSelectChar = () => {
         // Make selection
         const selection = window.getSelection();
-        const parentNode = selection 
-            && selection.anchorNode 
-            && selection.anchorNode.parentElement 
+        const parentNode = selection
+            && selection.anchorNode
+            && selection.anchorNode.parentElement
             && selection.anchorNode.parentElement.parentNode
 
-        if (parentNode) {
+        if (parentNode && selection) {
             const sibling = parentNode.nextSibling ? parentNode.nextSibling : parentNode.parentNode && parentNode.parentNode.nextSibling
 
             if (sibling && sibling.firstChild && sibling.firstChild.firstChild && sibling.firstChild.firstChild.firstChild) {
                 const newSelection = sibling.firstChild.firstChild.firstChild
                 const range = document.createRange();
                 range.selectNode(newSelection)
-                selection.removeAllRanges();
+                selection.removeAllRanges()
                 selection.addRange(range)
             }
         }
     }
 
-    onChange = (change: any) => {
+    @OF.autobind
+    onChange(change: any) {
         const { value, operations } = change
 
         const operationsJs = operations.toJS()
@@ -267,7 +265,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             ignoreOperations.push("set_selection")
         }
 
-        if (operationsJs.some((o: any) =>  ignoreOperations.includes(o.type))) {
+        if (operationsJs.some((o: any) => ignoreOperations.includes(o.type))) {
             return
         }
 
@@ -276,6 +274,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         // User clicked next to a single character.  Go ahead and autoselect it
         if (tokenNodes.size === 0 && operationsJs.length === 1) {
             this.onSelectChar()
+            this.props.onClosePicker(true)
             return
         }
         if (tokenNodes.size > 0) {
@@ -318,14 +317,19 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             this.props.onChangeCustomEntities(customEntities, this.props.entities)
         }
 
-        const pickerProps = this.getNextPickerProps(change.value, this.menu)
+        const pickerProps = this.getNextPickerProps(change.value, this.menuRef.current)
         if (pickerProps) {
             this.setState({
                 isSelectionOverlappingOtherEntities: pickerProps.isOverlappingOtherEntities,
-                isMenuVisible: pickerProps.isVisible,
                 menuPosition: pickerProps.position,
                 builtInTypeFilter: pickerProps.builtInTypeFilter
             })
+            if (this.props.isPickerVisible && !pickerProps.isVisible) {
+                this.props.onClosePicker()
+            }
+            else if (!this.props.isPickerVisible && pickerProps.isVisible) {
+                this.props.onOpenPicker()
+            }
         }
     }
 
@@ -353,23 +357,19 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         return undefined
     }
 
-    menuRef = (menu: any) => {
-        this.menu = menu
-    }
-
     @OF.autobind
     onDeleteButtonVisible(isDeleteButtonVisible: boolean): void {
-        this.setState({isDeleteButtonVisible})
+        this.setState({ isDeleteButtonVisible })
     }
 
     renderNode = (props: any): React.ReactNode | void => {
         switch (props.node.type) {
-            case NodeType.TokenNodeType: 
+            case NodeType.TokenNodeType:
                 return <TokenNode {...props} />
-            case NodeType.CustomEntityNodeType: 
-                const cenProps = {...props, onDeleteButtonVisible: this.onDeleteButtonVisible}
+            case NodeType.CustomEntityNodeType:
+                const cenProps = { ...props, onDeleteButtonVisible: this.onDeleteButtonVisible }
                 return <CustomEntityNode {...cenProps} />
-            case NodeType.PreBuiltEntityNodeType:   
+            case NodeType.PreBuiltEntityNodeType:
                 return <PreBuiltEntityNode {...props} />
             default: return
         }
@@ -398,7 +398,9 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     @OF.autobind
     onClickNewEntity(entityTypeFilter: string) {
-        this.setState({isMenuVisible: false})
+        if (this.props.isPickerVisible) {
+            this.props.onClosePicker()
+        }
         this.props.onClickNewEntity(entityTypeFilter)
     }
 
@@ -406,7 +408,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         // For end 2 end unit testing.
         document.addEventListener("Test_SelectWord", this.onTestSelectWord)
     }
-    
+
     componentWillUnmount() {
         // For end 2 end unit testing.
         document.removeEventListener("Test_SelectWord", this.onTestSelectWord)
@@ -415,58 +417,96 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     // For end 2 end unit testing.
     @OF.autobind
     onTestSelectWord(val: any) {
-
-        const words = val.detail.split(" ")
+        const phrase: string = val.detail
+        const words = phrase.split(" ")
+        const firstWord = words[0]
+        const lastWord = words[words.length - 1]
 
         // Get start div
-        const arr = Array.from(document.querySelectorAll(".cl-token-node"))
+        const tokens = Array.from(document.querySelectorAll(".cl-token-node"))
+        const firstWordToken = tokens.filter(element => element.children[0].textContent === firstWord)[0]
+        const lastWordToken = tokens.filter(element => element.children[0].textContent === lastWord)[0]
 
-        const firstDiv = arr.filter(element => element.children[0].textContent === words[0])[0].children[0].children[0]
-        const lastDiv = arr.filter(element => element.children[0].textContent === words[words.length - 1])[0].children[0].children[0]
+        if (!firstWordToken || !lastWordToken) {
+            const extractionTextElement = document.querySelector('[data-slate-editor="true"]')
+            const input = extractionTextElement ? extractionTextElement.textContent : ''
+            throw new Error(`You attempted to select the phrase: '${phrase}', but it was not found in the input: '${input}'`)
+        }
 
+        const firstDiv = firstWordToken.children[0].children[0]
+        const lastDiv = lastWordToken.children[0].children[0]
         const slateEditor = firstDiv!.parentElement!.parentElement!.parentElement!.parentElement
 
         // Events are special, can't use spread or Object.keys
         const selectEvent: any = {}
-        for (const key in val) { 
+        for (const key in val) {
             if (key === 'currentTarget') {
-                
                 selectEvent['currentTarget'] = slateEditor
             }
             else if (key === 'type') {
                 selectEvent['type'] = "select"
             }
             else {
-                selectEvent[key] = val[key] 
+                selectEvent[key] = val[key]
             }
         }
-  
+
         // Make selection
-        const selection = window.getSelection();        
+        const selection = window.getSelection();
         const range = document.createRange();
 
-        range.setStartBefore(firstDiv)
-        range.setEndAfter(lastDiv)
+        if (selection) {
+            range.setStartBefore(firstDiv)
+            range.setEndAfter(lastDiv)
 
-        selection.removeAllRanges();
-        selection.addRange(range)
+            if (selection) {
+                selection.removeAllRanges();
+                selection.addRange(range)
+            }
 
-        // Fire select event
-        this.editor.current.onEvent("onSelect", selectEvent)
+            // Fire select event
+            this.editor.current.onEvent("onSelect", selectEvent)
+        }
+    }
+
+    borderStyle(): string {
+        switch (this.props.status) {
+            case ExtractorStatus.ERROR:
+                return 'entity-labeler__custom-editor--error'
+            case ExtractorStatus.WARNING:
+                return 'entity-labeler__custom-editor--warning'
+            default:
+                return ''
+        }
     }
 
     render() {
+        const filteredOptions = this.props.options
+            .filter(option => option.type === CLM.EntityType.LUIS)
+            .sort((a, b) => {
+                const nameCompare = (x: IOption, y: IOption) => x.name > y.name ? 1 : (x.name < y.name ? -1 : 0)
+                if (a.resolverType === this.state.builtInTypeFilter) {
+                    if (b.resolverType === this.state.builtInTypeFilter) {
+                        return nameCompare(a, b)
+                    }
+                    return -1
+                } else if (b.resolverType === this.state.builtInTypeFilter) {
+                    return -1
+                } else {
+                    return nameCompare(a, b)
+                }
+            })
 
         return (
             <div className="entity-labeler">
-                {(this.state.isMenuVisible || this.state.isDeleteButtonVisible) &&
-                    <div 
+                {(this.props.isPickerVisible || this.state.isDeleteButtonVisible) &&
+                    <div
                         className="entity-labeler-overlay"
-                        onClick={() => this.setState({isMenuVisible: false})}
+                        onClick={() => this.props.onClosePicker()}
                         role="button"
                     />
                 }
-                <div className={`entity-labeler__custom-editor ${this.props.readOnly ? 'entity-labeler__custom-editor--read-only' : ''} ${this.props.isValid ? '' : 'entity-labeler__custom-editor--error'}`}>
+                <div className={`entity-labeler__custom-editor ${this.props.readOnly ? 'entity-labeler__custom-editor--read-only' : ''} ${this.borderStyle()}`}>
                     <div className="entity-labeler__editor">
                         <Editor
                             data-testid="extractorresponseeditor-editor-text"
@@ -482,28 +522,16 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                         <EntityPicker
                             data-testid="extractorresponseeditor-entitypicker"
                             isOverlappingOtherEntities={this.state.isSelectionOverlappingOtherEntities}
-                            isVisible={this.state.isMenuVisible}
-                            options={this.props.options.filter(option => option.type === EntityType.LUIS).sort((a, b) => {
-                                const nameCompare = (x: IOption, y: IOption) => x.name > y.name ? 1 : (x.name < y.name ? -1 : 0)
-                                if (a.resolverType === this.state.builtInTypeFilter) {
-                                    if (b.resolverType === this.state.builtInTypeFilter) {
-                                        return nameCompare(a, b)
-                                    }
-                                    return -1
-                                } else if (b.resolverType === this.state.builtInTypeFilter) {
-                                    return -1
-                                } else {
-                                    return nameCompare(a, b)
-                                }
-                            })}
+                            isVisible={this.props.isPickerVisible}
+                            options={filteredOptions}
                             maxDisplayedOptions={500}
-                            menuRef={this.menuRef}
+                            ref={this.menuRef}
                             position={this.state.menuPosition}
                             value={this.state.value}
 
                             onClickNewEntity={this.onClickNewEntity}
                             onSelectOption={o => this.onSelectOption(o, this.state.value, this.onChange)}
-                            entityTypeFilter={this.state.builtInTypeFilter !== null ? this.state.builtInTypeFilter as any : EntityType.LUIS}
+                            entityTypeFilter={this.state.builtInTypeFilter !== null ? this.state.builtInTypeFilter as any : CLM.EntityType.LUIS}
                         />
                     </div>
                 </div>

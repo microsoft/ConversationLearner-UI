@@ -7,7 +7,6 @@ import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as scorerModal from '../../support/components/ScorerModal'
 import * as train from '../../support/Train'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as helpers from '../../support/Helpers'
 
 describe('Tag and Frog - Edit And Branching', () => {
@@ -17,36 +16,41 @@ describe('Tag and Frog - Edit And Branching', () => {
   
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {
-    models.ImportModel('z-tagAndFrog2', 'z-tagAndFrog2.cl')
-    modelPage.NavigateToTrainDialogs()
-    cy.WaitForTrainingStatusCompleted()
+      models.ImportModel('z-tagAndFrog2', 'z-tagAndFrog2.cl')
+      modelPage.NavigateToTrainDialogs()
+      cy.WaitForTrainingStatusCompleted()
     })
   })
 
   context('Edit Train Dialog', () => {
-    it('Should remove two entity labels from alternative input', () => {
+    it('Should edit the training and verify the entities are labeled', () => {
       train.EditTraining('This is Tag.', 'This is Tag.', 'Hi')
-      editDialogModal.SelectChatTurnExactMatch('This is Tag.')
+      train.SelectChatTurnExactMatch('This is Tag.')
 
-      editDialogModal.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
-      editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
-      editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
-
-      editDialogModal.RemoveEntityLabel('Tag', 'multi', 1)
-      editDialogModal.RemoveEntityLabel('Frog', 'multi', 2)
+      train.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
+      train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
+      train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
     })
 
+    it('Should remove two entity labels from alternative input', () => {
+      train.RemoveEntityLabel('Tag', 'multi', 1)
+      train.RemoveEntityLabel('Frog', 'multi', 2)
+    })
     
-    it('Should verify user cannot submit changes without accepting auto-re-labling of those two entity labels in the alternative input', () => {
-      editDialogModal.ClickSubmitChangesButton()
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
-      editDialogModal.ClickSubmitChangesButton()
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+    it('Should verify user cannot submit changes without accepting auto-re-labling of the 1st alternative input that we changed', () => {
+      train.ClickSubmitChangesButton()
+      train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+      train.ClickSubmitChangesButton()
+      train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+    })
 
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
-      editDialogModal.ClickSubmitChangesButton()
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+    it('Should verify user cannot submit changes without accepting auto-re-labling of the 2nd alternative input that we changed', () => {
+      train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+      train.ClickSubmitChangesButton()
+      train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+    })
 
+    it('Should abandon the changes', () => {
       train.AbandonDialog()
     })
   })

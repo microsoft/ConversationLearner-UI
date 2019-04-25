@@ -7,7 +7,6 @@ import * as homePage from '../../support/components/HomePage'
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as scorerModal from '../../support/components/ScorerModal'
 import * as helpers from '../../support/Helpers'
 
@@ -27,26 +26,31 @@ describe('End Session', () => {
       train.CreateNewTrainDialog()
 
       train.TypeYourMessage('Hi')
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       train.SelectAction('Hello')
 
       train.TypeYourMessage('Bye')
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       train.SelectEndSessionAction('Goodbye')
     })
 
+    it('Should verify that the user has no way to add another turn after the EndSession turn', () => {
+      train.VerifyScoreActionsButtonIsMissing()
+      train.VerifyTypeYourMessageIsMissing()
+    })
+
     it('End Session Score Action should be disabled for 1st Bot turn', () => {
-      editDialogModal.SelectChatTurnExactMatch('Hello')
+      train.SelectChatTurnExactMatch('Hello')
       scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
     })
 
-    it('End Session Score Action should be disabled for last Bot turn only because it is already selected.', () => {
-      editDialogModal.SelectChatTurnExactMatch('EndSession: Goodbye')
-      scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
+    it('End Session Score Action button should be labeled "Selected" for last Bot turn', () => {
+      train.SelectChatTurnExactMatch('EndSession: Goodbye')
+      scorerModal.VerifyContainsSelectedEndSessionAction('Goodbye')
     })
 
     it('End Session chat turn should only contain a delete turn button.', () => {
-      editDialogModal.VerifyEndSessionChatTurnControls()
+      train.VerifyEndSessionChatTurnControls()
     })
 
     it('Should save the training', () => {
@@ -61,27 +65,27 @@ describe('End Session', () => {
     })
 
     it('Should delete EndSession turn', () => {
-      editDialogModal.SelectChatTurnExactMatch('EndSession: Goodbye')
-      editDialogModal.ClickDeleteChatTurn()
+      train.SelectChatTurnExactMatch('EndSession: Goodbye')
+      train.ClickDeleteChatTurn()
     })
 
     it('End Session Action should be disabled for remaining Bot turn', () => {
-      editDialogModal.SelectChatTurnExactMatch('Hello')
+      train.SelectChatTurnExactMatch('Hello')
       scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
     })
 
     it('Should delete last user turn and cause a Bot turn to be the last turn', () => {
-      editDialogModal.SelectChatTurnExactMatch('Bye')
-      editDialogModal.ClickDeleteChatTurn()
+      train.SelectChatTurnExactMatch('Bye')
+      train.ClickDeleteChatTurn()
     })
 
     it('End Session Action should now be enabled', () => {
-      editDialogModal.SelectChatTurnExactMatch('Hello')
+      train.SelectChatTurnExactMatch('Hello')
       scorerModal.VerifyContainsEnabledEndSessionAction('Goodbye')
     })
 
     it('Should abandon our changes', () => {
-      editDialogModal.ClickAbandonDeleteButton()
+      train.ClickAbandonDeleteButton()
       homePage.ClickConfirmButton()
     })
   })
@@ -92,26 +96,26 @@ describe('End Session', () => {
       train.EditTraining('Yo', 'Bye', "Goodbye")
     })
 
-    it('End Session Score Action should be disabled for last Bot turn only because it is already selected.', () => {
-      editDialogModal.SelectChatTurnExactMatch('EndSession: Goodbye')
-      scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
+    it('End Session Score Action button should be labeled "Selected" for last Bot turn', () => {
+      train.SelectChatTurnExactMatch('EndSession: Goodbye')
+      scorerModal.VerifyContainsSelectedEndSessionAction('Goodbye')
     })
 
     it('End Session chat turn should only contain a delete turn button.', () => {
-      editDialogModal.VerifyEndSessionChatTurnControls()
+      train.VerifyEndSessionChatTurnControls()
     })
 
     it('End Session Score Action should be disabled for 1st Bot turn', () => {
-      editDialogModal.SelectChatTurnExactMatch('Okay')
+      train.SelectChatTurnExactMatch('Okay')
       scorerModal.VerifyContainsDisabledEndSessionAction('Goodbye')
     })
 
     it('Should insert a new Bot turn whose Action is automatically selected', () => {
-      editDialogModal.InsertBotResponseAfter('Okay')
+      train.InsertBotResponseAfter('Okay')
     })
 
     it('Verify that the automatically selected Bot turn is NOT our EndSession Action', () => {
-      editDialogModal.VerifyChatTurnIsNotAnExactMatch('EndSession: Goodbye', 5, 2)
+      train.VerifyChatTurnIsNotAnExactMatch('EndSession: Goodbye', 5, 2)
     })
   })
 })

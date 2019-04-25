@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-import { doesTrainDialogMatch, findMatchingTrainDialog, isTrainDialogLonger, mergeTrainDialogs } from './dialogUtils'
+import { doesTrainDialogMatch, findMatchingTrainDialog, isTrainDialogLonger, mergeTrainDialogs, hasInternalLabelConflict } from './dialogUtils'
 import { makeTrainDialog, makeExtractorStep, makeScorerStep, makeLabelEntities } from './testDataUtil'
 import { deepCopy } from './util'
 import * as CLM from '@conversationlearner/models'
@@ -59,6 +59,32 @@ describe('dialogUtils', () => {
         copy.trainDialogId = trainDialogId || CLM.ModelUtils.generateGUID()
         return copy
     }
+
+    describe('hasInternalLabelConflict', () => {
+
+        test('noConflict', () => {
+
+            const trainDialog2 = copyTrainDialog()
+
+            let result = hasInternalLabelConflict(trainDialog1, trainDialog2)
+            expect(result).toEqual(false)
+
+            result = hasInternalLabelConflict(trainDialog2, trainDialog1)
+            expect(result).toEqual(false)
+        })
+
+        test('conflict', () => {
+
+            const trainDialog2 = copyTrainDialog()
+            trainDialog2.rounds[0].extractorStep.textVariations[0].labelEntities.pop()
+
+            let result = hasInternalLabelConflict(trainDialog1, trainDialog2)
+            expect(result).toEqual(true)
+
+            result = hasInternalLabelConflict(trainDialog2, trainDialog1)
+            expect(result).toEqual(true)
+        })
+    })
 
     describe('doesTrainDialogMatch', () => {
 

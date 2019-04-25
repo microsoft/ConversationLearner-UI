@@ -1,6 +1,6 @@
 .cl-treeview-container {
     height: 100%;
-    background: #999999;
+    background: #efefef;
 }
 
 .cl-treeview-expandedNode {
@@ -30,12 +30,6 @@
   font-size: 12px;
 }
 
-.cl-treeview-closeButton {
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-}
-
 .cl-treeview-botBoxSelected {
   border-color: #ffff00;
   border-width: 5px;
@@ -55,9 +49,11 @@
 }
 
 .cl-treeview-messageBar {
-  top: 0px;
+  right: 0px;
   background-color: rgba(186, 216, 10) !important;
-  position: fixed !important;
+  position: absolute !important;
+  width: 320px !important;
+  z-index: 100;
 }
 
 .cl-treeview-memoryBox {
@@ -67,9 +63,9 @@
   font-style: italic;
   padding-left: 15px;
   padding-right: 5px;
-  border-bottom-width: 0.5px;
+  border-width: 0.5px;
   border-color: black;
-  border-bottom-style: solid;
+  border-style: none solid solid solid;
 }
 
 .cl-treeview-footerButton {
@@ -86,7 +82,7 @@
   bottom: unset;
   height: 18px;
   color: #ffffff;
-  background-color: var(--cl-color-user-train);
+  background-color: var(--cl-color-user-train) !important;
 }
 
 .cl-treeview-moreButton-scorer {
@@ -98,7 +94,14 @@
   bottom: unset;
   height: 18px;
   color: #ffffff;
-  background-color: var(--cl-color-user-train);
+  background-color: var(--cl-color-user-train) !important;
+}
+
+.cl-treeview-cl-treeview-footerButton-pin--selected {
+    border-color: #ffff00;
+    border-width: 5px;
+    border-style: none solid solid solid;
+    box-sizing: content-box;
 }
 
 .cl-treeview-userInput:hover {
@@ -113,9 +116,9 @@
   display: block;
   font-size: 16px;
   background-color: #f4f4f4;
-  border-bottom-style: solid;
+  border-style: none solid solid solid;
   border-color: black;
-  border-width: 1px;
+  border-width: 0.5px;
   color: #000000;
   padding-left: 5px;
 }
@@ -152,10 +155,17 @@
 }
 
 .cl-treeview-fullscreen {
-  width: 100%;
+  position: absolute;
   height: 100%;
+  width: 100%;
+  top: 0px;
+  left: 0px;
 }
 
+.cl-treeview-expandButton {
+  position: absolute !important;
+  z-index: 100;
+}
 
 .cl-treeview-treeViewButton {
   display: inline-block;

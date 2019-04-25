@@ -41,12 +41,12 @@ class SessionWindow extends React.Component<Props, ComponentState> {
         }
     }
     @OF.autobind
-    onClickDone() {
+    async onClickDone() {
         if (this.props.chatSession.current !== null) {
-            this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId)
+            await this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId)
         }
 
-        this.props.onClose();
+        this.props.onClose()
     }
 
     @OF.autobind

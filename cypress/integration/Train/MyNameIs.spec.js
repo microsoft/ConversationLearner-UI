@@ -8,7 +8,6 @@ import * as modelPage from '../../support/components/ModelPage'
 import * as memoryTableComponent from '../../support/components/MemoryTableComponent'
 import * as scorerModal from '../../support/components/ScorerModal'
 import * as train from '../../support/Train'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as common from '../../support/Common'
 import * as helpers from '../../support/Helpers'
 
@@ -30,11 +29,11 @@ describe('My Name Is - Train Dialog', () => {
 
     it('Should auto-label Entity in user utterance based existing Train Dialog', () => {
       train.TypeYourMessage('My name is David.')
-      editDialogModal.VerifyEntityLabel('David', 'name')
+      train.VerifyEntityLabel('David', 'name')
     })
 
     it('Should find labeled Entity in memory', () => {
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntitiesInMemory('name', ['David'])
     })
 
@@ -50,11 +49,11 @@ describe('My Name Is - Train Dialog', () => {
 
     it('Should require manual Entity labeling', () => {
       train.TypeYourMessage('My name is Susan.')
-      editDialogModal.LabelTextAsEntity('Susan', 'name')
+      train.LabelTextAsEntity('Susan', 'name')
     })
 
     it('Should find labeled Entity in memory', () => {
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntitiesInMemory('name', ['Susan'], 'David')
     })
 
@@ -72,16 +71,20 @@ describe('My Name Is - Train Dialog', () => {
   context('Train Dialog Next', () => {
     it('Should create a new Train Dialog', () => {
       cy.WaitForTrainingStatusCompleted()
+
+      // Hack to deal with "Bug 1901: Training Status is Misleading Causes Automatic Entity Labeling to NOT be Consistent"
+      cy.wait(30000)
+
       train.CreateNewTrainDialog()
     })
 
     it('Should auto-label Entity in user utterance based previous Train Dialog', () => {
       train.TypeYourMessage('My name is Gabriella.')
-      editDialogModal.VerifyEntityLabel('Gabriella', 'name')
+      train.VerifyEntityLabel('Gabriella', 'name')
     })
 
     it('Should find labeled Entity in memory', () => {
-      editDialogModal.ClickScoreActionsButton()
+      train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntitiesInMemory('name', ['Gabriella'])
     })
 
@@ -94,6 +97,6 @@ describe('My Name Is - Train Dialog', () => {
       train.SelectAction('Hello Gabriella', 'Hello $name')
       train.Save()
     })
-    // Manually EXPORT this to fixtures folder and name it 'z-nameTrained.cl'
   })
+  // Manually EXPORT this to fixtures folder and name it 'z-nameTrained.cl'
 })

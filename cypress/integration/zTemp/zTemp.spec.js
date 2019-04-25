@@ -9,7 +9,6 @@ import * as modelPage from '../../support/components/ModelPage'
 import * as models from '../../support/Models'
 import * as train from '../../support/Train'
 import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 
 describe('zTemp', () => {
   it('Temporary Experimental Test', () => {
@@ -26,6 +25,6 @@ describe('zTemp', () => {
     modelPage.NavigateToTrainDialogs()
     train.CreateNewTrainDialog()
 
-    editDialogModal.AddTags(['Apple', 'Banana', 'Carrot', 'Duck', 'Egg', 'Food', 'Green Chilli', 'Habanero','Ice Cream', 'Jalapeno', 'Kale', 'Letuce', 'Mango', 'Necterine', 'Orange', 'Plum', 'QQQ', 'Raisin', 'Salt', 'Tangerine', 'UUUuuu', 'VVV', 'WwWwWwW', 'X', 'YYYyy', 'ZzZzZ'])
+    train.AddTags(['Apple', 'Banana', 'Carrot', 'Duck', 'Egg', 'Food', 'Green Chilli', 'Habanero','Ice Cream', 'Jalapeno', 'Kale', 'Letuce', 'Mango', 'Necterine', 'Orange', 'Plum', 'QQQ', 'Raisin', 'Salt', 'Tangerine', 'UUUuuu', 'VVV', 'WwWwWwW', 'X', 'YYYyy', 'ZzZzZ'])
   })
 })

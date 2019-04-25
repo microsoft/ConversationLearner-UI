@@ -4,10 +4,10 @@
  */
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { FM } from '../../react-intl-messages'
 import * as CLM from '@conversationlearner/models'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
+import { FM } from '../../react-intl-messages'
 import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './ExtractConflictModal.css'
@@ -46,12 +46,15 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
                     render={(editorProps, onChangeCustomEntities) =>
                         <ExtractorResponseEditor.Editor
                             readOnly={true}
-                            isValid={true}
+                            status={ExtractorResponseEditor.Models.ExtractorStatus.OK}
                             entities={props.entities}
                             {...editorProps}
 
                             onChangeCustomEntities={onChangeCustomEntities}
                             onClickNewEntity={() => { }}
+                            isPickerVisible={false}
+                            onOpenPicker={() => { }}
+                            onClosePicker={() => { }}
                         />
                     }
                     entities={props.entities}
@@ -64,12 +67,15 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
                     render={(editorProps, onChangeCustomEntities) =>
                         <ExtractorResponseEditor.Editor
                             readOnly={true}
-                            isValid={true}
+                            status={ExtractorResponseEditor.Models.ExtractorStatus.OK}
                             entities={props.entities}
                             {...editorProps}
 
                             onChangeCustomEntities={onChangeCustomEntities}
                             onClickNewEntity={() => { }}
+                            isPickerVisible={false}
+                            onOpenPicker={() => { }}
+                            onClosePicker={() => { }}
                         />
                     }
                     entities={props.entities}
@@ -80,7 +86,7 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
                 <p>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CALLTOACTION)}</p>
             </div>
             <div className="cl-modal_footer cl-modal-buttons">
-                <div className="cl-modal-buttons_secondary"></div>
+                <div className="cl-modal-buttons_secondary"/>
                 <div className="cl-modal-buttons_primary">
                     <OF.PrimaryButton
                         onClick={() => props.onAccept()}

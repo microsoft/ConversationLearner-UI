@@ -25,7 +25,6 @@ interface ReceivedProps {
 interface ComponentState {
     description: string
     tags: string[]
-    userInput: string
 }
 
 type Props = ReceivedProps & InjectedIntlProps
@@ -34,8 +33,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
 
     state: ComponentState = {
         description: "",
-        tags: [],
-        userInput: ""
+        tags: []
     }
 
     componentDidUpdate(prevProps: Props) {
@@ -44,14 +42,9 @@ class MergeModal extends React.Component<Props, ComponentState> {
 
             if (this.props.savedTrainDialog && this.props.existingTrainDialog) {
 
-                const userInput = DialogUtils.isTrainDialogLonger(this.props.savedTrainDialog, this.props.existingTrainDialog)
-                    ? DialogUtils.dialogSampleInput(this.props.savedTrainDialog)
-                    : DialogUtils.dialogSampleInput(this.props.existingTrainDialog)
-
                 this.setState({
                     description: DialogUtils.mergeTrainDialogDescription(this.props.savedTrainDialog, this.props.existingTrainDialog),
                     tags: DialogUtils.mergeTrainDialogTags(this.props.savedTrainDialog, this.props.existingTrainDialog),
-                    userInput
                 })
             }
         }
@@ -85,6 +78,11 @@ class MergeModal extends React.Component<Props, ComponentState> {
         }
 
         const { intl } = this.props
+
+        const savedInput =  DialogUtils.dialogSampleInput(this.props.savedTrainDialog)
+        const existingInput = DialogUtils.dialogSampleInput(this.props.existingTrainDialog)
+        const isSavedLonger = DialogUtils.isTrainDialogLonger(this.props.savedTrainDialog, this.props.existingTrainDialog)
+
         return (
             <Modal
                 containerClassName='cl-modal cl-modal--small'
@@ -110,26 +108,12 @@ class MergeModal extends React.Component<Props, ComponentState> {
                 </div>    
                 <div>
                     <OF.Label className="ms-Label--tight cl-label">
-                        {Util.formatMessageId(intl, FM.MERGE_LABEL_MERGED)}
-                    </OF.Label>
-                    <div className="cl-merge-box">
-                        <DialogMetadata
-                                description={this.state.description}
-                                tags={this.state.tags}
-                                userInput={this.state.userInput}
-                                allUniqueTags={this.props.allUniqueTags}
-                                onChangeDescription={this.onChangeDescription}
-                                onAddTag={this.onAddTag}
-                                onRemoveTag={this.onRemoveTag}
-                        />
-                    </div>
-                    <OF.Label className="ms-Label--tight cl-label">
                         {Util.formatMessageId(intl, FM.MERGE_LABEL_SAVED)}
                     </OF.Label>
                     <div className="cl-merge-box cl-merge-box--readonly">
                         <DialogMetadata
                                 description={this.props.savedTrainDialog.description}
-                                userInput={DialogUtils.dialogSampleInput(this.props.savedTrainDialog)}
+                                userInput={savedInput}
                                 tags={this.props.savedTrainDialog.tags}
                                 allUniqueTags={[]}
                                 readOnly={true}
@@ -141,10 +125,25 @@ class MergeModal extends React.Component<Props, ComponentState> {
                     <div className="cl-merge-box cl-merge-box--readonly">
                         <DialogMetadata
                                 description={this.props.existingTrainDialog.description}
-                                userInput={DialogUtils.dialogSampleInput(this.props.existingTrainDialog)}
+                                userInput={existingInput}
                                 tags={this.props.existingTrainDialog.tags}
                                 allUniqueTags={[]}
                                 readOnly={true}
+                        />
+                    </div>
+                    <OF.Label className="ms-Label--tight cl-label">
+                        {Util.formatMessageId(intl, FM.MERGE_LABEL_MERGED)}
+                    </OF.Label>
+                    <div className="cl-merge-box">
+                        <DialogMetadata
+                                description={this.state.description}
+                                tags={this.state.tags}
+                                userInput={isSavedLonger ? savedInput : existingInput}
+                                altInput={isSavedLonger ? existingInput : savedInput}
+                                allUniqueTags={this.props.allUniqueTags}
+                                onChangeDescription={this.onChangeDescription}
+                                onAddTag={this.onAddTag}
+                                onRemoveTag={this.onRemoveTag}
                         />
                     </div>
                 </div>              

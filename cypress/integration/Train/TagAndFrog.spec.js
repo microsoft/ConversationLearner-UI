@@ -6,7 +6,6 @@
 import * as models from '../../support/Models'
 import * as modelPage from '../../support/components/ModelPage'
 import * as train from '../../support/Train'
-import * as editDialogModal from '../../support/components/EditDialogModal'
 import * as common from '../../support/Common'
 import * as helpers from '../../support/Helpers'
 
@@ -29,32 +28,32 @@ describe('Tag And Frog - Train', () => {
   context('Train - Standard Input', () => {
     it('Should get an error message after removing single entity label & prevent scoring actions till fixed', () => {
       train.TypeYourMessage('This is Tag.')
-      editDialogModal.RemoveEntityLabel('Tag', 'multi')
-      editDialogModal.ClickScoreActionsButton()
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndClose([textEntityPairs[0]])
-      editDialogModal.ClickScoreActionsButton()
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept([textEntityPairs[0]])
+      train.RemoveEntityLabel('Tag', 'multi')
+      train.ClickScoreActionsButton()
+      train.VerifyEntityLabeledDifferentPopupAndClose([textEntityPairs[0]])
+      train.ClickScoreActionsButton()
+      train.VerifyEntityLabeledDifferentPopupAndAccept([textEntityPairs[0]])
       train.SelectAction('Hello')
     })
 
     it('Should get an error message after removing a different single entity label & prevent scoring actions till fixed', () => {
       train.TypeYourMessage('This is Frog and Tag.')
-      editDialogModal.RemoveEntityLabel('Frog', 'multi')
-      editDialogModal.ClickScoreActionsButton()
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
-      editDialogModal.ClickScoreActionsButton()
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+      train.RemoveEntityLabel('Frog', 'multi')
+      train.ClickScoreActionsButton()
+      train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+      train.ClickScoreActionsButton()
+      train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
       train.SelectAction('Hi')
     })
 
     it('Should get an error message after removing two entity labels & prevent scoring actions till fixed', () => {
       train.TypeYourMessage('This is Tag and Frog.')
-      editDialogModal.RemoveEntityLabel('Tag', 'multi')
-      editDialogModal.RemoveEntityLabel('Frog', 'multi')
-      editDialogModal.ClickScoreActionsButton()
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
-      editDialogModal.ClickScoreActionsButton()
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+      train.RemoveEntityLabel('Tag', 'multi')
+      train.RemoveEntityLabel('Frog', 'multi')
+      train.ClickScoreActionsButton()
+      train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+      train.ClickScoreActionsButton()
+      train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
       train.SelectAction('Hi')
     })
   })
@@ -70,26 +69,26 @@ describe('Tag And Frog - Train', () => {
   context('Train - Alternative Input', () => {
     it('Should automatically label entites in alternative input', () => {
       train.TypeYourMessage('This is Tag.')
-      editDialogModal.TypeAlternativeInput('This is Frog and Tag.')
-      editDialogModal.TypeAlternativeInput('This is Tag and Frog.')
+      train.TypeAlternativeInput('This is Frog and Tag.')
+      train.TypeAlternativeInput('This is Tag and Frog.')
 
-      editDialogModal.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
-      editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
-      editDialogModal.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
+      train.VerifyEntityLabelWithinSpecificInput([textEntityPairs[0]], 0)
+      train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 1)
+      train.VerifyEntityLabelWithinSpecificInput(textEntityPairs, 2)
     })
 
     it('Should get an error message after removing two entity labels from alternative input & prevent scoring actions till fixed', () => {
-      editDialogModal.RemoveEntityLabel('Tag', 'multi', 1)
-      editDialogModal.RemoveEntityLabel('Frog', 'multi', 2)
+      train.RemoveEntityLabel('Tag', 'multi', 1)
+      train.RemoveEntityLabel('Frog', 'multi', 2)
 
-      editDialogModal.ClickScoreActionsButton()
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
-      editDialogModal.ClickScoreActionsButton()
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+      train.ClickScoreActionsButton()
+      train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+      train.ClickScoreActionsButton()
+      train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
 
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
-      editDialogModal.ClickScoreActionsButton()
-      editDialogModal.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+      train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+      train.ClickScoreActionsButton()
+      train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
       train.SelectAction('Hi')
 
       train.Save()
