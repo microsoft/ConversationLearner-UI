@@ -22,5 +22,5 @@ let authoringKeyIndex = Math.floor((circleCiBuildNumber % 10) / 2)
 let luisAuthoringKey = authoringKeys[authoringKeyIndex]
 
 console.log(`export LUIS_AUTHORING_KEY=${luisAuthoringKey}\n`)
-console.log(`export CIRCLE_BUILD_NUM=${circleCiBuildNumber}\n`)
+console.log(`export CYPRESS_CIRCLE_BUILD_NUM=${circleCiBuildNumber}\n`)
 
