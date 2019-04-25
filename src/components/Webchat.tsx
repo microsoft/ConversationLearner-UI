@@ -173,7 +173,7 @@ class Webchat extends React.Component<Props, {}> {
             const dl = new BotChat.DirectLine({
                 secret: 'secret',
                 token: 'token',
-                domain: `http://localhost:${this.props.settings.botPort}/directline`,
+                domain: `//localhost:${this.props.settings.botPort}/directline`,
                 webSocket: false // defaults to true,
             })
 
