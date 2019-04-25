@@ -2,21 +2,38 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import { ActionObject, SettingsState, defaultBotPort } from '../types'
+import { ActionObject, SettingsState, ports } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import produce from 'immer'
 
+// TODO: Consolidate calculation, needs to match reduxStore
+const botPort = ports.defaultUiPort = ports.urlBotPort
+    ? ports.defaultBotPort
+    : ports.urlBotPort
+
 const initialState: SettingsState = {
-    botPort: defaultBotPort
+    useCustomPort: false,
+    botPort,
+    customPort: ports.defaultBotPort,
 }
 
 const settingsReducer: Reducer<SettingsState> = produce((state: SettingsState, action: ActionObject) => {
     switch (action.type) {
         case AT.SETTINGS_RESET:
-            return { ...initialState }
+            state.customPort = ports.defaultBotPort
+            return
         case AT.SETTINGS_UPDATE:
-            state.botPort = action.botPort
+            state.customPort = action.port
+            if (state.useCustomPort) {
+                state.botPort = state.customPort
+            }
+            return
+        case AT.SETTINGS_USE_CUSTOM_PORT:
+            state.useCustomPort = !state.useCustomPort
+            state.botPort = state.useCustomPort
+                ? state.customPort
+                : ports.urlBotPort
             return
         default:
             return
