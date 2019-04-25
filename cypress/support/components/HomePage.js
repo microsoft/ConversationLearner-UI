@@ -7,7 +7,7 @@ import * as modelPage from '../components/ModelPage'
 import * as settings from '../components/Settings'
 import * as helpers from '../Helpers'
 
-export function Visit() { return cy.visit('http://localhost:5050'); VerifyPageTitle() }
+export function Visit() { return cy.visit('http://localhost:3000'); VerifyPageTitle() }
 export function VerifyPageTitle() { return cy.Get('[data-testid="model-list-title"]').contains('Create and manage your Conversation Learner models').should('be.visible') }
 export function NavigateToModelPage(name) { return cy.Get('[data-testid="model-list-model-name"]').ExactMatch(`${name}`).Click() }
 export function ClickNewModelButton() { return cy.Get('[data-testid="model-list-create-new-button"]').Click() }

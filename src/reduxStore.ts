@@ -4,7 +4,7 @@
  */
 import { createStore, applyMiddleware, Store } from 'redux'
 import thunk from 'redux-thunk'
-import { State, defaultBotPort, previousBotPort } from './types'
+import { State, ports } from './types'
 import rootReducer from './reducers/root'
 import { throttle } from 'lodash'
 import * as localStorage from './services/localStorage'
@@ -13,15 +13,16 @@ import * as ClientFactory from './services/clientFactory'
 export const createReduxStore = (): Store<State> => {
     const persistedState = localStorage.load<Partial<State>>()
 
-    /**
-     * This is a work around to auto reset port to 3978 from 5000
-     * and avoid users having to manually resetting
-     */
-    // TODO: Remove after most people have upgraded
     const settings = persistedState && persistedState.settings
-    if (settings) {
-        if (settings.botPort === previousBotPort) {
-            settings.botPort = defaultBotPort
+    // If user chose to use custom port update the client to use this port
+    // Need this since the subscribe below only happens on store change not initialization
+    if (settings && settings.useCustomPort) {
+        ClientFactory.setPort(settings.customPort)
+    }
+    // TODO: Could move initialization to client, but try to keep on one place
+    else {
+        if (ports.defaultUiPort = ports.urlBotPort) {
+            ClientFactory.setPort(ports.defaultBotPort)
         }
     }
 
@@ -36,11 +37,17 @@ export const createReduxStore = (): Store<State> => {
         const state = store.getState()
 
         // Update client to use the PORT
-        ClientFactory.setPort(state.settings.botPort)
+        if (state.settings.botPort) {
+            ClientFactory.setPort(state.settings.botPort)
+        }
 
         const stateToPersist = {
-            settings: state.settings
+            settings: {
+                userCustomPort: state.settings.useCustomPort,
+                customPort: state.settings.customPort,
+            }
         }
+
         localStorage.save(stateToPersist)
     }, 1000))
 

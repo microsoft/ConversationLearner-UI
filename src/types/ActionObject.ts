@@ -72,9 +72,11 @@ export type UpdateAction = {
     activeApps: { [appId: string]: string }
 } | {
     type: AT.SETTINGS_UPDATE,
-    botPort: number
+    port: number
 } | {
     type: AT.SETTINGS_RESET
+} | {
+    type: AT.SETTINGS_USE_CUSTOM_PORT
 }
 
 export type DisplayAction = {
