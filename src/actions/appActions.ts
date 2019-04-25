@@ -306,7 +306,7 @@ export const fetchApplicationsThunkAsync = (userId: string) => {
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_APPLICATIONS_ASYNC))
-            return null;
+            return null
         }
     }
 }
