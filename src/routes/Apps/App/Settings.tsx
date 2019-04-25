@@ -3,27 +3,29 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { returntypeof } from 'react-redux-typescript'
-import actions from '../../../actions'
-import { bindActionCreators } from 'redux'
-import PackageTable from '../../../components/modals/PackageTable'
-import { connect } from 'react-redux'
-import { State, AppCreatorType } from '../../../types'
 import * as OF from 'office-ui-fabric-react'
-import { Expando, AppCreator } from '../../../components/modals'
-import FormattedMessageId from '../../../components/FormattedMessageId'
-import { saveAs } from 'file-saver'
-import { AppBase, AppDefinition, TrainingStatusCode } from '@conversationlearner/models'
-import './Settings.css'
-import { FM } from '../../../react-intl-messages'
-import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
-import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities'
+import * as CLM from '@conversationlearner/models'
 import * as TC from '../../../components/tipComponents'
 import * as ToolTip from '../../../components/ToolTips/ToolTips'
-import HelpIcon from '../../../components/HelpIcon'
+import * as OBIUtil from '../../../Utils/obiUtil'
 import * as Util from '../../../Utils/util'
+import * as AdmZip from 'adm-zip'
+import actions from '../../../actions'
+import PackageTable from '../../../components/modals/PackageTable'
+import FormattedMessageId from '../../../components/FormattedMessageId'
+import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
+import HelpIcon from '../../../components/HelpIcon'
 import TextboxRestrictableModal from '../../../components/modals/TextboxRestrictable'
+import { connect } from 'react-redux'
+import { State, AppCreatorType } from '../../../types'
+import { Expando, AppCreator } from '../../../components/modals'
+import { bindActionCreators } from 'redux'
+import { returntypeof } from 'react-redux-typescript'
+import { saveAs } from 'file-saver'
+import { FM } from '../../../react-intl-messages'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'office-ui-fabric-react/lib/Utilities'
+import './Settings.css'
 
 interface ComponentState {
     localeVal: string
@@ -68,7 +70,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }
     }
 
-    updateAppState(app: AppBase) {
+    updateAppState(app: CLM.AppBase) {
         this.setState({
             localeVal: app.locale,
             appIdVal: app.appId,
@@ -156,8 +158,8 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onSubmitAppCopyModal(app: AppBase) {
-        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<AppDefinition>)
+    async onSubmitAppCopyModal(app: CLM.AppBase) {
+        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
         this.setState({
             isAppCopyModalOpen: false
         }, () => this.props.onCreateApp(app, appDefinition))
@@ -199,7 +201,7 @@ class Settings extends React.Component<Props, ComponentState> {
     @autobind
     onClickSave() {
         const app = this.props.app
-        const modifiedApp: AppBase = {
+        const modifiedApp: CLM.AppBase = {
             ...app,
             appName: this.state.appNameVal,
             metadata: {
@@ -211,7 +213,7 @@ class Settings extends React.Component<Props, ComponentState> {
             // packageVersions: DON'T SEND
             // devPackageId: DON'T SEND
             trainingFailureMessage: null,
-            trainingStatus: TrainingStatusCode.Completed,
+            trainingStatus: CLM.TrainingStatusCode.Completed,
             datetime: new Date()
         }
         this.props.editApplicationThunkAsync(modifiedApp)
@@ -269,9 +271,27 @@ class Settings extends React.Component<Props, ComponentState> {
 
     @autobind
     async onClickExport() {
-        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<AppDefinition>)
+        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
         const blob = new Blob([JSON.stringify(appDefinition)], { type: "text/plain;charset=utf-8" })
         saveAs(blob, `${this.props.app.appName}.cl`);
+    }
+
+    @autobind
+    async onClickExportOBI() {
+        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
+        
+        const transcripts = await OBIUtil.toTranscripts(appDefinition, this.props.app.appId, this.props.user, this.props.fetchHistoryThunkAsync as any)
+        
+        const zip = new AdmZip()
+        transcripts.forEach(t => {
+            const content = JSON.stringify(t.activities)
+           // const blob = new Blob([JSON.stringify(t.activities)], { type: "text/plain;charset=utf-8" })
+            zip.addFile(`${CLM.ModelUtils.generateGUID()}.transcript`, Buffer.alloc(content.length, content))
+        })
+        const zipBuffer = zip.toBuffer()
+        const zipBlob = new Blob([zipBuffer])
+
+        saveAs(zipBlob, `${this.props.app.appName}.zip`);
     }
 
     @autobind
@@ -352,6 +372,12 @@ class Settings extends React.Component<Props, ComponentState> {
                             onClick={this.onClickExport}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION)}
                             text={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONTEXT)}
+                            iconProps={{ iconName: 'DownloadDocument' }}
+                        />
+                        <OF.PrimaryButton
+                            onClick={this.onClickExportOBI}
+                            ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION)}
+                            text={"Export to OBI"}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
                         <OF.PrimaryButton
@@ -522,7 +548,8 @@ const mapDispatchToProps = (dispatch: any) => {
         editAppEditingTagThunkAsync: actions.app.editAppEditingTagThunkAsync,
         editAppLiveTagThunkAsync: actions.app.editAppLiveTagThunkAsync,
         fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
-        deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync
+        deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync,
+        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -532,14 +559,17 @@ const mapStateToProps = (state: State) => {
 
     return {
         user: state.user.user,
-        apps: state.apps.all
+        apps: state.apps.all,
+        trainDialogs: state.trainDialogs,
+        entities: state.entities,
+        actions: state.actions
     }
 }
 
 export interface ReceivedProps {
-    app: AppBase,
+    app: CLM.AppBase,
     editingPackageId: string,
-    onCreateApp: (app: AppBase, source: AppDefinition) => void
+    onCreateApp: (app: CLM.AppBase, source: CLM.AppDefinition) => void
     onDeleteApp: (id: string) => void
 }
 
