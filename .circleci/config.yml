@@ -94,7 +94,6 @@ jobs:
 
 
       - run: 
-          ###command: npm run cypress -- run  --record --key $CYPRESS_RECORD_KEY --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js"
           command: npm run cypress -- run --record false --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js"
           when: always
 

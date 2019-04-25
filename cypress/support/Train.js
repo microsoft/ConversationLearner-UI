@@ -202,21 +202,29 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
     cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
   }
 
-  if (itMustNotBeLabeledYet) LabelIt()
-  else {
+  if (itMustNotBeLabeledYet) {
+    LabelIt()
+  } else {
     // First make sure it is not already labeled before trying to label it.
     cy.WaitForStableDOM()
     cy.Enqueue(() => {
-      let found = false
+      let labeledAlready = false
       const elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
 
       // If you need to find a phrase, this part of the code will fail, 
       // you will need to upgrade this code in that case.
-      const element = elements.find(element => helpers.TextContentWithoutNewlines(elements) === text)
-      if (element) {
-        found = Cypress.$(element).parents('.cl-entity-node--custom').find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`).length == 0
+      for (let i = 0; i < elements.length; i++) {
+        if (helpers.TextContentWithoutNewlines(elements[i]) === text) {
+          labeledAlready = Cypress.$(elements[i]).parents('.cl-entity-node--custom')
+                            .find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`)
+                            .length > 0
+          break;
+        }
       }
-      if (!found) LabelIt()
+      
+      if (!labeledAlready) {
+        LabelIt()
+      }
     })
   }
 }
@@ -356,13 +364,6 @@ function VerifyChatTurnInternal(expectedTurnCount, turnIndex, doVerification) {
     doVerification(chatMessages[turnIndex])
   })
 }
-
-
-
-
-
-
-
 
 export function CreateNewTrainDialog() {
   cy.Enqueue(() => {
@@ -627,3 +628,4 @@ export function EditTrainingNEW(scenario, tags) {
     throw `Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${scenario}' -- tags: ${tags}`
   })
 }
+
