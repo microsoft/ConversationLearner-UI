@@ -299,7 +299,7 @@ export const fetchApplicationsThunkAsync = (userId: string) => {
         try {
             const uiAppList = await clClient.apps(userId)
 
-            // Initialize datatime property since trainingStatus comes with app
+            // Initialize datetime property since trainingStatus comes with app
             uiAppList.appList.apps.forEach(app => app.datetime = new Date())
             dispatch(fetchApplicationsFulfilled(uiAppList))
             return uiAppList
