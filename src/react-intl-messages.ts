@@ -170,6 +170,13 @@ export enum FM {
     DASHBOARD_TITLE = 'Dashboard.title',
     DASHBOARD_SUBTITLE = 'Dashboard.subtitle',
 
+    // DialogMetadata
+    DIALOGMETADATA_TAGS_LABEL = 'DialogMetadata.Tags.label',
+    DIALOGMETADATA_DESCRIPTION_LABEL = 'DialogMetadata.Description.label',
+    DIALOGMETADATA_DESCRIPTION_PLACEHOLDER = 'DialogMetadata.Description.placeholder',
+    DIALOGMETADATA_USERINPUT_LABEL = 'DialogMetadata.UserInput.label',
+    DIALOGMETADATA_ALTINPUT_LABEL = 'DialogMetadata.AltInput.label',
+
     // DemoImporter
     DEMOIMPORT_TITLE = 'DemoImporter.title',
     DEMOIMPORT_BUTTON_ARIADESCRIPTION = 'DemoImporter.button.ariaDescription',
@@ -199,6 +206,7 @@ export enum FM {
     EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE = 'EditDialogModal.confirmDeleteTrain.title',
     EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE = 'EditDialogModal.confirmAbandonNew.title',
     EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE = 'EditDialogModal.confirmAbandonEdit.title',
+    EDITDIALOGMODAL_SAVECONFLICT_TITLE = 'EditDialogModal.saveConflict.title',
     EDITDIALOGMODAL_WARNING_INVALID_BOT = 'EditDialogModal.warningInvalidBot.title',
     EDITDIALOGMODAL_WARNING_INVALID_PACKAGE = 'EditDialogModal.warningInvalidPackage.title',
     EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY = 'EditDialogModal.unknownNeedReplay.title',
@@ -406,13 +414,9 @@ export enum FM {
     SETTINGS_MODEL_VERSIONS_DESCRIPTION = 'Settings.modelVersionsDescription',
 
     // Tags and Description
-    DIALOGMETADATA_TAGS_LABEL = 'DialogMetadata.Tags.label',
     TAGSINPUT_ADD = 'TagsInput.add',
     TAGSINPUT_ERROR_DUPLICATE = 'TagsInput.error.duplicate',
     TAGSINPUT_READONLY_EMPTY = 'TagsReadOnly.empty',
-    DIALOGMETADATA_DESCRIPTION_LABEL = 'DialogMetadata.Description.label',
-    DIALOGMETADATA_DESCRIPTION_PLACEHOLDER = 'DialogMetadata.Description.placeholder',
-    DIALOGMETADATA_USERINPUT_LABEL = 'DialogMetadata.UserInput.label',
 
     // TeachSessionAdmin
     TEACHSESSIONADMIN_DIALOGMODE_USER = 'TeachSessionAdmin.dialogMode.user',
@@ -534,6 +538,11 @@ export enum FM {
     TRAINDIALOGS_FILTERING_ENTITIES = 'TrainDialogs.FilteringEntities',
     TRAINDIALOGS_FILTERING_ACTIONS_LABEL = 'TrainDialogs.FilteringActions.Label',
     TRAINDIALOGS_FILTERING_ACTIONS = 'TrainDialogs.FilteringActions',
+    TRAINDIALOGS_LISTVIEW_BUTTON = 'TrainDialogs.ListView.Button',
+    TRAINDIALOGS_TREEVIEW_BUTTON = 'TrainDialogs.TreeView.Button',
+
+    // TreeView
+    TREEVIEW_TOGGLE_FULLSCREEN = 'TreeView.ToggleFullScreen',
 
     // Tutorial Importer
     TUTORIALIMPORTER_TITLE = 'TutorialImporter.Title',
@@ -900,6 +909,11 @@ export default {
         [FM.TRAINDIALOGS_FILTERING_ENTITIES]: 'All entities',
         [FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL]: 'Filter by Actions:',
         [FM.TRAINDIALOGS_FILTERING_ACTIONS]: 'All actions',
+        [FM.TRAINDIALOGS_LISTVIEW_BUTTON]: 'List View',
+        [FM.TRAINDIALOGS_TREEVIEW_BUTTON]: 'Tree View',
+
+        // TreeView
+        [FM.TREEVIEW_TOGGLE_FULLSCREEN]: 'Toggle Fullscreen',
 
         // Tutorial Importer
         [FM.TUTORIALIMPORTER_TITLE]: 'Tutorials',
@@ -944,6 +958,7 @@ export default {
         [FM.DIALOGMETADATA_DESCRIPTION_LABEL]: 'Description',
         [FM.DIALOGMETADATA_DESCRIPTION_PLACEHOLDER]: 'Click to add description',
         [FM.DIALOGMETADATA_USERINPUT_LABEL]: 'User Input',
+        [FM.DIALOGMETADATA_ALTINPUT_LABEL]: 'Alt Input',
 
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
@@ -1039,7 +1054,7 @@ export default {
         [FM.MERGE_BUTTON_MERGE]: 'Merge',
         [FM.MERGE_BUTTON_SAVE]: 'Save As Is',
         [FM.MERGE_LABEL_MERGED]: 'Merged Dialog',
-        [FM.MERGE_LABEL_SAVED]: 'Saved Dialog',
+        [FM.MERGE_LABEL_SAVED]: 'This Dialog',
         [FM.MERGE_LABEL_EQUIVALENT]: 'Equivalent Dialog',
 
         // PackageCreator
@@ -1098,6 +1113,7 @@ export default {
         [FM.EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE]: 'Are you sure you want to delete this Training Dialog?',
         [FM.EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE]: 'Are you sure you want to abandon this Training Dialog?',
         [FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE]: 'Are you sure you want to abandon your edits?',
+        [FM.EDITDIALOGMODAL_SAVECONFLICT_TITLE]: 'Previous edits require that you save this dialog before taking this action',
         [FM.EDITDIALOGMODAL_WARNING_INVALID_BOT]: 'Running Bot not compatible with this Model',
         [FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE]: 'Editing only permitted on the Master tag',
         [FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY]: 'Entity or Action changes require replay of the TrainDialog',

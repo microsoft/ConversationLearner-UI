@@ -399,11 +399,11 @@ export default class ClClient {
 
     //AT.FETCH_TEXTVARIATIONCONFLICT_ASYNC
     // If there is a conflicting text variation, returns corresponding extractresponse, otherwise null
-    // filteredDialog = dialog to ignore when checking for conflicting labels
-    async fetchTextVariationConflict(appId: string, trainDialogId: string, textVariation: CLM.TextVariation, filteredDialog: string | null): Promise<CLM.ExtractResponse | null> {
+    // excludeDialogId = dialog to ignore when checking for conflicting labels
+    async fetchTextVariationConflict(appId: string, trainDialogId: string, textVariation: CLM.TextVariation, excludeDialogId: string | null): Promise<CLM.ExtractResponse | null> {
         let url = `/app/${appId}/traindialog/${trainDialogId}/extractor/textvariation`
-        if (filteredDialog) {
-            url = `${url}?filteredDialog=${filteredDialog}`
+        if (excludeDialogId) {
+            url = `${url}?filteredDialog=${excludeDialogId}`
         }
         const response = await this.send<CLM.ExtractResponse>({
             method: 'post',
@@ -571,15 +571,21 @@ export default class ClClient {
     }
 
     //AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
-    async teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
+    // filteredDialog = dialog to ignore when checking for conflicting labels
+    async teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string, filteredDialog: string | null): Promise<CLM.TeachWithHistory> {
+        let url = `/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`
+        if (filteredDialog) {
+            url = `${url}&filteredDialog=${filteredDialog}`
+        }
         const response = await this.send<CLM.TeachWithHistory>({
             method: 'post',
-            url: `/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`,
+            url,
             data: {
                 trainDialog,
                 userInput
             }
         })
+
         return response.data
     }
 
