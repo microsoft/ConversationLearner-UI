@@ -13,6 +13,7 @@ import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 describe('zTemp', () => {
   it('Temporary Experimental Test', () => {
     helpers.ConLog('zTemp', Cypress.env('CIRCLE_BUILD_NUM'))
+    helpers.ConLog('zTemp', `Not--'${Cypress.env('NotAnEnvVar')}'`)
     homePage.Visit()
     homePage.GetModelListRowCount()
   })
