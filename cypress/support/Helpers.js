@@ -78,7 +78,7 @@ let buildKey = undefined
 export function GetBuildKey() {
   if (!buildKey) {
     buildKey = Cypress.env('BUILD_NUM')
-ConLog('GetBuildKey', `BUILD_NUM: ${buildKey}`)
+ConLog('GetBuildKey', `BUILD_NUM: ${Cypress.env('BUILD_NUM')} -- ${buildKey}`)
     if (buildKey) {
       buildKey = String.fromCharCode('a'.charCodeAt() + buildKey % 26)
 ConLog('GetBuildKey', `buildKey: ${buildKey}`)
