@@ -115,3 +115,18 @@ export const clearErrorDisplay = (): ActionObject => {
         type: AT.CLEAR_ERROR_DISPLAY
     }
 }
+
+//--------------------------------------------------------------
+// For long running client actions that aren't service calls
+//--------------------------------------------------------------
+export const spinnerAdd = (): ActionObject => {
+    return {
+        type: AT.SPINNER_ADD
+    }
+}
+
+export const spinnerRemove = (): ActionObject => {
+    return {
+        type: AT.SPINNER_REMOVE
+    }
+}

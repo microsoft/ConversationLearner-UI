@@ -363,6 +363,15 @@ export function findMatchingTrainDialog(trainDialog: CLM.TrainDialog, trainDialo
 // Returns true if trainDialog1 is longer than trainDialog2
 export function isTrainDialogLonger(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): boolean {
 
+    // Default to existing train dialog
+    if (!trainDialog1.trainDialogId) {
+        return false
+    }
+    if (!trainDialog2.trainDialogId) {
+        return true
+    }
+
+    // Then pick one with more rounds
     if (trainDialog1.rounds.length > trainDialog2.rounds.length) {
         return true
     }
@@ -418,6 +427,7 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
 
     largeTrainDialog.description = mergeTrainDialogDescription(largeTrainDialog, smallTrainDialog)
     largeTrainDialog.tags = mergeTrainDialogTags(largeTrainDialog, smallTrainDialog)
+
     return largeTrainDialog
 }
 

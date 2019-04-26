@@ -815,14 +815,26 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             return ss.labelAction !== undefined
         }))
 
-        try {
-            await ((this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>);
-        }
-        catch (error) {
-            console.warn(`Error when attempting to create a train dialog: `, error)
-        }
+        // Check to see if new TrainDialog can be merged with an existing TrainDialog
+        const matchingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs)
 
-        void this.onCloseEditDialogModal()
+        if (matchingTrainDialog) {
+            this.setState({
+                mergeExistingTrainDialog: matchingTrainDialog,
+                mergeNewTrainDialog: newTrainDialog,
+                isTeachDialogModalOpen: false
+            })
+        }
+        else {
+            try {
+                await ((this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>);
+            }
+            catch (error) {
+                console.warn(`Error when attempting to create a train dialog: `, error)
+            }
+
+            void this.onCloseEditDialogModal()
+        }
     }
 
     @OF.autobind
@@ -1058,7 +1070,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         componentRef={component => this.newTeachSessionButton = component!}
                         iconProps={{ iconName: 'Add' }}
                     />
-                    <OF.PrimaryButton
+                    <OF.DefaultButton
                         iconProps={{
                             iconName: "Add"
                         }}

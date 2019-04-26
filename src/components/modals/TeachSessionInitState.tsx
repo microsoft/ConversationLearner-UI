@@ -24,12 +24,14 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        this.state = { filledEntityMap: new CLM.FilledEntityMap() }
+        this.state = { 
+            filledEntityMap: new CLM.FilledEntityMap() 
+        }
     }
 
     componentWillReceiveProps(newProps: Props) {
         if (this.props.isOpen !== newProps.isOpen) {
-            this.setState({filledEntityMap: new CLM.FilledEntityMap()})
+            this.setState({filledEntityMap: this.props.initMemories || new CLM.FilledEntityMap()})
         }
     }
 
@@ -223,6 +225,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     isOpen: boolean,
+    initMemories: CLM.FilledEntityMap | null
     handleClose: (filledEntityMap?: CLM.FilledEntityMap) => void
 }
 

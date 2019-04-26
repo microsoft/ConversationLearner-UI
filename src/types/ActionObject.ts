@@ -108,6 +108,10 @@ export type DisplayAction = {
 } | {
     type: AT.SET_WEBCHAT_SCROLL_POSITION,
     position: number
+}| {
+    type: AT.SPINNER_ADD
+}| {
+    type: AT.SPINNER_REMOVE
 } | {
     type: AT.CLEAR_WEBCHAT_SCROLL_POSITION
 } | {

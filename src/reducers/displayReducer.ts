@@ -115,6 +115,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.GET_SCORES_ASYNC:
         case AT.RUN_SCORER_ASYNC:
         case AT.POST_SCORE_FEEDBACK_ASYNC:
+        case AT.SPINNER_ADD:
             state.displaySpinner.push(spinnerName(action.type))
             return
         case AT.CREATE_ACTION_FULFILLED:
@@ -176,6 +177,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.GET_SCORES_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
+        case AT.SPINNER_REMOVE:
             state.displaySpinner = removeSpinner(state.displaySpinner, action.type)
             return
         default:

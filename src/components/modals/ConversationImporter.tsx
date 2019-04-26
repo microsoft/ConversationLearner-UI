@@ -67,6 +67,9 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
 
     async onImport(transcript: BB.Activity[]): Promise<void> {
 
+        // This can take a while, so add a spinner
+        this.props.spinnerAdd()
+
         let trainDialog: CLM.TrainDialog = {
             trainDialogId: undefined!,
             version: undefined!,
@@ -133,6 +136,8 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
 
         // Try to map action again now that we have entities
         DialogUtils.replaceStubActions(newTrainDialog, this.props.actions, this.props.entities)
+
+        this.props.spinnerRemove()
 
         this.props.onSubmit(newTrainDialog)
     }
@@ -258,6 +263,8 @@ const mapDispatchToProps = (dispatch: any) => {
         setErrorDisplay: actions.display.setErrorDisplay,
         fetchExtractionsAsync: actions.app.fetchExtractionsThunkAsync,
         trainDialogReplayAsync: actions.train.trainDialogReplayThunkAsync,
+        spinnerAdd: actions.display.spinnerAdd,
+        spinnerRemove: actions.display.spinnerRemove
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

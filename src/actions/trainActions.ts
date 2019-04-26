@@ -259,8 +259,10 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
                 // Update existing train dialog with merged train dialog, and delete other dialogs
                 mergedTrainDialog.lastModifiedDateTime = `${new Date().toISOString().slice(0, 19)}+00:00`
                 promises.push(clClient.trainDialogEdit(appId, mergedTrainDialog))
-                promises.push(clClient.trainDialogsDelete(appId, newTrainDialog.trainDialogId))
-
+                
+                if (newTrainDialog.trainDialogId) {
+                    promises.push(clClient.trainDialogsDelete(appId, newTrainDialog.trainDialogId))
+                }
                 // If newTrainDialog was an edit of an original, delete the original
                 if (sourceTrainDialogId) {
                     promises.push(clClient.trainDialogsDelete(appId, sourceTrainDialogId))
@@ -278,7 +280,9 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
                         trainDialogId: sourceTrainDialogId,
                     }
                     promises.push(clClient.trainDialogEdit(appId, updatedSourceDialog))
-                    promises.push(clClient.trainDialogsDelete(appId, existingTrainDialog.trainDialogId))
+                    if (existingTrainDialog.trainDialogId) {
+                        promises.push(clClient.trainDialogsDelete(appId, existingTrainDialog.trainDialogId))
+                    }
                     await Promise.all(promises)
                 }
                 // Otherwise, replace the newTrainDialog with the merged one

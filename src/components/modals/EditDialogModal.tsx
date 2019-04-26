@@ -306,9 +306,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             console.log('Warning: No Activity Selected')
             return
         }
-/* LARS TODO
-        if (filledEntityMap) {
 
+        if (filledEntityMap) {
+/*
             // Generate stub
             let scoredAction: CLM.ScoredAction = {
                 actionId: undefined!,
@@ -329,9 +329,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 logicResult: undefined!,
                 scoredAction: scoredAction
             }
-
-    // LARS TODO        await this.props.onInsertAction(this.props.trainDialog, this.state.selectedActivity, SelectionType.NEXT, scorerStep)           
-    }*/
+*/
+        }
+        //LARS TODO
     }
 
     //---- ABANDON ----
@@ -399,48 +399,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             }
         }
     }
-/* LARS remove?
-    @OF.autobind
-    async onReplaceStubAction(action: CLM.ActionBase) {
-        if (!this.state.selectedActivity) {
-            console.log('Warning: No Activity Selected')
-            return
-        }
-        this.setState({actionCreatorText: null})
 
-        let newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
-
-        if (newAction) {
-            const clData: CLM.CLChannelData = this.state.selectedActivity.channelData.clData
-            const roundIndex = clData.roundIndex
-            const scoreIndex = clData.scoreIndex || 0
-            const curRound = this.props.trainDialog.rounds[roundIndex!]
-
-            if (curRound !== undefined) {
-                const scorerStep = curRound.scorerSteps[scoreIndex]
-                if (scorerStep !== undefined) {
-
-                    let scoredAction: CLM.ScoredAction = {
-                        actionId: action.actionId,
-                        payload: action.payload,
-                        isTerminal: action.isTerminal,
-                        actionType: action.actionType,
-                        score: undefined!
-                    }
-
-                    let trainScorerStep: CLM.TrainScorerStep = {
-                        input: scorerStep.input,
-                        labelAction: action.actionId,
-                        logicResult: scorerStep.logicResult,
-                        scoredAction: scoredAction
-                    }
-
-                    this.onChangeAction(trainScorerStep);
-                }
-            }
-        }
-    }
-*/
     // TEMP: until server can exclude label conflicts with self, we need
     // to check for them and force save before we can add a turn 
     showInternalLabelConflict(): boolean {
@@ -781,6 +740,41 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             default:
                 return ""
         }
+    }
+
+    getFilledEntityMapForActivity(): CLM.FilledEntityMap | null {
+
+        if (!this.state.selectedActivity) {
+            return null
+        }
+
+        const clData: CLM.CLChannelData = this.state.selectedActivity.channelData.clData
+        // If rounds were trimmed, selectedActivity could have been in deleted rounds
+
+        if (clData.roundIndex !== null) {
+            const round = this.props.trainDialog.rounds[clData.roundIndex]
+            if (round.scorerSteps.length > 0) {
+                // If a score round 
+                if (typeof clData.scoreIndex === "number") {
+                    const scorerStep = round.scorerSteps[clData.scoreIndex];
+                    if (!scorerStep) {
+                        throw new Error(`Cannot get score step at index: ${clData.scoreIndex} from array of length: ${round.scorerSteps.length}`)
+                    }
+
+                    const filledEntities = scorerStep.logicResult
+                        ? [...scorerStep.input.filledEntities, ...scorerStep.logicResult.changedFilledEntities]
+                        : [...scorerStep.input.filledEntities]
+
+                    return CLM.FilledEntityMap.FromFilledEntities(filledEntities, this.props.entities)
+                }
+                // If user round, get filled entities from first scorer step
+                else {
+                    const scorerStep = round.scorerSteps[0];
+                    return CLM.FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, this.props.entities)
+                }
+            }
+        }
+        return null
     }
 
     trainDialogValidity(): CLM.Validity | undefined {
@@ -1245,6 +1239,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 }
                 <TeachSessionInitState
                     isOpen={this.state.isCreateStubOpen}
+                    initMemories={this.getFilledEntityMapForActivity()}
                     handleClose={this.onCloseCreateAPIStub}
                 />
                 <UserInputModal

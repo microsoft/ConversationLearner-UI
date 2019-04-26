@@ -930,6 +930,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 </Modal>
                 <TeachSessionInitState
                     isOpen={this.state.isInitStateOpen}
+                    initMemories={null}
                     handleClose={this.onCloseInitState}
                 />
                 <LogConversionConflictModal
