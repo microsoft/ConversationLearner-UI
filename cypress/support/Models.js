@@ -5,27 +5,30 @@
 
 import * as homePage from './components/HomePage'
 import * as modelPage from './components/ModelPage'
+import * as helpers from './Helpers'
 
 class UniqueModelName {
-  // Get a unique time to use as a suffix for the model name.
+  // Construct a unique model name by appending the suffix to the supplied prefix.
   static Get(modelNamePrefix) {
+    // We need a unique time to use as part of the suffix.
     let moment = Cypress.moment()
-    let time = moment.format("MMMDD-HHmmss")
+    let time = moment.format("MMDD-HHmmss")
     if (UniqueModelName._lastTimeUsed && time == UniqueModelName._lastTimeUsed) {
+      // This is one of those rare occassions where we need to fudge and add 
+      // a second to the time to guarantee uniqueness.
       moment = moment.add(1, 'seconds')
-      time = moment.format("MMMDD-HHmmss")
+      time = moment.format("MMDD-HHmmss")
     }
-
     UniqueModelName._lastTimeUsed = time
-    return `${modelNamePrefix}-${time}`
+    
+    return `${modelNamePrefix}-${time}${helpers.GetBuildKey()}`
   }
 }
 
 // The test defined prefix can be up to 17 characters.
-// The dash and time suffix takes 13 characters. 
+// The dash and suffix takes 13 characters. 
 // 30 characters is the maximum model name.
 export function CreateNewModel(modelNamePrefix) {
-  //const name = `${modelNamePrefix}-${ModelNameTime()}`
   const name = UniqueModelName.Get(modelNamePrefix)
 
   homePage.Visit()
