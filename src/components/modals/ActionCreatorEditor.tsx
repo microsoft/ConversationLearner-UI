@@ -1448,7 +1448,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             selectedKey={this.state.selectedEnumValueOptionKey}
                                             placeHolder={this.state.enumValueOptions.length === 0 ? 'NONE DEFINED' : 'Enum value...'}
                                             disabled={!this.state.selectedEntityOptionKey}
-                                            tipType={ToolTip.TipType.ACTION_ENTITY_VALUE}
+                                            tipType={ToolTip.TipType.ACTION_SET_ENTITY_VALUE}
                                         />
                                     </div>
                                 </>
