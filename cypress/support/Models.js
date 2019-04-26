@@ -29,7 +29,7 @@ class UniqueModelName {
 // The dash and suffix takes 13 characters. 
 // 30 characters is the maximum model name.
 export function CreateNewModel(modelNamePrefix) {
-  const name// = UniqueModelName.Get(modelNamePrefix)
+  let name // = UniqueModelName.Get(modelNamePrefix)
 
   homePage.Visit()
   homePage.ClickNewModelButton()
