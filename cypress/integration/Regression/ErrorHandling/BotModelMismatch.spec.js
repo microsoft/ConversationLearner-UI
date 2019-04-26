@@ -11,8 +11,6 @@ describe('Bot Model Mismatch - ErrorHandling', () => {
 
   context('Setup', () => {
     it('Should import a model to test against', () => {
-      helpers.ConLog('zTemp1', Cypress.env('BUILD_NUM'))
-      helpers.ConLog('zTemp2', Cypress.env('BUILDXX_NUM'))
       models.ImportModel('z-wrongBot', 'z-botModelMismatch.cl')
     })
   })

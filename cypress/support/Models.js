@@ -29,11 +29,10 @@ class UniqueModelName {
 // The dash and suffix takes 13 characters. 
 // 30 characters is the maximum model name.
 export function CreateNewModel(modelNamePrefix) {
-  let name // = UniqueModelName.Get(modelNamePrefix)
+  const name = UniqueModelName.Get(modelNamePrefix)
 
   homePage.Visit()
   homePage.ClickNewModelButton()
-  cy.Enqueue(() => {name = UniqueModelName.Get(modelNamePrefix)})
   homePage.TypeModelName(name)
   homePage.ClickSubmitButton()
   modelPage.VerifyModelName(name)
@@ -45,16 +44,14 @@ export function CreateNewModel(modelNamePrefix) {
 export function ImportModel(modelNamePrefix, fileName) {
   return new Promise((resolve) => {
     // Maximum Name Length is 30 Characters
-    let name //= UniqueModelName.Get(modelNamePrefix)
+    const name = UniqueModelName.Get(modelNamePrefix)
 
     homePage.Visit()
     homePage.ClickImportModelButton()
-    cy.Enqueue(() => {name = UniqueModelName.Get(modelNamePrefix)}).then(() => {
-      homePage.TypeModelName(name)
-      homePage.UploadImportModelFile(fileName)
-      homePage.ClickSubmitButton()
+    homePage.TypeModelName(name)
+    homePage.UploadImportModelFile(fileName)
+    homePage.ClickSubmitButton()
 
-      cy.WaitForStableDOM().then(() => { resolve(name) })
-    })
+    cy.WaitForStableDOM().then(() => { resolve(name) })
   })
 }
