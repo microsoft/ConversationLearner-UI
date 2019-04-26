@@ -1067,6 +1067,23 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         ariaDescription="Import"
                         text="Import"
                     />
+                    {this.state.isTreeViewModalOpen ?
+                        <OF.DefaultButton
+                            className="cl-rotate"
+                            iconProps={{ iconName: 'AlignJustify' }}
+                            onClick={this.onCloseTreeView}
+                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_LISTVIEW_BUTTON)}
+                            text={Util.formatMessageId(intl, FM.TRAINDIALOGS_LISTVIEW_BUTTON)}
+                        />
+                        :
+                        <OF.DefaultButton
+                            className="cl-rotate"
+                            iconProps={{ iconName: 'BranchFork2' }}
+                            onClick={this.onOpenTreeView}
+                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}                      
+                            text={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
+                        />
+                    }
                 </div>
                 <TreeView
                     open={this.state.isTreeViewModalOpen}
