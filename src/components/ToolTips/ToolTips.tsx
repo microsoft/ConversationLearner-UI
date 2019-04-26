@@ -19,7 +19,7 @@ export enum TipType {
     ACTION_API3 = 'actionAPI3',
     ACTION_ARGUMENTS = 'actionArguments',
     ACTION_CARD = 'actionCard',
-    ACTION_END_SESSION = 'actionEndSesion',
+    ACTION_END_SESSION = 'actionEndSession',
     ACTION_ENTITIES = 'actionEntities',
     ACTION_NEGATIVE = 'negativeEntities',
     ACTION_REQUIRED = 'requiredEntities',
@@ -27,6 +27,8 @@ export enum TipType {
     ACTION_RESPONSE_TEXT = 'actionResponseText',
     ACTION_SCORE = 'actionScore',
     ACTION_SUGGESTED = 'suggestedEntity',
+    ACTION_SET_ENTITY = 'actionTypeSetEntity',
+    ACTION_ENTITY_VALUE = 'actionSetEntityValue',
     ACTION_TYPE = 'actionType',
     ACTION_WAIT = 'isTerminal',
 
@@ -179,6 +181,10 @@ export function getTip(tipType: string) {
             return render(FM.TOOLTIP_ACTION_CARD_TITLE, [FM.TOOLTIP_ACTION_CARD])
         case TipType.ACTION_END_SESSION:
             return render(FM.TOOLTIP_ACTION_END_SESSION_TITLE, [FM.TOOLTIP_ACTION_END_SESSION])
+        case TipType.ACTION_SET_ENTITY:
+            return render(FM.TOOLTIP_ACTION_SET_ENTITY_TITLE, [FM.TOOLTIP_ACTION_SET_ENTITY])
+        case TipType.ACTION_ENTITY_VALUE:
+            return render(FM.TOOLTIP_ACTION_SET_ENTITY_TITLE, [FM.TOOLTIP_ACTION_SET_ENTITY])
         case TipType.ACTION_ENTITIES:
             return (
                 <div>

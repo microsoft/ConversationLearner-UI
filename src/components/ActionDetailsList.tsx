@@ -61,6 +61,12 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             case CLM.ActionTypes.END_SESSION: {
                 return false
             }
+            case CLM.ActionTypes.SET_ENTITY: {
+                const entity = this.props.entities.find(e => e.entityId === action.entityId)
+                return !entity
+                    ? true
+                    : entity.entityType !== CLM.EntityType.ENUM
+            }
             default: {
                 console.warn(`Could not get validation for unknown action type: ${action.actionType}`)
                 return true
@@ -225,6 +231,10 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
             memories={null}
         />)
     }
+    else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
+        const [name, value] = Util.setEntityActionDisplay(action, component.props.entities)
+        return <span data-testid="actions-list-set-entity" className={OF.FontClassNames.mediumPlus}>{name}: {value}</span>
+    }
 
     return <span className={OF.FontClassNames.mediumPlus}>Unknown Action Type</span>
 }
@@ -313,6 +323,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         case CLM.ActionTypes.END_SESSION: {
                             const sessionAction = new CLM.SessionAction(action)
                             return sessionAction.renderValue(entityMap, { preserveOptionalNodeWrappingCharacters: true })
+                        }
+                        case CLM.ActionTypes.SET_ENTITY: {
+                            return `set-${action.entityId}-${action.enumValueId}`
                         }
                         default: {
                             console.warn(`Could not get sort value for unknown action type: ${action.actionType}`)

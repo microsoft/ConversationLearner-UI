@@ -50,6 +50,8 @@ export enum FM {
     ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD = 'ActionCreatorEditor.warningNonEmptyFields',
     ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION = 'ActionCreatorEditor.warningDuplicateAction',
     ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND = 'ActionCreatorEditor.warningDuplicateFound',
+    ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION = 'ActionCreationEditor.warningSetEntityCreation',
+    ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT = 'ActionCreatorEditor.warningSetEntityEdit',
 
     // ActionDetails
     ACTIONDETAILSLIST_COLUMNS_RESPONSE = 'ActionDetailsList.columns.response',
@@ -447,6 +449,10 @@ export enum FM {
     TOOLTIP_ACTION_CARD_TITLE = 'ToolTip.ACTION_CARD_TITLE',
     TOOLTIP_ACTION_END_SESSION = 'ToolTip.ACTION_END_SESSION',
     TOOLTIP_ACTION_END_SESSION_TITLE = 'ToolTip.ACTION_CARD_END_SESSION',
+    TOOLTIP_ACTION_SET_ENTITY = 'ToolTip.ACTION_SET_ENTITY',
+    TOOLTIP_ACTION_SET_ENTITY_TITLE = 'ToolTip.ACTION_SET_ENTITY_TITLE',
+    TOOLTIP_ACTION_ENTITY_VALUE = 'ToolTip.ACTION_ENTITY_VALUE',
+    TOOLTIP_ACTION_ENTITY_VALUE_TITLE = 'ToolTip.ACTION_ENTITY_VALUE_TITLE',
     TOOLTIP_ACTION_ENTITIES = 'ToolTip.ACTION_ENTITIES',
     TOOLTIP_ACTION_ENTITIES_REQ = 'ToolTip.ACTION_ENTITIES_REQ',
     TOOLTIP_ACTION_ENTITIES_REQ_NOT = 'ToolTip.ACTION_ENTITIES_REQ_NOT',
@@ -600,6 +606,8 @@ export default {
         [FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD]: `Non-wait Actions can't have Expected Entities`,
         [FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION]: `Actions must be unique`,
         [FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND]: 'The action you are creating matches an existing action. Actions must be unique. Please change the properties or close.',
+        [FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION]: 'You will not be able to edit this action after saving.',
+        [FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT]: 'You cannot save changes to {actionType} Actions.',
 
         // ActionScorer
         [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
@@ -815,6 +823,10 @@ export default {
         [FM.TOOLTIP_ACTION_CARD_TITLE]: `Card`,
         [FM.TOOLTIP_ACTION_END_SESSION]: `Data to send to "onSessionEndCallback" when this Action is selected`,
         [FM.TOOLTIP_ACTION_END_SESSION_TITLE]: `End Session`,
+        [FM.TOOLTIP_ACTION_SET_ENTITY]: `Set entity actions are used to learn when to set enum values.`,
+        [FM.TOOLTIP_ACTION_SET_ENTITY_TITLE]: `Set Entity`,
+        [FM.TOOLTIP_ACTION_ENTITY_VALUE]: `When this action is taken by the bot it will result in the entity being set with this value`,
+        [FM.TOOLTIP_ACTION_ENTITY_VALUE_TITLE]: `Entity Value`,
         [FM.TOOLTIP_ACTION_ENTITIES]: 'Status of Entity requirements for this Action:',
         [FM.TOOLTIP_ACTION_ENTITIES_REQ]: 'Required Entity is present',
         [FM.TOOLTIP_ACTION_ENTITIES_REQ_NOT]: 'Required Enitity is missing (DISQUALIFIES ACTION)',
@@ -1002,7 +1014,7 @@ export default {
         [FM.ENTITYCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit may invalidate one or more Training Dialogs.  If you proceed they may be removed from training until fixed.',
         [FM.ENTITYCREATOREDITOR_PREBUILT_WARNING]: 'Note: You must wait for training to complete before the new pre-trained Entity will be detected',
         [FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE]: 'Unable to delete this Entity',
-        [FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING]: 'It is either referenced within the payload or used as suggested entity by one or more Actions',
+        [FM.ENTITYCREATOREDITOR_DELETE_ERROR_WARNING]: 'It is either referenced within the payload, used as suggested entity, or used to set an entity by one or more Actions',
         [FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_TITLE]: 'Are you sure?',
         [FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_WARNING]: 'Enum is referenced by one or more Actions and may invalidate related Training Dialogs',
 

@@ -36,7 +36,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             isSortedDescending: true,
             getSortValue: entity => entity.entityName.toLowerCase(),
-            render: entity => <span className={OF.FontClassNames.mediumPlus}>{entity.entityName}</span>
+            render: entity => <span data-testid="entities-name" className={OF.FontClassNames.mediumPlus}>{entity.entityName}</span>
         },
         {
             key: 'entityType',

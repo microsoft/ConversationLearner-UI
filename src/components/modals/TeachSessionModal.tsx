@@ -426,7 +426,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         suggestedEntity: null,
                         version: 0,
                         packageCreationId: 0,
-                        packageDeletionId: 0
+                        packageDeletionId: 0,
+                        entityId: undefined,
+                        enumValueId: undefined,
                     }
                 }
 

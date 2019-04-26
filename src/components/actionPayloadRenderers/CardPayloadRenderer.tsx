@@ -71,7 +71,7 @@ export default class Component extends React.Component<Props, State> {
 
         return <div className="cl-card-payload">
             <div>
-                <div className={OF.FontClassNames.mediumPlus}>{this.props.name}</div>
+                <div className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-card-name">{this.props.name}</div>
                 <div className="cl-card-payload__arguments ms-ListItem-primaryText">
                     {pairedArguments.argumentPairs.length !== 0
                         && pairedArguments.argumentPairs.map((argument, i) =>
