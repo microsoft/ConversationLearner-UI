@@ -422,6 +422,8 @@ describe('Description and Tags', () => {
             // Need to import a small model that has a train dialog
             models.ImportModel('z-descriptionTags', 'z-myNameIs.cl')
             model.NavigateToLogDialogs()
+
+            // @ts-ignore
             cy.WaitForTrainingStatusCompleted()
         })
 

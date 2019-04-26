@@ -1,3 +1,4 @@
+export default 1
 const testSelectors = {
     common: {
         spinner: '.cl-spinner',
@@ -251,9 +252,9 @@ describe('EntityPicker', () => {
             cy.get(testSelectors.models.buttonLocalFile)
                 .click()
 
-                // TODO: Add types
-                // @ts-ignore
-                cy.UploadFile(testData.modelFile, testSelectors.models.inputFile)
+            // TODO: Add types
+            // @ts-ignore
+            cy.UploadFile(testData.modelFile, testSelectors.models.inputFile)
 
             cy.get(testSelectors.models.submit)
                 .click()

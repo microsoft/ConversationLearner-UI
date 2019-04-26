@@ -2,9 +2,9 @@
     "compilerOptions": {
         "strict": true,
         "baseUrl": "../node_modules",
-        "target": "es5",
+        "target": "es2016",
         "lib": [
-            "es2018",
+            "esnext",
             "dom"
         ],
         "types": [

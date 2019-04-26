@@ -66,6 +66,8 @@ describe('Entity Conflicts', () => {
 
     before(() => {
         models.ImportModel('z-entityConflicts', 'z-entityConflicts.cl')
+
+        // @ts-ignore
         cy.WaitForTrainingStatusCompleted()
     })
 
@@ -98,6 +100,8 @@ describe('Entity Conflicts', () => {
 
             it('should change the labels if Accept is clicked', () => {
                 trainDialog.ClickScoreActionsButton()
+
+                // @ts-ignore
                 cy.WaitForStableDOM()
                 cy.get(testSelectors.dialogModal.entityConflictModal.acceptButton)
                     .click()
@@ -110,6 +114,7 @@ describe('Entity Conflicts', () => {
                 cy.get(testSelectors.confirmCancelModal.acceptButton)
                     .click()
 
+                // @ts-ignore
                 cy.WaitForTrainingStatusCompleted()
             })
         })
@@ -124,10 +129,10 @@ describe('Entity Conflicts', () => {
                 .should('not.exist')
 
             cy.get(testSelectors.model.logDialogsLink)
-                .click()
+                .click();
 
             // Create log dialogs (one for each test to isolate behavior)
-            ;(new Array(4)).fill(0).forEach((_, i) => {
+            (new Array<number>(4)).fill(0).forEach((_, i) => {
                 logDialogs.CreateNewLogDialogButton()
                 logDialog.TypeYourMessageValidateResponse(testData.userInput1, testData.actionResponse)
                 // TODO: Why is this wait needed if we're waiting/validating response before next input
@@ -139,7 +144,7 @@ describe('Entity Conflicts', () => {
             })
 
             // Change the labels on train dialogs to create conflict
-            model.NavigateToTrainDialogs()
+            model.NavigateToTrainDialogs();
 
             cy.get(testSelectors.trainDialogs.description)
                 .contains(testData.userInput1)
@@ -220,6 +225,7 @@ describe('Entity Conflicts', () => {
                     cy.get(testSelectors.dialogModal.saveAsTrainDialogButton)
                         .click()
 
+                    // @ts-ignore
                     cy.WaitForStableDOM()
 
                     cy.get(testSelectors.logConversionConflictsModal.acceptButton)
@@ -262,6 +268,7 @@ describe('Entity Conflicts', () => {
             })
 
             afterEach(() => {
+                // @ts-ignore
                 cy.WaitForStableDOM()
 
                 cy.get(testSelectors.logConversionConflictsModal.acceptButton)
@@ -295,6 +302,7 @@ describe('Entity Conflicts', () => {
 
                 cy.get(testSelectors.logConversionConflictsModal.modal)
 
+                // @ts-ignore
                 cy.WaitForStableDOM()
 
                 cy.get(testSelectors.logConversionConflictsModal.acceptButton)
