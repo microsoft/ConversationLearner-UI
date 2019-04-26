@@ -77,8 +77,8 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
             rounds: [],
             tags: [], 
             description: '',
-            createdDateTime: Date.now().toString(),  
-            lastModifiedDateTime: Date.now().toString() 
+            createdDateTime: new Date().toJSON(),
+            lastModifiedDateTime: new Date().toJSON()
         }
 
         let curRound: CLM.TrainRound | null = null
