@@ -366,12 +366,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     // If editing an existing train dialog, extract its dialogId
                     const sourceTrainDialogId = this.sourceTrainDialogId()
 
-                    // Delete the teach session and retreive the new TrainDialog
+                    // Delete the teach session and retrieve the new TrainDialog
                     const newTrainDialog = await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app, true, sourceTrainDialogId) as any) as Promise<CLM.TrainDialog>)
                     newTrainDialog.tags = tags
                     newTrainDialog.description = description
 
-                    // Check to see if new TrainDialog can be merged with an exising TrainDialog
+                    // Check to see if new TrainDialog can be merged with an existing TrainDialog
                     const matchingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
 
                     if (matchingTrainDialog) {
