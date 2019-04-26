@@ -7,7 +7,7 @@ const authoringKeys =
   process.env.LUIS_AUTHORING_KEY_ALT_5,
 ]
 
-let buildNumber = +process.env.BUILD_NUM
+let buildNumber = +process.env.CIRCLE_BUILD_NUM
 
 // We have 5 LUIS Authoring Keys that we rotate through.
 // We use the Circle CI Build Number to help us get an index to each in sequence.
