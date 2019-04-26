@@ -213,8 +213,7 @@ class Settings extends React.Component<Props, ComponentState> {
             // packageVersions: DON'T SEND
             // devPackageId: DON'T SEND
             trainingFailureMessage: null,
-            trainingStatus: CLM.TrainingStatusCode.Completed,
-            datetime: new Date()
+            trainingStatus: CLM.TrainingStatusCode.Completed
         }
         this.props.editApplicationThunkAsync(modifiedApp)
     }

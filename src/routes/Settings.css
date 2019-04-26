@@ -1,9 +1,10 @@
 .cl-input {
-    padding: 0.5em;
+    padding: 0.475em 0.5em;
+    margin-right: 0.5em;
     border: 1px solid #a6a6a6;
     color: rgb(51,51,51);
 }
-.cl-input:hover {
+.cl-input:hover:not(:disabled) {
     border-color: #212121;
 }
 .cl-input:focus {
@@ -12,4 +13,9 @@
 
 .cl-input-warning {
     padding: 0.5em 0;
+}
+
+.cl-settings__bot-port {
+    display: grid;
+    grid-gap: 1em;
 }

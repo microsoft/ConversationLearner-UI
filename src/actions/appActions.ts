@@ -299,14 +299,14 @@ export const fetchApplicationsThunkAsync = (userId: string) => {
         try {
             const uiAppList = await clClient.apps(userId)
 
-            // Initialize datatime property since trainingStatus comes with app
+            // Initialize datetime property since trainingStatus comes with app
             uiAppList.appList.apps.forEach(app => app.datetime = new Date())
             dispatch(fetchApplicationsFulfilled(uiAppList))
             return uiAppList
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_APPLICATIONS_ASYNC))
-            return null;
+            return null
         }
     }
 }

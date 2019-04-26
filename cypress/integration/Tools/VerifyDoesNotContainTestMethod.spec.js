@@ -13,7 +13,7 @@ import * as train from '../../support/Train'
 // will verify that our method is working as we expect.
 describe('Verify the "DoesNotContain" test function - Tools', () => {
   it('test', () => {
-    models.ImportModel('z-editContols', 'z-nameTrained.cl')
+    models.ImportModel('z-editContols', 'z-learnedEntLabel.cl')
     modelPage.NavigateToTrainDialogs()
 
     train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')

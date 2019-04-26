@@ -31,7 +31,6 @@ const appsReducer: Reducer<AppsState> = produce((state: AppsState, action: Actio
                 return
             }
 
-            app.trainingStatus = TrainingStatusCode.Queued
             app.didPollingExpire = false
             return
         }
@@ -55,11 +54,11 @@ const appsReducer: Reducer<AppsState> = produce((state: AppsState, action: Actio
             app.didPollingExpire = false
             app.trainingStatus = action.trainingStatus.trainingStatus
             // Since we're updating training status simulate update to datetime field
-            app.datetime = new Date(),
-                // Used discriminated union to access failure message
-                app.trainingFailureMessage = (action.trainingStatus.trainingStatus === TrainingStatusCode.Failed)
-                    ? action.trainingStatus.trainingFailureMessage
-                    : null
+            app.datetime = new Date()
+            // Used discriminated union to access failure message
+            app.trainingFailureMessage = (action.trainingStatus.trainingStatus === TrainingStatusCode.Failed)
+                ? action.trainingStatus.trainingFailureMessage
+                : null
             return
         }
         case AT.CREATE_APPLICATION_FULFILLED:
