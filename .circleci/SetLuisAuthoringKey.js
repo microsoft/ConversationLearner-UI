@@ -15,8 +15,7 @@ let buildNumber = +process.env.CIRCLE_BUILD_NUM
 // The Build part does NOT consume a LUIS Authoring Keys, which affects our algorithm,
 // thus we need to use one LUIS Authoring Key for every other Build Number.
 //
-// While this is not perfect, it does work most of the time, and using the same
-// key twice in a row everyonce in a while should work out just fine.
+// While this is not perfect, it does work.
 let authoringKeyIndex = Math.floor((buildNumber % 10) / 2)
 
 let luisAuthoringKey = authoringKeys[authoringKeyIndex]

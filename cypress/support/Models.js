@@ -10,7 +10,7 @@ import * as helpers from './Helpers'
 class UniqueModelName {
   // Construct a unique model name by appending the suffix to the supplied prefix.
   static Get(modelNamePrefix) {
-    // The suffix will start with the time.
+    // We need a unique time to use as part of the suffix.
     let moment = Cypress.moment()
     let time = moment.format("MMDD-HHmmss")
     if (UniqueModelName._lastTimeUsed && time == UniqueModelName._lastTimeUsed) {
