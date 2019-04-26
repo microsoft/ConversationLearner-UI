@@ -526,13 +526,13 @@ const fetchAllTrainDialogsFulfilled = (trainDialogs: CLM.TrainDialog[]): ActionO
 // ----------------------------------------
 // History
 // ----------------------------------------
-export const fetchHistoryThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string) => {
+export const fetchHistoryThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean = true) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_HISTORY_ASYNC)
         dispatch(fetchHistoryAsync(appId, trainDialog, userName, userId))
 
         try {
-            const teachWithHistory = await clClient.history(appId, trainDialog, userName, userId)
+            const teachWithHistory = await clClient.history(appId, trainDialog, userName, userId, useMarkdown)
             dispatch(fetchHistoryFulfilled(teachWithHistory))
             return teachWithHistory
         } catch (e) {

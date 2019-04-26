@@ -454,6 +454,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 trainDialog,
                 selectedActivity,
                 trainScorerStep,
+                this.state.editType,
                 this.props.app.appId,
                 this.props.entities,
                 this.props.actions,
@@ -478,7 +479,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 trainDialog,
                 selectedActivity,
                 textVariations,
-
+                this.state.editType,
                 this.props.app.appId,
                 this.props.entities,
                 this.props.actions,
@@ -1240,6 +1241,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 />
                 {this.state.isConversationImportOpen && 
                     <ConversationImporter
+                        app={this.props.app}
                         open={true}
                         onCancel={this.onCancelImportConversation}
                         onSubmit={this.onSubmitImportConversation}

@@ -180,6 +180,15 @@ export default class ClClient {
         return response.data
     }
 
+    async appExtract(appId: string, userUtterances: string[]): Promise<CLM.ExtractResponse[]> {
+        const response = await this.send<CLM.ExtractResponse[]>({
+            method: 'post',
+            url: `${this.baseUrl}/app/${appId}/extract`,
+            data: userUtterances
+        })
+        return response.data
+    }
+
     async entitiesGetById(appId: string, entityId: string): Promise<CLM.EntityBase> {
         const response = await this.send<CLM.EntityBase>({
             url: `${this.baseUrl}/app/${appId}/entity/${entityId}`
@@ -418,10 +427,10 @@ export default class ClClient {
         return response.data.appList.apps
     }
 
-    async history(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
+    async history(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean): Promise<CLM.TeachWithHistory> {
         const response = await this.send<CLM.TeachWithHistory>({
             method: 'post',
-            url: `${this.baseUrl}/app/${appId}/history?username=${userName}&userid=${userId}`,
+            url: `${this.baseUrl}/app/${appId}/history?username=${userName}&userid=${userId}&useMarkdown=${useMarkdown}`,
             data: trainDialog
         })
         return response.data

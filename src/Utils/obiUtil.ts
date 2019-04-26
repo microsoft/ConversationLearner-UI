@@ -11,7 +11,7 @@ export async function toTranscripts(
     appDefinition: CLM.AppDefinition, 
     appId: string,
     user: User,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string) => Promise<CLM.TeachWithHistory>
+    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
     ): Promise<BB.Transcript[]> {
 
     const definitions = {
@@ -24,11 +24,11 @@ export async function toTranscripts(
 }
 
 async function getHistory(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string) => Promise<CLM.TeachWithHistory>
+    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
     ): Promise<BB.Transcript> {
     const newTrainDialog = deepCopy(trainDialog)
     newTrainDialog.definitions = definitions
 
-    const teachWithHistory = await fetchHistoryAsync(appId, newTrainDialog, user.name, user.id)
+    const teachWithHistory = await fetchHistoryAsync(appId, newTrainDialog, user.name, user.id, false)
     return { activities: teachWithHistory.history }
 }

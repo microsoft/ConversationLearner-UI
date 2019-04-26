@@ -290,6 +290,11 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_TUTORIALS_FULFILLED,
     tutorials: CLM.AppBase[]
+} | {
+    type: AT.FETCH_EXTRACTIONS_ASYNC
+} | {
+    type: AT.FETCH_EXTRACTIONS_FULFILLED,
+    extractResponses: CLM.ExtractResponse[]
 }
 
 export type CreateAction = {

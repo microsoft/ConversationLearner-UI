@@ -4,19 +4,20 @@
  */
 import * as React from 'react';
 import * as BB from 'botbuilder'
+import * as OF from 'office-ui-fabric-react'
+import * as CLM from '@conversationlearner/models'
+import * as DialogEditing from '../../Utils/dialogEditing'
+import * as DialogUtils from '../../Utils/dialogUtils'
+import actions from '../../actions'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import * as OF from 'office-ui-fabric-react'
 import { State, ErrorType } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
 import { FilePicker } from 'react-file-picker'
-import { setErrorDisplay } from '../../actions/displayActions'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import * as CLM from '@conversationlearner/models'
-import { ActionTypes } from '@conversationlearner/models';
 
 interface ComponentState {
     file: File | null
@@ -41,19 +42,30 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
         this.props.onCancel()
     }
 
-    findActionByText(text: string): CLM.ActionBase | undefined {
-        return this.props.actions.find(action =>
-            {
-                if (action.actionType === ActionTypes.TEXT) {
-                    const textAction = new CLM.TextAction(action)
-                    const actionText = textAction.renderValue(new Map<string, string>())
-                    return text === actionText
+    async addEntityExtractions(trainDialog: CLM.TrainDialog) {
+        // TODO: Consider checking locally stored TrainDialogs first for matches to lighten load on server
+
+        // Generate list of all unique user utterances
+        const userInput: string[] = []
+        trainDialog.rounds.forEach(round => round.extractorStep.textVariations.forEach(textVariation => userInput.push(textVariation.text)))
+        const uniqueInput = [...new Set(userInput)]
+
+        // Get extraction results
+        const extractResponses = await ((this.props.fetchExtractionsAsync(this.props.app.appId, uniqueInput) as any) as Promise<CLM.ExtractResponse[]>)
+
+        // Now swap in any extract values
+        trainDialog.rounds.forEach(round => round.extractorStep.textVariations
+            .forEach(textVariation => {
+                const extractResponse = extractResponses.find(er => er.text === textVariation.text)
+                if (extractResponse && extractResponse.predictedEntities.length > 0) {
+                    textVariation.labelEntities = CLM.ModelUtils.ToLabeledEntities(extractResponse.predictedEntities)
                 }
-                return false
+                console.log(extractResponses[0])
             })
+        )
     }
 
-    onImport(transcript: BB.Activity[]): void {
+    async onImport(transcript: BB.Activity[]): Promise<void> {
 
         let trainDialog: CLM.TrainDialog = {
             trainDialogId: undefined!,
@@ -93,11 +105,11 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                         context: {},
                         maskedActions: []
                     }
-                    const action = this.findActionByText(activity.text)
+                    const action = DialogUtils.findActionByText(activity.text, this.props.actions)
                     let scorerStep: CLM.TrainScorerStep = {
                         stubText: action ? undefined : activity.text,
                         input: scoreInput,
-                        labelAction: action ? action.actionId : "NEW",
+                        labelAction: action ? action.actionId : DialogUtils.STUB_LABEL_ACTION,
                         logicResult: undefined,
                         scoredAction: undefined
                     }
@@ -107,7 +119,22 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
             }
         })
 
-        this.props.onSubmit(trainDialog)
+        // Extract entities
+        await this.addEntityExtractions(trainDialog)
+
+        // Replay to fill in memory
+        const newTrainDialog = await DialogEditing.onReplayTrainDialog(
+            trainDialog,
+            this.props.app.appId,
+            this.props.entities,
+            this.props.actions,
+            this.props.trainDialogReplayAsync as any,
+        )
+
+        // Try to map action again now that we have entities
+        DialogUtils.replaceStubActions(newTrainDialog, this.props.actions, this.props.entities)
+
+        this.props.onSubmit(newTrainDialog)
     }
 
     onChangeFile = (file: File) => {
@@ -116,7 +143,8 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickImport = () => {
+    @OF.autobind
+    async onClickImport() {
         if (!this.state.file) {
             console.warn(`You clicked import before a file was selected. This should not be possible. Contact support`)
             return
@@ -227,17 +255,21 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setErrorDisplay
+        setErrorDisplay: actions.display.setErrorDisplay,
+        fetchExtractionsAsync: actions.app.fetchExtractionsThunkAsync,
+        trainDialogReplayAsync: actions.train.trainDialogReplayThunkAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
     return {
         apps: state.apps.all,
-        actions: state.actions
+        actions: state.actions,
+        entities: state.entities
     }
 }
 
 export interface ReceivedProps {
+    app: CLM.AppBase
     open: boolean
     onSubmit: (trainDialog: CLM.TrainDialog) => void
     onCancel: () => void

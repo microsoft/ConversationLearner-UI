@@ -8,6 +8,7 @@ import { deepCopy } from './util'
 import * as DialogUtils from './dialogUtils'
 import { Activity } from 'botframework-directlinejs'
 import { SelectionType, User } from '../types'
+import { EditDialogType } from 'src/components/modals';
 
 export async function onInsertAction(
     trainDialog: CLM.TrainDialog,
@@ -194,7 +195,7 @@ export async function onChangeAction(
     trainDialog: CLM.TrainDialog,
     selectedActivity: Activity,
     trainScorerStep: CLM.TrainScorerStep,
-
+    editType: EditDialogType,
     appId: string,
     entities: CLM.EntityBase[],
     actions: CLM.ActionBase[],
@@ -216,6 +217,11 @@ export async function onChangeAction(
     // Replay logic functions on train dialog
     const replayedDialog = await trainDialogReplay(appId, newTrainDialog)
 
+    // If importing attempt to replace any stub actions
+    if (editType === EditDialogType.IMPORT) {
+        DialogUtils.replaceStubActions(replayedDialog, actions, entities)
+    }
+
     return replayedDialog
 }
 
@@ -223,7 +229,7 @@ export async function onChangeExtraction(
     trainDialog: CLM.TrainDialog,
     selectedActivity: Activity,
     textVariations: CLM.TextVariation[],
-
+    editType: EditDialogType,
     appId: string,
     entities: CLM.EntityBase[],
     actions: CLM.ActionBase[],
@@ -243,6 +249,11 @@ export async function onChangeExtraction(
 
     // Replay logic functions on train dialog
     const replayedDialog = await trainDialogReplay(appId, newTrainDialog)
+
+    // If importing attempt to replace any stub actions
+    if (editType === EditDialogType.IMPORT) {
+        DialogUtils.replaceStubActions(replayedDialog, actions, entities)
+    }
 
     return replayedDialog
 }

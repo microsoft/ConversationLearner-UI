@@ -10,6 +10,7 @@ import { Activity } from 'botframework-directlinejs'
 import TagsReadOnly from '../components/TagsReadOnly'
 
 const MAX_SAMPLE_INPUT_LENGTH = 150
+export const STUB_LABEL_ACTION = "STUB_ACTION"
 
 export interface DialogRenderData {
     dialogMode: CLM.DialogMode
@@ -418,4 +419,57 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
     largeTrainDialog.description = mergeTrainDialogDescription(largeTrainDialog, smallTrainDialog)
     largeTrainDialog.tags = mergeTrainDialogTags(largeTrainDialog, smallTrainDialog)
     return largeTrainDialog
+}
+
+// Genereate entity map for an action, filling in any missing entities with a blank value
+export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityMap: Map<string, string> = new Map<string, string>()): Map<string, string> {
+    const map = new Map<string, string>()
+    action.requiredEntities.forEach(e => {
+        let value = filledEntityMap.get(e)
+        if (value) {
+            map.set(e, value)
+        }
+        else {
+            map.set(e, "")
+        }
+    })
+    return map
+}
+
+// Find an action given text value
+export function findActionByText(text: string, actions: CLM.ActionBase[], filledEntityMap?: Map<string, string> | undefined): CLM.ActionBase | undefined {
+    return actions.find(action => {
+            if (action.actionType === CLM.ActionTypes.TEXT) {
+                const textAction = new CLM.TextAction(action)
+                const entityMap = generateEntityMapForAction(action, filledEntityMap)
+                const actionText = textAction.renderValue(entityMap)
+                return text === actionText
+            }
+            return false
+        })
+}
+
+// Look for stub actions in TrainDialog and attempt to replace them
+// with existing actions.  Return true if any replacement occured
+export function replaceStubActions(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): boolean {
+    let match = false
+    // Now swap in any extract values
+    trainDialog.rounds.forEach(round => {
+        let filledEntities = round.scorerSteps[0] && round.scorerSteps[0].input ? round.scorerSteps[0].input.filledEntities : []
+        let filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(filledEntities, entities)
+        const filledIdMap = filledEntityMap.EntityMapToIdMap()
+        let valueMap = CLM.getEntityDisplayValueMap(filledIdMap)
+        round.scorerSteps.forEach(scorerStep => {
+            if (scorerStep.labelAction === STUB_LABEL_ACTION && scorerStep.stubText) {
+                const action = findActionByText(scorerStep.stubText, actions, valueMap)
+                if (action) {
+                    scorerStep.labelAction = action.actionId
+                    delete scorerStep.stubText
+                    match = true
+                }
+            }
+        })
+        }
+    )
+    return match
 }
