@@ -17,6 +17,10 @@ import { FM } from '../../../react-intl-messages'
 import FormattedMessageId from '../../FormattedMessageId'
 import { InjectedIntlProps } from 'react-intl'
 
+export interface IEnumValueForDisplay extends CLM.EnumValue {
+    allowDelete: boolean
+}
+
 // Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
 interface ReceivedProps {
     open: boolean
@@ -71,7 +75,7 @@ interface ReceivedProps {
     resolverOptions: OF.IDropdownOption[]
     onResolverChanged: (option: OF.IDropdownOption) => void
 
-    enumValues: (CLM.EnumValue | null)[]
+    enumValues: (IEnumValueForDisplay | null)[]
     onChangedEnum: (index: number, value: string) => void
     onDeleteEnum: (enumValue: CLM.EnumValue) => void
     onGetEnumErrorMessage: (enumValue: CLM.EnumValue | null) => string
@@ -110,6 +114,7 @@ const EditComponent: React.SFC<Props> = (props) => {
             value={props.name}
             disabled={props.isNameDisabled}
             ref={setFocused}
+            autoComplete="off"
         />
         {props.entityTypeKey === CLM.EntityType.LUIS &&
             <TC.Dropdown
@@ -131,7 +136,8 @@ const EditComponent: React.SFC<Props> = (props) => {
             
             props.enumValues.map((value, index) => {
                 return (
-                    <div 
+                    <div
+                        data-testid="entity-enum-value"
                         className="cl-inputWithButton-input"
                         key={index}
                     >
@@ -142,9 +148,12 @@ const EditComponent: React.SFC<Props> = (props) => {
                             label={index === 0 ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_ENUM_LABEL) : ""}
                             errorMessage={props.onGetEnumErrorMessage(value)}
                             value={value ? value.enumValue : ""}
+                            data-testid="entity-enum-value-value-name"
                         />
                         {value && value.enumValueId &&
                             <OF.IconButton
+                                data-testid="entity-enum-value-button-delete"
+                                disabled={value ? !value.allowDelete : false}
                                 className={`cl-inputWithButton-button`}
                                 iconProps={{ iconName: 'Delete' }}
                                 onClick={() => props.onDeleteEnum(value)}
@@ -257,6 +266,7 @@ const Component: React.SFC<Props> = (props) => {
                 />
 
                 <OF.DefaultButton
+                    data-testid="entity-button-cancel"
                     onClick={props.onClickCancel}
                     ariaDescription={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
                     text={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CANCELBUTTON_TEXT)}
@@ -265,6 +275,7 @@ const Component: React.SFC<Props> = (props) => {
 
                 {props.showDelete &&
                     <OF.DefaultButton
+                        data-testid="entity-button-delete"
                         className="cl-button-delete"
                         onClick={props.onClickDelete}
                         ariaDescription={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}

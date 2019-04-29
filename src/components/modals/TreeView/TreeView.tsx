@@ -162,6 +162,10 @@ class TreeView extends React.Component<Props, ComponentState> {
             //const sessionAction = new CLM.SessionAction(action)
             return "API: End Session"
         }
+        else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
+            const [name, value] = Util.setEntityActionDisplay(action, this.props.entities)
+            return `Set Entity - ${name}: ${value}`
+        }
         else {
             return "UNKNOWN ACTION TYPE"
         }

@@ -31,6 +31,12 @@ import { FM } from '../../react-intl-messages'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
 
+const convertEntityToDropdownOption = (entity: CLM.EntityBase): OF.IDropdownOption =>
+    ({
+        key: entity.entityId,
+        text: entity.entityName,
+    })
+
 const convertEntityToOption = (entity: CLM.EntityBase): ActionPayloadEditor.IOption =>
     ({
         id: entity.entityId,
@@ -41,6 +47,14 @@ const convertEntityToTag = (entity: CLM.EntityBase): OF.ITag =>
     ({
         key: entity.entityId,
         name: entity.entityName
+    })
+
+const convertEnumValueToDropdownOptions = (enumValueObject: CLM.EnumValue): OF.IDropdownOption =>
+    ({
+        // TODO: Change EnumValue definition on entities to always have an id
+        // It only doesn't have id for new created values
+        key: enumValueObject.enumValueId!,
+        text: enumValueObject.enumValue
     })
 
 const convertOptionToTag = (option: ActionPayloadEditor.IOption): OF.ITag =>
@@ -76,7 +90,7 @@ const convertConditionalsToTags = (conditions: CLM.Condition[], entities: CLM.En
     conditions.forEach(c => {
         const entity = entities.find(e => e.entityId === c.entityId)
         if (!entity) {
-            console.log(`ERROR: Condition refers to non-existant Entity ${c.entityId}`)
+            console.log(`ERROR: Condition refers to non-existent Entity ${c.entityId}`)
         }
         else if (!entity.enumValues) {
             console.log(`ERROR: Condition refers to Entity without Enums ${entity.entityName}`)
@@ -84,7 +98,7 @@ const convertConditionalsToTags = (conditions: CLM.Condition[], entities: CLM.En
         else {
             const enumValue = entity.enumValues.find(e => e.enumValueId === c.valueId)
             if (!enumValue) {
-                console.log(`ERROR: Condition refers to non-existant EnumValue: ${c.valueId}`)
+                console.log(`ERROR: Condition refers to non-existent EnumValue: ${c.valueId}`)
             }
             else {
                 tags.push({
@@ -95,7 +109,7 @@ const convertConditionalsToTags = (conditions: CLM.Condition[], entities: CLM.En
             }
         }
     })
-    return tags 
+    return tags
 }
 
 // Entities that can be chosen for required / blocking
@@ -131,7 +145,7 @@ const conditionalEntityTags = (entities: CLM.EntityBase[]): IConditionalTag[] =>
 }
 
 // Entities that can be picked as expected entity
-const availableExpectedEntityTags = (entities: CLM.EntityBase[]): OF.ITag[] =>  {
+const availableExpectedEntityTags = (entities: CLM.EntityBase[]): OF.ITag[] => {
     // Must be LUIS entity and not the negative
     return entities
         .filter(e => e.entityType === CLM.EntityType.LUIS && !e.positiveId)
@@ -208,7 +222,9 @@ const actionTypeOptions = Object.values(CLM.ActionTypes)
     .map<OF.IDropdownOption>(actionTypeString => {
         return {
             key: actionTypeString,
-            text: actionTypeString === 'API_LOCAL' ? "API" : actionTypeString
+            text: actionTypeString === 'API_LOCAL'
+                ? "API"
+                : actionTypeString
         }
     })
 
@@ -219,9 +235,13 @@ interface IConditionalTag extends OF.ITag {
 }
 
 interface ComponentState {
+    entityOptions: OF.IDropdownOption[]
+    enumValueOptions: OF.IDropdownOption[]
     apiOptions: OF.IDropdownOption[]
     renderOptions: OF.IDropdownOption[]
     cardOptions: OF.IDropdownOption[]
+    selectedEntityOptionKey: string | undefined
+    selectedEnumValueOptionKey: string | undefined
     selectedApiOptionKey: string | number | undefined
     selectedRenderOptionKey: string | number | undefined
     selectedCardOptionKey: string | number | undefined
@@ -251,9 +271,13 @@ interface ComponentState {
 }
 
 const initialState: Readonly<ComponentState> = {
+    entityOptions: [],
+    enumValueOptions: [],
     apiOptions: [],
     renderOptions: [],
     cardOptions: [],
+    selectedEntityOptionKey: undefined,
+    selectedEnumValueOptionKey: undefined,
     selectedApiOptionKey: undefined,
     selectedRenderOptionKey: undefined,
     selectedCardOptionKey: undefined,
@@ -296,9 +320,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const { entities, botInfo } = this.props
         const apiOptions = botInfo.callbacks.map<OF.IDropdownOption>(convertCallbackToOption)
         const cardOptions = botInfo.templates.map<OF.IDropdownOption>(convertTemplateToOption)
+        const entityOptions = entities
+            .filter(e => e.entityType === CLM.EntityType.ENUM)
+            .map(e => convertEntityToDropdownOption(e))
 
         return {
             ...initialState,
+            entityOptions,
             apiOptions,
             cardOptions,
             availableExpectedEntityTags: availableExpectedEntityTags(entities),
@@ -410,6 +438,27 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         }
                     }
                 }
+                else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
+                    const entity = this.props.entities.find(e => e.entityId === action.entityId)
+                    if (!entity) {
+                        throw new Error(`The action references an entity by id: ${action.entityId} but it was not found.`)
+                    }
+                    if (entity.entityType !== CLM.EntityType.ENUM) {
+                        throw new Error(`The action references entity: ${entity.entityName} but its type ${entity.entityType} was not ${CLM.EntityType.ENUM}.`)
+                    }
+
+                    if (!entity.enumValues) {
+                        throw new Error(`The action references entity: ${entity.entityName} has no enum values.`)
+                    }
+
+                    const enumValueOptions = entity.enumValues.map(ev => convertEnumValueToDropdownOptions(ev))
+                    nextState = {
+                        ...nextState,
+                        enumValueOptions,
+                        selectedEntityOptionKey: action.entityId,
+                        selectedEnumValueOptionKey: action.enumValueId,
+                    }
+                }
 
                 const requiredEntityTagsFromPayload = Object.values(slateValuesMap)
                     .reduce<OF.ITag[]>((entities, value) => {
@@ -428,7 +477,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 if (action.negativeConditions) {
                     negativeEntityTags.push(...convertConditionalsToTags(action.negativeConditions, this.props.entities))
                 }
-            
+
                 nextState = {
                     ...nextState,
                     isPayloadMissing: action.actionType === CLM.ActionTypes.TEXT && action.payload.length === 0,
@@ -556,6 +605,29 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }))
     }
 
+    onChangedEntityOption = (entityOption: OF.IDropdownOption) => {
+        const entity = this.props.entities.find(e => e.entityId === entityOption.key)
+
+        if (entity && entity.enumValues) {
+            const enumValueOptions = entity.enumValues.map(ev => convertEnumValueToDropdownOptions(ev))
+
+            this.setState({
+                selectedEntityOptionKey: typeof entityOption.key === 'string'
+                    ? entityOption.key
+                    : undefined,
+                enumValueOptions
+            })
+        }
+    }
+
+    onChangedEnumValueOption = (enumValueOption: OF.IDropdownOption) => {
+        this.setState({
+            selectedEnumValueOptionKey: typeof enumValueOption.key === 'string'
+                ? enumValueOption.key
+                : undefined,
+        })
+    }
+
     onChangedApiOption = (apiOption: OF.IDropdownOption) => {
         const callback = this.props.botInfo.callbacks.find(t => t.name === apiOption.key)
         if (!callback) {
@@ -649,6 +721,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     convertStateToModel(): CLM.ActionBase {
         let payload: string | null = null
 
+
         /**
          * If action type if TEXT
          * Then payload map has single value named TEXT_SLOT:
@@ -699,6 +772,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 }
                 payload = JSON.stringify(t)
                 break;
+            case CLM.ActionTypes.SET_ENTITY:
+                // TODO: Fix types with discriminated unions
+                // If action being saved is set entity action, entityId and enumValueId should be defined
+                const entityId = this.state.selectedEntityOptionKey!
+                const enumValueId = this.state.selectedEnumValueOptionKey!
+                const setEntityPayload: CLM.SetEntityPayload = {
+                    entityId,
+                    enumValueId,
+                }
+                payload = JSON.stringify(setEntityPayload)
+                break;
             default:
                 throw new Error(`When attempting to submit action, the selected action type: ${this.state.selectedActionTypeOptionKey} did not have matching type`)
         }
@@ -708,8 +792,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const requiredConditions = this.state.requiredEntityTags.filter(t => t.condition).map(t => t.condition!)
         const negativeConditions = this.state.negativeEntityTags.filter(t => t.condition).map(t => t.condition!)
 
-        // TODO: This should be new model such as ActionInput for creation only.
-        const model = new CLM.ActionBase({
+        // TODO: This should be new type such as ActionInput for creation only.
+        const action = new CLM.ActionBase({
             actionId: null!,
             payload,
             createdDateTime: new Date().toJSON(),
@@ -723,13 +807,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             version: 0,
             packageCreationId: 0,
             packageDeletionId: 0,
-            actionType: CLM.ActionTypes[this.state.selectedActionTypeOptionKey]
+            actionType: CLM.ActionTypes[this.state.selectedActionTypeOptionKey],
+            entityId: this.state.selectedEntityOptionKey,
+            enumValueId: this.state.selectedEnumValueOptionKey,
         })
 
         if (this.state.isEditing && this.props.action) {
-            model.actionId = this.props.action.actionId
+            action.actionId = this.props.action.actionId
         }
-        return model
+        return action
     }
 
     @OF.autobind
@@ -890,13 +976,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
         const isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload && textPayload.document.text.length === 0)
+        const isTerminal = actionTypeOption.key === CLM.ActionTypes.END_SESSION
+            ? true
+            : actionTypeOption.key === CLM.ActionTypes.SET_ENTITY
+                ? false
+                : this.state.isTerminal
 
         this.setState({
             isPayloadMissing,
-            isTerminal: actionTypeOption.key === CLM.ActionTypes.END_SESSION
-                ? true
-                : this.state.isTerminal,
+            isTerminal,
             selectedActionTypeOptionKey: actionTypeOption.key,
+            selectedEntityOptionKey: undefined,
+            selectedEnumValueOptionKey: undefined,
             selectedApiOptionKey: undefined,
             selectedCardOptionKey: undefined,
             slateValuesMap: {
@@ -1051,11 +1142,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 return this.state.selectedCardOptionKey === undefined
             case CLM.ActionTypes.API_LOCAL:
                 return this.state.selectedApiOptionKey === undefined
+            case CLM.ActionTypes.SET_ENTITY:
+                return this.state.selectedEntityOptionKey === undefined
+                    || this.state.selectedEnumValueOptionKey === undefined
             default:
                 return false
         }
     }
     saveDisabled(): boolean {
+        // SET_ENTITY Actions are immutable
+        if (this.props.action && this.props.action.actionType === CLM.ActionTypes.SET_ENTITY) {
+            return true
+        }
 
         return this.areInputsInvalid()
             || (this.state.isEditing && !this.state.hasPendingChanges)
@@ -1146,6 +1244,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             disabled={disabled}
                             tipType={ToolTip.TipType.ACTION_TYPE}
                         />
+                        {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.SET_ENTITY
+                            && <div data-testid="action-set-entity-warning" className="cl-text--warning">
+                                <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
+                                {this.state.isEditing
+                                    ? <span>{formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT, { actionType: CLM.ActionTypes.SET_ENTITY })}</span>
+                                    : <span>{formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION)} </span>}
+                            </div>}
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
                             && <div>
@@ -1318,9 +1423,43 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </div>
                             )}
 
-                        {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CARD &&
-                            this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.END_SESSION &&
-                            (<div className="cl-action-creator--expected-entities">
+                        {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.SET_ENTITY
+                            && (
+                                <>
+                                    <div>
+                                        <TC.Dropdown
+                                            data-testid="action-set-entity"
+                                            label="Entity"
+                                            options={this.state.entityOptions}
+                                            onChanged={this.onChangedEntityOption}
+                                            selectedKey={this.state.selectedEntityOptionKey}
+                                            placeHolder={this.state.entityOptions.length === 0 ? 'NONE DEFINED' : 'Entity name...'}
+                                            disabled={this.state.entityOptions.length === 0}
+                                            tipType={ToolTip.TipType.ACTION_SET_ENTITY}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <TC.Dropdown
+                                            data-testid="action-set-enum"
+                                            label="Enum Value"
+                                            options={this.state.enumValueOptions}
+                                            onChanged={this.onChangedEnumValueOption}
+                                            selectedKey={this.state.selectedEnumValueOptionKey}
+                                            placeHolder={this.state.enumValueOptions.length === 0 ? 'NONE DEFINED' : 'Enum value...'}
+                                            disabled={!this.state.selectedEntityOptionKey}
+                                            tipType={ToolTip.TipType.ACTION_SET_ENTITY_VALUE}
+                                        />
+                                    </div>
+                                </>
+                            )}
+
+
+
+                        {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CARD
+                            && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.END_SESSION
+                            && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.SET_ENTITY
+                            && (<div className="cl-action-creator--expected-entities">
                                 <TC.TagPicker
                                     label="Expected Entity in User reply..."
                                     onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
@@ -1384,7 +1523,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
                                 style={{ marginTop: '1em', display: 'inline-block' }}
-                                disabled={this.state.selectedActionTypeOptionKey === CLM.ActionTypes.END_SESSION}
+                                disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>

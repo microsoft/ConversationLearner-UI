@@ -119,7 +119,9 @@ describe('util', () => {
                 requiredEntities: [],
                 requiredEntitiesFromPayload: [],
                 suggestedEntity: null,
-                version: 0
+                version: 0,
+                entityId: undefined,
+                enumValueId: undefined,
             }
 
             let actionSet: CLM.ActionBase[] = []
@@ -147,9 +149,9 @@ describe('util', () => {
 
         })
 
-        describe('ENDSESSION actions', () => {
+        describe('END_SESSION actions', () => {
 
-            const sampleAction = {
+            const sampleAction: CLM.ActionBase = {
                 actionId: "c64988df-a707-46c9-873c-8de42b9a116d",
                 actionType: CLM.ActionTypes.END_SESSION,
                 createdDateTime: "2019-02-25T00:00:00.001Z",
@@ -163,7 +165,9 @@ describe('util', () => {
                 requiredEntities: [],
                 requiredEntitiesFromPayload: [],
                 suggestedEntity: null,
-                version: 0
+                version: 0,
+                entityId: undefined,
+                enumValueId: undefined,
             }
 
             let actionSet: CLM.ActionBase[] = []
@@ -193,7 +197,7 @@ describe('util', () => {
 
         describe('CARD actions', () => {
 
-            const sampleAction = {
+            const sampleAction: CLM.ActionBase = {
                 actionId: "83c94294-3a42-49ae-ba84-a6f43fda2f3a",
                 actionType: CLM.ActionTypes.CARD,
                 createdDateTime: "2019-02-25T23:01:35.456Z",
@@ -207,7 +211,9 @@ describe('util', () => {
                 requiredEntities: [],
                 requiredEntitiesFromPayload: [],
                 suggestedEntity: null,
-                version: 0
+                version: 0,
+                entityId: undefined,
+                enumValueId: undefined,
             }
 
             let actionSet: CLM.ActionBase[] = []
@@ -250,10 +256,12 @@ describe('util', () => {
                 requiredEntities: [],
                 requiredEntitiesFromPayload: [],
                 suggestedEntity: null,
-                version: 0
+                version: 0,
+                entityId: undefined,
+                enumValueId: undefined,
             }
 
-            const sampleActionSession = {
+            const sampleActionSession: CLM.ActionBase = {
                 actionId: "c64988df-a707-46c9-873c-8de42b9a116d",
                 actionType: CLM.ActionTypes.END_SESSION,
                 createdDateTime: "2019-02-25T00:00:00.001Z",
@@ -267,10 +275,12 @@ describe('util', () => {
                 requiredEntities: [],
                 requiredEntitiesFromPayload: [],
                 suggestedEntity: null,
-                version: 0
+                version: 0,
+                entityId: undefined,
+                enumValueId: undefined,
             }
 
-            const sampleActionCard = {
+            const sampleActionCard: CLM.ActionBase = {
                 actionId: "83c94294-3a42-49ae-ba84-a6f43fda2f3a",
                 actionType: CLM.ActionTypes.CARD,
                 createdDateTime: "2019-02-25T23:01:35.456Z",
@@ -284,7 +294,9 @@ describe('util', () => {
                 requiredEntities: [],
                 requiredEntitiesFromPayload: [],
                 suggestedEntity: null,
-                version: 0
+                version: 0,
+                entityId: undefined,
+                enumValueId: undefined,
             }
 
             const actionTypesExercised = [sampleActionText, sampleActionSession, sampleActionCard]

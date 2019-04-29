@@ -6,7 +6,7 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import FormattedMessageId from '../FormattedMessageId'
 import { FM } from '../../react-intl-messages'
-import { MemoryValue } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import HelpLink from '../HelpLink'
 import './ToolTips.css'
 import { renderAPIPage1, renderAPIPage2, renderAPIPage3 } from './ToolTipAPI'
@@ -19,7 +19,7 @@ export enum TipType {
     ACTION_API3 = 'actionAPI3',
     ACTION_ARGUMENTS = 'actionArguments',
     ACTION_CARD = 'actionCard',
-    ACTION_END_SESSION = 'actionEndSesion',
+    ACTION_END_SESSION = 'actionEndSession',
     ACTION_ENTITIES = 'actionEntities',
     ACTION_NEGATIVE = 'negativeEntities',
     ACTION_REQUIRED = 'requiredEntities',
@@ -27,6 +27,8 @@ export enum TipType {
     ACTION_RESPONSE_TEXT = 'actionResponseText',
     ACTION_SCORE = 'actionScore',
     ACTION_SUGGESTED = 'suggestedEntity',
+    ACTION_SET_ENTITY = 'actionTypeSetEntity',
+    ACTION_SET_ENTITY_VALUE = 'actionSetEntityValue',
     ACTION_TYPE = 'actionType',
     ACTION_WAIT = 'isTerminal',
 
@@ -179,6 +181,32 @@ export function getTip(tipType: string) {
             return render(FM.TOOLTIP_ACTION_CARD_TITLE, [FM.TOOLTIP_ACTION_CARD])
         case TipType.ACTION_END_SESSION:
             return render(FM.TOOLTIP_ACTION_END_SESSION_TITLE, [FM.TOOLTIP_ACTION_END_SESSION])
+        case TipType.ACTION_SET_ENTITY:
+        case TipType.ACTION_SET_ENTITY_VALUE:
+            return (
+                <div>
+                    <div className="cl-tooltop-headerText"><FormattedMessageId id={FM.TOOLTIP_ACTION_SET_ENTITY_TITLE} /></div>
+                    <p>
+                        As the name implies a SET_ENTITY action will set an entity to a specific value. When the bot takes this action it is equivalent to manually calling `Set` with the `memoryManager` in your API callback.
+                    </p>
+                    <code>memory.Set('entityName', 'ENTITY_VALUE')</code>
+                    <p>
+                        Having these dedicated actions provides an alternative to the manual work of creating API callbacks for all of these cases. These actions are coupled with ENUM entities and thus have similar recommended use cases.
+                    </p>
+                    <p>
+                        If the specific word or label is context sensitive and can't be learned you will want to used ENUMs and SET_ENTITY actions.
+                    </p>
+                    <p>
+                        For example, yes/no questions. Such as completing a survey or ordering something.<br />
+                        Would you like popcorn? Yes<br />
+                        Would you like soda? Yes<br /><br />
+
+                        In cases where there are various questions with the same answer "yes" or "no".  It would not be possible to learn the label "yes" as entity [popcorn] because it would look identical to the answer for soda and thus also label that answer as [popcorn]. In this case the question or context is necessary to determine the entity to set.  This is a good case for ENUMs and SET_ENTITY actions.
+                    </p>
+                    <p><FormattedMessageId id={FM.TOOLTIP_ACTION_SET_ENTITY} /></p>
+                </div>
+            )
+            // return render(FM.TOOLTIP_ACTION_SET_ENTITY_TITLE, [FM.TOOLTIP_ACTION_SET_ENTITY])
         case TipType.ACTION_ENTITIES:
             return (
                 <div>
@@ -264,7 +292,8 @@ export function getTip(tipType: string) {
                             { key: 'TEXT:', value: FM.TOOLTIP_ACTION_TYPE_TEXT },
                             { key: 'API', value: FM.TOOLTIP_ACTION_TYPE_APILOCAL },
                             { key: 'CARD:', value: FM.TOOLTIP_ACTION_TYPE_CARD },
-                            { key: 'END_SESSION:', value: FM.TOOLTIP_ACTION_TYPE_ENDSESSION }
+                            { key: 'END_SESSION:', value: FM.TOOLTIP_ACTION_TYPE_ENDSESSION },
+                            { key: `${CLM.ActionTypes.SET_ENTITY}:`, value: FM.TOOLTIP_ACTION_TYPE_SET_ENTITY },
                         ])}
                     <div><HelpLink label="API Overview" tipType={TipType.ACTION_API1} /></div>
                 </div>
@@ -780,7 +809,7 @@ function render(title: FM, body: FM[], example: FM | null = null, tableItems: IT
     );
 }
 
-export function prebuilt(memoryValue: MemoryValue, content: JSX.Element): JSX.Element {
+export function prebuilt(memoryValue: CLM.MemoryValue, content: JSX.Element): JSX.Element {
     if (!memoryValue.builtinType || Object.keys(memoryValue.resolution).length === 0) {
         return content;
     }
