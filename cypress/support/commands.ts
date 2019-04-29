@@ -1,21 +1,17 @@
 import * as helpers from './Helpers.js'
 import * as modelPage from './components/ModelPage'
 
-// add new command to the existing Cypress interface
 declare global {
   namespace Cypress {
     interface Chainable {
-      /**
-       * cy.UploadFile(fileName, fileInputSelector)
-       */
       UploadFile: typeof uploadFile
-
       ConLog: () => Chainable
       WaitForStableDOM: () => Chainable
       WaitForTrainingStatusCompleted: () => Chainable
     }
   }
 }
+
 // **********************************************************************************************
 // OTHER cy.* COMMANDS are defined in MonitorDocumentChanges.js
 // They are defined there so as to have access to the correct instance 

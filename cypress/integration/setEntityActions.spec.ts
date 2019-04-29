@@ -1,67 +1,4 @@
-export default 1
-
-const testSelectors = {
-    common: {
-        spinner: '.cl-spinner',
-    },
-    models: {
-        create: '[data-testid=model-list-create-new-button]',
-        buttonImport: '[data-testid=model-list-import-model-button]',
-        buttonLocalFile: '[data-testid="model-creator-locate-file-button"]',
-        name: '[data-testid=model-creator-input-name]',
-        submit: '[data-testid=model-creator-submit-button]',
-        inputFile: '[data-testid="model-creator-import-file-picker"] > div > input[type="file"]',
-    },
-    model: {
-        navActions: '[data-testid="app-index-nav-link-actions"]',
-        navEntities: '[data-testid="app-index-nav-link-entities"]',
-        navTrainDialogs: '[data-testid=app-index-nav-link-train-dialogs]',
-    },
-    entities: {
-        name: '[data-testid="entities-name"]',
-    },
-    entity: {
-        enumValue: '[data-testid="entity-enum-value"]',
-        enumValueName: '[data-testid="entity-enum-value-value-name"]',
-        enumValueButtonDelete: '[data-testid="entity-enum-value-button-delete"]',
-        buttonDelete: '[data-testid="entity-button-delete"]',
-        buttonCancel: '[data-testid="entity-button-cancel"]',
-        buttonSave: '[data-testid="entity-creator-button-save"]',
-    },
-    actions: {
-        newAction: '[data-testid="actions-button-create"]',
-        setEntityResponseText: '[data-testid="actions-list-set-entity"]',
-    },
-    action: {
-        typeDropDown: '[data-testid="dropdown-action-type"]',
-        dropDownOptions: 'button.ms-Dropdown-item',
-        entityDropDown: '[data-testid="action-set-entity"]',
-        enumDropDown: '[data-testid="action-set-enum"]',
-        waitForResponseCheckbox: '[data-testid="action-creator-wait-checkbox"]',
-        createButton: '[data-testid="action-creator-create-button"]',
-        setEntityWarning: '[data-testid="action-set-entity-warning"]',
-    },
-    confirmCancelModal: {
-        buttonCancel: '[data-testid="confirm-cancel-modal-cancel"]',
-        buttonConfirm: '[data-testid="confirm-cancel-modal-accept"]',
-        buttonOk: '[data-testid="confirm-cancel-modal-ok"]',
-    },
-    trainDialogs: {
-        buttonNew: '[data-testid="button-new-train-dialog"]',
-    },
-    trainDialog: {
-        inputWebChat: 'input[placeholder="Type your message..."]',
-        buttonScoreActions: '[data-testid="score-actions-button"]',
-        buttonAbandon: '[data-testid="edit-dialog-modal-abandon-delete-button"]',
-        buttonSelectAction: '[data-testid="action-scorer-button-clickable"]',
-        buttonSave: '[data-testid="edit-teach-dialog-close-save-button"]',
-        actionScorerSetEntityActions: '[data-testid="action-scorer-action-set-entity"]',
-        actionScorerTextActions: '[data-testid="action-scorer-text-response"]',
-        actionScorer: {
-            rowField: '[data-automationid="DetailsRowFields"]',
-        }
-    },
-}
+import s from '../support/selectors'
 
 const testConstants = {
     spinner: {
@@ -97,104 +34,104 @@ describe('Set Entity Actions', () => {
         before(() => {
             cy.visit('http://localhost:3000')
 
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+            cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
 
-            cy.get(testSelectors.models.buttonImport)
+            cy.get(s.models.buttonImport)
                 .click()
 
-            cy.get(testSelectors.models.name)
+            cy.get(s.models.name)
                 .type(`z-${testData.modelName}-${Cypress.moment().format('MM-D-mm-ss')}`)
 
-            cy.get(testSelectors.models.buttonLocalFile)
+            cy.get(s.models.buttonLocalFile)
                 .click()
 
-            cy.UploadFile(testData.modelFile, testSelectors.models.inputFile)
+            cy.UploadFile(testData.modelFile, s.models.inputFile)
 
-            cy.get(testSelectors.models.submit)
+            cy.get(s.models.submit)
                 .click()
 
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+            cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
         })
 
         describe('enum entity deletion', () => {
             before(() => {
                 cy.reload()
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(testSelectors.model.navEntities)
+                cy.get(s.model.navEntities)
                     .click()
             })
 
             beforeEach(() => {
                 cy.reload()
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
             })
 
             it('should prevent deletion of enum entities used within set entity actions', () => {
-                cy.get(testSelectors.entities.name)
+                cy.get(s.entities.name)
                     .contains(testData.entity.usedName)
                     .click()
 
-                cy.get(testSelectors.entity.buttonDelete)
+                cy.get(s.entity.buttonDelete)
                     .click()
 
-                cy.get(testSelectors.confirmCancelModal.buttonCancel)
+                cy.get(s.confirmCancelModal.buttonCancel)
                     .click()
 
                 cy.wait(500)
 
-                cy.get(testSelectors.entity.buttonCancel)
+                cy.get(s.entity.buttonCancel)
                     .click()
             })
 
             it('should prevent deletion of enum VALUES used within set entity actions', () => {
-                cy.get(testSelectors.entities.name)
+                cy.get(s.entities.name)
                     .contains(testData.entity.usedName)
                     .click()
 
                 // TODO: Why doesn't contains work? It should check value field
                 // cy.contains(testSelectors.entity.enumValueName, testData.entity.usedEnumName)
-                cy.get(testSelectors.entity.enumValue)
+                cy.get(s.entity.enumValue)
                     .get(`[value="${testData.entity.usedEnumName}"]`)
-                    .parents(testSelectors.entity.enumValue)
-                    .find(testSelectors.entity.enumValueButtonDelete)
+                    .parents(s.entity.enumValue)
+                    .find(s.entity.enumValueButtonDelete)
                     .should('have.attr', 'disabled')
             })
 
             it('should allow deletion of unused enum values', () => {
-                cy.get(testSelectors.entities.name)
+                cy.get(s.entities.name)
                     .contains(testData.entity.usedName)
                     .click()
 
                 // TODO: Why doesn't contains work? It should check value field
                 // cy.contains(testSelectors.entity.enumValueName, testData.entity.usedEnumName)
-                cy.get(testSelectors.entity.enumValue)
+                cy.get(s.entity.enumValue)
                     .get(`[value="${testData.entity.unusedEnumName}"]`)
-                    .parents(testSelectors.entity.enumValue)
-                    .find(testSelectors.entity.enumValueButtonDelete)
+                    .parents(s.entity.enumValue)
+                    .find(s.entity.enumValueButtonDelete)
                     .click()
 
-                cy.get(testSelectors.entity.buttonSave)
+                cy.get(s.entity.buttonSave)
             })
 
             it('should allow deletion of enum entities NOT used within actions', () => {
-                cy.get(testSelectors.entities.name)
+                cy.get(s.entities.name)
                     .contains(testData.entity.unusedName)
                     .click()
 
-                cy.get(testSelectors.entity.buttonDelete)
+                cy.get(s.entity.buttonDelete)
                     .click()
 
-                cy.get(testSelectors.confirmCancelModal.buttonConfirm)
+                cy.get(s.confirmCancelModal.buttonConfirm)
                     .click()
 
                 cy.wait(500)
 
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
             })
         })
@@ -202,97 +139,97 @@ describe('Set Entity Actions', () => {
         describe('manual creation', () => {
             before(() => {
                 cy.reload()
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
-                cy.get(testSelectors.model.navActions)
+                cy.get(s.model.navActions)
                     .click()
             })
 
             beforeEach(() => {
                 cy.reload()
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(testSelectors.actions.newAction)
+                cy.get(s.actions.newAction)
                     .click()
             })
 
             it('should show correct form state when SET_ENTITY type is selected', () => {
-                cy.get(testSelectors.action.entityDropDown)
+                cy.get(s.action.entityDropDown)
                     .should('not.exist')
 
-                cy.get(testSelectors.action.enumDropDown)
+                cy.get(s.action.enumDropDown)
                     .should('not.exist')
 
-                selectDropDownOption(testSelectors.action.typeDropDown, testData.action.setEntityType)
+                selectDropDownOption(s.action.typeDropDown, testData.action.setEntityType)
 
-                cy.get(testSelectors.action.setEntityWarning)
-                cy.get(testSelectors.action.entityDropDown)
-                cy.get(testSelectors.action.enumDropDown)
-                cy.get(testSelectors.action.waitForResponseCheckbox)
+                cy.get(s.action.setEntityWarning)
+                cy.get(s.action.entityDropDown)
+                cy.get(s.action.enumDropDown)
+                cy.get(s.action.waitForResponseCheckbox)
                     .find('button')
                     .should('have.attr', 'disabled')
                     .should('not.have.attr', 'checked')
             })
 
             it('should reset the value of the fields when changing the action type', () => {
-                selectDropDownOption(testSelectors.action.typeDropDown, testData.action.setEntityType)
-                selectDropDownOption(testSelectors.action.entityDropDown, testData.action.entityName)
-                selectDropDownOption(testSelectors.action.enumDropDown, testData.action.enumValue)
-                selectDropDownOption(testSelectors.action.typeDropDown, testData.action.textType)
-                selectDropDownOption(testSelectors.action.typeDropDown, testData.action.setEntityType)
+                selectDropDownOption(s.action.typeDropDown, testData.action.setEntityType)
+                selectDropDownOption(s.action.entityDropDown, testData.action.entityName)
+                selectDropDownOption(s.action.enumDropDown, testData.action.enumValue)
+                selectDropDownOption(s.action.typeDropDown, testData.action.textType)
+                selectDropDownOption(s.action.typeDropDown, testData.action.setEntityType)
 
                 // field should be unset
-                cy.get(testSelectors.action.entityDropDown)
+                cy.get(s.action.entityDropDown)
                     .should('not.have.text', testData.action.entityName)
 
                 // enum field should be unset
-                cy.get(testSelectors.action.entityDropDown)
+                cy.get(s.action.entityDropDown)
                     .should('not.have.text', testData.action.enumValue)
             })
 
             it('should not allow creating the action unless entity and enum are set', () => {
-                selectDropDownOption(testSelectors.action.typeDropDown, testData.action.setEntityType)
+                selectDropDownOption(s.action.typeDropDown, testData.action.setEntityType)
 
-                cy.get(testSelectors.action.createButton)
+                cy.get(s.action.createButton)
                     .should('have.attr', 'disabled')
 
-                selectDropDownOption(testSelectors.action.entityDropDown, testData.action.entityName)
+                selectDropDownOption(s.action.entityDropDown, testData.action.entityName)
 
-                cy.get(testSelectors.action.createButton)
+                cy.get(s.action.createButton)
                     .should('have.attr', 'disabled')
 
-                selectDropDownOption(testSelectors.action.enumDropDown, testData.action.enumValue)
+                selectDropDownOption(s.action.enumDropDown, testData.action.enumValue)
 
-                cy.get(testSelectors.action.createButton)
+                cy.get(s.action.createButton)
                     .should('not.have.attr', 'disabled')
             })
 
             it('should prevent creating duplicate actions (same entity and enum value)', () => {
                 // Create action 
-                selectDropDownOption(testSelectors.action.typeDropDown, testData.action.setEntityType)
-                selectDropDownOption(testSelectors.action.entityDropDown, testData.action.entityName)
-                selectDropDownOption(testSelectors.action.enumDropDown, testData.action.enumValue)
-                cy.get(testSelectors.action.createButton)
+                selectDropDownOption(s.action.typeDropDown, testData.action.setEntityType)
+                selectDropDownOption(s.action.entityDropDown, testData.action.entityName)
+                selectDropDownOption(s.action.enumDropDown, testData.action.enumValue)
+                cy.get(s.action.createButton)
                     .click()
 
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(testSelectors.actions.newAction)
+                cy.get(s.actions.newAction)
                     .click()
 
                 // Try to create duplicate
-                selectDropDownOption(testSelectors.action.typeDropDown, testData.action.setEntityType)
-                selectDropDownOption(testSelectors.action.entityDropDown, testData.action.entityName)
-                selectDropDownOption(testSelectors.action.enumDropDown, testData.action.enumValue)
-                cy.get(testSelectors.action.createButton)
+                selectDropDownOption(s.action.typeDropDown, testData.action.setEntityType)
+                selectDropDownOption(s.action.entityDropDown, testData.action.entityName)
+                selectDropDownOption(s.action.enumDropDown, testData.action.enumValue)
+                cy.get(s.action.createButton)
                     .click()
 
-                cy.get(testSelectors.confirmCancelModal.buttonOk)
+                cy.get(s.confirmCancelModal.buttonOk)
                     .click()
 
-                cy.get(testSelectors.confirmCancelModal.buttonOk)
+                cy.get(s.confirmCancelModal.buttonOk)
                     .should('not.exist')
             })
         })
@@ -300,31 +237,31 @@ describe('Set Entity Actions', () => {
         describe('editing', () => {
             before(() => {
                 cy.reload()
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
-                cy.get(testSelectors.model.navActions)
+                cy.get(s.model.navActions)
                     .click()
             })
 
             it('should show the entity name and enum value in the fields', () => {
-                cy.get(testSelectors.actions.setEntityResponseText)
+                cy.get(s.actions.setEntityResponseText)
                     .contains(`${testData.action.entityName}: ${testData.action.enumValue}`)
                     .click()
 
-                cy.get(testSelectors.action.entityDropDown)
+                cy.get(s.action.entityDropDown)
                     .contains(testData.action.entityName)
 
-                cy.get(testSelectors.action.enumDropDown)
+                cy.get(s.action.enumDropDown)
                     .contains(testData.action.enumValue)
             })
 
             // TODO: Should probably make everything disabled.
             it('should not allow saving changes to SET_ENTITY actions', () => {
-                cy.get(testSelectors.action.setEntityWarning)
+                cy.get(s.action.setEntityWarning)
 
-                selectDropDownOption(testSelectors.action.enumDropDown, testData.action.nonExistingEnumValue)
+                selectDropDownOption(s.action.enumDropDown, testData.action.nonExistingEnumValue)
 
-                cy.get(testSelectors.action.createButton)
+                cy.get(s.action.createButton)
                     .should('have.attr', 'disabled')
             })
         })
@@ -332,30 +269,30 @@ describe('Set Entity Actions', () => {
         describe('automatic creation', () => {
             before(() => {
                 cy.reload()
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(testSelectors.model.navTrainDialogs)
+                cy.get(s.model.navTrainDialogs)
                     .click()
             })
 
             it('should create a placeholder action for each possible enum value', () => {
-                cy.get(testSelectors.trainDialogs.buttonNew)
+                cy.get(s.trainDialogs.buttonNew)
                     .click()
 
-                cy.get(testSelectors.trainDialog.inputWebChat)
+                cy.get(s.trainDialog.inputWebChat)
                     .type('User input{enter}')
 
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(testSelectors.trainDialog.buttonScoreActions)
+                cy.get(s.trainDialog.buttonScoreActions)
                     .click()
 
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(testSelectors.trainDialog.actionScorerSetEntityActions)
+                cy.get(s.trainDialog.actionScorerSetEntityActions)
                     .should('have.length', testData.enumValueCount)
             })
 
@@ -364,31 +301,31 @@ describe('Set Entity Actions', () => {
                 const setEntityPlaceholderText = `${testData.action.entityName}: ${testData.action.nonExistingEnumValue}`
 
                 // Select set entity action
-                selectAction(testSelectors.trainDialog.actionScorerSetEntityActions, setEntityPlaceholderText)
+                selectAction(s.trainDialog.actionScorerSetEntityActions, setEntityPlaceholderText)
 
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
                 // Select other wait action
-                selectAction(testSelectors.trainDialog.actionScorerTextActions, testData.action.text)
+                selectAction(s.trainDialog.actionScorerTextActions, testData.action.text)
 
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(testSelectors.trainDialog.buttonSave)
+                cy.get(s.trainDialog.buttonSave)
                     .click()
 
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
 
                 // TODO: Why is closing modal delayed
                 cy.get('.cl-modal--teach')
                     .should('not.exist')
 
-                cy.get(testSelectors.model.navActions)
+                cy.get(s.model.navActions)
                     .click()
 
-                cy.get(testSelectors.actions.setEntityResponseText)
+                cy.get(s.actions.setEntityResponseText)
                     .contains(setEntityPlaceholderText)
             })
         })
@@ -398,10 +335,10 @@ describe('Set Entity Actions', () => {
         xdescribe('action deletion', () => {
             before(() => {
                 cy.reload()
-                cy.get(testSelectors.model.navActions)
+                cy.get(s.model.navActions)
                     .click()
 
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                     .should('not.exist')
             })
         })
@@ -411,59 +348,59 @@ describe('Set Entity Actions', () => {
         before(() => {
             cy.visit('http://localhost:3000')
 
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+            cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
 
-            cy.get(testSelectors.models.buttonImport)
+            cy.get(s.models.buttonImport)
                 .click()
 
-            cy.get(testSelectors.models.name)
+            cy.get(s.models.name)
                 .type(`z-${testData.modelName}-${Cypress.moment().format('MM-D-mm-ss')}`)
 
-            cy.get(testSelectors.models.buttonLocalFile)
+            cy.get(s.models.buttonLocalFile)
                 .click()
 
-            cy.UploadFile(testData.modelFile, testSelectors.models.inputFile)
+            cy.UploadFile(testData.modelFile, s.models.inputFile)
 
-            cy.get(testSelectors.models.submit)
+            cy.get(s.models.submit)
                 .click()
 
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+            cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
         })
 
         it('should successful place fast food order using context for instead of labels', () => {
-            cy.get(testSelectors.model.navTrainDialogs)
+            cy.get(s.model.navTrainDialogs)
                 .click()
 
-            cy.get(testSelectors.trainDialogs.buttonNew)
+            cy.get(s.trainDialogs.buttonNew)
                 .click()
 
             inputText(`Hi, I'd like a large coke and fries.`)
             clickScoreActionButton()
-            selectAction(testSelectors.trainDialog.actionScorerSetEntityActions, 'drinkSize: LARGE')
-            selectAction(testSelectors.trainDialog.actionScorerTextActions, 'What size fries would you like?')
+            selectAction(s.trainDialog.actionScorerSetEntityActions, 'drinkSize: LARGE')
+            selectAction(s.trainDialog.actionScorerTextActions, 'What size fries would you like?')
 
             inputText(`Um, make that a medium.`)
             clickScoreActionButton()
-            selectAction(testSelectors.trainDialog.actionScorerSetEntityActions, 'friesSize: MEDIUM')
-            selectAction(testSelectors.trainDialog.actionScorerTextActions, 'Ok, I have an order for a LARGE drink and MEDIUM fries. Is that correct?')
+            selectAction(s.trainDialog.actionScorerSetEntityActions, 'friesSize: MEDIUM')
+            selectAction(s.trainDialog.actionScorerTextActions, 'Ok, I have an order for a LARGE drink and MEDIUM fries. Is that correct?')
 
             inputText(`Actually, make the fries a small`)
             clickScoreActionButton()
-            selectAction(testSelectors.trainDialog.actionScorerSetEntityActions, 'orderConfirmation: NO')
-            selectAction(testSelectors.trainDialog.actionScorerSetEntityActions, 'friesSize: SMALL')
-            selectAction(testSelectors.trainDialog.actionScorerTextActions, 'Ok, I have an order for a LARGE drink and SMALL fries. Is that correct?')
+            selectAction(s.trainDialog.actionScorerSetEntityActions, 'orderConfirmation: NO')
+            selectAction(s.trainDialog.actionScorerSetEntityActions, 'friesSize: SMALL')
+            selectAction(s.trainDialog.actionScorerTextActions, 'Ok, I have an order for a LARGE drink and SMALL fries. Is that correct?')
 
             inputText(`Yep, that's correct.`)
             clickScoreActionButton()
-            selectAction(testSelectors.trainDialog.actionScorerSetEntityActions, 'orderConfirmation: YES')
-            selectAction(testSelectors.trainDialog.actionScorerTextActions, `Ok, your order number is 58. Please wait over there.`)
+            selectAction(s.trainDialog.actionScorerSetEntityActions, 'orderConfirmation: YES')
+            selectAction(s.trainDialog.actionScorerTextActions, `Ok, your order number is 58. Please wait over there.`)
 
-            cy.get(testSelectors.trainDialog.buttonSave)
+            cy.get(s.trainDialog.buttonSave)
                 .click()
 
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+            cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
                 .should('not.exist')
 
             // TODO: Why is closing modal delayed
@@ -477,7 +414,7 @@ function selectDropDownOption(dropDownSelector: string, optionName: string) {
     cy.get(dropDownSelector)
         .click()
         .then(() => {
-            cy.get(testSelectors.action.dropDownOptions)
+            cy.get(s.action.dropDownOptions)
                 .contains(optionName)
                 .click()
         })
@@ -486,25 +423,25 @@ function selectDropDownOption(dropDownSelector: string, optionName: string) {
 function selectAction(actionScorerSelector: string, actionResponseText: string) {
     cy.get(actionScorerSelector)
         .contains(actionResponseText)
-        .parents(testSelectors.trainDialog.actionScorer.rowField)
-        .find(testSelectors.trainDialog.buttonSelectAction)
+        .parents(s.trainDialog.actionScorer.rowField)
+        .find(s.trainDialog.buttonSelectAction)
         .click()
 
-    cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+    cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
         .should('not.exist')
 }
 
 function inputText(text: string) {
-    cy.get(testSelectors.trainDialog.inputWebChat)
+    cy.get(s.trainDialog.inputWebChat)
         .type(`${text}{enter}`)
 
-    cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+    cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
         .should('not.exist')
 }
 
 function clickScoreActionButton() {
-    cy.get(testSelectors.trainDialog.buttonScoreActions)
+    cy.get(s.trainDialog.buttonScoreActions)
         .click();
-    cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+    cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
         .should('not.exist');
 }
