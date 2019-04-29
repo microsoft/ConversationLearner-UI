@@ -109,8 +109,6 @@ describe('Set Entity Actions', () => {
             cy.get(testSelectors.models.buttonLocalFile)
                 .click()
 
-            // TODO: Add typing
-            // @ts-ignore
             cy.UploadFile(testData.modelFile, testSelectors.models.inputFile)
 
             cy.get(testSelectors.models.submit)
@@ -425,8 +423,6 @@ describe('Set Entity Actions', () => {
             cy.get(testSelectors.models.buttonLocalFile)
                 .click()
 
-            // TODO: Add typing
-            // @ts-ignore
             cy.UploadFile(testData.modelFile, testSelectors.models.inputFile)
 
             cy.get(testSelectors.models.submit)
@@ -477,7 +473,7 @@ describe('Set Entity Actions', () => {
     })
 })
 
-function selectDropDownOption(dropDownSelector, optionName) {
+function selectDropDownOption(dropDownSelector: string, optionName: string) {
     cy.get(dropDownSelector)
         .click()
         .then(() => {
@@ -487,7 +483,7 @@ function selectDropDownOption(dropDownSelector, optionName) {
         })
 }
 
-function selectAction(actionScorerSelector, actionResponseText) {
+function selectAction(actionScorerSelector: string, actionResponseText: string) {
     cy.get(actionScorerSelector)
         .contains(actionResponseText)
         .parents(testSelectors.trainDialog.actionScorer.rowField)
@@ -498,7 +494,7 @@ function selectAction(actionScorerSelector, actionResponseText) {
         .should('not.exist')
 }
 
-function inputText(text) {
+function inputText(text: string) {
     cy.get(testSelectors.trainDialog.inputWebChat)
         .type(`${text}{enter}`)
 
