@@ -1,6 +1,17 @@
 import * as helpers from './Helpers.js'
 import * as modelPage from './components/ModelPage'
 
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      UploadFile: typeof uploadFile
+      ConLog: () => Chainable
+      WaitForStableDOM: () => Chainable
+      WaitForTrainingStatusCompleted: () => Chainable
+    }
+  }
+}
+
 // **********************************************************************************************
 // OTHER cy.* COMMANDS are defined in MonitorDocumentChanges.js
 // They are defined there so as to have access to the correct instance 
@@ -37,10 +48,10 @@ import * as modelPage from './components/ModelPage'
 Cypress.Commands.add("ConLog", (funcName, message) => { helpers.ConLog(funcName, message) })
 
 // fileName must exist with cypress\fixtures folder
-Cypress.Commands.add('UploadFile', (fileName, selector) => {
+const uploadFile = (fileName: string, selector: string) => {
   cy.get(selector).then(elements => {
     cy.fixture(fileName).then((content) => {
-      const element = elements[0]
+      const element = elements[0] as HTMLInputElement
       const testFile = new File([content], fileName)
       const dataTransfer = new DataTransfer()
 
@@ -54,7 +65,9 @@ Cypress.Commands.add('UploadFile', (fileName, selector) => {
       if (Cypress.browser.name === 'chrome') { cy.wrap(elements).trigger('change', {force: true}) }
     })
   })
-})
+}
+
+Cypress.Commands.add('UploadFile', uploadFile)
 
 // This function operates similar to the "cy.contains" command except that it expects
 // the text content of the elements to contain an EXACT MATCH to the expected text.
