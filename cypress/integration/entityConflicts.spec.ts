@@ -78,7 +78,7 @@ describe('Entity Conflicts', () => {
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
-            cy.get(s.model.logDialogsLink)
+            cy.get(s.model.navLogDialogs)
                 .click();
 
             // Create log dialogs (one for each test to isolate behavior)
@@ -123,7 +123,7 @@ describe('Entity Conflicts', () => {
                     .contains(testData.userInput1)
                     .click()
 
-                cy.get(s.dialogModal.saveAsTrainDialogButton)
+                cy.get(s.dialogModal.buttonSaveAsTrainDialog)
                     .click()
 
                 cy.get(s.logConversionConflictsModal.modal)
@@ -146,7 +146,7 @@ describe('Entity Conflicts', () => {
                 // TODO: Could improve to very clicking button shows correct conflict
 
                 it('clicking next should change the active conflict', () => {
-                    cy.get(s.logConversionConflictsModal.nextButton)
+                    cy.get(s.logConversionConflictsModal.buttonNext)
                         .click()
 
                     cy.get('[data-testid="log-conversion-conflicts-conflict-2"]')
@@ -154,7 +154,7 @@ describe('Entity Conflicts', () => {
                 })
 
                 it('clicking previous should change the active conflict', () => {
-                    cy.get(s.logConversionConflictsModal.previousButton)
+                    cy.get(s.logConversionConflictsModal.buttonPrevious)
                         .click()
 
                     cy.get('[data-testid="log-conversion-conflicts-conflict-1"]')
@@ -162,7 +162,7 @@ describe('Entity Conflicts', () => {
                 })
 
                 it('clicking abort should close the modal', () => {
-                    cy.get(s.logConversionConflictsModal.abortButton)
+                    cy.get(s.logConversionConflictsModal.buttonAbort)
                         .click()
 
                     cy.get(s.logConversionConflictsModal.modal)
@@ -172,12 +172,12 @@ describe('Entity Conflicts', () => {
 
             describe('behavior of accept', () => {
                 it('clicking accept should close the modal and convert the dialog which removes it from the list', () => {
-                    cy.get(s.dialogModal.saveAsTrainDialogButton)
+                    cy.get(s.dialogModal.buttonSaveAsTrainDialog)
                         .click()
 
                     cy.WaitForStableDOM()
 
-                    cy.get(s.logConversionConflictsModal.acceptButton)
+                    cy.get(s.logConversionConflictsModal.buttonAccept)
                         .click()
 
                     cy.get(s.logConversionConflictsModal.modal)
@@ -219,7 +219,7 @@ describe('Entity Conflicts', () => {
             afterEach(() => {
                 cy.WaitForStableDOM()
 
-                cy.get(s.logConversionConflictsModal.acceptButton)
+                cy.get(s.logConversionConflictsModal.buttonAccept)
                     .click()
 
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
@@ -228,7 +228,7 @@ describe('Entity Conflicts', () => {
                 cy.get(s.logConversionConflictsModal.modal)
                     .should('not.exist')
 
-                cy.get(s.dialogModal.closeSave)
+                cy.get(s.dialogModal.buttonCloseSave)
                     .click()
 
                 // Modal should not pop up since dialog is already corrected
@@ -252,7 +252,7 @@ describe('Entity Conflicts', () => {
 
                 cy.WaitForStableDOM()
 
-                cy.get(s.logConversionConflictsModal.acceptButton)
+                cy.get(s.logConversionConflictsModal.buttonAccept)
                     .click()
 
                 trainDialog.ClickScoreActionsButton()

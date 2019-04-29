@@ -28,7 +28,7 @@ describe('EntityPicker', () => {
                 .should('not.exist')
 
             // Create model
-            cy.get(s.models.create)
+            cy.get(s.models.buttonCreate)
                 .click()
 
             cy.get(s.models.name)
