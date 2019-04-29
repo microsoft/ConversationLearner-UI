@@ -430,6 +430,7 @@ export enum FM {
     // TeachSessionInit
     TEACHSESSIONINIT_INPUT_PLACEHOLDER = 'TeachSessionInit.input.placeholder',
     TEACHSESSIONINIT_TITLE = 'TeachSessionInit.title',
+    TEACHSESSIONSTUB_TITLE = 'TeachSessionStub.title',
 
     // TeachSessionModal
     TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE = 'TeachSessionModal.teach.confirmDelete.title',
@@ -1083,6 +1084,7 @@ export default {
 
         [FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER]: 'Initial value...',
         [FM.TEACHSESSIONINIT_TITLE]: 'Set Initial Entity Values',
+        [FM.TEACHSESSIONSTUB_TITLE]: 'Set Post-API Call Entity Values',
 
         // TeachSessionModal
         [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this dialog?',

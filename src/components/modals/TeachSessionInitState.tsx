@@ -12,7 +12,6 @@ import { State } from '../../types';
 import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import { FM } from '../../react-intl-messages'
 import './TeachSessionInitState.css'
 
@@ -35,12 +34,12 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     onClickCancel() {
         this.props.handleClose()
     }
 
-    @autobind
+    @OF.autobind
     onClickSubmit() {
         // Remove any empty items
         for (const entityName of Object.keys(this.state.filledEntityMap.map)) {
@@ -54,7 +53,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         this.props.handleClose(this.state.filledEntityMap)
     }
 
-    @autobind
+    @OF.autobind
     onClickAdd(entity: CLM.EntityBase) {
         const memoryValue: CLM.MemoryValue = {
             userText: '',
@@ -76,7 +75,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         this.setState({ filledEntityMap: this.state.filledEntityMap })
     }
 
-    @autobind
+    @OF.autobind
     onClickRemove(index: number, entity: CLM.EntityBase) {
         const map = this.state.filledEntityMap.map
         map[entity.entityName].values.splice(index, 1)
@@ -109,7 +108,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
             >
                 <div className="cl-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>
-                        <FormattedMessageId id={FM.TEACHSESSIONINIT_TITLE} />
+                        <FormattedMessageId id={this.props.initMemories ? FM.TEACHSESSIONSTUB_TITLE : FM.TEACHSESSIONINIT_TITLE} />
                     </span>
                 </div>
                 <div>

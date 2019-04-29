@@ -308,7 +308,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         if (filledEntityMap) {
-/*
+
+            const filledEntities = filledEntityMap.FilledEntities()
+
             // Generate stub
             let scoredAction: CLM.ScoredAction = {
                 actionId: undefined!,
@@ -318,20 +320,19 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 score: 1
             }
             let scoreInput: CLM.ScoreInput = {
-                filledEntities: [],
+                filledEntities,
                 context: {},
                 maskedActions: []
             }
             let scorerStep: CLM.TrainScorerStep = {
-                stubFilledEntities: filledEntityMap.FilledEntities(),
+                stubFilledEntities: filledEntities,
                 input: scoreInput,
                 labelAction: "NEW",
                 logicResult: undefined!,
                 scoredAction: scoredAction
             }
-*/
+            this.onChangeAction(scorerStep)
         }
-        //LARS TODO
     }
 
     //---- ABANDON ----
