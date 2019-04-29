@@ -49,7 +49,7 @@ export default class Component extends React.Component<Props, State> {
 
         return <div className="cl-api-payload">
             <div>
-                <div className={OF.FontClassNames.mediumPlus}>{this.props.name}</div>
+                <div className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-api-name">{this.props.name}</div>
                 {this.props.showLogicFunction
                     && <div className="cl-api-payload__fn">
                     <div className="cl-api-payload__signature">logic(memoryManager{pairedLogicArguments.argumentPairs.length !== 0 && `, ${pairedLogicArguments.argumentPairs.map(a => a.original.parameter).join(', ')}`})</div>

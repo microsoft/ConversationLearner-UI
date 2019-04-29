@@ -88,7 +88,7 @@ export function getDefaultText(id: IntlMessages.FM): string {
     return IntlMessages.default["en-US"].hasOwnProperty(id) ? IntlMessages.default["en-US"][id] : ""
 }
 
-export function formatMessageId(intl: ReactIntl.InjectedIntl, id: IntlMessages.FM, values?: {[key: string]: MessageValue}) {
+export function formatMessageId(intl: ReactIntl.InjectedIntl, id: IntlMessages.FM, values?: { [key: string]: MessageValue }) {
     return intl.formatMessage({
         id: id,
         defaultMessage: getDefaultText(id)
@@ -103,9 +103,10 @@ export function earlierDateOrTimeToday(timestamp: string): string {
 }
 
 export function isActionUnique(newAction: CLM.ActionBase, actions: CLM.ActionBase[]): boolean {
-    const needle = normalizeActionAndStringify(newAction)
-    const haystack = actions.map(action => normalizeActionAndStringify(action))
-    return !haystack.some(straw => straw === needle)
+    const normalizedNewAction = normalizeActionAndStringify(newAction)
+    const normalizedExistingActions = actions.map(action => normalizeActionAndStringify(action))
+    const isUnique = !normalizedExistingActions.some(straw => straw === normalizedNewAction)
+    return isUnique
 }
 
 function normalizeActionAndStringify(newAction: CLM.ActionBase) {
@@ -157,5 +158,73 @@ export const returnStringWhenError = (s: string) => {
         catch (err) {
             return s
         }
+    }
+}
+
+export const setEntityActionDisplay = (action: CLM.ActionBase, entities: CLM.EntityBase[]): [string, string] => {
+    let name = `MISSING ENTITY`
+    let value = `MISSING VALUE`
+
+    const entity = entities.find(e => e.entityId === action.entityId)
+    if (entity) {
+        name = entity.entityName
+        if (entity.entityType !== CLM.EntityType.ENUM) {
+            value = `Entity Is Not Enum!`
+        }
+        else if (entity.enumValues) {
+            const enumValueObj = entity.enumValues.find(en => en.enumValueId === action.enumValueId)
+            if (enumValueObj) {
+                value = enumValueObj.enumValue
+            }
+        }
+    }
+
+    return [name, value]
+}
+
+export const getSetEntityActionsFromEnumEntity = (entity: CLM.EntityBase): CLM.ActionBase[] => {
+    if (entity.entityType !== CLM.EntityType.ENUM) {
+        throw new Error(`You attempted to create set entity actions from an entity that was not an ENUM. Entity: ${entity.entityName} - ${entity.entityType}`)
+    }
+
+    if (!entity.enumValues) {
+        throw new Error(`You attempted to create set entity actions from an entity which had no enum values. Entity: ${entity.entityName} - ${entity.entityType}`)
+    }
+
+    return entity.enumValues.map(evo => {
+        if (!evo.enumValueId) {
+            throw new Error(`You attempted to create a set entity action from entity whose enum values have not yet been saved and don't have valid id. Please save the entity first. Entity: ${entity.entityName} - ${entity.entityType}`)
+        }
+
+        return getSetEntityActionForEnumValue(entity.entityId, evo.enumValueId)
+    })
+}
+
+export const PLACEHOLDER_SET_ENTITY_ACTION_ID = 'PLACEHOLDER_SET_ENTITY_ACTION_ID'
+export const getSetEntityActionForEnumValue = (entityId: string, enumValueId: string): CLM.ActionBase => {
+    const setEntityPayload: CLM.SetEntityPayload = {
+        entityId,
+        enumValueId,
+    }
+
+    const payload = JSON.stringify(setEntityPayload)
+
+    return {
+        actionId: PLACEHOLDER_SET_ENTITY_ACTION_ID,
+        actionType: CLM.ActionTypes.SET_ENTITY,
+        payload,
+        createdDateTime: new Date().toJSON(),
+        isTerminal: false,
+        requiredEntitiesFromPayload: [],
+        requiredEntities: [],
+        negativeEntities: [],
+        requiredConditions: [],
+        negativeConditions: [],
+        suggestedEntity: null,
+        version: 0,
+        packageCreationId: 0,
+        packageDeletionId: 0,
+        entityId,
+        enumValueId,
     }
 }

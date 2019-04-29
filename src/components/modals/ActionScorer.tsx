@@ -96,7 +96,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     return (
                         <OF.PrimaryButton
                             data-testid="action-scorer-button-clickable"
-                            onClick={() => component.handleActionSelection(action.actionId)}
+                            onClick={() => component.handleActionSelection(action.actionId, action)}
                             ariaDescription={buttonText}
                             text={buttonText}
                             componentRef={refFn}
@@ -121,7 +121,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     const textAction = new CLM.TextAction(action)
                     return (
                         <ActionPayloadRenderers.TextPayloadRendererContainer
-                            data-testid="action-scorer-action-text"
                             textAction={textAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
@@ -132,7 +131,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     const callback = component.props.botInfo.callbacks.find(t => t.name === apiAction.name)
                     return (
                         <ActionPayloadRenderers.ApiPayloadRendererContainer
-                            data-testid="action-scorer-action-api"
                             apiAction={apiAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
@@ -143,7 +141,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     const cardAction = new CLM.CardAction(action)
                     return (
                         <ActionPayloadRenderers.CardPayloadRendererContainer
-                            data-testid="action-scorer-action-card"
                             isValidationError={false}
                             cardAction={cardAction}
                             entities={component.props.entities}
@@ -155,11 +152,14 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     const sessionAction = new CLM.SessionAction(action)
                     return (
                         <ActionPayloadRenderers.SessionPayloadRendererContainer
-                            data-testid="action-scorer-action-session"
                             sessionAction={sessionAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
                         />)
+                }
+                else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
+                    const [name, value] = Util.setEntityActionDisplay(action, component.props.entities)
+                    return <span data-testid="action-scorer-action-set-entity" className={OF.FontClassNames.mediumPlus}>{name}: {value}</span>
                 }
 
                 return <span className={OF.FontClassNames.mediumPlus}>{CLM.ActionBase.GetPayload(action, defaultEntityMap)}</span>
@@ -244,7 +244,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 80,
             isResizable: true,
             getSortValue: action => action.actionType.toLowerCase(),
-            render: action => action.actionType
+            render: action => <span className={OF.FontClassNames.mediumPlus}>{action.actionType}</span>
         },
     ]
 }
@@ -428,36 +428,53 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    handleActionSelection(actionId: string) {
-        const { scoredActions, unscoredActions } = this.props.scoreResponse
-        let scoredAction = scoredActions.find(a => a.actionId === actionId);
-        if (!scoredAction) {
-            const unscoredAction = unscoredActions.find(a => a.actionId === actionId);
-            if (unscoredAction) {
-                const { reason, ...scoredBase } = unscoredAction
-                // This is hack to create scored action without a real score
-                scoredAction = {
-                    ...scoredBase,
-                    score: undefined!
-                }
-            }
-            // TODO: Modify handleActionSelection to be passed action instead of finding action again from list by ID
-            // TODO: If score can be undefined on train dialog, what is the value in actually having the real score?
-            // if it doesn't matter, then skip all this steps for scored, unscored, missing and just find action within props.actions
-            else {
-                const responseActions = [...scoredActions, ...unscoredActions]
-                const otherActions = this.props.actions.filter(a => responseActions.every(sa => sa.actionId !== a.actionId))
-                const action = otherActions.find(a => a.actionId === actionId)
-                if (!action) {
-                    throw new Error(`Could not find action with id: ${actionId} in list of actions`)
-                }
+    async handleActionSelection(actionId: string, scoredBase?: CLM.ScoredBase) {
+        let scoredAction: CLM.ScoredAction | undefined
+        if (scoredBase && actionId === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID) {
+            // TODO: Schema refactor
+            const setEntityAction = new CLM.SetEntityAction(scoredBase as CLM.ActionBase)
+            const action = Util.getSetEntityActionForEnumValue(setEntityAction.entityId, setEntityAction.enumValueId)
+            const newAction = await (this.props.createActionThunkAsync(this.props.app.appId, action) as any as CLM.ActionBase)
 
-                scoredAction = {
-                    actionId: action.actionId,
-                    payload: action.payload,
-                    isTerminal: action.isTerminal,
-                    actionType: action.actionType,
-                    score: undefined!
+            scoredAction = {
+                actionId: newAction.actionId,
+                payload: newAction.payload,
+                isTerminal: newAction.isTerminal,
+                actionType: newAction.actionType,
+                score: undefined!
+            }
+        }
+        else {
+            const { scoredActions, unscoredActions } = this.props.scoreResponse
+            scoredAction = scoredActions.find(a => a.actionId === actionId);
+            if (!scoredAction) {
+                const unscoredAction = unscoredActions.find(a => a.actionId === actionId);
+                if (unscoredAction) {
+                    const { reason, ...scoredBase } = unscoredAction
+                    // This is hack to create scored action without a real score
+                    scoredAction = {
+                        ...scoredBase,
+                        score: undefined!
+                    }
+                }
+                // TODO: Modify handleActionSelection to be passed action instead of finding action again from list by ID
+                // TODO: If score can be undefined on train dialog, what is the value in actually having the real score?
+                // if it doesn't matter, then skip all this steps for scored, unscored, missing and just find action within props.actions
+                else {
+                    const responseActions = [...scoredActions, ...unscoredActions]
+                    const otherActions = this.props.actions.filter(a => responseActions.every(sa => sa.actionId !== a.actionId))
+                    const action = otherActions.find(a => a.actionId === actionId)
+                    if (!action) {
+                        throw new Error(`Could not find action with id: ${actionId} in list of actions`)
+                    }
+
+                    scoredAction = {
+                        actionId: action.actionId,
+                        payload: action.payload,
+                        isTerminal: action.isTerminal,
+                        actionType: action.actionType,
+                        score: undefined!
+                    }
                 }
             }
         }
@@ -468,7 +485,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         const trainScorerStep: CLM.TrainScorerStep = {
             input: this.props.scoreInput,
-            labelAction: actionId,
+            labelAction: scoredAction.actionId,
             logicResult: undefined,
             scoredAction: scoredAction
         };
@@ -507,11 +524,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     renderEntityRequirements(actionId: string) {
+        if (actionId === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID) {
+            return null
+        }
+
         const action = this.props.actions.filter(a => a.actionId === actionId)[0];
 
         // If action is null - there's a bug somewhere
         if (!action) {
-            return <div>ERROR: Missing Action</div>
+            return <div className={OF.FontClassNames.mediumPlus}>ERROR: Missing Action</div>
         }
 
         const items = [];
@@ -575,18 +596,23 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
             // If selected action is EndSession, it's ok to replace it with another EndSession
             // If no selected actionId, first item is selected one
-            const selectedActionId = this.props.selectedActionId || (this.state.scoredItems.length > 0 ? this.state.scoredItems[0].actionId : null) 
+            const selectedActionId = this.props.selectedActionId || (this.state.scoredItems.length > 0 ? this.state.scoredItems[0].actionId : null)
             if (selectedActionId) {
                 let selectedAction = this.props.actions.find(a => a.actionId === selectedActionId)
                 if (selectedAction && selectedAction.actionType === CLM.ActionTypes.END_SESSION) {
                     return true
                 }
-                
+
             }
             return false
         }
-        if (action.reason === CLM.ScoreReason.NotAvailable) {
-            return false;
+        else if (action.reason === CLM.ScoreReason.NotAvailable) {
+            return false
+        }
+        // actionId can be undefined for "fake" actions injected in the list
+        // even though it was casted to UnscoredAction to lose type information
+        else if (action.actionId === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID) {
+            return true
         } else {
             return this.isActionIdAvailable(action.actionId);
         }
@@ -745,10 +771,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         let scoredItems = [...this.props.scoreResponse.scoredActions as CLM.ScoredBase[], ...this.props.scoreResponse.unscoredActions]
 
         // Need to reassemble to scored item has full action info and reason
-        scoredItems = scoredItems.map(e => {
-            const action = this.props.actions.find(ee => ee.actionId === e.actionId);
-            const score = (e as CLM.ScoredAction).score;
-            const reason = score ? null : this.calculateReason(e as CLM.UnscoredAction);
+        scoredItems = scoredItems.map(scoredBase => {
+            const action = this.props.actions.find(ee => ee.actionId === scoredBase.actionId);
+            const score = (scoredBase as CLM.ScoredAction).score;
+            const reason = score ? null : this.calculateReason(scoredBase as CLM.UnscoredAction);
             if (action) {
                 return { ...action, reason: reason, score: score }
             }
@@ -761,19 +787,48 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Add any new actions that weren't included in scores
         // NOTE: This will go away when we always rescore the step
         const missingActions = this.props.actions.filter(a => scoredItems.find(si => si.actionId === a.actionId) == null)
-        const missingItems = missingActions.map(action =>
+        const missingItems = missingActions.map<CLM.ScoredBase>(action =>
             ({
                 ...action,
                 reason: CLM.ScoreReason.NotCalculated,
                 score: 0
             }))
-        // Null is rendered as ActionCreat button
+
         scoredItems = [...scoredItems, ...missingItems]
+
+        // Add any actions to set enum values that weren't already generated
+        // Note: These actions don't have ID's because they don't exist
+        const setEntityActions = this.props.entities
+            .filter(e => e.entityType === CLM.EntityType.ENUM)
+            .map(e => Util.getSetEntityActionsFromEnumEntity(e))
+            .reduce((a, b) => [...a, ...b], [])
+
+        // TODO: Schema Refactor
+        // Need to convert these to access entityId and enumValueId
+        const existingSetEntityActions = scoredItems
+            .filter(si => si.actionType === CLM.ActionTypes.SET_ENTITY)
+            .map(a => new CLM.SetEntityAction(a as CLM.ActionBase))
+
+        const missingSetEntityActions = setEntityActions
+            .filter(possibleAction => !existingSetEntityActions.find(existingAction =>
+                existingAction.entityId === possibleAction.entityId
+                && existingAction.enumValueId === possibleAction.enumValueId
+            ))
+
+        const missingSetEntityItems = missingSetEntityActions
+            .map<CLM.ScoredBase>(action =>
+                ({
+                    ...action,
+                    reason: CLM.ScoreReason.NotCalculated,
+                    score: 0
+                }))
+
+        scoredItems = [...scoredItems, ...missingSetEntityItems]
 
         if (this.state.sortColumn) {
             const sortColumn = this.state.sortColumn
             // Sort the items.
-            scoredItems = scoredItems.sort((a: CLM.ScoredBase, b: CLM.ScoredBase) => {
+            scoredItems = scoredItems.sort((a, b) => {
                 const firstValue = sortColumn.getSortValue(a, this)
                 const secondValue = sortColumn.getSortValue(b, this)
 
@@ -792,14 +847,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             });
         }
 
-        // If editing allowed and Action creation button
+        // If editing allowed add Action creation button
         if (!this.props.autoTeach && this.props.canEdit) {
             scoredItems.push(this.makeDummyItem(ACTION_BUTTON, 0));
             scoredItems.push(this.makeDummyItem(STUB_BUTTON, 0));
         }
 
-        // Add null for action createtion button at end
-        return scoredItems;
+        return scoredItems
     }
 
     render() {

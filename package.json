@@ -21,7 +21,7 @@
   },
   "private": true,
   "dependencies": {
-    "@conversationlearner/models": "0.199.3",
+    "@conversationlearner/models": "0.200.0",
     "@conversationlearner/webchat": "0.145.0",
     "adaptivecards": "1.0.0",
     "adm-zip": "^0.4.13",
