@@ -423,7 +423,6 @@ describe('Description and Tags', () => {
             models.ImportModel('z-descriptionTags', 'z-myNameIs.cl')
             model.NavigateToLogDialogs()
 
-            // @ts-ignore
             cy.WaitForTrainingStatusCompleted()
         })
 

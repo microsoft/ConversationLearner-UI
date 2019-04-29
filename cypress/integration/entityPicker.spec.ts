@@ -180,8 +180,6 @@ describe('EntityPicker', () => {
                 .contains(testData.entity1)
                 .should('have.length', 1)
 
-                // TODO: Remove
-                // @ts-ignore
                 cy.WaitForStableDOM()
 
             cy.get(testSelectors.extractionEditor.overlay)
@@ -252,8 +250,6 @@ describe('EntityPicker', () => {
             cy.get(testSelectors.models.buttonLocalFile)
                 .click()
 
-            // TODO: Add types
-            // @ts-ignore
             cy.UploadFile(testData.modelFile, testSelectors.models.inputFile)
 
             cy.get(testSelectors.models.submit)

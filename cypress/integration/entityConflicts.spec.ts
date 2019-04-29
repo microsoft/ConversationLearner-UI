@@ -67,7 +67,6 @@ describe('Entity Conflicts', () => {
     before(() => {
         models.ImportModel('z-entityConflicts', 'z-entityConflicts.cl')
 
-        // @ts-ignore
         cy.WaitForTrainingStatusCompleted()
     })
 
@@ -101,7 +100,6 @@ describe('Entity Conflicts', () => {
             it('should change the labels if Accept is clicked', () => {
                 trainDialog.ClickScoreActionsButton()
 
-                // @ts-ignore
                 cy.WaitForStableDOM()
                 cy.get(testSelectors.dialogModal.entityConflictModal.acceptButton)
                     .click()
@@ -114,7 +112,6 @@ describe('Entity Conflicts', () => {
                 cy.get(testSelectors.confirmCancelModal.acceptButton)
                     .click()
 
-                // @ts-ignore
                 cy.WaitForTrainingStatusCompleted()
             })
         })
@@ -225,7 +222,6 @@ describe('Entity Conflicts', () => {
                     cy.get(testSelectors.dialogModal.saveAsTrainDialogButton)
                         .click()
 
-                    // @ts-ignore
                     cy.WaitForStableDOM()
 
                     cy.get(testSelectors.logConversionConflictsModal.acceptButton)
@@ -268,7 +264,6 @@ describe('Entity Conflicts', () => {
             })
 
             afterEach(() => {
-                // @ts-ignore
                 cy.WaitForStableDOM()
 
                 cy.get(testSelectors.logConversionConflictsModal.acceptButton)
@@ -302,7 +297,6 @@ describe('Entity Conflicts', () => {
 
                 cy.get(testSelectors.logConversionConflictsModal.modal)
 
-                // @ts-ignore
                 cy.WaitForStableDOM()
 
                 cy.get(testSelectors.logConversionConflictsModal.acceptButton)
