@@ -436,34 +436,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             }
         }
         else {
-            const { scoredActions, unscoredActions } = this.props.scoreResponse
-            scoredAction = scoredActions.find(a => a.actionId === scoredBase.actionId);
-            if (!scoredAction) {
-                const unscoredAction = unscoredActions.find(a => a.actionId === scoredBase.actionId);
-                if (unscoredAction) {
-                    const { reason, ...scoredBase } = unscoredAction
-                    // This is hack to create scored action without a real score
-                    scoredAction = {
-                        ...scoredBase,
-                        score: undefined!
-                    }
-                }
-                else {
-                    const responseActions = [...scoredActions, ...unscoredActions]
-                    const otherActions = this.props.actions.filter(a => responseActions.every(sa => sa.actionId !== a.actionId))
-                    const action = otherActions.find(a => a.actionId === scoredBase.actionId)
-                    if (!action) {
-                        throw new Error(`Could not find action with id: ${scoredBase.actionId} in list of actions`)
-                    }
-
-                    scoredAction = {
-                        actionId: action.actionId,
-                        payload: action.payload,
-                        isTerminal: action.isTerminal,
-                        actionType: action.actionType,
-                        score: undefined!
-                    }
-                }
+            scoredAction = {
+                ...scoredBase,
+                score: undefined!
             }
         }
 
