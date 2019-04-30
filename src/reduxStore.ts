@@ -25,7 +25,9 @@ export const createReduxStore = (): Store<State> => {
     else {
         if (ports.defaultUiPort === ports.urlBotPort) {
             ClientFactory.setPort(ports.defaultBotPort)
-            state.settings.botPort = ports.defaultBotPort
+            if (settings) {
+                state.settings.botPort = settings.customPort
+            }
         }
     }
 
