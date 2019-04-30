@@ -54,11 +54,11 @@ export const deleteLogDialogThunkAsync = (app: AppBase, logDialogId: string, pac
 //-------------------------------------
 // fetchAllLogDialogs
 //-------------------------------------
-const fetchAllLogDialogsAsync = (appId: string, packageId: string): ActionObject => {
+const fetchAllLogDialogsAsync = (appId: string, packageIds: string[]): ActionObject => {
     return {
         type: AT.FETCH_LOG_DIALOGS_ASYNC,
-        appId: appId,
-        packageId: packageId
+        appId,
+        packageIds,
     }
 }
 
@@ -72,15 +72,15 @@ const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObject => {
 export const fetchAllLogDialogsThunkAsync = (app: AppBase, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         // Note: In future change fetch log dialogs to default to all package if packageId is dev
-        const commaSeparatedPackageIds = (packageId === app.devPackageId)
-            ? (app.packageVersions || []).map(pv => pv.packageId).concat(packageId).join(',')
-            : packageId
+        const packageIds = (packageId === app.devPackageId)
+            ? (app.packageVersions || []).map(pv => pv.packageId).concat(packageId)
+            : [packageId]
 
         const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOGS_ASYNC)
-        dispatch(fetchAllLogDialogsAsync(app.appId, commaSeparatedPackageIds))
+        dispatch(fetchAllLogDialogsAsync(app.appId, packageIds))
 
         try {
-            const logDialogs = await clClient.logDialogs(app.appId, commaSeparatedPackageIds)
+            const logDialogs = await clClient.logDialogs(app.appId, packageIds)
             dispatch(fetchAllLogDialogsFulfilled(logDialogs))
             return logDialogs
         } catch (e) {
