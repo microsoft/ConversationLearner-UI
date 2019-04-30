@@ -8,7 +8,7 @@ import { Reducer } from 'redux'
 import produce from 'immer'
 
 // TODO: Consolidate calculation, needs to match reduxStore
-const botPort = ports.defaultUiPort = ports.urlBotPort
+const botPort = ports.defaultUiPort === ports.urlBotPort
     ? ports.defaultBotPort
     : ports.urlBotPort
 
