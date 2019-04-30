@@ -22,7 +22,7 @@ export enum SelectionType {
 
 export const CL_IMPORT_ID = '9c110735ea8b440d8f31c5c68ffb767d'
 
-export const ports = {
+export const ports: Readonly<any> = {
     urlBotPort: parseInt(location.port, 10),
     defaultUiPort: 3000,
     defaultBotPort: 3978,
