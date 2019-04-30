@@ -136,20 +136,20 @@ describe('Entity Conflicts', () => {
                 })
 
                 it('should show the first conflict as active', () => {
-                    cy.get('[data-testid="log-conversion-conflicts-conflict-1"]')
+                    cy.get(s.logConversionConflictsModal.conflict1)
                         .should('have.class', 'active')
 
-                    cy.get('[data-testid="log-conversion-conflicts-conflict-2"]')
+                    cy.get(s.logConversionConflictsModal.conflict2)
                         .should('not.have.class', 'active')
                 })
 
-                // TODO: Could improve to very clicking button shows correct conflict
+                // TODO: Could improve to verify clicking button shows correct conflict
 
                 it('clicking next should change the active conflict', () => {
                     cy.get(s.logConversionConflictsModal.buttonNext)
                         .click()
 
-                    cy.get('[data-testid="log-conversion-conflicts-conflict-2"]')
+                    cy.get(s.logConversionConflictsModal.conflict2)
                         .should('have.class', 'active')
                 })
 
@@ -157,7 +157,7 @@ describe('Entity Conflicts', () => {
                     cy.get(s.logConversionConflictsModal.buttonPrevious)
                         .click()
 
-                    cy.get('[data-testid="log-conversion-conflicts-conflict-1"]')
+                    cy.get(s.logConversionConflictsModal.conflict1)
                         .should('have.class', 'active')
                 })
 

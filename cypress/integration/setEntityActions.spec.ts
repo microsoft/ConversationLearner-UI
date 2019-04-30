@@ -1,13 +1,6 @@
+import * as util from '../support/utilities'
+import constants from '../support/constants'
 import s from '../support/selectors'
-
-const testConstants = {
-    spinner: {
-        timeout: 120000,
-    },
-    prediction: {
-        timeout: 60000,
-    }
-}
 
 describe('Set Entity Actions', () => {
     const testData = {
@@ -32,16 +25,16 @@ describe('Set Entity Actions', () => {
 
     describe('model behavior', () => {
         before(() => {
-            cy.visit('http://localhost:3000')
+            cy.visit(constants.baseUrl)
 
-            cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
             cy.get(s.models.buttonImport)
                 .click()
 
             cy.get(s.models.name)
-                .type(`z-${testData.modelName}-${Cypress.moment().format('MM-D-mm-ss')}`)
+                .type(util.generateUniqueModelName(testData.modelName))
 
             cy.get(s.models.buttonLocalFile)
                 .click()
@@ -51,14 +44,14 @@ describe('Set Entity Actions', () => {
             cy.get(s.models.submit)
                 .click()
 
-            cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
         })
 
         describe('enum entity deletion', () => {
             before(() => {
                 cy.reload()
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
                 cy.get(s.model.navEntities)
@@ -67,7 +60,7 @@ describe('Set Entity Actions', () => {
 
             beforeEach(() => {
                 cy.reload()
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
             })
 
@@ -131,7 +124,7 @@ describe('Set Entity Actions', () => {
 
                 cy.wait(500)
 
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
             })
         })
@@ -139,7 +132,7 @@ describe('Set Entity Actions', () => {
         describe('manual creation', () => {
             before(() => {
                 cy.reload()
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
                 cy.get(s.model.navActions)
                     .click()
@@ -147,7 +140,7 @@ describe('Set Entity Actions', () => {
 
             beforeEach(() => {
                 cy.reload()
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
                 cy.get(s.actions.newAction)
@@ -213,7 +206,7 @@ describe('Set Entity Actions', () => {
                 cy.get(s.action.createButton)
                     .click()
 
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
                 cy.get(s.actions.newAction)
@@ -237,7 +230,7 @@ describe('Set Entity Actions', () => {
         describe('editing', () => {
             before(() => {
                 cy.reload()
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
                 cy.get(s.model.navActions)
                     .click()
@@ -269,7 +262,7 @@ describe('Set Entity Actions', () => {
         describe('automatic creation', () => {
             before(() => {
                 cy.reload()
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
                 cy.get(s.model.navTrainDialogs)
@@ -283,13 +276,13 @@ describe('Set Entity Actions', () => {
                 cy.get(s.trainDialog.inputWebChat)
                     .type('User input{enter}')
 
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
                 cy.get(s.trainDialog.buttonScoreActions)
                     .click()
 
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
                 cy.get(s.trainDialog.actionScorerSetEntityActions)
@@ -303,19 +296,19 @@ describe('Set Entity Actions', () => {
                 // Select set entity action
                 selectAction(s.trainDialog.actionScorerSetEntityActions, setEntityPlaceholderText)
 
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
                 // Select other wait action
                 selectAction(s.trainDialog.actionScorerTextActions, testData.action.text)
 
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
                 cy.get(s.trainDialog.buttonSave)
                     .click()
 
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
                 // TODO: Why is closing modal delayed
@@ -338,7 +331,7 @@ describe('Set Entity Actions', () => {
                 cy.get(s.model.navActions)
                     .click()
 
-                cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
             })
         })
@@ -346,16 +339,16 @@ describe('Set Entity Actions', () => {
 
     describe('scenario using set entity actions', () => {
         before(() => {
-            cy.visit('http://localhost:3000')
+            cy.visit(constants.baseUrl)
 
-            cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
             cy.get(s.models.buttonImport)
                 .click()
 
             cy.get(s.models.name)
-                .type(`z-${testData.modelName}-${Cypress.moment().format('MM-D-mm-ss')}`)
+                .type(util.generateUniqueModelName(testData.modelName))
 
             cy.get(s.models.buttonLocalFile)
                 .click()
@@ -365,7 +358,7 @@ describe('Set Entity Actions', () => {
             cy.get(s.models.submit)
                 .click()
 
-            cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
         })
 
@@ -400,7 +393,7 @@ describe('Set Entity Actions', () => {
             cy.get(s.trainDialog.buttonSave)
                 .click()
 
-            cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
             // TODO: Why is closing modal delayed
@@ -427,7 +420,7 @@ function selectAction(actionScorerSelector: string, actionResponseText: string) 
         .find(s.trainDialog.buttonSelectAction)
         .click()
 
-    cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
         .should('not.exist')
 }
 
@@ -435,13 +428,13 @@ function inputText(text: string) {
     cy.get(s.trainDialog.inputWebChat)
         .type(`${text}{enter}`)
 
-    cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
         .should('not.exist')
 }
 
 function clickScoreActionButton() {
     cy.get(s.trainDialog.buttonScoreActions)
         .click();
-    cy.get(s.common.spinner, { timeout: testConstants.spinner.timeout })
+    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
         .should('not.exist');
 }

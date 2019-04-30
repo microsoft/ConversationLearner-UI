@@ -74,6 +74,7 @@ const selectors = {
         inputDescription: '[data-testid="train-dialog-description"]',
         inputTag: '[data-testid="train-dialog-tags"] .cl-tags__form input',
         tags: '[data-testid="train-dialog-tags"] .cl-tags__tag span',
+        tagsControl: '[data-testid="train-dialog-tags"]',
         webChatUtterances: 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p',
         entityConflictModal: {
             modal: '[data-testid="extract-conflict-modal-conflicting-labels"]',
@@ -88,6 +89,8 @@ const selectors = {
     logConversionConflictsModal: {
         modal: '[data-testid="log-conversion-conflicts-modal"]',
         conflictButtons: '[data-testid^="log-conversion-conflicts-conflict"]',
+        conflict1: '[data-testid="log-conversion-conflicts-conflict-1"]',
+        conflict2: '[data-testid="log-conversion-conflicts-conflict-2"]',
         buttonNext: '[data-testid="log-conversion-conflicts-modal-next"]',
         buttonPrevious: '[data-testid="log-conversion-conflicts-modal-previous"]',
         buttonAbort: '[data-testid="log-conversion-conflicts-modal-cancel"]',
@@ -107,6 +110,11 @@ const selectors = {
         inputSearch: '[data-testid="entity-picker-entity-search"]',
         buttonNew: '[data-testid="entity-picker-button-new"]',
         options: '.custom-toolbar .custom-toolbar__results .custom-toolbar__result',
+    },
+    webChat: {
+        messageFromBot: '.wc-message-from-bot',
+        messageFromMe: 'wc-message-from-me',
+        messageColorException: 'wc-message-color-exception',
     }
 }
 
