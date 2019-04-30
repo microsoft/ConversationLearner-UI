@@ -26,14 +26,20 @@ describe('Branching - Edit and Branching', () => {
       train.CaptureOriginalChatMessages()
     })
 
-    it('Should branch a turn and capture the changes for verification later', () => {
+    it('Should branch a turn', () => {
         train.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
-        train.ClickScoreActionsButton('Hello $name')
+        train.ClickScoreActionsButton()
         scorerModal.VerifyChatMessage('Hello Joseph')
-        train.CaptureEditedChatMessages()
     })
 
-    it('Should save the changes and confirm they show up in the grid', () => {
+    it('Should add another user input and Bot response', () => {
+      train.TypeYourMessage('My name is Guadalupe.')
+      train.ClickScoreActionsButton()
+      train.SelectAction('Hello Guadalupe', 'Hello $name')
+    })
+
+    it('Should capture the changes for verification later, save the changes, and confirm they show up in the grid', () => {
+      train.CaptureEditedChatMessages()
       train.Save()
     })
 
