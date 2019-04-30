@@ -116,7 +116,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should save the Train Dialog and verify that it shows up in the grid', () => {
-        train.Save()
+        train.SaveAsIsVerifyInGrid()
       })
     })
   })
@@ -164,7 +164,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should save the Train Dialog and verify the contents show up in the grid', () => {
-        train.Save()
+        train.SaveAsIsVerifyInGrid()
       })
     })
   })

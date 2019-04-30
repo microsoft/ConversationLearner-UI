@@ -48,7 +48,7 @@ describe('End Session - Create Model', () => {
     
     it('Should add a description and save the Train Dialog', () => {
       train.TypeDescription(preliminaryTrainingDescription)
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
 
     // IMPORTANT! - Keep this stage of the test here before we add in the End Session Bot response.
@@ -71,7 +71,7 @@ describe('End Session - Create Model', () => {
     })
 
     it('Should save the Train Dialog and verifies that we still have only 1 Train Dialog and that the description persisted', () => {
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
       trainDialogsGrid.VerifyDescriptionForRow(0, preliminaryTrainingDescription)
     })
   })
@@ -95,7 +95,7 @@ describe('End Session - Create Model', () => {
     })
 
     it('Should save the Train Dialog', () => {
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
   })
 })

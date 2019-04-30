@@ -107,7 +107,7 @@ describe('Description and Tags', () => {
                 trainDialog.TypeYourMessage('Should be deleted')
                 trainDialog.ClickScoreActionsButton()
                 trainDialog.SelectAction(testData.actionResponse)
-                trainDialog.Save()
+                trainDialog.SaveAsIsVerifyInGrid()
 
                 // Verify tags and description in list
                 cy.get(testSelectors.trainDialogs.descriptions)

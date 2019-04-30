@@ -68,7 +68,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
 
     it('Should be able to select an Action and save the training', () => {
       train.SelectAction('Hello Susan', 'Hello $name')
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
   })
   
@@ -99,7 +99,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
 
     it('Should be able to select an Action and save the training', () => {
       train.SelectAction('Hello Gabriella', 'Hello $name')
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
   })
   // Manually EXPORT this to fixtures folder and name it 'z-learnedEntLabel.cl'

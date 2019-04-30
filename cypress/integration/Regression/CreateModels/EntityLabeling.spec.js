@@ -50,7 +50,7 @@ describe('Entity Labeling - Create Model', () => {
       train.ClickScoreActionsButton()
       train.SelectAction('Hello')
 
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
 
       modelPage.NavigateToTrainDialogs()
       cy.WaitForTrainingStatusCompleted()
@@ -89,7 +89,7 @@ describe('Entity Labeling - Create Model', () => {
       train.ClickScoreActionsButton()
       train.SelectAction('Hi')
 
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
 
     // Manually EXPORT this to fixtures folder and name it 'z-entityLabeling.cl'

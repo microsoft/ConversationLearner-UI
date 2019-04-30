@@ -67,7 +67,7 @@ describe('Expected Entity Labeling - Train', () => {
     })
 
     it('Should save the Train Dialog and verify that it shows up in the grid', () => {
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
   })
   // Manually EXPORT this to fixtures folder and name it 'z-expectedEntLabl.cl'
