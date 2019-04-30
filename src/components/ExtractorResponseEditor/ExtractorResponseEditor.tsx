@@ -203,7 +203,14 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             }
         }
 
-        let builtInTypeFilter = null
+        /**
+         * If the text you select has a prebuilt entity detected within same region
+         * it opens the entity creator modal with that prebuilt type pre-selected to help prevent mismatches.
+         * This means `entityTypeFilter` and `builtInTypeFilter` do need to remain a string since the pre-built types/names are not EntityTypes
+         * 
+         * TODO: In future look at adding explicit resolver preset parameter and remove casting
+         */
+        let builtInTypeFilter: string | null = null
         const selectedNodes: any[] = value.inlines.toJS()
         if (selectedNodes.length > 0 && selectedNodes.every(n => n.type === NodeType.TokenNodeType)) {
             const startIndex = selectedNodes[0].data.startIndex
