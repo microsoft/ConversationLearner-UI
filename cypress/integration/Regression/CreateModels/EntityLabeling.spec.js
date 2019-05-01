@@ -82,6 +82,12 @@ describe('Entity Labeling - Create Model', () => {
     })
 
     it('Reverse the labeled words and once again label them as the same entity.', () => {
+      // TODO: Watch this test and see if this wait fixed the occassional NON labeling of "Frog"
+      //       The theory is that the training status complete is not accurate and by waiting longer
+      //       we can ensure training from the previous step does complete and "Frog" should then
+      //       get automatically labeled as an entity.
+      cy.wait(30000)
+
       train.TypeYourMessage('This is Tag and Frog.')
       memoryTableComponent.VerifyEntitiesInMemory('multi', ['Tag', 'Frog'])
       train.VerifyEntityLabel('Tag', 'multi')

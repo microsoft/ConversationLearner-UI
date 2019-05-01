@@ -39,6 +39,8 @@ export function WaitForTrainingStatusCompleted() {
 
     canRefreshTrainingStatusTime = currentTime + (2 * 1000)
 
+    helpers.ConLog('WaitForTrainingStatusCompleted', 'Polling stopped - Click refresh button')
+
     // When we get here it is possible there are two refresh buttons on the page, one that
     // is covered up by a popup dialog, so we need to click on the last one found.
     const elements = Cypress.$('[data-testid="training-status-refresh-button"]')

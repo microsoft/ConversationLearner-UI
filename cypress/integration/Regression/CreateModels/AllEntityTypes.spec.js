@@ -9,7 +9,7 @@ import * as helpers from '../../../support/Helpers'
 
 // Alternately return true or false.
 // Starts out with different value depending on the day of the year.
-// Can't do this with simple variables due to the way Cypress works.
+// Can't do this with simple variables due to the way Javascript Closures works.
 class FlipFlop {
   static Get(){
     if (FlipFlop.value === undefined) {
