@@ -41,7 +41,8 @@ export function CreateNewActionThenVerifyInGrid({ response, expectedEntities, re
   // If we skip this step, the validations that follow will fail.
   if (type === 'END_SESSION') actionsGrid.GetEndSessionRowToBeValidated(response)
   else actionsGrid.GetRowToBeValidated(response)
-
+  
+  actionsGrid.ValidateActionType(type)
   actionsGrid.ValidateRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
   actionsGrid.ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)
   actionsGrid.ValidateExpectedEntities(expectedEntities)

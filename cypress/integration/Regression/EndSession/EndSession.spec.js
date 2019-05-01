@@ -54,7 +54,7 @@ describe('End Session', () => {
     })
 
     it('Should save the training', () => {
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
   })
 

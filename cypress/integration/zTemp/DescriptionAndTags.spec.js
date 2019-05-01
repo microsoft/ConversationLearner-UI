@@ -38,7 +38,7 @@ describe('Description and Tags - Train Dialog', () => {
         train.ClickScoreActionsButton()
         train.SelectAction("What's your name?")
 
-        train.Save()
+        train.SaveAsIsVerifyInGrid()
       })
     })
 
@@ -79,7 +79,7 @@ describe('Description and Tags - Train Dialog', () => {
         // Verify edited tags and description are still on dialog
         train.TypeDescription('Edited Test Scenario')
         train.AddTags(['TagY'])
-        train.Save()
+        train.SaveAsIsVerifyInGrid()
 
         train.EditTrainingNEW('Edited Test Scenario', 'TagXTagY')
         train.VerifyDescription('Edited Test Scenario')
