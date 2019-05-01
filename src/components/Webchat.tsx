@@ -251,6 +251,10 @@ const mapStateToProps = (state: State, ownProps: any) => {
         throw new Error(`You attempted to render WebChat but the user was not defined. This is likely a problem with higher level component. Please open an issue.`)
     }
 
+    if (!state.settings.botPort) {
+        throw new Error(`Bot port is not set. This should not be possible. Please open an issue.`)
+    }
+
     return {
         settings: state.settings,
         user: state.user.user,
