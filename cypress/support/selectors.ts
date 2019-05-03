@@ -63,6 +63,11 @@ const selectors = {
             rowField: '[data-automationid="DetailsRowFields"]',
         },
     },
+    mergeModal: {
+        title: '[data-testid="merge-modal-title"]',
+        buttonMerge: '[data-testid="merge-modal-merge-button"]',
+        buttonSaveAsIs: '[data-testid="merge-modal-save-as-is-button"]',
+    },
     dialogModal: {
         branchButton: '[data-testid="edit-dialog-modal-branch-button"]',
         branchInput: '[data-testid="user-input-modal-new-message-input"]',

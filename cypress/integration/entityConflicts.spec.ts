@@ -183,6 +183,9 @@ describe('Entity Conflicts', () => {
                     cy.get(s.logConversionConflictsModal.modal)
                         .should('not.exist')
 
+                    cy.get(s.mergeModal.buttonSaveAsIs)
+                        .click()
+
                     cy.get(s.logDialogs.firstInput)
                         .should('have.length', 3)
                 })
@@ -237,6 +240,12 @@ describe('Entity Conflicts', () => {
 
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
+
+                cy.get(s.mergeModal.buttonSaveAsIs)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
             })
         })
 
@@ -258,6 +267,13 @@ describe('Entity Conflicts', () => {
                 trainDialog.ClickScoreActionsButton()
                 trainDialog.SelectAction(testData.actionResponse)
                 trainDialog.ClickSaveCloseButton()
+
+                cy.WaitForStableDOM()
+                cy.get(s.mergeModal.buttonSaveAsIs)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
             })
         })
     })
