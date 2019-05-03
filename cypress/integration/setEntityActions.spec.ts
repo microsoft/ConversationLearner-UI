@@ -54,7 +54,7 @@ describe('Set Entity Actions', () => {
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(s.model.navEntities)
+                cy.get(s.model.buttonNavEntities)
                     .click()
             })
 
@@ -134,7 +134,7 @@ describe('Set Entity Actions', () => {
                 cy.reload()
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
-                cy.get(s.model.navActions)
+                cy.get(s.model.buttonNavActions)
                     .click()
             })
 
@@ -143,80 +143,80 @@ describe('Set Entity Actions', () => {
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(s.actions.newAction)
+                cy.get(s.actions.buttonNewAction)
                     .click()
             })
 
             it('should show correct form state when SET_ENTITY type is selected', () => {
-                cy.get(s.action.entityDropDown)
+                cy.get(s.action.dropDownEntity)
                     .should('not.exist')
 
-                cy.get(s.action.enumDropDown)
+                cy.get(s.action.dropDownEnum)
                     .should('not.exist')
 
-                selectDropDownOption(s.action.typeDropDown, testData.action.setEntityType)
+                selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
 
                 cy.get(s.action.setEntityWarning)
-                cy.get(s.action.entityDropDown)
-                cy.get(s.action.enumDropDown)
-                cy.get(s.action.waitForResponseCheckbox)
+                cy.get(s.action.dropDownEntity)
+                cy.get(s.action.dropDownEnum)
+                cy.get(s.action.checkBoxWaitForResponse)
                     .find('button')
                     .should('have.attr', 'disabled')
                     .should('not.have.attr', 'checked')
             })
 
             it('should reset the value of the fields when changing the action type', () => {
-                selectDropDownOption(s.action.typeDropDown, testData.action.setEntityType)
-                selectDropDownOption(s.action.entityDropDown, testData.action.entityName)
-                selectDropDownOption(s.action.enumDropDown, testData.action.enumValue)
-                selectDropDownOption(s.action.typeDropDown, testData.action.textType)
-                selectDropDownOption(s.action.typeDropDown, testData.action.setEntityType)
+                selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
+                selectDropDownOption(s.action.dropDownEntity, testData.action.entityName)
+                selectDropDownOption(s.action.dropDownEnum, testData.action.enumValue)
+                selectDropDownOption(s.action.dropDownType, testData.action.textType)
+                selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
 
                 // field should be unset
-                cy.get(s.action.entityDropDown)
+                cy.get(s.action.dropDownEntity)
                     .should('not.have.text', testData.action.entityName)
 
                 // enum field should be unset
-                cy.get(s.action.entityDropDown)
+                cy.get(s.action.dropDownEntity)
                     .should('not.have.text', testData.action.enumValue)
             })
 
             it('should not allow creating the action unless entity and enum are set', () => {
-                selectDropDownOption(s.action.typeDropDown, testData.action.setEntityType)
+                selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
 
-                cy.get(s.action.createButton)
+                cy.get(s.action.buttonCreate)
                     .should('have.attr', 'disabled')
 
-                selectDropDownOption(s.action.entityDropDown, testData.action.entityName)
+                selectDropDownOption(s.action.dropDownEntity, testData.action.entityName)
 
-                cy.get(s.action.createButton)
+                cy.get(s.action.buttonCreate)
                     .should('have.attr', 'disabled')
 
-                selectDropDownOption(s.action.enumDropDown, testData.action.enumValue)
+                selectDropDownOption(s.action.dropDownEnum, testData.action.enumValue)
 
-                cy.get(s.action.createButton)
+                cy.get(s.action.buttonCreate)
                     .should('not.have.attr', 'disabled')
             })
 
             it('should prevent creating duplicate actions (same entity and enum value)', () => {
                 // Create action 
-                selectDropDownOption(s.action.typeDropDown, testData.action.setEntityType)
-                selectDropDownOption(s.action.entityDropDown, testData.action.entityName)
-                selectDropDownOption(s.action.enumDropDown, testData.action.enumValue)
-                cy.get(s.action.createButton)
+                selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
+                selectDropDownOption(s.action.dropDownEntity, testData.action.entityName)
+                selectDropDownOption(s.action.dropDownEnum, testData.action.enumValue)
+                cy.get(s.action.buttonCreate)
                     .click()
 
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(s.actions.newAction)
+                cy.get(s.actions.buttonNewAction)
                     .click()
 
                 // Try to create duplicate
-                selectDropDownOption(s.action.typeDropDown, testData.action.setEntityType)
-                selectDropDownOption(s.action.entityDropDown, testData.action.entityName)
-                selectDropDownOption(s.action.enumDropDown, testData.action.enumValue)
-                cy.get(s.action.createButton)
+                selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
+                selectDropDownOption(s.action.dropDownEntity, testData.action.entityName)
+                selectDropDownOption(s.action.dropDownEnum, testData.action.enumValue)
+                cy.get(s.action.buttonCreate)
                     .click()
 
                 cy.get(s.confirmCancelModal.buttonOk)
@@ -232,7 +232,7 @@ describe('Set Entity Actions', () => {
                 cy.reload()
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
-                cy.get(s.model.navActions)
+                cy.get(s.model.buttonNavActions)
                     .click()
             })
 
@@ -241,10 +241,10 @@ describe('Set Entity Actions', () => {
                     .contains(`${testData.action.entityName}: ${testData.action.enumValue}`)
                     .click()
 
-                cy.get(s.action.entityDropDown)
+                cy.get(s.action.dropDownEntity)
                     .contains(testData.action.entityName)
 
-                cy.get(s.action.enumDropDown)
+                cy.get(s.action.dropDownEnum)
                     .contains(testData.action.enumValue)
             })
 
@@ -252,9 +252,9 @@ describe('Set Entity Actions', () => {
             it('should not allow saving changes to SET_ENTITY actions', () => {
                 cy.get(s.action.setEntityWarning)
 
-                selectDropDownOption(s.action.enumDropDown, testData.action.nonExistingEnumValue)
+                selectDropDownOption(s.action.dropDownEnum, testData.action.nonExistingEnumValue)
 
-                cy.get(s.action.createButton)
+                cy.get(s.action.buttonCreate)
                     .should('have.attr', 'disabled')
             })
         })
@@ -265,7 +265,7 @@ describe('Set Entity Actions', () => {
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(s.model.navTrainDialogs)
+                cy.get(s.model.buttonNavTrainDialogs)
                     .click()
             })
 
@@ -315,7 +315,7 @@ describe('Set Entity Actions', () => {
                 cy.get('.cl-modal--teach')
                     .should('not.exist')
 
-                cy.get(s.model.navActions)
+                cy.get(s.model.buttonNavActions)
                     .click()
 
                 cy.get(s.actions.setEntityResponseText)
@@ -328,7 +328,7 @@ describe('Set Entity Actions', () => {
         xdescribe('action deletion', () => {
             before(() => {
                 cy.reload()
-                cy.get(s.model.navActions)
+                cy.get(s.model.buttonNavActions)
                     .click()
 
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
@@ -363,7 +363,7 @@ describe('Set Entity Actions', () => {
         })
 
         it('should successful place fast food order using context for instead of labels', () => {
-            cy.get(s.model.navTrainDialogs)
+            cy.get(s.model.buttonNavTrainDialogs)
                 .click()
 
             cy.get(s.trainDialogs.buttonNew)
@@ -407,7 +407,7 @@ function selectDropDownOption(dropDownSelector: string, optionName: string) {
     cy.get(dropDownSelector)
         .click()
         .then(() => {
-            cy.get(s.action.dropDownOptions)
+            cy.get(s.common.dropDownOptions)
                 .contains(optionName)
                 .click()
         })

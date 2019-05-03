@@ -44,7 +44,7 @@ describe('Entity Conflicts', () => {
             })
 
             it('should not change labels if abort is clicked', () => {
-                cy.get(s.dialogModal.entityConflictModal.cancelButton)
+                cy.get(s.dialogModal.entityConflictModal.buttonCancel)
                     .click()
 
                 trainDialog.VerifyEntityLabel(labeledWord2, testData.entityName)
@@ -54,7 +54,7 @@ describe('Entity Conflicts', () => {
                 trainDialog.ClickScoreActionsButton()
 
                 cy.WaitForStableDOM()
-                cy.get(s.dialogModal.entityConflictModal.acceptButton)
+                cy.get(s.dialogModal.entityConflictModal.buttonAccept)
                     .click()
 
                 // TODO: Selects score actions immediately, need to verify memory
@@ -78,7 +78,7 @@ describe('Entity Conflicts', () => {
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
-            cy.get(s.model.navLogDialogs)
+            cy.get(s.model.buttonNavLogDialogs)
                 .click();
 
             // Create log dialogs (one for each test to isolate behavior)

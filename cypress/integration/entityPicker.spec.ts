@@ -41,7 +41,7 @@ describe('EntityPicker', () => {
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
-            cy.get(s.model.navTrainDialogs)
+            cy.get(s.model.buttonNavTrainDialogs)
                 .click()
 
             cy.get(s.trainDialogs.buttonNew)
@@ -195,7 +195,7 @@ describe('EntityPicker', () => {
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
-            cy.get(s.model.navTrainDialogs)
+            cy.get(s.model.buttonNavTrainDialogs)
                 .click()
 
             cy.get(s.trainDialogs.buttonNew)

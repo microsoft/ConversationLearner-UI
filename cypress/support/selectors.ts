@@ -1,6 +1,7 @@
 const selectors = {
     common: {
         spinner: '.cl-spinner',
+        dropDownOptions: 'button.ms-Dropdown-item',
     },
     models: {
         buttonCreate: '[data-testid=model-list-create-new-button]',
@@ -11,10 +12,10 @@ const selectors = {
         inputFile: '[data-testid="model-creator-import-file-picker"] > div > input[type="file"]',
     },
     model: {
-        navActions: '[data-testid="app-index-nav-link-actions"]',
-        navEntities: '[data-testid="app-index-nav-link-entities"]',
-        navTrainDialogs: '[data-testid=app-index-nav-link-train-dialogs]',
-        navLogDialogs: '[data-testid="app-index-nav-link-log-dialogs"]',
+        buttonNavActions: '[data-testid="app-index-nav-link-actions"]',
+        buttonNavEntities: '[data-testid="app-index-nav-link-entities"]',
+        buttonNavTrainDialogs: '[data-testid=app-index-nav-link-train-dialogs]',
+        buttonNavLogDialogs: '[data-testid="app-index-nav-link-log-dialogs"]',
     },
     entities: {
         name: '[data-testid="entities-name"]',
@@ -29,16 +30,15 @@ const selectors = {
         buttonSave: '[data-testid="entity-creator-button-save"]',
     },
     actions: {
-        newAction: '[data-testid="actions-button-create"]',
+        buttonNewAction: '[data-testid="actions-button-create"]',
         setEntityResponseText: '[data-testid="actions-list-set-entity"]',
     },
     action: {
-        typeDropDown: '[data-testid="dropdown-action-type"]',
-        dropDownOptions: 'button.ms-Dropdown-item',
-        entityDropDown: '[data-testid="action-set-entity"]',
-        enumDropDown: '[data-testid="action-set-enum"]',
-        waitForResponseCheckbox: '[data-testid="action-creator-wait-checkbox"]',
-        createButton: '[data-testid="action-creator-create-button"]',
+        dropDownType: '[data-testid="dropdown-action-type"]',
+        dropDownEntity: '[data-testid="action-set-entity"]',
+        dropDownEnum: '[data-testid="action-set-enum"]',
+        checkBoxWaitForResponse: '[data-testid="action-creator-wait-checkbox"]',
+        buttonCreate: '[data-testid="action-creator-create-button"]',
         setEntityWarning: '[data-testid="action-set-entity-warning"]',
     },
     confirmCancelModal: {
@@ -78,8 +78,8 @@ const selectors = {
         webChatUtterances: 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p',
         entityConflictModal: {
             modal: '[data-testid="extract-conflict-modal-conflicting-labels"]',
-            acceptButton: '[data-testid="entity-conflict-accept"]',
-            cancelButton: '[data-testid="entity-conflict-cancel"]',
+            buttonAccept: '[data-testid="entity-conflict-accept"]',
+            buttonCancel: '[data-testid="entity-conflict-cancel"]',
         },
     },
     logDialogs: {
