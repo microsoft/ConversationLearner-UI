@@ -7,6 +7,8 @@ import * as helpers from '../Helpers'
 
 // Path to product code: ConversationLearner-UI\src\routes\Apps\App\TrainDialogs.tsx
 export function VerifyPageTitle() { cy.Get('[data-testid="train-dialogs-title"]').contains('Train Dialogs').should('be.visible') }
+export function IsVisible() { return Cypress.$(`[data-testid="train-dialogs-title"]:contains('Train Dialogs'):visible`).length === 1 }
+
 export function CreateNewTrainDialog() { cy.Get('[data-testid="button-new-train-dialog"]').Click() }
 export function SearchBox() { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
 export function EntityDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-entity"]') }

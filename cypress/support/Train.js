@@ -6,6 +6,7 @@
 import * as homePage from './components/HomePage'
 import * as scorerModal from './components/ScorerModal'
 import * as trainDialogsGrid from './components/TrainDialogsGrid'
+import * as mergeModal from './components/MergeModal'
 import * as helpers from './Helpers'
 
 let currentTrainingSummary
@@ -351,7 +352,7 @@ export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount
 function VerifyChatTurnInternal(expectedTurnCount, turnIndex, doVerification) {
   cy.WaitForStableDOM()
   let chatMessages
-  cy.wrap(undefined).should(() => { 
+  cy.wrap(1).should(() => { 
     chatMessages = GetAllChatMessages()
     if (chatMessages.length != expectedTurnCount) { 
       throw new Error(`${chatMessages.length} chat turns were found, however we were expecting ${expectedTurnCount}`)
@@ -459,7 +460,7 @@ export function ClickScoreActionsButtonAfterBranching(lastResponse) {
   })
 }
 
-export function Save() {
+export function SaveAsIsVerifyInGrid() {
   ClickSaveCloseButton()
   trainDialogsGrid.VerifyPageTitle()
   cy.Enqueue(() => {
@@ -467,9 +468,23 @@ export function Save() {
     // which is not exactly the same as our test machine.
     currentTrainingSummary.MomentTrainingEnded = Cypress.moment().add(25, 'seconds')
 
-    if (isBranched) VerifyTrainingSummaryIsInGrid(originalTrainingSummary)
+    //let clickedSaveAsIsButton = false
+    cy.WaitForStableDOM()
+    cy.wrap(1).should(() => {
+      if (mergeModal.IsVisible()) {
+        helpers.ConLog('SaveAsIsVerifyInGrid', 'mergeModal.IsVisible')
+        mergeModal.ClickSaveAsButton()
+        throw new Error('The Merge Modal popped up, and we clicked the Save As Is button...need to retry and wait for the grid to become visible')
+      }
 
-    VerifyTrainingSummaryIsInGrid(currentTrainingSummary)
+      if (!trainDialogsGrid.IsVisible()) {
+        helpers.ConLog('SaveAsIsVerifyInGrid', '!trainDialogsGrid.IsVisible')
+        throw new Error('Train Dialog Grid is not yet visible...retry until it is')
+      }
+    }).then(() => {
+      if (isBranched) VerifyTrainingSummaryIsInGrid(originalTrainingSummary)
+      VerifyTrainingSummaryIsInGrid(currentTrainingSummary)
+    })
   })
 }
 

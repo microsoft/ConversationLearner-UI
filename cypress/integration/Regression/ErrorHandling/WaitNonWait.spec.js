@@ -46,7 +46,7 @@ describe('Wait Non Wait Error Handling', () => {
     })
   })
 
-  context(`Save & Validate Training Errors`, () => {
+  context(`SaveAsIsVerifyInGrid & Validate Training Errors`, () => {
     it('Saves the Training with Errors, verifies Model page and Train Dialog grid shows an error', () => {
       train.ClickSaveCloseButton()
       modelPage.VerifyIncidentTriangleForTrainDialogs()

@@ -6,15 +6,21 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as train from '../../../support/Train'
+import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as helpers from '../../../support/Helpers'
 
 describe('Verify Edit Training Controls And Labels - Edit And Branching', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  let originalTrainDialogCount = 0
 
   context('Setup', () => {
     it('Should import a model to test against and navigate to the Train Dialogs', () => {
       models.ImportModel('z-editContols', 'z-learnedEntLabel.cl')
       modelPage.NavigateToTrainDialogs()
+    })
+
+    it('Should capture the count of Train Dialogs in the grid', () => {
+      cy.Enqueue( () => originalTrainDialogCount = trainDialogsGrid.GetTurns().length)
     })
   })
 
@@ -58,6 +64,16 @@ describe('Verify Edit Training Controls And Labels - Edit And Branching', () => 
 
     it('Should close the Train Dialog', () => {
       train.ClickSaveCloseButton()
+    })
+
+    it('Should verify the count of Train Dialogs in the grid are the same as when we started', () => {
+      cy.WaitForStableDOM()
+      cy.wrap(originalTrainDialogCount).should( originalTrainDialogCount => {
+        const currentTrainDialogCount = trainDialogsGrid.GetTurns().length
+        if (currentTrainDialogCount != originalTrainDialogCount) {
+          throw new Error(`We are expecting there to be ${originalTrainDialogCount} Train Dialogs in the grid, instead we find ${currentTrainDialogCount}.`)
+        }
+      })
     })
   })
 })

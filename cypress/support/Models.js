@@ -37,6 +37,7 @@ export function CreateNewModel(modelNamePrefix) {
   homePage.ClickSubmitButton()
   modelPage.VerifyModelName(name)
 
+  helpers.ConLog('CreateNewModel', `Model '${name}' has been created successfully`)
   return name
 }
 
@@ -52,6 +53,8 @@ export function ImportModel(modelNamePrefix, fileName) {
     homePage.UploadImportModelFile(fileName)
     homePage.ClickSubmitButton()
 
+    helpers.ConLog('ImportModel', `Model '${name}' has been successfully imported from '${fileName}'`)
+    
     cy.WaitForStableDOM().then(() => { resolve(name) })
   })
 }

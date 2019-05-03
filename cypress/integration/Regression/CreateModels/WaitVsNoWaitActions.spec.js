@@ -56,7 +56,7 @@ describe('Wait vs. Non Wait Actions - CreateModels', () => {
     })
 
     it('Should be able save the Train Dialog and find it in the grid', () => {
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
 
     // Manually EXPORT this to fixtures folder and name it 'z-waitNoWait.cl'
