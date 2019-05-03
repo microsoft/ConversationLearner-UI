@@ -11,7 +11,8 @@ import * as settings from '../../support/components/Settings'
 import * as helpers from '../Helpers'
 
 export function VerifyModelName(name) { cy.Get('[data-testid="app-index-model-name"]').should(el => { expect(el).to.contain(name) }) }
-export function VerifyPageTitle() { cy.Get('[data-testid="dashboard-title"]').contains('Log Dialogs').should('be.visible') }
+export function VerifyPageTitle() { cy.Get('[data-testid="dashboard-title"]').contains('Overview').should('be.visible') }
+export function IsOverlaid() { return Cypress.$('div.ms-Modal > div.ms-Overlay').length === 1 }
 
 export function NavigateToHome() { cy.Get('[data-testid="app-index-nav-link-home"]').Click(); VerifyPageTitle() }
 export function NavigateToEntities() { cy.Get('[data-testid="app-index-nav-link-entities"]').Click(); entitiesGrid.VerifyPageTitle() }
