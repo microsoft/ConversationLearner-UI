@@ -9,6 +9,7 @@ import * as scorerModal from './components/ScorerModal'
 import * as trainDialogsGrid from './components/TrainDialogsGrid'
 import * as mergeModal from './components/MergeModal'
 import * as helpers from './Helpers'
+import { func } from 'prop-types';
 
 let currentTrainingSummary
 let originalTrainingSummary
@@ -463,6 +464,11 @@ export function ClickScoreActionsButtonAfterBranching(lastResponse) {
 
 export function SaveAsIsVerifyInGrid() {
   const funcName = 'SaveAsIsVerifyInGrid'
+
+  cy.server()
+  cy.route('PUT', '/sdk/app/*/traindialog/*').as('putTrainDialog')
+
+  cy.DumpHtmlOnDomChange(true)
   ClickSaveCloseButton()
   cy.Enqueue(() => {
     // FUDGING on the time - adding 25 seconds because the time is set by the server
@@ -490,10 +496,15 @@ export function SaveAsIsVerifyInGrid() {
       }
       helpers.ConLog(funcName, 'No overlays for at least 1 second')
     }).then(() => {
+      helpers.ConLog(funcName, 'start cy.wait')
+      cy.wait('@putTrainDialog')
+      helpers.ConLog(funcName, 'end cy.wait')
+      
       if (isBranched) VerifyTrainingSummaryIsInGrid(originalTrainingSummary)
       VerifyTrainingSummaryIsInGrid(currentTrainingSummary)
     })
   })
+  cy.DumpHtmlOnDomChange(false)
 }
 
 function VerifyTrainingSummaryIsInGrid(trainingSummary) {
