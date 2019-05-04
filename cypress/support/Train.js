@@ -9,7 +9,6 @@ import * as scorerModal from './components/ScorerModal'
 import * as trainDialogsGrid from './components/TrainDialogsGrid'
 import * as mergeModal from './components/MergeModal'
 import * as helpers from './Helpers'
-import { func } from 'prop-types';
 
 let currentTrainingSummary
 let originalTrainingSummary
