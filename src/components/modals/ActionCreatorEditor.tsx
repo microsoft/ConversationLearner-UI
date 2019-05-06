@@ -799,7 +799,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             negativeEntities: negativeTags.map<string>(tag => tag.key),
             requiredConditions,
             negativeConditions,
-            suggestedEntity: (this.state.expectedEntityTags.length > 0) ? this.state.expectedEntityTags[0].key : null,
+            suggestedEntity: (this.state.expectedEntityTags.length > 0)
+                ? this.state.expectedEntityTags[0].key
+                : undefined,
             version: 0,
             packageCreationId: 0,
             packageDeletionId: 0,
