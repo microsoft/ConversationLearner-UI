@@ -463,6 +463,9 @@ export function ClickScoreActionsButtonAfterBranching(lastResponse) {
 
 export function SaveAsIsVerifyInGrid() {
   const funcName = 'SaveAsIsVerifyInGrid'
+
+  cy.DumpHtmlOnDomChange(true)
+
   ClickSaveCloseButton()
   cy.Enqueue(() => {
     // FUDGING on the time - adding 25 seconds because the time is set by the server
@@ -494,6 +497,7 @@ export function SaveAsIsVerifyInGrid() {
       VerifyTrainingSummaryIsInGrid(currentTrainingSummary)
     })
   })
+  cy.DumpHtmlOnDomChange(false)
 }
 
 function VerifyTrainingSummaryIsInGrid(trainingSummary) {
