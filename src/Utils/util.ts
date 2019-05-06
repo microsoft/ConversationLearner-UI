@@ -220,7 +220,7 @@ export const getSetEntityActionForEnumValue = (entityId: string, enumValueId: st
         negativeEntities: [],
         requiredConditions: [],
         negativeConditions: [],
-        suggestedEntity: null,
+        suggestedEntity: undefined,
         version: 0,
         packageCreationId: 0,
         packageDeletionId: 0,

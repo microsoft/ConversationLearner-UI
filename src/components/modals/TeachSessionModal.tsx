@@ -423,7 +423,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         requiredConditions: [],
                         negativeEntities: [],
                         negativeConditions: [],
-                        suggestedEntity: null,
+                        suggestedEntity: undefined,
                         version: 0,
                         packageCreationId: 0,
                         packageDeletionId: 0,
