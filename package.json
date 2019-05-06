@@ -23,6 +23,7 @@
   "dependencies": {
     "@conversationlearner/models": "0.200.0",
     "@conversationlearner/webchat": "0.145.0",
+    "@cypress/webpack-preprocessor": "4.0.3",
     "adaptivecards": "1.0.0",
     "adm-zip": "^0.4.13",
     "axios": "^0.16.2",

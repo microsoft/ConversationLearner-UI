@@ -9,6 +9,8 @@ export function VerifyPageTitle() { cy.Get('[data-testid="actions-title"]').cont
 export function ValidateExpectedEntities(entities) { ValidateEntities('[data-testid="action-details-expected-entity"]', '[data-testid="action-details-empty-expected-entities"]', entities) }
 export function ClickNewAction() { cy.Get('[data-testid="actions-button-create"]').Click() }
 
+export function ValidateActionType(actionType) {cy.Get('@responseDetailsRow').find('[data-testid="action-details-action-type"]').contains(actionType)}
+
 // The UI automatically populates the Required Entities field with entities found in the response text,
 // so the additionalRequiredEntities parameter allows the caller to specify entities not found in the response text.
 export function ValidateRequiredEntities(requiredEntitiesFromResponse, additionalRequiredEntities) { ValidateEntities('[data-testid="action-details-required-entity"]', '[data-testid="action-details-empty-required-entities"]', requiredEntitiesFromResponse, additionalRequiredEntities) }

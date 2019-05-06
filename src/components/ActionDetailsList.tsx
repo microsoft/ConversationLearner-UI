@@ -362,7 +362,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             getSortValue: action => action.actionType.toLowerCase(),
             render: action => {
                 const actionType = action.actionType === CLM.ActionTypes.API_LOCAL ? "API" : action.actionType
-                return <span className={OF.FontClassNames.mediumPlus}>{actionType}</span>
+                return <span className={OF.FontClassNames.mediumPlus} data-testid="action-details-action-type">{actionType}</span>
             }
         },
         {

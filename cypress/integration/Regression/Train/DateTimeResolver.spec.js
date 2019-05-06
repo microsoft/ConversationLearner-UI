@@ -62,7 +62,7 @@ describe('Date Time Resolver - Train', () => {
 
     it('Should select the enabled Bot response, save the Train Dialog, and verifiy the training shows up in the grid', () => {
       train.SelectAction(botResponse, 'You are leaving on $departure and returning on $return')
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
   })
 })

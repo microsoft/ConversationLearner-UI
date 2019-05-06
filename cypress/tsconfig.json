@@ -2,14 +2,15 @@
     "compilerOptions": {
         "strict": true,
         "baseUrl": "../node_modules",
-        "target": "es5",
+        "target": "es2016",
         "lib": [
-            "es5",
+            "esnext",
             "dom"
         ],
         "types": [
             "cypress"
         ],
+        "keyofStringsOnly": true
     },
     "include": [
         "**/*.ts"

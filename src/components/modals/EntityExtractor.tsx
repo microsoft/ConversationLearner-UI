@@ -34,7 +34,7 @@ interface ComponentState {
     isPendingSubmit: boolean
     pendingVariationChange: boolean
     entityModalOpen: boolean
-    entityTypeFilter: string
+    entityTypeFilter: string | null
     warningOpen: boolean
     // Handle saves after round change
     savedExtractResponses: CLM.ExtractResponse[]
@@ -144,7 +144,15 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     onNewEntity(entityTypeFilter: string) {
         this.setState({
             entityModalOpen: true,
-            entityTypeFilter: entityTypeFilter
+            entityTypeFilter
+        })
+    }
+    
+    @OF.autobind
+    onClickCreateEntity(): void {
+        this.setState({
+            entityModalOpen: true,
+            entityTypeFilter: null,
         })
     }
 
@@ -573,6 +581,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             componentRef={(ref: any) => { this.doneExtractingButton = ref }}
                         />
                     }
+
+                    <OF.DefaultButton
+                        onClick={this.onClickCreateEntity}
+                        ariaDescription="Create Entity"
+                        text="Create Entity"
+                        iconProps={{ iconName: 'Add' }}
+                    />
                 </div>
 
                 <div className="cl-dialog-admin__dialogs">

@@ -90,7 +90,7 @@ describe('Consistent Entity Labeling - Train', () => {
       train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
       train.SelectAction('Hi')
 
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
   })
     // Manually EXPORT this to fixtures folder and name it 'z-cnstntEntLabel.cl'

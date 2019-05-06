@@ -4,8 +4,10 @@
  */
 
 import * as homePage from './components/HomePage'
+import * as modalPage from './components/ModelPage'
 import * as scorerModal from './components/ScorerModal'
 import * as trainDialogsGrid from './components/TrainDialogsGrid'
+import * as mergeModal from './components/MergeModal'
 import * as helpers from './Helpers'
 
 let currentTrainingSummary
@@ -351,7 +353,7 @@ export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount
 function VerifyChatTurnInternal(expectedTurnCount, turnIndex, doVerification) {
   cy.WaitForStableDOM()
   let chatMessages
-  cy.wrap(undefined).should(() => { 
+  cy.wrap(1).should(() => { 
     chatMessages = GetAllChatMessages()
     if (chatMessages.length != expectedTurnCount) { 
       throw new Error(`${chatMessages.length} chat turns were found, however we were expecting ${expectedTurnCount}`)
@@ -459,18 +461,43 @@ export function ClickScoreActionsButtonAfterBranching(lastResponse) {
   })
 }
 
-export function Save() {
+export function SaveAsIsVerifyInGrid() {
+  const funcName = 'SaveAsIsVerifyInGrid'
+
+  cy.DumpHtmlOnDomChange(true)
+
   ClickSaveCloseButton()
-  trainDialogsGrid.VerifyPageTitle()
   cy.Enqueue(() => {
     // FUDGING on the time - adding 25 seconds because the time is set by the server
     // which is not exactly the same as our test machine.
     currentTrainingSummary.MomentTrainingEnded = Cypress.moment().add(25, 'seconds')
 
-    if (isBranched) VerifyTrainingSummaryIsInGrid(originalTrainingSummary)
+    cy.WaitForStableDOM()
+    let renderingShouldBeCompleteTime = new Date().getTime() + 1000
+    cy.wrap(1).should(() => {
+      if (mergeModal.IsVisible()) {
+        helpers.ConLog(funcName, 'mergeModal.IsVisible')
 
-    VerifyTrainingSummaryIsInGrid(currentTrainingSummary)
+        mergeModal.$ClickSaveAsButton()
+        renderingShouldBeCompleteTime = new Date().getTime() + 1000
+        throw new Error('The Merge Modal popped up, and we clicked the Save As Is button...need to retry and wait for the grid to become visible')
+      }
+
+      if (modalPage.IsOverlaid()) {
+        helpers.ConLog(funcName, 'modalPage.IsOverlaid')
+        renderingShouldBeCompleteTime = new Date().getTime() + 1000
+        throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
+      } else if (new Date().getTime() < renderingShouldBeCompleteTime) {
+        helpers.ConLog(funcName, 'Wait for no overlays for at least 1 second')
+        throw new Error('Waiting till no overlays show up for at least 1 second...retry')
+      }
+      helpers.ConLog(funcName, 'No overlays for at least 1 second')
+    }).then(() => {
+      if (isBranched) VerifyTrainingSummaryIsInGrid(originalTrainingSummary)
+      VerifyTrainingSummaryIsInGrid(currentTrainingSummary)
+    })
   })
+  cy.DumpHtmlOnDomChange(false)
 }
 
 function VerifyTrainingSummaryIsInGrid(trainingSummary) {
@@ -481,8 +508,18 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   helpers.ConLog(funcName, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
   helpers.ConLog(funcName, `MomentTrainingEnded: ${trainingSummary.MomentTrainingEnded.format()}`)
 
+  let renderingShouldBeCompleteTime = new Date().getTime()
   cy.Get('[data-testid="train-dialogs-turns"]', {timeout: 10000})
     .should(elements => { 
+      if (modalPage.IsOverlaid()) {
+        helpers.ConLog(funcName, 'modalPage.IsOverlaid')
+        renderingShouldBeCompleteTime = new Date().getTime() + 1000
+        throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
+      } else if (new Date().getTime() < renderingShouldBeCompleteTime) {
+        helpers.ConLog(funcName, 'Wait for no overlays for at least 1 second')
+        throw new Error('Waiting till no overlays show up for at least 1 second...retry')
+      }
+
       if (elements.length != trainingSummary.TrainGridRowCount) { 
         helpers.ConLog(funcName, `Did NOT find the expected row count: ${elements.length}.`)
         throw new Error(`${elements.length} rows found in the training grid, however we were expecting ${trainingSummary.TrainGridRowCount}`)

@@ -153,13 +153,13 @@ class MergeModal extends React.Component<Props, ComponentState> {
                         className="cl-rotate"
                         text={Util.formatMessageId(intl, FM.MERGE_BUTTON_MERGE)}
                         iconProps={{ iconName: 'Merge' }}
-                        data-testid="confirm-cancel-modal-ok"
+                        data-testid="merge-modal-merge-button"
                     />
                     <OF.DefaultButton
                         onClick={() => this.props.onCancel()}
                         text={Util.formatMessageId(intl, FM.MERGE_BUTTON_SAVE)}
                         iconProps={{ iconName: 'Accept' }}
-                        data-testid="confirm-cancel-modal-cancel"
+                        data-testid="merge-modal-save-as-is-button"
                     />
                 </OF.DialogFooter>        
             </Modal>

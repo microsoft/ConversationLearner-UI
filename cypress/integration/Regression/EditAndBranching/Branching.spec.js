@@ -20,23 +20,34 @@ describe('Branching - Edit and Branching', () => {
     })
   })
 
-  context('Branching', () => {
+  context('Branch and Extend Training', () => {
     it('Should edit a specific Train Dialog and capture the original chat messages for verification later', () => {
       train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
       train.CaptureOriginalChatMessages()
     })
 
-    it('Should branch a turn and capture the changes for verification later', () => {
+    it('Should branch a turn', () => {
         train.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
-        train.ClickScoreActionsButton('Hello $name')
+        train.ClickScoreActionsButton()
         scorerModal.VerifyChatMessage('Hello Joseph')
-        train.CaptureEditedChatMessages()
+    })
+
+    it('Should add another user input and Bot response', () => {
+      train.TypeYourMessage('My name is Guadalupe.')
+      train.ClickScoreActionsButton()
+      train.SelectAction('Hello Guadalupe', 'Hello $name')
+    })
+
+    it('Should capture the changes for verification later', () => {
+      train.CaptureEditedChatMessages()
     })
 
     it('Should save the changes and confirm they show up in the grid', () => {
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
+  })
 
+  context('Validations', () => {
     it('Should edit the original Train Dialog and verify it was not changed.', () => {
       train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
       train.VerifyOriginalChatMessages()
@@ -44,7 +55,7 @@ describe('Branching - Edit and Branching', () => {
     })
 
     it('Should edit the branched Train Dialog and verify it was persisted correctly.', () => {
-      train.EditTraining('My name is David.', 'My name is Joseph.', 'Hello $name')
+      train.EditTraining('My name is David.', 'My name is Guadalupe.', 'Hello $name')
       train.VerifyEditedChatMessages()
       train.ClickSaveCloseButton()
     })

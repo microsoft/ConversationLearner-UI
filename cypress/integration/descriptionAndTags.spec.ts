@@ -1,54 +1,18 @@
-/// <reference types="Cypress" />
-
 import * as models from '../support/Models'
 import * as model from '../support/components/ModelPage'
 import * as actions from '../support/Actions'
 import * as actionsList from '../support/components/ActionsGrid'
 import * as trainDialog from '../support/Train'
 import * as logDialogModal from '../support/components/LogDialogModal'
-
-const testSelectors = {
-    common: {
-        spinner: '.cl-spinner'
-    },
-    trainDialogs: {
-        descriptions: '[data-testid="train-dialogs-description"]',
-        tags: '[data-testid="train-dialogs-tags"] .cl-tags-readonly__tag'
-    },
-    dialogModal: {
-        branchButton: '[data-testid="edit-dialog-modal-branch-button"]',
-        branchInput: '[data-testid="user-input-modal-new-message-input"]',
-        branchSubmit: '[data-testid="app-create-button-submit"]',
-        closeSave: '[data-testid="edit-teach-dialog-close-save-button"]',
-        descriptionInput: '[data-testid="train-dialog-description"]',
-        scoreActionsButton: '[data-testid="score-actions-button"]',
-        tags: '[data-testid="train-dialog-tags"] .cl-tags__tag span',
-        addTagButton: '[data-testid="train-dialog-tags"] .cl-tags__button-add',
-        tagInput: '[data-testid="train-dialog-tags"] .cl-tags__form input',
-        webChatUtterances: 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p',
-    },
-    logDialogs: {
-        createButton: '[data-testid="log-dialogs-new-button"]',
-        firstInput: '[data-testid="log-dialogs-first-input"]'
-    },
-    chatModal: {
-        container: '.cl-sessionmodal',
-        doneButton: '[data-testid="chat-session-modal-done-testing-button"]'
-    }
-}
-
-const testConstants = {
-    spinner: {
-        timeout: 120000
-    },
-    prediction: {
-        timeout: 60000
-    }
-}
+import s from '../support/selectors'
+import constants from '../support/constants'
 
 describe('Description and Tags', () => {
+    const modelName = 'z-descriptionTags'
+
     context('Train Dialogs', () => {
         const testData = {
+            modelName,
             userInput: 'First test input',
             continuedInput: 'Continued Dialog',
             actionResponse: 'The only response',
@@ -63,7 +27,7 @@ describe('Description and Tags', () => {
 
         before(() => {
             // TODO: Find way to preserve Intellisense
-            models.CreateNewModel('z-descriptionTags')
+            models.CreateNewModel(testData.modelName)
             model.NavigateToActions()
             actionsList.ClickNewAction()
             actions.CreateNewAction({ response: testData.actionResponse })
@@ -80,23 +44,23 @@ describe('Description and Tags', () => {
                 trainDialog.CreateNewTrainDialog()
 
                 // Verify that description and tags are empty
-                cy.get(testSelectors.dialogModal.descriptionInput)
+                cy.get(s.dialogModal.inputDescription)
                     .should('be.empty')
 
-                cy.get(testSelectors.dialogModal.tags)
+                cy.get(s.dialogModal.tags)
                     .should('not.exist')
             })
 
             it('should save the tags and description on the new dialog', () => {
                 // Set description
-                cy.get(testSelectors.dialogModal.descriptionInput)
+                cy.get(s.dialogModal.inputDescription)
                     .type(testData.description)
 
                 // Set tags
-                cy.get(testSelectors.dialogModal.addTagButton)
+                cy.get(s.dialogModal.buttonAddTag)
                     .click()
 
-                cy.get(testSelectors.dialogModal.tagInput)
+                cy.get(s.dialogModal.inputTag)
                     .type(`${testData.tag01}{enter}`)
 
                 trainDialog.TypeYourMessage(testData.userInput)
@@ -107,13 +71,13 @@ describe('Description and Tags', () => {
                 trainDialog.TypeYourMessage('Should be deleted')
                 trainDialog.ClickScoreActionsButton()
                 trainDialog.SelectAction(testData.actionResponse)
-                trainDialog.Save()
+                trainDialog.SaveAsIsVerifyInGrid()
 
                 // Verify tags and description in list
-                cy.get(testSelectors.trainDialogs.descriptions)
+                cy.get(s.trainDialogs.descriptions)
                     .should('contain', testData.description)
 
-                cy.get(testSelectors.trainDialogs.tags)
+                cy.get(s.trainDialogs.tags)
                     .should('contain', testData.tag01)
             })
         })
@@ -121,59 +85,59 @@ describe('Description and Tags', () => {
         context('Edit', () => {
             it('should open with the tags and description', () => {
                 // Open train dialog which has known description
-                cy.get(testSelectors.trainDialogs.descriptions)
+                cy.get(s.trainDialogs.descriptions)
                     .contains(testData.description)
                     .click()
 
                 // Verify description and tags are expected in the opened dialog
-                cy.get(testSelectors.dialogModal.descriptionInput)
+                cy.get(s.dialogModal.inputDescription)
                     .should('have.value', testData.description)
 
-                cy.get(testSelectors.dialogModal.tags)
+                cy.get(s.dialogModal.tags)
                     .should('have.text', testData.tag01)
             })
 
             it('should discard the changes made to tags and description when abandoned', () => {
                 // Added a tag
-                cy.get(testSelectors.dialogModal.addTagButton)
+                cy.get(s.dialogModal.buttonAddTag)
                     .click()
 
-                cy.get(testSelectors.dialogModal.tagInput)
+                cy.get(s.dialogModal.inputTag)
                     .type('newTag{enter}')
 
                 // Edit description
-                cy.get(testSelectors.dialogModal.descriptionInput)
+                cy.get(s.dialogModal.inputDescription)
                     .type(' Abandon Edit')
 
                 trainDialog.AbandonDialog()
 
                 // Re-open dialog
-                cy.get(testSelectors.trainDialogs.descriptions)
+                cy.get(s.trainDialogs.descriptions)
                     .contains(testData.description)
                     .click()
 
                 // Verify tags and description are unmodified
-                cy.get(testSelectors.dialogModal.descriptionInput)
+                cy.get(s.dialogModal.inputDescription)
                     .should('have.value', testData.description)
 
-                cy.get(testSelectors.dialogModal.tags)
+                cy.get(s.dialogModal.tags)
                     .should('have.text', testData.tag01)
             })
 
             it('should save the edited tags and description', () => {
                 // Edit tags
-                cy.get(testSelectors.dialogModal.addTagButton)
+                cy.get(s.dialogModal.buttonAddTag)
                     .click()
 
-                cy.get(testSelectors.dialogModal.tagInput)
+                cy.get(s.dialogModal.inputTag)
                     .type(`${testData.tag02}{enter}`)
 
                 // Edit description
-                cy.get(testSelectors.dialogModal.descriptionInput)
+                cy.get(s.dialogModal.inputDescription)
                     .type(testData.descriptionEdit)
 
                 // Save dialog
-                cy.get(testSelectors.dialogModal.closeSave)
+                cy.get(s.dialogModal.buttonCloseSave)
                     .click()
 
                 // Implicitly closes dialog, but stays on train dialogs page
@@ -181,11 +145,11 @@ describe('Description and Tags', () => {
                 cy.reload()
 
                 // Verify description
-                cy.get(testSelectors.trainDialogs.descriptions)
+                cy.get(s.trainDialogs.descriptions)
                     .contains(`${testData.description}${testData.descriptionEdit}`)
 
                 // Verify tags
-                cy.get(testSelectors.trainDialogs.tags)
+                cy.get(s.trainDialogs.tags)
                     .should(($tags) => {
                         const texts = $tags.map((_, el) => Cypress.$(el).text()).get()
                         expect(texts).to.deep.eq([
@@ -196,23 +160,23 @@ describe('Description and Tags', () => {
             })
 
             it('(advanced edit) should save the edited tags, description, and rounds', () => {
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
                 // Re-open dialog
-                cy.get(testSelectors.trainDialogs.descriptions)
+                cy.get(s.trainDialogs.descriptions)
                     .contains(testData.description)
                     .click()
 
                 // Edit tags
-                cy.get(testSelectors.dialogModal.addTagButton)
+                cy.get(s.dialogModal.buttonAddTag)
                     .click()
 
-                cy.get(testSelectors.dialogModal.tagInput)
+                cy.get(s.dialogModal.inputTag)
                     .type(`${testData.tag03}{enter}`)
 
                 // Edit description
-                cy.get(testSelectors.dialogModal.descriptionInput)
+                cy.get(s.dialogModal.inputDescription)
                     .type(testData.descriptionEdit)
 
                 // Delete the last bot response and user input. Affects rounds but doesn't make it invalid
@@ -244,7 +208,7 @@ describe('Description and Tags', () => {
 
                 cy.route('PUT', '/sdk/app/*/traindialog/*').as('putTrainDialog')
 
-                cy.get(testSelectors.dialogModal.closeSave)
+                cy.get(s.dialogModal.buttonCloseSave)
                     // .click()
                 // TODO: Find out what is blocking the click?
                 trainDialog.ClickSaveCloseButton()
@@ -258,13 +222,13 @@ describe('Description and Tags', () => {
             before(() => {
                 cy.reload()
 
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
             })
 
             it('should preserve tags and description when continuing a dialog', () => {
                 // Open dialog
-                cy.get(testSelectors.trainDialogs.descriptions)
+                cy.get(s.trainDialogs.descriptions)
                     .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}`)
                     .click()
 
@@ -273,14 +237,14 @@ describe('Description and Tags', () => {
                 cy.wait(1000)
 
                 // Edit tags
-                cy.get(testSelectors.dialogModal.addTagButton)
+                cy.get(s.dialogModal.buttonAddTag)
                     .click()
 
-                cy.get(testSelectors.dialogModal.tagInput)
+                cy.get(s.dialogModal.inputTag)
                     .type(`${testData.tag04}{enter}`)
 
                 // Edit description
-                cy.get(testSelectors.dialogModal.descriptionInput)
+                cy.get(s.dialogModal.inputDescription)
                     .type(testData.descriptionEdit)
 
                 // Modify dialog to add user input
@@ -298,15 +262,16 @@ describe('Description and Tags', () => {
                 cy.route('GET', '/sdk/app/*/traindialogs*').as('getTrainDialogs')
                 // Give time for requests to be sent
                 cy.wait(3000)
-                cy.wait(['@putTrainDialog', '@getTrainDialogs'])
+                cy.wait(['@putTrainDialog'/* , '@getTrainDialogs' */])
 
-                // Re-open dialog
-                cy.get(testSelectors.trainDialogs.descriptions)
+                // Re-open dialog'
+                cy.WaitForStableDOM()
+                cy.get(s.trainDialogs.descriptions)
                     .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}${testData.descriptionEdit}`)
                     .click()
 
                 // Verify it has all three of the tags
-                cy.get(testSelectors.dialogModal.tags)
+                cy.get(s.dialogModal.tags)
                     .should(($tags) => {
                         const texts = $tags.map((i, el) => Cypress.$(el).text()).get()
                         expect(texts).to.deep.eq([
@@ -334,56 +299,56 @@ describe('Description and Tags', () => {
 
             it('should preserve tags and description after branching', () => {
                 // Open dialog
-                cy.get(testSelectors.trainDialogs.descriptions)
+                cy.get(s.trainDialogs.descriptions)
                     .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}${testData.descriptionEdit}`)
                     .click()
 
                 // Edit tags
-                cy.get(testSelectors.dialogModal.addTagButton)
+                cy.get(s.dialogModal.buttonAddTag)
                     .click()
 
-                cy.get(testSelectors.dialogModal.tagInput)
+                cy.get(s.dialogModal.inputTag)
                     .type(`${testData.tag05}{enter}`)
 
                 // Edit description
-                cy.get(testSelectors.dialogModal.descriptionInput)
+                cy.get(s.dialogModal.inputDescription)
                     .type(testData.descriptionEdit)
                     .blur()
 
                 cy.wait(1000)
 
                 // Get the desired user input to branch on
-                cy.get(testSelectors.dialogModal.webChatUtterances)
+                cy.get(s.dialogModal.webChatUtterances)
                     .contains(testData.continuedInput)
                     .click()
 
                 // Click branch on one of the user inputs
-                cy.get(testSelectors.dialogModal.branchButton)
+                cy.get(s.dialogModal.branchButton)
                     .click()
 
-                cy.get(testSelectors.dialogModal.branchInput)
+                cy.get(s.dialogModal.branchInput)
                     .type('New Branched Input')
 
-                cy.get(testSelectors.dialogModal.branchSubmit)
+                cy.get(s.dialogModal.branchSubmit)
                     .click()
 
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
                 cy.server()
                 cy.route('POST', '/sdk/app/*/scorefromhistory').as('postScoreFromHistory')
                 cy.route('POST', '/sdk/app/*/history*').as('postHistory')
 
-                cy.get(testSelectors.dialogModal.scoreActionsButton)
+                cy.get(s.dialogModal.buttonScoreActionsButton)
                     .click()
 
                 cy.wait(['@postScoreFromHistory', '@postHistory'])
 
                 // Verify edited description and tags are preserved after branch
-                cy.get(testSelectors.dialogModal.descriptionInput)
+                cy.get(s.dialogModal.inputDescription)
                     .should('have.value', `${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}${testData.descriptionEdit}${testData.descriptionEdit}`)
 
-                cy.get(testSelectors.dialogModal.tags)
+                cy.get(s.dialogModal.tags)
                     .should(($tags) => {
                         const texts = $tags.map((i, el) => Cypress.$(el).text()).get()
                         expect(texts).to.deep.eq([
@@ -396,10 +361,10 @@ describe('Description and Tags', () => {
                     })
 
                 cy.wait(500)
-                cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(testSelectors.dialogModal.closeSave)
+                cy.get(s.dialogModal.buttonCloseSave)
                     .click()
 
                 cy.server()
@@ -409,11 +374,11 @@ describe('Description and Tags', () => {
                 cy.wait(['@getAppLogDialogs', '@getAppSource'])
 
                 // Verify old dialog with original tags and description is still in the list
-                cy.get(testSelectors.trainDialogs.descriptions)
+                cy.get(s.trainDialogs.descriptions)
                     .contains(`${testData.description}${testData.descriptionEdit}`)
 
                 // Verify new dialog with edited tags and description is now in the list
-                cy.get(testSelectors.trainDialogs.descriptions)
+                cy.get(s.trainDialogs.descriptions)
                     .contains(`${testData.description}${testData.descriptionEdit}${testData.descriptionEdit}`)
             })
         })
@@ -422,8 +387,9 @@ describe('Description and Tags', () => {
     context('Log Dialogs', () => {
         before(() => {
             // Need to import a small model that has a train dialog
-            models.ImportModel('z-descriptionTags', 'z-myNameIs.cl')
+            models.ImportModel(modelName, 'z-expectedEntLabl.cl')
             model.NavigateToLogDialogs()
+
             cy.WaitForTrainingStatusCompleted()
         })
 
@@ -436,25 +402,25 @@ describe('Description and Tags', () => {
             cy.server()
             cy.route('POST', '/sdk/app/*/session').as('postSession')
 
-            cy.get(testSelectors.logDialogs.createButton)
+            cy.get(s.logDialogs.buttonCreate)
                 .click()
 
             cy.wait('@postSession')
 
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
-            cy.get(testSelectors.chatModal.container)
+            cy.get(s.chatModal.container)
                 .should('be.visible')
 
-            cy.get('[data-testid="train-dialog-description"]')
+            cy.get(s.dialogModal.inputDescription)
                 .should('not.exist')
 
-            cy.get('[data-testid="train-dialog-tags"]')
+            cy.get(s.dialogModal.tagsControl)
                 .should('not.exist')
         })
 
-        it('should not show tags or description fields when viewing a log dialog', () => {
+        it('should show tags or description fields when viewing a log dialog', () => {
             const testData = {
                 input: 'My Log Dialog Message'
             }
@@ -463,42 +429,39 @@ describe('Description and Tags', () => {
             cy.server()
             cy.route('POST', '/sdk/app/*/session').as('postSession')
             
-            cy.get(testSelectors.logDialogs.createButton)
+            cy.get(s.logDialogs.buttonCreate)
                 .click()
 
             cy.wait('@postSession')
             
-            cy.get(testSelectors.common.spinner, { timeout: testConstants.spinner.timeout })
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
             logDialogModal.TypeYourMessage(testData.input)
 
             // Wait for prediction and ensure it isn't an error
-            cy.get('.wc-message-from-bot', { timeout: testConstants.prediction.timeout })
+            cy.get(s.webChat.messageFromBot, { timeout: constants.prediction.timeout })
                 .should('exist')
-                .should('not.have.class', 'wc-message-color-exception')
+                .should('not.have.class', s.webChat.messageColorException)
 
             cy.server()
             cy.route('GET', '/sdk/app/*/logdialogs*').as('getLogDialogs')
 
-            cy.get(testSelectors.chatModal.doneButton)
+            cy.get(s.chatModal.buttonDone)
                 .click()
 
             cy.wait(['@getLogDialogs'])
 
-            cy.get(testSelectors.logDialogs.firstInput)
+            cy.get(s.logDialogs.firstInput)
                 .contains(testData.input)
                 .click()
 
-            // Verify no fields for tags for description
-            cy.get('[data-testid="train-dialog-description"]')
-                .should('not.exist')
-
-            cy.get('[data-testid="train-dialog-tags"]')
-                .should('not.exist')
+            // Verify fields for tags for description
+            cy.get(s.dialogModal.inputDescription)
+            cy.get(s.dialogModal.buttonAddTag)
 
             // Close window to prevent continued polling
-            cy.get(testSelectors.dialogModal.closeSave)
+            cy.get(s.dialogModal.buttonCloseSave)
                 .click()
         })
     })
