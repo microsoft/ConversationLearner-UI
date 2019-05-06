@@ -84,7 +84,7 @@ describe('Wait vs Non Wait Actions - Train', () => {
     })
 
     it('Should save the training and verify that it appears in the grid', () => {
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
   })
 })

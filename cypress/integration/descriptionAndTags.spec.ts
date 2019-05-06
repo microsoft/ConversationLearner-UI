@@ -8,8 +8,11 @@ import s from '../support/selectors'
 import constants from '../support/constants'
 
 describe('Description and Tags', () => {
+    const modelName = 'z-descriptionTags'
+
     context('Train Dialogs', () => {
         const testData = {
+            modelName,
             userInput: 'First test input',
             continuedInput: 'Continued Dialog',
             actionResponse: 'The only response',
@@ -24,7 +27,7 @@ describe('Description and Tags', () => {
 
         before(() => {
             // TODO: Find way to preserve Intellisense
-            models.CreateNewModel('z-descriptionTags')
+            models.CreateNewModel(testData.modelName)
             model.NavigateToActions()
             actionsList.ClickNewAction()
             actions.CreateNewAction({ response: testData.actionResponse })
@@ -68,7 +71,7 @@ describe('Description and Tags', () => {
                 trainDialog.TypeYourMessage('Should be deleted')
                 trainDialog.ClickScoreActionsButton()
                 trainDialog.SelectAction(testData.actionResponse)
-                trainDialog.Save()
+                trainDialog.SaveAsIsVerifyInGrid()
 
                 // Verify tags and description in list
                 cy.get(s.trainDialogs.descriptions)
@@ -384,7 +387,7 @@ describe('Description and Tags', () => {
     context('Log Dialogs', () => {
         before(() => {
             // Need to import a small model that has a train dialog
-            models.ImportModel('z-descriptionTags', 'z-expectedEntLabl.cl')
+            models.ImportModel(modelName, 'z-expectedEntLabl.cl')
             model.NavigateToLogDialogs()
 
             cy.WaitForTrainingStatusCompleted()
@@ -410,10 +413,10 @@ describe('Description and Tags', () => {
             cy.get(s.chatModal.container)
                 .should('be.visible')
 
-            cy.get('[data-testid="train-dialog-description"]')
+            cy.get(s.dialogModal.inputDescription)
                 .should('not.exist')
 
-            cy.get('[data-testid="train-dialog-tags"]')
+            cy.get(s.dialogModal.tagsControl)
                 .should('not.exist')
         })
 
@@ -437,9 +440,9 @@ describe('Description and Tags', () => {
             logDialogModal.TypeYourMessage(testData.input)
 
             // Wait for prediction and ensure it isn't an error
-            cy.get('.wc-message-from-bot', { timeout: constants.prediction.timeout })
+            cy.get(s.webChat.messageFromBot, { timeout: constants.prediction.timeout })
                 .should('exist')
-                .should('not.have.class', 'wc-message-color-exception')
+                .should('not.have.class', s.webChat.messageColorException)
 
             cy.server()
             cy.route('GET', '/sdk/app/*/logdialogs*').as('getLogDialogs')

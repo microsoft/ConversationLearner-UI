@@ -31,7 +31,7 @@ describe('Missing Action - ErrorHandling', () => {
       train.TypeYourMessage(common.gonnaDeleteAnAction)
       train.ClickScoreActionsButton()
       train.SelectAction(common.whatsYourName)
-      train.Save()
+      train.SaveAsIsVerifyInGrid()
     })
   })
 

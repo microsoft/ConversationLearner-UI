@@ -95,7 +95,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     return (
                         <OF.PrimaryButton
                             data-testid="action-scorer-button-clickable"
-                            onClick={() => component.handleActionSelection(action.actionId, action)}
+                            onClick={() => component.handleActionSelection(action)}
                             ariaDescription={buttonText}
                             text={buttonText}
                             componentRef={refFn}
@@ -324,9 +324,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 this.props.toggleAutoTeach(false);
                 return;
             }
-            const selectedActionId = bestAction.actionId;
-            this.handleActionSelection(selectedActionId);
 
+            this.handleActionSelection(bestAction);
         } else if (!this.state.actionModalOpen) {
             setTimeout(this.focusPrimaryButton, 100)
         }
@@ -360,9 +359,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             )
         ) {
             // See if new action is available, then take it
-            const isAvailable = this.isAvailable(newAction);
+            const isAvailable = this.isAvailable(newAction)
             if (isAvailable) {
-                this.handleActionSelection(newAction.actionId);
+                this.handleActionSelection(newAction)
             }
         }
     }
@@ -402,27 +401,27 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     @OF.autobind
     handleDefaultSelection() {
         // Look for a valid action
-        let actionId = null
+        let scoredBase: CLM.ScoredBase | null = null
         const scoreResponse = this.props.scoreResponse
         if (scoreResponse.scoredActions && scoreResponse.scoredActions.length > 0) {
-            actionId = scoreResponse.scoredActions[0].actionId;
+            scoredBase = scoreResponse.scoredActions[0];
         } else if (scoreResponse.unscoredActions) {
             for (const unscoredAction of scoreResponse.unscoredActions) {
                 if (unscoredAction.reason === CLM.ScoreReason.NotScorable) {
-                    actionId = unscoredAction.actionId;
+                    scoredBase = unscoredAction;
                     break;
                 }
             }
         }
-        if (actionId) {
-            this.handleActionSelection(actionId);
+        if (scoredBase) {
+            this.handleActionSelection(scoredBase);
         }
     }
 
     @OF.autobind
-    async handleActionSelection(actionId: string, scoredBase?: CLM.ScoredBase) {
+    async handleActionSelection(scoredBase: CLM.ScoredBase) {
         let scoredAction: CLM.ScoredAction | undefined
-        if (scoredBase && actionId === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID) {
+        if (scoredBase.actionId === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID) {
             // TODO: Schema refactor
             const setEntityAction = new CLM.SetEntityAction(scoredBase as CLM.ActionBase)
             const action = Util.getSetEntityActionForEnumValue(setEntityAction.entityId, setEntityAction.enumValueId)
@@ -437,37 +436,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             }
         }
         else {
-            const { scoredActions, unscoredActions } = this.props.scoreResponse
-            scoredAction = scoredActions.find(a => a.actionId === actionId);
-            if (!scoredAction) {
-                const unscoredAction = unscoredActions.find(a => a.actionId === actionId);
-                if (unscoredAction) {
-                    const { reason, ...scoredBase } = unscoredAction
-                    // This is hack to create scored action without a real score
-                    scoredAction = {
-                        ...scoredBase,
-                        score: undefined!
-                    }
-                }
-                // TODO: Modify handleActionSelection to be passed action instead of finding action again from list by ID
-                // TODO: If score can be undefined on train dialog, what is the value in actually having the real score?
-                // if it doesn't matter, then skip all this steps for scored, unscored, missing and just find action within props.actions
-                else {
-                    const responseActions = [...scoredActions, ...unscoredActions]
-                    const otherActions = this.props.actions.filter(a => responseActions.every(sa => sa.actionId !== a.actionId))
-                    const action = otherActions.find(a => a.actionId === actionId)
-                    if (!action) {
-                        throw new Error(`Could not find action with id: ${actionId} in list of actions`)
-                    }
-
-                    scoredAction = {
-                        actionId: action.actionId,
-                        payload: action.payload,
-                        isTerminal: action.isTerminal,
-                        actionType: action.actionType,
-                        score: undefined!
-                    }
-                }
+            scoredAction = {
+                ...scoredBase,
+                score: undefined!
             }
         }
 

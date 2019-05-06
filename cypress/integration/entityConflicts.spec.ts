@@ -44,7 +44,7 @@ describe('Entity Conflicts', () => {
             })
 
             it('should not change labels if abort is clicked', () => {
-                cy.get(s.dialogModal.entityConflictModal.cancelButton)
+                cy.get(s.dialogModal.entityConflictModal.buttonCancel)
                     .click()
 
                 trainDialog.VerifyEntityLabel(labeledWord2, testData.entityName)
@@ -54,7 +54,7 @@ describe('Entity Conflicts', () => {
                 trainDialog.ClickScoreActionsButton()
 
                 cy.WaitForStableDOM()
-                cy.get(s.dialogModal.entityConflictModal.acceptButton)
+                cy.get(s.dialogModal.entityConflictModal.buttonAccept)
                     .click()
 
                 // TODO: Selects score actions immediately, need to verify memory
@@ -78,7 +78,7 @@ describe('Entity Conflicts', () => {
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
-            cy.get(s.model.navLogDialogs)
+            cy.get(s.model.buttonNavLogDialogs)
                 .click();
 
             // Create log dialogs (one for each test to isolate behavior)
@@ -136,20 +136,20 @@ describe('Entity Conflicts', () => {
                 })
 
                 it('should show the first conflict as active', () => {
-                    cy.get('[data-testid="log-conversion-conflicts-conflict-1"]')
+                    cy.get(s.logConversionConflictsModal.conflict1)
                         .should('have.class', 'active')
 
-                    cy.get('[data-testid="log-conversion-conflicts-conflict-2"]')
+                    cy.get(s.logConversionConflictsModal.conflict2)
                         .should('not.have.class', 'active')
                 })
 
-                // TODO: Could improve to very clicking button shows correct conflict
+                // TODO: Could improve to verify clicking button shows correct conflict
 
                 it('clicking next should change the active conflict', () => {
                     cy.get(s.logConversionConflictsModal.buttonNext)
                         .click()
 
-                    cy.get('[data-testid="log-conversion-conflicts-conflict-2"]')
+                    cy.get(s.logConversionConflictsModal.conflict2)
                         .should('have.class', 'active')
                 })
 
@@ -157,7 +157,7 @@ describe('Entity Conflicts', () => {
                     cy.get(s.logConversionConflictsModal.buttonPrevious)
                         .click()
 
-                    cy.get('[data-testid="log-conversion-conflicts-conflict-1"]')
+                    cy.get(s.logConversionConflictsModal.conflict1)
                         .should('have.class', 'active')
                 })
 
@@ -182,6 +182,9 @@ describe('Entity Conflicts', () => {
 
                     cy.get(s.logConversionConflictsModal.modal)
                         .should('not.exist')
+
+                    cy.get(s.mergeModal.buttonSaveAsIs)
+                        .click()
 
                     cy.get(s.logDialogs.firstInput)
                         .should('have.length', 3)
@@ -237,6 +240,12 @@ describe('Entity Conflicts', () => {
 
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
+
+                cy.get(s.mergeModal.buttonSaveAsIs)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
             })
         })
 
@@ -258,6 +267,13 @@ describe('Entity Conflicts', () => {
                 trainDialog.ClickScoreActionsButton()
                 trainDialog.SelectAction(testData.actionResponse)
                 trainDialog.ClickSaveCloseButton()
+
+                cy.WaitForStableDOM()
+                cy.get(s.mergeModal.buttonSaveAsIs)
+                    .click()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
             })
         })
     })

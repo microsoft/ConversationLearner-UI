@@ -1,3 +1,4 @@
+import * as util from '../support/utilities'
 import constants from '../support/constants'
 import s from '../support/selectors'
 
@@ -11,7 +12,7 @@ function verifyWordIsLabeled(word: string, entityName: string) {
 describe('EntityPicker', () => {
     describe('new model', () => {
         const testData = {
-            modelName: `z-entityPicker-${Cypress.moment().format('MM-d-mm-ss')}`,
+            modelName: util.generateUniqueModelName('entityPicker'),
             entity1: 'myEntity',
             word1: 'word1',
             word2: 'word2',
@@ -22,7 +23,7 @@ describe('EntityPicker', () => {
         testData.phrase = `Phrase start ${testData.word1} ${testData.word2} ${testData.word3} ${testData.word4} end.`
 
         before(() => {
-            cy.visit('http://localhost:3000')
+            cy.visit(constants.baseUrl)
 
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
@@ -40,7 +41,7 @@ describe('EntityPicker', () => {
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
-            cy.get(s.model.navTrainDialogs)
+            cy.get(s.model.buttonNavTrainDialogs)
                 .click()
 
             cy.get(s.trainDialogs.buttonNew)
@@ -172,7 +173,7 @@ describe('EntityPicker', () => {
         testData.phrase = `Phrase start ${testData.word1} ${testData.word2} ${testData.word3} ${testData.word4} end.`
 
         before(() => {
-            cy.visit('http://localhost:3000')
+            cy.visit(constants.baseUrl)
 
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
@@ -194,7 +195,7 @@ describe('EntityPicker', () => {
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
-            cy.get(s.model.navTrainDialogs)
+            cy.get(s.model.buttonNavTrainDialogs)
                 .click()
 
             cy.get(s.trainDialogs.buttonNew)
