@@ -822,7 +822,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                                 ariaDescription='Create Action'
                                 text='Action'
                                 iconProps={{ iconName: 'CirclePlus' }}
-                            //LARS TODO    componentRef={ref}
                             />
                             <OF.DefaultButton
                                 data-testid="action-scorer-add-apistub-button"

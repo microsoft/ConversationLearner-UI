@@ -66,6 +66,7 @@ export enum TipType {
     REPLAYERROR_DESC_API_BADCARD = "REPLAYERROR_DESC_API_BADCARD",
     REPLAYERROR_DESC_API_EXCEPTION = "REPLAYERROR_DESC_API_EXCEPTION",
     REPLAYERROR_DESC_API_MALFORMED = "REPLAYERROR_DESC_API_MALFORMED",
+    REPLAYERROR_DESC_API_STUB = "REPLAYERROR_DESC_API_STUB",
     REPLAYERROR_DESC_API_UNDEFINED = "REPLAYERROR_DESC_API_UNDEFINED",
     REPLAYERROR_DESC_ENTITY_UNDEFINED = "REPLAYERROR_DESC_ENTITY_UNDEFINED",
     REPLAYERROR_DESC_ENTITY_EMPTY = "REPLAYERROR_DESC_ENTITY_EMPTY",
@@ -660,6 +661,19 @@ export function getTip(tipType: string) {
                     <ol>
                         <li>Remove return value from Logic portion of API</li>
                         <li>Add Render portion to API</li>
+                    </ol>
+                    <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
+                </div>
+            )
+
+        case TipType.REPLAYERROR_DESC_API_STUB:
+            return (
+                <div>
+                    <h2>Error: API call is just a stub</h2>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Delete the API stub</li>
+                        <li>Replace Stub will an actual API call</li>
                     </ol>
                     <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
                 </div>

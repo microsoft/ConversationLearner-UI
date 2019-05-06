@@ -462,12 +462,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.trainDialogReplayThunkAsync as any,
             )
 
-            // LARS: TODO Should be able to not invalidate these
-            // but need to show warning
-            // Invalidate train dialog with stub actions
+            // Train dialog with stub actions should be in warning status
             const action = this.props.actions.find(a => a.actionId === trainScorerStep.labelAction)
             if (ActionBase.isStubbedAPI(action!)) {
-                newTrainDialog.validity = CLM.Validity.INVALID
+                newTrainDialog.validity = CLM.Validity.WARNING
             }
 
             await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE, this.state.editType)
