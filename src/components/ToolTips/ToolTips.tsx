@@ -72,6 +72,7 @@ export enum TipType {
     REPLAYERROR_DESC_ENTITY_EMPTY = "REPLAYERROR_DESC_ENTITY_EMPTY",
     REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE = "REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE",
     REPLAYERROR_DESC_ACTION_UNDEFINED = "REPLAYERROR_DESC_ACTION_UNDEFINED",
+    REPLAYERROR_DESC_ACTION_STUB = "REPLAYERROR_DESC_ACTION_STUB",
 
     MODEL_VERSION_EDITING = 'modelVersionEditing',
     MODEL_VERSION_LIVE = 'modelVersionLIve'
@@ -784,6 +785,20 @@ export function getTip(tipType: string) {
                     <ol>
                         <li>Replace selected Action with a different Action</li>
                         <li>Create a new Action</li>
+                    </ol>
+                </div>
+            )
+
+        case TipType.REPLAYERROR_DESC_ACTION_STUB:
+            return (
+                <div>
+                    <h2>Error: Action not assigned yet</h2>
+                    <p>This reponse was imported and does not yet have an action assigned to it</p>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Assign an existing action</li>
+                        <li>Create a new action</li>
+                        <li>Delete this utterance</li>
                     </ol>
                 </div>
             )

@@ -428,10 +428,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             selectedActivity: activity,
         })
 
-        const stubText = this.actionStubText(activity)
-        if (!stubText) {
-            this.setState({newActionPreset: undefined})
-        }
+        const newActionPreset = this.getNewActionPreset(activity)
+        this.setState({newActionPreset})
     }
 
     onPendingStatusChanged(changed: boolean) {
@@ -505,7 +503,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType, this.state.selectedActivity != null)
     }
 
-    actionStubText(activity: Activity): string | undefined {
+    getNewActionPreset(activity: Activity): NewActionPreset | undefined {
         const clData: CLM.CLChannelData = activity.channelData.clData
         const senderType = clData.senderType
         const scoreIndex = clData.scoreIndex || 0
@@ -517,7 +515,15 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return undefined
         }
 
-        return curRound.scorerSteps[scoreIndex].stubText
+        const stubText = curRound.scorerSteps[scoreIndex].stubText
+        const isTerminal = senderType === CLM.SenderType.Bot 
+            ? curRound.scorerSteps.length === scoreIndex + 1
+            : false
+
+        if (stubText) {
+            return { text: stubText, isTerminal }
+        }
+        return undefined
     }
 
     @OF.autobind
@@ -536,7 +542,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.TRAIN_ORIGINAL)
 
         const roundIndex = clData.roundIndex
-        const scoreIndex = clData.scoreIndex || 0
         const senderType = clData.senderType
         const curRound = this.props.trainDialog.rounds[roundIndex!]
 
@@ -553,14 +558,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             (roundIndex !== 0 && roundIndex !== null) ||
             senderType !== CLM.SenderType.User ||
             (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)
-
-        const stubText = 
-            senderType === CLM.SenderType.Bot ?
-            curRound.scorerSteps[scoreIndex].stubText : undefined
-
-        const isTerminal = senderType === CLM.SenderType.Bot 
-            ? curRound.scorerSteps.length === scoreIndex + 1
-            : false
 
         const hideBranch =  
             !canBranch || 
@@ -599,21 +596,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 }
                                 this.props.onDeleteTurn(trainDialog, activity)
                             }
-                        }}
-                        ariaDescription="Delete Turn"
-                    />
-                }
-                {stubText &&
-                    <OF.IconButton
-                        className={`cl-wc-addaction`}
-                        iconProps={{ iconName: 'CircleAdditionSolid' }}
-                        onClick={() => {
-                            this.setState({newActionPreset: 
-                                {
-                                    text: stubText,
-                                    isTerminal
-                                }
-                            })
                         }}
                         ariaDescription="Delete Turn"
                     />

@@ -285,11 +285,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 scoredItems: this.getScoredItems()
             })
         }
-        if (this.props.newActionPreset !== prevProps.newActionPreset) {
-            this.setState({
-                actionCreatorModalOpen: this.props.newActionPreset !== undefined
-            })
-        }
     }
 
     componentDidMount() {
