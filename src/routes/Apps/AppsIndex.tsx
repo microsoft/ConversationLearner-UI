@@ -16,7 +16,7 @@ import { AppBase, AppDefinition } from '@conversationlearner/models'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
-import { CL_IMPORT_ID } from '../../types/const'
+import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
 
 class AppsIndex extends React.Component<Props, {}> {
     updateAppsAndBot() {
@@ -60,7 +60,7 @@ class AppsIndex extends React.Component<Props, {}> {
     }
 
     onImportTutorial = (tutorial: AppBase) => {
-        const srcUserId = CL_IMPORT_ID;
+        const srcUserId = CL_IMPORT_TUTORIALS_USER_ID;
         const destUserId = this.props.user.id;
 
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.

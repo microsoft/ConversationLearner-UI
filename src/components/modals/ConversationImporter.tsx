@@ -13,7 +13,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { State, ErrorType, CL_STUB_ACTION_ID } from '../../types'
+import { State, ErrorType, CL_STUB_IMPORT_ACTION_ID } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
 import { FilePicker } from 'react-file-picker'
@@ -114,7 +114,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                     let scorerStep: CLM.TrainScorerStep = {
                         stubText: action ? undefined : activity.text,
                         input: scoreInput,
-                        labelAction: action ? action.actionId : CL_STUB_ACTION_ID,
+                        labelAction: action ? action.actionId : CL_STUB_IMPORT_ACTION_ID,
                         logicResult: undefined,
                         scoredAction: undefined
                     }
