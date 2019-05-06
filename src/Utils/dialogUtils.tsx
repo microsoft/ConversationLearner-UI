@@ -10,7 +10,6 @@ import { Activity } from 'botframework-directlinejs'
 import TagsReadOnly from '../components/TagsReadOnly'
 
 const MAX_SAMPLE_INPUT_LENGTH = 150
-export const STUB_LABEL_ACTION = "STUB_ACTION"
 
 export interface DialogRenderData {
     dialogMode: CLM.DialogMode
@@ -470,10 +469,11 @@ export function replaceStubActions(trainDialog: CLM.TrainDialog, actions: CLM.Ac
         const filledIdMap = filledEntityMap.EntityMapToIdMap()
         let valueMap = CLM.getEntityDisplayValueMap(filledIdMap)
         round.scorerSteps.forEach(scorerStep => {
-            if (scorerStep.labelAction === STUB_LABEL_ACTION && scorerStep.stubText) {
-                const action = findActionByText(scorerStep.stubText, actions, valueMap)
-                if (action) {
-                    scorerStep.labelAction = action.actionId
+            if (scorerStep.stubText) {
+                // LARS TODO - use hash 
+                const newAction = findActionByText(scorerStep.stubText, actions, valueMap)
+                if (newAction) {
+                    scorerStep.labelAction = newAction.actionId
                     delete scorerStep.stubText
                     match = true
                 }

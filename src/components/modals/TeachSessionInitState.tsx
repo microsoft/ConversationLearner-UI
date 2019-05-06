@@ -5,11 +5,12 @@
 import * as React from 'react';
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react';
+import EntityCreatorEditor from './EntityCreatorEditor'
+import FormattedMessageId from '../FormattedMessageId'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../types';
-import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { FM } from '../../react-intl-messages'
@@ -17,6 +18,7 @@ import './TeachSessionInitState.css'
 
 interface ComponentState {
     filledEntityMap: CLM.FilledEntityMap
+    isEntityEditorModalOpen: boolean
 }
 
 class TeachSessionInitState extends React.Component<Props, ComponentState> {
@@ -24,7 +26,8 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
     constructor(props: Props) {
         super(props)
         this.state = { 
-            filledEntityMap: new CLM.FilledEntityMap() 
+            filledEntityMap: new CLM.FilledEntityMap(),
+            isEntityEditorModalOpen: false
         }
     }
 
@@ -32,6 +35,20 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         if (this.props.isOpen !== newProps.isOpen) {
             this.setState({filledEntityMap: this.props.initMemories || new CLM.FilledEntityMap()})
         }
+    }
+
+    @OF.autobind
+    onClickCreateEntity() {
+        this.setState({
+            isEntityEditorModalOpen: true
+        })
+    }
+
+    @OF.autobind
+    onCloseEntityEditor() {
+        this.setState({
+            isEntityEditorModalOpen: false
+        })
     }
 
     @OF.autobind
@@ -175,38 +192,53 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                             )
                     }
                 </div>
-                <div className="cl-modal_footer cl-modal_footer--border">
-                    <div className="cl-modal-buttons">
-                        <div className="cl-modal-buttons_primary">
-                            <OF.PrimaryButton
-                                data-testid="teach-session-ok-button"
-                                onClick={this.onClickSubmit}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.BUTTON_OK,
-                                    defaultMessage: 'Ok'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.BUTTON_OK,
-                                    defaultMessage: 'Ok'
-                                })}
-                                iconProps={{ iconName: 'Accept' }}
-                            />
-                            <OF.DefaultButton
-                                data-testid="teach-session-cancel-button"
-                                onClick={this.onClickCancel}
-                                ariaDescription={intl.formatMessage({
-                                    id: FM.BUTTON_CANCEL,
-                                    defaultMessage: 'Cancel'
-                                })}
-                                text={intl.formatMessage({
-                                    id: FM.BUTTON_CANCEL,
-                                    defaultMessage: 'Cancel'
-                                })}
-                                iconProps={{ iconName: 'Cancel' }}
-                            />
-                        </div>
+                <div className="cl-modal_footer cl-modal-buttons cl-modal_footer--border">
+                    <div className="cl-modal-buttons_secondary">
+                        <OF.DefaultButton
+                            onClick={this.onClickCreateEntity}
+                            ariaDescription="Create Entity"
+                            text="Entity"
+                            iconProps={{ iconName: 'CirclePlus' }}
+                        />
+                    </div>
+                    <div className="cl-modal-buttons_primary">
+                        <OF.PrimaryButton
+                            data-testid="teach-session-ok-button"
+                            onClick={this.onClickSubmit}
+                            ariaDescription={intl.formatMessage({
+                                id: FM.BUTTON_OK,
+                                defaultMessage: 'Ok'
+                            })}
+                            text={intl.formatMessage({
+                                id: FM.BUTTON_OK,
+                                defaultMessage: 'Ok'
+                            })}
+                            iconProps={{ iconName: 'Accept' }}
+                        />
+                        <OF.DefaultButton
+                            data-testid="teach-session-cancel-button"
+                            onClick={this.onClickCancel}
+                            ariaDescription={intl.formatMessage({
+                                id: FM.BUTTON_CANCEL,
+                                defaultMessage: 'Cancel'
+                            })}
+                            text={intl.formatMessage({
+                                id: FM.BUTTON_CANCEL,
+                                defaultMessage: 'Cancel'
+                            })}
+                            iconProps={{ iconName: 'Cancel' }}
+                        />
                     </div>
                 </div>
+                <EntityCreatorEditor
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
+                    open={this.state.isEntityEditorModalOpen}
+                    entity={null}
+                    handleClose={this.onCloseEntityEditor}
+                    handleDelete={() => { }}
+                    entityTypeFilter={null}
+                />
             </Modal>
         );
     }
@@ -224,6 +256,8 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     isOpen: boolean,
+    app: CLM.AppBase,
+    editingPackageId: string
     initMemories: CLM.FilledEntityMap | null
     handleClose: (filledEntityMap?: CLM.FilledEntityMap) => void
 }

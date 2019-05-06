@@ -7,6 +7,7 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import * as BotChat from '@conversationlearner/webchat'
+import * as DialogEditing from '../../Utils/dialogEditing'
 import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
 import AddButtonInput from './AddButtonInput'
@@ -18,6 +19,7 @@ import UserInputModal from './UserInputModal'
 import FormattedMessageId from '../FormattedMessageId'
 import Webchat, { renderActivity } from '../Webchat'
 import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
+import { NewActionPreset } from './ActionCreatorEditor'
 import { formatMessageId, equal, deepCopy } from '../../Utils/util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
@@ -37,7 +39,7 @@ interface ComponentState {
     isConfirmAbandonOpen: boolean
     cantReplayMessage: FM | null
     isUserInputModalOpen: boolean
-    newActionText?: string
+    newActionPreset?: NewActionPreset
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
     isCreateStubOpen: boolean
@@ -55,7 +57,7 @@ const initialState: ComponentState = {
     isConfirmAbandonOpen: false,
     cantReplayMessage: null,
     isUserInputModalOpen: false,
-    newActionText: undefined,
+    newActionPreset: undefined,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
     isCreateStubOpen: false,
@@ -295,7 +297,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             isCreateStubOpen: true
         })
     }
-    
+
+
     @OF.autobind
     async onCloseCreateAPIStub(filledEntityMap?: CLM.FilledEntityMap) {
         this.setState({
@@ -310,6 +313,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         if (filledEntityMap) {
 
             const filledEntities = filledEntityMap.FilledEntities()
+            const stubAction = await DialogEditing.getStubAPIAction(this.props.app.appId, this.props.actions, this.props.createActionThunkAsync as any)
 
             // Generate stub
             let scoredAction: CLM.ScoredAction = {
@@ -327,10 +331,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             let scorerStep: CLM.TrainScorerStep = {
                 stubFilledEntities: filledEntities,
                 input: scoreInput,
-                labelAction: "NEW",
+                labelAction: stubAction.actionId,
                 logicResult: undefined!,
                 scoredAction: scoredAction
             }
+
             this.onChangeAction(scorerStep)
         }
     }
@@ -404,6 +409,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     // TEMP: until server can exclude label conflicts with self, we need
     // to check for them and force save before we can add a turn 
     showInternalLabelConflict(): boolean {
+
+        // Can avoid check on import as won't have pre-existing dialog
+        if (this.props.editType === EditDialogType.IMPORT) {
+            return false
+        }
         if (this.props.originalTrainDialog && this.state.currentTrainDialog) {
             const conflict = DialogUtils.hasInternalLabelConflict(this.props.originalTrainDialog, this.state.currentTrainDialog)
             if (conflict) {
@@ -420,7 +430,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         const stubText = this.actionStubText(activity)
         if (!stubText) {
-            this.setState({newActionText: undefined})
+            this.setState({newActionPreset: undefined})
         }
     }
 
@@ -548,6 +558,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             senderType === CLM.SenderType.Bot ?
             curRound.scorerSteps[scoreIndex].stubText : undefined
 
+        const isTerminal = senderType === CLM.SenderType.Bot 
+            ? curRound.scorerSteps.length === scoreIndex + 1
+            : false
+
         const hideBranch =  
             !canBranch || 
             !this.props.onBranchDialog ||
@@ -594,7 +608,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         className={`cl-wc-addaction`}
                         iconProps={{ iconName: 'CircleAdditionSolid' }}
                         onClick={() => {
-                            this.setState({newActionText: stubText})
+                            this.setState({newActionPreset: 
+                                {
+                                    text: stubText,
+                                    isTerminal
+                                }
+                            })
                         }}
                         ariaDescription="Delete Turn"
                     />
@@ -1151,7 +1170,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onChangeAction={(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
-                                    newActionText={this.state.newActionText}
+                                    newActionPreset={this.state.newActionPreset}
                                     onCreateAPIStub={this.onClickAPIStub}
 
                                     allUniqueTags={this.props.allUniqueTags}
@@ -1161,7 +1180,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
                                     description={this.state.description}
                                     onChangeDescription={this.onChangeDescription}
-                                    onActionCreatorClosed={() => this.setState({newActionText: undefined})}
+                                    onActionCreatorClosed={() => this.setState({newActionPreset: undefined})}
                                 />
                             </div>
                             {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay" />}
@@ -1240,6 +1259,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 }
                 <TeachSessionInitState
                     isOpen={this.state.isCreateStubOpen}
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
                     initMemories={this.getFilledEntityMapForActivity()}
                     handleClose={this.onCloseCreateAPIStub}
                 />

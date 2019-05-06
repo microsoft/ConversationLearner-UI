@@ -21,6 +21,7 @@ export enum SelectionType {
 }
 
 export const CL_IMPORT_ID = '9c110735ea8b440d8f31c5c68ffb767d'
+export const CL_STUB_ACTION_ID = '51cd7df5-e504-451d-b629-0932e604689c'
 
 export const ports = {
     urlBotPort: parseInt(location.port, 10),

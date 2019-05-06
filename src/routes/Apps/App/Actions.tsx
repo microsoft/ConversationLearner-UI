@@ -3,22 +3,22 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react'
+import * as Utils from '../../../Utils/util'
+import actions from '../../../actions'
+import ActionDetailsList from '../../../components/ActionDetailsList'
+import FormattedMessageId from '../../../components/FormattedMessageId'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import actions from '../../../actions'
-import ActionDetailsList from '../../../components/ActionDetailsList'
-import * as OF from 'office-ui-fabric-react'
-import * as Utils from '../../../Utils/util'
-import FormattedMessageId from '../../../components/FormattedMessageId'
-import { AppBase, ActionBase } from '@conversationlearner/models'
 import { ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
-    actionSelected: ActionBase | null
+    actionSelected: CLM.ActionBase | null
     actionIDToDelete: string | null
     isConfirmDeleteActionModalOpen: boolean
     isActionEditorModalOpen: boolean
@@ -48,7 +48,7 @@ class Actions extends React.Component<Props, ComponentState> {
         this.newActionButton.focus();
     }
 
-    onSelectAction(action: ActionBase) {
+    onSelectAction(action: CLM.ActionBase) {
         if (this.props.editingPackageId === this.props.app.devPackageId) {
             this.setState({
                 actionSelected: action,
@@ -73,7 +73,7 @@ class Actions extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickDeleteActionEditor(action: ActionBase) {
+    onClickDeleteActionEditor(action: CLM.ActionBase) {
         Utils.setStateAsync(this, {
             isActionEditorOpen: false,
             actionSelected: null
@@ -83,7 +83,7 @@ class Actions extends React.Component<Props, ComponentState> {
         setTimeout(() => this.newActionButton.focus(), 1000)
     }
 
-    onClickSubmitActionEditor(action: ActionBase) {
+    onClickSubmitActionEditor(action: CLM.ActionBase) {
         const wasEditing = this.state.actionSelected
         Utils.setStateAsync(this, {
             isActionEditorOpen: false,
@@ -97,7 +97,7 @@ class Actions extends React.Component<Props, ComponentState> {
         setTimeout(() => this.newActionButton.focus(), 500)
     }
 
-    getFilteredActions(): ActionBase[] {
+    getFilteredActions(): CLM.ActionBase[] {
         //runs when user changes the text 
         const searchStringLower = this.state.searchValue.toLowerCase()
         return this.props.actions.filter(a => {
@@ -107,7 +107,7 @@ class Actions extends React.Component<Props, ComponentState> {
                 .filter(e => [...a.requiredEntities, ...a.negativeEntities, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(e.entityId))
             const entityMatch = entities.some(e => e.entityName.toLowerCase().includes(searchStringLower))
 
-            return nameMatch || typeMatch || entityMatch
+            return (nameMatch || typeMatch || entityMatch) && !CLM.ActionBase.isStubbedAPI(a)
         })
     }
 
@@ -220,7 +220,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: AppBase
+    app: CLM.AppBase
     editingPackageId: string
 }
 

@@ -234,6 +234,11 @@ interface IConditionalTag extends OF.ITag {
     condition: CLM.Condition | null
 }
 
+export interface NewActionPreset {
+    text: string, 
+    isTerminal: boolean
+}
+
 interface ComponentState {
     entityOptions: OF.IDropdownOption[]
     enumValueOptions: OF.IDropdownOption[]
@@ -336,9 +341,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        if (this.props.newActionText) {
-            let values = Plain.deserialize(this.props.newActionText)
+        if (this.props.newActionPreset) {
+            let values = Plain.deserialize(this.props.newActionPreset.text)
             this.onChangePayloadEditor(values, TEXT_SLOT)
+            this.setState({isTerminal: this.props.newActionPreset.isTerminal})
         }
     }
     componentWillReceiveProps(nextProps: Props) {
@@ -509,9 +515,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         // Set initial text value (used for dummy import actions)
         if (nextProps.open === true && this.props.open === false) { 
-            if (nextProps.newActionText) {
-                let values = Plain.deserialize(nextProps.newActionText)
+            if (nextProps.newActionPreset) {
+                let values = Plain.deserialize(nextProps.newActionPreset.text)
                 this.onChangePayloadEditor(values, TEXT_SLOT)
+                this.setState({isTerminal: nextProps.newActionPreset.isTerminal})
             }
         }
     }
@@ -1671,7 +1678,7 @@ export interface ReceiveProps {
     open: boolean
     action: CLM.ActionBase | null
     actions: CLM.ActionBase[]
-    newActionText?: string
+    newActionPreset?: NewActionPreset
     handleEdit: (action: CLM.ActionBase) => void
     handleClose: () => void
     handleDelete: (action: CLM.ActionBase) => void

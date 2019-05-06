@@ -932,6 +932,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 </Modal>
                 <TeachSessionInitState
                     isOpen={this.state.isInitStateOpen}
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
                     initMemories={null}
                     handleClose={this.onCloseInitState}
                 />

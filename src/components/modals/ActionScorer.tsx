@@ -7,22 +7,20 @@ import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react';
 import * as Util from '../../Utils/util'
+import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
+import ConfirmCancelModal from './ConfirmCancelModal'
+import ActionCreatorEditor, { NewActionPreset } from './ActionCreatorEditor'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { State } from '../../types'
 import { createActionThunkAsync } from '../../actions/actionActions'
 import { toggleAutoTeach } from '../../actions/teachActions'
-import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
-import ConfirmCancelModal from './ConfirmCancelModal'
 import './ActionScorer.css'
 
-const ACTION_BUTTON = 'action_button'
-const STUB_BUTTON = 'stub_button'
 const MISSING_ACTION = 'missing_action'
 
 interface IRenderableColumn extends OF.IColumn {
@@ -287,9 +285,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 scoredItems: this.getScoredItems()
             })
         }
-        if (this.props.newActionText !== prevProps.newActionText) {
+        if (this.props.newActionPreset !== prevProps.newActionPreset) {
             this.setState({
-                actionCreatorModalOpen: this.props.newActionText !== undefined
+                actionCreatorModalOpen: this.props.newActionPreset !== undefined
             })
         }
     }
@@ -686,49 +684,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     renderItemColumn(action: CLM.ScoredBase, index: number, column: IRenderableColumn) {
-        // Null is action create button
-        if (action.actionId === ACTION_BUTTON) {
-            if (column.key === 'select') {
-                // Will focus on new action button if no scores
-                const ref = (index === 0)
-                    ? (r: OF.IButton) => { this.primaryScoreButton = r }
-                    : undefined;
-                return ( 
-                    <OF.PrimaryButton
-                        data-testid="action-scorer-add-action-button"
-                        onClick={this.handleOpenActionModal}
-                        ariaDescription='Create Action'
-                        text='Action'
-                        iconProps={{ iconName: 'CirclePlus' }}
-                        componentRef={ref}
-                    />
-                )
-            } else {
-                return ''
-            }
-        }
-        else if (action.actionId === STUB_BUTTON) {
-            if (column.key === 'select') {
-                // Will focus on new action button if no scores
-                const ref = (index === 0)
-                    ? ((r: any) => { this.primaryScoreButton = r })
-                    : undefined;
-                return ( 
-                    <OF.PrimaryButton
-                        data-testid="action-scorer-add-action-button"
-                        onClick={this.props.onCreateAPIStub}
-                        ariaDescription='Create API Stub'
-                        text='API'
-                        iconProps={{ iconName: 'EditSolid12' }}
-                        componentRef={ref}
-                    />
-                )
-            } else {
-                return '';
-            }
-        }
         // Handle deleted actions
-        else if (action.actionId === MISSING_ACTION) {
+        if (action.actionId === MISSING_ACTION) {
             if (column.key === 'select') {
                 const buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && index === 0) ? "Selected" : "Select";
                 return (
@@ -847,12 +804,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             });
         }
 
-        // If editing allowed add Action creation button
-        if (!this.props.autoTeach && this.props.canEdit) {
-            scoredItems.push(this.makeDummyItem(ACTION_BUTTON, 0));
-            scoredItems.push(this.makeDummyItem(STUB_BUTTON, 0));
-        }
-
         return scoredItems
     }
 
@@ -877,7 +828,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         return (
             <div>
-                {this.state.scoredItems.length === 1 && (!this.props.autoTeach && this.props.canEdit)
+                {this.state.scoredItems.length === 0 && (!this.props.autoTeach && this.props.canEdit)
                     ? <div className="cl-action-scorer-placeholder">
                         <div className={`cl-action-scorer-placeholder__description`}>
                             <h1 className={OF.FontClassNames.xxLarge}>Create an Action</h1>
@@ -891,7 +842,26 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                             />
                         </div>
                     </div>
-                    : <OF.DetailsList
+                    : 
+                    <div>
+                        <div className="cl-modal-buttons_primary">
+                            <OF.DefaultButton
+                                data-testid="action-scorer-add-action-button"
+                                onClick={this.handleOpenActionModal}
+                                ariaDescription='Create Action'
+                                text='Action'
+                                iconProps={{ iconName: 'CirclePlus' }}
+                            //LARS TODO    componentRef={ref}
+                            />
+                            <OF.DefaultButton
+                                data-testid="action-scorer-add-apistub-button"
+                                onClick={this.props.onCreateAPIStub}
+                                ariaDescription='Create API Stub'
+                                text='API Stub'
+                                iconProps={{ iconName: 'Handwriting' }}
+                            />
+                        </div>
+                    <OF.DetailsList
                         className={OF.FontClassNames.mediumPlus}
                         items={this.state.scoredItems}
                         columns={this.state.columns}
@@ -903,6 +873,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                             defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
                             onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                     />
+                    </div>
                 }
 
                 <ActionCreatorEditor
@@ -911,7 +882,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     open={this.state.actionCreatorModalOpen}
                     action={null}
                     actions={this.props.actions}
-                    newActionText={this.props.newActionText}
+                    newActionPreset={this.props.newActionPreset}
                     handleClose={() => this.onClickCancelActionEditor()}
                     // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete 
                     handleDelete={action => { }}
@@ -958,7 +929,7 @@ export interface ReceivedProps {
     memories: CLM.Memory[],
     canEdit: boolean,
     isEndSessionAvailable: boolean,
-    newActionText?: string 
+    newActionPreset?: NewActionPreset 
     onActionSelected: (trainScorerStep: CLM.TrainScorerStep) => void,
     onActionCreatorClosed: () => void
     onCreateAPIStub: () => void

@@ -426,4 +426,24 @@ export async function onEditTeach(
     selectedActivity.channelData.clData = clData
 
     await editHandler(trainDialog, selectedActivity, args)
+} 
+
+// Returns stubAPIAction if it exists, otherwise creates it
+export async function getStubAPIAction(
+    appId: string,
+    actions: CLM.ActionBase[],
+    createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
+
+): Promise<CLM.ActionBase> {
+    let stubAction = actions.find(a => CLM.ActionBase.isStubbedAPI(a))
+    if (stubAction) {
+        return stubAction
+    }
+    stubAction = CLM.ActionBase.getStubAction()
+    const newAction = await createActionThunkAsync(appId, stubAction)
+    if (!newAction) {
+        throw new Error("Failed to create APIStub action")
+    }
+
+    return newAction
 }

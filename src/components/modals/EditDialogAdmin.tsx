@@ -13,6 +13,7 @@ import ActionScorer from './ActionScorer'
 import MemoryTable from './MemoryTable'
 import FormattedMessageId from '../FormattedMessageId'
 import TrainingStatusContainer from '../TrainingStatusContainer'
+import { NewActionPreset } from './ActionCreatorEditor'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -500,7 +501,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 isEndSessionAvailable={!hasEndSession && this.props.isLastActivitySelected}
                                 dialogType={CLM.DialogType.TRAINDIALOG}
                                 autoTeach={false}
-                                newActionText={this.props.newActionText}
+                                newActionPreset={this.props.newActionPreset}
                                 dialogMode={renderData.dialogMode}
                                 scoreResponse={renderData.scoreResponse}
                                 scoreInput={renderData.scoreInput}
@@ -552,7 +553,7 @@ export interface ReceivedProps {
     editState: EditState
     editType: EditDialogType
     // If creating an action with a pre-filled text value
-    newActionText?: string
+    newActionPreset?: NewActionPreset
     onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void
     onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void
     onPendingStatusChanged: (changed: boolean) => void

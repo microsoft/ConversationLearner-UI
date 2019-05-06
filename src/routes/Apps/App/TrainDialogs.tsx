@@ -24,6 +24,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps, } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
+import { ActionBase } from '@conversationlearner/models';
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -460,6 +461,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.actions,
                 this.props.trainDialogReplayThunkAsync as any,
             )
+
+            // LARS: TODO Should be able to not invalidate these
+            // but need to show warning
+            // Invalidate train dialog with stub actions
+            const action = this.props.actions.find(a => a.actionId === trainScorerStep.labelAction)
+            if (ActionBase.isStubbedAPI(action!)) {
+                newTrainDialog.validity = CLM.Validity.INVALID
+            }
 
             await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE, this.state.editType)
         }

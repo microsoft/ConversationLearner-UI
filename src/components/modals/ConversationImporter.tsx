@@ -13,7 +13,7 @@ import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { State, ErrorType } from '../../types'
+import { State, ErrorType, CL_STUB_ACTION_ID } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
 import { FilePicker } from 'react-file-picker'
@@ -81,7 +81,9 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
             tags: [], 
             description: '',
             createdDateTime: new Date().toJSON(),
-            lastModifiedDateTime: new Date().toJSON()
+            lastModifiedDateTime: new Date().toJSON(),
+            // It's initially invalid
+            validity: CLM.Validity.INVALID
         }
 
         let curRound: CLM.TrainRound | null = null
@@ -112,7 +114,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                     let scorerStep: CLM.TrainScorerStep = {
                         stubText: action ? undefined : activity.text,
                         input: scoreInput,
-                        labelAction: action ? action.actionId : DialogUtils.STUB_LABEL_ACTION,
+                        labelAction: action ? action.actionId : CL_STUB_ACTION_ID,
                         logicResult: undefined,
                         scoredAction: undefined
                     }
@@ -261,6 +263,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setErrorDisplay: actions.display.setErrorDisplay,
+        createActionThunkAsync: actions.action.createActionThunkAsync,
         fetchExtractionsAsync: actions.app.fetchExtractionsThunkAsync,
         trainDialogReplayAsync: actions.train.trainDialogReplayThunkAsync,
         spinnerAdd: actions.display.spinnerAdd,
