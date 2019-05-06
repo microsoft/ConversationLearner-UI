@@ -7,6 +7,7 @@ import { TipType } from '../ToolTips/ToolTips'
 import HelpIcon from '../HelpIcon'
 import * as OF from 'office-ui-fabric-react'
 
+const testIdAttribute = 'data-testid'
 export interface ITagPickerWithTipProps extends OF.ITagPickerProps {
     label: string;
     tipType: TipType;
@@ -15,7 +16,7 @@ export interface ITagPickerWithTipProps extends OF.ITagPickerProps {
 export default function component(props: ITagPickerWithTipProps) {
     const { label, tipType, ...pickerProps } = props
     return (
-        <div>
+        <div data-testid={props[testIdAttribute]}>
             <OF.Label className="cl-label">{label}
                 <HelpIcon tipType={tipType} />
             </OF.Label>
