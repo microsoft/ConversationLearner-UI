@@ -23,6 +23,10 @@ describe('action modal', () => {
     })
 
     beforeEach(() => {
+        cy.reload()
+        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+            .should('not.exist')
+            
         cy.get(s.actions.buttonNewAction)
             .click()
     })
@@ -87,7 +91,7 @@ describe('action modal', () => {
         })
 
         // TODO: Find out why this fails to select picker item?
-        it.skip('adding an entity should make removable required entities non-removable', () => {
+        it('adding an entity should make removable required entities non-removable', () => {
             cy.WaitForStableDOM()
             
             cy.get(s.action.inputRequiredConditions)
