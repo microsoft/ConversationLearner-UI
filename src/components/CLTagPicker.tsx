@@ -12,6 +12,8 @@ import './CLTagPicker.css'
  * It would be better to take in render functions or components instead of declarative options such as highlight or strike through which are not flexible
  * Also, this has overlap with the CLTagItem component which could be used here.
  */
+const testIdAttribute = 'data-testid'
+
 export interface ICLTagPickerProps extends OF.ITagPickerProps {
     label: string
     tipType: TipType
@@ -22,7 +24,7 @@ export interface ICLTagPickerProps extends OF.ITagPickerProps {
 export const component = (props: ICLTagPickerProps) => {
     const { nonRemovableTags, nonRemoveableHighlight = true, nonRemoveableStrikethrough = true, ...tagPickerProps } = props
     return (
-        <div>
+        <div data-testid={props[testIdAttribute]}>
             <OF.Label className="cl-label">{props.label}
                 <HelpIcon tipType={props.tipType} />
             </OF.Label>
@@ -30,7 +32,7 @@ export const component = (props: ICLTagPickerProps) => {
                 <div className="ms-BasePicker-text ms-BasePicker-text--static pickerText_52f33f52" role="list">
                     {nonRemovableTags.map(tag => (
                         <div className={`ms-TagItem ${nonRemoveableHighlight ? 'ms-TagItem-text--highlight' : ''}`} tabIndex={0} key={tag.key}>
-                            <span className={`ms-TagItem-text ${nonRemoveableStrikethrough ? 'ms-TagItem-text--strike' : ''}`} aria-label={tag.name}>{tag.name}</span>
+                            <span data-testid="picker-tag-nonRemovable" className={`ms-TagItem-text ${nonRemoveableStrikethrough ? 'ms-TagItem-text--strike' : ''}`} aria-label={tag.name}>{tag.name}</span>
                         </div>
                     ))}
                 </div>

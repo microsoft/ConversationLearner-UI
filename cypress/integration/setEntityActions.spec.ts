@@ -154,7 +154,7 @@ describe('Set Entity Actions', () => {
                 cy.get(s.action.dropDownEnum)
                     .should('not.exist')
 
-                selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
+                util.selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
 
                 cy.get(s.action.setEntityWarning)
                 cy.get(s.action.dropDownEntity)
@@ -166,11 +166,11 @@ describe('Set Entity Actions', () => {
             })
 
             it('should reset the value of the fields when changing the action type', () => {
-                selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
-                selectDropDownOption(s.action.dropDownEntity, testData.action.entityName)
-                selectDropDownOption(s.action.dropDownEnum, testData.action.enumValue)
-                selectDropDownOption(s.action.dropDownType, testData.action.textType)
-                selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
+                util.selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
+                util.selectDropDownOption(s.action.dropDownEntity, testData.action.entityName)
+                util.selectDropDownOption(s.action.dropDownEnum, testData.action.enumValue)
+                util.selectDropDownOption(s.action.dropDownType, testData.action.textType)
+                util.selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
 
                 // field should be unset
                 cy.get(s.action.dropDownEntity)
@@ -182,17 +182,17 @@ describe('Set Entity Actions', () => {
             })
 
             it('should not allow creating the action unless entity and enum are set', () => {
-                selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
+                util.selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
 
                 cy.get(s.action.buttonCreate)
                     .should('have.attr', 'disabled')
 
-                selectDropDownOption(s.action.dropDownEntity, testData.action.entityName)
+                util.selectDropDownOption(s.action.dropDownEntity, testData.action.entityName)
 
                 cy.get(s.action.buttonCreate)
                     .should('have.attr', 'disabled')
 
-                selectDropDownOption(s.action.dropDownEnum, testData.action.enumValue)
+                util.selectDropDownOption(s.action.dropDownEnum, testData.action.enumValue)
 
                 cy.get(s.action.buttonCreate)
                     .should('not.have.attr', 'disabled')
@@ -200,9 +200,9 @@ describe('Set Entity Actions', () => {
 
             it('should prevent creating duplicate actions (same entity and enum value)', () => {
                 // Create action 
-                selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
-                selectDropDownOption(s.action.dropDownEntity, testData.action.entityName)
-                selectDropDownOption(s.action.dropDownEnum, testData.action.enumValue)
+                util.selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
+                util.selectDropDownOption(s.action.dropDownEntity, testData.action.entityName)
+                util.selectDropDownOption(s.action.dropDownEnum, testData.action.enumValue)
                 cy.get(s.action.buttonCreate)
                     .click()
 
@@ -213,9 +213,9 @@ describe('Set Entity Actions', () => {
                     .click()
 
                 // Try to create duplicate
-                selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
-                selectDropDownOption(s.action.dropDownEntity, testData.action.entityName)
-                selectDropDownOption(s.action.dropDownEnum, testData.action.enumValue)
+                util.selectDropDownOption(s.action.dropDownType, testData.action.setEntityType)
+                util.selectDropDownOption(s.action.dropDownEntity, testData.action.entityName)
+                util.selectDropDownOption(s.action.dropDownEnum, testData.action.enumValue)
                 cy.get(s.action.buttonCreate)
                     .click()
 
@@ -252,7 +252,7 @@ describe('Set Entity Actions', () => {
             it('should not allow saving changes to SET_ENTITY actions', () => {
                 cy.get(s.action.setEntityWarning)
 
-                selectDropDownOption(s.action.dropDownEnum, testData.action.nonExistingEnumValue)
+                util.selectDropDownOption(s.action.dropDownEnum, testData.action.nonExistingEnumValue)
 
                 cy.get(s.action.buttonCreate)
                     .should('have.attr', 'disabled')
@@ -322,7 +322,6 @@ describe('Set Entity Actions', () => {
                     .contains(setEntityPlaceholderText)
             })
         })
-
 
         // TODO: What to test? Deletion currently works the same
         xdescribe('action deletion', () => {
@@ -402,16 +401,6 @@ describe('Set Entity Actions', () => {
         })
     })
 })
-
-function selectDropDownOption(dropDownSelector: string, optionName: string) {
-    cy.get(dropDownSelector)
-        .click()
-        .then(() => {
-            cy.get(s.common.dropDownOptions)
-                .contains(optionName)
-                .click()
-        })
-}
 
 function selectAction(actionScorerSelector: string, actionResponseText: string) {
     cy.get(actionScorerSelector)
