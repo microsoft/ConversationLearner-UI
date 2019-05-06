@@ -429,9 +429,10 @@ export default class ClClient {
         return response.data
     }
 
-    async logDialogs(appId: string, packageId: string): Promise<CLM.LogDialog[]> {
+    async logDialogs(appId: string, packageIds: string[]): Promise<CLM.LogDialog[]> {
+        const packages = packageIds.map(p => `package=${p}`).join("&")
         const response = await this.send<CLM.LogDialogList>({
-            url: `/app/${appId}/logdialogs?packageId=${packageId}`
+            url: `/app/${appId}/logdialogs?includeDefinitions=false&excludeConverted=true&${packages}`
         })
         return response.data.logDialogs
     }

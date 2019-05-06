@@ -4,7 +4,7 @@
 }
 
 .cl-tagpicker:hover .ms-BasePicker-text {
-    border-color: var(--color-themeLight);
+    border-color: var(--color-neutralDark);
 }
 
 .cl-tagpicker .ms-BasePicker-text.ms-BasePicker-text--static {
