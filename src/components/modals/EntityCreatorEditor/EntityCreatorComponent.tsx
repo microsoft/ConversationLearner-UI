@@ -195,7 +195,7 @@ const Component: React.SFC<Props> = (props) => {
         isBlocking={false}
         containerClassName="cl-modal cl-modal--medium"
     >
-        <div className={`cl-modal_header ${OF.FontClassNames.xxLarge}`}>
+        <div data-testid="entity-creator-modal" className={`cl-modal_header ${OF.FontClassNames.xxLarge}`}>
             {props.title}
         </div>
         <div className="cl-modal_body">

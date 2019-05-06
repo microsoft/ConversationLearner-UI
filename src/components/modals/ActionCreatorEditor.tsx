@@ -1526,6 +1526,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             />
                         </div>
                         <div
+                            data-testid="action-warning-nowait-expected"
                             className="cl-error-message-label"
                             style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}
                         >
@@ -1545,6 +1546,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             />
                         }
                         <OF.DefaultButton
+                            data-testid="action-button-create-entity"
                             onClick={this.onClickCreateEntity}
                             ariaDescription="Create Entity"
                             text="Entity"
