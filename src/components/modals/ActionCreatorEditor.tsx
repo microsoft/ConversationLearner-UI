@@ -951,7 +951,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             return
         }
 
-        console.log({ option })
         this.props.handleDelete(this.props.action, option)
         this.setState({
             isConfirmDeleteModalOpen: false
