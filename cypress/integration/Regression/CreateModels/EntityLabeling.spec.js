@@ -71,6 +71,12 @@ describe('Entity Labeling - Create Model', () => {
     })
     
     it('Label multiple words as the same entity.', () => {
+      // TODO: Watch this test and see if this wait fixed the occassional NON labeling of "Tag"
+      //       The theory is that the training status complete is not accurate and by waiting longer
+      //       we can ensure training from the previous step does complete and "Tag" should then
+      //       get automatically labeled as an entity.
+      cy.wait(30000)
+
       train.TypeYourMessage('This is Frog and Tag.')
       memoryTableComponent.VerifyEntitiesInMemory('multi', ['Tag'])
       train.VerifyEntityLabel('Tag', 'multi')
