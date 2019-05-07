@@ -64,6 +64,7 @@ class Actions extends React.Component<Props, ComponentState> {
         })
     }
 
+    @OF.autobind
     onClickCancelActionEditor() {
         this.setState({
             isActionEditorOpen: false,
@@ -73,6 +74,7 @@ class Actions extends React.Component<Props, ComponentState> {
         })
     }
 
+    @OF.autobind
     onClickDeleteActionEditor(action: ActionBase, deleteFromDialogs: boolean) {
         Utils.setStateAsync(this, {
             isActionEditorOpen: false,
@@ -83,6 +85,7 @@ class Actions extends React.Component<Props, ComponentState> {
         setTimeout(() => this.newActionButton.focus(), 1000)
     }
 
+    @OF.autobind
     onClickSubmitActionEditor(action: ActionBase) {
         const wasEditing = this.state.actionSelected
         Utils.setStateAsync(this, {
