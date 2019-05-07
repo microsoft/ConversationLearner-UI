@@ -945,13 +945,14 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onConfirmDelete() {
+    onConfirmDelete(option: boolean) {
         if (!this.props.action) {
             console.warn(`You clicked to confirm deletion, but there is no action to delete`)
             return
         }
 
-        this.props.handleDelete(this.props.action)
+        console.log({ option })
+        this.props.handleDelete(this.props.action, option)
         this.setState({
             isConfirmDeleteModalOpen: false
         })
@@ -1594,6 +1595,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     onConfirm={this.onConfirmDelete}
                     title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
                     message={this.validationWarning}
+                    optionMessage={this.validationWarning ? 'Delete from all Train Dialogs' : undefined}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmEditModalOpen}
@@ -1661,7 +1663,7 @@ export interface ReceiveProps {
     actions: CLM.ActionBase[]
     handleEdit: (action: CLM.ActionBase) => void
     handleClose: () => void
-    handleDelete: (action: CLM.ActionBase) => void
+    handleDelete: (action: CLM.ActionBase, deleteFromDialogs: boolean) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

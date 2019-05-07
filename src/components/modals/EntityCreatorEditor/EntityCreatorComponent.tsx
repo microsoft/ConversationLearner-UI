@@ -315,7 +315,6 @@ const Component: React.SFC<Props> = (props) => {
         <ConfirmCancelModal
             open={props.isDeleteErrorModalOpen}
             onCancel={props.onCancelDelete}
-            onConfirm={null}
             title={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_DELETE_ERROR_TITLE)}
             message={() => <div className={`${OF.FontClassNames.medium} cl-text--error`}>
                 <OF.Icon iconName="Error" className="cl-icon" /> Error:&nbsp;

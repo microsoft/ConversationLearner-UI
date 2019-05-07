@@ -1092,7 +1092,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     <ConfirmCancelModal
                         open={true}
                         onCancel={this.onClickCloseCantReplay}
-                        onConfirm={null}
                         title={this.state.cantReplayMessage ? formatMessageId(intl, this.state.cantReplayMessage) : ""}
                     />
                 }

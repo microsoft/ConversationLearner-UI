@@ -73,13 +73,13 @@ class Actions extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickDeleteActionEditor(action: ActionBase) {
+    onClickDeleteActionEditor(action: ActionBase, deleteFromDialogs: boolean) {
         Utils.setStateAsync(this, {
             isActionEditorOpen: false,
             actionSelected: null
         })
 
-        this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId)
+        this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId, deleteFromDialogs)
         setTimeout(() => this.newActionButton.focus(), 1000)
     }
 
@@ -195,9 +195,9 @@ class Actions extends React.Component<Props, ComponentState> {
                     open={this.state.isActionEditorOpen}
                     action={this.state.actionSelected}
                     actions={this.props.actions}
-                    handleClose={() => this.onClickCancelActionEditor()}
-                    handleDelete={action => this.onClickDeleteActionEditor(action)}
-                    handleEdit={action => this.onClickSubmitActionEditor(action)}
+                    handleClose={this.onClickCancelActionEditor}
+                    handleDelete={this.onClickDeleteActionEditor}
+                    handleEdit={this.onClickSubmitActionEditor}
                 />
             </div>
         );

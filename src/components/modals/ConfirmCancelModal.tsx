@@ -10,26 +10,30 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 // Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
 interface ReceivedProps {
-    onConfirm?: Function | null
-    onCancel?: Function | null
-    onOk?: Function | null
+    onConfirm?: (option: boolean) => void
+    onCancel?: (option?: boolean) => void
+    onOk?: (option: boolean) => void
     open: boolean
     title: string
+    optionMessage?: string
     message?: () => React.ReactNode
 }
 
 type Props = ReceivedProps & InjectedIntlProps
 
-const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
+const ConfirmCancelModal: React.FC<Props> = (props) => {
     const { intl } = props
     const onDismiss = props.onCancel || props.onOk
     if (!onDismiss) {
         throw new Error("Must have cancel or ok callback")
     }
+
+    const [option, setOption] = React.useState(false)
+
     return (
         <OF.Dialog
             hidden={!props.open}
-            onDismiss={() => onDismiss()}
+            onDismiss={() => onDismiss(option)}
             dialogContentProps={{
                 type: OF.DialogType.normal,
                 title: props.title
@@ -39,12 +43,21 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
             }}
         >
             {typeof props.message === 'function' && props.message()}
+            {props.optionMessage
+                && (
+                    <OF.Checkbox
+                        data-testid="confirm-cancel-option"
+                        label={props.optionMessage}
+                        checked={option}
+                        onChange={() => setOption(o => !o)}
+                    />
+                )}
             <OF.DialogFooter>
                 {props.onConfirm &&
                     <OF.PrimaryButton
                         onClick={() => {
                             if (props.onConfirm) {
-                                props.onConfirm()
+                                props.onConfirm(option)
                             }
                         }}
                         text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT)}
@@ -68,7 +81,7 @@ const ConfirmCancelModal: React.SFC<Props> = (props: Props) => {
                     <OF.DefaultButton
                         onClick={() => {
                             if (props.onOk) {
-                                props.onOk()
+                                props.onOk(option)
                             }
                         }}
                         text={formatMessageId(intl, FM.BUTTON_OK)}

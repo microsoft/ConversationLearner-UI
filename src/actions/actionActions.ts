@@ -85,13 +85,13 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
     }
 }
 
-export const deleteActionThunkAsync = (appId: string, actionId: string) => {
+export const deleteActionThunkAsync = (appId: string, actionId: string, deleteFromDialogs: boolean) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteActionAsync(appId, actionId))
         const clClient = ClientFactory.getInstance(AT.DELETE_ACTION_ASYNC)
 
         try {
-            const deleteEditResponse = await clClient.actionsDelete(appId, actionId);
+            const deleteEditResponse = await clClient.actionsDelete(appId, actionId, deleteFromDialogs);
             dispatch(deleteActionFulfilled(actionId));
 
             // Fetch train dialogs if any train dialogs were impacted

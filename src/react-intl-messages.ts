@@ -25,7 +25,6 @@ export enum FM {
     ACTIONS_SUBTITLE = 'Actions.subtitle',
     ACTIONS_CREATEBUTTONARIADESCRIPTION = 'Actions.createButtonAriaDescription',
     ACTIONS_CREATEBUTTONTITLE = 'Actions.createButtonTitle',
-    ACTIONS_CONFIRMCANCELMODALTITLE = 'Actions.confirmCancelModalTitle',
 
     // ActionCreatorEditor
     ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.saveButton.ariaDescription',
@@ -632,7 +631,6 @@ export default {
         [FM.ACTIONS_SUBTITLE]: `Actions are executed by the Bot in response to user input`,
         [FM.ACTIONS_CREATEBUTTONARIADESCRIPTION]: 'Create a New Action',
         [FM.ACTIONS_CREATEBUTTONTITLE]: 'New Action',
-        [FM.ACTIONS_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this Action?',
 
         // AppCreator
         [FM.APPCREATOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
