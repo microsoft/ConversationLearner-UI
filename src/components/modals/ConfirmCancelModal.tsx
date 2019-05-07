@@ -30,6 +30,11 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
     }
 
     const [option, setOption] = React.useState(false)
+    React.useEffect(() => {
+        if (props.open) {
+            setOption(false)
+        }
+    }, [props.open])
 
     return (
         <OF.Dialog
