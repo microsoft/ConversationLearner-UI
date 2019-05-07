@@ -115,7 +115,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: (action: CLM.ActionBase, component) => {
                 const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
 
-                if (action.actionType === CLM.ActionTypes.TEXT) {
+                if (CLM.ActionBase.isStubbedAPI(action)) {
+                    return <span className="cl-font--warning">STUBBED API CALL</span>
+                }
+                else if (action.actionType === CLM.ActionTypes.TEXT) {
                     const textAction = new CLM.TextAction(action)
                     return (
                         <ActionPayloadRenderers.TextPayloadRendererContainer
@@ -662,7 +665,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     />
                 )
             } else if (column.key === 'actionResponse') {
-                return <span className="cl-font--warning">MISSING ACTION</span>;
+                if (this.props.newActionPreset) {
+                    return <span className="cl-font--warning">STUBBED ACTION</span>;
+                }
+                else {
+                    return <span className="cl-font--warning">MISSING ACTION</span>;
+                }
             }
             else if (column.key === 'actionScore') {
                 return column.render(action as CLM.ScoredBase, this, index)

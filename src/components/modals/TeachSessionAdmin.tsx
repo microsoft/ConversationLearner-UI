@@ -425,7 +425,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 memories={renderData.memories}
                                 onActionSelected={this.onActionScorerSubmit}
                                 onActionCreatorClosed={() => {}}
-                                onCreateAPIStub={() => {}}  // LARS todo
+                                onCreateAPIStub={this.props.onCreateAPIStub}
                             />
                         }
                     </div>
@@ -457,10 +457,6 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    onScoredAction: (scoredAction: CLM.ScoredAction) => void;
-    onEditExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
-    onEditAction: (trainScorerStep: CLM.TrainScorerStep) => any
-    onReplaceActivityText: (userText: string, index: number) => void
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string
@@ -476,8 +472,13 @@ export interface ReceivedProps {
     selectedActivityIndex: number | null
     isLastActivitySelected: boolean,
     historyRenderData: (() => DialogUtils.DialogRenderData) | null
+    onScoredAction: (scoredAction: CLM.ScoredAction) => void;
+    onEditExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
+    onEditAction: (trainScorerStep: CLM.TrainScorerStep) => any
+    onReplaceActivityText: (userText: string, index: number) => void
+    onCreateAPIStub: () => void
+    
     allUniqueTags: string[]
-
     tags: string[]
     onAddTag: (tag: string) => void
     onRemoveTag: (tag: string) => void

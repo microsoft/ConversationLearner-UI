@@ -429,7 +429,7 @@ export async function onEditTeach(
 } 
 
 // Returns stubAPIAction if it exists, otherwise creates it
-export async function getStubAPIAction(
+async function getStubAPIAction(
     appId: string,
     actions: CLM.ActionBase[],
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
@@ -446,4 +446,37 @@ export async function getStubAPIAction(
     }
 
     return newAction
+}
+
+// Returns stubAPIAction if it exists, otherwise creates it
+export async function getStubScorerStep(
+    appId: string,
+    actions: CLM.ActionBase[],
+    filledEntityMap: CLM.FilledEntityMap,
+    createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
+): Promise<CLM.TrainScorerStep> {
+    
+    const stubAction = await getStubAPIAction(appId, actions, createActionThunkAsync)
+    const filledEntities = filledEntityMap.FilledEntities()
+
+    // Generate stub
+    let scoredAction: CLM.ScoredAction = {
+        actionId: undefined!,
+        payload: "",
+        isTerminal: false,
+        actionType: CLM.ActionTypes.API_LOCAL,
+        score: 1
+    }
+    let scoreInput: CLM.ScoreInput = {
+        filledEntities,
+        context: {},
+        maskedActions: []
+    }
+    return {
+        stubFilledEntities: filledEntities,
+        input: scoreInput,
+        labelAction: stubAction.actionId,
+        logicResult: undefined!,
+        scoredAction: scoredAction
+    }
 }

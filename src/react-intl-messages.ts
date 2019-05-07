@@ -771,7 +771,7 @@ export default {
         [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
         [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Action follows a Wait Action',
         [FM.REPLAYERROR_DESC_ACTION_UNDEFINED]: 'Action does not exist',
-        [FM.REPLAYERROR_DESC_ACTION_STUB]: 'Action not assigned to this imported response',
+        [FM.REPLAYERROR_DESC_ACTION_STUB]: 'Action not yet assigned to this imported response',
         [FM.REPLAYERROR_DESC_API_BADCARD]: 'API Render function returned a malformed Activity',
         [FM.REPLAYERROR_DESC_API_EXCEPTION]: 'API in Bot encountered an exception',
         [FM.REPLAYERROR_DESC_API_MALFORMED]: 'Logic portion of callback returns a value, but no Render portion defined',

@@ -7,7 +7,7 @@ import * as BotChat from '@conversationlearner/webchat'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
-import { EditHandlerArgs } from '../../Utils/dialogEditing'
+import * as DialogEditing from '../../Utils/dialogEditing'
 import * as CLM from '@conversationlearner/models'
 import AddButtonInput from './AddButtonInput'
 import AddButtonScore from './AddButtonScore'
@@ -33,10 +33,12 @@ import { SelectionType } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.'
 import './TeachSessionModal.css'
+import { FilledEntityMap } from '@conversationlearner/models';
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
     isUserInputModalOpen: boolean,
+    isCreateStubOpen: boolean,
     addUserInputSelectionType: SelectionType
     isInitStateOpen: boolean,
     isInitAvailable: boolean,
@@ -62,6 +64,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isConfirmDeleteOpen: false,
         isUserInputModalOpen: false,
+        isCreateStubOpen: false,
         addUserInputSelectionType: SelectionType.NONE,
         isInitStateOpen: false,
         isInitAvailable: true,
@@ -196,6 +199,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    //---- INIT STATE ----
     @OF.autobind
     onInitStateClicked() {
         this.setState({
@@ -214,6 +218,32 @@ class TeachModal extends React.Component<Props, ComponentState> {
         })
     }
 
+    //---- API STUBS ----
+    @OF.autobind
+    onClickAPIStub() {
+        this.setState({
+            isCreateStubOpen: true
+        })
+    }
+
+    @OF.autobind
+    async onCloseCreateAPIStub(filledEntityMap?: CLM.FilledEntityMap) {
+        this.setState({
+            isCreateStubOpen: false
+        })
+
+        if (this.state.selectedActivityIndex === null) {
+            console.log('Warning: No Activity Selected')
+            return
+        }
+
+        if (filledEntityMap) {
+            const scorerStep = await DialogEditing.getStubScorerStep(this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
+            this.onEditScore(scorerStep)
+        }
+    }
+
+    //---- ABANDON ----
     @OF.autobind
     onClickAbandonTeach() {
         if (this.state.nextActivityIndex) {
@@ -346,7 +376,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     // TODO: this is redundant with EditDialogAdmin
     @OF.autobind
-    getPrevMemories(): CLM.Memory[] {
+    getPrevFilledEntityMap(): CLM.FilledEntityMap {
 
         if (!this.state.selectedHistoryActivity || !this.props.sourceTrainDialog) {
             throw new Error("historyRender missing data")
@@ -359,25 +389,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
             throw new Error(`Cannot get previous memories because roundIndex is null. This is likely a problem with code. Please open an issue.`)
         }
 
-        let memories: CLM.Memory[] = [];
         const prevIndex = roundIndex - 1;
         if (prevIndex >= 0) {
             const round = this.props.sourceTrainDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
                 const scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
-                memories = scorerStep.input.filledEntities.map<CLM.Memory>(fe => {
-                    const entity = this.props.entities.find(e => e.entityId === fe.entityId)
-                    if (!entity) {
-                        throw new Error(`Could not find entity by id: ${fe.entityId} in list of entities`)
-                    }
-                    return {
-                        entityName: entity.entityName,
-                        entityValues: fe.values
-                    }
-                })
+                return FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, this.props.entities)
             }
         }
-        return memories;
+        return new FilledEntityMap();
     }
 
     // TODO: this is redundant with EditDialogAdmin
@@ -442,7 +462,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 });
 
                 // Get prevmemories
-                prevMemories = this.getPrevMemories();
+                prevMemories = this.getPrevFilledEntityMap().ToMemory()
 
                 const scoredAction: CLM.ScoredAction = {
                     actionId: selectedAction.actionId,
@@ -487,7 +507,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     });
 
                     // Get prevmemories
-                    prevMemories = this.getPrevMemories()
+                    prevMemories = this.getPrevFilledEntityMap().ToMemory()
                 }
             }
             return {
@@ -847,6 +867,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
                                         onEditExtraction={this.onEditExtraction}
                                         onEditAction={this.onEditScore}
+                                        onCreateAPIStub={this.onClickAPIStub}
 
                                         allUniqueTags={this.props.allUniqueTags}
                                         tags={this.state.tags}
@@ -937,6 +958,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     initMemories={null}
                     handleClose={this.onCloseInitState}
                 />
+                <TeachSessionInitState
+                    isOpen={this.state.isCreateStubOpen}
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
+                    initMemories={this.state.isCreateStubOpen ? this.getPrevFilledEntityMap() : null}
+                    handleClose={this.onCloseCreateAPIStub}
+                />
                 <LogConversionConflictModal
                     title={Util.formatMessageId(intl, FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE)}
                     open={this.props.conflictPairs.length > 0}
@@ -952,6 +980,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        createActionThunkAsync: actions.action.createActionThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
         toggleAutoTeach: actions.teach.toggleAutoTeach,
@@ -974,11 +1003,11 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean
     onClose: (save: boolean, tags?: string[], description?: string) => void
-    onEditTeach: (historyIndex: number, args: EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any) => void
-    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
-    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
-    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
-    onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
+    onEditTeach: (historyIndex: number, args: DialogEditing.EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any) => void
+    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
+    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
+    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
+    onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onEndSessionActivity: (tags: string[], description: string) => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any

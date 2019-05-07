@@ -311,31 +311,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         if (filledEntityMap) {
-
-            const filledEntities = filledEntityMap.FilledEntities()
-            const stubAction = await DialogEditing.getStubAPIAction(this.props.app.appId, this.props.actions, this.props.createActionThunkAsync as any)
-
-            // Generate stub
-            let scoredAction: CLM.ScoredAction = {
-                actionId: undefined!,
-                payload: "",
-                isTerminal: false,
-                actionType: CLM.ActionTypes.API_LOCAL,
-                score: 1
-            }
-            let scoreInput: CLM.ScoreInput = {
-                filledEntities,
-                context: {},
-                maskedActions: []
-            }
-            let scorerStep: CLM.TrainScorerStep = {
-                stubFilledEntities: filledEntities,
-                input: scoreInput,
-                labelAction: stubAction.actionId,
-                logicResult: undefined!,
-                scoredAction: scoredAction
-            }
-
+            const scorerStep = await DialogEditing.getStubScorerStep(this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
             this.onChangeAction(scorerStep)
         }
     }
