@@ -15,7 +15,7 @@ import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import TeachSessionAdmin from './TeachSessionAdmin'
-import TeachSessionInitState from './TeachSessionInitState' // LARS remove?
+import TeachSessionInitState from './TeachSessionInitState'
 import FormattedMessageId from '../FormattedMessageId'
 import Webchat, { renderActivity } from '../Webchat'
 import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
@@ -348,39 +348,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     // TODO: this is redundant with EditDialogAdmin
     @OF.autobind
-    getPrevFilledEntityMap(): CLM.FilledEntityMap {
-
-        if (!this.state.selectedHistoryActivity || !this.props.sourceTrainDialog) {
-            throw new Error("historyRender missing data")
-        }
-
-        const clData: CLM.CLChannelData = this.state.selectedHistoryActivity.channelData.clData
-        const roundIndex = clData.roundIndex!
-
-        if (roundIndex === null) {
-            throw new Error(`Cannot get previous memories because roundIndex is null. This is likely a problem with code. Please open an issue.`)
-        }
-
-        const prevIndex = roundIndex - 1;
-        if (prevIndex >= 0) {
-            const round = this.props.sourceTrainDialog.rounds[prevIndex];
-            if (round.scorerSteps.length > 0) {
-                const scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
-                return CLM.FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, this.props.entities)
-            }
-        }
-        return new CLM.FilledEntityMap();
-    }
-
-    // TODO: this is redundant with EditDialogAdmin
-    @OF.autobind
     getRenderData(): DialogUtils.DialogRenderData {
-        let selectedAction: CLM.ActionBase | undefined
-        let scorerStep: CLM.TrainScorerStep | CLM.LogScorerStep | undefined
-        let scoreResponse: CLM.ScoreResponse | undefined
-        let round: CLM.TrainRound | CLM.LogRound | undefined
-        let memories: CLM.Memory[] = [];
-        let prevMemories: CLM.Memory[] = [];
 
         if (this.state.selectedHistoryActivity === null || !this.props.sourceTrainDialog) {
             throw new Error("getRenderData missing data")
@@ -391,93 +359,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         const scoreIndex = clData.scoreIndex
         const senderType = clData.senderType
 
-        if (roundIndex !== null && roundIndex < this.props.sourceTrainDialog.rounds.length) {
-            round = this.props.sourceTrainDialog.rounds[roundIndex];
-            if (round.scorerSteps.length > 0 && typeof scoreIndex === "number") {
-                scorerStep = round.scorerSteps[scoreIndex];
-                if (!scorerStep) {
-                    throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
-                }
-
-                const actionId = scorerStep!.labelAction
-                selectedAction = this.props.actions.find(action => action.actionId === actionId);
-
-                if (!selectedAction) {
-                    // Action may have been deleted.  If so create dummy action to render
-                    selectedAction = {
-                        actionId: actionId || 'MISSING ACTION',
-                        createdDateTime: new Date().toJSON(),
-                        payload: 'MISSING ACTION',
-                        isTerminal: false,
-                        actionType: CLM.ActionTypes.TEXT,
-                        requiredEntitiesFromPayload: [],
-                        requiredEntities: [],
-                        requiredConditions: [],
-                        negativeEntities: [],
-                        negativeConditions: [],
-                        suggestedEntity: null,
-                        version: 0,
-                        packageCreationId: 0,
-                        packageDeletionId: 0,
-                        entityId: undefined,
-                        enumValueId: undefined,
-                    }
-                }
-
-                memories = DialogUtils.filledEntitiesToMemory(scorerStep.input.filledEntities, this.props.entities)
-                prevMemories = this.getPrevFilledEntityMap().ToMemory()
-
-                const scoredAction: CLM.ScoredAction = {
-                    actionId: selectedAction.actionId,
-                    payload: selectedAction.payload,
-                    isTerminal: selectedAction.isTerminal,
-                    score: 1,
-                    actionType: selectedAction.actionType
-                }
-
-                // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
-                const unscoredActions = this.props.actions
-                    .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
-                    .map<CLM.UnscoredAction>(action =>
-                        ({
-                            actionId: action.actionId,
-                            payload: action.payload,
-                            isTerminal: action.isTerminal,
-                            reason: CLM.ScoreReason.NotCalculated,
-                            actionType: action.actionType
-                        }));
-
-                scoreResponse = {
-                    metrics: {
-                        wallTime: 0
-                    },
-                    scoredActions: [scoredAction],
-                    unscoredActions: unscoredActions
-                }
-            }
-            // Extraction step
-            else {
-                // If scorer step exists, use it to populate memory
-                scorerStep = round.scorerSteps[0];
-                if (scorerStep) {
-                    memories = DialogUtils.filledEntitiesToMemory(scorerStep.input.filledEntities, this.props.entities)
-
-                    // Get prevmemories
-                    prevMemories = this.getPrevFilledEntityMap().ToMemory()
-                }
-            }
-            return {
-                dialogMode: (senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
-                scoreInput: scorerStep ? scorerStep.input : undefined,
-                scoreResponse: scoreResponse,
-                roundIndex,
-                memories: DialogUtils.filterDummyEntities(memories),
-                prevMemories: DialogUtils.filterDummyEntities(prevMemories),
-                extractResponses: [],
-                textVariations: round.extractorStep.textVariations
-            }
-        }
-        throw new Error("Fail to render")
+        return DialogUtils.getDialogRenderData(this.props.sourceTrainDialog, this.props.entities, this.props.actions, roundIndex, scoreIndex, senderType)
     }
 
     @OF.autobind

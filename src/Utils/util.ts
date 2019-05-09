@@ -181,24 +181,6 @@ export const setEntityActionDisplay = (action: CLM.ActionBase, entities: CLM.Ent
     return [name, value]
 }
 
-export const getSetEntityActionsFromEnumEntity = (entity: CLM.EntityBase): CLM.ActionBase[] => {
-    if (entity.entityType !== CLM.EntityType.ENUM) {
-        throw new Error(`You attempted to create set entity actions from an entity that was not an ENUM. Entity: ${entity.entityName} - ${entity.entityType}`)
-    }
-
-    if (!entity.enumValues) {
-        throw new Error(`You attempted to create set entity actions from an entity which had no enum values. Entity: ${entity.entityName} - ${entity.entityType}`)
-    }
-
-    return entity.enumValues.map(evo => {
-        if (!evo.enumValueId) {
-            throw new Error(`You attempted to create a set entity action from entity whose enum values have not yet been saved and don't have valid id. Please save the entity first. Entity: ${entity.entityName} - ${entity.entityType}`)
-        }
-
-        return getSetEntityActionForEnumValue(entity.entityId, evo.enumValueId)
-    })
-}
-
 export const PLACEHOLDER_SET_ENTITY_ACTION_ID = 'PLACEHOLDER_SET_ENTITY_ACTION_ID'
 export const getSetEntityActionForEnumValue = (entityId: string, enumValueId: string): CLM.ActionBase => {
     const setEntityPayload: CLM.SetEntityPayload = {
@@ -226,4 +208,22 @@ export const getSetEntityActionForEnumValue = (entityId: string, enumValueId: st
         entityId,
         enumValueId,
     }
+}
+
+export const getSetEntityActionsFromEnumEntity = (entity: CLM.EntityBase): CLM.ActionBase[] => {
+    if (entity.entityType !== CLM.EntityType.ENUM) {
+        throw new Error(`You attempted to create set entity actions from an entity that was not an ENUM. Entity: ${entity.entityName} - ${entity.entityType}`)
+    }
+
+    if (!entity.enumValues) {
+        throw new Error(`You attempted to create set entity actions from an entity which had no enum values. Entity: ${entity.entityName} - ${entity.entityType}`)
+    }
+
+    return entity.enumValues.map(evo => {
+        if (!evo.enumValueId) {
+            throw new Error(`You attempted to create a set entity action from entity whose enum values have not yet been saved and don't have valid id. Please save the entity first. Entity: ${entity.entityName} - ${entity.entityType}`)
+        }
+
+        return getSetEntityActionForEnumValue(entity.entityId, evo.enumValueId)
+    })
 }

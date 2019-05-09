@@ -239,16 +239,26 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             if (lookupIndex >= 0) {
 
                 const turnData = this.state.turnLookup[lookupIndex]
+                const memories = (turnData && turnData.uiScoreResponse && turnData.uiScoreResponse.memories) 
+                    ? turnData.uiScoreResponse.memories 
+                    : []
+            
+                
+                // If prev action was user, use prevTurn.memory.  If following a wait action use uiScoreResponse.memories
+                const prevTurn = this.state.turnLookup[lookupIndex - 1] 
+                const prevMemories = (prevTurn && prevTurn.uiScoreResponse && prevTurn.uiScoreResponse.memories) 
+                    ? prevTurn.uiScoreResponse.memories 
+                    : (prevTurn && prevTurn.memories) 
+                    ? prevTurn.memories 
+                    : []
 
-                const prevTurn = this.state.turnLookup[lookupIndex - 1]
-                const prevMemories = (prevTurn && prevTurn.uiScoreResponse) ? prevTurn.uiScoreResponse.memories! : []
                 if (turnData.uiScoreResponse) {
                     return {
                         dialogMode: CLM.DialogMode.Scorer,
                         scoreInput: turnData.uiScoreResponse.scoreInput,
                         scoreResponse: turnData.uiScoreResponse.scoreResponse,
                         selectedActionId: turnData.selectedActionId,
-                        memories: turnData.memories ? DialogUtils.filterDummyEntities(turnData.memories) : [],
+                        memories: turnData.memories ? DialogUtils.filterDummyEntities(memories) : [],
                         prevMemories: DialogUtils.filterDummyEntities(prevMemories),
                         extractResponses: this.props.teachSession.extractResponses,
                         textVariations: [],
