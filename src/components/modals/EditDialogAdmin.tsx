@@ -6,6 +6,7 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import * as DialogUtils from '../../Utils/dialogUtils'
+// LARS import * as DialogEditing from '../../Utils/dialogEditing'
 import DialogMetadata from './DialogMetadata'
 import actions from '../../actions'
 import EntityExtractor from './EntityExtractor'
@@ -157,25 +158,36 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             throw new Error(`Cannot get previous memories because roundIndex is null. This is likely a problem with code. Please open an issue.`)
         }
 
-        let memories: CLM.Memory[] = [];
-        const prevIndex = this.state.roundIndex - 1;
-        if (prevIndex >= 0) {
-            const round = this.props.trainDialog.rounds[prevIndex];
-            if (round.scorerSteps.length > 0) {
-                const scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
-                memories = scorerStep.input.filledEntities.map<CLM.Memory>(fe => {
-                    const entity = this.props.entities.find(e => e.entityId === fe.entityId)
-                    if (!entity) {
-                        throw new Error(`Could not find entity by id: ${fe.entityId} in list of entities`)
-                    }
-                    return {
-                        entityName: entity.entityName,
-                        entityValues: fe.values
-                    }
-                })
+        let scorerStep: CLM.TrainScorerStep | null = null
+
+        // If user input is selected (score index will be null)
+        if (this.state.scoreIndex === null) {
+            // Prev memory is from end of last round
+            const prevIndex = this.state.roundIndex - 1
+            if (prevIndex >= 0) {
+                const round = this.props.trainDialog.rounds[prevIndex]
+                if (round.scorerSteps.length > 0) {
+                    scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
+                }
             }
         }
-        return memories;
+        // If first bot response
+        else if (this.state.scoreIndex === 0) {
+            // Prev memory is current step
+            const round = this.props.trainDialog.rounds[this.state.roundIndex]
+            scorerStep = round.scorerSteps[0]
+        }
+        // Is bot response after a non-wait bot response
+        else { 
+            // Prev memory comes from previous score
+            const round = this.props.trainDialog.rounds[this.state.roundIndex]
+            scorerStep = round.scorerSteps[this.state.scoreIndex - 1]
+        }
+        
+        if (scorerStep) {
+            return DialogUtils.filledEntitiesToMemory(scorerStep.input.filledEntities, this.props.entities)
+        } 
+        return []
     }
 
     getMemories(): CLM.Memory[] {
@@ -203,14 +215,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             }
         }
 
-        return filledEntities.map<CLM.Memory>((fe) => {
-            const entity = this.props.entities.find(e => e.entityId === fe.entityId);
-            const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
-            return {
-                entityName: entityName,
-                entityValues: fe.values
-            }
-        })
+        return DialogUtils.filledEntitiesToMemory(filledEntities, this.props.entities)
     }
 
     getRenderData(): DialogUtils.DialogRenderData {
@@ -254,20 +259,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         }
                     }
 
-                    const filledEntities = scorerStep.logicResult
-                        ? [...scorerStep.input.filledEntities, ...scorerStep.logicResult.changedFilledEntities]
-                        : [...scorerStep.input.filledEntities]
-
-                    memories = filledEntities.map<CLM.Memory>((fe) => {
-                        const entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                        const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
-                        return {
-                            entityName: entityName,
-                            entityValues: fe.values
-                        }
-                    });
-
-                    // Get prevmemories
+                    memories = DialogUtils.filledEntitiesToMemory(scorerStep.input.filledEntities, this.props.entities)
                     prevMemories = this.getPrevMemories();
 
                     // If originated from LogDialog, I'll have score response data
@@ -307,17 +299,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                 }
                 // If user round, get filled entities from first scorer step
                 else {
-                    scorerStep = round.scorerSteps[0];
-                    memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
-                        const entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                        const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
-                        return {
-                            entityName: entityName,
-                            entityValues: fe.values
-                        }
-                    })
-
-                    // Get prevmemories
+                    memories = DialogUtils.filledEntitiesToMemory(round.scorerSteps[0].input.filledEntities, this.props.entities)
                     prevMemories = this.getPrevMemories()
                 }
             }
@@ -509,7 +491,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 memories={renderData.memories}
                                 onActionSelected={this.props.onChangeAction}
                                 onActionCreatorClosed={this.props.onActionCreatorClosed}
-                                onCreateAPIStub={this.props.onCreateAPIStub}
+                                onEditAPIStub={this.props.onEditAPIStub}
                             />
                         </div>
                     </div>
@@ -558,7 +540,7 @@ export interface ReceivedProps {
     onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void
     onPendingStatusChanged: (changed: boolean) => void
     onActionCreatorClosed: () => void
-    onCreateAPIStub: () => void
+    onEditAPIStub: () => void
     
     allUniqueTags: string[]
     tags: string[]

@@ -8,7 +8,7 @@ import { deepCopy } from './util'
 import * as DialogUtils from './dialogUtils'
 import { Activity } from 'botframework-directlinejs'
 import { SelectionType, User } from '../types'
-import { EditDialogType } from 'src/components/modals';
+import { EditDialogType } from '../components/modals';
 
 export async function onInsertAction(
     trainDialog: CLM.TrainDialog,
@@ -219,7 +219,7 @@ export async function onChangeAction(
 
     // If importing attempt to replace any stub actions
     if (editType === EditDialogType.IMPORT) {
-        DialogUtils.replaceStubActions(replayedDialog, actions, entities)
+        DialogUtils.replaceImportActions(replayedDialog, actions, entities)
     }
 
     return replayedDialog
@@ -252,12 +252,11 @@ export async function onChangeExtraction(
 
     // If importing attempt to replace any stub actions
     if (editType === EditDialogType.IMPORT) {
-        DialogUtils.replaceStubActions(replayedDialog, actions, entities)
+        DialogUtils.replaceImportActions(replayedDialog, actions, entities)
     }
 
     return replayedDialog
 }
-
 
 export async function onDeleteTurn(
     trainDialog: CLM.TrainDialog,
@@ -448,6 +447,36 @@ async function getStubAPIAction(
     return newAction
 }
 
+export function getFilledEntityMapForActivity(trainDialog: CLM.TrainDialog, selectedActivity: Activity, entities: CLM.EntityBase[]): CLM.FilledEntityMap | null {
+
+    if (!selectedActivity) {
+        return null
+    }
+
+    const clData: CLM.CLChannelData = selectedActivity.channelData.clData
+    // If rounds were trimmed, selectedActivity could have been in deleted rounds
+
+    if (clData.roundIndex !== null) {
+        const round = trainDialog.rounds[clData.roundIndex]
+        if (round.scorerSteps.length > 0) {
+            // If a score round 
+            if (typeof clData.scoreIndex === "number") {
+                const scorerStep = round.scorerSteps[clData.scoreIndex];
+                if (!scorerStep) {
+                    throw new Error(`Cannot get score step at index: ${clData.scoreIndex} from array of length: ${round.scorerSteps.length}`)
+                }
+                return CLM.FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, entities)
+            }
+            // If user round, get filled entities from first scorer step
+            else {
+                const scorerStep = round.scorerSteps[0];
+                return CLM.FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, entities)
+            }
+        }
+    }
+    return null
+}
+
 // Returns stubAPIAction if it exists, otherwise creates it
 export async function getStubScorerStep(
     appId: string,
@@ -456,7 +485,7 @@ export async function getStubScorerStep(
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
 ): Promise<CLM.TrainScorerStep> {
     
-    const stubAction = await getStubAPIAction(appId, actions, createActionThunkAsync)
+    const stubAPIAction = await getStubAPIAction(appId, actions, createActionThunkAsync)
     const filledEntities = filledEntityMap.FilledEntities()
 
     // Generate stub
@@ -468,15 +497,19 @@ export async function getStubScorerStep(
         score: 1
     }
     let scoreInput: CLM.ScoreInput = {
-        filledEntities,
+        filledEntities: [],
         context: {},
         maskedActions: []
     }
+    // Store stub API output in LogicResult
+    let logicResult: CLM.LogicResult = {
+        logicValue: undefined,
+        changedFilledEntities: filledEntities,
+    }
     return {
-        stubFilledEntities: filledEntities,
         input: scoreInput,
-        labelAction: stubAction.actionId,
-        logicResult: undefined!,
+        labelAction: stubAPIAction.actionId,
+        logicResult,
         scoredAction: scoredAction
     }
 }

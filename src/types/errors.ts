@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as CLM from '@conversationlearner/models'
 
 export class EntityLabelConflictError extends Error {

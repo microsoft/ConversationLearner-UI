@@ -425,7 +425,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 memories={renderData.memories}
                                 onActionSelected={this.onActionScorerSubmit}
                                 onActionCreatorClosed={() => {}}
-                                onCreateAPIStub={this.props.onCreateAPIStub}
+                                onEditAPIStub={this.props.onEditAPIStub}
                             />
                         }
                     </div>
@@ -476,7 +476,7 @@ export interface ReceivedProps {
     onEditExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onEditAction: (trainScorerStep: CLM.TrainScorerStep) => any
     onReplaceActivityText: (userText: string, index: number) => void
-    onCreateAPIStub: () => void
+    onEditAPIStub: () => void
     
     allUniqueTags: string[]
     tags: string[]

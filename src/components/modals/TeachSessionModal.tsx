@@ -15,7 +15,7 @@ import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import TeachSessionAdmin from './TeachSessionAdmin'
-import TeachSessionInitState from './TeachSessionInitState'
+import TeachSessionInitState from './TeachSessionInitState' // LARS remove?
 import FormattedMessageId from '../FormattedMessageId'
 import Webchat, { renderActivity } from '../Webchat'
 import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
@@ -33,12 +33,10 @@ import { SelectionType } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.'
 import './TeachSessionModal.css'
-import { FilledEntityMap } from '@conversationlearner/models';
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
     isUserInputModalOpen: boolean,
-    isCreateStubOpen: boolean,
     addUserInputSelectionType: SelectionType
     isInitStateOpen: boolean,
     isInitAvailable: boolean,
@@ -64,7 +62,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         isConfirmDeleteOpen: false,
         isUserInputModalOpen: false,
-        isCreateStubOpen: false,
         addUserInputSelectionType: SelectionType.NONE,
         isInitStateOpen: false,
         isInitAvailable: true,
@@ -208,7 +205,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
+    async onCloseInitState(filledEntityMap: CLM.FilledEntityMap | null) {
         if (filledEntityMap && this.props.onSetInitialEntities) {
             await this.props.onSetInitialEntities(filledEntityMap)
         }
@@ -216,31 +213,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
             isInitStateOpen: false,
             initialEntities: filledEntityMap || null
         })
-    }
-
-    //---- API STUBS ----
-    @OF.autobind
-    onClickAPIStub() {
-        this.setState({
-            isCreateStubOpen: true
-        })
-    }
-
-    @OF.autobind
-    async onCloseCreateAPIStub(filledEntityMap?: CLM.FilledEntityMap) {
-        this.setState({
-            isCreateStubOpen: false
-        })
-
-        if (this.state.selectedActivityIndex === null) {
-            console.log('Warning: No Activity Selected')
-            return
-        }
-
-        if (filledEntityMap) {
-            const scorerStep = await DialogEditing.getStubScorerStep(this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
-            this.onEditScore(scorerStep)
-        }
     }
 
     //---- ABANDON ----
@@ -394,15 +366,15 @@ class TeachModal extends React.Component<Props, ComponentState> {
             const round = this.props.sourceTrainDialog.rounds[prevIndex];
             if (round.scorerSteps.length > 0) {
                 const scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
-                return FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, this.props.entities)
+                return CLM.FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, this.props.entities)
             }
         }
-        return new FilledEntityMap();
+        return new CLM.FilledEntityMap();
     }
 
     // TODO: this is redundant with EditDialogAdmin
     @OF.autobind
-    historyRender(): DialogUtils.DialogRenderData {
+    getRenderData(): DialogUtils.DialogRenderData {
         let selectedAction: CLM.ActionBase | undefined
         let scorerStep: CLM.TrainScorerStep | CLM.LogScorerStep | undefined
         let scoreResponse: CLM.ScoreResponse | undefined
@@ -411,7 +383,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         let prevMemories: CLM.Memory[] = [];
 
         if (this.state.selectedHistoryActivity === null || !this.props.sourceTrainDialog) {
-            throw new Error("historyRender missing data")
+            throw new Error("getRenderData missing data")
         }
 
         const clData: CLM.CLChannelData = this.state.selectedHistoryActivity.channelData.clData
@@ -452,16 +424,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     }
                 }
 
-                memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
-                    const entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                    const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
-                    return {
-                        entityName: entityName,
-                        entityValues: fe.values
-                    }
-                });
-
-                // Get prevmemories
+                memories = DialogUtils.filledEntitiesToMemory(scorerStep.input.filledEntities, this.props.entities)
                 prevMemories = this.getPrevFilledEntityMap().ToMemory()
 
                 const scoredAction: CLM.ScoredAction = {
@@ -497,14 +460,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 // If scorer step exists, use it to populate memory
                 scorerStep = round.scorerSteps[0];
                 if (scorerStep) {
-                    memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
-                        const entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                        const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
-                        return {
-                            entityName: entityName,
-                            entityValues: fe.values
-                        }
-                    });
+                    memories = DialogUtils.filledEntitiesToMemory(scorerStep.input.filledEntities, this.props.entities)
 
                     // Get prevmemories
                     prevMemories = this.getPrevFilledEntityMap().ToMemory()
@@ -605,6 +561,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
     onEditScore(trainScorerStep: CLM.TrainScorerStep) {
         if (this.state.selectedActivityIndex != null) {
             this.props.onEditTeach(this.state.selectedActivityIndex, { trainScorerStep }, this.state.tags, this.state.description, this.props.onChangeAction)
+        }
+    }
+
+    @OF.autobind
+    onEditAPIStub() {
+        if (this.state.selectedActivityIndex != null) {
+            this.props.onEditTeach(this.state.selectedActivityIndex, null, this.state.tags, this.state.description, this.props.onEditAPIStub)
         }
     }
 
@@ -856,7 +819,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         nextActivityIndex={this.state.nextActivityIndex}
                                         selectedActivityIndex={this.state.selectedActivityIndex}
                                         isLastActivitySelected={isLastActivitySelected}
-                                        historyRenderData={this.state.selectedHistoryActivity ? this.historyRender : null}
+                                        historyRenderData={this.state.selectedHistoryActivity ? this.getRenderData : null}
                                         onScoredAction={this.onScoredAction}
                                         onReplaceActivityText={(userText, index) => {
                                             this.setState({
@@ -867,7 +830,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
                                         onEditExtraction={this.onEditExtraction}
                                         onEditAction={this.onEditScore}
-                                        onCreateAPIStub={this.onClickAPIStub}
+                                        onEditAPIStub={this.onEditAPIStub}
 
                                         allUniqueTags={this.props.allUniqueTags}
                                         tags={this.state.tags}
@@ -958,13 +921,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     initMemories={null}
                     handleClose={this.onCloseInitState}
                 />
-                <TeachSessionInitState
-                    isOpen={this.state.isCreateStubOpen}
-                    app={this.props.app}
-                    editingPackageId={this.props.editingPackageId}
-                    initMemories={this.state.isCreateStubOpen ? this.getPrevFilledEntityMap() : null}
-                    handleClose={this.onCloseCreateAPIStub}
-                />
                 <LogConversionConflictModal
                     title={Util.formatMessageId(intl, FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE)}
                     open={this.props.conflictPairs.length > 0}
@@ -980,7 +936,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createActionThunkAsync: actions.action.createActionThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
         toggleAutoTeach: actions.teach.toggleAutoTeach,
@@ -1012,6 +967,7 @@ export interface ReceivedProps {
     onEndSessionActivity: (tags: string[], description: string) => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any
     onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => void) | null
+    onEditAPIStub: (trainDialog: CLM.TrainDialog, activity: Activity) => void
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string

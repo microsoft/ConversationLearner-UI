@@ -828,7 +828,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                             />
                             <OF.DefaultButton
                                 data-testid="action-scorer-add-apistub-button"
-                                onClick={this.props.onCreateAPIStub}
+                                onClick={this.props.onEditAPIStub}
                                 ariaDescription='Create API Stub'
                                 text='API Stub'
                                 iconProps={{ iconName: 'Handwriting' }}
@@ -905,7 +905,7 @@ export interface ReceivedProps {
     newActionPreset?: NewActionPreset 
     onActionSelected: (trainScorerStep: CLM.TrainScorerStep) => void,
     onActionCreatorClosed: () => void
-    onCreateAPIStub: () => void
+    onEditAPIStub: () => void
 }
 
 const mapDispatchToProps = (dispatch: any) => {

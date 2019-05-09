@@ -12,6 +12,7 @@ import * as moment from 'moment'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import produce from 'immer'
+import TeachSessionInitState from '../../../components/modals/TeachSessionInitState'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -127,6 +128,8 @@ interface ComponentState {
     isChatSessionWindowOpen: boolean
     isEditDialogModalOpen: boolean
     isTeachDialogModalOpen: boolean
+    // If creating an API Stub, the initial filled entities, if set modal will open
+    apiStubFilledEntityMap: CLM.FilledEntityMap | null
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
@@ -188,6 +191,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isChatSessionWindowOpen: false,
             isEditDialogModalOpen: false,
             isTeachDialogModalOpen: false,
+            apiStubFilledEntityMap: null,
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
             selectedHistoryIndex: null,
@@ -653,6 +657,35 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
+    //---- API STUBS ----
+    @OF.autobind
+    onEditAPIStub(trainDialog: CLM.TrainDialog, selectedActivity: Activity | null) {
+        if (selectedActivity) {
+            const filledEntityMap = DialogEditing.getFilledEntityMapForActivity(trainDialog, selectedActivity, this.props.entities)
+            this.setState({
+                apiStubFilledEntityMap: filledEntityMap
+            })
+        }
+    }
+
+    @OF.autobind
+    async onCloseCreateAPIStub(filledEntityMap: CLM.FilledEntityMap | null) {
+        this.setState({
+            apiStubFilledEntityMap: null
+        })
+
+        if (this.state.selectedHistoryIndex === null) {
+            console.log('Warning: No Activity Selected')
+            return
+        }
+
+        if (filledEntityMap && this.state.currentTrainDialog) {
+            const scorerStep = await DialogEditing.getStubScorerStep(this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
+            const selectedActivity = this.state.history[this.state.selectedHistoryIndex]
+            this.onChangeAction(this.state.currentTrainDialog, selectedActivity, scorerStep)
+        }
+    }
+
     async onCloseEditDialogModal(reload: boolean = false) {
 
         this.setState({
@@ -952,6 +985,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         originalTrainDialogId={null}
                         onClose={this.onCloseTeachSession}
                         onSetInitialEntities={null}
+                        onEditAPIStub={this.onEditAPIStub}
                         onEditTeach={(historyIndex, editHandlerArgs, tags, description, editHandler) => this.onEditTeach(historyIndex, editHandlerArgs ? editHandlerArgs : undefined, tags, description, editHandler)}
                         onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.isLastActivity!)}
                         onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)}
@@ -996,6 +1030,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}
                     onChangeAction={(trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainDialog, activity, trainScorerStep)}
+                    onEditAPIStub={(trainDialog: CLM.TrainDialog, activity: Activity) => this.onEditAPIStub(trainDialog, activity)}
                     onBranchDialog={null} // Never branch on LogDialogs
                     onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
                     onDeleteDialog={this.onDeleteLogDialog}
@@ -1008,6 +1043,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     conflictPairs={this.state.conflictPairs}
                     onAcceptConflictResolution={this.onAcceptConflictChanges}
                     onAbortConflictResolution={this.onAbortConflictChanges}
+                />
+                <TeachSessionInitState
+                    isOpen={this.state.apiStubFilledEntityMap !== null}
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
+                    initMemories={this.state.apiStubFilledEntityMap}
+                    handleClose={this.onCloseCreateAPIStub}
                 />
             </div>
         );
@@ -1052,6 +1094,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
+        createActionThunkAsync: actions.action.createActionThunkAsync,
         createChatSessionThunkAsync: actions.chat.createChatSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,

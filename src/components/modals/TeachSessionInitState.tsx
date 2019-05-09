@@ -33,7 +33,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     componentWillReceiveProps(newProps: Props) {
         if (this.props.isOpen !== newProps.isOpen) {
-            this.setState({filledEntityMap: this.props.initMemories || new CLM.FilledEntityMap()})
+            this.setState({filledEntityMap: newProps.initMemories || new CLM.FilledEntityMap()})
         }
     }
 
@@ -53,7 +53,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickCancel() {
-        this.props.handleClose()
+        this.props.handleClose(null)
     }
 
     @OF.autobind
@@ -259,7 +259,7 @@ export interface ReceivedProps {
     app: CLM.AppBase,
     editingPackageId: string
     initMemories: CLM.FilledEntityMap | null
-    handleClose: (filledEntityMap?: CLM.FilledEntityMap) => void
+    handleClose: (filledEntityMap: CLM.FilledEntityMap | null) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

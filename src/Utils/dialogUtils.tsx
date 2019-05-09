@@ -458,9 +458,9 @@ export function findActionByText(text: string, actions: CLM.ActionBase[], filled
         })
 }
 
-// Look for stub actions in TrainDialog and attempt to replace them
+// Look for imported actions in TrainDialog and attempt to replace them
 // with existing actions.  Return true if any replacement occured
-export function replaceStubActions(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): boolean {
+export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): boolean {
     let match = false
     // Now swap in any extract values
     trainDialog.rounds.forEach(round => {
@@ -469,12 +469,12 @@ export function replaceStubActions(trainDialog: CLM.TrainDialog, actions: CLM.Ac
         const filledIdMap = filledEntityMap.EntityMapToIdMap()
         let valueMap = CLM.getEntityDisplayValueMap(filledIdMap)
         round.scorerSteps.forEach(scorerStep => {
-            if (scorerStep.stubText) {
+            if (scorerStep.importText) {
                 // LARS TODO - use hash 
-                const newAction = findActionByText(scorerStep.stubText, actions, valueMap)
+                const newAction = findActionByText(scorerStep.importText, actions, valueMap)
                 if (newAction) {
                     scorerStep.labelAction = newAction.actionId
-                    delete scorerStep.stubText
+                    delete scorerStep.importText
                     match = true
                 }
             }
@@ -482,4 +482,15 @@ export function replaceStubActions(trainDialog: CLM.TrainDialog, actions: CLM.Ac
         }
     )
     return match
+}
+
+export function filledEntitiesToMemory(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): CLM.Memory[] {
+    return filledEntities.map<CLM.Memory>(fe => {
+        const entity = entities.find(e => e.entityId === fe.entityId)
+        const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
+        return {
+            entityName: entityName,
+            entityValues: fe.values
+        }
+    })
 }

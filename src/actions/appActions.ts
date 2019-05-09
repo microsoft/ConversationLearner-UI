@@ -13,6 +13,22 @@ import { Poller, IPollConfig } from '../services/poller'
 import { delay } from '../Utils/util'
 import { setUpdatedAppDefinition } from './sourceActions'
 
+
+const createApplicationAsync = (userId: string, application: CLM.AppBase): ActionObject => {
+    return {
+        type: AT.CREATE_APPLICATION_ASYNC,
+        userId: userId,
+        app: application,
+    }
+}
+
+const createApplicationFulfilled = (app: CLM.AppBase): ActionObject => {
+    return {
+        type: AT.CREATE_APPLICATION_FULFILLED,
+        app: app
+    }
+}
+
 export const createApplicationThunkAsync = (userId: string, application: CLM.AppBase, source: CLM.AppDefinition | null = null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_APPLICATION_ASYNC)
@@ -33,21 +49,6 @@ export const createApplicationThunkAsync = (userId: string, application: CLM.App
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_APPLICATION_ASYNC))
             throw error
         }
-    }
-}
-
-const createApplicationAsync = (userId: string, application: CLM.AppBase): ActionObject => {
-    return {
-        type: AT.CREATE_APPLICATION_ASYNC,
-        userId: userId,
-        app: application,
-    }
-}
-
-const createApplicationFulfilled = (app: CLM.AppBase): ActionObject => {
-    return {
-        type: AT.CREATE_APPLICATION_FULFILLED,
-        app: app
     }
 }
 
@@ -83,6 +84,20 @@ export const editApplicationThunkAsync = (app: CLM.AppBase) => {
     }
 }
 
+const editAppLiveTagAsync = (appId: string, packageId: string): ActionObject =>
+    ({
+        type: AT.EDIT_APP_LIVE_TAG_ASYNC,
+        packageId: packageId,
+        appId: appId
+    })
+
+const editAppLiveTagFulfilled = (app: CLM.AppBase): ActionObject => {
+    return {
+        type: AT.EDIT_APP_LIVE_TAG_FULFILLED,
+        app: app
+    }
+}
+
 export const editAppLiveTagThunkAsync = (app: CLM.AppBase, tagId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_APP_LIVE_TAG_ASYNC)
@@ -102,17 +117,17 @@ export const editAppLiveTagThunkAsync = (app: CLM.AppBase, tagId: string) => {
     }
 }
 
-const editAppLiveTagAsync = (appId: string, packageId: string): ActionObject =>
+const editAppEditingTagAsync = (currentAppId: string, packageId: string): ActionObject =>
     ({
-        type: AT.EDIT_APP_LIVE_TAG_ASYNC,
+        type: AT.EDIT_APP_EDITING_TAG_ASYNC,
         packageId: packageId,
-        appId: appId
+        appId: currentAppId
     })
 
-const editAppLiveTagFulfilled = (app: CLM.AppBase): ActionObject => {
+const editAppEditingTagFulfilled = (activeApps: { [appId: string]: string }): ActionObject => {
     return {
-        type: AT.EDIT_APP_LIVE_TAG_FULFILLED,
-        app: app
+        type: AT.EDIT_APP_EDITING_TAG_FULFILLED,
+        activeApps: activeApps
     }
 }
 
@@ -134,17 +149,17 @@ export const editAppEditingTagThunkAsync = (appId: string, packageId: string) =>
     }
 }
 
-const editAppEditingTagAsync = (currentAppId: string, packageId: string): ActionObject =>
-    ({
-        type: AT.EDIT_APP_EDITING_TAG_ASYNC,
-        packageId: packageId,
-        appId: currentAppId
-    })
-
-const editAppEditingTagFulfilled = (activeApps: { [appId: string]: string }): ActionObject => {
+const setAppSourceAsync = (appId: string, source: CLM.AppDefinition): ActionObject => {
     return {
-        type: AT.EDIT_APP_EDITING_TAG_FULFILLED,
-        activeApps: activeApps
+        type: AT.EDIT_APPSOURCE_ASYNC,
+        appId: appId,
+        source: source,
+    }
+}
+
+const setAppSourceFulfilled = (): ActionObject => {
+    return {
+        type: AT.EDIT_APPSOURCE_FULFILLED
     }
 }
 
@@ -165,17 +180,18 @@ export const setAppSourceThunkAsync = (appId: string, appDefinition: CLM.AppDefi
     }
 }
 
-const setAppSourceAsync = (appId: string, source: CLM.AppDefinition): ActionObject => {
+const copyApplicationAsync = (srcUserId: string, destUserId: string, appId: string): ActionObject => {
     return {
-        type: AT.EDIT_APPSOURCE_ASYNC,
-        appId: appId,
-        source: source,
+        type: AT.COPY_APPLICATION_ASYNC,
+        srcUserId: srcUserId,
+        destUserId: destUserId,
+        appId: appId
     }
 }
 
-const setAppSourceFulfilled = (): ActionObject => {
+const copyApplicationFulfilled = (): ActionObject => {
     return {
-        type: AT.EDIT_APPSOURCE_FULFILLED
+        type: AT.COPY_APPLICATION_FULFILLED
     }
 }
 
@@ -197,18 +213,18 @@ export const copyApplicationThunkAsync = (srcUserId: string, destUserId: string,
     }
 }
 
-const copyApplicationAsync = (srcUserId: string, destUserId: string, appId: string): ActionObject => {
-    return {
-        type: AT.COPY_APPLICATION_ASYNC,
-        srcUserId: srcUserId,
-        destUserId: destUserId,
-        appId: appId
-    }
-}
+const createAppTagAsync = (currentAppId: string, tagName: string, makeLive: boolean): ActionObject =>
+    ({
+        type: AT.CREATE_APP_TAG_ASYNC,
+        tagName: tagName,
+        makeLive: makeLive,
+        appId: currentAppId
+    })
 
-const copyApplicationFulfilled = (): ActionObject => {
+const createAppTagFulfilled = (app: CLM.AppBase): ActionObject => {
     return {
-        type: AT.COPY_APPLICATION_FULFILLED
+        type: AT.CREATE_APP_TAG_FULFILLED,
+        app: app
     }
 }
 
@@ -227,21 +243,6 @@ export const createAppTagThunkAsync = (appId: string, tagName: string, makeLive:
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_APP_TAG_ASYNC))
             throw error
         }
-    }
-}
-
-const createAppTagAsync = (currentAppId: string, tagName: string, makeLive: boolean): ActionObject =>
-    ({
-        type: AT.CREATE_APP_TAG_ASYNC,
-        tagName: tagName,
-        makeLive: makeLive,
-        appId: currentAppId
-    })
-
-const createAppTagFulfilled = (app: CLM.AppBase): ActionObject => {
-    return {
-        type: AT.CREATE_APP_TAG_FULFILLED,
-        app: app
     }
 }
 
@@ -313,6 +314,29 @@ export const fetchApplicationsThunkAsync = (userId: string) => {
 
 const poller = new Poller({ interval: 2000 })
 
+
+const fetchApplicationTrainingStatusAsync = (appId: string): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC,
+        appId
+    }
+}
+
+const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingStatus: CLM.TrainingStatus): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED,
+        appId,
+        trainingStatus
+    }
+}
+
+const fetchApplicationTrainingStatusExpired = (appId: string): ActionObject => {
+    return {
+        type: AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED,
+        appId
+    }
+}
+
 export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(fetchApplicationTrainingStatusAsync(appId))
@@ -340,25 +364,18 @@ export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
     }
 }
 
-const fetchApplicationTrainingStatusAsync = (appId: string): ActionObject => {
+const fetchAppSourceAsync = (appId: string, packageId: string): ActionObject => {
     return {
-        type: AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC,
-        appId
+        type: AT.FETCH_APPSOURCE_ASYNC,
+        appId: appId,
+        packageId: packageId
     }
 }
 
-const fetchApplicationTrainingStatusFulfilled = (appId: string, trainingStatus: CLM.TrainingStatus): ActionObject => {
+const fetchAppSourceFulfilled = (appDefinition: CLM.AppDefinition): ActionObject => {
     return {
-        type: AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED,
-        appId,
-        trainingStatus
-    }
-}
-
-const fetchApplicationTrainingStatusExpired = (appId: string): ActionObject => {
-    return {
-        type: AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED,
-        appId
+        type: AT.FETCH_APPSOURCE_FULFILLED,
+        appDefinition: appDefinition
     }
 }
 
@@ -387,18 +404,17 @@ export const fetchAppSourceThunkAsync = (appId: string, packageId: string, updat
     }
 }
 
-const fetchAppSourceAsync = (appId: string, packageId: string): ActionObject => {
+const fetchTutorialsAsync = (userId: string): ActionObject => {
     return {
-        type: AT.FETCH_APPSOURCE_ASYNC,
-        appId: appId,
-        packageId: packageId
+        type: AT.FETCH_TUTORIALS_ASYNC,
+        userId: userId
     }
 }
 
-const fetchAppSourceFulfilled = (appDefinition: CLM.AppDefinition): ActionObject => {
+const fetchTutorialsFulfilled = (tutorials: CLM.AppBase[]): ActionObject => {
     return {
-        type: AT.FETCH_APPSOURCE_FULFILLED,
-        appDefinition: appDefinition
+        type: AT.FETCH_TUTORIALS_FULFILLED,
+        tutorials: tutorials
     }
 }
 
@@ -419,20 +435,6 @@ export const fetchTutorialsThunkAsync = (userId: string) => {
     }
 }
 
-const fetchTutorialsAsync = (userId: string): ActionObject => {
-    return {
-        type: AT.FETCH_TUTORIALS_ASYNC,
-        userId: userId
-    }
-}
-
-const fetchTutorialsFulfilled = (tutorials: CLM.AppBase[]): ActionObject => {
-    return {
-        type: AT.FETCH_TUTORIALS_FULFILLED,
-        tutorials: tutorials
-    }
-}
-
 // --------------------------
 // appExtract
 // --------------------------
@@ -448,6 +450,7 @@ const fetchExtractionsFulfilled = (extractResponses: CLM.ExtractResponse[]): Act
         extractResponses
     }
 }
+
 export const fetchExtractionsThunkAsync = (appId: string, userUtterances: string[]) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_EXTRACTIONS_ASYNC)

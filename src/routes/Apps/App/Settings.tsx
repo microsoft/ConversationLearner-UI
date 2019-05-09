@@ -411,7 +411,9 @@ class Settings extends React.Component<Props, ComponentState> {
                             <a
                                 href={`https://www.luis.ai/applications/${this.props.app.luisAppId}/versions/0.1/manage/endpoints`}
                                 rel="noopener noreferrer"
-                                target="_blank">
+                                target="_blank"
+                                role="button"
+                            >
                                 <OF.DefaultButton
                                     iconProps={{ iconName: "OpenInNewWindow" }}
                                     ariaDescription={Util.formatMessageId(this.props.intl, FM.SETTINGS_LUIS_LINK)}

@@ -7,14 +7,12 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import * as BotChat from '@conversationlearner/webchat'
-import * as DialogEditing from '../../Utils/dialogEditing'
 import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
 import AddButtonInput from './AddButtonInput'
 import AddScoreButton from './AddButtonScore'
 import DisabledInputButtom from './DisabledInputButton'
 import ConfirmCancelModal from './ConfirmCancelModal'
-import TeachSessionInitState from './TeachSessionInitState'
 import UserInputModal from './UserInputModal'
 import FormattedMessageId from '../FormattedMessageId'
 import Webchat, { renderActivity } from '../Webchat'
@@ -42,7 +40,6 @@ interface ComponentState {
     newActionPreset?: NewActionPreset
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
-    isCreateStubOpen: boolean
     isSaveConflictModalOpen: boolean
     selectedActivity: Activity | null
     webchatKey: number
@@ -60,7 +57,6 @@ const initialState: ComponentState = {
     newActionPreset: undefined,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
-    isCreateStubOpen: false,
     isSaveConflictModalOpen: false,
     selectedActivity: null,
     webchatKey: 0,
@@ -290,32 +286,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    //---- API STUBS ----
-    @OF.autobind
-    onClickAPIStub() {
-        this.setState({
-            isCreateStubOpen: true
-        })
-    }
-
-
-    @OF.autobind
-    async onCloseCreateAPIStub(filledEntityMap?: CLM.FilledEntityMap) {
-        this.setState({
-            isCreateStubOpen: false
-        })
-
-        if (!this.state.selectedActivity) {
-            console.log('Warning: No Activity Selected')
-            return
-        }
-
-        if (filledEntityMap) {
-            const scorerStep = await DialogEditing.getStubScorerStep(this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
-            this.onChangeAction(scorerStep)
-        }
-    }
-
     //---- ABANDON ----
     @OF.autobind
     onClickAbandon() {
@@ -491,13 +461,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return undefined
         }
 
-        const stubText = curRound.scorerSteps[scoreIndex].stubText
+        const importText = curRound.scorerSteps[scoreIndex].importText
         const isTerminal = senderType === CLM.SenderType.Bot 
             ? curRound.scorerSteps.length === scoreIndex + 1
             : false
 
-        if (stubText) {
-            return { text: stubText, isTerminal }
+        if (importText) {
+            return { text: importText, isTerminal }
         }
         return undefined
     }
@@ -614,7 +584,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
-        if (!lastScorerStep.stubFilledEntities) {
+
+        // If not an unresolved import action
+        if (!lastScorerStep.importText) {
             const lastAction = this.props.actions.find(a => a.actionId === lastScorerStep.labelAction)
             // Disable if last round's last scorer step isn't terminal
             if (!lastAction || !lastAction.isTerminal) {
@@ -718,41 +690,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             default:
                 return ""
         }
-    }
-
-    getFilledEntityMapForActivity(): CLM.FilledEntityMap | null {
-
-        if (!this.state.selectedActivity) {
-            return null
-        }
-
-        const clData: CLM.CLChannelData = this.state.selectedActivity.channelData.clData
-        // If rounds were trimmed, selectedActivity could have been in deleted rounds
-
-        if (clData.roundIndex !== null) {
-            const round = this.props.trainDialog.rounds[clData.roundIndex]
-            if (round.scorerSteps.length > 0) {
-                // If a score round 
-                if (typeof clData.scoreIndex === "number") {
-                    const scorerStep = round.scorerSteps[clData.scoreIndex];
-                    if (!scorerStep) {
-                        throw new Error(`Cannot get score step at index: ${clData.scoreIndex} from array of length: ${round.scorerSteps.length}`)
-                    }
-
-                    const filledEntities = scorerStep.logicResult
-                        ? [...scorerStep.input.filledEntities, ...scorerStep.logicResult.changedFilledEntities]
-                        : [...scorerStep.input.filledEntities]
-
-                    return CLM.FilledEntityMap.FromFilledEntities(filledEntities, this.props.entities)
-                }
-                // If user round, get filled entities from first scorer step
-                else {
-                    const scorerStep = round.scorerSteps[0];
-                    return CLM.FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, this.props.entities)
-                }
-            }
-        }
-        return null
     }
 
     trainDialogValidity(): CLM.Validity | undefined {
@@ -1129,7 +1066,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
                                     newActionPreset={this.state.newActionPreset}
-                                    onCreateAPIStub={this.onClickAPIStub}
+                                    onEditAPIStub={() => this.props.onEditAPIStub(this.props.trainDialog, this.state.selectedActivity)}
 
                                     allUniqueTags={this.props.allUniqueTags}
                                     tags={this.state.tags}
@@ -1215,13 +1152,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         title={this.state.cantReplayMessage ? formatMessageId(intl, this.state.cantReplayMessage) : ""}
                     />
                 }
-                <TeachSessionInitState
-                    isOpen={this.state.isCreateStubOpen}
-                    app={this.props.app}
-                    editingPackageId={this.props.editingPackageId}
-                    initMemories={this.getFilledEntityMapForActivity()}
-                    handleClose={this.onCloseCreateAPIStub}
-                />
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
                     titleFM={FM.USERINPUT_ADD_TITLE}
@@ -1256,7 +1186,6 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
-        createActionThunkAsync: actions.action.createActionThunkAsync,
         setErrorDismissCallback: actions.display.setErrorDismissCallback
     }, dispatch);
 }
@@ -1299,6 +1228,7 @@ export interface ReceivedProps {
     // Add a new train dialog to the Model (when EditDialogType === NEW)
     onCreateDialog: (newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) => void
     onDeleteDialog: () => void
+    onEditAPIStub: (trainDialog: CLM.TrainDialog, activity: Activity | null) => void
     conflictPairs: ConflictPair[]
     onAcceptConflictResolution: (conflictPairs: ConflictPair[]) => Promise<void>
     onAbortConflictResolution: () => void

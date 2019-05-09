@@ -112,7 +112,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                     }
                     const action = DialogUtils.findActionByText(activity.text, this.props.actions)
                     let scorerStep: CLM.TrainScorerStep = {
-                        stubText: action ? undefined : activity.text,
+                        importText: action ? undefined : activity.text,
                         input: scoreInput,
                         labelAction: action ? action.actionId : CL_STUB_IMPORT_ACTION_ID,
                         logicResult: undefined,
@@ -137,7 +137,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
         )
 
         // Try to map action again now that we have entities
-        DialogUtils.replaceStubActions(newTrainDialog, this.props.actions, this.props.entities)
+        DialogUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
 
         this.props.spinnerRemove()
 
@@ -263,7 +263,6 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         setErrorDisplay: actions.display.setErrorDisplay,
-        createActionThunkAsync: actions.action.createActionThunkAsync,
         fetchExtractionsAsync: actions.app.fetchExtractionsThunkAsync,
         trainDialogReplayAsync: actions.train.trainDialogReplayThunkAsync,
         spinnerAdd: actions.display.spinnerAdd,

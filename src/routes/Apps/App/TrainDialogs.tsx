@@ -13,7 +13,8 @@ import * as moment from 'moment'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
-import ConversationImporter from 'src/components/modals/ConversationImporter';
+import ConversationImporter from '../../../components/modals/ConversationImporter';
+import TeachSessionInitState from '../../../components/modals/TeachSessionInitState'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { returntypeof } from 'react-redux-typescript'
@@ -24,7 +25,6 @@ import { injectIntl, InjectedIntl, InjectedIntlProps, } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
-// LARS TEMP import { ActionBase } from '@conversationlearner/models';
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -139,6 +139,8 @@ interface ComponentState {
     isEditDialogModalOpen: boolean
     isConversationImportOpen: boolean
     isTreeViewModalOpen: boolean
+    // If creating an API Stub, the initial filled entities, if set modal will open
+    apiStubFilledEntityMap: CLM.FilledEntityMap | null
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
@@ -175,6 +177,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isEditDialogModalOpen: false,
             isConversationImportOpen: false,
             isTreeViewModalOpen: false,
+            apiStubFilledEntityMap: null,
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
             selectedActivityIndex: null,
@@ -314,7 +317,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     onSelectEntityFilter(item: OF.IDropdownOption) {
         this.setState({
-            entityFilter: (-1 != item.key) ? item : null
+            entityFilter: (item.key !== -1) ? item : null
         })
     }
 
@@ -641,6 +644,37 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
+    //---- API STUBS ----
+    @OF.autobind
+    onEditAPIStub(trainDialog: CLM.TrainDialog, selectedActivity: Activity | null) {
+        if (selectedActivity) {
+            const filledEntityMap = DialogEditing.getFilledEntityMapForActivity(trainDialog, selectedActivity, this.props.entities)
+            const selectedActivityIndex = DialogUtils.matchedActivityIndex(selectedActivity, this.state.history)
+            this.setState({
+                apiStubFilledEntityMap: filledEntityMap,
+                selectedActivityIndex
+            })
+        }
+    }
+
+    @OF.autobind
+    async onCloseCreateAPIStub(filledEntityMap: CLM.FilledEntityMap | null) {
+        this.setState({
+            apiStubFilledEntityMap: null
+        })
+
+        if (this.state.selectedActivityIndex === null) {
+            console.log('Warning: No Activity Selected')
+            return
+        }
+
+        if (filledEntityMap && this.state.currentTrainDialog) {
+            const scorerStep = await DialogEditing.getStubScorerStep(this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
+            const selectedActivity = this.state.history[this.state.selectedActivityIndex]
+            this.onChangeAction(this.state.currentTrainDialog, selectedActivity, scorerStep)
+        }
+    }
+
     onDeleteTrainDialog() {
         if (!this.state.currentTrainDialog) {
             throw new Error(`You attempted to delete a train dialog, but currentTrainDialog is not defined. Please open an issue.`)
@@ -746,7 +780,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 description: newTrainDialog.description
             } : null
             
-
             // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
             this.setState({
                 history: teachWithHistory.history,
@@ -1220,6 +1253,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onEndSessionActivity={this.onEndSessionActivity}
                         onReplayDialog={(trainDialog) => this.onReplayTrainDialog(trainDialog)}
                         onSetInitialEntities={this.onSetInitialEntities}
+                        onEditAPIStub={this.onEditAPIStub}
                         initialHistory={this.state.history}
                         editType={this.state.editType}
                         lastAction={this.state.lastAction}
@@ -1257,6 +1291,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}
                     onChangeAction={(trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainDialog, activity, trainScorerStep)}
+                    onEditAPIStub={(trainDialog: CLM.TrainDialog, activity: Activity) => this.onEditAPIStub(trainDialog, activity)}
                     onBranchDialog={(trainDialog, activity, userInput) => this.onBranchTrainDialog(trainDialog, activity, userInput)}
                     onDeleteDialog={() => this.onDeleteTrainDialog()}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
@@ -1277,6 +1312,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onSubmit={this.onSubmitImportConversation}
                     />
                 }
+                <TeachSessionInitState
+                    isOpen={this.state.apiStubFilledEntityMap !== null}
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
+                    initMemories={this.state.apiStubFilledEntityMap}
+                    handleClose={this.onCloseCreateAPIStub}
+                />
             </div>
         );
     }
@@ -1318,6 +1360,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
+        createActionThunkAsync: actions.action.createActionThunkAsync,
         createTeachSessionThunkAsync: actions.teach.createTeachSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,
