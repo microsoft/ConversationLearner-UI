@@ -75,13 +75,13 @@ class Actions extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickDeleteActionEditor(action: ActionBase, deleteFromDialogs: boolean) {
+    onClickDeleteActionEditor(action: ActionBase, removeFromDialogs: boolean) {
         Utils.setStateAsync(this, {
             isActionEditorOpen: false,
             actionSelected: null
         })
 
-        this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId, deleteFromDialogs)
+        this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId, removeFromDialogs)
         setTimeout(() => this.newActionButton.focus(), 1000)
     }
 

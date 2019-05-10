@@ -280,10 +280,10 @@ export default class ClClient {
         return action
     }
 
-    async actionsDelete(appId: string, actionId: string, deleteFromDialogs?: boolean): Promise<CLM.DeleteEditResponse> {
+    async actionsDelete(appId: string, actionId: string, removeFromDialogs?: boolean): Promise<CLM.DeleteEditResponse> {
         let url = `/app/${appId}/action/${actionId}`
-        if (deleteFromDialogs) {
-            url += `?deleteFromDialogs=true`
+        if (removeFromDialogs) {
+            url += `?removeFromDialogs=true`
         }
 
         const response = await this.send({

@@ -1662,7 +1662,7 @@ export interface ReceiveProps {
     actions: CLM.ActionBase[]
     handleEdit: (action: CLM.ActionBase) => void
     handleClose: () => void
-    handleDelete: (action: CLM.ActionBase, deleteFromDialogs: boolean) => void
+    handleDelete: (action: CLM.ActionBase, removeFromDialogs: boolean) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

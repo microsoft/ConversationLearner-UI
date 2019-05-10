@@ -30,7 +30,7 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
     }
 
     const [option, setOption] = React.useState(false)
-    React.useEffect(() => {
+    React.useLayoutEffect(() => {
         if (props.open) {
             setOption(false)
         }
