@@ -367,19 +367,19 @@ class Settings extends React.Component<Props, ComponentState> {
                         value={this.state.appNameVal}
                     />
                     <div className="cl-buttons-row">
-                        <OF.PrimaryButton
+                        <OF.DefaultButton
                             onClick={this.onClickExport}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION)}
                             text={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONTEXT)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
-                        <OF.PrimaryButton
+                        <OF.DefaultButton
                             onClick={this.onClickExportOBI}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION)}
                             text={"Export to OBI"}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
-                        <OF.PrimaryButton
+                        <OF.DefaultButton
                             onClick={this.onClickCopy}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONARIALDESCRIPTION)}
                             text={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONTEXT)}

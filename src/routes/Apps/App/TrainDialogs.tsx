@@ -463,6 +463,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.entities,
                 this.props.actions,
                 this.props.trainDialogReplayThunkAsync as any,
+                this.props.editActionThunkAsync as any
             )
 
             await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE, this.state.editType)
@@ -1386,6 +1387,7 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteTrainDialogThunkAsync: actions.train.deleteTrainDialogThunkAsync,
         deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
         deleteMemoryThunkAsync: actions.teach.deleteMemoryThunkAsync,
+        editActionThunkAsync: actions.action.editActionThunkAsync,
         editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
         extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,

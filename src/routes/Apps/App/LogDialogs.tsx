@@ -133,7 +133,7 @@ interface ComponentState {
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
-    selectedHistoryIndex: number | null
+    selectedActivityIndex: number | null
     // The ID of the selected log dialog
     currentLogDialogId: string | null
     // The trainDialog created out of the selected LogDialog
@@ -194,7 +194,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             apiStubFilledEntityMap: null,
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
-            selectedHistoryIndex: null,
+            selectedActivityIndex: null,
             currentLogDialogId: null,
             currentTrainDialog: null,
             editType: EditDialogType.LOG_ORIGINAL,
@@ -380,7 +380,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined) {
+    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined, editAPIStub: boolean = true) {
         if (!trainScorerStep) {
             throw new Error("missing args")
         }
@@ -395,9 +395,20 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.entities,
                 this.props.actions,
                 this.props.trainDialogReplayThunkAsync as any,
+                this.props.editActionThunkAsync as any
             )
 
+            // LARS TODO - put in generic function above
             await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
+
+            // Should I get input for API Stub?
+            if (editAPIStub) {
+                // If Stub API was chosen allow user to select API reponse
+                const action = this.props.actions.find(a => a.actionId === trainScorerStep.labelAction)
+                if (CLM.ActionBase.isStubbedAPI(action)) {
+                    this.onEditAPIStub(newTrainDialog, selectedActivity)
+                }
+            }
         }
         catch (error) {
             console.warn(`Error when attempting to change an Action: `, error)
@@ -517,7 +528,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 history: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
                 isEditDialogModalOpen: false,
-                selectedHistoryIndex: null,
+                selectedActivityIndex: null,
                 isTeachDialogModalOpen: true,
                 editType: EditDialogType.LOG_EDITED,
                 currentTrainDialog
@@ -585,7 +596,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 currentTrainDialog: newTrainDialog,
                 isEditDialogModalOpen: true,
                 isTeachDialogModalOpen: false,
-                selectedHistoryIndex: activityIndex,
+                selectedActivityIndex: activityIndex,
                 editType: EditDialogType.LOG_EDITED
             })
         }
@@ -620,7 +631,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: trainDialog,
                 isEditDialogModalOpen: true,
-                selectedHistoryIndex: null,
+                selectedActivityIndex: null,
                 editType: EditDialogType.LOG_ORIGINAL
             })
         }
@@ -674,15 +685,21 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             apiStubFilledEntityMap: null
         })
 
-        if (this.state.selectedHistoryIndex === null) {
-            console.log('Warning: No Activity Selected')
-            return
-        }
-
         if (filledEntityMap && this.state.currentTrainDialog) {
             const scorerStep = await DialogEditing.getStubScorerStep(this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
-            const selectedActivity = this.state.history[this.state.selectedHistoryIndex]
-            this.onChangeAction(this.state.currentTrainDialog, selectedActivity, scorerStep)
+
+            // Editing history
+            if (this.state.selectedActivityIndex) {
+                const selectedActivity = this.state.history[this.state.selectedActivityIndex]
+                this.onChangeAction(this.state.currentTrainDialog, selectedActivity, scorerStep, false)
+            }
+            // Editing a teach session
+            else {
+                const newTrainDialog = Util.deepCopy(this.state.currentTrainDialog)
+                const lastRound = newTrainDialog.rounds[newTrainDialog.rounds.length - 1]
+                lastRound.scorerSteps[lastRound.scorerSteps.length - 1] = scorerStep
+                await this.onUpdateHistory(newTrainDialog, null, SelectionType.NONE)
+            }
         }
     }
 
@@ -698,7 +715,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
 
         this.setState({
-            selectedHistoryIndex: null,
+            selectedActivityIndex: null,
             currentTrainDialog: null,
             currentLogDialogId: null,
             history: [],
@@ -1023,7 +1040,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     editingLogDialogId={this.state.currentLogDialogId}
                     originalTrainDialog={null}
                     history={this.state.history}
-                    initialSelectedActivityIndex={this.state.selectedHistoryIndex}
+                    initialSelectedActivityIndex={this.state.selectedActivityIndex}
                     editType={this.state.editType}
                     onInsertAction={(trainDialog, activity, isLastActivity) => this.onInsertAction(trainDialog, activity, isLastActivity)}
                     onInsertInput={(trainDialog, activity, userInput) => this.onInsertInput(trainDialog, activity, userInput)}
@@ -1101,6 +1118,7 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteLogDialogThunkAsync: actions.log.deleteLogDialogThunkAsync,
         deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
         deleteTrainDialogThunkAsync: actions.train.deleteTrainDialogThunkAsync,
+        editActionThunkAsync: actions.action.editActionThunkAsync,
         editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
         extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
         fetchAllLogDialogsThunkAsync: actions.log.fetchAllLogDialogsThunkAsync,

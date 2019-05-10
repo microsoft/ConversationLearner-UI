@@ -422,8 +422,17 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
+    importActionSelected(): boolean {
+        // If no selected actionId, first item is selected one
+        const selectedActionID = this.props.selectedActionId || this.props.scoreResponse.scoredActions[0]
+        return selectedActionID === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID
+    }
+
     @OF.autobind
     async handleActionSelection(scoredBase: CLM.ScoredBase) {
+
+        const replacingImportAction = this.importActionSelected()
+
         let scoredAction: CLM.ScoredAction | undefined
         if (scoredBase.actionId === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID) {
             // TODO: Schema refactor
@@ -457,8 +466,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             scoredAction: scoredAction
         };
 
-        this.setState({ haveEdited: true });
-        this.props.onActionSelected(trainScorerStep);
+        this.setState({ haveEdited: true })
+        this.props.onActionSelected(trainScorerStep)
+
+        if (replacingImportAction) {
+            console.log("gotcha")
+        }
     }
 
     isConditionMet(condition: CLM.Condition): { match: boolean, name: string } {

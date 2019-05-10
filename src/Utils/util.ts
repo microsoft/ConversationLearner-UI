@@ -227,3 +227,19 @@ export const getSetEntityActionsFromEnumEntity = (entity: CLM.EntityBase): CLM.A
         return getSetEntityActionForEnumValue(entity.entityId, evo.enumValueId)
     })
 }
+
+// Calculate a 32 bit FNV-1a hash
+// Ref.: http://isthe.com/chongo/tech/comp/fnv/
+export function hashText(text: string) {
+    // tslint:disable:no-bitwise 
+    let l = text.length
+    let hval = 0x811C9DC5  // seed
+
+    for (let i = 0; i < l; i = i + 1) {
+        hval ^= text.charCodeAt(i)
+        hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24)
+    }
+
+    // Return 8 digit hex string
+    return `0000000${(hval >>> 0).toString(16)}`.substr(-8)
+}

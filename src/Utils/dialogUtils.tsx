@@ -5,6 +5,7 @@
 import * as CLM from '@conversationlearner/models'
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
+import * as Util from '../Utils/util'
 import { deepCopy, getDefaultEntityMap } from './util'
 import { Activity } from 'botframework-directlinejs'
 import TagsReadOnly from '../components/TagsReadOnly'
@@ -458,20 +459,50 @@ export function findActionByText(text: string, actions: CLM.ActionBase[], filled
         })
 }
 
+export function importTextWithEntities(importText: string, valueMap: Map<string, string>) {
+
+    let outText = importText.slice()
+    valueMap.forEach((value: string, entityId: string) => {
+        outText = outText.replace(value, entityId)
+    })
+    return outText
+}
+
+export function filledEntityIdMap(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): Map<string, string> {
+    const filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(filledEntities, entities)
+    const filledIdMap = filledEntityMap.EntityMapToIdMap()
+    return CLM.getEntityDisplayValueMap(filledIdMap)
+}
+
 // Look for imported actions in TrainDialog and attempt to replace them
-// with existing actions.  Return true if any replacement occured
+// with existing actions.  Return true if any replacement occurred
 export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): boolean {
+
+    // Filter out actions that have no hash lookups. If there are none, terminate early
+    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.importHashes && a.clientData.importHashes.length > 0)
+    if (actionsWithHash.length === 0) {
+        return false
+    }
+
+    // Now swap any actions that match
     let match = false
-    // Now swap in any extract values
     trainDialog.rounds.forEach(round => {
-        let filledEntities = round.scorerSteps[0] && round.scorerSteps[0].input ? round.scorerSteps[0].input.filledEntities : []
-        let filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(filledEntities, entities)
-        const filledIdMap = filledEntityMap.EntityMapToIdMap()
-        let valueMap = CLM.getEntityDisplayValueMap(filledIdMap)
         round.scorerSteps.forEach(scorerStep => {
+            let filledEntities = scorerStep.input.filledEntities//LARSround.scorerSteps[0] && round.scorerSteps[0].input ? round.scorerSteps[0].input.filledEntities : []
+            const filledIdMap = filledEntityIdMap(filledEntities, entities)
+
+            // If it's a dummy action with imported text
             if (scorerStep.importText) {
-                // LARS TODO - use hash 
-                const newAction = findActionByText(scorerStep.importText, actions, valueMap)
+                // Convert import text to hash with entity Ids
+                const importText = importTextWithEntities(scorerStep.importText, filledIdMap)
+                const importHash = Util.hashText(importText)
+
+                // Try to find matching action with same hash
+                const newAction = actionsWithHash.find(a => {
+                    // Filter above ensures these are not null
+                    return a.clientData!.importHashes!.indexOf(importHash) > -1
+                })
+                // If action exists replace labelled action with match
                 if (newAction) {
                     scorerStep.labelAction = newAction.actionId
                     delete scorerStep.importText
@@ -479,8 +510,7 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
                 }
             }
         })
-        }
-    )
+    })
     return match
 }
 
