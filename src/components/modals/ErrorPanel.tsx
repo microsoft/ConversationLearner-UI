@@ -53,7 +53,7 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
 
         // If error associated with an action
         if (actionType) {
-            ErrorHandler.handleError(actionType)
+            ErrorHandler.HandleError(actionType)
         }
 
         if (this.state.errorCode === ErrorCode.INVALID_BOT_CHECKSUM) {

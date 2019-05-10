@@ -158,7 +158,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     newChatSessionButton: OF.IButton
     state: ComponentState
 
-    static getConflicts(rounds: CLM.TrainRound[], previouslySubmittedTextVariations: CLM.TextVariation[]) {
+    static GetConflicts(rounds: CLM.TrainRound[], previouslySubmittedTextVariations: CLM.TextVariation[]) {
         const conflictPairs: ConflictPair[] = []
 
         rounds.forEach((round, roundIndex) => {
@@ -367,7 +367,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         catch (error) {
             if (error instanceof EntityLabelConflictError) {
-                const conflictPairs = LogDialogs.getConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                const conflictPairs = LogDialogs.GetConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
                 this.acceptConflictResolutionFn = (updatedDialog) => this.onInsertAction(updatedDialog, selectedActivity, isLastActivity)
                 this.setState({
                     conflictPairs
@@ -484,7 +484,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         catch (error) {
             if (error instanceof EntityLabelConflictError) {
-                const conflictPairs = LogDialogs.getConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                const conflictPairs = LogDialogs.GetConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
                 this.acceptConflictResolutionFn = (updatedDialog) => this.onInsertInput(updatedDialog, selectedActivity, inputText)
                 this.setState({
                     conflictPairs
@@ -525,7 +525,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         catch (error) {
             if (error instanceof EntityLabelConflictError) {
-                const conflictPairs = LogDialogs.getConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                const conflictPairs = LogDialogs.GetConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
                 this.acceptConflictResolutionFn = (updatedDialog) => this.onContinueTrainDialog(updatedDialog, initialUserInput)
                 this.setState({
                     conflictPairs
@@ -746,7 +746,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         catch (error) {
             if (error instanceof EntityLabelConflictError) {
-                const conflictPairs = LogDialogs.getConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
+                const conflictPairs = LogDialogs.GetConflicts((this.state.currentTrainDialog && this.state.currentTrainDialog.rounds) || [], error.textVariations)
                 this.acceptConflictResolutionFn = this.onSaveTrainDialog
                 this.setState({
                     conflictPairs
@@ -1057,7 +1057,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     // User has edited an Activity in a TeachSession
     private async onEditTeach(
-        historyIndex: number,
+        historyIndex: number | null,
         args: DialogEditing.EditHandlerArgs | undefined,
         tags: string[],
         description: string,

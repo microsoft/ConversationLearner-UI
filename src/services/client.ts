@@ -3,9 +3,8 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
-import { PartialTrainDialog } from '../types/models'
+import { PartialTrainDialog, AppInput } from '../types/models'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
-import { AppInput } from '../types/models'
 
 export interface ClientHeaders {
     botChecksum: string

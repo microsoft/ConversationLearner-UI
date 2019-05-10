@@ -448,7 +448,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined) {
+    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined, editAPIStub: boolean = true) {
         if (!trainScorerStep) {
             throw new Error(`You attempted to change an Action but the step you are editing was undefined. Please open an issue.`)
         }
@@ -466,6 +466,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             )
 
             await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE, this.state.editType)
+
+            // Should I get input for API Stub?
+            if (editAPIStub) {
+                // If Stub API was chosen allow user to select API reponse
+                const action = this.props.actions.find(a => a.actionId === trainScorerStep.labelAction)
+                if (CLM.ActionBase.isStubbedAPI(action)) {
+                    this.onEditAPIStub(newTrainDialog, selectedActivity)
+                }
+            }
         }
         catch (error) {
             console.warn(`Error when attempting to change an Action: `, error)
@@ -647,12 +656,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     //---- API STUBS ----
     @OF.autobind
     onEditAPIStub(trainDialog: CLM.TrainDialog, selectedActivity: Activity | null) {
-        if (selectedActivity) {
-            const filledEntityMap = DialogEditing.getFilledEntityMapForActivity(trainDialog, selectedActivity, this.props.entities)
-            const selectedActivityIndex = DialogUtils.matchedActivityIndex(selectedActivity, this.state.history)
+        // If no selected activity, select the most recent one
+        const activity = selectedActivity || this.state.history[this.state.history.length - 1]
+        
+        if (activity) {
+            const filledEntityMap = DialogEditing.getFilledEntityMapForActivity(trainDialog, activity, this.props.entities)
+            const selectedActivityIndex = DialogUtils.matchedActivityIndex(activity, this.state.history)
             this.setState({
                 apiStubFilledEntityMap: filledEntityMap,
-                selectedActivityIndex
+                selectedActivityIndex,
+                currentTrainDialog: trainDialog
             })
         }
     }
@@ -663,15 +676,21 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             apiStubFilledEntityMap: null
         })
 
-        if (this.state.selectedActivityIndex === null) {
-            console.log('Warning: No Activity Selected')
-            return
-        }
-
         if (filledEntityMap && this.state.currentTrainDialog) {
             const scorerStep = await DialogEditing.getStubScorerStep(this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
-            const selectedActivity = this.state.history[this.state.selectedActivityIndex]
-            this.onChangeAction(this.state.currentTrainDialog, selectedActivity, scorerStep)
+
+            // Editing history
+            if (this.state.selectedActivityIndex) {
+                const selectedActivity = this.state.history[this.state.selectedActivityIndex]
+                this.onChangeAction(this.state.currentTrainDialog, selectedActivity, scorerStep, false)
+            }
+            // Editing a teach session
+            else {
+                const newTrainDialog = Util.deepCopy(this.state.currentTrainDialog)
+                const lastRound = newTrainDialog.rounds[newTrainDialog.rounds.length - 1]
+                lastRound.scorerSteps[lastRound.scorerSteps.length - 1] = scorerStep
+                await this.onUpdateHistory(newTrainDialog, null, SelectionType.NONE, this.state.editType)
+            }
         }
     }
 
@@ -708,7 +727,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
                 // Delete the teach session w/o saving
                 await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
-  
+
                 // Generate history
                 await this.onUpdateHistory(trainDialog, null, SelectionType.NONE, this.state.editType)
             }
@@ -740,7 +759,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 ? EditDialogType.TRAIN_EDITED 
                 : editDialogType
 
-            this.setState({
+            await Util.setStateAsync(this, {
                 history: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: newTrainDialog,
@@ -1325,7 +1344,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     // User has edited an Activity in a TeachSession
     private async onEditTeach(
-        historyIndex: number,
+        historyIndex: number | null,
         args: DialogEditing.EditHandlerArgs | undefined,
         tags: string[],
         description: string,

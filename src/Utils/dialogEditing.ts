@@ -385,7 +385,7 @@ export interface EditHandlerArgs {
 }
 
 export async function onEditTeach(
-    historyIndex: number,
+    historyIndex: number | null,
     args: EditHandlerArgs | undefined,
     tags: string[],
     description: string,
@@ -420,7 +420,8 @@ export async function onEditTeach(
 
     // Generate history
     const teachWithHistory = await fetchHistoryAsync(app.appId, trainDialog, user.name, user.id)
-    const selectedActivity = teachWithHistory.history[historyIndex]
+    // If no index given, select last activity
+    const selectedActivity = historyIndex ? teachWithHistory.history[historyIndex] : teachWithHistory.history[teachWithHistory.history.length - 1]
     const clData: CLM.CLChannelData = { ...selectedActivity.channelData.clData, activityIndex: historyIndex }
     selectedActivity.channelData.clData = clData
 

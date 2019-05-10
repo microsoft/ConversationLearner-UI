@@ -197,7 +197,10 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         this.props.onScoredAction(scoredAction)
 
-        if (!waitForUser) {
+        if (CLM.ActionBase.isStubbedAPI(scoredAction)) {
+            this.props.onEditAPIStub()
+        }
+        else if (!waitForUser) {
             const uiScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
             const turnLookup = [...this.state.turnLookup]
 

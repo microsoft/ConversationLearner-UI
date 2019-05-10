@@ -20,6 +20,16 @@
         "curly": true,
         "eofline": false,
         "forin": true,
+        "function-name": [ 
+            true, 
+            { 
+                "method-regex": "^[a-z][\\w\\d]+$", 
+                "private-method-regex": "^[a-z][\\w\\d]+$", 
+                "protected-method-regex": "^[a-z][\\w\\d]+$", 
+                "static-method-regex": "^[A-Z][\\w\\d]+$",   
+                "function-regex": "^[a-z][\\w\\d]+$" 
+            } 
+        ],
         "indent": [ true, "spaces" ],
         "interface-name": [true, "never-prefix"],
         "jsdoc-format": true,

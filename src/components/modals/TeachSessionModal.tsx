@@ -82,7 +82,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     private callbacksId: string | null = null;
 
     componentDidMount() {
-        this.callbacksId = ErrorHandler.registerCallbacks(
+        this.callbacksId = ErrorHandler.RegisterCallbacks(
             [
                 { actionType: AT.POST_SCORE_FEEDBACK_ASYNC, callback: this.onDismissError },
                 { actionType: AT.RUN_SCORER_ASYNC, callback: this.onDismissError },
@@ -100,7 +100,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     componentWillUnmount() {
         if (this.callbacksId) {
-            ErrorHandler.deleteCallbacks(this.callbacksId)
+            ErrorHandler.DeleteCallbacks(this.callbacksId)
         }
     }
 
@@ -448,9 +448,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onEditAPIStub() {
-        if (this.state.selectedActivityIndex != null) {
-            this.props.onEditTeach(this.state.selectedActivityIndex, null, this.state.tags, this.state.description, this.props.onEditAPIStub)
-        }
+        // Can be called with selectedActvityIndex as null, when API stub action is selected during teach session
+        this.props.onEditTeach(this.state.selectedActivityIndex, null, this.state.tags, this.state.description, this.props.onEditAPIStub)
     }
 
     @OF.autobind
@@ -840,7 +839,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean
     onClose: (save: boolean, tags?: string[], description?: string) => void
-    onEditTeach: (historyIndex: number, args: DialogEditing.EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any) => void
+    onEditTeach: (historyIndex: number | null, args: DialogEditing.EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any) => void
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
