@@ -5,10 +5,10 @@
     color: rgb(51,51,51);
 }
 .cl-input:hover:not(:disabled) {
-    border-color: #212121;
+    border-color: var(--color-neutralDark);
 }
 .cl-input:focus {
-    border-color: #0078d7;
+    border-color: var(--color-themePrimary);
 }
 
 .cl-input-warning {

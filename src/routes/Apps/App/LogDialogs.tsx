@@ -808,7 +808,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     getFilteredAndSortedDialogs(): CLM.LogDialog[] {
         // Don't show log dialogs that have derived TrainDialogs as they've already been edited
-        let filteredLogDialogs: CLM.LogDialog[] = this.props.logDialogs.filter(l => !l.targetTrainDialogIds || l.targetTrainDialogIds.length === 0);
+        let filteredLogDialogs: CLM.LogDialog[] = [...this.props.logDialogs]
 
         if (this.state.searchValue) {
             // TODO: Consider caching as not very efficient
