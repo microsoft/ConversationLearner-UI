@@ -219,7 +219,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
                     // If primary sort is the same do secondary sort on another column, to prevent sort jumping around
                     if (compareValue === 0) {
-                        const sortColumn2 = ((this.state.sortColumn !== this.state.columns[1]) ? this.state.columns[1] : this.state.columns[2]) as IRenderableColumn
+                        const sortColumn2 = ((this.state.sortColumn !== this.state.columns[1]) ? this.state.columns[1] : this.state.columns[2])
                         firstValue = sortColumn2.getSortValue(a, this)
                         secondValue = sortColumn2.getSortValue(b, this)
                         compareValue = firstValue.localeCompare(secondValue)
@@ -333,7 +333,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     async onClickSync() {
-        await this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId);
+        await ((this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId) as any) as Promise<void>)
     }
 
     @OF.autobind
@@ -343,7 +343,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
 
         if (this.state.currentLogDialogId) {
-            await this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
+            await ((this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId) as any) as Promise<void>)
         }
         await this.onCloseEditDialogModal();
     }
@@ -512,7 +512,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         try {
             if (this.props.teachSession.teach) {
                 // Delete the teach session w/o saving
-                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+                await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
             }
             const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput, null) as any) as Promise<CLM.TeachWithHistory>)
 
@@ -565,8 +565,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 }
 
                 // Delete the teach session w/o saving
-                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
-  
+                await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
+
                 // Generate history
                 await this.onUpdateHistory(trainDialog, null, SelectionType.NONE)
             }
@@ -649,11 +649,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
 
         if (shouldMerge) {
-            await this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags, null)
+            await ((this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags, null) as any) as Promise<void>)
         }
 
         if (this.state.currentLogDialogId) {
-            await this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
+            await ((this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId) as any) as Promise<void>)
         }
 
         this.setState({
@@ -691,7 +691,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Editing history
             if (this.state.selectedActivityIndex) {
                 const selectedActivity = this.state.history[this.state.selectedActivityIndex]
-                this.onChangeAction(this.state.currentTrainDialog, selectedActivity, scorerStep, false)
+                await this.onChangeAction(this.state.currentTrainDialog, selectedActivity, scorerStep, false)
             }
             // Editing a teach session
             else {
@@ -711,7 +711,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session w/o saving
-            await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+            await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
         }
 
         this.setState({
@@ -734,7 +734,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
 
         try {
-            await this.props.createTrainDialogThunkAsync(this.props.app.appId, cleanedDialog)
+            await ((this.props.createTrainDialogThunkAsync(this.props.app.appId, cleanedDialog) as any) as Promise<void>)
 
             this.setState({
                 isEditDialogModalOpen: false,
@@ -754,7 +754,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             else {
 
                 if (this.state.currentLogDialogId) {
-                    await this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
+                    await ((this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId) as any) as Promise<void>)
                 }
                 else {
                     throw new Error("Could not find LogDialag associated with conversion to TrainDialog")
@@ -774,7 +774,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             console.warn(`Error when attempting to convert log dialog to train dialog: `, error)
         }
 
-        this.onCloseEditDialogModal()
+        await this.onCloseEditDialogModal()
     }
 
     @OF.autobind
@@ -799,17 +799,17 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 }
                 else {
                     // Otherwise just update the tags and description
-                    await this.props.editTrainDialogThunkAsync(this.props.app.appId, { trainDialogId: newTrainDialog.trainDialogId, tags, description })
+                    await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, { trainDialogId: newTrainDialog.trainDialogId, tags, description }) as any) as Promise<void>)
 
                     // Delete associated log dialog
                     if (this.state.currentLogDialogId) {
-                        await this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
+                        await ((this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId) as any) as Promise<void>)
                     }
                 }
             }
             // Just delete the teach sesion without saving
             else {
-                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+                await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
             }
         }
 
@@ -1085,7 +1085,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 return
             }
 
-            DialogEditing.onEditTeach(
+            await DialogEditing.onEditTeach(
                 historyIndex,
                 args,
                 tags,

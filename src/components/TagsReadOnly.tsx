@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as React from 'react'
 import { FM } from '../react-intl-messages'
 import FormattedMessageId from './FormattedMessageId'
@@ -7,7 +11,7 @@ interface Props extends React.HTMLProps<HTMLDivElement> {
     tags: string[]
 }
 
-class component extends React.Component<Props> {
+class Component extends React.Component<Props> {
     render() {
         const { tags, className } = this.props
         return (
@@ -24,4 +28,4 @@ class component extends React.Component<Props> {
     }
 }
 
-export default component
+export default Component

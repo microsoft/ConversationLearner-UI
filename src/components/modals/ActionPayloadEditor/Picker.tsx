@@ -11,10 +11,8 @@ import FuseMatch from '../../ExtractorResponseEditor/FuseMatch'
 interface Props {
     matchedOptions: MatchedOption<IOption>[]
     isVisible: boolean
-    bottom: number
     left: number
     top: number
-    searchText: string
     menuRef: (element: HTMLDivElement) => void
     onClickOption: (option: IOption) => void
 }

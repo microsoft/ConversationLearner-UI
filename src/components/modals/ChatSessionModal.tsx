@@ -43,7 +43,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onClickDone() {
         if (this.props.chatSession.current !== null) {
-            await this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId)
+            await (this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId) as any as Promise<void>)
         }
 
         this.props.onClose()
@@ -53,7 +53,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     async onClickAbandon() {
         if (this.props.chatSession.current !== null) {
             const deleteAssociatedLogDialog = this.state.hasChatActivity
-            await this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId, deleteAssociatedLogDialog)
+            await (this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId, deleteAssociatedLogDialog) as any as Promise<void>)
         }
 
         this.props.onClose()

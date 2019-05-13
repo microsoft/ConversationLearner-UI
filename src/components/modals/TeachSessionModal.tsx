@@ -336,13 +336,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
             // If there's an error when I try to continue, reset webchat to ignore new input
             await this.props.setErrorDismissCallback(this.onClickUndoInput)
-            await this.props.runExtractorThunkAsync(
+            await (this.props.runExtractorThunkAsync(
                 this.props.app.appId,
                 CLM.DialogType.TEACH,
                 this.props.teachSession.teach.teachId,
                 null,
                 userInput,
-                this.props.originalTrainDialogId)
+                this.props.originalTrainDialogId) as any as Promise<void>)
         }
     }
 

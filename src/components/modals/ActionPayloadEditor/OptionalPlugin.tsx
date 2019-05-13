@@ -102,6 +102,7 @@ export default function optionalPlugin(inputOptions: Partial<IOptions> = {}) {
         renderNode(props: any): React.ReactNode | void {
             switch (props.node.type) {
                 case NodeTypes.Optional: return <OptionalNode {...props} />
+                default: return
             }
         }
     }

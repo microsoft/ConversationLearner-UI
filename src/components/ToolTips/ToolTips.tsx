@@ -32,6 +32,8 @@ export enum TipType {
     ACTION_TYPE = 'actionType',
     ACTION_WAIT = 'isTerminal',
 
+    CONVERSATION_IMPORTER = 'conversationImporter',
+
     EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY = "EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY",
     EDITDIALOGMODAL_WARNING_NEED_REPLAY = "EDITDIALOGMODAL_WARNING_NEED_REPLAY",
 
@@ -167,7 +169,22 @@ const memoryManagerSample =
     memoryManager.Copy(entityNameFrom: string, entityNameTo: string): void
 
     // Info about the current running Session
-    memoryManager.SessionInfo(): SessionInfo`;
+    memoryManager.SessionInfo(): SessionInfo`
+
+const transriptSample =
+    `
+    [
+        {
+            "from": { "role": "user" },
+            "type": "message",
+            "text": "i'm hungry"
+        },
+        {
+            "from": { "role": "bot" },
+            "type": "message",
+            "text": "What would you like on your pizza?"
+        }
+    ]`
 
 export function getTip(tipType: string) {
     switch (tipType) {
@@ -302,6 +319,28 @@ export function getTip(tipType: string) {
             )
         case TipType.ACTION_WAIT:
             return render(FM.TOOLTIP_ACTION_WAIT_TITLE, [FM.TOOLTIP_ACTION_WAIT]);
+
+        case TipType.CONVERSATION_IMPORTER:
+            return (
+                <div>
+                    <h2>Import .transcript file</h2>
+                    <p>Used to create Train Dialogs from pre-existing "user/user" or "bot/user" conversations that were created outside Conversation Learner</p>
+                    <p>Imported files must in OBI format</p>
+
+                    <h4>Minimally:</h4>
+                    <pre>{transriptSample}</pre>
+                    <div>
+                        <a
+                            href={`https://github.com/microsoft/botframework-obi/tree/master/fileformats/transcript`}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            role="button"
+                        >
+                            More on .transcript format
+                        </a>
+                    </div>
+                </div>
+            )
 
         case TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY:
             return (
@@ -564,7 +603,6 @@ export function getTip(tipType: string) {
                         <li>Select 'settings' from the menu</li>
                         <li>Copy the "Authoring Key" and use it as the LUIS_AUTHORING_KEY value for your model</li>
                     </ol>
-
 
                     <img
                         className="cl-panelimage"

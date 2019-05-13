@@ -9,6 +9,9 @@ import * as CLM from '@conversationlearner/models'
 import * as DialogEditing from '../../Utils/dialogEditing'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import actions from '../../actions'
+import FormattedMessageId from '../FormattedMessageId'
+import HelpIcon from '../HelpIcon'
+import { TipType } from '../ToolTips/ToolTips'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -187,14 +190,18 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
             >
                 <div className='cl-modal_header'>
                     <span className={OF.FontClassNames.xxLarge}>
-                        Import a conversation...
+                        <FormattedMessageId id={FM.CONVERSATION_IMPORTER_TITLE}/>
                     </span>
+                    <div className={OF.FontClassNames.medium}>
+                        <FormattedMessageId id={FM.CONVERSATION_IMPORTER_DESCRIPTION}/>
+                        <HelpIcon tipType={TipType.CONVERSATION_IMPORTER}/>
+                    </div>
                 </div>
                 <div className="cl-action-creator-fieldset">
                     <div data-testid="model-creator-import-file-picker">
                         <OF.Label>Import File</OF.Label>
                         <FilePicker
-                          //  extensions={['cl']}
+                            extensions={['transcript']}
                             onChange={this.onChangeFile}
                             onError={(error: string) => this.props.setErrorDisplay(ErrorType.Error, error, "", null)}
                             maxSize={300}

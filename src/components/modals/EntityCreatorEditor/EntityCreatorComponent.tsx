@@ -336,7 +336,9 @@ const Component: React.SFC<Props> = (props) => {
 }
 
 function setFocused(ref: OF.TextField) {
-    if (ref) ref.focus()
+    if (ref) {
+        ref.focus()
+    }
 }
 
 export default Component

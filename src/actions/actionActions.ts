@@ -85,6 +85,21 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
     }
 }
 
+const deleteActionAsync = (appId: string, actionId: string): ActionObject => {
+    return {
+        type: AT.DELETE_ACTION_ASYNC,
+        actionId: actionId,
+        appId: appId
+    }
+}
+
+const deleteActionFulfilled = (actionId: string): ActionObject => {
+    return {
+        type: AT.DELETE_ACTION_FULFILLED,
+        actionId: actionId
+    }
+}
+
 export const deleteActionThunkAsync = (appId: string, actionId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteActionAsync(appId, actionId))
@@ -106,21 +121,6 @@ export const deleteActionThunkAsync = (appId: string, actionId: string) => {
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_ACTION_ASYNC))
             return false;
         }
-    }
-}
-
-const deleteActionAsync = (appId: string, actionId: string): ActionObject => {
-    return {
-        type: AT.DELETE_ACTION_ASYNC,
-        actionId: actionId,
-        appId: appId
-    }
-}
-
-const deleteActionFulfilled = (actionId: string): ActionObject => {
-    return {
-        type: AT.DELETE_ACTION_FULFILLED,
-        actionId: actionId
     }
 }
 

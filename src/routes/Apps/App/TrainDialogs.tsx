@@ -337,7 +337,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 lastTeachSession: { ...this.props.teachSession }
             })
 
-            await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+            await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
 
             // Create new one with initial entities
             await this.onClickNewTeachSession(initialFilledEntityMap)
@@ -346,7 +346,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     async onClickNewTeachSession(initialFilledEntityMap: CLM.FilledEntityMap | null = null) {
         try {
-            await this.props.createTeachSessionThunkAsync(this.props.app.appId, initialFilledEntityMap)
+            await ((this.props.createTeachSessionThunkAsync(this.props.app.appId, initialFilledEntityMap) as any) as Promise<void>)
 
             this.setState({
                 isTeachDialogModalOpen: true,
@@ -402,17 +402,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     else {
                         // If editing an existing Train Dialog, replace existing with the new one
                         if (sourceTrainDialogId) {
-                            await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog)
+                            await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog) as any) as Promise<void>)
                         }
                         // Otherwise just update the tags and description
                         else {
-                            await this.props.editTrainDialogThunkAsync(this.props.app.appId, { trainDialogId: newTrainDialog.trainDialogId, tags, description })
+                            await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, { trainDialogId: newTrainDialog.trainDialogId, tags, description }) as any) as Promise<void>)
                         }
                     }
                 }
                 // Just delete the teach session without saving
                 else {
-                    await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+                    await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
                 }
             }
         }
@@ -634,12 +634,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const sourceTrainDialogId = this.sourceTrainDialogId()
 
         if (shouldMerge) {
-            await this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags, sourceTrainDialogId)
+            await ((this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags, sourceTrainDialogId) as any) as Promise<void>)
         }
         else {
             // If editing an existing Train Dialog, replace existing with the new one
             if (sourceTrainDialogId) {
-                await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, this.state.mergeNewTrainDialog)
+                await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, this.state.mergeNewTrainDialog) as any) as Promise<void>)
             }
         }
         this.setState({
@@ -727,7 +727,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
 
                 // Delete the teach session w/o saving
-                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+                await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
 
                 // Generate history
                 await this.onUpdateHistory(trainDialog, null, SelectionType.NONE, this.state.editType)
@@ -781,7 +781,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         try {
             if (this.props.teachSession && this.props.teachSession.teach) {
                 // Delete the teach session w/o saving
-                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+                await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
             }
 
             const conflictIgnoreId = this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null
@@ -845,7 +845,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
             // Otherwise save as a new TrainDialog
             else {
-                await this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog)
+                await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<void>)
             }
         }
         catch (error) {
@@ -965,7 +965,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session w/o saving
-            await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+            await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
         }
 
         if (reload && this.state.originalTrainDialog) {

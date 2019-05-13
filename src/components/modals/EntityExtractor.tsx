@@ -412,14 +412,14 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
 
         const userInput: CLM.UserInput = { text: text }
-        await this.props.runExtractorThunkAsync(
+        await (this.props.runExtractorThunkAsync(
             this.props.app.appId,
             extractType,
             extractId,
             this.props.roundIndex,
             userInput,
             this.props.originalTrainDialogId
-        )
+        ) as any as Promise<void>)
 
         this.setState({
             isPendingSubmit: true,

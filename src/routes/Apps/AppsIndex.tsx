@@ -54,7 +54,7 @@ class AppsIndex extends React.Component<Props, {}> {
     }
 
     onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
-        const app: AppBase = await this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any
+        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
     }

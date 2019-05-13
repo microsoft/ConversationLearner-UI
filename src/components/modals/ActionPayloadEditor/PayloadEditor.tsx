@@ -238,66 +238,6 @@ export default class PayloadEditor extends React.Component<Props, State> {
         return true
     }
 
-    private onCompleteNode(event: React.KeyboardEvent<HTMLInputElement> | undefined, change: any, option: IOption) {
-        if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
-            return undefined
-        }
-
-        // It's a little odd to have optional event here, there might be better way to refactor
-        // When invoked on key events we have an event; however, on click from the Picker menu we do not
-        // The alternative is moving this event logic into the key handlers but that also moves the above logic
-        // and consolidating here seemed better for consistent maintenance
-        event && event.preventDefault()
-
-        const textNode = change.value.texts.last()
-        if (textNode) {
-            change
-                .replaceNodeByKey(textNode.key, Text.fromJSON({
-                    "kind": "text",
-                    "leaves": [
-                        {
-                            "kind": "leaf",
-                            "text": `$${option.name}`,
-                            "marks": [] as any[]
-                        }
-                    ]
-                }))
-                .collapseToStartOfNextText()
-        }
-        else {
-            console.warn(`Current selection did not contain any text nodes to insert option name into`, change.value.texts)
-        }
-
-        // Mark inline node as completed meaning it is now immutable
-        const inline = change.value.inlines.find((i: any) => i.type === NodeTypes.Mention)
-        if (inline) {
-            change
-                .setNodeByKey(inline.key, {
-                    data: {
-                        ...inline.get('data').toJS(),
-                        option,
-                        completed: true
-                    }
-                })
-        }
-        else {
-            console.warn(`Could not find any inlines matching Mention type`, change.value.inlines)
-        }
-
-        change
-            .collapseToStartOfNextText()
-
-        // Reset Scroll position of menuRef
-        this.menu.scrollTop = 0
-
-        // Reset highlight index to be ready for next node
-        this.setState({
-            highlightIndex: 0
-        })
-
-        return true
-    }
-
     onEscape(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
         if (!this.state.menuProps.isVisible) {
             return
@@ -380,5 +320,65 @@ export default class PayloadEditor extends React.Component<Props, State> {
                 readOnly={this.props.disabled}
             />
         </div>
+    }
+
+    private onCompleteNode(event: React.KeyboardEvent<HTMLInputElement> | undefined, change: any, option: IOption) {
+        if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
+            return undefined
+        }
+
+        // It's a little odd to have optional event here, there might be better way to refactor
+        // When invoked on key events we have an event; however, on click from the Picker menu we do not
+        // The alternative is moving this event logic into the key handlers but that also moves the above logic
+        // and consolidating here seemed better for consistent maintenance
+        event && event.preventDefault()
+
+        const textNode = change.value.texts.last()
+        if (textNode) {
+            change
+                .replaceNodeByKey(textNode.key, Text.fromJSON({
+                    "kind": "text",
+                    "leaves": [
+                        {
+                            "kind": "leaf",
+                            "text": `$${option.name}`,
+                            "marks": [] as any[]
+                        }
+                    ]
+                }))
+                .collapseToStartOfNextText()
+        }
+        else {
+            console.warn(`Current selection did not contain any text nodes to insert option name into`, change.value.texts)
+        }
+
+        // Mark inline node as completed meaning it is now immutable
+        const inline = change.value.inlines.find((i: any) => i.type === NodeTypes.Mention)
+        if (inline) {
+            change
+                .setNodeByKey(inline.key, {
+                    data: {
+                        ...inline.get('data').toJS(),
+                        option,
+                        completed: true
+                    }
+                })
+        }
+        else {
+            console.warn(`Could not find any inlines matching Mention type`, change.value.inlines)
+        }
+
+        change
+            .collapseToStartOfNextText()
+
+        // Reset Scroll position of menuRef
+        this.menu.scrollTop = 0
+
+        // Reset highlight index to be ready for next node
+        this.setState({
+            highlightIndex: 0
+        })
+
+        return true
     }
 }

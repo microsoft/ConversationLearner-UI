@@ -738,7 +738,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     convertStateToModel(): CLM.ActionBase {
         let payload: string | null = null
 
-
         /**
          * If action type if TEXT
          * Then payload map has single value named TEXT_SLOT:

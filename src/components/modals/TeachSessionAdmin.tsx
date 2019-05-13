@@ -193,7 +193,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
             trainExtractorStep: null
         } as CLM.UIScoreInput
 
-        await this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput)
+        await (this.props.postScorerFeedbackThunkAsync(this.props.user.id, appId, teachId, uiTrainScorerStep, waitForUser, uiScoreInput) as any as Promise<void>)
 
         this.props.onScoredAction(scoredAction)
 
@@ -246,7 +246,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     ? turnData.uiScoreResponse.memories 
                     : []
             
-                
                 // If prev action was user, use prevTurn.memory.  If following a wait action use uiScoreResponse.memories
                 const prevTurn = this.state.turnLookup[lookupIndex - 1] 
                 const prevMemories = (prevTurn && prevTurn.uiScoreResponse && prevTurn.uiScoreResponse.memories) 

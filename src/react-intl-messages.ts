@@ -165,6 +165,10 @@ export enum FM {
     CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT = 'ConfirmCancelModal.primaryButton.text',
     CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT = 'ConfirmCancelModal.defaultButton.text',
 
+    // Conversation Importer
+    CONVERSATION_IMPORTER_TITLE = 'ConversationImporter.title',
+    CONVERSATION_IMPORTER_DESCRIPTION = 'ConversationImporter.description',
+
     // Custom Errors
     CUSTOMERROR_NETWORK_ERROR = 'CustomError.networkError',
 
@@ -972,6 +976,10 @@ export default {
         // ConfirmCancelModal
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
+        
+        // Conversation Importer
+        [FM.CONVERSATION_IMPORTER_TITLE]: 'Import a Conversation...',
+        [FM.CONVERSATION_IMPORTER_DESCRIPTION]: 'Create a Train Dialog from a .transcript file',
 
         // DialogMetadata
         [FM.DIALOGMETADATA_TAGS_LABEL]: 'Tags',
