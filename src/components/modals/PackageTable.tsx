@@ -10,10 +10,7 @@ import { State } from '../../types'
 import * as OF from 'office-ui-fabric-react'
 import { AppBase, PackageReference } from '@conversationlearner/models'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { createAppTagThunkAsync } from '../../actions/appActions'
-import PackageCreator from './PackageCreator'
 import * as util from '../../Utils/util'
-import { FM } from '../../react-intl-messages'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (packageReference: PackageReference, component: PackageTable) => React.ReactNode
@@ -53,7 +50,6 @@ const columns: IRenderableColumn[] = [
 
 interface ComponentState {
     columns: IRenderableColumn[]
-    isPackageCreatorOpen: boolean
 }
 
 class PackageTable extends React.Component<Props, ComponentState> {
@@ -61,7 +57,6 @@ class PackageTable extends React.Component<Props, ComponentState> {
         super(p);
         this.state = {
             columns: columns,
-            isPackageCreatorOpen: false
         }
     }
 
@@ -69,67 +64,26 @@ class PackageTable extends React.Component<Props, ComponentState> {
         return column.render(packageReference, this)
     }
 
-    @OF.autobind
-    onClickNewTag() {
-        this.setState({
-            isPackageCreatorOpen: true
-        })
-    }
-
-    @OF.autobind
-    onSubmitPackageCreator(tagName: string, setLive: boolean) {
-        this.props.createAppTagThunkAsync(this.props.app.appId, tagName, setLive)
-        this.setState({
-            isPackageCreatorOpen: false
-        })
-    }
-
-    @OF.autobind
-    onCancelPackageCreator() {
-        this.setState({
-            isPackageCreatorOpen: false
-        })
-    }
-
     render() {
         const packageReferences = util.packageReferences(this.props.app);
         return (
-            <div>
-                <OF.PrimaryButton
-                    onClick={this.onClickNewTag}
-                    ariaDescription={util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSIONS_CREATE)}
-                    text={util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSIONS_CREATE)}
-                    iconProps={{ iconName: 'Add' }}
-                />
-                <p>
-                    {util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION)}
-                </p>
-                <PackageCreator
-                    open={this.state.isPackageCreatorOpen}
-                    onSubmit={this.onSubmitPackageCreator}
-                    onCancel={this.onCancelPackageCreator}
-                    packageReferences={this.props.app.packageVersions}
-                />
-                <OF.DetailsList
-                    className={OF.FontClassNames.mediumPlus}
-                    items={packageReferences}
-                    columns={this.state.columns}
-                    onRenderItemColumn={(packageReference, i, column: IRenderableColumn) => column.render(packageReference, this)}
-                    checkboxVisibility={OF.CheckboxVisibility.hidden}
-                    constrainMode={OF.ConstrainMode.horizontalConstrained}
-                />
-            </div>
+            <OF.DetailsList
+                className={OF.FontClassNames.mediumPlus}
+                items={packageReferences}
+                columns={this.state.columns}
+                onRenderItemColumn={(packageReference, i, column: IRenderableColumn) => column.render(packageReference, this)}
+                checkboxVisibility={OF.CheckboxVisibility.hidden}
+                constrainMode={OF.ConstrainMode.horizontalConstrained}
+            />
         )
     }
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createAppTagThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
     return {
-        user: state.user
     }
 }
 

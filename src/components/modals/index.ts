@@ -10,12 +10,16 @@ import EntityCreatorEditor from './EntityCreatorEditor'
 import EditDialogModal from './EditDialogModal'
 import EditDialogAdmin from './EditDialogAdmin'
 import ErrorPanel from './ErrorPanel'
+import ErrorInjectionEditor from './ErrorInjectionEditor'
 import Expando from './Expando'
 import LogConversionConflictModal from './LogConversionConflictModal'
 import MergeModal from './MergeModal'
 import SpinnerWindow from './SpinnerWindow'
 import TeachSessionModal from './TeachSessionModal'
 import TutorialImporterModal from './TutorialImporter'
+import TextboxRestrictable from './TextboxRestrictable'
+import PackageCreator from './PackageCreator'
+import PackageTable from './PackageTable'
 
 // What is being edited
 export enum EditDialogType {
@@ -45,10 +49,14 @@ export {
     EditDialogAdmin,
     EditDialogModal,
     ErrorPanel,
+    ErrorInjectionEditor,
     Expando,
     LogConversionConflictModal,
     MergeModal,
+    PackageCreator,
+    PackageTable,
     SpinnerWindow,
     TeachSessionModal,
     TutorialImporterModal,
+    TextboxRestrictable,
 }
