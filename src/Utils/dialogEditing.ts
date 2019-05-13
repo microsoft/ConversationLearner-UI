@@ -458,7 +458,7 @@ export async function onEditTeach(
 } 
 
 // Returns stubAPIAction if it exists, otherwise creates it
-async function getStubAPIAction(
+export async function getStubAPIAction(
     appId: string,
     actions: CLM.ActionBase[],
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>

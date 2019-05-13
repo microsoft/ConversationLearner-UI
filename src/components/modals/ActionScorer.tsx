@@ -7,9 +7,11 @@ import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react';
 import * as Util from '../../Utils/util'
+import * as DialogEditing from '../../Utils/dialogEditing'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import ActionCreatorEditor, { NewActionPreset } from './ActionCreatorEditor'
+import { compareTwoStrings } from 'string-similarity'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
@@ -24,8 +26,8 @@ import './ActionScorer.css'
 const MISSING_ACTION = 'missing_action'
 
 interface IRenderableColumn extends OF.IColumn {
-    getSortValue: (action: CLM.ScoredBase, component: ActionScorer) => number | string
-    render: (x: CLM.ScoredBase, component: ActionScorer, index: number) => React.ReactNode
+    getSortValue: (scoreBase: CLM.ScoredBase, component: ActionScorer) => number | string
+    render: (scoreBase: CLM.ScoredBase, component: ActionScorer, index: number) => React.ReactNode
 }
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
@@ -177,8 +179,18 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isSortedDescending: true,
             getSortValue: (scoredBase, component) => {
 
-                // TODO: Fix type so we can use typed property access
-                const score = scoredBase['score']
+                let score: number
+
+                // If an import action, sort by string similarity
+                if (component.props.newActionPreset && scoredBase.actionId !== MISSING_ACTION) {
+                    const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
+                    const actionText = CLM.ActionBase.GetPayload(scoredBase, defaultEntityMap)
+                    score = compareTwoStrings(actionText, component.props.newActionPreset.text)
+                }
+                else {
+                    // TODO: Fix type so we can use typed property access
+                    score = scoredBase['score']
+                }
 
                 // If score base does not have score it's either not scorable or not available
                 // prioritize not scorable over not available but both at bottom of list
@@ -418,20 +430,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             }
         }
         if (scoredBase) {
-            this.handleActionSelection(scoredBase);
+            this.handleActionSelection(scoredBase)
         }
-    }
-
-    importActionSelected(): boolean {
-        // If no selected actionId, first item is selected one
-        const selectedActionID = this.props.selectedActionId || this.props.scoreResponse.scoredActions[0]
-        return selectedActionID === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID
     }
 
     @OF.autobind
     async handleActionSelection(scoredBase: CLM.ScoredBase) {
-
-        const replacingImportAction = this.importActionSelected()
 
         let scoredAction: CLM.ScoredAction | undefined
         if (scoredBase.actionId === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID) {
@@ -468,10 +472,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         this.setState({ haveEdited: true })
         this.props.onActionSelected(trainScorerStep)
-
-        if (replacingImportAction) {
-            console.log("gotcha")
-        }
     }
 
     isConditionMet(condition: CLM.Condition): { match: boolean, name: string } {
@@ -794,6 +794,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         return scoredItems
     }
 
+    @OF.autobind
+    async onSelectAPIStub() {
+        const stubAPIAction = await DialogEditing.getStubAPIAction(this.props.app.appId, this.props.actions, createActionThunkAsync as any)
+        this.handleActionSelection(stubAPIAction)
+    }
+
     render() {
         // In teach mode, hide scores after selection
         // so they can't be re-selected for non-terminal actions
@@ -841,7 +847,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                             />
                             <OF.DefaultButton
                                 data-testid="action-scorer-add-apistub-button"
-                                onClick={this.props.onEditAPIStub}
+                                onClick={this.onSelectAPIStub}
                                 ariaDescription='Create API Stub'
                                 text='API Stub'
                                 iconProps={{ iconName: 'Handwriting' }}
@@ -918,7 +924,6 @@ export interface ReceivedProps {
     newActionPreset?: NewActionPreset 
     onActionSelected: (trainScorerStep: CLM.TrainScorerStep) => void,
     onActionCreatorClosed: () => void
-    onEditAPIStub: () => void
 }
 
 const mapDispatchToProps = (dispatch: any) => {

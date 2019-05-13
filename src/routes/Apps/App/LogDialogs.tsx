@@ -398,7 +398,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.editActionThunkAsync as any
             )
 
-            // LARS TODO - put in generic function above
             await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
 
             // Should I get input for API Stub?

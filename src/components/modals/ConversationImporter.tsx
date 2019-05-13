@@ -113,6 +113,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                         context: {},
                         maskedActions: []
                     }
+                    // As a first pass, try to match by exact text
                     const action = DialogUtils.findActionByText(activity.text, this.props.actions)
                     let scorerStep: CLM.TrainScorerStep = {
                         importText: action ? undefined : activity.text,

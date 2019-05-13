@@ -437,7 +437,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 memories={renderData.memories}
                                 onActionSelected={this.onActionScorerSubmit}
                                 onActionCreatorClosed={() => {}}
-                                onEditAPIStub={this.props.onEditAPIStub}
                             />
                         }
                     </div>

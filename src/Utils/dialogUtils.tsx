@@ -488,8 +488,7 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
     let match = false
     trainDialog.rounds.forEach(round => {
         round.scorerSteps.forEach(scorerStep => {
-            let filledEntities = scorerStep.input.filledEntities//LARSround.scorerSteps[0] && round.scorerSteps[0].input ? round.scorerSteps[0].input.filledEntities : []
-            const filledIdMap = filledEntityIdMap(filledEntities, entities)
+            const filledIdMap = filledEntityIdMap(scorerStep.input.filledEntities, entities)
 
             // If it's a dummy action with imported text
             if (scorerStep.importText) {

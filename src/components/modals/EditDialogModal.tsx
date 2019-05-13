@@ -1066,7 +1066,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
                                     newActionPreset={this.state.newActionPreset}
-                                    onEditAPIStub={() => this.props.onEditAPIStub(this.props.trainDialog, this.state.selectedActivity)}
 
                                     allUniqueTags={this.props.allUniqueTags}
                                     tags={this.state.tags}
