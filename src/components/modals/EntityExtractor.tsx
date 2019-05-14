@@ -498,7 +498,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             ? <div className="editor-container__icons">
                                 <button
                                     type="button"
-                                    className={`editor-button-delete ${OF.FontClassNames.large}`}
+                                    className={`cl-icon-warning ${OF.FontClassNames.large}`}
                                     onClick={() => this.onRemoveExtractResponse(extractResponse)}
                                 >
                                     <OF.Icon iconName="Delete" />

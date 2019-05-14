@@ -50,7 +50,7 @@ class App extends React.Component<Props, ComponentState> {
       this.setState({
         loadingState: LoadingState.LOADING
       })
-      await this.props.fetchBotInfoThunkAsync(this.props.browserId)
+      await (this.props.fetchBotInfoThunkAsync(this.props.browserId) as any as Promise<void>)
       this.setState({
         loadingState: LoadingState.SUCCEEDED
       })

@@ -13,7 +13,6 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { EditDialogType } from '.'
-import { FontClassNames, Icon } from 'office-ui-fabric-react'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import { AppBase } from '@conversationlearner/models'
@@ -83,8 +82,8 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                 <div className="cl-modal_body">
                     <div className="cl-sessionmodal">
                         <div className="cl-sessionmodal-title">
-                            <div className={`cl-dialog-title cl-dialog-title--log ${FontClassNames.xxLarge}`}>
-                                <Icon iconName="UserFollowed" />Log Dialog
+                            <div className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
+                                <OF.Icon iconName="UserFollowed" />Log Dialog
                             </div>
                         </div>
                         <div className="cl-chatmodal_webchat" data-testid="chat-session-modal-webchat">

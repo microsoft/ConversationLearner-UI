@@ -330,9 +330,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             // We assume if DialogMode is Scorer, then we must have ScoreResponse
             // TODO: Fix this with better types
             const scoreResponse = this.props.scoreResponse
-            const actions = [...scoreResponse.scoredActions as CLM.ScoredBase[], ...scoreResponse.unscoredActions]
+            const allActions = [...scoreResponse.scoredActions as CLM.ScoredBase[], ...scoreResponse.unscoredActions]
             // Since actions are sorted by score descending (max first), assume first scored action is the "best" action
-            const bestAction = actions[0];
+            const bestAction = allActions[0];
 
             // Make sure there is an available action
             if ((bestAction as CLM.UnscoredAction).reason === CLM.ScoreReason.NotAvailable) {
@@ -688,14 +688,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 }
             }
             else if (column.key === 'actionScore') {
-                return column.render(action as CLM.ScoredBase, this, index)
+                return column.render(action, this, index)
             }
             else {
                 return ''
             }
         }
 
-        return column.render(action as CLM.ScoredBase, this, index)
+        return column.render(action, this, index)
     }
 
     // Create dummy item for injecting non-actions into list

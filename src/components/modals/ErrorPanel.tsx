@@ -69,7 +69,8 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
         return (
             <div>
                 <OF.DefaultButton
-                    className="cl-button-close cl-ux-flexpanel--right" style={{ marginBottom: '1em' }}
+                    className="cl-button-close cl-ux-flexpanel--right" 
+                    style={{ marginBottom: '1em' }}
                     onClick={() => this.handleClose(this.props.error.actionType)}
                 >
                     Close

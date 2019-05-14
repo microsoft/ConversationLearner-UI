@@ -12,13 +12,6 @@
     grid-gap: 0.25em;
 }
 
-.editor-button-delete {
-    background: none;
-    border: none;
-    padding: 0;
-    color: var(--color-red);
-}
-
 .editor-button-invalid {
     color: var(--cl-color-error);
 }

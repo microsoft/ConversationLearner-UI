@@ -72,23 +72,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickAdd(entity: CLM.EntityBase) {
-        const memoryValue: CLM.MemoryValue = {
-            userText: '',
-            displayText: null,
-            builtinType: null,
-            resolution: {}
-        }
-        const map = this.state.filledEntityMap.map
-
-        if (!map[entity.entityName]) {
-            map[entity.entityName] = {
-                entityId: entity.entityId,
-                values: [memoryValue]
-            }
-        }
-        else {
-            map[entity.entityName].values.push(memoryValue);
-        }
+        this.addEntity(this.state.filledEntityMap, entity)
         this.setState({ filledEntityMap: this.state.filledEntityMap })
     }
 
@@ -100,6 +84,80 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
             delete map[entity.entityName]
         }
         this.setState({ filledEntityMap: this.state.filledEntityMap })
+    }
+
+    @OF.autobind
+    onClickNext(index: number, entity: CLM.EntityBase) {
+        const editableEntities = this.getEditableEntities()
+        const map = this.state.filledEntityMap.map
+
+        // Remove value from entity
+        const removedValue = map[entity.entityName].values.splice(index, 1)
+        if (map[entity.entityName].values.length === 0) {
+            delete map[entity.entityName]
+        }
+
+        // Insert on previous entity
+        const removeIndex = editableEntities.findIndex(e => e.entityId === entity.entityId)
+        let insertIndex = removeIndex + 1
+        if (insertIndex === editableEntities.length) {
+            insertIndex = 0
+        }
+        const insertEntity = editableEntities[insertIndex]
+        this.insertValue(this.state.filledEntityMap, insertEntity, removedValue[0])
+    }
+
+    @OF.autobind
+    onClickPrev(index: number, entity: CLM.EntityBase) {
+        const editableEntities = this.getEditableEntities()
+        const map = this.state.filledEntityMap.map
+
+        // Remove value from entity
+        const removedValue = map[entity.entityName].values.splice(index, 1)
+        if (map[entity.entityName].values.length === 0) {
+            delete map[entity.entityName]
+        }
+
+        // Insert on previous entity
+        const removeIndex = editableEntities.findIndex(e => e.entityId === entity.entityId)
+        let insertIndex = removeIndex - 1
+        if (insertIndex < 0) {
+            insertIndex = editableEntities.length - 1
+        }
+        const insertEntity = editableEntities[insertIndex]
+        this.insertValue(this.state.filledEntityMap, insertEntity, removedValue[0])
+    }
+
+    insertValue(filledEntityMap: CLM.FilledEntityMap, entity: CLM.EntityBase, value: CLM.MemoryValue) {
+        const map = filledEntityMap.map
+        if (!map[entity.entityName]) {
+            this.addEntity(filledEntityMap, entity)
+            map[entity.entityName].values = [value]
+        }
+        else {
+            map[entity.entityName].values.push(value)
+        }
+        this.setState({ filledEntityMap: filledEntityMap })
+    }
+
+    addEntity(filledEntityMap: CLM.FilledEntityMap, entity: CLM.EntityBase) {
+        const memoryValue: CLM.MemoryValue = {
+            userText: '',
+            displayText: null,
+            builtinType: null,
+            resolution: {}
+        }
+        const map = filledEntityMap.map
+
+        if (!map[entity.entityName]) {
+            map[entity.entityName] = {
+                entityId: entity.entityId,
+                values: [memoryValue]
+            }
+        }
+        else {
+            map[entity.entityName].values.push(memoryValue);
+        }
     }
  
     onEnumChanged(item: OF.IDropdownOption, entity: CLM.EntityBase) {
@@ -114,9 +172,13 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         this.setState({ filledEntityMap: this.state.filledEntityMap })
     }
 
+    // Filter out negative entities and entities that should not be memorized   
+    getEditableEntities(): CLM.EntityBase[] {
+        return this.props.entities.filter(entity => !entity.positiveId && !entity.doNotMemorize)
+    }
     render() {
         const { intl } = this.props
-
+        const editableEntities = this.getEditableEntities()
         return (
             <Modal
                 isOpen={this.props.isOpen}
@@ -130,12 +192,10 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                 </div>
                 <div>
                     {
-                        this.props.entities
-                            // Filter out negative entities and entities that should not be memorized                            
-                            .filter(entity => !entity.positiveId && !entity.doNotMemorize)
-                            .map(entity => {
+                        editableEntities.map(entity => {
                                 return (
                                     <div className="teachInitBlock" key={entity.entityId}>
+                                        <OF.Label className="cl-label cl-font--emphasis" data-testid="teach-session-entity-name">{entity.entityName}</OF.Label>
                                         <OF.IconButton
                                             className="cl-icon-plain"
                                             data-testid="teach-session-add-initial-value"
@@ -144,19 +204,14 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                             ariaDescription="Add Initial Value"
                                             iconProps={{ iconName: 'AddTo' }}
                                         />
-                                        <OF.Label className="cl-label cl-font--emphasis" data-testid="teach-session-entity-name">{entity.entityName}</OF.Label>
                                         {this.state.filledEntityMap.map[entity.entityName] &&
                                             this.state.filledEntityMap.map[entity.entityName].values.map((memoryValue, index) => {
                                                 const key = `${entity.entityId}+${index}`
                                                 return (
-                                                <div key={key}>
-                                                    <OF.IconButton
-                                                        className="cl-float-left"
-                                                        data-testid="teach-session-delete-button"
-                                                        onClick={() => this.onClickRemove(index, entity)}
-                                                        ariaDescription="Remove Value"
-                                                        iconProps={{ iconName: 'Delete' }}
-                                                    />
+                                                <div 
+                                                    className="cl-modal-buttons_primary" 
+                                                    key={key}
+                                                >
                                                     {entity.entityType === CLM.EntityType.ENUM ?
                                                         <OF.Dropdown
                                                             className="cl-input--inline"
@@ -182,6 +237,31 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                                             value={memoryValue.userText || ''}
                                                         />
                                                     }
+                                                    {this.props.initMemories && (editableEntities.length > 1) &&
+                                                        <OF.IconButton
+                                                            className="cl-icon-plain"
+                                                            onClick={() => this.onClickNext(index, entity)}
+                                                            ariaDescription="Move to next Entity"
+                                                            text=""
+                                                            iconProps={{ iconName: 'Down' }}
+                                                        /> 
+                                                    }
+                                                    {this.props.initMemories && (editableEntities.length > 1) &&  
+                                                        <OF.IconButton
+                                                            className="cl-icon-plain"
+                                                            onClick={() => this.onClickPrev(index, entity)}
+                                                            ariaDescription="Move to previous Entity"
+                                                            text=""
+                                                            iconProps={{ iconName: 'Up' }}
+                                                        />
+                                                    }
+                                                    <OF.IconButton
+                                                        className="cl-icon-warning"
+                                                        data-testid="teach-session-delete-button"
+                                                        onClick={() => this.onClickRemove(index, entity)}
+                                                        ariaDescription="Remove Value"
+                                                        iconProps={{ iconName: 'Delete' }}
+                                                    />
                                                 </div>
                                                 )
                                             })

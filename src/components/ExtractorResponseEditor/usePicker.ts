@@ -96,6 +96,7 @@ export const usePicker = (
                 event.stopPropagation()
                 event.preventDefault()
                 break;
+            default:
         }
 
         setHighlighIndex(modifyFunction(highlightIndex, matchedOptions.length - 1))

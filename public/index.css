@@ -406,6 +406,17 @@ i[data-icon-name="Edit"]:hover {
   color: var(--color-red);
 }
 
+
+.cl-icon-warning {
+  border: none !important;
+  background-color: transparent !important;
+  color: var(--cl-color-error)
+}
+
+.cl-icon-warning:hover {
+  color: var(--color-red);
+}
+
 /* botframework-webchat component override */
 .wc-chatview-panel:focus {
   outline: 0;

@@ -5,7 +5,7 @@
 import * as React from 'react'
 import './TokenNode.css'
 
-/* Simulate entity component props which have children */
+// Simulate entity component props which have children */
 interface EntityComponentProps {
     editor: any
     node: any
@@ -32,7 +32,13 @@ class TokenNode extends React.Component<Props, {}> {
 
     render() {
         return (
-            <span className="cl-token-node" data-testid="token-node-entity-value" {...this.props.attributes} onMouseDown={this.onMouseDown}>
+            <span 
+                className="cl-token-node" 
+                data-testid="token-node-entity-value" 
+                {...this.props.attributes} 
+                onMouseDown={this.onMouseDown}
+                role="button"
+            >
                 {...this.props.children}
             </span>
         )
