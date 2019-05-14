@@ -8,6 +8,7 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react';
 import * as Util from '../../Utils/util'
 import * as DialogEditing from '../../Utils/dialogEditing'
+import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import ActionCreatorEditor, { NewActionPreset } from './ActionCreatorEditor'
 import AdaptiveCardViewer , { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -16,8 +17,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { State } from '../../types'
-import { createActionThunkAsync } from '../../actions/actionActions'
-import { toggleAutoTeach } from '../../actions/teachActions'
 import { onRenderDetailsHeader } from '../ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
@@ -124,7 +123,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
 
                 if (CLM.ActionBase.isStubbedAPI(action)) {
-                    return <span className="cl-font--warning">STUBBED API CALL</span>
+                    return <span className="cl-font--warning cl-action-scorer-warning">STUBBED API CALL</span>
                 }
                 else if (action.actionType === CLM.ActionTypes.TEXT) {
                     const textAction = new CLM.TextAction(action)
@@ -682,10 +681,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 )
             } else if (column.key === 'actionResponse') {
                 if (this.props.newActionPreset) {
-                    return <span className="cl-font--warning">STUBBED ACTION</span>;
+                    return <span className="cl-font--warning cl-action-scorer-warning">IMPORTED ACTION</span>;
                 }
                 else {
-                    return <span className="cl-font--warning">MISSING ACTION</span>;
+                    return <span className="cl-font--warning cl-action-scorer-warning">MISSING ACTION</span>;
                 }
             }
             else if (column.key === 'actionScore') {
@@ -828,7 +827,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onSelectAPIStub() {
-        const stubAPIAction = await DialogEditing.getStubAPIAction(this.props.app.appId, this.props.actions, createActionThunkAsync as any)
+        const stubAPIAction = await DialogEditing.getStubAPIAction(this.props.app.appId, this.props.actions, this.props.createActionThunkAsync as any)
         this.handleActionSelection(stubAPIAction)
     }
 
@@ -960,8 +959,8 @@ export interface ReceivedProps {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createActionThunkAsync,
-        toggleAutoTeach,
+        createActionThunkAsync: actions.action.createActionThunkAsync,
+        toggleAutoTeach: actions.teach.toggleAutoTeach
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {

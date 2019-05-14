@@ -240,7 +240,10 @@ class Index extends React.Component<Props, ComponentState> {
                                 <OF.Icon iconName="List" /><span>Entities</span><span className="count">{this.state.modelLoaded ? this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).filter(e => !e.doNotMemorize).length : ''}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-actions" to={{ pathname: `${match.url}/actions`, state: { app } }}>
-                                <OF.Icon iconName="List" /><span>Actions</span><span className="count">{this.state.modelLoaded ? this.props.actions.length : ''}</span>
+                                <OF.Icon iconName="List" /><span>Actions</span>
+                                <span className="count">
+                                    {this.state.modelLoaded ? this.props.actions.filter(a => !CLM.ActionBase.isStubbedAPI(a)).length : ''}
+                                </span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-train-dialogs" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
                                 <OF.Icon iconName="List" />
