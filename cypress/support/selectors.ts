@@ -110,6 +110,7 @@ const selectors = {
             buttonCancel: '[data-testid="entity-conflict-cancel"]',
         },
         error: '[data-testid="dialog-modal-error-noselection"]',
+        warning: '[data-testid="dialog-modal-warning"]',
     },
     logDialogs: {
         buttonCreate: '[data-testid="log-dialogs-new-button"]',
