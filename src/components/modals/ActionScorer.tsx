@@ -8,9 +8,9 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react';
 import * as Util from '../../Utils/util'
 import * as DialogEditing from '../../Utils/dialogEditing'
-import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import ActionCreatorEditor, { NewActionPreset } from './ActionCreatorEditor'
+import AdaptiveCardViewer , { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
 import { compareTwoStrings } from 'string-similarity'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -25,8 +25,14 @@ import './ActionScorer.css'
 
 const MISSING_ACTION = 'missing_action'
 
+interface ActionForRender extends CLM.ScoredBase {
+    similarityScore?: number
+    score?: number
+    reason?: CLM.ScoreReason | null
+}
+
 interface IRenderableColumn extends OF.IColumn {
-    getSortValue: (scoreBase: CLM.ScoredBase, component: ActionScorer) => number | string
+    getSortValue: (actionForRender: ActionForRender, component: ActionScorer) => number | string
     render: (scoreBase: CLM.ScoredBase, component: ActionScorer, index: number) => React.ReactNode
 }
 
@@ -177,28 +183,25 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             isSorted: true,
             isSortedDescending: true,
-            getSortValue: (scoredBase, component) => {
+            getSortValue: (actionForRender, component) => {
 
-                let score: number
+                let score: number | undefined
 
-                // If an import action, sort by string similarity
-                if (component.props.newActionPreset && scoredBase.actionId !== MISSING_ACTION) {
-                    const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
-                    const actionText = CLM.ActionBase.GetPayload(scoredBase, defaultEntityMap)
-                    score = compareTwoStrings(actionText, component.props.newActionPreset.text)
+                // If an import action, sort by string similarity to existing actions
+                if (component.props.newActionPreset) {
+                    score = actionForRender.similarityScore || 0
                 }
                 else {
-                    // TODO: Fix type so we can use typed property access
-                    score = scoredBase['score']
+                    score = actionForRender.score
                 }
 
                 // If score base does not have score it's either not scorable or not available
                 // prioritize not scorable over not available but both at bottom of list
                 if (!score) {
-                    if (scoredBase['reason'] === CLM.ScoreReason.NotAvailable) {
+                    if (actionForRender.reason === CLM.ScoreReason.NotAvailable) {
                         return -100;
                     } else {
-                        const isAvailable = component.isUnscoredActionAvailable(scoredBase as CLM.UnscoredAction);
+                        const isAvailable = component.isUnscoredActionAvailable(actionForRender as CLM.UnscoredAction);
                         return isAvailable
                             ? -1
                             : -10
@@ -265,7 +268,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 interface ComponentState {
     actionCreatorModalOpen: boolean
     columns: OF.IColumn[],
-    scoredItems: CLM.ScoredBase[],
+    actionForRender: CLM.ScoredBase[],
     sortColumn: IRenderableColumn
     haveEdited: boolean
     cardViewerAction: CLM.ActionBase | null
@@ -283,7 +286,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.state = {
             actionCreatorModalOpen: false,
             columns,
-            scoredItems: [],
+            actionForRender: [],
             sortColumn: columns[2], // "score"
             haveEdited: false,
             cardViewerAction: null,
@@ -297,7 +300,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             this.autoSelect()
             this.setState({
                 haveEdited: false,
-                scoredItems: this.getScoredItems()
+                actionForRender: this.getActionsForRender()
             })
         }
     }
@@ -305,7 +308,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     componentDidMount() {
         this.autoSelect();
         this.setState({
-            scoredItems: this.getScoredItems()
+            actionForRender: this.getActionsForRender()
         })
     }
 
@@ -576,7 +579,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
             // If selected action is EndSession, it's ok to replace it with another EndSession
             // If no selected actionId, first item is selected one
-            const selectedActionId = this.props.selectedActionId || (this.state.scoredItems.length > 0 ? this.state.scoredItems[0].actionId : null)
+            const selectedActionId = this.props.selectedActionId || (this.state.actionForRender.length > 0 ? this.state.actionForRender[0].actionId : null)
             if (selectedActionId) {
                 let selectedAction = this.props.actions.find(a => a.actionId === selectedActionId)
                 if (selectedAction && selectedAction.actionType === CLM.ActionTypes.END_SESSION) {
@@ -707,12 +710,33 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
-    getScoredItems(): CLM.ScoredBase[] {
+    // Calculate distance between imported bot action and given action
+    calcSimilarity(scoredBase: CLM.ScoredBase): number {
+        if (!this.props.newActionPreset || scoredBase.actionId === MISSING_ACTION) {
+            return 0
+        }
+        const defaultEntityMap = Util.getDefaultEntityMap(this.props.entities)
+        let actionText = ""
+        if (scoredBase.actionType === CLM.ActionTypes.TEXT) {
+            actionText = CLM.ActionBase.GetPayload(scoredBase, defaultEntityMap)
+        }
+        else if (scoredBase.actionType === CLM.ActionTypes.CARD) {
+            const cardAction = new CLM.CardAction(scoredBase as any)
+            const template = this.props.botInfo.templates.find((t) => t.name === cardAction.templateName)
+            if (template) {
+                const renderedActionArguments = cardAction.renderArguments(defaultEntityMap, { fallbackToOriginal: true })
+                actionText = getRawTemplateText(template, renderedActionArguments)
+            }
+        }
+        return compareTwoStrings(actionText, this.props.newActionPreset.text)
+    }
+
+    getActionsForRender(): ActionForRender[] {
         if (!this.props.scoreResponse) {
             return []
         }
 
-        let scoredItems = [...this.props.scoreResponse.scoredActions as CLM.ScoredBase[], ...this.props.scoreResponse.unscoredActions]
+        let scoredItems = [...this.props.scoreResponse.scoredActions as ActionForRender[], ...this.props.scoreResponse.unscoredActions as ActionForRender[]]
 
         // Need to reassemble to scored item has full action info and reason
         scoredItems = scoredItems.map(scoredBase => {
@@ -731,7 +755,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Add any new actions that weren't included in scores
         // NOTE: This will go away when we always rescore the step
         const missingActions = this.props.actions.filter(a => scoredItems.find(si => si.actionId === a.actionId) == null)
-        const missingItems = missingActions.map<CLM.ScoredBase>(action =>
+        const missingItems = missingActions.map<ActionForRender>(action =>
             ({
                 ...action,
                 reason: CLM.ScoreReason.NotCalculated,
@@ -760,7 +784,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             ))
 
         const missingSetEntityItems = missingSetEntityActions
-            .map<CLM.ScoredBase>(action =>
+            .map<ActionForRender>(action =>
                 ({
                     ...action,
                     reason: CLM.ScoreReason.NotCalculated,
@@ -768,6 +792,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 }))
 
         scoredItems = [...scoredItems, ...missingSetEntityItems]
+
+        // If imported action selected, pre-calculate sort scores
+        if (this.props.newActionPreset) { 
+            scoredItems = scoredItems.map(si => ({
+                ...si,
+                similarityScore: this.calcSimilarity(si), 
+            }))
+        }
 
         if (this.state.sortColumn) {
             const sortColumn = this.state.sortColumn
@@ -821,7 +853,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         return (
             <div>
-                {this.state.scoredItems.length === 0 && (!this.props.autoTeach && this.props.canEdit)
+                {this.state.actionForRender.length === 0 && (!this.props.autoTeach && this.props.canEdit)
                     ? <div className="cl-action-scorer-placeholder">
                         <div className={`cl-action-scorer-placeholder__description`}>
                             <h1 className={OF.FontClassNames.xxLarge}>Create an Action</h1>
@@ -855,7 +887,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         </div>
                     <OF.DetailsList
                         className={OF.FontClassNames.mediumPlus}
-                        items={this.state.scoredItems}
+                        items={this.state.actionForRender}
                         columns={this.state.columns}
                         checkboxVisibility={OF.CheckboxVisibility.hidden}
                         onRenderItemColumn={this.renderItemColumn}
