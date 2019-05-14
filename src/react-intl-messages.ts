@@ -439,6 +439,7 @@ export enum FM {
     TEACHSESSIONINIT_INPUT_PLACEHOLDER = 'TeachSessionInit.input.placeholder',
     TEACHSESSIONINIT_TITLE = 'TeachSessionInit.title',
     TEACHSESSIONSTUB_TITLE = 'TeachSessionStub.title',
+    TEACHSESSIONSTUB_DESCRIPTION = 'TeachSessionStub.description',
 
     // TeachSessionModal
     TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE = 'TeachSessionModal.teach.confirmDelete.title',
@@ -1108,9 +1109,10 @@ export default {
         [FM.TEACHSESSIONADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
         [FM.TEACHSESSIONADMIN_ACTION_TITLE]: 'Action',
 
-        [FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER]: 'Initial value...',
+        [FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER]: 'Entity value...',
         [FM.TEACHSESSIONINIT_TITLE]: 'Set Initial Entity Values',
-        [FM.TEACHSESSIONSTUB_TITLE]: 'Set Post-API Call Entity Values',
+        [FM.TEACHSESSIONSTUB_TITLE]: 'Stub API Output',
+        [FM.TEACHSESSIONSTUB_DESCRIPTION]: 'Set Memory values as they should be after API call',
 
         // TeachSessionModal
         [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this dialog?',

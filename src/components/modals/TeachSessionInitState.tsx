@@ -7,6 +7,8 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react';
 import EntityCreatorEditor from './EntityCreatorEditor'
 import FormattedMessageId from '../FormattedMessageId'
+import HelpIcon from '../HelpIcon'
+import { TipType } from '../ToolTips/ToolTips'
 import { returntypeof } from 'react-redux-typescript';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -189,6 +191,12 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                     <span className={OF.FontClassNames.xxLarge}>
                         <FormattedMessageId id={this.props.initMemories ? FM.TEACHSESSIONSTUB_TITLE : FM.TEACHSESSIONINIT_TITLE} />
                     </span>
+                    {this.props.initMemories &&
+                        <div className={OF.FontClassNames.medium}>
+                            <FormattedMessageId id={FM.TEACHSESSIONSTUB_DESCRIPTION}/>
+                            <HelpIcon tipType={TipType.STUB_API}/>
+                        </div>
+                    }
                 </div>
                 <div>
                     {
@@ -232,7 +240,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                                                             onChanged={text => this.onChanged(index, text, entity)}
                                                             placeholder={intl.formatMessage({
                                                                 id: FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER,
-                                                                defaultMessage: "Initial Value..."
+                                                                defaultMessage: "Value..."
                                                             })}
                                                             value={memoryValue.userText || ''}
                                                         />

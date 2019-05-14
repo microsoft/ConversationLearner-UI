@@ -58,6 +58,9 @@ export enum TipType {
 
     MEMORY_CONVERTER = 'memoryConverter',
     MEMORY_MANAGER = 'memoryManager',
+ 
+    MODEL_VERSION_EDITING = 'modelVersionEditing',
+    MODEL_VERSION_LIVE = 'modelVersionLIve',
 
     PACKAGECREATOR_LIVE_TOGGLE = 'packageCreatorLiveToggle',
 
@@ -76,8 +79,7 @@ export enum TipType {
     REPLAYERROR_DESC_ACTION_UNDEFINED = "REPLAYERROR_DESC_ACTION_UNDEFINED",
     REPLAYERROR_DESC_ACTION_STUB = "REPLAYERROR_DESC_ACTION_STUB",
 
-    MODEL_VERSION_EDITING = 'modelVersionEditing',
-    MODEL_VERSION_LIVE = 'modelVersionLIve'
+    STUB_API = 'STUB_API'
 }
 
 export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps, defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) {
@@ -838,6 +840,18 @@ export function getTip(tipType: string) {
                         <li>Create a new action</li>
                         <li>Delete this utterance</li>
                     </ol>
+                </div>
+            )
+
+        case TipType.STUB_API:
+            return (
+                <div>
+                    <h2>Stub APIs</h2>
+                    <p>Stub APIs can be used as placeholders for real API calls.  This can be useful if you want to define your conversation flow before writing any code.</p>
+                    <p>In an API Stub you specify what should be in the Bot's memory after the API is called.</p>
+                    <p>For example, you may need an API call to check whether an item is in stock (say for a pizza bot).  Your temporary stub call can move an item from the "Toppings" Entity to the "OutOfStock" Entity </p>
+                    <p>API Stubs must be replaced with actual API callbacks for your Bot to function.</p>
+                    <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
                 </div>
             )
 
