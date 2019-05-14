@@ -921,13 +921,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             }
             else {
                 return (
-                    <div className="cl-editdialog-error">
-                        <div className={OF.FontClassNames.mediumPlus}>
-                            {this.props.editType === EditDialogType.LOG_ORIGINAL
-                                ? <FormattedMessageId id={FM.REPLAYERROR_EXISTS_LOG} />
-                                : <FormattedMessageId id={FM.REPLAYERROR_EXISTS} />
-                            }
-                        </div>
+                    <div
+                        className={`cl-editdialog-error ${OF.FontClassNames.mediumPlus}`}
+                        data-testid="dialog-modal-error-noselection">
+                        {this.props.editType === EditDialogType.LOG_ORIGINAL
+                            ? <FormattedMessageId id={FM.REPLAYERROR_EXISTS_LOG} />
+                            : <FormattedMessageId id={FM.REPLAYERROR_EXISTS} />
+                        }
                     </div>
                 )
             }

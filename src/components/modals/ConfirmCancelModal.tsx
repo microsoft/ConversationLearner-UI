@@ -51,9 +51,8 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
             {typeof props.message === 'function' && props.message()}
             {props.optionMessage
                 && (
-                    <div className="cl-confirm-cancel_option">
+                    <div className="cl-confirm-cancel_option" data-testid="confirm-cancel-option">
                         <OF.Checkbox
-                            data-testid="confirm-cancel-option"
                             label={props.optionMessage}
                             checked={option}
                             onChange={() => setOption(o => !o)}
