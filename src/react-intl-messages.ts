@@ -139,6 +139,7 @@ export enum FM {
     BUTTON_CANCEL = 'Button.CANCEL',
     BUTTON_CLOSE = 'Button.CLOSE',
     BUTTON_DELETE = 'Button.DELETE',
+    BUTTON_EXPORT = 'Button.EXPORT',
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
     BUTTON_OK = 'Button.OK',
@@ -290,6 +291,11 @@ export enum FM {
     ERROR_PRIMARYBUTTON_TEXT = 'Error.text',
     ERROR_TOOMANYCHARACTERS = 'Error.tooManyChars',
 
+    // ExportChoice 
+    EXPORT_CHOICE_TITLE = 'ConversationImporter.title',
+    EXPORT_CHOICE_DESCRIPTION = 'ConversationImporter.description',
+    EXPORT_CHOICE_LABEL = 'ConversationImporter.label',
+
     // ExtractConflictModal
     EXTRACTCONFLICTMODAL_TITLE = 'ExtractConflictModal.title',
     EXTRACTCONFLICTMODAL_SUBTITLE = 'ExtractConflictModal.subtitle',
@@ -393,7 +399,6 @@ export enum FM {
     SETTINGS_COPYBUTTONARIALDESCRIPTION = 'Settings.copyButtonArielDescription',
     SETTINGS_COPYBUTTONTEXT = 'Settings.copyButtonText',
     SETTINGS_EXPORTBUTTONARIALDESCRIPTION = 'Settings.exportButtonArielDescription',
-    SETTINGS_EXPORTBUTTONTEXT = 'Settings.exportButtonText',
     SETTINGS_FIELDERROR_REQUIREDVALUE = 'Settings.fieldError.requiredValue',
     SETTINGS_FIELDERROR_ALPHANUMERIC = 'Settings.fieldError.alphanumeric',
     SETTINGS_FIELDERROR_DISTINCT = 'Settings.fieldError.distinct',
@@ -712,6 +717,7 @@ export default {
         [FM.BUTTON_CANCEL]: 'Cancel',
         [FM.BUTTON_CLOSE]: 'Close',
         [FM.BUTTON_DELETE]: 'Delete',
+        [FM.BUTTON_EXPORT]: 'Export',
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
         [FM.BUTTON_OK]: 'OK',
@@ -797,7 +803,6 @@ export default {
         [FM.SETTINGS_COPYBUTTONARIALDESCRIPTION]: 'Copy Model',
         [FM.SETTINGS_COPYBUTTONTEXT]: 'Copy',
         [FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION]: 'Export Model to File',
-        [FM.SETTINGS_EXPORTBUTTONTEXT]: 'Export',
         [FM.SETTINGS_FIELDERROR_REQUIREDVALUE]: 'Required Value',
         [FM.SETTINGS_FIELDERROR_ALPHANUMERIC]: 'Model names may only contain alphanumeric characters',
         [FM.SETTINGS_FIELDERROR_DISTINCT]: 'Name is already in use.',
@@ -1041,6 +1046,11 @@ export default {
         [FM.ERROR_PRIMARYBUTTON_ARIADESCRIPTION]: 'Ok',
         [FM.ERROR_PRIMARYBUTTON_TEXT]: 'Ok',
         [FM.ERROR_TOOMANYCHARACTERS]: 'Current value exceeds maximum supported length.',
+
+        // ExportChoice
+        [FM.EXPORT_CHOICE_TITLE]: 'Export Model',
+        [FM.EXPORT_CHOICE_DESCRIPTION]: 'Save Model data to a file on disk',
+        [FM.EXPORT_CHOICE_LABEL]: 'Export Format',
 
         // ExtractConflictModal
         [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Inconsistent Entity Labels',

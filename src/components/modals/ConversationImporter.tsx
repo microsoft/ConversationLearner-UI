@@ -5,6 +5,7 @@
 import * as React from 'react';
 import * as BB from 'botbuilder'
 import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../Utils/util'
 import * as CLM from '@conversationlearner/models'
 import * as DialogEditing from '../../Utils/dialogEditing'
 import * as DialogUtils from '../../Utils/dialogUtils'
@@ -211,14 +212,8 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                                 <OF.PrimaryButton
                                     data-testid="model-creator-locate-file-button"
                                     className="cl-action-creator-file-button"
-                                    ariaDescription={this.props.intl.formatMessage({
-                                        id: FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Choose a file'
-                                    })}
-                                    text={this.props.intl.formatMessage({
-                                        id: FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT,
-                                        defaultMessage: 'Choose'
-                                    })}
+                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION)} 
+                                    text={Util.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT)} 
                                 />
                                 <OF.TextField
                                     disabled={true}

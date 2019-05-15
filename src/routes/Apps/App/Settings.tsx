@@ -7,10 +7,9 @@ import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import * as TC from '../../../components/tipComponents'
 import * as ToolTip from '../../../components/ToolTips/ToolTips'
-import * as OBIUtil from '../../../Utils/obiUtil'
 import * as Util from '../../../Utils/util'
-import * as AdmZip from 'adm-zip'
 import actions from '../../../actions'
+import ExportChoice from '../../../components/modals/ExportChoice'
 import PackageTable from '../../../components/modals/PackageTable'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
@@ -21,10 +20,8 @@ import { State, AppCreatorType } from '../../../types'
 import { Expando, AppCreator } from '../../../components/modals'
 import { bindActionCreators } from 'redux'
 import { returntypeof } from 'react-redux-typescript'
-import { saveAs } from 'file-saver'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities'
 import './Settings.css'
 
 interface ComponentState {
@@ -43,7 +40,8 @@ interface ComponentState {
     isPackageExpandoOpen: boolean,
     isSettingsExpandoOpen: boolean,
     isAppCopyModalOpen: boolean
-    isConfirmDeleteAppModalOpen: boolean
+    isConfirmDeleteAppModalOpen: boolean,
+    isExportChoiceOpen: boolean
 }
 
 class Settings extends React.Component<Props, ComponentState> {
@@ -66,7 +64,8 @@ class Settings extends React.Component<Props, ComponentState> {
             isPackageExpandoOpen: false,
             isSettingsExpandoOpen: false,
             isAppCopyModalOpen: false,
-            isConfirmDeleteAppModalOpen: false
+            isConfirmDeleteAppModalOpen: false,
+            isExportChoiceOpen: false
         }
     }
 
@@ -102,7 +101,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     onChangedName(text: string) {
         this.setState({
             appNameVal: text,
@@ -110,7 +109,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onChangedBotId(text: string) {
         this.setState({
             newBotVal: text,
@@ -118,7 +117,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onChangedMarkdown(text: string) {
         this.setState({
             markdownVal: text,
@@ -126,7 +125,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onChangedVideo(text: string) {
         this.setState({
             videoVal: text,
@@ -134,7 +133,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onClickAddBot() {
         const newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
         this.setState({
@@ -143,21 +142,21 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onClickCopyApp() {
         this.setState({
             isAppCopyModalOpen: true
         })
     }
 
-    @autobind
+    @OF.autobind
     onCancelAppCopyModal() {
         this.setState({
             isAppCopyModalOpen: false
         })
     }
 
-    @autobind
+    @OF.autobind
     async onSubmitAppCopyModal(app: CLM.AppBase) {
         const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
         this.setState({
@@ -165,7 +164,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }, () => this.props.onCreateApp(app, appDefinition))
     }
 
-    @autobind
+    @OF.autobind
     onToggleLoggingOn() {
         this.setState({
             isLoggingOnVal: !this.state.isLoggingOnVal,
@@ -173,7 +172,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onRenderBotListRow(item?: any, index?: number) {
         return (
             <div>
@@ -182,7 +181,7 @@ class Settings extends React.Component<Props, ComponentState> {
         )
     }
 
-    @autobind
+    @OF.autobind
     onClickDiscard() {
         const app = this.props.app
         this.setState({
@@ -198,7 +197,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onClickSave() {
         const app = this.props.app
         const modifiedApp: CLM.AppBase = {
@@ -268,46 +267,37 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
-    async onClickExport() {
-        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
-        const blob = new Blob([JSON.stringify(appDefinition)], { type: "text/plain;charset=utf-8" })
-        saveAs(blob, `${this.props.app.appName}.cl`);
-    }
-
-    @autobind
-    async onClickExportOBI() {
-        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
-        
-        const transcripts = await OBIUtil.toTranscripts(appDefinition, this.props.app.appId, this.props.user, this.props.fetchHistoryThunkAsync as any)
-        
-        const zip = new AdmZip()
-        transcripts.forEach(t => {
-            const content = JSON.stringify(t.activities)
-           // const blob = new Blob([JSON.stringify(t.activities)], { type: "text/plain;charset=utf-8" })
-            zip.addFile(`${CLM.ModelUtils.generateGUID()}.transcript`, Buffer.alloc(content.length, content))
-        })
-        const zipBuffer = zip.toBuffer()
-        const zipBlob = new Blob([zipBuffer])
-
-        saveAs(zipBlob, `${this.props.app.appName}.zip`);
-    }
-
-    @autobind
+    @OF.autobind // LARS OF
     onClickCopy() {
         this.setState({
             isAppCopyModalOpen: true
         })
     }
 
-    @autobind
+    //--- EXPORT ------
+    @OF.autobind
+    onClickExport() {
+        this.setState({
+            isExportChoiceOpen: true
+        })
+    }
+
+    @OF.autobind
+    onCloseExportModal() {
+        this.setState({
+            isExportChoiceOpen: false
+        })
+    }
+
+    //--- DELETE ------
+    @OF.autobind
     onClickDelete() {
         this.setState({
             isConfirmDeleteAppModalOpen: true
         })
     }
 
-    @autobind
+    @OF.autobind
     onConfirmDeleteApp() {
         this.props.onDeleteApp(this.props.app.appId)
         this.setState({
@@ -315,7 +305,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onCancelDeleteModal() {
         this.setState({
             isConfirmDeleteAppModalOpen: false
@@ -369,14 +359,8 @@ class Settings extends React.Component<Props, ComponentState> {
                     <div className="cl-buttons-row">
                         <OF.DefaultButton
                             onClick={this.onClickExport}
-                            ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION)}
-                            text={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONTEXT)}
-                            iconProps={{ iconName: 'DownloadDocument' }}
-                        />
-                        <OF.DefaultButton
-                            onClick={this.onClickExportOBI}
-                            ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION)}
-                            text={"Export to OBI"}
+                            ariaDescription={Util.formatMessageId(intl, FM.BUTTON_EXPORT)}
+                            text={Util.formatMessageId(intl, FM.BUTTON_EXPORT)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
                         <OF.DefaultButton
@@ -539,6 +523,13 @@ class Settings extends React.Component<Props, ComponentState> {
                     onOK={this.onConfirmDeleteApp}
                     onCancel={this.onCancelDeleteModal}
                 />
+                {this.state.isExportChoiceOpen &&
+                    <ExportChoice
+                        app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
+                        onClose={this.onCloseExportModal}
+                    />
+                }
             </div>
         );
     }
@@ -550,7 +541,6 @@ const mapDispatchToProps = (dispatch: any) => {
         editAppLiveTagThunkAsync: actions.app.editAppLiveTagThunkAsync,
         fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
         deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync,
-        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
