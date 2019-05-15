@@ -15,7 +15,17 @@ import * as helpers from '../support/Helpers'
 // However, there are cases where the caller may want to explicitly specify these autopopulated 
 // values anyway, and this code does allow for that.
 
-export function CreateNewAction({ response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' }) {
+export function CreateNewAction({ 
+    response, 
+    expectedEntities, 
+    requiredEntities, 
+    disqualifyingEntities, 
+    uncheckWaitForResponse, 
+    name,       // Name of API
+    logicArgs,  // provide an array of strings
+    renderArgs, // provide an array of strings
+    type = 'TEXT'
+  }) {
   // We do this first since we had a bug (1910) where it is not reset by the UI when
   // type END_SESSION is selected.
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
@@ -28,7 +38,17 @@ export function CreateNewAction({ response, expectedEntities, requiredEntities, 
   actionModal.ClickCreateButton()
 }
 
-export function CreateNewActionThenVerifyInGrid({ response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' }) {
+export function CreateNewActionThenVerifyInGrid({ 
+    response, 
+    expectedEntities, 
+    requiredEntities, 
+    disqualifyingEntities, 
+    uncheckWaitForResponse, 
+    name,       // Name of API
+    logicArgs,  // provide an array of strings
+    renderArgs, // provide an array of strings
+    type = 'TEXT' 
+  }) {
   modelPage.NavigateToActions()
   actionsGrid.ClickNewAction()
 

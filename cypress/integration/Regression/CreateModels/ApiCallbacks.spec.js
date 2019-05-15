@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as entities from '../../../support/Entities'
+import * as actions from '../../../support/Actions'
 import * as helpers from '../../../support/Helpers'
 
 describe('All Entity Types - CreateModels', () => {
@@ -28,7 +29,7 @@ describe('All Entity Types - CreateModels', () => {
 
   context('Create Actions', () => {
     it('Should create Action', () => {
-      
+      actions.CreateNewActionThenVerifyInGrid({ type: 'API', response: common.whatsYourName, expectedEntities: ['name'], disqualifyingEntities: ['name'] })
     })
 
     it('Should create Action', () => {

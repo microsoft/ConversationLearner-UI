@@ -26,6 +26,22 @@ export function TypeResponse(textToType) {
   })
 }
 
+export function TypeApiLogicArgs(args) {
+  cy.Get('label')
+    .contains('Logic Arguments')
+    .next('div.editor-container')
+    .find('div[data-slate-editor="true"]')
+    .then(elements => {
+      if (elements.length != args.length) {
+        throw new Error(`Test Code Error: The API takes ${elements.length} arguments, but test code supplied ${args.length}`)
+      }
+
+      for (let i = 0; i < args.length; i++) {
+        cy.wrap(element[i]).clear().type(arg)
+      }
+    })
+}
+
 // Pass in an undefined 'entityNames' to just clear the field
 function TypeMultipleEntities(selector, entityNames) {
   cy.Get('.cl-modal_body').within(() => {
