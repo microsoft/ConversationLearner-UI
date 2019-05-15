@@ -294,17 +294,6 @@ describe('Action Deletion', () => {
 
         describe('preserve worst validity', () => {
             it('dialog should remain INVALID after deletion operation which is VALID', () => {
-                // navigate to actions
-                // select terminal action 5
-                // delete action with option
-                // open affect dialog
-                // verify invalid
-                // close
-                // navigate to actions
-                // select non-terminal action 6
-                // delete action with option
-                // open affect dialog
-                // verify invalid
                 cy.get(s.actions.textResponse)
                     .contains(testData.actions.terminal3)
                     .click()
