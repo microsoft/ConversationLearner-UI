@@ -16,12 +16,11 @@ import * as helpers from '../support/Helpers'
 // values anyway, and this code does allow for that.
 
 export function CreateNewAction({ 
-    response, 
+    responseNameData, // TEXT-response, API-name, CARD-name, END_SESSION-data
     expectedEntities, 
     requiredEntities, 
     disqualifyingEntities, 
     uncheckWaitForResponse, 
-    name,       // Name of API
     logicArgs,  // provide an array of strings
     renderArgs, // provide an array of strings
     type = 'TEXT'
@@ -31,7 +30,16 @@ export function CreateNewAction({
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
 
   actionModal.SelectType(type)
-  actionModal.TypeResponse(response)
+  switch(type) {
+    case 'TEXT': 
+      actionModal.TypeResponse(responseNameData)
+      break;
+    case 'API':
+      actionModal.SelectApi(responseNameData)
+      if (logicArgs) actionModal.TypeApiLogicArgs(logicArgs)
+      if (renderArgs) actionModal.TypeApiRenderArgs(renderArgs)
+      break;
+  }
   if (expectedEntities) actionModal.TypeExpectedEntity(expectedEntities)
   if (requiredEntities) actionModal.TypeRequiredEntities(requiredEntities)
   if (disqualifyingEntities) actionModal.TypeDisqualifyingEntities(disqualifyingEntities)
@@ -39,12 +47,11 @@ export function CreateNewAction({
 }
 
 export function CreateNewActionThenVerifyInGrid({ 
-    response, 
+    responseNameData, // TEXT-response, API-name, CARD-name, END_SESSION-data
     expectedEntities, 
     requiredEntities, 
     disqualifyingEntities, 
     uncheckWaitForResponse, 
-    name,       // Name of API
     logicArgs,  // provide an array of strings
     renderArgs, // provide an array of strings
     type = 'TEXT' 
@@ -54,20 +61,23 @@ export function CreateNewActionThenVerifyInGrid({
 
   CreateNewAction(arguments[0])
 
-  const requiredEntitiesFromResponse = ExtractEntities(response)
-  response = response.replace(/{enter}/g, '')
+  const requiredEntitiesFromResponse = []
+  if (type === 'TEXT') {
+    requiredEntitiesFromResponse = ExtractEntities(responseNameData)
+  }
+  responseNameData = responseNameData.replace(/{enter}/g, '')
 
   // Get the row that we are going to validate and assign a Cypress Alias to it.
   // If we skip this step, the validations that follow will fail.
-  if (type === 'END_SESSION') actionsGrid.GetEndSessionRowToBeValidated(response)
-  else actionsGrid.GetRowToBeValidated(response)
+  actionsGrid.GetRowToBeValidated(type, responseNameData)
   
+  actionsGrid.ValidateApi()
   actionsGrid.ValidateActionType(type)
   actionsGrid.ValidateRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
   actionsGrid.ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)
   actionsGrid.ValidateExpectedEntities(expectedEntities)
   
-  // Type END_SESSION must have "Wait for Response" checked even if user unchecks it.
+  // Type END_SESSION must have "Wait for Response" checked even if uncheckWaitForResponse is true.
   actionsGrid.ValidateWaitForResponse((type === 'END_SESSION') || !uncheckWaitForResponse)
 }
 

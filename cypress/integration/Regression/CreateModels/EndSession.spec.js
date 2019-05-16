@@ -21,9 +21,9 @@ describe('End Session - Create Model', () => {
     })
 
     it('Should create three Actions', () => {
-      actions.CreateNewActionThenVerifyInGrid({ response: "Hello" })
-      actions.CreateNewActionThenVerifyInGrid({ response: "Okay" })
-      actions.CreateNewActionThenVerifyInGrid({ type: 'END_SESSION', response: "Goodbye" })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: "Hello" })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: "Okay" })
+      actions.CreateNewActionThenVerifyInGrid({ type: 'END_SESSION', responseNameData: "Goodbye" })
     })
   })
 

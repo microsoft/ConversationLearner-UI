@@ -24,12 +24,12 @@ describe("What's Your Name - CreateModels", () => {
     })
 
     it('Should create a simple Action that expectes the "name" Entity as a user response', () => {
-      actions.CreateNewActionThenVerifyInGrid({ response: common.whatsYourName, expectedEntities: ['name'] })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: common.whatsYourName, expectedEntities: ['name'] })
     })
 
     it('Should create another simple Action that says, "Hello $name"', () => {
       // NOTE: the {enter} in this call is necessary to triger the entity detection.
-      actions.CreateNewActionThenVerifyInGrid({ response: 'Hello $name{enter}' })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'Hello $name{enter}' })
     })
   })
   // Manually EXPORT this to fixtures folder and name it 'z-whatsYourName.cl'
