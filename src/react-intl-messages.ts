@@ -811,7 +811,7 @@ export default {
         [FM.SETTINGS_MODEL_VERSION_LIVE]: 'Live Version',
         [FM.SETTINGS_MODEL_VERSIONS_CREATE]: 'New Version',
         [FM.SETTINGS_MODEL_VERSIONS_TITLE]: 'Model Versions',
-        [FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION]: 'Creating a new version will save a snapshot of the currently active model. You can promote this version to "live" for use in deployed bots while you continue to edit the latest version.  You can also recall these snapshots at any point in time to test previous bot behavior.',
+        [FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION]: 'Creating a new version will save a snapshot of the currently active model. You can promote this version to "live" for use in deployed bots while you continue to edit the latest version.  You can also recall these snapshots at any point in time.',
 
         // ToolTip
         [FM.TOOLTIP_ACTION_API]: 'APIs exposed in the running Bot of the form:',
