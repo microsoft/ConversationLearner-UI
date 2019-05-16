@@ -50,6 +50,8 @@ export enum TipType {
     ENTITY_VALUE = 'entityValues',
     ENTITY_RESOLVER = 'entityResolver',
 
+    EXPORT_CHOICE = 'EXPORT_CHOICE',
+
     INVALID_BOT = 'INVALID_BOT',
     LOGGING_TOGGLE = 'loggingToggle',
     LUIS_AUTHORING_KEY = 'luisAuthoringKey',
@@ -503,6 +505,32 @@ export function getTip(tipType: string) {
                     />
                 </div>
             )
+
+        case TipType.EXPORT_CHOICE:
+            return (
+                <div>
+                    <h2>Model Export</h2>
+                    <p>A Conversation Learner Model can be exported in two formats:</p>
+                    <h3>.cl file</h3>
+                    <p>Exports entire Conversation Learner Model (Train Dialogs, Entities and Actions).  Exported file can be imported back into Conversation Learner</p>
+                    <h3>.transcript files</h3>
+                    <p>Exports just Train Dialogs as "user/bot" conversations in OBI format.  Suitable for importing into tools other than Conversation Learner</p>
+
+                    <h4>For Example:</h4>
+                    <pre>{transriptSample}</pre>
+                    <div>
+                        <a
+                            href={`https://github.com/microsoft/botframework-obi/tree/master/fileformats/transcript`}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            role="button"
+                        >
+                            More on .transcript format
+                        </a>
+                    </div>
+                </div>
+            )
+
         case TipType.MEMORY_CONVERTER:
             return (
                 <div>
