@@ -16,7 +16,7 @@ describe('action modal', () => {
     }
 
     before(() => {
-        cy.visit('http://localhost:3000')
+        cy.visit(constants.baseUrl)
         util.importModel(testData.modelName, testData.modelFile)
         cy.get(s.model.buttonNavActions)
             .click()

@@ -92,6 +92,7 @@ const selectors = {
         buttonSaveAsIs: '[data-testid="merge-modal-save-as-is-button"]',
     },
     dialogModal: {
+        container: '.cl-modal',
         branchButton: '[data-testid="edit-dialog-modal-branch-button"]',
         branchInput: '[data-testid="user-input-modal-new-message-input"]',
         branchSubmit: '[data-testid="app-create-button-submit"]',
@@ -146,7 +147,8 @@ const selectors = {
         messageFromBotException: '.wc-border-error-from-bot',
         messageFromMe: 'wc-message-from-me',
         messageFromMeException: '.wc-border-error-from-me',
-        messageColorException: 'wc-message-color-exception',
+        messageColorException: '.wc-message-color-exception',
+        messageDownArrow: '.wc-message-downarrow',
     }
 }
 

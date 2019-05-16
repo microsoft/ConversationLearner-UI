@@ -7,9 +7,11 @@ describe('Action Deletion', () => {
         modelName: `actionDeletion`,
         modelFile: `actionDeletion.cl`,
         dialogs: {
-            terminal1: 'terminalText1',
-            terminal2: 'terminalText2',
-            terminal3: 'terminalText3',
+            preservePlaceholder: 'preservePlaceholder',
+            markInvalid: 'markInvalid',
+            stillValidAfterRemoval: 'stillValidAfterRemoval',
+            notOnlyOccurrence: 'notOnlyOccurrence',
+            notOnlyScorerStep: 'notOnlyScorerStep',
             nonTerminal: 'nonTerminal',
             setEntity: 'setEntity',
             preserveValidity: 'preserveValidity',
@@ -26,17 +28,17 @@ describe('Action Deletion', () => {
     }
 
     before(() => {
-        cy.visit('http://localhost:3000')
+        cy.visit(constants.baseUrl)
         util.importModel(testData.modelName, testData.modelFile)
     })
 
-    beforeEach(() => {
-        cy.wait(500)
-        cy.get(s.model.buttonNavActions)
-            .click()
-    })
-
     describe('preserve action placeholder', () => {
+        beforeEach(() => {
+            cy.wait(500)
+            cy.get(s.model.buttonNavActions)
+                .click()
+        })
+
         it('should mark the dialog using action as invalid', () => {
             // select action 1
             cy.get(s.actions.textResponse)
@@ -68,7 +70,7 @@ describe('Action Deletion', () => {
                 .click()
 
             cy.get(s.trainDialogs.descriptions)
-                .contains(testData.dialogs.terminal1)
+                .contains(testData.dialogs.preservePlaceholder)
                 .click()
 
             // verify has invalid
@@ -82,13 +84,11 @@ describe('Action Deletion', () => {
 
     describe('remove scorer step', () => {
         describe('terminal actions', () => {
-            afterEach(() => {
-                // try to close modal even if test fails
-                cy.get(s.dialogModal.buttonCloseSave)
+            before(() => {
+                cy.wait(500)
+                cy.get(s.model.buttonNavActions)
                     .click()
-            })
 
-            it('should mark dialogs using action as invalid', () => {
                 cy.get(s.actions.textResponse)
                     .contains(testData.actions.terminal2)
                     .click()
@@ -119,9 +119,21 @@ describe('Action Deletion', () => {
                 // open affected dialog
                 cy.get(s.model.buttonNavTrainDialogs)
                     .click()
+            })
 
+            beforeEach(() => {
+                cy.wait(500)
+            })
+
+            afterEach(() => {
+                // try to close modal even if test fails
+                cy.get(s.dialogModal.buttonCloseSave)
+                    .click()
+            })
+
+            it('should mark dialogs invalid if action user other than only score step of last round', () => {
                 cy.get(s.trainDialogs.descriptions)
-                    .contains(testData.dialogs.terminal2)
+                    .contains(testData.dialogs.markInvalid)
                     .click()
 
                 // verify has invalid
@@ -129,43 +141,13 @@ describe('Action Deletion', () => {
                 cy.get(s.dialogModal.error)
             })
 
-            it('should remain valid if the last round has no non-terminal scorer steps', () => {
-                cy.get(s.actions.textResponse)
-                    .contains(testData.actions.terminal4)
-                    .click()
-
-                // delete action without option
-                cy.get(s.action.buttonDelete)
-                    .click()
-
-                // wait deletion calculation
-                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-                    .should('not.exist')
-
-                cy.get(s.confirmCancelModal.optionRemovePlaceholder)
-                    .click()
-
-                cy.server()
-                cy.route('/sdk/app/*/traindialogs*').as('getTrainDialogs')
-
-                cy.get(s.confirmCancelModal.buttonConfirm)
-                    .click()
-
-                // wait actual deletion
-                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-                    .should('not.exist')
-
-                cy.wait(['@getTrainDialogs'])
-
-                // open affected dialog
-                cy.get(s.model.buttonNavTrainDialogs)
-                    .click()
-
+            it('should remain valid if action was the only scorer steps of last round', () => {
                 cy.get(s.trainDialogs.descriptions)
-                    .contains(testData.dialogs.terminal3)
+                    .contains(testData.dialogs.stillValidAfterRemoval)
                     .click()
 
                 // verify not invalid
+                cy.get(s.dialogModal.container)
                 cy.get(s.webChat.messageFromMeException)
                     .should('not.exist')
                 cy.get(s.webChat.messageFromBotException)
@@ -173,16 +155,42 @@ describe('Action Deletion', () => {
                 cy.get(s.dialogModal.error)
                     .should('not.exist')
             })
+
+            it('should become invalid if last round contains multiple scorer steps (non-terminal)', () => {
+                cy.get(s.trainDialogs.descriptions)
+                    .contains(testData.dialogs.notOnlyScorerStep)
+                    .click()
+
+                // verify not invalid
+                cy.get(s.dialogModal.container)
+                cy.get(s.webChat.messageDownArrow)
+            })
+
+            it('should become invalid if terminal action was used in a previous round and last round', () => {
+                cy.get(s.trainDialogs.descriptions)
+                    .contains(testData.dialogs.notOnlyOccurrence)
+                    .click()
+
+                // verify not invalid
+                cy.get(s.dialogModal.container)
+                cy.get(s.webChat.messageFromMeException)
+            })
         })
 
         describe('non-terminal', () => {
-            describe('does not affect memory', () => {
-                afterEach(() => {
-                    // try to close modal even if test fails
-                    cy.get(s.dialogModal.buttonCloseSave)
-                        .click()
-                })
+            beforeEach(() => {
+                cy.wait(500)
+                cy.get(s.model.buttonNavActions)
+                    .click()
+            })
 
+            afterEach(() => {
+                // try to close modal even if test fails
+                cy.get(s.dialogModal.buttonCloseSave)
+                    .click()
+            })
+
+            describe('does not affect memory', () => {
                 it('removing TEXT action from dialog should not modify validity', () => {
                     cy.get(s.actions.textResponse)
                         .contains(testData.actions.nonTerminal1)
@@ -234,12 +242,6 @@ describe('Action Deletion', () => {
             })
 
             describe('does affect memory', () => {
-                afterEach(() => {
-                    // try to close modal even if test fails
-                    cy.get(s.dialogModal.buttonCloseSave)
-                        .click()
-                })
-
                 it('removing SET_ENTITY action from dialog should require replay and show WARNING', () => {
                     cy.get(s.actions.setEntityResponseText)
                         .contains(testData.actions.setEntity)
@@ -294,6 +296,10 @@ describe('Action Deletion', () => {
 
         describe('preserve worst validity', () => {
             it('dialog should remain INVALID after deletion operation which is VALID', () => {
+                cy.wait(500)
+                cy.get(s.model.buttonNavActions)
+                    .click()
+
                 cy.get(s.actions.textResponse)
                     .contains(testData.actions.terminal3)
                     .click()
