@@ -45,7 +45,7 @@ export function CreateNewAction({
   if (disqualifyingEntities) actionModal.TypeDisqualifyingEntities(disqualifyingEntities)
   actionModal.ClickCreateButton()
 }
-
+ 
 export function CreateNewActionThenVerifyInGrid({ 
     responseNameData, // TEXT-response, API-name, CARD-name, END_SESSION-data
     expectedEntities, 
@@ -62,10 +62,15 @@ export function CreateNewActionThenVerifyInGrid({
 
   CreateNewAction(arguments[0])
 
-  const requiredEntitiesFromResponse = []
-  if (type === 'TEXT') {
-    requiredEntitiesFromResponse = ExtractEntities(responseNameData)
-  }
+  // const requiredEntitiesFromResponse = []
+  // if (type === 'TEXT') {
+  //   requiredEntitiesFromResponse = ExtractEntities(responseNameData)
+  // }
+
+  const joined = (responseNameData ? responseNameData : '') + (logicArgs ? logicArgs.join() : '') + (renderArgs ? renderArgs.join() : '')
+helpers.ConLog('CreateNewActionThenVerifyInGrid', joined)
+  const requiredEntitiesFromResponse = ExtractEntities(joined)
+
   responseNameData = responseNameData.replace(/{enter}/g, '')
 
   // Get the row that we are going to validate and assign a Cypress Alias to it.

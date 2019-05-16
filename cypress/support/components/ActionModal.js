@@ -42,9 +42,12 @@ function TypeApiArgs(apiArgLabel, args) {
         throw new Error(`Test Code Error: The API ${apiArgLabel} takes ${elements.length} arguments, but test code supplied ${args.length}`)
       }
 
+      cy.DumpHtmlOnDomChange(true)
       for (let i = 0; i < args.length; i++) {
-        cy.wrap(elements[i]).clear().type(args[i])
+        cy.wrap(elements[i]).clear().type(args[i]).wait(1000)
+        //cy.pause()
       }
+      cy.DumpHtmlOnDomChange(false)
     })
 }
 
