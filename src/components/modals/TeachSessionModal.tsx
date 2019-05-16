@@ -151,7 +151,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             hasTerminalAction = false
             initialEntities = null
             this.setState({
-                tags: newProps.sourceTrainDialog ? newProps.sourceTrainDialog.tags : [], 
+                tags: newProps.sourceTrainDialog ? newProps.sourceTrainDialog.tags : [],
                 description: newProps.sourceTrainDialog ? newProps.sourceTrainDialog.description : ''
             })
         }
@@ -187,7 +187,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             || ((this.props.sourceTrainDialog && newProps.sourceTrainDialog)
                 && (!Util.equal(this.props.sourceTrainDialog.tags, newProps.sourceTrainDialog.tags)
                     || this.props.sourceTrainDialog.description !== newProps.sourceTrainDialog.description)
-                )) {
+            )) {
             const { tags, description } = newProps.sourceTrainDialog
             this.setState({
                 tags,
@@ -766,10 +766,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
         else if (this.hasReplayError()) {
             // Replay error, but not activity selected
             return (
-                <div className="cl-editdialog-error">
-                    <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessageId id={FM.REPLAYERROR_EXISTS} />
-                    </div>
+                <div
+                    className={`cl-editdialog-error ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-error-noselection"
+                >
+                    <FormattedMessageId id={FM.REPLAYERROR_EXISTS} />
                 </div>
             )
         }

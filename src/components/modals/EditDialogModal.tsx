@@ -130,7 +130,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     @OF.autobind
     onClickAddUserInput(selectionType: SelectionType) {
         // TEMP: until server can exclude label conflicts with self
-        if (this.showInternalLabelConflict()) {   
+        if (this.showInternalLabelConflict()) {
             return
         }
         if (this.state.selectedActivity) {
@@ -151,7 +151,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     @OF.autobind
     onClickAddScore(activity: BotChat.Activity, selectionType: SelectionType) {
         // TEMP: until server can exclude label conflicts with self
-        if (this.showInternalLabelConflict()) {   
+        if (this.showInternalLabelConflict()) {
             return
         }
         if (this.canReplay(activity)) {
@@ -333,7 +333,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             // Otherwise continue
             else {
                 // TEMP: until server can exclude label conflicts with self
-                if (this.showInternalLabelConflict()) {   
+                if (this.showInternalLabelConflict()) {
                     return
                 }
                 await this.props.onContinueDialog(newTrainDialog, userInput)
@@ -347,7 +347,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         if (this.props.originalTrainDialog && this.state.currentTrainDialog) {
             const conflict = DialogUtils.hasInternalLabelConflict(this.props.originalTrainDialog, this.state.currentTrainDialog)
             if (conflict) {
-                this.setState({isSaveConflictModalOpen: true})
+                this.setState({ isSaveConflictModalOpen: true })
                 return true
             }
         }
@@ -874,7 +874,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return null
     }
 
-    renderWarning(): JSX.Element | null {
+    renderWarning(): React.ReactNode | null {
         if (!this.props.trainDialog) {
             return null
         }
@@ -882,20 +882,18 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const replayError = DialogUtils.getReplayError(this.state.selectedActivity)
         if (this.props.editState === EditState.INVALID_BOT) {
             return (
-                <div className="cl-editdialog-warning">
-                    <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT} />
-                        <HelpIcon tipType={TipType.INVALID_BOT} />
-                    </div>
+                <div className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-warning">
+                    <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT} />
+                    <HelpIcon tipType={TipType.INVALID_BOT} />
                 </div>
             )
         }
         if (this.props.editState === EditState.INVALID_PACKAGE) {
             return (
-                <div className="cl-editdialog-warning">
-                    <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE} />
-                    </div>
+                <div className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-warning">
+                    <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE} />
                 </div>
             )
         }
@@ -911,50 +909,41 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 if (this.props.trainDialog.validity !== CLM.Validity.UNKNOWN
                     && this.props.trainDialog.validity !== CLM.Validity.WARNING) {
                     return (
-                        <div className="cl-editdialog-warning">
-                            <div className={OF.FontClassNames.mediumPlus}>
-                                <FormattedMessageId id={FM.REPLAYERROR_WARNING} />
-                            </div>
+                        <div className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
+                            data-testid="dialog-modal-warning">
+                            <FormattedMessageId id={FM.REPLAYERROR_WARNING} />
                         </div>
                     )
                 }
             }
             else {
                 return (
-                    <div className="cl-editdialog-error">
-                        <div className={OF.FontClassNames.mediumPlus}>
-                            {this.props.editType === EditDialogType.LOG_ORIGINAL
-                                ? <FormattedMessageId id={FM.REPLAYERROR_EXISTS_LOG} />
-                                : <FormattedMessageId id={FM.REPLAYERROR_EXISTS} />
-                            }
-                        </div>
+                    <div className={`cl-editdialog-error ${OF.FontClassNames.mediumPlus}`}
+                        data-testid="dialog-modal-error-noselection">
+                        {this.props.editType === EditDialogType.LOG_ORIGINAL
+                            ? <FormattedMessageId id={FM.REPLAYERROR_EXISTS_LOG} />
+                            : <FormattedMessageId id={FM.REPLAYERROR_EXISTS} />
+                        }
                     </div>
                 )
             }
-
         }
 
         if (this.props.trainDialog.validity === CLM.Validity.UNKNOWN) {
             return (
-                <div>
-                    <div className="cl-editdialog-caution">
-                        <div className={OF.FontClassNames.mediumPlus}>
-                            <FormattedMessageId id={FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} />
-                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} customClass="cl-icon-orangebackground" />
-                        </div>
-                    </div>
+                <div className={`cl-editdialog-caution ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-caution">
+                    <FormattedMessageId id={FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} />
+                    <HelpIcon tipType={TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} customClass="cl-icon-orangebackground" />
                 </div>
             )
         }
         else if (this.props.trainDialog.validity === CLM.Validity.WARNING) {
             return (
-                <div>
-                    <div className="cl-editdialog-warning">
-                        <div className={OF.FontClassNames.mediumPlus}>
-                            <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY} />
-                            <HelpIcon tipType={TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY} customClass="cl-icon-orangebackground" />
-                        </div>
-                    </div>
+                <div className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-warning">
+                    <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY} />
+                    <HelpIcon tipType={TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY} customClass="cl-icon-orangebackground" />
                 </div>
             )
         }
@@ -1092,7 +1081,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     <ConfirmCancelModal
                         open={true}
                         onCancel={this.onClickCloseCantReplay}
-                        onConfirm={null}
                         title={this.state.cantReplayMessage ? formatMessageId(intl, this.state.cantReplayMessage) : ""}
                     />
                 }
@@ -1159,7 +1147,7 @@ export interface ReceivedProps {
     // If starting with activity selected
     initialSelectedActivityIndex: number | null
     allUniqueTags: string[]
-    
+
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, isLastActivity: boolean, selectionType: SelectionType) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any

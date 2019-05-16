@@ -39,6 +39,7 @@ const selectors = {
     actions: {
         buttonNewAction: '[data-testid="actions-button-create"]',
         setEntityResponseText: '[data-testid="actions-list-set-entity"]',
+        textResponse: '[data-testid="action-scorer-text-response"]',
     },
     action: {
         dropDownType: '[data-testid="dropdown-action-type"]',
@@ -49,6 +50,7 @@ const selectors = {
         buttonCreate: '[data-testid="action-creator-create-button"]',
         buttonCreateEntity: '[data-testid="action-button-create-entity"]',
         buttonCancel: '[data-testid="action-creator-cancel-button"]',
+        buttonDelete: '[data-testid="action-creator-delete-button"]',
         inputResponse: '[data-testid="action-text-response"] [contenteditable="true"]',
         inputRequiredConditions: '[data-testid="action-required-entities"] input',
         inputDisqualifiedConditions: '[data-testid="action-disqualifying-entities"] input',
@@ -65,6 +67,7 @@ const selectors = {
         buttonCancel: '[data-testid="confirm-cancel-modal-cancel"]',
         buttonConfirm: '[data-testid="confirm-cancel-modal-accept"]',
         buttonOk: '[data-testid="confirm-cancel-modal-ok"]',
+        optionRemovePlaceholder: '[data-testid="confirm-cancel-option"]',
     },
     trainDialogs: {
         descriptions: '[data-testid="train-dialogs-description"]',
@@ -89,6 +92,7 @@ const selectors = {
         buttonSaveAsIs: '[data-testid="merge-modal-save-as-is-button"]',
     },
     dialogModal: {
+        container: '.cl-modal',
         branchButton: '[data-testid="edit-dialog-modal-branch-button"]',
         branchInput: '[data-testid="user-input-modal-new-message-input"]',
         branchSubmit: '[data-testid="app-create-button-submit"]',
@@ -106,6 +110,8 @@ const selectors = {
             buttonAccept: '[data-testid="entity-conflict-accept"]',
             buttonCancel: '[data-testid="entity-conflict-cancel"]',
         },
+        error: '[data-testid="dialog-modal-error-noselection"]',
+        warning: '[data-testid="dialog-modal-warning"]',
     },
     logDialogs: {
         buttonCreate: '[data-testid="log-dialogs-new-button"]',
@@ -138,8 +144,11 @@ const selectors = {
     },
     webChat: {
         messageFromBot: '.wc-message-from-bot',
+        messageFromBotException: '.wc-border-error-from-bot',
         messageFromMe: 'wc-message-from-me',
-        messageColorException: 'wc-message-color-exception',
+        messageFromMeException: '.wc-border-error-from-me',
+        messageColorException: '.wc-message-color-exception',
+        messageDownArrow: '.wc-message-downarrow',
     }
 }
 

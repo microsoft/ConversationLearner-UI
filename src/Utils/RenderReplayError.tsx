@@ -10,7 +10,7 @@ import { TipType } from '../components/ToolTips/ToolTips'
 import FormattedMessageId from '../components/FormattedMessageId'
 import * as CLM from '@conversationlearner/models'
 
-export function renderReplayError(replayError: CLM.ReplayError): JSX.Element {
+export function renderReplayError(replayError: CLM.ReplayError): React.ReactNode {
     switch (replayError.type) {
         case CLM.ReplayErrorType.ActionUndefined:
             return (
