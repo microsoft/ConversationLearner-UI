@@ -54,7 +54,8 @@ export function CreateNewActionThenVerifyInGrid({
     uncheckWaitForResponse, 
     logicArgs,  // provide an array of strings
     renderArgs, // provide an array of strings
-    type = 'TEXT' 
+    type = 'TEXT',
+    validateResponse: validateApiResponse  // The easiest way to get this is from the logs after a test run...search for 'ValidateApi'
   }) {
   modelPage.NavigateToActions()
   actionsGrid.ClickNewAction()
@@ -71,7 +72,7 @@ export function CreateNewActionThenVerifyInGrid({
   // If we skip this step, the validations that follow will fail.
   actionsGrid.GetRowToBeValidated(type, responseNameData)
   
-  actionsGrid.ValidateApi()
+  actionsGrid.ValidateApi(validateApiResponse)
   actionsGrid.ValidateActionType(type)
   actionsGrid.ValidateRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
   actionsGrid.ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)

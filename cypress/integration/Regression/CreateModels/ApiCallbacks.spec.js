@@ -29,7 +29,9 @@ describe('API Callbacks - CreateModels', () => {
 
   context('Create Actions', () => {
     it('Should create Action', () => {
-      actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'TextCard', type: 'API', renderArgs: ['Greetings', 'Have a great day!']})
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'TextCard', type: 'API', 
+                                                renderArgs: ['Greetings', 'Have a great day!'], 
+                                                validateApiResponse: 'TextCardrender(result, memoryManager, cardTitle, cardText)cardTitle:"Greetings"cardText:"Have a great day!"'})
     })
 
     // it('Should create Action', () => {

@@ -19,12 +19,18 @@ export function ValidateRequiredEntities(requiredEntitiesFromResponse, additiona
 // so the disqualifyingEntities parameter allows the caller to specify entities not found in expectedEntities.
 export function ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities) { ValidateEntities('[data-testid="action-details-disqualifying-entity"]', '[data-testid="action-details-empty-disqualifying-entities"]', expectedEntities, disqualifyingEntities) }
 
-export function ValidateApi() {
-  //cy.Get('@responseDetailsRow').find('div.cl-api-payload__fn').then(elements => {
-  cy.Get('@responseDetailsRow').parent('div').then(elements => {
-    let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
-    helpers.ConLog('ValidateApi', textContentWithoutNewlines)
-  })
+// In order to get the 'validateResponse' parameter right, first run a test with this undefined,
+// then look in the log to see the actual value, then add it to the code.
+export function ValidateApi(validateApiResponse) {
+  cy.Get('@responseDetailsRow')
+    .find('[data-testid="action-scorer-api-name"]')
+    .parent('div').then(elements => {
+      let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
+      helpers.ConLog('ValidateApi', textContentWithoutNewlines)
+      if (validateApiResponse && validateApiResponse !== textContentWithoutNewlines) {
+        throw new Error(`Expecting API response to show up in the grid like this "${validateApiResponse}" --- instead we found "${textContentWithoutNewlines}"`)
+      }
+    })
 }
 
 export function ValidateWaitForResponse(checked) { cy.Get('@responseDetailsRow').find(`[data-icon-name="${checked ? 'CheckMark' : 'Remove'}"][data-testid="action-details-wait"]`) }
@@ -42,7 +48,7 @@ helpers.ConLog(`GetRowToBeValidated(${actionType}, ${textId})`, 'Start')
   if (i == -1) {
     throw new Error(`Unrecognized type: '${actionType}'`)
   }
-  let selector = typeSelectorPairs.selector
+  let selector = typeSelectorPairs[i].selector
   
 helpers.ConLog(`GetRowToBeValidated(${actionType}, ${textId})`, `selector: '${selector}'`)
   cy.Get(selector)
