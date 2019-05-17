@@ -31,7 +31,8 @@ export function CreateNewAction({
 
   actionModal.SelectType(type)
   switch(type) {
-    case 'TEXT': 
+    case 'TEXT':
+    case 'END_SESSION':
       actionModal.TypeResponse(responseNameData)
       break;
     case 'API':
