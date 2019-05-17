@@ -12,7 +12,7 @@ import * as actions from '../../../support/Actions'
 import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
 
-describe('Missing Action - ErrorHandling', () => {
+describe.skip('Missing Action - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   context('Setup', () => {

@@ -62,13 +62,7 @@ export function CreateNewActionThenVerifyInGrid({
 
   CreateNewAction(arguments[0])
 
-  // const requiredEntitiesFromResponse = []
-  // if (type === 'TEXT') {
-  //   requiredEntitiesFromResponse = ExtractEntities(responseNameData)
-  // }
-
   const joined = (responseNameData ? responseNameData : '') + (logicArgs ? logicArgs.join() : '') + (renderArgs ? renderArgs.join() : '')
-helpers.ConLog('CreateNewActionThenVerifyInGrid', joined)
   const requiredEntitiesFromResponse = ExtractEntities(joined)
 
   responseNameData = responseNameData.replace(/{enter}/g, '')
