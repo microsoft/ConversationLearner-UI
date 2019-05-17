@@ -8,7 +8,7 @@ import * as entities from '../../../support/Entities'
 import * as actions from '../../../support/Actions'
 import * as helpers from '../../../support/Helpers'
 
-describe('API Callbacks - CreateModels', () => {
+describe.skip('API Callbacks - CreateModels', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
