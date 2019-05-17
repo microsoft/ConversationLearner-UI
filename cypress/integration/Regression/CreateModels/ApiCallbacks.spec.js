@@ -32,21 +32,24 @@ describe('API Callbacks - CreateModels', () => {
       actions.CreateNewActionThenVerifyInGrid({ 
         responseNameData: 'BadCard',
         type: 'API',
-        validateApiResponse: 'BadCardrender(result, memoryManager)'})
+        validateApiResponse: 'BadCardrender(result, memoryManager)'
+      })
     })
 
     it('Should create ExceptionAPI Action', () => {
       actions.CreateNewActionThenVerifyInGrid({ 
         responseNameData: 'ExceptionAPI', 
         type: 'API',
-        validateApiResponse: 'ExceptionAPIlogic(memoryManager)render(result, memoryManager)' })
+        validateApiResponse: 'ExceptionAPIlogic(memoryManager)render(result, memoryManager)' 
+      })
     })
 
     it('Should create LogicWithNoArgs Action', () => {
       actions.CreateNewActionThenVerifyInGrid({ 
         responseNameData: 'LogicWithNoArgs', 
         type: 'API',
-        validateApiResponse: 'LogicWithNoArgslogic(memoryManager)'})
+        validateApiResponse: 'LogicWithNoArgslogic(memoryManager)'
+      })
     })
     
     it('Should create LogicWithArgs Action', () => {
@@ -54,14 +57,16 @@ describe('API Callbacks - CreateModels', () => {
         responseNameData: 'LogicWithArgs', 
         type: 'API',
         logicArgs: ['$1stArg{enter}', '$2ndArg{enter}'],
-        validateApiResponse: 'LogicWithArgslogic(memoryManager, firstArg, secondArg)firstArg:"$1stArg"secondArg:"$2ndArg"' })
+        validateApiResponse: 'LogicWithArgslogic(memoryManager, firstArg, secondArg)firstArg:"$1stArg"secondArg:"$2ndArg"'
+      })
     })
 
     it('Should create Malformed Action', () => {
       actions.CreateNewActionThenVerifyInGrid({ 
         responseNameData: 'Malformed', 
         type: 'API',
-        validateApiResponse: 'Malformedlogic(memoryManager)'})
+        validateApiResponse: 'Malformedlogic(memoryManager)'
+      })
     })
     
     it('Should create RenderTheArgs Action', () => {
@@ -70,7 +75,8 @@ describe('API Callbacks - CreateModels', () => {
         type: 'API',
         logicArgs: ['$1stArg{enter}', '$2ndArg{enter}', '333', '4444', 'five', 'six', 'seven'],                                          
         renderArgs: ['$1stArg{enter}', '$2ndArg{enter}', 'three', 'four', '55555', '666666', '7777777'],
-        validateApiResponse: 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"333"fourthArg:"4444"fifthArg:"five"sixthArg:"six"seventhArg:"seven"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"three"fourthArg:"four"fifthArg:"55555"sixthArg:"666666"seventhArg:"7777777"' })
+        validateApiResponse: 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"333"fourthArg:"4444"fifthArg:"five"sixthArg:"six"seventhArg:"seven"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"three"fourthArg:"four"fifthArg:"55555"sixthArg:"666666"seventhArg:"7777777"'
+      })
     })
 
     it('Should create TextCard Action', () => {
@@ -78,7 +84,8 @@ describe('API Callbacks - CreateModels', () => {
         responseNameData: 'TextCard', 
         type: 'API', 
         renderArgs: ['Greetings', 'Have a great day!'], 
-        validateApiResponse: 'TextCardrender(result, memoryManager, cardTitle, cardText)cardTitle:"Greetings"cardText:"Have a great day!"'})
+        validateApiResponse: 'TextCardrender(result, memoryManager, cardTitle, cardText)cardTitle:"Greetings"cardText:"Have a great day!"'
+      })
     })
   })
 })

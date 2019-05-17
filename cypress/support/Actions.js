@@ -77,7 +77,7 @@ helpers.ConLog('CreateNewActionThenVerifyInGrid', joined)
   // If we skip this step, the validations that follow will fail.
   actionsGrid.GetRowToBeValidated(type, responseNameData)
   
-  actionsGrid.ValidateApi(validateApiResponse)
+  if (validateApiResponse) actionsGrid.ValidateApi(validateApiResponse)
   actionsGrid.ValidateActionType(type)
   actionsGrid.ValidateRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
   actionsGrid.ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)
