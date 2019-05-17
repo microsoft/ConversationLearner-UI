@@ -10,8 +10,8 @@ import * as helpers from '../Helpers'
 export function Visit() { return cy.visit('http://localhost:3000'); VerifyPageTitle() }
 export function VerifyPageTitle() { return cy.Get('[data-testid="model-list-title"]').contains('Create and manage your Conversation Learner models').should('be.visible') }
 export function NavigateToModelPage(name) { return cy.Get('[data-testid="model-list-model-name"]').ExactMatch(`${name}`).Click() }
-export function ClickNewModelButton() { return cy.Get('[data-testid="model-list-create-new-button"]').Click() }
-export function ClickImportModelButton() { return cy.Get('[data-testid="model-list-import-model-button"]').Click() }
+export function ClickNewModelButton() { return cy.Get('[data-testid="model-list-create-new-button"]', {timeout: 10000}).Click() }
+export function ClickImportModelButton() { return cy.Get('[data-testid="model-list-import-model-button"]', {timeout: 10000}).Click() }
 export function TypeModelName(name) { return cy.Get('[data-testid="model-creator-input-name"]').type(name) }
 export function ClickSubmitButton() { return cy.Get('[data-testid="model-creator-submit-button"]').Click() }
 
