@@ -445,12 +445,14 @@ export function SelectAction(expectedResponse, lastResponse) {
   })
 }
 
-export function SelectEndSessionAction(expectedData, lastResponse) {
+export function SelectApiAction(apiName, expectedResponse) {
+  scorerModal.ClickApiAction(apiName, expectedResponse)
+  cy.Enqueue(() => { currentTrainingSummary.LastResponse = expectedResponse })
+}
+
+export function SelectEndSessionAction(expectedData) {
   scorerModal.ClickEndSessionAction(expectedData);
-  cy.Enqueue(() => {
-    if (lastResponse) currentTrainingSummary.LastResponse = lastResponse;
-    else currentTrainingSummary.LastResponse = 'EndSession: ' + expectedData;
-  })
+  cy.Enqueue(() => { currentTrainingSummary.LastResponse = 'EndSession: ' + expectedData; })
 }
 
 // This method is used to score AND AUTO-SELECT the action after branching.

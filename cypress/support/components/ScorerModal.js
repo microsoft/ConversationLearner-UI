@@ -18,6 +18,13 @@ export function ClickAction(expectedResponse, expectedIndexForActionPlacement) {
   VerifyChatMessage(expectedResponse, expectedIndexForActionPlacement)
 }
 
+export function ClickApiAction(apiName, expectedResponse, expectedIndexForActionPlacement) {
+  cy.Get('[data-testid="action-scorer-api-name"]').ExactMatch(apiName)
+    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
+    .Click()
+  VerifyApiChatMessage(expectedResponse, expectedIndexForActionPlacement)
+}
+
 export function ClickEndSessionAction(expectedData, expectedIndexForActionPlacement) {
   cy.Get('[data-testid="action-scorer-session-response"]')
     .ExactMatch('EndSession')
@@ -35,9 +42,33 @@ export function VerifyChatMessage(expectedMessage, expectedIndexOfMessage) {
   const expectedUtterance = expectedMessage.replace(/'/g, "’")
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
-    cy.wrap(elements[expectedIndexOfMessage]).within(e => {
+    cy.wrap(elements[expectedIndexOfMessage]).within(element => {
       cy.get('div.format-markdown > p').should('have.text', expectedUtterance)
     })
+  })
+}
+
+// To verify the last chat utterance leave expectedIndexOfMessage undefined
+// Leave expectedMessage temporarily undefined if you want to grab the text output from the log.
+export function VerifyApiChatMessage(expectedMessage, expectedIndexOfMessage) {
+  cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
+    let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find("div.format-markdown > p:contains('API Call:')").parent()
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected 'API Call:' card with '${expectedMessage}'`)
+    }
+    elements = Cypress.$(elements[0]).next('div.wc-list').find('div.wc-adaptive-card > div.ac-container > div.ac-container > div > p')
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected content element for API Call card that should contain '${expectedMessage}'`)
+    }
+    
+    // Log the contents of the API Call card so that we can copy the exact string into the .spec.js file.
+    let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
+    helpers.ConLog('VerifyApiChatMessage', textContentWithoutNewlines)
+    
+    if (expectedMessage && textContentWithoutNewlines !== expectedMessage) {
+      throw new Error(`Expected to find '${expectedMessage}' in the API Card, instead we found '${textContentWithoutNewlines}'`)
+    }
   })
 }
 
