@@ -197,18 +197,30 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         }
 
         const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL)
-        const editTypeClass = isLogDialog ? 'log' : 'train'
+        const editTypeClass = this.props.editType === EditDialogType.IMPORT ? "import" : isLogDialog ? 'log' : 'train'
         const hasEndSession = DialogUtils.hasEndSession(this.props.trainDialog, this.props.actions)
         const renderData = DialogUtils.getDialogRenderData(this.props.trainDialog, this.props.entities, this.props.actions, this.state.roundIndex, this.state.scoreIndex, this.state.senderType)
-
         return (
             <div className={`cl-dialog-admin`}>
                 <div className="cl-dialog-admin__header">
                     <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.xxLarge}`}>
                         <OF.Icon
-                            iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
+                            iconName={this.props.editType === EditDialogType.IMPORT
+                                ? 'DownloadDocument'
+                                :  isLogDialog 
+                                ? 'UserFollowed' 
+                                : 'EditContact'}
                         />
-                        {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                        {this.props.editType === EditDialogType.IMPORT
+                            ? "Import"
+                            : isLogDialog 
+                            ? 'Log Dialog' 
+                            : 'Train Dialog'}
+                        {this.props.editType === EditDialogType.IMPORT &&
+                            <div className="cl-dialog-importcount">
+                                {`${this.props.importIndex} of ${this.props.importCount}`}
+                            </div>
+                        }
                     </div>
                     <DialogMetadata
                         description={this.props.description}
@@ -226,7 +238,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                     ? (
                         <div className="cl-dialog-admin__content">
                             <div
-                                className={`cl-wc-message cl-wc-message--user cl-wc-message--${isLogDialog ? 'log' : 'train'}`}
+                                className={`cl-wc-message cl-wc-message--user cl-wc-message--${editTypeClass}`}
                             >
                                 <FormattedMessageId
                                     data-testid="modal-user-input"
@@ -376,7 +388,8 @@ export interface ReceivedProps {
     onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void
     onPendingStatusChanged: (changed: boolean) => void
     onActionCreatorClosed: () => void
-    
+    importIndex?: number
+    importCount?: number
     allUniqueTags: string[]
     tags: string[]
     onAddTag: (tag: string) => void

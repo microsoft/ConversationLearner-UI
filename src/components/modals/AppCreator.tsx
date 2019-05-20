@@ -3,22 +3,21 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
+import * as Utils from '../../Utils/util'
+import FormattedMessageId from '../FormattedMessageId'
 import { returntypeof } from 'react-redux-typescript'
 import { getLuisApplicationCultures } from '../../epics/apiHelpers'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import * as OF from 'office-ui-fabric-react'
 import { State, ErrorType, AppCreatorType } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
-import { FilePicker } from 'react-file-picker'
 import { setErrorDisplay } from '../../actions/displayActions'
-import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { AppInput } from '../../types/models'
 import { AppDefinition } from '@conversationlearner/models'
-import * as Utils from '../../Utils/util'
 
 interface ComponentState {
     appNameVal: string
@@ -34,6 +33,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
         localeOptions: [],
         file: null,
     }
+
+    private fileInput: any
 
     constructor(p: Props) {
         super(p)
@@ -151,9 +152,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
         return value ? "" : Utils.formatMessageId(this.props.intl, FM.APPCREATOR_FIELDERROR_REQUIREDVALUE)
     }
 
-    onChangeFile = (file: File) => {
+    onChangeFile = (files: any) => {
         this.setState({
-            file
+            file: files[0]
         })
     }
 
@@ -244,28 +245,29 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     {this.props.creatorType === AppCreatorType.IMPORT &&
                         <div data-testid="model-creator-import-file-picker">
                             <OF.Label>Import File</OF.Label>
-                            <FilePicker
-                                extensions={['cl']}
-                                onChange={this.onChangeFile}
-                                onError={(error: string) => this.props.setErrorDisplay(ErrorType.Error, error, "", null)}
-                                maxSize={10}
-                            >
-                                <div className="cl-action-creator-file-picker">
-                                    <OF.PrimaryButton
-                                        data-testid="model-creator-locate-file-button"
-                                        className="cl-action-creator-file-button"
-                                        ariaDescription={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION)}
-                                        text={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT)}
-                                        iconProps={{ iconName: 'DocumentSearch' }}
-                                    />
-                                    <OF.TextField
-                                        disabled={true}
-                                        value={this.state.file
-                                            ? this.state.file.name
-                                            : ''}
-                                    />
-                                </div>
-                            </FilePicker>
+                            <input
+                                type="file"
+                                style={{ display: 'none' }}
+                                onChange={(event) => this.onChangeFile(event.target.files)}
+                                ref={ele => (this.fileInput = ele)}
+                                multiple={false}
+                            />
+                            <div className="cl-action-creator-file-picker">
+                                <OF.PrimaryButton
+                                    data-testid="model-creator-locate-file-button"
+                                    className="cl-action-creator-file-button"
+                                    ariaDescription={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION)}
+                                    text={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT)}
+                                    iconProps={{ iconName: 'DocumentSearch' }}
+                                    onClick={() => this.fileInput.click()}
+                                />
+                                <OF.TextField
+                                    disabled={true}
+                                    value={this.state.file
+                                        ? this.state.file.name
+                                        : ''}
+                                />
+                            </div>
                         </div>
                     }
                 </div>

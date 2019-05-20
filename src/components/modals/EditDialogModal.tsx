@@ -32,9 +32,11 @@ import { FM } from '../../react-intl-messages'
 import { TipType } from '../ToolTips/ToolTips'
 import { renderReplayError } from '../../Utils/RenderReplayError'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import ImportCancelModal from './ImportCancelModal';
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
+    isImportAbandonOpen: boolean
     cantReplayMessage: FM | null
     isUserInputModalOpen: boolean
     newActionPreset?: NewActionPreset
@@ -52,6 +54,7 @@ interface ComponentState {
 
 const initialState: ComponentState = {
     isConfirmAbandonOpen: false,
+    isImportAbandonOpen: false,
     cantReplayMessage: null,
     isUserInputModalOpen: false,
     newActionPreset: undefined,
@@ -289,16 +292,27 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     //---- ABANDON ----
     @OF.autobind
     onClickAbandon() {
-        this.setState({
-            isConfirmAbandonOpen: true
-        })
+        if (this.props.editType === EditDialogType.IMPORT) {
+            this.setState({
+                isImportAbandonOpen: true
+            })
+        }
+        else {
+            this.setState({
+                isConfirmAbandonOpen: true
+            })
+        }
     }
 
     @OF.autobind
-    onClickAbandonCancel() {
+    onClickAbandonCancel(cancelImport: boolean = false) {
         this.setState({
-            isConfirmAbandonOpen: false
+            isConfirmAbandonOpen: false,
+            isImportAbandonOpen: false
         })
+        if (cancelImport) {
+
+        }
     }
 
     // User is continuing the train dialog by typing something new
@@ -616,7 +630,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickAbandonApprove() {
+    onClickAbandonApprove(stopImporting: boolean = false) {
         const dialogChanged = this.isDialogChanged()
 
         switch (this.props.editType) {
@@ -624,23 +638,23 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 this.props.onDeleteDialog()
                 break;
             case EditDialogType.IMPORT:
-                this.props.onCloseModal(false) // false -> no need to reload original
+                this.props.onCloseModal(false, stopImporting) // false -> no need to reload original
                 break;
             case EditDialogType.BRANCH:
-                this.props.onCloseModal(false) // false -> no need to reload original
+                this.props.onCloseModal(false, stopImporting) // false -> no need to reload original
                 break;
             case EditDialogType.LOG_EDITED:
-                this.props.onCloseModal(false) // false -> no need to reload original
+                this.props.onCloseModal(false, stopImporting) // false -> no need to reload original
                 break;
             case EditDialogType.LOG_ORIGINAL:
                 this.props.onDeleteDialog()
                 break;
             case EditDialogType.TRAIN_EDITED:
-                this.props.onCloseModal(true) // true -> Reload original TrainDialog
+                this.props.onCloseModal(true, stopImporting) // true -> Reload original TrainDialog
                 break;
             case EditDialogType.TRAIN_ORIGINAL:
                 dialogChanged
-                    ? this.props.onCloseModal(true)
+                    ? this.props.onCloseModal(true, stopImporting)
                     : this.props.onDeleteDialog()
                 break;
             default:
@@ -652,8 +666,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            return formatMessageId(intl, FM.BUTTON_ABANDON)
             case EditDialogType.IMPORT:
-                return formatMessageId(intl, FM.BUTTON_ABANDON)
+                return formatMessageId(intl, FM.BUTTON_ABANDON_IMPORT)
             case EditDialogType.BRANCH:
                 return formatMessageId(intl, FM.BUTTON_ABANDON_BRANCH)
             case EditDialogType.LOG_EDITED:
@@ -756,7 +771,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 this.props.onSaveDialog(trainDialog, trainDialogValidity)
                 break;
             case EditDialogType.LOG_ORIGINAL:
-                this.props.onCloseModal(false)  // false - No need to reload original
+                this.props.onCloseModal(false, false)  // false - No need to reload original
                 break;
             case EditDialogType.TRAIN_EDITED:
                 this.props.onSaveDialog(trainDialog, trainDialogValidity)
@@ -764,7 +779,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             case EditDialogType.TRAIN_ORIGINAL:
                 dialogChanged
                     ? this.props.onSaveDialog(trainDialog, trainDialogValidity)
-                    : this.props.onCloseModal(false)  // false - No need to reload original
+                    : this.props.onCloseModal(false, false)  // false - No need to reload original
                 break;
             default:
         }
@@ -837,8 +852,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const dialogChanged = this.isDialogChanged()
 
         switch (this.props.editType) {
-            case EditDialogType.NEW:
             case EditDialogType.IMPORT:
+            case EditDialogType.NEW:
             case EditDialogType.BRANCH:
             case EditDialogType.LOG_EDITED:
             case EditDialogType.TRAIN_EDITED:
@@ -1065,8 +1080,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onChangeAction={(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
-                                    newActionPreset={this.state.newActionPreset}
-
+                                    newActionPreset={this.state.newActionPreset}//LARS rename
+                                    importIndex={this.props.importIndex}
+                                    importCount={this.props.importCount}
                                     allUniqueTags={this.props.allUniqueTags}
                                     tags={this.state.tags}
                                     onAddTag={this.onAddTag}
@@ -1143,6 +1159,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onConfirm={this.onClickAbandonApprove}
                     title={this.renderConfirmText(intl)}
                 />
+                <ImportCancelModal
+                    open={this.state.isImportAbandonOpen}
+                    onCancel={this.onClickAbandonCancel}
+                    onConfirm={this.onClickAbandonApprove}
+                />
                 {this.state.cantReplayMessage &&
                     <ConfirmCancelModal
                         open={true}
@@ -1213,13 +1234,14 @@ export interface ReceivedProps {
     // If starting with activity selected
     initialSelectedActivityIndex: number | null
     allUniqueTags: string[]
-    
+    importIndex?: number
+    importCount?: number
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, isLastActivity: boolean, selectionType: SelectionType) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
-    onCloseModal: (reload: boolean) => void
+    onCloseModal: (reload: boolean, stopImport: boolean) => void
     onBranchDialog: ((trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => void) | null,
     onContinueDialog: (newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) => void
     onSaveDialog: (newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) => void

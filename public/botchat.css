@@ -385,10 +385,12 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 }
 
 .wc-message-from-me.wc-message-from {
-  text-align: right; }
+  text-align: right; 
+}
 
 .wc-message-from-me .wc-message-content {
-   color: #ffffff; }
+  color: #ffffff; 
+}
 
 .wc-message-color-bot {
   background-color: var(--color-wc-bot); 
@@ -400,6 +402,10 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 
 .wc-message-color-log {
   background-color: var(--cl-color-user-log); 
+}
+
+.wc-message-color-import {
+  background-color: var(--cl-color-user-import); 
 }
 
 .wc-message-color-exception {
@@ -420,6 +426,10 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 
 .wc-message-fillcolor-log {
   fill: var(--cl-color-user-log) !important; 
+}
+
+.wc-message-fillcolor-import {
+  fill: var(--cl-color-user-import) !important; 
 }
 
 .wc-message-fillcolor-exception {

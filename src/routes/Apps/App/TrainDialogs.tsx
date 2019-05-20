@@ -10,21 +10,24 @@ import * as DialogEditing from '../../../Utils/dialogEditing'
 import * as DialogUtils from '../../../Utils/dialogUtils'
 import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
+import * as BB from 'botbuilder'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
 import ConversationImporter from '../../../components/modals/ConversationImporter';
 import TeachSessionInitState from '../../../components/modals/TeachSessionInitState'
+import { AT } from '../../../types/ActionTypes'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { returntypeof } from 'react-redux-typescript'
-import { State } from '../../../types'
+import { State, ErrorType } from '../../../types'
 import { SelectionType } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState, MergeModal } from '../../../components/modals'
 import { injectIntl, InjectedIntl, InjectedIntlProps, } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
+import ImportWaitModal from 'src/components/modals/ImportWaitModal';
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -137,7 +140,10 @@ interface ComponentState {
     lastAction: CLM.ActionBase | null
     isTeachDialogModalOpen: boolean
     isEditDialogModalOpen: boolean
-    isConversationImportOpen: boolean
+    isTranscriptImportOpen: boolean
+    isImportWaitModalOpen: boolean
+    importIndex: number
+    filesToImport: File[] | undefined
     isTreeViewModalOpen: boolean
     // If creating an API Stub, the initial filled entities, if set modal will open
     apiStubFilledEntityMap: CLM.FilledEntityMap | null
@@ -175,7 +181,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             lastAction: null,
             isTeachDialogModalOpen: false,
             isEditDialogModalOpen: false,
-            isConversationImportOpen: false,
+            isTranscriptImportOpen: false,
+            isImportWaitModalOpen: false,
+            importIndex: 0,
+            filesToImport: undefined,
             isTreeViewModalOpen: false,
             apiStubFilledEntityMap: null,
             mergeExistingTrainDialog: null,
@@ -416,7 +425,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
             }
         }
-        this.setState({
+        Util.setStateAsync(this, {
             isTeachDialogModalOpen: false,
             history: [],
             lastAction: null,
@@ -424,6 +433,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // originalTrainDialogId - do not clear. Need for later 
             dialogKey: this.state.dialogKey + 1
         })
+
+        if (this.state.filesToImport && this.state.filesToImport.length > 0) {
+            this.onStartTranscriptImport()
+        }
     }
 
     @OF.autobind
@@ -642,7 +655,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, this.state.mergeNewTrainDialog) as any) as Promise<void>)
             }
         }
-        this.setState({
+
+        Util.setStateAsync(this, {
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
             isTeachDialogModalOpen: false,
@@ -652,6 +666,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // originalTrainDialogId - do not clear. Need for later 
             dialogKey: this.state.dialogKey + 1
         })
+
+        if (this.state.filesToImport && this.state.filesToImport.length > 0) {
+            this.onStartTranscriptImport()
+        }
     }
 
     //---- API STUBS ----
@@ -707,7 +725,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const deleteDialogId = this.state.currentTrainDialog.trainDialogId
         this.props.deleteTrainDialogThunkAsync(this.props.app, deleteDialogId)
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
-        void this.onCloseEditDialogModal();
+        void this.onCloseEditDialogModal()
     }
 
     // End Session activity selected.  Switch from Teach to Edit
@@ -941,27 +959,167 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     onClickImportConversation(): void {
         this.setState({
-            isConversationImportOpen: true
+            isTranscriptImportOpen: true
         })
     }
 
     @OF.autobind
-    onCancelImportConversation(): void {
-        this.setState({
-            isConversationImportOpen: false
+    async onCloseImportConversation(transcriptsToImport: File[] | null): Promise<void> {
+        await Util.setStateAsync(this, {
+            isTranscriptImportOpen: false,
+            filesToImport: transcriptsToImport,
+            importIndex: 0
         })
+        this.onStartTranscriptImport()
     }
 
     @OF.autobind
-    onSubmitImportConversation(trainDialog: CLM.TrainDialog): void {
-        this.setState({
-            isConversationImportOpen: false,
-            originalTrainDialog: trainDialog
-        })
-        this.onClickTrainDialogItem(trainDialog, EditDialogType.IMPORT)
+    async onStartTranscriptImport() {
+        if (!this.state.filesToImport || this.state.filesToImport.length === 0) {
+            return
+        }
+
+        // Check if I'm done importing files
+        if (this.state.importIndex === this.state.filesToImport.length) {
+            this.setState({filesToImport: undefined})
+            return
+        }
+
+        // Pop the next file
+        const transcriptFile = this.state.filesToImport[this.state.importIndex]
+        this.setState({importIndex: this.state.importIndex + 1})
+
+        if (transcriptFile) {
+            const reader = new FileReader()
+            reader.onload = (e: Event) => {
+                try {
+                    if (typeof reader.result !== 'string') {
+                        throw new Error("String Expected")
+                    }
+                    
+                    const source = JSON.parse(reader.result)
+                    this.onImport(source);
+                }
+                catch (e) {
+                    const error = e as Error
+                    this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", AT.CREATE_APPLICATION_ASYNC)
+                }
+            }
+            reader.readAsText(transcriptFile)
+        }
     }
 
-    async onCloseEditDialogModal(reload: boolean = false) {
+    async onImport(transcript: BB.Activity[]): Promise<void> {
+
+        // This can take a while, so add a spinner
+       //LARS this.props.spinnerAdd()
+        this.setState({isImportWaitModalOpen: true})
+
+        let trainDialog: CLM.TrainDialog = {
+            trainDialogId: undefined!,
+            version: undefined!,
+            packageCreationId: undefined!,
+            packageDeletionId: undefined!,
+            sourceLogDialogId: undefined!,
+            initialFilledEntities: [],
+            rounds: [],
+            tags: [], 
+            description: '',
+            createdDateTime: new Date().toJSON(),
+            lastModifiedDateTime: new Date().toJSON(),
+            // It's initially invalid
+            validity: CLM.Validity.INVALID
+        }
+
+        let curRound: CLM.TrainRound | null = null
+        transcript.forEach((activity: BB.Activity) => {
+            // TODO: Handle conversation updates
+            if (activity.type === "message") {
+                if (activity.from.role === "user") {
+                    let textVariation: CLM.TextVariation = {
+                        text: activity.text,
+                        labelEntities: []
+                    }
+                    let extractorStep: CLM.TrainExtractorStep = {
+                        textVariations: [textVariation]
+                    }
+                    curRound = {
+                        extractorStep,
+                        scorerSteps: []
+                    }
+                    trainDialog.rounds.push(curRound)
+                }
+                else if (activity.from.role === "bot") {
+                    let scoreInput: CLM.ScoreInput = {
+                        filledEntities: [],
+                        context: {},
+                        maskedActions: []
+                    }
+                    // As a first pass, try to match by exact text
+                    const action = DialogUtils.findActionByText(activity.text, this.props.actions)
+                    let scorerStep: CLM.TrainScorerStep = {
+                        importText: action ? undefined : activity.text,
+                        input: scoreInput,
+                        labelAction: action ? action.actionId : CLM.CL_STUB_IMPORT_ACTION_ID,
+                        logicResult: undefined,
+                        scoredAction: undefined
+                    }
+
+                    curRound!.scorerSteps.push(scorerStep)
+                }
+            }
+        })
+
+        // Extract entities
+        await this.addEntityExtractions(trainDialog)
+
+        // Replay to fill in memory
+        const newTrainDialog = await DialogEditing.onReplayTrainDialog(
+            trainDialog,
+            this.props.app.appId,
+            this.props.entities,
+            this.props.actions,
+            this.props.trainDialogReplayAsync as any,
+        )
+
+        // Try to map action again now that we have entities
+        DialogUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
+
+        this.props.spinnerRemove()
+
+        await Util.setStateAsync(this, {
+            originalTrainDialog: newTrainDialog
+        })
+
+        this.setState({isImportWaitModalOpen: false})
+
+        this.onClickTrainDialogItem(newTrainDialog, EditDialogType.IMPORT)
+    }
+
+    async addEntityExtractions(trainDialog: CLM.TrainDialog) {
+        // TODO: Consider checking locally stored TrainDialogs first for matches to lighten load on server
+
+        // Generate list of all unique user utterances
+        const userInput: string[] = []
+        trainDialog.rounds.forEach(round => round.extractorStep.textVariations.forEach(textVariation => userInput.push(textVariation.text)))
+        const uniqueInput = [...new Set(userInput)]
+
+        // Get extraction results
+        const extractResponses = await ((this.props.fetchExtractionsThunkAsync(this.props.app.appId, uniqueInput) as any) as Promise<CLM.ExtractResponse[]>)
+
+        // Now swap in any extract values
+        trainDialog.rounds.forEach(round => round.extractorStep.textVariations
+            .forEach(textVariation => {
+                const extractResponse = extractResponses.find(er => er.text === textVariation.text)
+                if (extractResponse && extractResponse.predictedEntities.length > 0) {
+                    textVariation.labelEntities = CLM.ModelUtils.ToLabeledEntities(extractResponse.predictedEntities)
+                }
+                console.log(extractResponses[0])
+            })
+        )
+    }
+
+    async onCloseEditDialogModal(reload: boolean = false, stopImport: boolean = false) {
 
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session w/o saving
@@ -972,7 +1130,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // Reload local copy
             await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.state.originalTrainDialog.trainDialogId, true) as any) as Promise<CLM.TrainDialog>)
         }
-        this.setState({
+        Util.setStateAsync(this, {
             isEditDialogModalOpen: false,
             selectedActivityIndex: null,
             currentTrainDialog: null,
@@ -981,6 +1139,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             lastAction: null,
             dialogKey: this.state.dialogKey + 1
         })
+
+        if (this.state.filesToImport && this.state.filesToImport.length > 0) {
+            if (stopImport) {
+                this.setState({filesToImport: undefined})
+            }
+            else {
+                this.onStartTranscriptImport()
+            }
+        }
     }
 
     onChangeSearchString(newValue: string) {
@@ -1055,7 +1222,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
                 const tagFilter = this.state.tagsFilter
                 if (tagFilter && tagFilter.key !== null
-                    && !t.tags.map(t => t.toLowerCase()).includes(tagFilter.text.toLowerCase())) {
+                    && !t.tags.map(tag => tag.toLowerCase()).includes(tagFilter.text.toLowerCase())) {
                     return false
                 }
 
@@ -1126,7 +1293,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                     <OF.DefaultButton
                         iconProps={{
-                            iconName: "Add"
+                            iconName: "DownloadDocument"
                         }}
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                         onClick={() => this.onClickImportConversation()}
@@ -1279,7 +1446,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
                         allUniqueTags={this.props.allUniqueTags}
-
+                        importIndex={this.state.importIndex}
+                        importCount={this.state.filesToImport ? this.state.filesToImport.length : undefined}
                         conflictPairs={[]}
                         onAbortConflictResolution={() => { }}
                         onAcceptConflictResolution={async () => { }}
@@ -1305,7 +1473,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     history={this.state.history}
                     initialSelectedActivityIndex={this.state.selectedActivityIndex}
                     editType={this.state.editType}
-                    onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
+                    onCloseModal={(reload, stopImport) => this.onCloseEditDialogModal(reload, stopImport)}
                     onInsertAction={(trainDialog, activity, isLastActivity, selectionType) => this.onInsertAction(trainDialog, activity, isLastActivity, selectionType)}
                     onInsertInput={(trainDialog, activity, userInput, selectionType) => this.onInsertInput(trainDialog, activity, userInput, selectionType)}
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
@@ -1319,17 +1487,23 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={(newTrainDialog, validity) => this.onCreateTrainDialog(newTrainDialog, validity)}
                     allUniqueTags={this.props.allUniqueTags}
-
+                    importIndex={this.state.importIndex}
+                    importCount={this.state.filesToImport ? this.state.filesToImport.length : undefined}
                     conflictPairs={[]}
                     onAbortConflictResolution={() => { }}
                     onAcceptConflictResolution={async () => { }}
                 />
-                {this.state.isConversationImportOpen && 
+                {this.state.isTranscriptImportOpen && 
                     <ConversationImporter
                         app={this.props.app}
                         open={true}
-                        onCancel={this.onCancelImportConversation}
-                        onSubmit={this.onSubmitImportConversation}
+                        onClose={this.onCloseImportConversation}
+                    />
+                }
+                {this.state.isImportWaitModalOpen &&
+                    <ImportWaitModal
+                        importIndex={this.state.importIndex}
+                        importCount={this.state.filesToImport ? this.state.filesToImport.length : 0}
                     />
                 }
                 <TeachSessionInitState
@@ -1393,10 +1567,15 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
+        fetchExtractionsThunkAsync: actions.app.fetchExtractionsThunkAsync,
         trainDialogMergeThunkAsync: actions.train.trainDialogMergeThunkAsync,
         trainDialogReplaceThunkAsync: actions.train.trainDialogReplaceThunkAsync,
+        trainDialogReplayAsync: actions.train.trainDialogReplayThunkAsync,
         scoreFromHistoryThunkAsync: actions.train.scoreFromHistoryThunkAsync,
         trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,
+        setErrorDisplay: actions.display.setErrorDisplay,
+        spinnerAdd: actions.display.spinnerAdd,
+        spinnerRemove: actions.display.spinnerRemove
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

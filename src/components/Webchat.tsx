@@ -35,9 +35,9 @@ export function renderActivity(
 
     const contentClassName = 'wc-message-content'
     const clData: CLM.CLChannelData | null = activityProps.activity.channelData ? activityProps.activity.channelData.clData : null
-
-    let messageColor = `wc-message-color-${activityProps.fromMe ? (isLogDialog ? 'log' : 'train') : 'bot'}`
-    let messageFillColor = `wc-message-fillcolor-${activityProps.fromMe ? (isLogDialog ? 'log' : 'train') : 'bot'}`
+    const userFillColor = editType === EditDialogType.IMPORT ? "import" : isLogDialog ? 'log' : 'train'
+    let messageColor = `wc-message-color-${activityProps.fromMe ? userFillColor : 'bot'}`
+    let messageFillColor = `wc-message-fillcolor-${activityProps.fromMe ? userFillColor : 'bot'}`
 
     if (clData) {
         if (clData.replayError) {
@@ -50,7 +50,6 @@ export function renderActivity(
             if (clData.replayError.type === CLM.ReplayErrorType.Exception) {
                 messageColor = `wc-message-color-exception`
                 messageFillColor = `wc-message-fillcolor-exception`
-
             }
         }
     }

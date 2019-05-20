@@ -344,6 +344,10 @@ i[data-icon-name="Edit"]:hover {
   background-color: var(--cl-color-user-log);
 }
 
+.cl-wc-message--import {
+  background-color: var(--cl-color-user-import);
+}
+
 .cl-wc-message--bot {
   background-color: var(--color-wc-bot);
   color: #000000;
@@ -446,6 +450,12 @@ i[data-icon-name="Edit"]:hover {
 .cl-modal.cl-modal--log {
   grid-template-rows: 1fr min-content;
   /* border-top: 8px solid var(--color-blueMid); */
+}
+
+.cl-modal.cl-modal--importwait {
+  height: 80px;
+  width: 350px;
+  padding: 20px;
 }
 
 .cl-modal.cl-modal--wide {
@@ -575,7 +585,7 @@ i[data-icon-name="Edit"]:hover {
 
 .cl-modal.cl-modal--teach .cl-modal_footer {
   padding: 1em;
-  /* background-color: var(--color-magentaDark); */
+  /* background-color: var(--cl-color-user-train); */
 }
 
 .cl-modal.cl-modal--log .cl-modal_footer{
@@ -604,10 +614,13 @@ i[data-icon-name="Edit"]:hover {
   vertical-align: sub;
 }
 .cl-dialog-title.cl-dialog-title--log i[role="presentation"] {
-  background-color: var(--color-green);
+  background-color: var(--cl-color-user-log);
 }
 .cl-dialog-title.cl-dialog-title--train i[role="presentation"] {
-  background-color: var(--color-magentaDark);
+  background-color: var(--cl-color-user-train);
+}
+.cl-dialog-title.cl-dialog-title--import i[role="presentation"] {
+  background-color: var(--cl-color-user-import);
 }
 
 .cl-inputWithButton-input {
@@ -852,11 +865,19 @@ i[data-icon-name="Edit"]:hover {
   display: grid;
   grid-gap: 0.8em;
 }
+
 .cl-dialog-admin__header {
   display: grid;
   grid-template: auto / max-content minmax(min-content, 1fr) minmax(214px, max-content);
   grid-gap: 1rem;
 }
+
+.cl-dialog-importcount {
+  font-size: 15px;
+  text-align: right;
+  margin-top: -4px;
+}
+
 .cl-dialog-admin__content {
   display: grid;
   grid-gap: 1rem;

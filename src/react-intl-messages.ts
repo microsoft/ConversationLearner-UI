@@ -135,9 +135,11 @@ export enum FM {
     BUTTON_ABANDON = 'Button.ABANDON',
     BUTTON_ABANDON_EDIT = 'Button.ABANDON_EDIT',
     BUTTON_ABANDON_BRANCH = 'Button.ABANDON_BRANCH',
+    BUTTON_ABANDON_IMPORT = 'Button.ABANDON_IMPORT',
     BUTTON_ACCEPT = 'Button.ACCEPT',
     BUTTON_CANCEL = 'Button.CANCEL',
     BUTTON_CLOSE = 'Button.CLOSE',
+    BUTTON_CONFIRM = 'Button.CONFIRM',
     BUTTON_DELETE = 'Button.DELETE',
     BUTTON_EXPORT = 'Button.EXPORT',
     BUTTON_INFO = 'Button.INFO',
@@ -169,6 +171,7 @@ export enum FM {
     // Conversation Importer
     CONVERSATION_IMPORTER_TITLE = 'ConversationImporter.title',
     CONVERSATION_IMPORTER_DESCRIPTION = 'ConversationImporter.description',
+    CONVERSATION_BUTTON_FILES = 'ConversationImporte.Button.files',
 
     // Custom Errors
     CUSTOMERROR_NETWORK_ERROR = 'CustomError.networkError',
@@ -292,9 +295,9 @@ export enum FM {
     ERROR_TOOMANYCHARACTERS = 'Error.tooManyChars',
 
     // ExportChoice 
-    EXPORT_CHOICE_TITLE = 'ConversationImporter.title',
-    EXPORT_CHOICE_DESCRIPTION = 'ConversationImporter.description',
-    EXPORT_CHOICE_LABEL = 'ConversationImporter.label',
+    EXPORT_CHOICE_TITLE = 'ExportChoice.title',
+    EXPORT_CHOICE_DESCRIPTION = 'ExportChoice.description',
+    EXPORT_CHOICE_LABEL = 'ExportChoice.label',
 
     // ExtractConflictModal
     EXTRACTCONFLICTMODAL_TITLE = 'ExtractConflictModal.title',
@@ -303,6 +306,10 @@ export enum FM {
     EXTRACTCONFLICTMODAL_CORRECT_LABELS = 'ExtractConflictModal.existing',
     EXTRACTCONFLICTMODAL_CONFLICTING_LABELS = 'ExtractConflictModal.conflictingLabels',
     EXTRACTCONFLICTMODAL_CALLTOACTION = 'ExtractConflictModal.callaction',
+
+    // Import Cancel
+    IMPORT_CANCEL_TITLE = 'ImportCancel.title',
+    IMPORT_CANCEL_CHECKBOX_LABEL = 'ImportCancel.Checkbox.label',
 
     // LogConversionConflictModal
     LOGCONVERSIONCONFLICTMODAL_TITLE = 'LogConversionConflictModal.title',
@@ -713,9 +720,11 @@ export default {
         [FM.BUTTON_ABANDON]: 'Abandon',
         [FM.BUTTON_ABANDON_BRANCH]: 'Abandon Branch',
         [FM.BUTTON_ABANDON_EDIT]: 'Abandon Edit',
+        [FM.BUTTON_ABANDON_IMPORT]: 'Abandon Import',
         [FM.BUTTON_ACCEPT]: 'Accept',
         [FM.BUTTON_CANCEL]: 'Cancel',
         [FM.BUTTON_CLOSE]: 'Close',
+        [FM.BUTTON_CONFIRM]: 'Confirm',
         [FM.BUTTON_DELETE]: 'Delete',
         [FM.BUTTON_EXPORT]: 'Export',
         [FM.BUTTON_IMPORT]: 'Import',
@@ -984,8 +993,9 @@ export default {
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
         
         // Conversation Importer
-        [FM.CONVERSATION_IMPORTER_TITLE]: 'Import a Conversation...',
-        [FM.CONVERSATION_IMPORTER_DESCRIPTION]: 'Create a Train Dialog from a .transcript file',
+        [FM.CONVERSATION_IMPORTER_TITLE]: 'Import Conversations...',
+        [FM.CONVERSATION_IMPORTER_DESCRIPTION]: 'Create Train Dialogs from .transcript files',
+        [FM.CONVERSATION_BUTTON_FILES]: 'Locate File(s)',
 
         // DialogMetadata
         [FM.DIALOGMETADATA_TAGS_LABEL]: 'Tags',
@@ -1059,6 +1069,11 @@ export default {
         [FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS]: 'Conflicting Labels',
         [FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS]: 'Previously Submitted Labels',
         [FM.EXTRACTCONFLICTMODAL_CALLTOACTION]: `Clicking 'Accept' will replace the conflicting labels with the previously submitted labels.`,
+
+         // Import Cancel
+        [FM.IMPORT_CANCEL_TITLE]: 'Are you sure you want to abandon this import?',
+        [FM.IMPORT_CANCEL_CHECKBOX_LABEL]: 'Skip remaining imports',
+    
 
         // LogConversionConflictModal
         [FM.LOGCONVERSIONCONFLICTMODAL_TITLE]: 'Incompatible Log Dialog',
@@ -1153,7 +1168,6 @@ export default {
         [FM.EDITDIALOGMODAL_CONFIRMDELETELOG_TITLE]: 'Are you sure you want to delete this Log Dialog?',
         [FM.EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE]: 'Are you sure you want to delete this Training Dialog?',
         [FM.EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE]: 'Are you sure you want to abandon this Training Dialog?',
-        [FM.EDITDIALOGMODAL_CONFIRMABANDON_IMPORT_TITLE]: 'Are you sure you want to abandon this import?',
         [FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE]: 'Are you sure you want to abandon your edits?',
         [FM.EDITDIALOGMODAL_SAVECONFLICT_TITLE]: 'Previous edits require that you save this dialog before taking this action',
         [FM.EDITDIALOGMODAL_WARNING_INVALID_BOT]: 'Running Bot not compatible with this Model',

@@ -520,8 +520,9 @@ class TeachModal extends React.Component<Props, ComponentState> {
     renderAbandonText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
-            case EditDialogType.IMPORT:
                 return Util.formatMessageId(intl, FM.BUTTON_ABANDON)
+            case EditDialogType.IMPORT:
+                return Util.formatMessageId(intl, FM.BUTTON_ABANDON_IMPORT)
             case EditDialogType.BRANCH:
                 return Util.formatMessageId(intl, FM.BUTTON_ABANDON_BRANCH)
             case EditDialogType.LOG_EDITED:
@@ -708,7 +709,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                                 replaceActivityText: userText
                                             })
                                         }}
-
+                                        importIndex={this.props.importIndex}
+                                        importCount={this.props.importCount}
                                         onEditExtraction={this.onEditExtraction}
                                         onEditAction={this.onEditScore}
                                         onEditAPIStub={this.onEditAPIStub}
@@ -862,7 +864,8 @@ export interface ReceivedProps {
     initialHistory: Activity[]
     lastAction: CLM.ActionBase | null
     allUniqueTags: string[]
-
+    importIndex?: number
+    importCount?: number
     conflictPairs: ConflictPair[]
     onAcceptConflictResolution: (conflictPairs: ConflictPair[]) => Promise<void>
     onAbortConflictResolution: () => void
