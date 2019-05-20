@@ -30,8 +30,8 @@ export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
 export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
 export function GetAllChatMessages() { return helpers.StringArrayFromElementText(AllChatMessagesSelector) }
-export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error > div > span').ExactMatch(expectedMessage) }
-export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error > div > span') }
+export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
+export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="edit-dialog-modal-delete-turn-button"]').Click() }
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
 export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreActionsButtonSelector) }
