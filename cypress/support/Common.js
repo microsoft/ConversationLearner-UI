@@ -11,7 +11,7 @@ export const whichAnimalWouldYouLike = 'Which animal would you like?'
 export const whatsYourName = "What's your name?"
 
 export const trainDialogHasErrorsMessage = 'This Train Dialog has errors that must be fixed before it can be used to train your model'
-export const actionFollowsWaitActionErrorMessage = 'Action follows a Wait Action'
-export const userInputFollowsNonWaitErrorMessage = 'User Input following a non-Wait Action'
+export const actionFollowsWaitActionErrorMessage = 'Action follows a Wait Action'
+export const userInputFollowsNonWaitErrorMessage = 'User Input following a non-Wait Action'
 export const gonnaDeleteAnAction = 'Gonna Delete an Action'
 
