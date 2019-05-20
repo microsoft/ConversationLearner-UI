@@ -1595,7 +1595,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     onConfirm={this.onConfirmDelete}
                     title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
                     message={this.validationWarning}
-                    optionMessage={this.validationWarning ? 'Delete from all Train Dialogs' : undefined}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmEditModalOpen}
