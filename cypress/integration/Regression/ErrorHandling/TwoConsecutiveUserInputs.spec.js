@@ -34,7 +34,7 @@ describe('Two Consecutive User Inputs - ErrorHandling', () => {
 
     it('Should select the chat turn containing the error and validate the specific error message', () => {
       train.SelectChatTurnExactMatch('Sam')
-      train.VerifyErrorMessage('Two consecutive User Inputs')
+      train.VerifyErrorMessage('Two consecutive User Inputs')
     })
 
     it('Should save the Train Dialog and verify the errors show up in the grid', () => {
@@ -49,7 +49,7 @@ describe('Two Consecutive User Inputs - ErrorHandling', () => {
       train.EditTraining(`Hey`, 'world peace', "Sorry $name, I can't help you get $want")
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
       train.SelectChatTurnExactMatch('Sam')
-      train.VerifyErrorMessage('Two consecutive User Inputs')
+      train.VerifyErrorMessage('Two consecutive User Inputs')
     })
 
     it('Should fix the error and verify that all error messages are gone', () => {

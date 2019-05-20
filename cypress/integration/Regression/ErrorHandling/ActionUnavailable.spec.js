@@ -46,7 +46,7 @@ describe('Action Unavailable - ErrorHandling', () => {
 
     it('Should verify the specifics of the error', () => {
       train.SelectChatTurnStartsWith('Hello')
-      train.VerifyErrorMessage('Action is unavailable')
+      train.VerifyErrorMessage('Action is unavailable')
       train.VerifyChatTurnIsAnExactMatch('Hello [$name]', 2, 1)
     })
 
@@ -62,7 +62,7 @@ describe('Action Unavailable - ErrorHandling', () => {
       train.EditTraining(`Joe`, 'Joe', "Hello $name")
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
       train.SelectChatTurnStartsWith('Hello')
-      train.VerifyErrorMessage('Action is unavailable')
+      train.VerifyErrorMessage('Action is unavailable')
       train.VerifyChatTurnIsAnExactMatch('Hello [$name]', 2, 1)
     })
 
