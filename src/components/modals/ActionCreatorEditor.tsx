@@ -16,6 +16,7 @@ import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
 import { formatMessageId, isActionUnique } from '../../Utils/util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
+import ActionDeleteModal from './ActionDeleteModal'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -1588,7 +1589,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             />}
                     </div>
                 </div>
-                <ConfirmCancelModal
+                <ActionDeleteModal
                     open={this.state.isConfirmDeleteModalOpen}
                     onCancel={this.onCancelDelete}
                     onConfirm={this.onConfirmDelete}
