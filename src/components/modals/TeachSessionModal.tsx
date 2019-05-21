@@ -17,6 +17,7 @@ import UserInputModal from './UserInputModal'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
 import FormattedMessageId from '../FormattedMessageId'
+import ImportCancelModal from './ImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
 import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
 import { returntypeof } from 'react-redux-typescript'
@@ -36,6 +37,7 @@ import './TeachSessionModal.css'
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
+    isImportAbandonOpen: boolean,
     isUserInputModalOpen: boolean,
     addUserInputSelectionType: SelectionType
     isInitStateOpen: boolean,
@@ -61,6 +63,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     state: ComponentState = {
         isConfirmDeleteOpen: false,
+        isImportAbandonOpen: false,
         isUserInputModalOpen: false,
         addUserInputSelectionType: SelectionType.NONE,
         isInitStateOpen: false,
@@ -106,7 +109,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onDismissError(errorType: AT): void {
-        this.props.onClose(false);
+        this.props.onClose(false)
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -217,33 +220,40 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     //---- ABANDON ----
     @OF.autobind
-    onClickAbandonTeach() {
-        if (this.state.nextActivityIndex) {
+    async onClickAbandonTeach() {
+        if (this.props.editType === EditDialogType.IMPORT) {
+            this.setState({
+                isImportAbandonOpen: true
+            })
+        }
+        else if (this.state.nextActivityIndex) {
             this.setState({
                 isConfirmDeleteOpen: true
             })
         } else {
-            this.onClickConfirmDelete()
+            await this.onClickConfirmDelete(false)
         }
     }
 
     @OF.autobind
     onClickSave() {
-        this.props.onClose(true, this.state.tags, this.state.description)
+        this.props.onClose(true, this.state.tags, this.state.description, false)
     }
 
     @OF.autobind
-    async onClickConfirmDelete() {
+    async onClickConfirmDelete(stopImport: boolean) {
         await Util.setStateAsync(this, {
-            isConfirmDeleteOpen: false
+            isConfirmDeleteOpen: false,
+            isImportAbandonOpen: false
         })
-        this.props.onClose(false)
+        this.props.onClose(false, undefined, undefined, stopImport)
     }
 
     @OF.autobind
     onClickCancelDelete() {
         this.setState({
-            isConfirmDeleteOpen: false
+            isConfirmDeleteOpen: false,
+            isImportAbandonOpen: false
         })
     }
 
@@ -776,6 +786,11 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     </div>
+                    <ImportCancelModal
+                        open={this.state.isImportAbandonOpen}
+                        onCancel={this.onClickCancelDelete}
+                        onConfirm={this.onClickConfirmDelete}
+                    />
                     <ConfirmCancelModal
                         data-testid="teach-session-confirm-cancel"
                         open={this.state.isConfirmDeleteOpen}
@@ -840,7 +855,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     isOpen: boolean
-    onClose: (save: boolean, tags?: string[], description?: string) => void
+    onClose: (save: boolean, tags?: string[], description?: string, stopImport?: boolean) => void
     onEditTeach: (historyIndex: number | null, args: DialogEditing.EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any) => void
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
@@ -849,7 +864,7 @@ export interface ReceivedProps {
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onEndSessionActivity: (tags: string[], description: string) => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any
-    onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => void) | null
+    onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => Promise<void>) | null
     onEditAPIStub: (trainDialog: CLM.TrainDialog, activity: Activity) => void
     app: CLM.AppBase
     teachSession: TeachSessionState

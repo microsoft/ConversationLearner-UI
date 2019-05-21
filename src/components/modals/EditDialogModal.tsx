@@ -15,6 +15,7 @@ import DisabledInputButtom from './DisabledInputButton'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import FormattedMessageId from '../FormattedMessageId'
+import ImportCancelModal from './ImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
 import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
 import { NewActionPreset } from './ActionCreatorEditor'
@@ -32,7 +33,6 @@ import { FM } from '../../react-intl-messages'
 import { TipType } from '../ToolTips/ToolTips'
 import { renderReplayError } from '../../Utils/RenderReplayError'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import ImportCancelModal from './ImportCancelModal';
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
@@ -305,14 +305,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickAbandonCancel(cancelImport: boolean = false) {
+    onClickAbandonCancel() {
         this.setState({
             isConfirmAbandonOpen: false,
             isImportAbandonOpen: false
         })
-        if (cancelImport) {
-
-        }
     }
 
     // User is continuing the train dialog by typing something new

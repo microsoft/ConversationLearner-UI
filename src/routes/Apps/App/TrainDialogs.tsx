@@ -381,7 +381,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onCloseTeachSession(save: boolean, tags: string[] = [], description: string = '') {
+    async onCloseTeachSession(save: boolean, tags: string[] = [], description: string = '', stopImport: boolean = false) {
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session unless it was already closed with and EndSessionAction
             if (this.props.teachSession.dialogMode !== CLM.DialogMode.EndSession) {
@@ -425,7 +425,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
             }
         }
-        Util.setStateAsync(this, {
+        await Util.setStateAsync(this, {
             isTeachDialogModalOpen: false,
             history: [],
             lastAction: null,
@@ -435,7 +435,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
 
         if (this.state.filesToImport && this.state.filesToImport.length > 0) {
-            this.onStartTranscriptImport()
+            if (stopImport) {
+                this.setState({filesToImport: undefined})
+            }
+            else {
+                await this.onStartTranscriptImport()
+            }
         }
     }
 
@@ -656,7 +661,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
         }
 
-        Util.setStateAsync(this, {
+        await Util.setStateAsync(this, {
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
             isTeachDialogModalOpen: false,
@@ -668,7 +673,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
 
         if (this.state.filesToImport && this.state.filesToImport.length > 0) {
-            this.onStartTranscriptImport()
+            await this.onStartTranscriptImport()
         }
     }
 
@@ -970,7 +975,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             filesToImport: transcriptsToImport,
             importIndex: 0
         })
-        this.onStartTranscriptImport()
+        await this.onStartTranscriptImport()
     }
 
     @OF.autobind
@@ -1093,7 +1098,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         this.setState({isImportWaitModalOpen: false})
 
-        this.onClickTrainDialogItem(newTrainDialog, EditDialogType.IMPORT)
+        await this.onClickTrainDialogItem(newTrainDialog, EditDialogType.IMPORT)
     }
 
     async addEntityExtractions(trainDialog: CLM.TrainDialog) {
@@ -1130,7 +1135,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // Reload local copy
             await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.state.originalTrainDialog.trainDialogId, true) as any) as Promise<CLM.TrainDialog>)
         }
-        Util.setStateAsync(this, {
+        await Util.setStateAsync(this, {
             isEditDialogModalOpen: false,
             selectedActivityIndex: null,
             currentTrainDialog: null,
@@ -1145,7 +1150,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.setState({filesToImport: undefined})
             }
             else {
-                this.onStartTranscriptImport()
+                await this.onStartTranscriptImport()
             }
         }
     }

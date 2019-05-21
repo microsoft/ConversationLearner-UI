@@ -73,8 +73,8 @@ class Actions extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickDeleteActionEditor(action: CLM.ActionBase) {
-        Utils.setStateAsync(this, {
+    async onClickDeleteActionEditor(action: CLM.ActionBase) {
+        await Utils.setStateAsync(this, {
             isActionEditorOpen: false,
             actionSelected: null
         })
@@ -83,9 +83,9 @@ class Actions extends React.Component<Props, ComponentState> {
         setTimeout(() => this.newActionButton.focus(), 1000)
     }
 
-    onClickSubmitActionEditor(action: CLM.ActionBase) {
+    async onClickSubmitActionEditor(action: CLM.ActionBase) {
         const wasEditing = this.state.actionSelected
-        Utils.setStateAsync(this, {
+        await Utils.setStateAsync(this, {
             isActionEditorOpen: false,
             actionSelected: null
         })
@@ -119,7 +119,7 @@ class Actions extends React.Component<Props, ComponentState> {
 
     render() {
         // TODO: Look to move this up to the set state calls instead of forcing it to be on every render
-        const { actions } = this.props
+        const { actions: allActions } = this.props
         const computedActions = this.getFilteredActions()
         return (
             <div className="cl-page">
@@ -149,7 +149,7 @@ class Actions extends React.Component<Props, ComponentState> {
                         componentRef={component => this.newActionButton = component!}
                     />
                 </div>
-                {actions.length === 0
+                {allActions.length === 0
                     ? <div className="cl-page-placeholder">
                         <div className="cl-page-placeholder__content">
                             <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`} data-testid="create-an-action-title">Create an Action</div>
