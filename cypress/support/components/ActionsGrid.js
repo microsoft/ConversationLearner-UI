@@ -43,13 +43,12 @@ let typeSelectorPairs = [
 
 // IMPORTANT: Call this method before calling any of the Validate* methods.
 export function GetRowToBeValidated(actionType, textId) {
-  let i = typeSelectorPairs.findIndex(typeSelectorPair => typeSelectorPair.type === actionType)
-  if (i == -1) {
+  let typeSelectorPair = typeSelectorPairs.find(typeSelectorPair => typeSelectorPair.type === actionType)
+  if (!typeSelectorPair) {
     throw new Error(`Test Code Error - Unrecognized type: '${actionType}'`)
   }
-  let selector = typeSelectorPairs[i].selector
   
-  cy.Get(selector)
+  cy.Get(typeSelectorPair.selector)
     .contains(textId)
     .parents('div.ms-DetailsRow-fields')
     .as('responseDetailsRow')
