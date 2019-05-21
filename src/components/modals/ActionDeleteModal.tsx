@@ -7,7 +7,9 @@ import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import './ConfirmCancelModal.css'
+import './ActionDeleteModal.css'
+import HelpIcon from '../HelpIcon';
+import { TipType } from '../ToolTips/ToolTips'
 
 // Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
 interface ReceivedProps {
@@ -20,27 +22,42 @@ interface ReceivedProps {
 
 type Props = ReceivedProps & InjectedIntlProps
 
+const actionDeleteTipType = TipType.ACTION_API1
+const deleteOptions: OF.IChoiceGroupOption[] = [
+    {
+        key: 'A',
+        text: 'Preserve Placeholders (Default)',
+    },
+    {
+        key: 'B',
+        text: 'Remove placeholders'
+    },
+]
+const defaultDeleteTypeKey = deleteOptions[0].key
+
 const ConfirmCancelModal: React.FC<Props> = (props) => {
     const { intl } = props
     const onDismiss = props.onCancel
 
-    const [deleteType, setDeleteType] = React.useState(false)
-    const onChangeDeleteType = React.useCallback((key) => {
-        key === 'A'
-            ? setDeleteType(false)
-            : setDeleteType(true)
+    const [deleteTypeKey, setDeleteTypeKey] = React.useState(defaultDeleteTypeKey)
+
+    const onChangeDeleteType = React.useCallback((event: React.FormEvent<HTMLInputElement>, option: OF.IChoiceGroupOption) => {
+        console.log(`onChangeDeleteType: `, event, option)
+        setDeleteTypeKey(option.key)
     }, []);
     React.useLayoutEffect(() => {
         if (props.open) {
-            setDeleteType(false)
+            if (deleteTypeKey !== defaultDeleteTypeKey) {
+                setDeleteTypeKey(defaultDeleteTypeKey)
+            }
         }
     }, [props.open])
-    React.useEffect(() => console.log(`deleteType: `, deleteType), [deleteType])
+    React.useEffect(() => console.log(`deleteType: `, deleteTypeKey), [deleteTypeKey])
 
     return (
         <OF.Dialog
             hidden={!props.open}
-            onDismiss={() => onDismiss(deleteType)}
+            onDismiss={() => onDismiss(deleteTypeKey !== defaultDeleteTypeKey)}
             dialogContentProps={{
                 type: OF.DialogType.normal,
                 title: props.title
@@ -50,47 +67,33 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
             }}
         >
             {typeof props.message === 'function' && props.message()}
-            <div className="cl-confirm-cancel_option" data-testid="confirm-cancel-option">
+            <div className="cl-action-delete-modal__option" data-testid="action-delete-option">
+                <OF.Label className="cl-label">Delete Type
+                    <HelpIcon tipType={actionDeleteTipType} />
+                </OF.Label>
                 <OF.ChoiceGroup
-                    className="defaultChoiceGroup"
-                    defaultSelectedKey="A"
-                    options={[
-                        {
-                            key: 'A',
-                            text: 'Keep Placeholders (Default)',
-                        },
-                        {
-                            key: 'B',
-                            text: 'Remove placeholders'
-                        },
-                    ]}
+                    selectedKey={deleteTypeKey}
+                    options={deleteOptions}
                     onChange={onChangeDeleteType}
-                    label="Pick one"
+                    label={undefined}
                     required={true}
+                    disabled={typeof props.message !== 'function'}
                 />
             </div>
 
             <OF.DialogFooter>
-                {props.onConfirm &&
-                    <OF.PrimaryButton
-                        onClick={() => props.onConfirm(deleteType)}
-                        text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT)}
-                        iconProps={{ iconName: 'Accept' }}
-                        data-testid="confirm-cancel-modal-accept"
-                    />
-                }
-                {props.onCancel &&
-                    <OF.DefaultButton
-                        onClick={() => {
-                            if (props.onCancel) {
-                                props.onCancel()
-                            }
-                        }}
-                        text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT)}
-                        iconProps={{ iconName: 'Cancel' }}
-                        data-testid="confirm-cancel-modal-cancel"
-                    />
-                }
+                <OF.PrimaryButton
+                    onClick={() => props.onConfirm(deleteTypeKey != defaultDeleteTypeKey)}
+                    text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT)}
+                    iconProps={{ iconName: 'Accept' }}
+                    data-testid="confirm-cancel-modal-accept"
+                />
+                <OF.DefaultButton
+                    onClick={() => props.onCancel()}
+                    text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT)}
+                    iconProps={{ iconName: 'Cancel' }}
+                    data-testid="confirm-cancel-modal-cancel"
+                />
             </OF.DialogFooter>
         </OF.Dialog>
     )

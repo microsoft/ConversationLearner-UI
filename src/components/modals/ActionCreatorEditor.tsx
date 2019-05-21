@@ -250,6 +250,7 @@ interface ComponentState {
     isEntityEditorModalOpen: boolean
     isCardViewerModalOpen: boolean
     isConfirmDeleteModalOpen: boolean
+    isConfirmDeleteInUseModalOpen: boolean
     isConfirmEditModalOpen: boolean
     isConfirmDuplicateActionModalOpen: boolean
     validationWarnings: string[]
@@ -286,6 +287,7 @@ const initialState: Readonly<ComponentState> = {
     isEntityEditorModalOpen: false,
     isCardViewerModalOpen: false,
     isConfirmDeleteModalOpen: false,
+    isConfirmDeleteInUseModalOpen: false,
     isConfirmEditModalOpen: false,
     isConfirmDuplicateActionModalOpen: false,
     validationWarnings: [],
@@ -826,7 +828,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             this.setState({
                 isConfirmDuplicateActionModalOpen: true,
                 validationWarnings: [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND)],
-                newOrEditedAction: newOrEditedAction
+                newOrEditedAction,
             })
 
             return
@@ -854,8 +856,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             if (validationWarnings.length > 0) {
                 this.setState({
                     isConfirmEditModalOpen: true,
-                    validationWarnings: validationWarnings,
-                    newOrEditedAction: newOrEditedAction
+                    validationWarnings,
+                    newOrEditedAction,
                 })
             }
             else {
@@ -881,16 +883,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         try {
             const invalidTrainingDialogIds = await ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
-            if (invalidTrainingDialogIds) {
-                const validationWarnings = (invalidTrainingDialogIds.length > 0)
-                    ? [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING)]
-                    : []
+            if (invalidTrainingDialogIds && invalidTrainingDialogIds.length > 0) {
+                const validationWarnings = [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING)]
 
-                this.setState(
-                    {
-                        isConfirmDeleteModalOpen: true,
-                        validationWarnings: validationWarnings
-                    });
+                this.setState({
+                    isConfirmDeleteInUseModalOpen: true,
+                    validationWarnings,
+                });
+            }
+            else {
+                this.setState({
+                    isConfirmDeleteModalOpen: true,
+                    validationWarnings: [],
+                });
             }
         }
         catch (e) {
@@ -900,9 +905,16 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
+    onCancelDeleteInUse() {
+        this.setState({
+            isConfirmDeleteInUseModalOpen: false,
+        })
+    }
+
+    @OF.autobind
     onCancelDelete() {
         this.setState({
-            isConfirmDeleteModalOpen: false
+            isConfirmDeleteModalOpen: false,
         })
     }
 
@@ -1590,11 +1602,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <ActionDeleteModal
+                    open={this.state.isConfirmDeleteInUseModalOpen}
+                    onCancel={this.onCancelDeleteInUse}
+                    onConfirm={this.onConfirmDelete}
+                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
+                    message={this.validationWarning}
+                />
+                <ConfirmCancelModal
                     open={this.state.isConfirmDeleteModalOpen}
                     onCancel={this.onCancelDelete}
                     onConfirm={this.onConfirmDelete}
                     title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
-                    message={this.validationWarning}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmEditModalOpen}

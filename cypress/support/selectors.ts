@@ -63,11 +63,13 @@ const selectors = {
         checkBoxWaitForResponse: '[data-testid="action-creator-wait-checkbox"] button[role="checkbox"]',
         warningNoWaitExpected: '[data-testid="action-warning-nowait-expected"]',
     },
+    actionDeleteModal: {
+        optionRemovePlaceholder: '[data-testid="confirm-cancel-option"]',
+    },
     confirmCancelModal: {
         buttonCancel: '[data-testid="confirm-cancel-modal-cancel"]',
         buttonConfirm: '[data-testid="confirm-cancel-modal-accept"]',
         buttonOk: '[data-testid="confirm-cancel-modal-ok"]',
-        optionRemovePlaceholder: '[data-testid="confirm-cancel-option"]',
     },
     trainDialogs: {
         descriptions: '[data-testid="train-dialogs-description"]',

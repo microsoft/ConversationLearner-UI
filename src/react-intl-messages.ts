@@ -597,7 +597,7 @@ export default {
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this Action?',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
         [FM.ACTIONCREATOREDITOR_CONFIRM_MISSINGLABEL_WARNING]: 'is a plain string not attached to an Entity',
