@@ -22,7 +22,6 @@ interface ReceivedProps {
 
 type Props = ReceivedProps & InjectedIntlProps
 
-const actionDeleteTipType = TipType.ACTION_API1
 const deleteOptions: OF.IChoiceGroupOption[] = [
     {
         key: 'A',
@@ -69,7 +68,7 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
             {typeof props.message === 'function' && props.message()}
             <div className="cl-action-delete-modal__option" data-testid="action-delete-option">
                 <OF.Label className="cl-label">Delete Type
-                    <HelpIcon tipType={actionDeleteTipType} />
+                    <HelpIcon tipType={TipType.ACTION_DELETE_INUSE} />
                 </OF.Label>
                 <OF.ChoiceGroup
                     selectedKey={deleteTypeKey}

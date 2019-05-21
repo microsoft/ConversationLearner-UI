@@ -1601,6 +1601,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             />}
                     </div>
                 </div>
+                {/* If deleting action in use, used custom modal, otherwise use confirm cancel modal */}
                 <ActionDeleteModal
                     open={this.state.isConfirmDeleteInUseModalOpen}
                     onCancel={this.onCancelDeleteInUse}
