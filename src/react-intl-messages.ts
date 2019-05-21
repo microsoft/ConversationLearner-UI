@@ -171,7 +171,9 @@ export enum FM {
     // Conversation Importer
     CONVERSATION_IMPORTER_TITLE = 'ConversationImporter.title',
     CONVERSATION_IMPORTER_DESCRIPTION = 'ConversationImporter.description',
-    CONVERSATION_BUTTON_FILES = 'ConversationImporte.Button.files',
+    CONVERSATION_IMPORTER_FILES = 'ConversationImporte.Button.files',
+    CONVERSATION_IMPORTER_AUTOIMPORT = 'ConversationImporte.autoimport',
+    CONVERSATION_IMPORTER_AUTOMERGE = 'ConversationImporte.automerge',
 
     // Custom Errors
     CUSTOMERROR_NETWORK_ERROR = 'CustomError.networkError',
@@ -215,7 +217,6 @@ export enum FM {
     EDITDIALOGMODAL_CONFIRMDELETELOG_TITLE = 'EditDialogModal.confirmDeleteLog.title',
     EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE = 'EditDialogModal.confirmDeleteTrain.title',
     EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE = 'EditDialogModal.confirmAbandonNew.title',
-    EDITDIALOGMODAL_CONFIRMABANDON_IMPORT_TITLE = 'EditDialogModal.confirmAbandonImport.title',
     EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE = 'EditDialogModal.confirmAbandonEdit.title',
     EDITDIALOGMODAL_SAVECONFLICT_TITLE = 'EditDialogModal.saveConflict.title',
     EDITDIALOGMODAL_WARNING_INVALID_BOT = 'EditDialogModal.warningInvalidBot.title',
@@ -995,7 +996,9 @@ export default {
         // Conversation Importer
         [FM.CONVERSATION_IMPORTER_TITLE]: 'Import Conversations...',
         [FM.CONVERSATION_IMPORTER_DESCRIPTION]: 'Create Train Dialogs from .transcript files',
-        [FM.CONVERSATION_BUTTON_FILES]: 'Locate File(s)',
+        [FM.CONVERSATION_IMPORTER_FILES]: 'Locate File(s)',
+        [FM.CONVERSATION_IMPORTER_AUTOIMPORT]: 'Auto Import',
+        [FM.CONVERSATION_IMPORTER_AUTOMERGE]: 'Auto Merge',
 
         // DialogMetadata
         [FM.DIALOGMETADATA_TAGS_LABEL]: 'Tags',

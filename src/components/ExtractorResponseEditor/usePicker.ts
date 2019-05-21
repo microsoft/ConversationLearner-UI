@@ -57,6 +57,15 @@ export const usePicker = (
     const [highlightIndex, setHighlighIndex] = React.useState(0)
     const [matchedOptions, setMatchedOptions] = React.useState<MatchedOption<IOption>[]>([])
 
+    const resetHighlighIndex = () => setHighlighIndex(0)
+    const onClickOption = (option: IOption) => onSelectOption(option)
+    const onSelectHighlightedOption = () => {
+        const option = matchedOptions[highlightIndex]
+        if (option) {
+            onSelectOption(option.original)
+        }
+    }
+    
     React.useEffect(() => {
         fuseRef.current = new Fuse(options, fuseOptions)
         const computed = getMatchedOptions(searchText, options, fuseRef.current, maxDisplayedOptions)
@@ -100,15 +109,6 @@ export const usePicker = (
         }
 
         setHighlighIndex(modifyFunction(highlightIndex, matchedOptions.length - 1))
-    }
-
-    const resetHighlighIndex = () => setHighlighIndex(0)
-    const onClickOption = (option: IOption) => onSelectOption(option)
-    const onSelectHighlightedOption = () => {
-        const option = matchedOptions[highlightIndex]
-        if (option) {
-            onSelectOption(option.original)
-        }
     }
 
     return {

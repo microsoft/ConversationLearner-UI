@@ -21,7 +21,12 @@ type Props = ReceivedProps
 
 const AutocompleteListItem: React.SFC<Props> = (props) => {
     return (
-        <div data-is-focusable={true} onClick={() => props.onClick()} className='autoCompleteListItem'>
+        <div 
+            data-is-focusable={true} 
+            onClick={() => props.onClick()} 
+            className='autoCompleteListItem'
+            role="button"
+        >
             <span className={FontClassNames.medium}>{props.item.text}</span>
         </div>
     );

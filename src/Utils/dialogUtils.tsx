@@ -6,6 +6,7 @@ import * as CLM from '@conversationlearner/models'
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../Utils/util'
+import * as BotChat from '@conversationlearner/webchat'
 import { deepCopy, getDefaultEntityMap } from './util'
 import { Activity } from 'botframework-directlinejs'
 import TagsReadOnly from '../components/TagsReadOnly'
@@ -197,6 +198,59 @@ export function trainDialogRenderTags(trainDialog: CLM.TrainDialog): React.React
 
 export function trainDialogRenderDescription(trainDialog: CLM.TrainDialog): React.ReactNode {
     return trainDialog.description ? <i>{trainDialog.description}</i> : dialogSampleInput(trainDialog)
+}
+
+// Returns true if train dialog has any stub import actions
+export function hasImportActions(trainDialog: CLM.TrainDialog): boolean {
+    for (const round of trainDialog.rounds) {
+        for (const scorerStep of round.scorerSteps) {
+            if (scorerStep.labelAction === CLM.CL_STUB_IMPORT_ACTION_ID) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
+// Does history have any replay errors
+export function getReplayErrorLevel(history: BotChat.Activity[]): CLM.ReplayErrorLevel | null {
+    // Return most severe error level found
+    let replayErrorLevel: CLM.ReplayErrorLevel | null = null
+    for (const h of history) {
+        const clData: CLM.CLChannelData = h.channelData.clData
+        if (clData && clData.replayError) {
+            if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
+                return CLM.ReplayErrorLevel.BLOCKING
+            }
+            else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
+                replayErrorLevel = CLM.ReplayErrorLevel.ERROR
+            }
+            else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING && replayErrorLevel !== CLM.ReplayErrorLevel.ERROR) {
+                replayErrorLevel = CLM.ReplayErrorLevel.WARNING
+            }
+        }
+    }
+    return replayErrorLevel
+}
+
+// Given train dialog and rendered activity, return validity
+export function getTrainDialogValidity(trainDialog: CLM.TrainDialog, history: BotChat.Activity[]): CLM.Validity | undefined {
+    // Look for individual replay errors
+    const replayErrorLevel = getReplayErrorLevel(history)
+    if (replayErrorLevel) {
+        if (replayErrorLevel === CLM.ReplayErrorLevel.BLOCKING || replayErrorLevel === CLM.ReplayErrorLevel.ERROR) {
+            return CLM.Validity.INVALID
+        }
+        if (replayErrorLevel === CLM.ReplayErrorLevel.WARNING) {
+            return CLM.Validity.WARNING
+        }
+    }
+    // Didn't find any errors on individual rounds so state is now valid
+    if (trainDialog.validity === CLM.Validity.INVALID) {
+        return CLM.Validity.VALID
+    }
+    // Unless previous validity state was WARNING or UNKNOWN and then I don't know
+    return trainDialog.validity
 }
 
 export function cleanTrainDialog(trainDialog: CLM.TrainDialog) {

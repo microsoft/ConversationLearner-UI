@@ -98,7 +98,7 @@ class TreeView extends React.Component<Props, ComponentState> {
 
         setTimeout(
             () => this.state.treeElement.setState({ isTransitioning: false }),
-            this.state.treeElement.props.transitionDuration + 10,
+            this.state.treeElement.props.transitionDuration as number + 10,
         );
         this.state.treeElement.internalState.targetNode = targetNode;
     }

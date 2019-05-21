@@ -252,10 +252,10 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                 ref={ele => (this.fileInput = ele)}
                                 multiple={false}
                             />
-                            <div className="cl-action-creator-file-picker">
+                            <div className="cl-file-picker">
                                 <OF.PrimaryButton
                                     data-testid="model-creator-locate-file-button"
-                                    className="cl-action-creator-file-button"
+                                    className="cl-file-picker-button"
                                     ariaDescription={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION)}
                                     text={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT)}
                                     iconProps={{ iconName: 'DocumentSearch' }}

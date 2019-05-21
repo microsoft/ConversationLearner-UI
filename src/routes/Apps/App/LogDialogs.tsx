@@ -641,7 +641,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onCloseMergeModal(shouldMerge: boolean, description: string = "", tags: string[] = []) {
+    async onCloseMergeModal(shouldMerge: boolean, description: string | null = null, tags: string[] | null = null) {
 
         if (!this.state.mergeNewTrainDialog || !this.state.mergeExistingTrainDialog) {
             throw new Error("Expected merge props to be set")
@@ -723,9 +723,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) {
+    async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog) {
         // Remove any data added for rendering
         DialogUtils.cleanTrainDialog(newTrainDialog)
+
+        const validity = DialogUtils.getTrainDialogValidity(newTrainDialog, this.state.history)
+
         const cleanedDialog = {
             ...newTrainDialog,
             validity,
@@ -1051,7 +1054,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
                     onDeleteDialog={this.onDeleteLogDialog}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
-                    onSaveDialog={(editedTrainDialog, validity) => this.onSaveTrainDialog(editedTrainDialog, validity)}
+                    onSaveDialog={(editedTrainDialog) => this.onSaveTrainDialog(editedTrainDialog)}
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={() => { }}
                     allUniqueTags={this.props.allUniqueTags}

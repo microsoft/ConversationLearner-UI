@@ -238,6 +238,40 @@ export const extractFromHistoryThunkAsync = (appId: string, trainDialog: CLM.Tra
     }
 }
 
+// ----------------------------------------
+// Fetch AllTrainDialogs
+// ----------------------------------------
+const fetchAllTrainDialogsAsync = (appId: string): ActionObject => {
+    return {
+        type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
+        appId: appId
+    }
+}
+
+const fetchAllTrainDialogsFulfilled = (trainDialogs: CLM.TrainDialog[]): ActionObject => {
+    return {
+        type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
+        allTrainDialogs: trainDialogs
+    }
+}
+
+export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC)
+        dispatch(fetchAllTrainDialogsAsync(appId))
+
+        try {
+            const trainDialogs = await clClient.trainDialogs(appId)
+            dispatch(fetchAllTrainDialogsFulfilled(trainDialogs))
+            return trainDialogs
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRAIN_DIALOGS_ASYNC))
+            return null;
+        }
+    }
+}
+
 // --------------------------
 // TrainDialogMerge
 // --------------------------
@@ -253,7 +287,7 @@ const trainDialogMergeFulfilled = (): ActionObject => {
     }
 }
 
-export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.TrainDialog, existingTrainDialog: CLM.TrainDialog, description: string, tags: string[], sourceTrainDialogId: string | null) => {
+export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.TrainDialog, existingTrainDialog: CLM.TrainDialog, newDescription: string | null, newTags: string[] | null, sourceTrainDialogId: string | null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_MERGE_ASYNC)
         dispatch(trainDialogMergeAsync())
@@ -263,8 +297,8 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
 
             // Create merged train dialog
             const mergedTrainDialog = DialogUtils.mergeTrainDialogs(newTrainDialog, existingTrainDialog)
-            mergedTrainDialog.description = description
-            mergedTrainDialog.tags = tags
+            mergedTrainDialog.description = newDescription || mergedTrainDialog.description
+            mergedTrainDialog.tags = newTags || mergedTrainDialog.tags
             
             // If merged into exisiting TrainDialog (as it was longer)
             if (mergedTrainDialog.trainDialogId === existingTrainDialog.trainDialogId) {
@@ -340,7 +374,7 @@ const trainDialogReplaceFulfilled = (updatedTrainDialog: CLM.TrainDialog, delete
     }
 }
 
-export const trainDialogReplaceThunkAsync = (appId: string,  destinationTrainDialogId: string, newTrainDialog: CLM.TrainDialog,) => {
+export const trainDialogReplaceThunkAsync = (appId: string,  destinationTrainDialogId: string, newTrainDialog: CLM.TrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_REPLACE_ASYNC)
         dispatch(trainDialogReplaceAsync())
@@ -491,40 +525,6 @@ export const deleteTrainDialogThunkAsync = (app: CLM.AppBase, trainDialogId: str
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_TRAIN_DIALOG_REJECTED))
             dispatch(deleteTrainDialogRejected())
             dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
-        }
-    }
-}
-
-// ----------------------------------------
-// Fetch AllTrainDialogs
-// ----------------------------------------
-const fetchAllTrainDialogsAsync = (appId: string): ActionObject => {
-    return {
-        type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
-        appId: appId
-    }
-}
-
-const fetchAllTrainDialogsFulfilled = (trainDialogs: CLM.TrainDialog[]): ActionObject => {
-    return {
-        type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
-        allTrainDialogs: trainDialogs
-    }
-}
-
-export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC)
-        dispatch(fetchAllTrainDialogsAsync(appId))
-
-        try {
-            const trainDialogs = await clClient.trainDialogs(appId)
-            dispatch(fetchAllTrainDialogsFulfilled(trainDialogs))
-            return trainDialogs
-        } catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRAIN_DIALOGS_ASYNC))
-            return null;
         }
     }
 }

@@ -19,11 +19,15 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
     files: File[] | null
+    autoImport: boolean
+    autoMerge: boolean
 }
 
 class ConversationImporter extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         files: null,
+        autoImport: false,
+        autoMerge: false
     }
         
     private fileInput: any
@@ -37,6 +41,20 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
         }
     }
 
+    @OF.autobind
+    onChangeAutoImport() {
+        this.setState({
+            autoImport: !this.state.autoImport
+        })
+    }
+
+    @OF.autobind
+    onChangeAutoMerge() {
+        this.setState({
+            autoMerge: !this.state.autoMerge
+        })
+    }
+
     onChangeFile = (files: any) => {
         this.setState({
             files
@@ -48,7 +66,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
         return (
             <Modal
                 isOpen={this.props.open}
-                onDismiss={() => this.props.onClose(null)}
+                onDismiss={() => this.props.onClose(null, false, false)}
                 isBlocking={false}
                 containerClassName='cl-modal cl-modal--small'
             >
@@ -61,35 +79,46 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                         <HelpIcon tipType={TipType.CONVERSATION_IMPORTER}/>
                     </div>
                 </div>
-                <div className="cl-action-creator-fieldset">
-                    <div data-testid="model-creator-import-file-picker">
-                        <input
-                            type="file"
-                            style={{ display: 'none' }}
-                            onChange={(event) => this.onChangeFile(event.target.files)}
-                            ref={ele => (this.fileInput = ele)}
-                            multiple={true}
+                <div 
+                    data-testid="transcript-import-file-picker"
+                    className="cl-form"
+                >
+                    <input
+                        type="file"
+                        style={{ display: 'none' }}
+                        onChange={(event) => this.onChangeFile(event.target.files)}
+                        ref={ele => (this.fileInput = ele)}
+                        multiple={true}
+                    />
+                    <div className="cl-file-picker">
+                        <OF.PrimaryButton
+                            data-testid="transcript-locate-file-button"
+                            className="cl-file-picker-button"
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.CONVERSATION_IMPORTER_FILES)} 
+                            text={Util.formatMessageId(this.props.intl, FM.CONVERSATION_IMPORTER_FILES)} 
+                            iconProps={{ iconName: 'DocumentSearch' }}
+                            onClick={() => this.fileInput.click()}
                         />
-                        <div className="cl-action-creator-file-picker">
-                            <OF.PrimaryButton
-                                data-testid="model-creator-locate-file-button"
-                                className="cl-action-creator-file-button"
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.CONVERSATION_BUTTON_FILES)} 
-                                text={Util.formatMessageId(this.props.intl, FM.CONVERSATION_BUTTON_FILES)} 
-                                onClick={() => this.fileInput.click()}
-                            />
-                            <OF.TextField
-                                disabled={true}
-                                value={!this.state.files 
-                                    ? undefined
-                                    : this.state.files.length === 1
-                                    ? this.state.files[0].name 
-                                    : `${this.state.files.length} files selected`
-                                }
-                            />
-                        </div>
+                        <OF.TextField
+                            disabled={true}
+                            value={!this.state.files 
+                                ? undefined
+                                : this.state.files.length === 1
+                                ? this.state.files[0].name 
+                                : `${this.state.files.length} files selected`
+                            }
+                        />
                     </div>
-                    
+                    <OF.Checkbox
+                        label={Util.formatMessageId(this.props.intl, FM.CONVERSATION_IMPORTER_AUTOIMPORT)}
+                        checked={this.state.autoImport}
+                        onChange={this.onChangeAutoImport}
+                    />
+                    <OF.Checkbox
+                        label={Util.formatMessageId(this.props.intl, FM.CONVERSATION_IMPORTER_AUTOMERGE)}
+                        checked={this.state.autoMerge}
+                        onChange={this.onChangeAutoMerge}
+                    />
                 </div>
                 <div className='cl-modal_footer'>
                     <div className="cl-modal-buttons">
@@ -97,14 +126,14 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                         <div className="cl-modal-buttons_primary">
                             <OF.PrimaryButton
                                 disabled={invalidImport}
-                                data-testid="model-creator-submit-button"
-                                onClick={() => this.props.onClose(this.state.files)}
+                                data-testid="transcript-submit-button"
+                                onClick={() => this.props.onClose(this.state.files, this.state.autoImport, this.state.autoMerge)}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_IMPORT)}
                                 text={Util.formatMessageId(this.props.intl, FM.BUTTON_IMPORT)}
                             />
                             <OF.DefaultButton
-                                data-testid="model-creator-cancel-button"
-                                onClick={() => this.props.onClose(null)}
+                                data-testid="transcript-cancel-button"
+                                onClick={() => this.props.onClose(null, false, false)}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
                                 text={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
                             />
@@ -131,7 +160,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     app: CLM.AppBase
     open: boolean
-    onClose: (files: File[] | null) => void
+    onClose: (files: File[] | null, autoImport: boolean, autoMerge: boolean) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

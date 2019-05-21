@@ -443,15 +443,16 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         const firstDiv = firstWordToken.children[0].children[0]
         const lastDiv = lastWordToken.children[0].children[0]
         const slateEditor = firstDiv!.parentElement!.parentElement!.parentElement!.parentElement
-
+        const currentTarget = 'currentTarget'
+        const typeKey = 'type'
         // Events are special, can't use spread or Object.keys
         const selectEvent: any = {}
         for (const key in val) {
-            if (key === 'currentTarget') {
-                selectEvent['currentTarget'] = slateEditor
+            if (key === currentTarget) {
+                selectEvent[currentTarget] = slateEditor
             }
-            else if (key === 'type') {
-                selectEvent['type'] = "select"
+            else if (key === typeKey) {
+                selectEvent[typeKey] = "select"
             }
             else {
                 selectEvent[key] = val[key]

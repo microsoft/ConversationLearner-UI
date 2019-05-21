@@ -23,6 +23,7 @@ class ImportCancelModal extends React.Component<Props, ComponentState> {
             stopImport: !this.state.stopImport
         })
     }
+    
     render () {
         return (
             <OF.Dialog

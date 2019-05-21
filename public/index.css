@@ -642,6 +642,23 @@ i[data-icon-name="Edit"]:hover {
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
+.cl-file-picker {
+  display: grid;
+  grid-template: auto / min-content 1fr;
+  grid-gap: 1em;
+  width: 100%;
+}
+
+.cl-file-picker-button {
+  white-space: nowrap;
+}
+
+.cl-form {
+  display: grid;
+  grid-gap: 0.5em;
+  justify-items: left;
+}
+
 .cl-spinner
 {
     width: 500px;
