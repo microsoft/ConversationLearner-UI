@@ -8,7 +8,8 @@ import * as entities from '../../../support/Entities'
 import * as actions from '../../../support/Actions'
 import * as helpers from '../../../support/Helpers'
 
-describe.skip('API Callbacks - CreateModels', () => {
+// We need to skip this test until the Bug 2132 is fixed.
+describe('API Callbacks - CreateModels', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
