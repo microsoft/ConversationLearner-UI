@@ -19,22 +19,37 @@ export function ValidateRequiredEntities(requiredEntitiesFromResponse, additiona
 // so the disqualifyingEntities parameter allows the caller to specify entities not found in expectedEntities.
 export function ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities) { ValidateEntities('[data-testid="action-details-disqualifying-entity"]', '[data-testid="action-details-empty-disqualifying-entities"]', expectedEntities, disqualifyingEntities) }
 
-export function ValidateWaitForResponse(checked) { cy.Get('@responseDetailsRow').find(`[data-icon-name="${checked ? 'CheckMark' : 'Remove'}"][data-testid="action-details-wait"]`) }
-
-// IMPORTANT: Call this method before calling any of the Validate* methods.
-export function GetRowToBeValidated(response) {
-  cy.Get('[data-testid="action-scorer-text-response"]')
-    .contains(response)
-    .parents('div.ms-DetailsRow-fields')
-    .as('responseDetailsRow')
+// In order to get the 'validateResponse' parameter right, first run a test with this undefined,
+// then look in the log to see the actual value, then add it to the code.
+export function ValidateApi(validateApiResponse) {
+  cy.Get('@responseDetailsRow')
+    .find('[data-testid="action-scorer-api-name"]')
+    .parent('div').then(elements => {
+      let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
+      helpers.ConLog('ValidateApi', textContentWithoutNewlines)
+      if (validateApiResponse && validateApiResponse !== textContentWithoutNewlines) {
+        throw new Error(`Expecting API response to show up in the grid like this "${validateApiResponse}" --- instead we found "${textContentWithoutNewlines}"`)
+      }
+    })
 }
 
+export function ValidateWaitForResponse(checked) { cy.Get('@responseDetailsRow').find(`[data-icon-name="${checked ? 'CheckMark' : 'Remove'}"][data-testid="action-details-wait"]`) }
+
+let typeSelectorPairs = [
+  {type: 'TEXT', selector: '[data-testid="action-scorer-text-response"]'},
+  {type: 'API', selector: '[data-testid="action-scorer-api-name"]'},
+  {type: 'END_SESSION', selector: '[data-testid="action-scorer-session-response-user"]'},
+]
+
 // IMPORTANT: Call this method before calling any of the Validate* methods.
-export function GetEndSessionRowToBeValidated(response) {
-  cy.Get('[data-testid="action-scorer-session-response"]')
-    .ExactMatch('EndSession')
-    .siblings('[data-testid="action-scorer-session-response-user"]')
-    .ExactMatch(response)
+export function GetRowToBeValidated(actionType, textId) {
+  let typeSelectorPair = typeSelectorPairs.find(typeSelectorPair => typeSelectorPair.type === actionType)
+  if (!typeSelectorPair) {
+    throw new Error(`Test Code Error - Unrecognized type: '${actionType}'`)
+  }
+  
+  cy.Get(typeSelectorPair.selector)
+    .contains(textId)
     .parents('div.ms-DetailsRow-fields')
     .as('responseDetailsRow')
 }
