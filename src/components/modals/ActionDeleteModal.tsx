@@ -41,7 +41,6 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
     const [deleteTypeKey, setDeleteTypeKey] = React.useState(defaultDeleteTypeKey)
 
     const onChangeDeleteType = React.useCallback((event: React.FormEvent<HTMLInputElement>, option: OF.IChoiceGroupOption) => {
-        console.log(`onChangeDeleteType: `, event, option)
         setDeleteTypeKey(option.key)
     }, []);
     React.useLayoutEffect(() => {
@@ -51,7 +50,6 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
             }
         }
     }, [props.open])
-    React.useEffect(() => console.log(`deleteType: `, deleteTypeKey), [deleteTypeKey])
 
     return (
         <OF.Dialog
@@ -66,7 +64,7 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
             }}
         >
             {typeof props.message === 'function' && props.message()}
-            <div className="cl-action-delete-modal__option" data-testid="action-delete-option">
+            <div className="cl-action-delete-modal__option" data-testid="action-delete-type">
                 <OF.Label className="cl-label">Delete Type
                     <HelpIcon tipType={TipType.ACTION_DELETE_INUSE} />
                 </OF.Label>
@@ -85,13 +83,13 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
                     onClick={() => props.onConfirm(deleteTypeKey != defaultDeleteTypeKey)}
                     text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT)}
                     iconProps={{ iconName: 'Accept' }}
-                    data-testid="confirm-cancel-modal-accept"
+                    data-testid="action-delete-confirm"
                 />
                 <OF.DefaultButton
                     onClick={() => props.onCancel()}
                     text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT)}
                     iconProps={{ iconName: 'Cancel' }}
-                    data-testid="confirm-cancel-modal-cancel"
+                    data-testid="action-delete-cancel"
                 />
             </OF.DialogFooter>
         </OF.Dialog>
