@@ -29,7 +29,7 @@ const deleteOptions: OF.IChoiceGroupOption[] = [
     },
     {
         key: 'B',
-        text: 'Remove placeholders'
+        text: 'Remove Placeholders'
     },
 ]
 const defaultDeleteTypeKey = deleteOptions[0].key
