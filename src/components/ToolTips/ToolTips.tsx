@@ -233,7 +233,7 @@ export function getTip(tipType: string) {
                     <p><FormattedMessageId id={FM.ACTION_DELETE_INUSE_PLACEHOLDER_PRESERVE} /></p>
                     <img
                         className="cl-panelimage"
-                        src="actionDeletionPlaceholder.png"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/actionDeletionPlaceholder.png"
                         alt="Action Placeholder"
                     />
                     <h2>Remove Placeholder</h2>
