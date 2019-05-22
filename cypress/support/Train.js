@@ -326,7 +326,7 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
         const indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
         if (chatMessages[indexOfInsertedBotResponse] != newMessage) {
           scorerModal.ClickTextAction(newMessage)
-          scorerModal.VerifyTextChatMessage(expectedResponse, expectedIndexForActionPlacement)
+          scorerModal.VerifyTextChatMessage(newMessage, indexOfInsertedBotResponse)
         }
       })
     }
