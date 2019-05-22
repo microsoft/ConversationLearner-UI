@@ -1120,7 +1120,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
                                 options={this.props.actions
                                     .map(a => this.toActionFilter(a, this.props.entities))
-                                    .filter(s => s !== null)
+                                    .filter(Util.notNullOrUndefined)
                                     .concat({ key: -1, text: Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS) })
                                 }
                             />

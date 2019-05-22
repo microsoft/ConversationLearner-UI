@@ -3,7 +3,6 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as OF from 'office-ui-fabric-react'
 import * as TC from '../../tipComponents'
 import * as ToolTip from '../../ToolTips/ToolTips'
@@ -113,7 +112,7 @@ const EditComponent: React.SFC<Props> = (props) => {
             required={true}
             value={props.name}
             disabled={props.isNameDisabled}
-            ref={setFocused}
+            componentRef={setFocused}
             autoComplete="off"
         />
         {props.entityTypeKey === CLM.EntityType.LUIS &&
@@ -190,7 +189,7 @@ const EditComponent: React.SFC<Props> = (props) => {
 }
 
 const Component: React.SFC<Props> = (props) => {
-    return <Modal
+    return <OF.Modal
         isOpen={props.open}
         isBlocking={false}
         containerClassName="cl-modal cl-modal--medium"
@@ -331,10 +330,10 @@ const Component: React.SFC<Props> = (props) => {
                 <FormattedMessageId id={FM.ENTITYCREATOREDITOR_DELETE_ENUM_ERROR_WARNING} />
             </div>}
         />
-    </Modal >
+    </OF.Modal>
 }
 
-function setFocused(ref: OF.TextField) {
+function setFocused(ref: OF.ITextField) {
     if (ref) ref.focus()
 }
 
