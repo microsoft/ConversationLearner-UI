@@ -31,30 +31,34 @@ describe('API Callbacks - Train', () => {
       train.CreateNewTrainDialog()
     })
 
-    it('Should invoke "LogicWithNoArgs" API', () => {
+    it('Should invoke "LogicWithNoArgs" API Callback and verify it is in the chat pane', () => {
       train.TypeYourMessage('LogicWithNoArgs')
       train.ClickScoreActionsButton()
-      train.SelectApiAction('LogicWithNoArgs')
+      train.SelectApiCardAction('LogicWithNoArgs', 'API Call:', 'LogicWithNoArgs()')
     })
 
-    it('Should invoke "LogicWithArgs" API', () => {
+    it('Should invoke "LogicWithArgs" API Callback and verify it is in the chat pane', () => {
       train.TypeYourMessage('LogicWithArgs ThingOne and ThingTwo')
       train.LabelTextAsEntity('ThingOne', '1stArg')
       train.LabelTextAsEntity('ThingTwo', '2ndArg')
       train.ClickScoreActionsButton()
-      train.SelectApiAction('LogicWithArgs')
+      train.SelectApiCardAction('LogicWithArgs', 'API Call:', 'LogicWithArgs(ThingOne,ThingTwo)')
     })
 
-    it('Should invoke "RenderTheArgs" API', () => {
+    it('Should invoke "RenderTheArgs" API Callback and verify it is in the chat pane', () => {
       train.TypeYourMessage('RenderTheArgs')
       train.ClickScoreActionsButton()
-      train.SelectApiAction('RenderTheArgs')
+      train.SelectApiTextAction('RenderTheArgs', 'The Logic Args: ‘ThingOne’, ‘ThingTwo’, ‘333’, ‘4444’, ‘five’, ‘six’, ‘seven’The Render Args: ‘ThingOne’, ‘ThingTwo’, ‘three’, ‘four’, ‘55555’, ‘666666’, ‘7777777’')
     })
 
-    it('Should invoke "TextCard" API', () => {
+    it('Should invoke "TextCard" API Callback and verify it is in the chat pane', () => {
       train.TypeYourMessage('TextCard')
       train.ClickScoreActionsButton()
-      train.SelectApiAction('TextCard')
+      train.SelectApiCardAction('TextCard', 'Greetings', 'Have a great day!')
+    })
+
+    it('Should save the training and verify it is in the grid', () => {
+      train.SaveAsIsVerifyInGrid()
     })
   })
 })

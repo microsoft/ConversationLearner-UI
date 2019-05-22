@@ -324,8 +324,10 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
 
         const chatMessages = GetAllChatMessages()
         const indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
-        if (chatMessages[indexOfInsertedBotResponse] != newMessage)
-          scorerModal.ClickAction(newMessage, indexOfInsertedBotResponse)
+        if (chatMessages[indexOfInsertedBotResponse] != newMessage) {
+          scorerModal.ClickTextAction(newMessage)
+          scorerModal.VerifyTextChatMessage(expectedResponse, expectedIndexForActionPlacement)
+        }
       })
     }
     cy.ConLog(`InsertBotResponseAfter(${existingMessage}, ${newMessage})`, `End`)
@@ -438,20 +440,29 @@ export function TypeYourMessage(message) {
 // lastResponse parameter is optional. It is necessary only when there are $entities
 // in the Action that produced the Bot's last response.
 export function SelectAction(expectedResponse, lastResponse) {
-  scorerModal.ClickAction(expectedResponse)
+  scorerModal.ClickTextAction(expectedResponse)
+  scorerModal.VerifyTextChatMessage(expectedResponse)
   cy.Enqueue(() => {
     if (lastResponse) currentTrainingSummary.LastResponse = lastResponse
     else currentTrainingSummary.LastResponse = expectedResponse
   })
 }
 
-export function SelectApiAction(apiName, expectedResponse) {
+export function SelectApiCardAction(apiName, expectedCardTitle, expectedCardText) {
+  scorerModal.ClickApiAction(apiName, expectedCardText)
+  scorerModal.VerifyCardChatMessage(expectedCardTitle, expectedCardText)
+  cy.Enqueue(() => { currentTrainingSummary.LastResponse = expectedCardText })
+}
+
+export function SelectApiTextAction(apiName, expectedResponse) {
   scorerModal.ClickApiAction(apiName, expectedResponse)
+  scorerModal.VerifyTextChatMessage(expectedResponse)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = expectedResponse })
 }
 
 export function SelectEndSessionAction(expectedData) {
   scorerModal.ClickEndSessionAction(expectedData);
+  scorerModal.VerifyEndSessionChatMessage(expectedData)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = 'EndSession: ' + expectedData; })
 }
 
