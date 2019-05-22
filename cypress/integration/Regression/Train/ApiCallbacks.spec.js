@@ -11,10 +11,6 @@ import * as train from '../../../support/Train'
 import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
-// This "Expected Entity Labeling" test scenario is Part 1 and
-// the "Learned Entity Labeling" test scenario is Part 2 in that 
-// it continues from where this test case left off by using the
-// model created by this test scenario.
 describe('API Callbacks - Train', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
@@ -22,7 +18,6 @@ describe('API Callbacks - Train', () => {
     it('Should import a model to test against and navigate to Train Dialogs view', () => {
       models.ImportModel('z-ApiCallbacks', 'z-ApiCallbacks.cl')
       modelPage.NavigateToTrainDialogs()
-      cy.WaitForTrainingStatusCompleted()
     })
   })
 

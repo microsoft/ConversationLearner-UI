@@ -9,7 +9,7 @@ import * as actions from '../../../support/Actions'
 import * as helpers from '../../../support/Helpers'
 
 // We need to skip this test until the Bug 2132 is fixed.
-describe('API Callbacks - CreateModels', () => {
+describe.skip('API Callbacks - CreateModels', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
