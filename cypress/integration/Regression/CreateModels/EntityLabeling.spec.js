@@ -25,8 +25,8 @@ describe('Entity Labeling - Create Model', () => {
     })
 
     it('Create two Actions', () => {
-      actions.CreateNewActionThenVerifyInGrid({ response: "Hello" })
-      actions.CreateNewActionThenVerifyInGrid({ response: "Hi" })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: "Hello" })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: "Hi" })
     })
   })
 

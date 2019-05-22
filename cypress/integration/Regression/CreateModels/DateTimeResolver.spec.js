@@ -25,11 +25,11 @@ describe('Date Time Resolver - CreateModels', () => {
     })
 
     it('Should create an Action that requires both of our datetimeV2 Entities', () => {
-      actions.CreateNewActionThenVerifyInGrid({ response: 'You are leaving on $departure{enter} and returning on $return{enter}', requiredEntities: ['departure', 'return'] })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'You are leaving on $departure{enter} and returning on $return{enter}', requiredEntities: ['departure', 'return'] })
     })
     
     it('Should create an Action that is disqualified by both of our datetimeV2 Entities', () => {
-      actions.CreateNewActionThenVerifyInGrid({ response: 'When are you planning to travel?', disqualifyingEntities: ['departure', 'return'] })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'When are you planning to travel?', disqualifyingEntities: ['departure', 'return'] })
     })
     // Manually EXPORT this to fixtures folder and name it 'z-dateTimeResolvr.cl'
   })
