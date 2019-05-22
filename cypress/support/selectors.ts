@@ -64,7 +64,9 @@ const selectors = {
         warningNoWaitExpected: '[data-testid="action-warning-nowait-expected"]',
     },
     actionDeleteModal: {
-        optionRemovePlaceholder: '[data-testid="confirm-cancel-option"]',
+        deleteType: '[data-testid="action-delete-type"]',
+        buttonConfirm: '[data-testid="action-delete-confirm"]',
+        buttonCancel: '[data-testid="action-delete-cancel"]',
     },
     confirmCancelModal: {
         buttonCancel: '[data-testid="confirm-cancel-modal-cancel"]',
