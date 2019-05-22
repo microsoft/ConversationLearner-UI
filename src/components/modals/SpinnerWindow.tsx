@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner'
 import { State } from '../../types'
+import './SpinnerWindow.css'
 
 // Enable to see what API calls I'm waiting for
 const debug = false;
@@ -20,6 +21,7 @@ class SpinnerWindow extends React.Component<Props, {}> {
                     isOpen={this.props.displaySpinner.length > 0}
                     isBlocking={true}
                     containerClassName='cl-spinner'
+                    scrollableContentClassName='cl-spinner_scrollable'
                 >
                     <Spinner size={SpinnerSize.large} />
                     {debug &&

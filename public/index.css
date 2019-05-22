@@ -613,15 +613,6 @@ i[data-icon-name="Edit"]:hover {
   align-items: end;
 }
 
-.cl-spinner
-{
-    width: 500px;
-    height: 500px;
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    position: relative;
-}
 .cl-screen-reader {
   position: absolute;
   left: -999em;
