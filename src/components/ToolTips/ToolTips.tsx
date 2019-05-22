@@ -228,16 +228,27 @@ export function getTip(tipType: string) {
             return (
                 <div className={OF.FontClassNames.mediumPlus}>
                     <h1 className={OF.FontClassNames.xLarge}><FormattedMessageId id={FM.ACTION_DELETE_INUSE_TITLE} /></h1>
-                    <br />
+                    <p>There might be cases when you want to delete an action from your dialogs. In the picture below I would be deleting the action 'Will be removed'.</p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/actionDeletionBeforeRemoval.png"
+                        alt="Action Placeholder"
+                    />
+                    <p>If the action is used you can choose between two types of deletion.</p>
                     <h2>Preserve Placeholder</h2>
                     <p><FormattedMessageId id={FM.ACTION_DELETE_INUSE_PLACEHOLDER_PRESERVE} /></p>
                     <img
                         className="cl-panelimage"
-                        src="https://blisstorage.blob.core.windows.net/uiimages/actionDeletionPlaceholder.png"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/actionDeletionPreservePlaceholders.png"
                         alt="Action Placeholder"
                     />
                     <h2>Remove Placeholder</h2>
                     <p><FormattedMessageId id={FM.ACTION_DELETE_INUSE_PLACEHOLDER_REMOVE} /></p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/actionDeletionRemovePlaceholders.png"
+                        alt="Action Placeholder"
+                    />
                 </div>
             )
         case TipType.ACTION_NEGATIVE:
