@@ -101,9 +101,8 @@ describe('Action Deletion', () => {
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(s.actionDeleteModal.deleteType)
-                    .find('label')
-                    .then((labels) => labels[2])
+                cy.get(s.actionDeleteModal.deleteTypeB)
+                    .siblings('label')
                     .click()
 
                 cy.server()
@@ -206,9 +205,8 @@ describe('Action Deletion', () => {
                     cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                         .should('not.exist')
 
-                    cy.get(s.actionDeleteModal.deleteType)
-                        .find('label')
-                        .then((labels) => labels[2])
+                    cy.get(s.actionDeleteModal.deleteTypeB)
+                        .siblings('label')
                         .click()
 
                     cy.server()
@@ -259,9 +257,8 @@ describe('Action Deletion', () => {
                     cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                         .should('not.exist')
 
-                    cy.get(s.actionDeleteModal.deleteType)
-                        .find('label')
-                        .then((labels) => labels[2])
+                    cy.get(s.actionDeleteModal.deleteTypeB)
+                        .siblings('label')
                         .click()
 
                     cy.server()
@@ -318,9 +315,8 @@ describe('Action Deletion', () => {
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(s.actionDeleteModal.deleteType)
-                    .find('label')
-                    .then((labels) => labels[2])
+                cy.get(s.actionDeleteModal.deleteTypeB)
+                    .siblings('label')
                     .click()
 
                 cy.server()

@@ -64,7 +64,8 @@ const selectors = {
         warningNoWaitExpected: '[data-testid="action-warning-nowait-expected"]',
     },
     actionDeleteModal: {
-        deleteType: '[data-testid="action-delete-type"]',
+        deleteTypeA: '[data-testid="action-delete-type"] [data-testid="action-modal-delete-type-a"]',
+        deleteTypeB: '[data-testid="action-delete-type"] [data-testid="action-modal-delete-type-b"]',
         buttonConfirm: '[data-testid="action-delete-confirm"]',
         buttonCancel: '[data-testid="action-delete-cancel"]',
     },

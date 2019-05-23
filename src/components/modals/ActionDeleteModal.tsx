@@ -22,14 +22,20 @@ interface ReceivedProps {
 
 type Props = ReceivedProps & InjectedIntlProps
 
-const deleteOptions: OF.IChoiceGroupOption[] = [
+interface ChoiceGroupOptionWithTestId extends OF.IChoiceGroupOption {
+    'data-testid': string
+}
+
+const deleteOptions: ChoiceGroupOptionWithTestId[] = [
     {
         key: 'A',
         text: 'Preserve Placeholders (Default)',
+        'data-testid': 'action-modal-delete-type-a',
     },
     {
         key: 'B',
-        text: 'Remove Placeholders'
+        text: 'Remove Placeholders',
+        'data-testid': 'action-modal-delete-type-b',
     },
 ]
 const defaultDeleteTypeKey = deleteOptions[0].key
