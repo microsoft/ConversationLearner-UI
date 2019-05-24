@@ -33,8 +33,12 @@ describe('Missing Action - ErrorHandling', () => {
       train.SelectApiCardAction('BadCard', 'Malformed API Callback ‘BadCard’', 'Return value in Render function must be a string or BotBuilder Activity')
     })
 
-    
+    it('More to do here - waiting for fix for Bug 2136: API Errors not behaving like other errors', () => {
+    })
 
+    it('Should save the training and verify it is in the grid', () => {
+      train.SaveAsIsVerifyInGrid()
+    })
   })
 
 })
