@@ -60,7 +60,7 @@ jobs:
       - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
 
       # Clone the Samples BOT
-      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
+      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b test ../cl-samples
       
       # Install and build sample Bot application
       - run: cd ../cl-samples && npm ci
