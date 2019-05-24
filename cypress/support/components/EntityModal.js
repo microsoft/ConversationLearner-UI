@@ -9,8 +9,8 @@ export function TypeEntityName(entityName) { cy.Get('[data-testid="entity-creato
 export function ClickEntityTypeDropdown() { cy.Get('[data-testid="entity-creator-entity-type-dropdown"]').Click() }
 export function ClickCreateButton() { cy.Get('[data-testid="entity-creator-button-save"]').Click() }
 
-export function ClickMultiValueCheckbox() { cy.Get('[data-testid="entity-creator-multi-valued-checkbox"] > button.cl-checkbox').Click() }
-export function ClickNegatableCheckbox() { cy.Get('[data-testid="entity-creator-negatable-checkbox"] > button.cl-checkbox').Click() }
+export function ClickMultiValueCheckbox() { cy.Get('[data-testid="entity-creator-multi-valued-checkbox"] > input').Click() }
+export function ClickNegatableCheckbox() { cy.Get('[data-testid="entity-creator-negatable-checkbox"] > input').Click() }
 
 export function ClickOkButtonOnNoteAboutPreTrained() { return cy.Get('.ms-Dialog-main').contains('pre-trained Entity').parents('.ms-Dialog-main').contains('OK').Click() }
 
