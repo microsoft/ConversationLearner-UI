@@ -13,7 +13,7 @@ describe('aAPITemp - CreateModels', () => {
 
   context('Setup', () => {
     it('Should import a model to test against', () => {
-      models.ImportModel('z-ApiCallbacks', 'z-ApiCallbacks.cl')
+      models.ImportModel('z-ApiCallbacks', 'z-ApiCallbacks.entities.cl')
       //cy.WaitForTrainingStatusCompleted()
     })
   })
