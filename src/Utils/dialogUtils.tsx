@@ -414,8 +414,8 @@ export function findMatchingTrainDialog(trainDialog: CLM.TrainDialog, trainDialo
     return null
 }
 
-// Returns true if trainDialog1 is longer than trainDialog2
-export function isTrainDialogLonger(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): boolean {
+// Returns true if trainDialog1 is more important than trainDialog2
+export function isPrimaryTrainDialog(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): boolean {
 
     // Default to existing train dialog
     if (!trainDialog1.trainDialogId) {
@@ -433,6 +433,7 @@ export function isTrainDialogLonger(trainDialog1: CLM.TrainDialog, trainDialog2:
         return false
     }
 
+    // Then pick the one with more scorer steps
     const lastRound1 = trainDialog1.rounds[trainDialog1.rounds.length - 1]
     const lastRound2 = trainDialog2.rounds[trainDialog2.rounds.length - 1]
     if (lastRound1.scorerSteps.length < lastRound2.scorerSteps.length) {
@@ -452,23 +453,23 @@ export function mergeTrainDialogDescription(trainDialog1: CLM.TrainDialog, train
         ? trainDialog1.description : trainDialog2.description
 }
 
-// Merges smaller dialog into larger one and returns it
+// Merges primary into secondary and returns it
 export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): CLM.TrainDialog {
     if (!doesTrainDialogMatch(trainDialog1, trainDialog2)) {
         throw new Error("Attempting to merge non-matching Train Dialogs")
     }
 
-    // Merge from smallest into largest
-    const d1Longer = isTrainDialogLonger(trainDialog1, trainDialog2)
-    const smallTrainDialog = d1Longer ? trainDialog2 : trainDialog1
+    // Merge from secondary into primary
+    const d1Longer = isPrimaryTrainDialog(trainDialog1, trainDialog2)
+    const primaryTrainDialog = d1Longer ? trainDialog2 : trainDialog1
     // Make copy of the one that I'm altering
-    const largeTrainDialog = deepCopy(d1Longer ? trainDialog1 : trainDialog2)
+    const mergedTrainDialog = deepCopy(d1Longer ? trainDialog1 : trainDialog2)
 
     // Copy text variations from small dialog onto large one
     let roundIndex = 0
-    while (roundIndex < smallTrainDialog.rounds.length) { 
-        const roundSmall = smallTrainDialog.rounds[roundIndex]
-        const roundLarge = largeTrainDialog.rounds[roundIndex]
+    while (roundIndex < primaryTrainDialog.rounds.length && roundIndex < mergedTrainDialog.rounds.length) { 
+        const roundSmall = primaryTrainDialog.rounds[roundIndex]
+        const roundLarge = mergedTrainDialog.rounds[roundIndex]
         const extractorStepSmall = roundSmall.extractorStep
         const extractorStepLarge = roundLarge.extractorStep
 
@@ -479,10 +480,10 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
         roundIndex = roundIndex + 1
     }
 
-    largeTrainDialog.description = mergeTrainDialogDescription(largeTrainDialog, smallTrainDialog)
-    largeTrainDialog.tags = mergeTrainDialogTags(largeTrainDialog, smallTrainDialog)
+    mergedTrainDialog.description = mergeTrainDialogDescription(mergedTrainDialog, primaryTrainDialog)
+    mergedTrainDialog.tags = mergeTrainDialogTags(mergedTrainDialog, primaryTrainDialog)
 
-    return largeTrainDialog
+    return mergedTrainDialog
 }
 
 // Genereate entity map for an action, filling in any missing entities with a blank value

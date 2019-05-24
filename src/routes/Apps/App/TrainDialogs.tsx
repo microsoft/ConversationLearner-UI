@@ -17,7 +17,6 @@ import TreeView from '../../../components/modals/TreeView/TreeView'
 import ConversationImporter from '../../../components/modals/ConversationImporter'
 import TeachSessionInitState from '../../../components/modals/TeachSessionInitState'
 import ImportWaitModal from '../../../components/modals/ImportWaitModal'
-import { AT } from '../../../types/ActionTypes'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { returntypeof } from 'react-redux-typescript'
@@ -906,13 +905,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // Otherwise save as a new TrainDialog
             else {
                 await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<void>)
+                await this.onCloseEditDialogModal()
             }
         }
         catch (error) {
             console.warn(`Error when attempting to replace an edited train dialog: `, error)
         }
-
-        await this.onCloseEditDialogModal()
     }
 
     // Create a new trainDialog 
@@ -1012,6 +1010,20 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         await this.onStartTranscriptImport()
     }
 
+    readFileAsync(file: File): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+        
+            reader.onload = (e: Event) => {
+                resolve(reader.result as any);
+            };
+        
+            reader.onerror = reject;
+        
+            reader.readAsText(file);
+        })
+    }
+
     @OF.autobind
     async onStartTranscriptImport() {
         if (!this.state.importFiles || this.state.importFiles.length === 0) {
@@ -1028,23 +1040,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const transcriptFile = this.state.importFiles[this.state.importIndex]
         this.setState({importIndex: this.state.importIndex + 1})
 
-        if (transcriptFile) {
-            const reader = new FileReader()
-            reader.onload = (e: Event) => {
-                try {
-                    if (typeof reader.result !== 'string') {
-                        throw new Error("String Expected")
-                    }
-                    
-                    const source = JSON.parse(reader.result)
-                    this.onImport(source);
-                }
-                catch (e) {
-                    const error = e as Error
-                    this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", AT.CREATE_APPLICATION_ASYNC)
-                }
-            }
-            reader.readAsText(transcriptFile)
+        let source = await this.readFileAsync(transcriptFile)
+        try {
+            const sourceJson = JSON.parse(source)
+            await this.onImport(sourceJson)
+        }
+        catch (e) {
+            const error = e as Error
+            this.props.setErrorDisplay(ErrorType.Error, error.message, ".transcript file has invalid JSON", null)
+            this.setState({importFiles: undefined})
         }
     }
 
@@ -1072,7 +1076,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             let curRound: CLM.TrainRound | null = null
             transcript.forEach((activity: BB.Activity) => {
                 // TODO: Handle conversation updates
-                if (activity.type === "message") {
+                if (!activity.type || activity.type === "message") {
                     if (activity.from.role === "user") {
                         let textVariation: CLM.TextVariation = {
                             text: activity.text,
@@ -1109,7 +1113,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
 
             // Extract entities
-            await this.addEntityExtractions(trainDialog)
+            if (this.props.entities.length > 0) {
+                await this.addEntityExtractions(trainDialog)
+            }
 
             // Replay to fill in memory
             const newTrainDialog = await DialogEditing.onReplayTrainDialog(
@@ -1127,18 +1133,20 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 originalTrainDialog: newTrainDialog
             })
 
-            this.setState({isImportWaitModalOpen: false})
-
             // If auto importing and new dialog has matched all actions
             if (this.state.importAutoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
                 // Fetch history as needed for validation checks
                 const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-                await Util.setStateAsync(this, { history: teachWithHistory.history})
-                await this.onReplaceTrainDialog(newTrainDialog)
+                await Util.setStateAsync(this, { 
+                    history: teachWithHistory.history,
+                    editType: EditDialogType.IMPORT})
+                await this.onCreateTrainDialog(newTrainDialog)
             }
             else {
                 await this.onClickTrainDialogItem(newTrainDialog, EditDialogType.IMPORT)
             }
+
+            this.setState({isImportWaitModalOpen: false})
         }
         catch (error) {
             // Abandon import

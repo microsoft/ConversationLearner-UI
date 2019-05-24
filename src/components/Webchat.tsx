@@ -98,7 +98,7 @@ export function renderActivity(
     )
 }
 
-class Webchat extends React.Component<Props, {}> {
+class Webchat extends React.Component<Props> {
 
     static defaultProps: ReceivedProps = {
         isOpen: false,

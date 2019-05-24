@@ -7,6 +7,7 @@ import * as CLM from '@conversationlearner/models'
 import * as ToolTip from '../ToolTips/ToolTips'
 import * as TC from '../tipComponents'
 import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../Utils/util'
 import * as ActionPayloadEditor from './ActionPayloadEditor'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
@@ -338,9 +339,30 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
+    presetText(rawText: string | null, useNewLine = true): string {
+        if (!rawText) {
+            return ""
+        }
+        return rawText
+            .trim()
+            .split('&nbsp;').join(" ") // Switch to actual spaces
+            .split(" </").join("</")  // Markdown can't have space before end
+            .split("\n").join(useNewLine ? "\n\n" : "")
+            .split("<b>").join("**")
+            .split("</b>").join("**")
+            .split("<i>").join("*")
+            .split("</i>").join("*")
+            .split("<strong>").join("**_")
+            .split("</strong>").join("_**")
+            .split("<br>").join(useNewLine ? "\n\n" : "")
+            .split("<br/>").join(useNewLine ? "\n\n" : "")
+            .split("<br />").join(useNewLine ? "\n\n" : "")
+            .split('&gt;').join(useNewLine ? "\n\n" : "")
+    }
+
     componentDidMount() {
         if (this.props.newActionPreset) {
-            let values = Plain.deserialize(this.props.newActionPreset.text)
+            let values = Plain.deserialize(this.presetText(this.props.newActionPreset.text))
             this.onChangePayloadEditor(values, TEXT_SLOT)
             this.setState({isTerminal: this.props.newActionPreset.isTerminal})
         }
@@ -512,7 +534,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         // Set initial text value (used for dummy import actions)
         if (nextProps.open === true && this.props.open === false) { 
             if (nextProps.newActionPreset) {
-                let values = Plain.deserialize(nextProps.newActionPreset.text)
+                let values = Plain.deserialize(this.presetText(nextProps.newActionPreset.text))
                 this.onChangePayloadEditor(values, TEXT_SLOT)
                 this.setState({isTerminal: nextProps.newActionPreset.isTerminal})
             }
@@ -675,7 +697,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChangedCardOption = (cardOption: OF.IDropdownOption) => {
+    async onChangedCardOption(cardOption: OF.IDropdownOption) {
         const template = this.props.botInfo.templates.find(t => t.name === cardOption.key)
         if (!template) {
             throw new Error(`Could not find template with name: ${cardOption.key}`)
@@ -688,10 +710,43 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 return values
             }, {})
 
-        this.setState({
+        await Util.setStateAsync(this, {
             selectedCardOptionKey: cardOption.key,
             slateValuesMap: newSlateValues
         })
+
+        // LARS TEMP CCI
+        if (this.props.newActionPreset) {
+            if (template.variables.length > 0) {
+                const semiSplit = this.presetText(this.props.newActionPreset.text, false).split(';')
+
+                // Assume first value is question followed by first button
+                let firstSplit = semiSplit[0].split('?')
+                // If no question mark, assume is first period
+                if (firstSplit.length === 1) {
+                    firstSplit = semiSplit[0].split('.')
+                } 
+                const rawTitle = firstSplit.slice(0, firstSplit.length - 1).join()
+
+                const title = Plain.deserialize(`${rawTitle}?`)
+                this.onChangePayloadEditor(title, template.variables[0].key)
+
+                // Gather button text
+                let rawButtons: string[]
+                if (firstSplit[1]) {
+                    rawButtons = [firstSplit[firstSplit.length - 1], ...semiSplit.slice(1, semiSplit.length)]
+                }
+                else {
+                    rawButtons = semiSplit.slice(1, semiSplit.length)
+                }
+                const buttons = rawButtons.map(t => Plain.deserialize(t))
+                buttons.forEach((button, index) => {
+                    if ((index + 1) < template.variables.length) {
+                        this.onChangePayloadEditor(button, template.variables[index + 1].key)
+                    }
+                })
+            }
+        }
     }
 
     onClickSyncBotInfo() {

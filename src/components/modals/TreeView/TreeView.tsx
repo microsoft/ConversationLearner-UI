@@ -391,7 +391,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                         >
                             {this.state.tree && this.state.treeContainer &&
                                 <Tree 
-                                    data={this.state.tree!}
+                                    data={this.state.tree}
                                     ref={this.setTreeRef}
                                     orientation='vertical'
                                     allowForeignObjects={true}

@@ -81,7 +81,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
 
         const savedInput =  DialogUtils.dialogSampleInput(this.props.savedTrainDialog)
         const existingInput = DialogUtils.dialogSampleInput(this.props.existingTrainDialog)
-        const isSavedLonger = DialogUtils.isTrainDialogLonger(this.props.savedTrainDialog, this.props.existingTrainDialog)
+        const isSavedLonger = DialogUtils.isPrimaryTrainDialog(this.props.savedTrainDialog, this.props.existingTrainDialog)
 
         return (
             <Modal
