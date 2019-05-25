@@ -441,7 +441,7 @@ export function TypeYourMessage(message) {
 // in the Action that produced the Bot's last response.
 export function SelectAction(expectedResponse, lastResponse) {
   scorerModal.ClickTextAction(expectedResponse)
-  scorerModal.VerifyTextChatMessage(expectedResponse)
+  VerifyTextChatMessage(expectedResponse)
   cy.Enqueue(() => {
     if (lastResponse) currentTrainingSummary.LastResponse = lastResponse
     else currentTrainingSummary.LastResponse = expectedResponse
@@ -450,20 +450,92 @@ export function SelectAction(expectedResponse, lastResponse) {
 
 export function SelectApiCardAction(apiName, expectedCardTitle, expectedCardText) {
   scorerModal.ClickApiAction(apiName, expectedCardText)
-  scorerModal.VerifyCardChatMessage(expectedCardTitle, expectedCardText)
-  cy.Enqueue(() => { currentTrainingSummary.LastResponse = expectedCardText })
+  VerifyCardChatMessage(expectedCardTitle, expectedCardText)
+  cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
 
 export function SelectApiTextAction(apiName, expectedResponse) {
   scorerModal.ClickApiAction(apiName, expectedResponse)
-  scorerModal.VerifyTextChatMessage(expectedResponse)
-  cy.Enqueue(() => { currentTrainingSummary.LastResponse = expectedResponse })
+  VerifyTextChatMessage(expectedResponse)
+  cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
 
 export function SelectEndSessionAction(expectedData) {
   scorerModal.ClickEndSessionAction(expectedData);
-  scorerModal.VerifyEndSessionChatMessage(expectedData)
+  VerifyEndSessionChatMessage(expectedData)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = 'EndSession: ' + expectedData; })
+}
+
+export function VerifyAllBotChatMessages(messages) {
+  messages.forEach((message, index) => {
+    let chatIndex = index * 2 + 1
+    switch(message.type) {
+      case 'TEXT':
+        VerifyTextChatMessage(message.text, chatIndex)
+        break;
+      case 'CARD':
+        VerifyCardChatMessage(message.cardTitle, message.cardText, chatIndex)
+        break
+      case 'END_SESSION':
+        VerifyEndSessionChatMessage(message.data, chatIndex)
+        break
+      default:
+        throw new Error(`Unexpected message type: '${message.type}'`)
+    }
+  })
+}
+
+// To verify the last chat utterance leave expectedIndexOfMessage undefined
+export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
+  cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
+    let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find('div.format-markdown > p')
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected Text Chat Message '${expectedMessage}'`)
+    }
+    
+    const expectedUtterance = expectedMessage.replace(/'/g, "’")
+    let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
+    helpers.ConLog('VerifyTextChatMessage', textContentWithoutNewlines)
+
+    if (helpers.TextContentWithoutNewlines(elements[0]) !== expectedUtterance) {
+      throw new Error(`Expected to find '${expectedUtterance}' in the text chat pane, instead we found '${textContentWithoutNewlines}'`)
+    }
+  })
+}
+
+// To verify the last chat utterance leave expectedIndexOfMessage undefined
+// Leave expectedMessage temporarily undefined so that you can copy the text
+// output from the screen or log to paste into your code.
+export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expectedIndexOfMessage) {
+  cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
+    let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find(`div.format-markdown > p:contains('${expectedCardTitle}')`).parent()
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected '${expectedCardTitle}' card with '${expectedCardText}'`)
+    }
+    elements = Cypress.$(elements[0]).next('div.wc-list').find('div.wc-adaptive-card > div.ac-container > div.ac-container > div > p')
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected content element for API Call card that should contain '${expectedCardText}'`)
+    }
+    
+    // Log the contents of the API Call card so that we can copy the exact string into the .spec.js file.
+    let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
+    helpers.ConLog('VerifyCardChatMessage', textContentWithoutNewlines)
+    
+    if (textContentWithoutNewlines !== expectedCardText) {
+      throw new Error(`Expected to find '${expectedCardTitle}' card with '${expectedCardText}', instead we found '${textContentWithoutNewlines}'`)
+    }
+  })
+}
+
+export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage) {
+  const expectedUtterance = 'EndSession: ' + expectedData.replace(/'/g, "’")
+  cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
+    const element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
+    expect(helpers.TextContentWithoutNewlines(element)).to.equal(expectedUtterance)
+  })
 }
 
 // This method is used to score AND AUTO-SELECT the action after branching.
@@ -516,6 +588,9 @@ export function SaveAsIsVerifyInGrid() {
 function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   const funcName = 'VerifyTrainingSummaryIsInGrid'
   // Keep these lines of logging code in this method, they come in handy when things go bad.
+  helpers.ConLog(funcName, `FirstInput: ${trainingSummary.FirstInput}`)
+  helpers.ConLog(funcName, `LastInput: ${trainingSummary.LastInput}`)
+  helpers.ConLog(funcName, `LastResponse: ${trainingSummary.LastResponse}`)
   helpers.ConLog(funcName, `CreatedDate: ${trainingSummary.CreatedDate}`)
   helpers.ConLog(funcName, `LastModifiedDate: ${trainingSummary.LastModifiedDate}`)
   helpers.ConLog(funcName, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
@@ -554,17 +629,17 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
         helpers.ConLog(funcName, `Turns[${i}]: ${turns[i]}`)
   
         if (((trainingSummary.LastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
-          helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
-          turns[i] == trainingSummary.Turns &&
-          ((trainingSummary.CreatedDate && createdDates[i] == trainingSummary.CreatedDate) ||
-            helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
-          firstInputs[i] == trainingSummary.FirstInput &&
-          lastInputs[i] == trainingSummary.LastInput &&
-          lastResponses[i] == trainingSummary.LastResponse)
-          
-          helpers.ConLog(funcName, 'Found all of the expected data. Validation PASSES!')
+            helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
+            turns[i] == trainingSummary.Turns &&
+            ((trainingSummary.CreatedDate && createdDates[i] == trainingSummary.CreatedDate) ||
+              helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
+            firstInputs[i] == trainingSummary.FirstInput &&
+            lastInputs[i] == trainingSummary.LastInput &&
+            lastResponses[i] == trainingSummary.LastResponse) {
 
+          helpers.ConLog(funcName, 'Found all of the expected data. Validation PASSES!')
           return; // Fully VALIDATED! We found what we expected.
+        }
       }
       throw new Error(`The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`)
     })
