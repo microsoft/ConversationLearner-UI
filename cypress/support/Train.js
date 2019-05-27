@@ -326,7 +326,7 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
         const indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
         if (chatMessages[indexOfInsertedBotResponse] != newMessage) {
           scorerModal.ClickTextAction(newMessage)
-          scorerModal.VerifyTextChatMessage(newMessage, indexOfInsertedBotResponse)
+          VerifyTextChatMessage(newMessage, indexOfInsertedBotResponse)
         }
       })
     }
@@ -463,7 +463,7 @@ export function SelectApiTextAction(apiName, expectedResponse) {
 export function SelectEndSessionAction(expectedData) {
   scorerModal.ClickEndSessionAction(expectedData);
   VerifyEndSessionChatMessage(expectedData)
-  cy.Enqueue(() => { currentTrainingSummary.LastResponse = 'EndSession: ' + expectedData; })
+  cy.Enqueue(() => { currentTrainingSummary.LastResponse = expectedData })
 }
 
 export function VerifyAllBotChatMessages(messages) {
