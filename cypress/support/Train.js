@@ -32,6 +32,8 @@ export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-change
 export function GetAllChatMessages() { return helpers.StringArrayFromElementText(AllChatMessagesSelector) }
 export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
+export function VerifyErrorPopup(expectedMessage) { cy.Get('p.ms-Dialog-title').ExactMatch(expectedMessage) }
+export function ClickConfirmCancelOkButton() { cy.Get('[data-testid="confirm-cancel-modal-ok"]').Click() }
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="edit-dialog-modal-delete-turn-button"]').Click() }
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
 export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreActionsButtonSelector) }
@@ -523,7 +525,7 @@ export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expec
     let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
     helpers.ConLog('VerifyCardChatMessage', textContentWithoutNewlines)
     
-    if (textContentWithoutNewlines !== expectedCardText) {
+    if (textContentWithoutNewlines.contains(expectedCardText)) {
       throw new Error(`Expected to find '${expectedCardTitle}' card with '${expectedCardText}', instead we found '${textContentWithoutNewlines}'`)
     }
   })
