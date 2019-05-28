@@ -25,7 +25,6 @@ export enum FM {
     ACTIONS_SUBTITLE = 'Actions.subtitle',
     ACTIONS_CREATEBUTTONARIADESCRIPTION = 'Actions.createButtonAriaDescription',
     ACTIONS_CREATEBUTTONTITLE = 'Actions.createButtonTitle',
-    ACTIONS_CONFIRMCANCELMODALTITLE = 'Actions.confirmCancelModalTitle',
 
     // ActionCreatorEditor
     ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.saveButton.ariaDescription',
@@ -654,7 +653,6 @@ export default {
         [FM.ACTIONS_SUBTITLE]: `Actions are executed by the Bot in response to user input`,
         [FM.ACTIONS_CREATEBUTTONARIADESCRIPTION]: 'Create a New Action',
         [FM.ACTIONS_CREATEBUTTONTITLE]: 'New Action',
-        [FM.ACTIONS_CONFIRMCANCELMODALTITLE]: 'Are you sure you want to delete this Action?',
 
         // AppCreator
         [FM.APPCREATOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
@@ -835,11 +833,11 @@ export default {
         [FM.SETTINGS_LOGGINGON_LABEL]: 'Log Conversations',
         [FM.SETTINGS_DELETEISPERMANENT]: 'Deletion is irreversible.',
         [FM.SETTINGS_LUIS_LINK]: 'Go to LUIS',
-        [FM.SETTINGS_MODEL_VERSION_EDITING]: 'Editing Version',
+        [FM.SETTINGS_MODEL_VERSION_EDITING]: 'Displayed Version',
         [FM.SETTINGS_MODEL_VERSION_LIVE]: 'Live Version',
         [FM.SETTINGS_MODEL_VERSIONS_CREATE]: 'New Version',
         [FM.SETTINGS_MODEL_VERSIONS_TITLE]: 'Model Versions',
-        [FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION]: 'Creating a new version will save a snapshot of the currently active model. You can promote this version to "live" for use in deployed bots while you continue to edit the latest version.  You can also recall these snapshots at any point in time to test previous bot behavior.',
+        [FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION]: 'Creating a new version will save a snapshot of the currently active model. You can promote this version to "live" for use in deployed bots while you continue to edit the latest version.  You can also recall these snapshots at any point in time.',
 
         // ToolTip
         [FM.TOOLTIP_ACTION_API]: 'APIs exposed in the running Bot of the form:',
@@ -927,8 +925,8 @@ export default {
         [FM.TOOLTIP_MEMORYCONVERTER_TITLE]: 'Memory Converters',
         [FM.TOOLTIP_PACKAGECREATOR_LIVE_TOGGLE]: 'When checked the new Tag will become the Live app served to users',
         [FM.TOOLTIP_REPLAY]: `Replay each step in the Dialog, calling the EntityDetectionCallback and any API callbacks.  This will update the Dialog to reflect any changes made to the Bot's APIs`,
-        [FM.TOOLTIP_TAG_EDITING]: 'The version (tag) of the Model to edit in UI',
-        [FM.TOOLTIP_TAG_LIVE]: 'The version (tag) of the Model used when published to external channels (e.g. Skype)',
+        [FM.TOOLTIP_TAG_EDITING]: 'The version of the Model displayed in this administrative interface. You can view any version but can only edit the "Master" version.',
+        [FM.TOOLTIP_TAG_LIVE]: 'The version of the Model used when published to external channels (e.g. Skype)',
         [FM.TOOLTIP_TRAINDIALOG_INVALID]: 'This Model contains Train Dialogs that have been invalided.  They must be edited and fixed to be included in training',
         [FM.TOOLTIP_TRAINDIALOG_UNKNOWN]: 'This Model contains Train Dialogs that may have errors. They must be replayed and any errors fixed to be included in training',
         [FM.TOOLTIP_TRAINDIALOG_WARNING]: 'This Model contains Train Dialogs that may have errors.',

@@ -20,17 +20,17 @@ describe('Wait vs. Non Wait Actions - CreateModels', () => {
 
   context('Create Actions', () => {
     it('Should create 1 Wait Action', () => {
-      actions.CreateNewActionThenVerifyInGrid({ response: 'Which animal would you like?' })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'Which animal would you like?' })
     })
 
     it('Should create 3 Non-Wait Actions', () => {
-      actions.CreateNewActionThenVerifyInGrid({ response: 'Cows say moo!', uncheckWaitForResponse: true })
-      actions.CreateNewActionThenVerifyInGrid({ response: 'Ducks say quack!', uncheckWaitForResponse: true })
-      actions.CreateNewActionThenVerifyInGrid({ response: 'Fish just swim.', uncheckWaitForResponse: true })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'Cows say moo!', uncheckWaitForResponse: true })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'Ducks say quack!', uncheckWaitForResponse: true })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'Fish just swim.', uncheckWaitForResponse: true })
     })
 
     it('Should create 1 END_SESSION Action, try to make it a Non-Wait Action, verify that UI overrides and creates it as a Wait Action', () => {
-      actions.CreateNewActionThenVerifyInGrid({ type: 'END_SESSION', response: "That's All Folks.", uncheckWaitForResponse: true })
+      actions.CreateNewActionThenVerifyInGrid({ type: 'END_SESSION', responseNameData: "That's All Folks.", uncheckWaitForResponse: true })
     })
   })
 

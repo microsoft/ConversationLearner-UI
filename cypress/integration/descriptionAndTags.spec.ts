@@ -30,7 +30,7 @@ describe('Description and Tags', () => {
             models.CreateNewModel(testData.modelName)
             model.NavigateToActions()
             actionsList.ClickNewAction()
-            actions.CreateNewAction({ response: testData.actionResponse })
+            actions.CreateNewAction({ responseNameData: testData.actionResponse })
             model.NavigateToTrainDialogs()
         })
 

@@ -15,40 +15,71 @@ import * as helpers from '../support/Helpers'
 // However, there are cases where the caller may want to explicitly specify these autopopulated 
 // values anyway, and this code does allow for that.
 
-export function CreateNewAction({ response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' }) {
+export function CreateNewAction({ 
+    responseNameData, // TEXT-response, API-name, CARD-name, END_SESSION-data
+    expectedEntities, 
+    requiredEntities, 
+    disqualifyingEntities, 
+    uncheckWaitForResponse, 
+    logicArgs,  // provide an array of strings
+    renderArgs, // provide an array of strings
+    type = 'TEXT'
+  }) {
   // We do this first since we had a bug (1910) where it is not reset by the UI when
   // type END_SESSION is selected.
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
 
   actionModal.SelectType(type)
-  actionModal.TypeResponse(response)
+  switch(type) {
+    case 'TEXT':
+    case 'END_SESSION':
+      actionModal.TypeResponse(responseNameData)
+      break;
+    case 'API':
+      actionModal.SelectApi(responseNameData)
+      if (logicArgs) actionModal.TypeApiLogicArgs(logicArgs)
+      if (renderArgs) actionModal.TypeApiRenderArgs(renderArgs)
+      break;
+  }
   if (expectedEntities) actionModal.TypeExpectedEntity(expectedEntities)
   if (requiredEntities) actionModal.TypeRequiredEntities(requiredEntities)
   if (disqualifyingEntities) actionModal.TypeDisqualifyingEntities(disqualifyingEntities)
   actionModal.ClickCreateButton()
 }
-
-export function CreateNewActionThenVerifyInGrid({ response, expectedEntities, requiredEntities, disqualifyingEntities, uncheckWaitForResponse, type = 'TEXT' }) {
+ 
+export function CreateNewActionThenVerifyInGrid({ 
+    responseNameData, // TEXT-response, API-name, CARD-name, END_SESSION-data
+    expectedEntities, 
+    requiredEntities, 
+    disqualifyingEntities, 
+    uncheckWaitForResponse, 
+    logicArgs,  // provide an array of strings
+    renderArgs, // provide an array of strings
+    type = 'TEXT',
+    validateResponse: validateApiResponse  // The easiest way to get this is from the logs after a test run...search for 'ValidateApi'
+  }) {
   modelPage.NavigateToActions()
   actionsGrid.ClickNewAction()
 
   CreateNewAction(arguments[0])
 
-  const requiredEntitiesFromResponse = ExtractEntities(response)
-  response = response.replace(/{enter}/g, '')
+  const joined = (responseNameData ? responseNameData : '') + (logicArgs ? logicArgs.join() : '') + (renderArgs ? renderArgs.join() : '')
+  const requiredEntitiesFromResponse = ExtractEntities(joined)
+
+  responseNameData = responseNameData.replace(/{enter}/g, '')
 
   // Get the row that we are going to validate and assign a Cypress Alias to it.
   // If we skip this step, the validations that follow will fail.
-  if (type === 'END_SESSION') actionsGrid.GetEndSessionRowToBeValidated(response)
-  else actionsGrid.GetRowToBeValidated(response)
+  let actionsGridrow = new actionsGrid.Row(type, responseNameData)
   
-  actionsGrid.ValidateActionType(type)
-  actionsGrid.ValidateRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
-  actionsGrid.ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)
-  actionsGrid.ValidateExpectedEntities(expectedEntities)
+  if (validateApiResponse) actionsGridrow.ValidateApi(validateApiResponse)
+  actionsGridrow.ValidateActionType(type)
+  actionsGridrow.ValidateRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
+  actionsGridrow.ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)
+  actionsGridrow.ValidateExpectedEntities(expectedEntities)
   
-  // Type END_SESSION must have "Wait for Response" checked even if user unchecks it.
-  actionsGrid.ValidateWaitForResponse((type === 'END_SESSION') || !uncheckWaitForResponse)
+  // Type END_SESSION must have "Wait for Response" checked even if uncheckWaitForResponse is true.
+  actionsGridrow.ValidateWaitForResponse((type === 'END_SESSION') || !uncheckWaitForResponse)
 }
 
 // ------------------------------------------------------------------------------------------------

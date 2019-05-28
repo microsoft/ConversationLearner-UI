@@ -48,9 +48,8 @@ class Settings extends React.Component<Props> {
                             <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
                             <FormattedMessageId id={FM.PROFILE_SETTINGS_BOT_PORT_WARNING} />
                         </div>
-                        <div>
+                        <div data-testid="settings-custom-bot-port">
                             <OF.Checkbox
-                                data-testid="settings-custom-bot-port"
                                 label={Util.formatMessageId(this.props.intl, FM.PROFILE_SETTINGS_BOT_PORT_USE_CUSTOM)}
                                 checked={this.props.settings.useCustomPort}
                                 onChange={this.onChangeCustomPort}

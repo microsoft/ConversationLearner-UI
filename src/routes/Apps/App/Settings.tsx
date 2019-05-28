@@ -10,14 +10,11 @@ import * as ToolTip from '../../../components/ToolTips/ToolTips'
 import * as Util from '../../../Utils/util'
 import actions from '../../../actions'
 import ExportChoice from '../../../components/modals/ExportChoice'
-import PackageTable from '../../../components/modals/PackageTable'
 import FormattedMessageId from '../../../components/FormattedMessageId'
-import ErrorInjectionEditor from '../../../components/modals/ErrorInjectionEditor'
 import HelpIcon from '../../../components/HelpIcon'
-import TextboxRestrictableModal from '../../../components/modals/TextboxRestrictable'
 import { connect } from 'react-redux'
 import { State, AppCreatorType } from '../../../types'
-import { Expando, AppCreator } from '../../../components/modals'
+import { Expando, AppCreator, TextboxRestrictable, PackageCreator, ErrorInjectionEditor, PackageTable } from '../../../components/modals'
 import { bindActionCreators } from 'redux'
 import { returntypeof } from 'react-redux-typescript'
 import { FM } from '../../../react-intl-messages'
@@ -40,8 +37,9 @@ interface ComponentState {
     isPackageExpandoOpen: boolean,
     isSettingsExpandoOpen: boolean,
     isAppCopyModalOpen: boolean
-    isConfirmDeleteAppModalOpen: boolean,
     isExportChoiceOpen: boolean
+    isConfirmDeleteAppModalOpen: boolean
+    isPackageCreatorOpen: boolean
 }
 
 class Settings extends React.Component<Props, ComponentState> {
@@ -65,7 +63,8 @@ class Settings extends React.Component<Props, ComponentState> {
             isSettingsExpandoOpen: false,
             isAppCopyModalOpen: false,
             isConfirmDeleteAppModalOpen: false,
-            isExportChoiceOpen: false
+            isExportChoiceOpen: false,
+            isPackageCreatorOpen: false,
         }
     }
 
@@ -333,6 +332,28 @@ class Settings extends React.Component<Props, ComponentState> {
             })
     }
 
+    @OF.autobind
+    onClickNewTag() {
+        this.setState({
+            isPackageCreatorOpen: true
+        })
+    }
+
+    @OF.autobind
+    onSubmitPackageCreator(tagName: string, setLive: boolean) {
+        this.props.createAppTagThunkAsync(this.props.app.appId, tagName, setLive)
+        this.setState({
+            isPackageCreatorOpen: false
+        })
+    }
+
+    @OF.autobind
+    onCancelPackageCreator() {
+        this.setState({
+            isPackageCreatorOpen: false
+        })
+    }
+
     render() {
         const { intl } = this.props
         const options = [{
@@ -406,27 +427,39 @@ class Settings extends React.Component<Props, ComponentState> {
                             </a>
                         </div>
                     </div>
-                    <div className="cl-command-bar">
-                        <TC.Dropdown
-                            label={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSION_EDITING)}
-                            options={packageOptions}
-                            onChanged={this.onChangedEditingVersion}
-                            selectedKey={this.state.selectedEditingVersionOptionKey}
-                            tipType={ToolTip.TipType.MODEL_VERSION_EDITING}
-                        />
-                        <TC.Dropdown
-                            label={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSION_LIVE)}
-                            options={packageOptions}
-                            onChanged={this.onChangedLiveVersion}
-                            selectedKey={this.state.selectedLiveVersionOptionKey}
-                            tipType={ToolTip.TipType.MODEL_VERSION_LIVE}
-                        />
-                    </div>
+                    <section>
+                        <header className="cl-settings-header">Model Versions</header>
+                        <p>{Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSIONS_DESCRIPTION)}</p>
+                        <div className="cl-command-bar">
+                            <TC.Dropdown
+                                label={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSION_EDITING)}
+                                options={packageOptions}
+                                onChanged={this.onChangedEditingVersion}
+                                selectedKey={this.state.selectedEditingVersionOptionKey}
+                                tipType={ToolTip.TipType.MODEL_VERSION_EDITING}
+                            />
+                            <TC.Dropdown
+                                label={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSION_LIVE)}
+                                options={packageOptions}
+                                onChanged={this.onChangedLiveVersion}
+                                selectedKey={this.state.selectedLiveVersionOptionKey}
+                                tipType={ToolTip.TipType.MODEL_VERSION_LIVE}
+                            />
+                            <div>
+                                <OF.PrimaryButton
+                                    onClick={this.onClickNewTag}
+                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSIONS_CREATE)}
+                                    text={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSIONS_CREATE)}
+                                    iconProps={{ iconName: 'Add' }}
+                                />
+                            </div>
+                        </div>
+                    </section>
 
                     <Expando
                         className={'cl-settings-container-header'}
                         isOpen={this.state.isPackageExpandoOpen}
-                        text="Model Versions"
+                        text="View All Versions"
                         onToggle={() => this.setState({ isPackageExpandoOpen: !this.state.isPackageExpandoOpen })}
                     />
                     {this.state.isPackageExpandoOpen &&
@@ -513,7 +546,13 @@ class Settings extends React.Component<Props, ComponentState> {
                     onCancel={this.onCancelAppCopyModal}
                     creatorType={AppCreatorType.COPY}
                 />
-                <TextboxRestrictableModal
+                <PackageCreator
+                    open={this.state.isPackageCreatorOpen}
+                    onSubmit={this.onSubmitPackageCreator}
+                    onCancel={this.onCancelPackageCreator}
+                    packageReferences={this.props.app.packageVersions}
+                />
+                <TextboxRestrictable
                     open={this.state.isConfirmDeleteAppModalOpen}
                     message={this.getDeleteDialogBoxText(this.props.app.appName)}
                     placeholder={""}
@@ -541,6 +580,7 @@ const mapDispatchToProps = (dispatch: any) => {
         editAppLiveTagThunkAsync: actions.app.editAppLiveTagThunkAsync,
         fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
         deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync,
+        createAppTagThunkAsync: actions.app.createAppTagThunkAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

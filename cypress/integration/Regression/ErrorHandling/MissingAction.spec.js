@@ -62,7 +62,7 @@ describe('Missing Action - ErrorHandling', () => {
 
     it('Should create a new action from Train Dialog which should also correct the error in the Train Dialog', () => {
       scorerModal.ClickAddActionButton()
-      actions.CreateNewAction({ response: common.whatsYourName, expectedEntities: ['name'] })
+      actions.CreateNewAction({ responseNameData: common.whatsYourName, expectedEntities: ['name'] })
       train.VerifyNoErrorMessage()
       train.ClickSaveCloseButton()
       modelPage.VerifyNoIncidentTriangleOnPage()
