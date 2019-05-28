@@ -525,7 +525,7 @@ export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expec
     let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
     helpers.ConLog('VerifyCardChatMessage', textContentWithoutNewlines)
     
-    if (textContentWithoutNewlines.contains(expectedCardText)) {
+    if (!textContentWithoutNewlines.includes(expectedCardText)) {
       throw new Error(`Expected to find '${expectedCardTitle}' card with '${expectedCardText}', instead we found '${textContentWithoutNewlines}'`)
     }
   })
