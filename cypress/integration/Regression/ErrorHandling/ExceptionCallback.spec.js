@@ -102,4 +102,28 @@ describe('Exception Callback - ErrorHandling', () => {
       train.SaveAsIsVerifyInGrid()
     })
   })
+
+  context('Edit the Train Dialog to Verify the Errors Persisted', () => {
+    it('Should edit the Train Dialog we just saved', () => {
+      train.EditTraining('This can be an entityError', 'An entityError shall go here as well', 'ExceptionAPI')
+    })
+
+    it('Should verify that all Bot responses persisted correctly', () => {
+      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 1)
+      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Logic Error', 3)
+      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 5)
+      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', 7)
+      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Logic Error', 9)
+      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', 11)
+      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 13)
+      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 15)
+    })
+
+    it('More to do here - waiting for fix for Bug 2136: API Errors not behaving like other errors', () => {
+    })
+
+    it('Should save the training and verify it is in the grid', () => {
+      train.SaveAsIsVerifyInGrid()
+    })
+  })
 })
