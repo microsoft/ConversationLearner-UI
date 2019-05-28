@@ -1047,7 +1047,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         catch (e) {
             const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name}) is invalid`, error.message, null)
+            this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
             this.setState({
                 importFiles: undefined,
                 isImportWaitModalOpen: false}
