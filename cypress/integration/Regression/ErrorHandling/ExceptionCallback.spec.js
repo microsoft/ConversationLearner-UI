@@ -108,13 +108,15 @@ describe('Exception Callback - ErrorHandling', () => {
       train.EditTraining('This can be an entityError', 'An entityError shall go here as well', 'ExceptionAPI')
     })
 
+    // Bug 2142: TEST BLOCKER - API Callback error rendering is different between original TD rendering and when editing a Train Dialog
+    // Once this bug is fixed the calls to "VerifyCardChatMessage" will fail due to the first parameter needing to be changed.
     it('Should verify that all Bot responses persisted correctly', () => {
       train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 1)
-      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Logic Error', 3)
+      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', 3)
       train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 5)
-      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', 7)
-      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Logic Error', 9)
-      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', 11)
+      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Render Error', 7)
+      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', 9)
+      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Render Error', 11)
       train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 13)
       train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 15)
     })
