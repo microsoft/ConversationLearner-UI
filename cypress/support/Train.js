@@ -4,7 +4,7 @@
  */
 
 import * as homePage from './components/HomePage'
-import * as modalPage from './components/ModelPage'
+import * as modelPage from './components/ModelPage'
 import * as scorerModal from './components/ScorerModal'
 import * as trainDialogsGrid from './components/TrainDialogsGrid'
 import * as mergeModal from './components/MergeModal'
@@ -203,7 +203,7 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
   function LabelIt() {
     // This actually works if text is a word or a phrase.
     cy.Get('body').trigger('Test_SelectWord', { detail: text })
-    cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
+    cy.Get('[data-testid="entity-picker-match-option"]').contains(entity).Click()
   }
 
   if (itMustNotBeLabeledYet) {
@@ -561,7 +561,7 @@ export function SaveAsIsVerifyInGrid() {
 
     cy.WaitForStableDOM()
     let renderingShouldBeCompleteTime = new Date().getTime() + 1000
-    cy.wrap(1).should(() => {
+    cy.wrap(1, {timeout: 10000}).should(() => {
       if (mergeModal.IsVisible()) {
         helpers.ConLog(funcName, 'mergeModal.IsVisible')
 
@@ -570,13 +570,15 @@ export function SaveAsIsVerifyInGrid() {
         throw new Error('The Merge Modal popped up, and we clicked the Save As Is button...need to retry and wait for the grid to become visible')
       }
 
-      if (modalPage.IsOverlaid()) {
+      if (modelPage.IsOverlaid()) {
         helpers.ConLog(funcName, 'modalPage.IsOverlaid')
         renderingShouldBeCompleteTime = new Date().getTime() + 1000
         throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
       } else if (new Date().getTime() < renderingShouldBeCompleteTime) {
+        // There is no overlay, but we will still wait until we've seen this condition for 
+        // at least 1 full second before we call it good.
         helpers.ConLog(funcName, 'Wait for no overlays for at least 1 second')
-        throw new Error('Waiting till no overlays show up for at least 1 second...retry')
+        throw new Error(`Waiting till no overlays show up for at least 1 second...retry '${funcName}'`)
       }
       helpers.ConLog(funcName, 'No overlays for at least 1 second')
     }).then(() => {
@@ -601,13 +603,13 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   let renderingShouldBeCompleteTime = new Date().getTime()
   cy.Get('[data-testid="train-dialogs-turns"]', {timeout: 10000})
     .should(elements => { 
-      if (modalPage.IsOverlaid()) {
+      if (modelPage.IsOverlaid()) {
         helpers.ConLog(funcName, 'modalPage.IsOverlaid')
         renderingShouldBeCompleteTime = new Date().getTime() + 1000
         throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
       } else if (new Date().getTime() < renderingShouldBeCompleteTime) {
         helpers.ConLog(funcName, 'Wait for no overlays for at least 1 second')
-        throw new Error('Waiting till no overlays show up for at least 1 second...retry')
+        throw new Error(`Waiting till no overlays show up for at least 1 second...retry '${funcName}'`)
       }
 
       if (elements.length != trainingSummary.TrainGridRowCount) { 

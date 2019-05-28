@@ -12,27 +12,29 @@ import * as actions from '../../../support/Actions'
 import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
 
+// This test suite is part 1 of 2. The second part is in ApiVerifyMultipleExceptions.
 describe('Exception Callback - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   context('Setup', () => {
     it('Should import a model to test against and navigate to Train Dialogs view', () => {
-      models.ImportModel('z-ExceptnCallback', 'z-ApiCallbacks.cl')
+      models.ImportModel('z-ApiMultExceptns', 'z-ApiCallbacks.cl')
       modelPage.NavigateToTrainDialogs()
     })
   })
 
-  context.skip('Train Dialog that will be Discarded by an Error', () => {
+  context('Train Dialog that will be Discarded by an Error', () => {
     it('Should create a new Train Dialog', () => {
       train.CreateNewTrainDialog()
     })
 
-    it('Should add a user turn, to be used later to cause an error, and verify it is in the chat pane', () => {
+    it('Should add a user turn to cause an error, dismiss the error and the TD and verify it returns to the TD grid pane view', () => {
       train.TypeYourMessage('This is an entityError')
       train.LabelTextAsEntity('entityError', 'entityError')
       train.ClickScoreActionsButton()
       train.VerifyErrorPopup("Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.")
       train.ClickConfirmCancelOkButton()
+      trainDialogsGrid.VerifyPageTitle()
     })
   })
 
@@ -102,30 +104,6 @@ describe('Exception Callback - ErrorHandling', () => {
       train.SaveAsIsVerifyInGrid()
     })
   })
-
-  context('Edit the Train Dialog to Verify the Errors Persisted', () => {
-    it('Should edit the Train Dialog we just saved', () => {
-      train.EditTraining('This can be an entityError', 'An entityError shall go here as well', 'ExceptionAPI')
-    })
-
-    // Bug 2142: TEST BLOCKER - API Callback error rendering is different between original TD rendering and when editing a Train Dialog
-    // Once this bug is fixed the calls to "VerifyCardChatMessage" will fail due to the first parameter needing to be changed.
-    it('Should verify that all Bot responses persisted correctly', () => {
-      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 1)
-      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', 3)
-      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 5)
-      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Render Error', 7)
-      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', 9)
-      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Render Error', 11)
-      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 13)
-      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 15)
-    })
-
-    it('More to do here - waiting for fix for Bug 2136: API Errors not behaving like other errors', () => {
-    })
-
-    it('Should save the training and verify it is in the grid', () => {
-      train.SaveAsIsVerifyInGrid()
-    })
-  })
+  
+  // Manually EXPORT this to fixtures folder and name it 'z-ApiMultExceptns.cl'
 })
