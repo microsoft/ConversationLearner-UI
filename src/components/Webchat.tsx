@@ -33,7 +33,6 @@ export function renderActivity(
             (activityProps.activity as Message).attachmentLayout || 'list',
             activityProps.onClickActivity && 'clickable'].filter(Boolean).join(' ')
 
-    const contentClassName = 'wc-message-content'
     const clData: CLM.CLChannelData | null = activityProps.activity.channelData ? activityProps.activity.channelData.clData : null
     const userFillColor = editType === EditDialogType.IMPORT ? "import" : isLogDialog ? 'log' : 'train'
     let messageColor = `wc-message-color-${activityProps.fromMe ? userFillColor : 'bot'}`
@@ -70,7 +69,7 @@ export function renderActivity(
                 ref={div => setRef(div)}
                 data-testid="web-chat-utterances"
             >
-                <div className={contentClassName}>
+                <div className='wc-message-content'>
                     <svg className={`wc-message-callout ${messageFillColor}`}>
                         <path className="point-left" d="m0,6 l6 6 v-12 z" />
                         <path className="point-right" d="m6,6 l-6 6 v-12 z" />

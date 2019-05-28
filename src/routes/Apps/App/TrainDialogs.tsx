@@ -1047,115 +1047,113 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         catch (e) {
             const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, error.message, ".transcript file has invalid JSON", null)
-            this.setState({importFiles: undefined})
+            this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name}) is invalid`, error.message, null)
+            this.setState({
+                importFiles: undefined,
+                isImportWaitModalOpen: false}
+            )
         }
     }
 
     async onImport(transcript: BB.Activity[]): Promise<void> {
 
-        try {
-            this.setState({isImportWaitModalOpen: true})
+        this.setState({isImportWaitModalOpen: true})
 
-            let trainDialog: CLM.TrainDialog = {
-                trainDialogId: undefined!,
-                version: undefined!,
-                packageCreationId: undefined!,
-                packageDeletionId: undefined!,
-                sourceLogDialogId: undefined!,
-                initialFilledEntities: [],
-                rounds: [],
-                tags: [], 
-                description: '',
-                createdDateTime: new Date().toJSON(),
-                lastModifiedDateTime: new Date().toJSON(),
-                // It's initially invalid
-                validity: CLM.Validity.INVALID
-            }
+        let trainDialog: CLM.TrainDialog = {
+            trainDialogId: undefined!,
+            version: undefined!,
+            packageCreationId: undefined!,
+            packageDeletionId: undefined!,
+            sourceLogDialogId: undefined!,
+            initialFilledEntities: [],
+            rounds: [],
+            tags: [], 
+            description: '',
+            createdDateTime: new Date().toJSON(),
+            lastModifiedDateTime: new Date().toJSON(),
+            // It's initially invalid
+            validity: CLM.Validity.INVALID
+        }
 
-            let curRound: CLM.TrainRound | null = null
-            transcript.forEach((activity: BB.Activity) => {
-                // TODO: Handle conversation updates
-                if (!activity.type || activity.type === "message") {
-                    if (activity.from.role === "user") {
-                        let textVariation: CLM.TextVariation = {
-                            text: activity.text,
-                            labelEntities: []
-                        }
-                        let extractorStep: CLM.TrainExtractorStep = {
-                            textVariations: [textVariation]
-                        }
-                        curRound = {
-                            extractorStep,
-                            scorerSteps: []
-                        }
-                        trainDialog.rounds.push(curRound)
+        let curRound: CLM.TrainRound | null = null
+        transcript.forEach((activity: BB.Activity) => {
+            // TODO: Handle conversation updates
+            if (!activity.type || activity.type === "message") {
+                if (activity.from.role === "user") {
+                    let textVariation: CLM.TextVariation = {
+                        text: activity.text,
+                        labelEntities: []
                     }
-                    else if (activity.from.role === "bot") {
-                        let scoreInput: CLM.ScoreInput = {
-                            filledEntities: [],
-                            context: {},
-                            maskedActions: []
-                        }
-                        // As a first pass, try to match by exact text
-                        const action = DialogUtils.findActionByText(activity.text, this.props.actions)
-                        let scorerStep: CLM.TrainScorerStep = {
-                            importText: action ? undefined : activity.text,
-                            input: scoreInput,
-                            labelAction: action ? action.actionId : CLM.CL_STUB_IMPORT_ACTION_ID,
-                            logicResult: undefined,
-                            scoredAction: undefined
-                        }
+                    let extractorStep: CLM.TrainExtractorStep = {
+                        textVariations: [textVariation]
+                    }
+                    curRound = {
+                        extractorStep,
+                        scorerSteps: []
+                    }
+                    trainDialog.rounds.push(curRound)
+                }
+                else if (activity.from.role === "bot") {
+                    let scoreInput: CLM.ScoreInput = {
+                        filledEntities: [],
+                        context: {},
+                        maskedActions: []
+                    }
+                    // As a first pass, try to match by exact text
+                    const action = DialogUtils.findActionByText(activity.text, this.props.actions)
+                    let scorerStep: CLM.TrainScorerStep = {
+                        importText: action ? undefined : activity.text,
+                        input: scoreInput,
+                        labelAction: action ? action.actionId : CLM.CL_STUB_IMPORT_ACTION_ID,
+                        logicResult: undefined,
+                        scoredAction: undefined
+                    }
 
-                        curRound!.scorerSteps.push(scorerStep)
+                    if (curRound) {
+                        curRound.scorerSteps.push(scorerStep)
+                    }
+                    else {
+                        throw new Error("Dialogs must start with User turn (role='user')")
                     }
                 }
-            })
-
-            // Extract entities
-            if (this.props.entities.length > 0) {
-                await this.addEntityExtractions(trainDialog)
             }
+        })
 
-            // Replay to fill in memory
-            const newTrainDialog = await DialogEditing.onReplayTrainDialog(
-                trainDialog,
-                this.props.app.appId,
-                this.props.entities,
-                this.props.actions,
-                this.props.trainDialogReplayAsync as any,
-            )
-
-            // Try to map action again now that we have entities
-            DialogUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
-
-            await Util.setStateAsync(this, {
-                originalTrainDialog: newTrainDialog
-            })
-
-            // If auto importing and new dialog has matched all actions
-            if (this.state.importAutoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
-                // Fetch history as needed for validation checks
-                const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-                await Util.setStateAsync(this, { 
-                    history: teachWithHistory.history,
-                    editType: EditDialogType.IMPORT})
-                await this.onCreateTrainDialog(newTrainDialog)
-            }
-            else {
-                await this.onClickTrainDialogItem(newTrainDialog, EditDialogType.IMPORT)
-            }
-
-            this.setState({isImportWaitModalOpen: false})
+        // Extract entities
+        if (this.props.entities.length > 0) {
+            await this.addEntityExtractions(trainDialog)
         }
-        catch (error) {
-            // Abandon import
-            this.setState({
-                isImportWaitModalOpen: false,
-                importFiles: undefined
-            })
 
+        // Replay to fill in memory
+        const newTrainDialog = await DialogEditing.onReplayTrainDialog(
+            trainDialog,
+            this.props.app.appId,
+            this.props.entities,
+            this.props.actions,
+            this.props.trainDialogReplayAsync as any,
+        )
+
+        // Try to map action again now that we have entities
+        DialogUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
+
+        await Util.setStateAsync(this, {
+            originalTrainDialog: newTrainDialog
+        })
+
+        // If auto importing and new dialog has matched all actions
+        if (this.state.importAutoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
+            // Fetch history as needed for validation checks
+            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            await Util.setStateAsync(this, { 
+                history: teachWithHistory.history,
+                editType: EditDialogType.IMPORT})
+            await this.onCreateTrainDialog(newTrainDialog)
         }
+        else {
+            await this.onClickTrainDialogItem(newTrainDialog, EditDialogType.IMPORT)
+        }
+
+        this.setState({isImportWaitModalOpen: false})
     }
 
     async addEntityExtractions(trainDialog: CLM.TrainDialog) {
