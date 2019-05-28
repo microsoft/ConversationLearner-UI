@@ -63,11 +63,16 @@ const selectors = {
         checkBoxWaitForResponse: '[data-testid="action-creator-wait-checkbox"] button[role="checkbox"]',
         warningNoWaitExpected: '[data-testid="action-warning-nowait-expected"]',
     },
+    actionDeleteModal: {
+        deleteTypeA: '[data-testid="action-delete-type"] [data-testid="action-modal-delete-type-a"]',
+        deleteTypeB: '[data-testid="action-delete-type"] [data-testid="action-modal-delete-type-b"]',
+        buttonConfirm: '[data-testid="action-delete-confirm"]',
+        buttonCancel: '[data-testid="action-delete-cancel"]',
+    },
     confirmCancelModal: {
         buttonCancel: '[data-testid="confirm-cancel-modal-cancel"]',
         buttonConfirm: '[data-testid="confirm-cancel-modal-accept"]',
         buttonOk: '[data-testid="confirm-cancel-modal-ok"]',
-        optionRemovePlaceholder: '[data-testid="confirm-cancel-option"]',
     },
     trainDialogs: {
         descriptions: '[data-testid="train-dialogs-description"]',
