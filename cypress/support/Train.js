@@ -46,6 +46,7 @@ export function VerifyDeleteButtonLabel() { cy.Get('[data-testid="edit-dialog-mo
 export function VerifyAbandonBranchButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Abandon Branch') }
 export function ClickUndoButton() { cy.Get('[data-testid="edit-teach-dialog-undo-button"]').Click() }
 export function ClickConfirmAbandonDialogButton() { return cy.Get('.ms-Dialog-main').contains('abandon').parents('.ms-Dialog-main').contains('Confirm').Click() }
+export function ClickReplayButton() { cy.Get('[data-testid="edit-dialog-modal-replay-button"]').Click() }
 
 export function VerifyDescription(expectedDescription) { cy.Get(`input.cl-borderless-text-input#description[value="${expectedDescription}"]`) }
 export function TypeDescription(description) { cy.Get('input.cl-borderless-text-input#description').clear().type(`${description}{enter}`) }

@@ -13,7 +13,7 @@ import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
 
 // This test suite is part 1 of 2. The second part is in ApiCreateMultipleExceptions.
-describe('Exception Callback - ErrorHandling', () => {
+describe('API Verify Multiple Exceptions - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   context('Setup', () => {
@@ -26,6 +26,10 @@ describe('Exception Callback - ErrorHandling', () => {
   context('Edit the Train Dialog to Verify the Errors Persisted', () => {
     it('Should edit the Train Dialog that was persisted', () => {
       train.EditTraining('This can be an entityError', 'An entityError shall go here as well', 'ExceptionAPI')
+
+      // Bug 2137: Render Error appears to be lost when editing an existing Train Dialog
+      // When this bug is fixed remove these comments and the line below.
+      train.ClickReplayButton()
     })
 
     // Bug 2142: TEST BLOCKER - API Callback error rendering is different between original TD rendering and when editing a Train Dialog
@@ -34,19 +38,9 @@ describe('Exception Callback - ErrorHandling', () => {
       train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 1)
       train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', 3)
       train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 5)
-
-      // Bug 2137: Render Error appears to be lost when editing an existing Train Dialog
-      // When this bug is fixed remove the following line and uncomment out the next one.
-      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 7)
-      //train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Render Error', 7)
-
+      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', 7)
       train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', 9)
-      
-      // Bug 2137: Render Error appears to be lost when editing an existing Train Dialog
-      // When this bug is fixed remove the following line and uncomment out the next one.
-      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 11)
-      //train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Render Error', 11)
-      
+      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', 11)
       train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 13)
       train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 15)
     })

@@ -13,7 +13,7 @@ import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
 
 // This test suite is part 1 of 2. The second part is in ApiVerifyMultipleExceptions.
-describe('Exception Callback - ErrorHandling', () => {
+describe('API Create Multiple Exceptions - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   context('Setup', () => {
@@ -29,7 +29,7 @@ describe('Exception Callback - ErrorHandling', () => {
     })
 
     it('Should add a user turn to cause an error, dismiss the error and the TD and verify it returns to the TD grid pane view', () => {
-      train.TypeYourMessage('This is an entityError')
+      train.TypeYourMessage('Create an entityError')
       train.LabelTextAsEntity('entityError', 'entityError')
       train.ClickScoreActionsButton()
       train.VerifyErrorPopup("Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.")
