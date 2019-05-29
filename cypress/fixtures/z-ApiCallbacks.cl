@@ -1,4 +1,4 @@
-﻿{
+{
   "trainDialogs": [],
   "actions": [
     {
