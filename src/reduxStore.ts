@@ -4,31 +4,44 @@
  */
 import { createStore, applyMiddleware, Store } from 'redux'
 import thunk from 'redux-thunk'
-import { State, ports } from './types'
+import { State } from './types'
 import rootReducer from './reducers/root'
 import { throttle } from 'lodash'
 import * as localStorage from './services/localStorage'
 import * as ClientFactory from './services/clientFactory'
+// Note: Because we need and force initialState to be done here it has no effect on the reducer but is kept there to follow pattern.
+import { initialState as initialSettings } from './reducers/settingsReducer'
 
 export const createReduxStore = (): Store<State> => {
-    const persistedState = localStorage.load<Partial<State>>()
-    const state = persistedState as State
+    let persistedState = localStorage.load<Partial<State>>()
 
-    const settings = persistedState && persistedState.settings
-    // If user chose to use custom port update the client to use this port
-    // Need this since the subscribe below only happens on store change not initialization
-    if (settings && settings.useCustomPort) {
-        ClientFactory.setPort(settings.customPort)
-        state.settings.botPort = settings.customPort
+    if (typeof persistedState !== 'object') {
+        persistedState = {
+            settings: initialSettings
+        }
     }
-    // TODO: Could move initialization to client, but try to keep on one place
     else {
-        if (ports.defaultUiPort === ports.urlBotPort) {
-            ClientFactory.setPort(ports.defaultBotPort)
-            if (settings) {
-                state.settings.botPort = settings.customPort
+        if (!persistedState.settings) {
+            persistedState.settings = initialSettings
+        }
+        else {
+            if (!persistedState.settings.useCustomPort) {
+                persistedState.settings.useCustomPort = initialSettings.useCustomPort
+            }
+            if (!persistedState.settings.customPort) {
+                persistedState.settings.customPort = initialSettings.customPort
             }
         }
+    }
+
+    // At this point persistedState should have a correct format of settings object
+    const state = persistedState as State
+    const persistedSettings = persistedState && persistedState.settings
+    // If user chose to use custom port update the client to use this port
+    // Need this since the subscribe below only happens on store change not initialization
+    if (persistedSettings && persistedSettings.useCustomPort) {
+        ClientFactory.setPort(persistedSettings.customPort)
+        state.settings.botPort = persistedSettings.customPort
     }
 
     const store = createStore(rootReducer,
