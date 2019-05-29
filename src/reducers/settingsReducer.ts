@@ -8,12 +8,14 @@ import { Reducer } from 'redux'
 import produce from 'immer'
 
 // TODO: Consolidate calculation, needs to match reduxStore
-const botPort = ports.defaultUiPort === ports.urlBotPort
+const useCustomPort = ports.defaultUiPort === ports.urlBotPort
+const botPort = useCustomPort
     ? ports.defaultBotPort
     : ports.urlBotPort
 
-const initialState: SettingsState = {
-    useCustomPort: false,
+
+export const initialState: SettingsState = {
+    useCustomPort,
     botPort,
     customPort: ports.defaultBotPort,
 }
