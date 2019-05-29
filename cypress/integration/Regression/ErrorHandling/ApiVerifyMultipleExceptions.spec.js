@@ -32,20 +32,66 @@ describe('API Verify Multiple Exceptions - ErrorHandling', () => {
       train.ClickReplayButton()
     })
 
-    // Bug 2142: TEST BLOCKER - API Callback error rendering is different between original TD rendering and when editing a Train Dialog
-    // Once this bug is fixed the calls to "VerifyCardChatMessage" will fail due to the first parameter needing to be changed.
     it('Should verify that all Bot responses persisted correctly', () => {
-      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 1)
-      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', 3)
-      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 5)
-      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', 7)
-      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', 9)
-      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', 11)
-      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 13)
-      train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 15)
+      VerifyAllBotChatMessages()
+    })
+
+    it('Should introduce an Entity detection error at the last Bot turn and verify it', () => {
+      train.SelectChatTurnExactMatch('An entityError shall go here as well')
+      train.LabelTextAsEntity('entityError', 'entityError')
+      train.ClickSubmitChangesButton()
+      VerifyAllBotChatMessages(true)
+    })
+
+    it('Should remove the Entity detection error at the last Bot turn and verify it', () => {
+      train.SelectChatTurnExactMatch('An entityError shall go here as well')
+      train.RemoveEntityLabel('entityError', 'entityError')
+      train.ClickSubmitChangesButton()
+      VerifyAllBotChatMessages()
+    })
+
+    it('Should introduce an Entity detection error at the first Bot turn and verify it affects all Bot responses', () => {
+      train.SelectChatTurnExactMatch('This can be an entityError')
+      train.LabelTextAsEntity('entityError', 'entityError')
+      train.ClickSubmitChangesButton()
+      VerifyAllBotChatMessagesAreForEntityDetectionCallback()
+    })
+
+    it('Should remove the Entity detection error at the first Bot turn and verify it', () => {
+      train.SelectChatTurnExactMatch('This can be an entityError')
+      train.RemoveEntityLabel('entityError', 'entityError')
+      train.ClickSubmitChangesButton()
+      VerifyAllBotChatMessages()
+    })
+
+    it('Should abandon the edit', () => {
+      train.AbandonDialog()
     })
 
     it('More to do here - waiting for fix for Bug 2136: API Errors not behaving like other errors', () => {
     })
   })
 })
+
+// Bug 2142: TEST BLOCKER - API Callback error rendering is different between original TD rendering and when editing a Train Dialog
+// Once this bug is fixed the calls to "VerifyCardChatMessage" will fail due to the first parameter needing to be changed.
+function VerifyAllBotChatMessages(endsWithEntityDetectionError) {
+  train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 1)
+  train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', 3)
+  train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 5)
+  train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', 7)
+  train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', 9)
+  train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', 11)
+  train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 13)
+  if(endsWithEntityDetectionError) {
+    train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", 15)
+  } else {
+    train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 15)
+  }
+}
+
+function VerifyAllBotChatMessagesAreForEntityDetectionCallback() {
+  for(let i = 1; i <= 15; i += 2) {
+    train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", i)
+  }
+}
