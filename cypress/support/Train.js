@@ -33,7 +33,7 @@ export function GetAllChatMessages() { return helpers.StringArrayFromElementText
 export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
 export function VerifyErrorPopup(expectedMessage) { cy.Get('p.ms-Dialog-title').ExactMatch(expectedMessage) }
-export function ClickConfirmCancelOkButton() { cy.Get('[data-testid="confirm-cancel-modal-ok"]').Click() }
+export function ClickPopupConfirmCancelOkButton() { cy.Get('[data-testid="confirm-cancel-modal-ok"]').Click() }
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="edit-dialog-modal-delete-turn-button"]').Click() }
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
 export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreActionsButtonSelector) }
@@ -467,25 +467,6 @@ export function SelectEndSessionAction(expectedData) {
   scorerModal.ClickEndSessionAction(expectedData);
   VerifyEndSessionChatMessage(expectedData)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = expectedData })
-}
-
-export function VerifyAllBotChatMessages(messages) {
-  messages.forEach((message, index) => {
-    let chatIndex = index * 2 + 1
-    switch(message.type) {
-      case 'TEXT':
-        VerifyTextChatMessage(message.text, chatIndex)
-        break;
-      case 'CARD':
-        VerifyCardChatMessage(message.cardTitle, message.cardText, chatIndex)
-        break
-      case 'END_SESSION':
-        VerifyEndSessionChatMessage(message.data, chatIndex)
-        break
-      default:
-        throw new Error(`Unexpected message type: '${message.type}'`)
-    }
-  })
 }
 
 // To verify the last chat utterance leave expectedIndexOfMessage undefined

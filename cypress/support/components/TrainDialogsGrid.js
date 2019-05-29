@@ -8,7 +8,7 @@ import * as helpers from '../Helpers'
 
 // Path to product code: ConversationLearner-UI\src\routes\Apps\App\TrainDialogs.tsx
 export function VerifyPageTitle() { 
-  cy.Get('[data-testid="train-dialogs-title"]').contains('Train Dialogs')//.should(() => {
+  cy.Get('[data-testid="train-dialogs-title"]').contains('Train Dialogs')
   cy.Enqueue(() => {
     if (modelPage.IsOverlaid()) {
       helpers.ConLog('VerifyPageTitle', 'modelPage.IsOverlaid')

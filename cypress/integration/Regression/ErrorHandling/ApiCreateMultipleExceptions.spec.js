@@ -33,7 +33,7 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
       train.LabelTextAsEntity('entityError', 'entityError')
       train.ClickScoreActionsButton()
       train.VerifyErrorPopup("Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.")
-      train.ClickConfirmCancelOkButton()
+      train.ClickPopupConfirmCancelOkButton()
       trainDialogsGrid.VerifyPageTitle()
     })
   })
