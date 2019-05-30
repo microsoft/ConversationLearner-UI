@@ -70,10 +70,10 @@ const convertTemplateToOption = (template: CLM.Template): OF.IDropdownOption =>
         text: template.name
     })
 
-const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[]): IConditionalTag[] => {
+const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[], expand = true): IConditionalTag[] => {
     return entities
         .filter(e => ids.some(id => id === e.entityId))
-        .map(convertEntityToConditionalTags)
+        .map(e => convertEntityToConditionalTags(e, expand))
         .reduce((a, b) => [...a, ...b], [])
 }
 
@@ -112,9 +112,15 @@ const convertConditionalsToTags = (conditions: CLM.Condition[], entities: CLM.En
  * If entity is ENUM convert each value into EQUAL condition
  * Otherwise convert with no condition
  */
-const convertEntityToConditionalTags = (entity: CLM.EntityBase): IConditionalTag[] => {
-    if (entity.entityType === CLM.EntityType.ENUM && entity.enumValues) {
-        return entity.enumValues.map(enumValue =>
+const convertEntityToConditionalTags = (entity: CLM.EntityBase, expand = true): IConditionalTag[] => {
+    if (expand && entity.entityType === CLM.EntityType.ENUM && entity.enumValues) {
+        const enumEntityTag: IConditionalTag = {
+            key: entity.entityId,
+            name: entity.entityName,
+            condition: null,
+        }
+
+        const conditionalTags = entity.enumValues.map<IConditionalTag>(enumValue =>
             ({
                 key: enumValue.enumValueId!,
                 name: toConditionName(entity, enumValue),
@@ -124,6 +130,8 @@ const convertEntityToConditionalTags = (entity: CLM.EntityBase): IConditionalTag
                     condition: CLM.ConditionType.EQUAL,
                 }
             }))
+
+        return [enumEntityTag, ...conditionalTags]
     }
 
     return [{
@@ -381,7 +389,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const action = nextProps.action
 
                 const payloadOptions = this.props.entities.map(convertEntityToOption)
-                const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
+                const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities, false)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
                 let selectedApiOptionKey: string | undefined
                 let selectedCardOptionKey: string | undefined
@@ -465,7 +473,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         return [...entities, ...newEntities.filter(ne => !entities.some(e => e.key === ne.key))]
                     }, [])
 
-                const requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
+                const requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities, false)
                     .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
 
                 if (action.requiredConditions) {
@@ -1473,7 +1481,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 <TC.TagPicker
                                     data-testid="action-expected-entity"
                                     label="Expected Entity in User reply..."
-                                    onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
+                                    onResolveSuggestions={this.onResolveExpectedEntityTags}
                                     onRenderItem={this.onRenderExpectedTag}
                                     getTextFromItem={item => item.name}
                                     onChange={this.onChangeExpectedEntityTags}
