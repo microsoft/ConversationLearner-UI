@@ -260,7 +260,7 @@ interface ComponentState {
     newOrEditedAction: CLM.ActionBase | null
     selectedActionTypeOptionKey: string | number
     availableExpectedEntityTags: OF.ITag[]
-    conditionalTags: OF.ITag[]
+    availableConditionalTags: OF.ITag[]
     expectedEntityTags: OF.ITag[]
     requiredEntityTagsFromPayload: OF.ITag[]
     requiredEntityTags: IConditionalTag[]
@@ -297,7 +297,7 @@ const initialState: Readonly<ComponentState> = {
     newOrEditedAction: null,
     selectedActionTypeOptionKey: actionTypeOptions[0].key,
     availableExpectedEntityTags: [],
-    conditionalTags: [],
+    availableConditionalTags: [],
     expectedEntityTags: [],
     requiredEntityTagsFromPayload: [],
     requiredEntityTags: [],
@@ -331,7 +331,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             apiOptions,
             cardOptions,
             availableExpectedEntityTags: availableExpectedEntityTags(entities),
-            conditionalTags: conditionalEntityTags(entities),
+            availableConditionalTags: conditionalEntityTags(entities),
             isEditing: !!this.props.action
         }
     }
@@ -351,7 +351,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     nextState = {
                         ...nextState,
                         availableExpectedEntityTags: availableExpectedEntityTags(nextProps.entities),
-                        conditionalTags: conditionalEntityTags(nextProps.entities),
+                        availableConditionalTags: conditionalEntityTags(nextProps.entities),
                     }
                 }
 
@@ -1046,7 +1046,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onResolveRequiredEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
         return getSuggestedTags(
             filterText,
-            this.state.conditionalTags,
+            this.state.availableConditionalTags,
             [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags, ...this.state.expectedEntityTags],
             this.state.requiredEntityTags
         )
@@ -1073,7 +1073,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onResolveNegativeEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
         return getSuggestedTags(
             filterText,
-            this.state.conditionalTags,
+            this.state.availableConditionalTags,
             [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags]
         )
     }
