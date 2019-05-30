@@ -43,7 +43,7 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
       train.CreateNewTrainDialog()
     })
 
-    it('Should add a user turn, to be used later to cause an error, and verify it is in the chat pane', () => {
+    it('Should add a user turn to be used later to cause an EntityDetectionCallback error and verify it is in the chat pane', () => {
       train.TypeYourMessage('This can be an entityError')
       train.ClickScoreActionsButton()
       train.SelectApiTextAction('ExceptionAPI', 'ExceptionAPI: Hello with no exception')
@@ -63,6 +63,18 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
       train.SelectApiTextAction('ExceptionAPI', 'ExceptionAPI: Hello with no exception')
     })
 
+    it('Should add a user turn to be used later to cause an EntityDetectionCallback error and verify it is in the chat pane', () => {
+      train.TypeYourMessage('Can be used to cause an entityError')
+      train.ClickScoreActionsButton()
+      train.SelectApiTextAction('ExceptionAPI', 'ExceptionAPI: Hello with no exception')
+    })
+
+    it('Should add a round with a TEXT Action to later test bug 2151', () => {
+      train.TypeYourMessage('Expecting TEXT Action: Test Bug 2151 to make sure that fixing an Exception thrown in the EntityDetectionCallback function cause the TEXT Action to render without error.')
+      train.ClickScoreActionsButton()
+      train.SelectTextAction('This is a TEXT ACTION')
+    })
+
     it('Should add a renderError turn and verify it renders a card with an error message in the chat pane', () => {
       train.TypeYourMessage('This will produce a renderError')
       train.LabelTextAsEntity('renderError', '+renderError')
@@ -77,15 +89,21 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
       train.SelectApiCardAction('ExceptionAPI', 'Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Logic Error')
     })
 
+    it('Should add a user turn to be used later to fix an EntityDetectionCallback error and verify it is in the chat pane', () => {
+      train.TypeYourMessage('Remove an entityError')
+      train.ClickScoreActionsButton()
+      train.SelectTextAction('This is a TEXT ACTION')
+    })
+
     it('Should add a turn to remove the logicError and verify it renders the error message for renderError once again', () => {
-      train.TypeYourMessage('Remove the logicError')
+      train.TypeYourMessage('Remove the logicError, however, you will still see the renderError.')
       train.LabelTextAsEntity('logicError', '-logicError', false)
       train.ClickScoreActionsButton()
       train.SelectApiCardAction('ExceptionAPI', 'Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error')
     })
 
     it('Should add a turn to remove the renderError and verify it renders a NON-error message', () => {
-      train.TypeYourMessage('Clear out the renderError')
+      train.TypeYourMessage('Clear out the renderError. At this point you should no longer see errors.')
       train.LabelTextAsEntity('renderError', '-renderError')
       train.ClickScoreActionsButton()
       train.SelectApiTextAction('ExceptionAPI', 'ExceptionAPI: Hello with no exception')

@@ -47,7 +47,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
     })
 
     it('Should be able to select an Action', () => {
-      train.SelectAction('Hello David', 'Hello $name')
+      train.SelectTextAction('Hello David', 'Hello $name')
       cy.WaitForTrainingStatusCompleted()
     })
 
@@ -67,7 +67,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
     })
 
     it('Should be able to select an Action and save the training', () => {
-      train.SelectAction('Hello Susan', 'Hello $name')
+      train.SelectTextAction('Hello Susan', 'Hello $name')
       train.SaveAsIsVerifyInGrid()
     })
   })
@@ -98,7 +98,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
     })
 
     it('Should be able to select an Action and save the training', () => {
-      train.SelectAction('Hello Gabriella', 'Hello $name')
+      train.SelectTextAction('Hello Gabriella', 'Hello $name')
       train.SaveAsIsVerifyInGrid()
     })
   })

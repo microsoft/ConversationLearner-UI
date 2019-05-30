@@ -129,49 +129,10 @@
       "actionId": "29cc5f54-2a89-45d5-98c5-54a40aea3df3",
       "createdDateTime": "2019-05-30T02:15:44.7253706+00:00",
       "actionType": "TEXT",
-      "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"Hello\",\"marks\":[]}]}]}]}}}",
+      "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"This is a TEXT ACTION\",\"marks\":[]}]}]}]}}}",
       "isTerminal": true,
       "requiredEntitiesFromPayload": [],
       "requiredEntities": [],
-      "negativeEntities": [],
-      "requiredConditions": [],
-      "negativeConditions": [],
-      "clientData": {
-        "importHashes": [],
-        "isStubbed": false
-      }
-    },
-    {
-      "actionId": "43221216-28e7-462e-8ea0-364dcd0c2ce2",
-      "createdDateTime": "2019-05-30T02:16:14.0292087+00:00",
-      "actionType": "TEXT",
-      "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"What's your name?\",\"marks\":[]}]}]}]}}}",
-      "isTerminal": true,
-      "requiredEntitiesFromPayload": [],
-      "requiredEntities": [],
-      "negativeEntities": [
-        "609c8552-43ee-4fc3-81df-10fa8711af3a"
-      ],
-      "requiredConditions": [],
-      "negativeConditions": [],
-      "suggestedEntity": "609c8552-43ee-4fc3-81df-10fa8711af3a",
-      "clientData": {
-        "importHashes": [],
-        "isStubbed": false
-      }
-    },
-    {
-      "actionId": "8e480482-36d0-4a25-b0e8-62493ad846f2",
-      "createdDateTime": "2019-05-30T02:16:33.7383354+00:00",
-      "actionType": "TEXT",
-      "payload": "{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"Hello \",\"marks\":[]}]},{\"kind\":\"inline\",\"type\":\"mention-inline-node\",\"isVoid\":false,\"data\":{\"completed\":true,\"option\":{\"id\":\"609c8552-43ee-4fc3-81df-10fa8711af3a\",\"name\":\"name\"}},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"$name\",\"marks\":[]}]}]},{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"\",\"marks\":[]}]}]}]}}}",
-      "isTerminal": true,
-      "requiredEntitiesFromPayload": [
-        "609c8552-43ee-4fc3-81df-10fa8711af3a"
-      ],
-      "requiredEntities": [
-        "609c8552-43ee-4fc3-81df-10fa8711af3a"
-      ],
       "negativeEntities": [],
       "requiredConditions": [],
       "negativeConditions": [],
@@ -258,15 +219,6 @@
       "entityType": "LUIS",
       "isMultivalue": false,
       "isNegatible": true,
-      "resolverType": "none"
-    },
-    {
-      "entityId": "609c8552-43ee-4fc3-81df-10fa8711af3a",
-      "createdDateTime": "2019-05-30T02:16:06.4924396+00:00",
-      "entityName": "name",
-      "entityType": "LUIS",
-      "isMultivalue": false,
-      "isNegatible": false,
       "resolverType": "none"
     }
   ],

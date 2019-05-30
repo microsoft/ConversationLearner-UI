@@ -442,7 +442,7 @@ export function TypeYourMessage(message) {
 
 // lastResponse parameter is optional. It is necessary only when there are $entities
 // in the Action that produced the Bot's last response.
-export function SelectAction(expectedResponse, lastResponse) {
+export function SelectTextAction(expectedResponse, lastResponse) {
   scorerModal.ClickTextAction(expectedResponse)
   VerifyTextChatMessage(expectedResponse)
   cy.Enqueue(() => {

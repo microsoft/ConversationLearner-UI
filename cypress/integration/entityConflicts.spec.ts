@@ -59,7 +59,7 @@ describe('Entity Conflicts', () => {
 
                 // TODO: Selects score actions immediately, need to verify memory
                 // trainDialog.VerifyEntityLabel(labeledWord1, testData.entityName)
-                trainDialog.SelectAction(testData.actionResponse)
+                trainDialog.SelectTextAction(testData.actionResponse)
                 trainDialog.ClickAbandonDeleteButton()
 
                 cy.get(s.confirmCancelModal.buttonConfirm)
@@ -265,7 +265,7 @@ describe('Entity Conflicts', () => {
                     .click()
 
                 trainDialog.ClickScoreActionsButton()
-                trainDialog.SelectAction(testData.actionResponse)
+                trainDialog.SelectTextAction(testData.actionResponse)
                 trainDialog.ClickSaveCloseButton()
 
                 cy.WaitForStableDOM()

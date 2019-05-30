@@ -30,7 +30,7 @@ describe('Missing Action - ErrorHandling', () => {
       train.CreateNewTrainDialog()
       train.TypeYourMessage(common.gonnaDeleteAnAction)
       train.ClickScoreActionsButton()
-      train.SelectAction(common.whatsYourName)
+      train.SelectTextAction(common.whatsYourName)
       train.SaveAsIsVerifyInGrid()
     })
   })

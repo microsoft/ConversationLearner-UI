@@ -32,7 +32,7 @@ describe('Consistent Entity Labeling - Train', () => {
       train.VerifyEntityLabeledDifferentPopupAndClose([textEntityPairs[0]])
       train.ClickScoreActionsButton()
       train.VerifyEntityLabeledDifferentPopupAndAccept([textEntityPairs[0]])
-      train.SelectAction('Hello')
+      train.SelectTextAction('Hello')
     })
 
     it('Should get an error message after removing a different single entity label & prevent scoring actions till fixed', () => {
@@ -42,7 +42,7 @@ describe('Consistent Entity Labeling - Train', () => {
       train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
       train.ClickScoreActionsButton()
       train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
-      train.SelectAction('Hi')
+      train.SelectTextAction('Hi')
     })
 
     it('Should get an error message after removing two entity labels & prevent scoring actions till fixed', () => {
@@ -53,7 +53,7 @@ describe('Consistent Entity Labeling - Train', () => {
       train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
       train.ClickScoreActionsButton()
       train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
-      train.SelectAction('Hi')
+      train.SelectTextAction('Hi')
     })
   })
 
@@ -88,7 +88,7 @@ describe('Consistent Entity Labeling - Train', () => {
       train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
       train.ClickScoreActionsButton()
       train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
-      train.SelectAction('Hi')
+      train.SelectTextAction('Hi')
 
       train.SaveAsIsVerifyInGrid()
     })
