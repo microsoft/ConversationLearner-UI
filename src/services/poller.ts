@@ -42,7 +42,7 @@ export class Poller {
         const { id, maxDuration } = pollConfig
         const start = new Date().getTime()
         const end = start + maxDuration
-        const activeApp = this.polls.find(p => p.id === id)
+        const activeApp = this.polls.find(p => p && p.id === id)
 
         if (activeApp) {
             console.debug(`Poller: ${this.id.toString()} - Existing polling found for id: ${id} increasing end from ${activeApp.end} to: ${end}`)
