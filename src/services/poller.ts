@@ -68,6 +68,7 @@ export class Poller {
 
     private async poll() {
         const now = (new Date()).getTime()
+        // TODO: Think the issue is poll being mapped to undefined, then future operation tries to access that poll id.
         // Alternate approach is to split this into three phases: Filter those expired, await all requests, then filter all resolved.
         this.polls = (await Promise.all(this.polls.map(async poll => {
             const { end } = poll
