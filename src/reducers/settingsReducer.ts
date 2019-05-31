@@ -26,13 +26,13 @@ const settingsReducer: Reducer<SettingsState> = produce((state: SettingsState, a
                 state.botPort = state.customPort
             }
             return
-        case AT.SETTINGS_UPDATE:
+        case AT.SETTINGS_UPDATE_PORT:
             state.customPort = action.port
             if (state.useCustomPort) {
                 state.botPort = state.customPort
             }
             return
-        case AT.SETTINGS_USE_CUSTOM_PORT:
+        case AT.SETTINGS_TOGGLE_USE_CUSTOM_PORT:
             state.useCustomPort = !state.useCustomPort
             state.botPort = state.useCustomPort
                 ? state.customPort
