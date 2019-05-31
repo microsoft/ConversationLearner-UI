@@ -19,11 +19,11 @@ import './Settings.css'
 class Settings extends React.Component<Props> {
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
         const botPort = parseInt(event.target.value, 10)
-        this.props.settingsUpdate(botPort)
+        this.props.settingsUpdatePort(botPort)
     }
 
     onChangeCustomPort = () => {
-        this.props.settingsUseCustomPort()
+        this.props.settingsToggleUseCustomPort()
     }
 
     reset = () => {
@@ -84,8 +84,8 @@ class Settings extends React.Component<Props> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         settingsReset: actions.settings.settingsReset,
-        settingsUpdate: actions.settings.settingsUpdate,
-        settingsUseCustomPort: actions.settings.settingsUseCustomPort,
+        settingsUpdatePort: actions.settings.settingsUpdatePort,
+        settingsToggleUseCustomPort: actions.settings.settingsToggleUseCustomPort,
     }, dispatch)
 }
 
