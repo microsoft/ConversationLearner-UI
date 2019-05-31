@@ -204,7 +204,7 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
   function LabelIt() {
     // This actually works if text is a word or a phrase.
     cy.Get('body').trigger('Test_SelectWord', { detail: text })
-    cy.Get('[data-testid="entity-picker-match-option"]').contains(entity).Click()
+    cy.Get('[data-testid="fuse-match-option"]').contains(entity).Click()
   }
 
   if (itMustNotBeLabeledYet) {
