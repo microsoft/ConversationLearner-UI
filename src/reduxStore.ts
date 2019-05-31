@@ -21,14 +21,14 @@ export const createReduxStore = (): Store<State> => {
         }
     }
     else {
-        if (!persistedState.settings) {
+        if (typeof persistedState.settings !== 'object') {
             persistedState.settings = initialSettings
         }
         else {
-            if (!persistedState.settings.useCustomPort) {
+            if (typeof persistedState.settings.useCustomPort !== 'boolean') {
                 persistedState.settings.useCustomPort = initialSettings.useCustomPort
             }
-            if (!persistedState.settings.customPort) {
+            if (typeof persistedState.settings.customPort !== 'number') {
                 persistedState.settings.customPort = initialSettings.customPort
             }
         }
