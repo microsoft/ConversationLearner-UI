@@ -36,13 +36,14 @@ export const createReduxStore = (): Store<State> => {
 
     // At this point persistedState should have a correct format of settings object
     const state = persistedState as State
-    const persistedSettings = persistedState && persistedState.settings
     // If user chose to use custom port update the client to use this port
     // Need this since the subscribe below only happens on store change not initialization
-    if (persistedSettings && persistedSettings.useCustomPort) {
-        ClientFactory.setPort(persistedSettings.customPort)
-        state.settings.botPort = persistedSettings.customPort
-    }
+    const botPort = state.settings.useCustomPort
+        ? state.settings.customPort
+        : initialSettings.botPort
+
+    ClientFactory.setPort(botPort)
+    state.settings.botPort = botPort
 
     const store = createStore(rootReducer,
         state,

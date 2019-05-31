@@ -7,12 +7,10 @@ import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import produce from 'immer'
 
-// TODO: Consolidate calculation, needs to match reduxStore
 const useCustomPort = ports.defaultUiPort === ports.urlBotPort
 const botPort = useCustomPort
     ? ports.defaultBotPort
     : ports.urlBotPort
-
 
 export const initialState: SettingsState = {
     useCustomPort,
