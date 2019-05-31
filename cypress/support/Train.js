@@ -475,7 +475,7 @@ export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
     let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find('div.format-markdown > p')
     if (elements.length == 0) {
-      throw new Error(`Did not find expected Text Chat Message '${expectedMessage}'`)
+      throw new Error(`Did not find expected Text Chat Message '${expectedMessage}' at index: ${expectedIndexOfMessage}`)
     }
     
     const expectedUtterance = expectedMessage.replace(/'/g, "’")
@@ -483,7 +483,7 @@ export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
     helpers.ConLog('VerifyTextChatMessage', textContentWithoutNewlines)
 
     if (helpers.TextContentWithoutNewlines(elements[0]) !== expectedUtterance) {
-      throw new Error(`Expected to find '${expectedUtterance}' in the text chat pane, instead we found '${textContentWithoutNewlines}'`)
+      throw new Error(`Expected to find '${expectedUtterance}' in the text chat pane, instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
     }
   })
 }
@@ -496,11 +496,11 @@ export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expec
     if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
     let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find(`div.format-markdown > p:contains('${expectedCardTitle}')`).parent()
     if (elements.length == 0) {
-      throw new Error(`Did not find expected '${expectedCardTitle}' card with '${expectedCardText}'`)
+      throw new Error(`Did not find expected '${expectedCardTitle}' card with '${expectedCardText}' at index: ${expectedIndexOfMessage}`)
     }
     elements = Cypress.$(elements[0]).next('div.wc-list').find('div.wc-adaptive-card > div.ac-container > div.ac-container > div > p')
     if (elements.length == 0) {
-      throw new Error(`Did not find expected content element for API Call card that should contain '${expectedCardText}'`)
+      throw new Error(`Did not find expected content element for API Call card that should contain '${expectedCardText}' at index: ${expectedIndexOfMessage}`)
     }
     
     // Log the contents of the API Call card so that we can copy the exact string into the .spec.js file.
@@ -508,7 +508,7 @@ export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expec
     helpers.ConLog('VerifyCardChatMessage', textContentWithoutNewlines)
     
     if (!textContentWithoutNewlines.includes(expectedCardText)) {
-      throw new Error(`Expected to find '${expectedCardTitle}' card with '${expectedCardText}', instead we found '${textContentWithoutNewlines}'`)
+      throw new Error(`Expected to find '${expectedCardTitle}' card with '${expectedCardText}', instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
     }
   })
 }

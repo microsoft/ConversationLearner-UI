@@ -90,7 +90,7 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
     })
 
     it('Should add a user turn to be used later to fix an EntityDetectionCallback error and verify it is in the chat pane', () => {
-      train.TypeYourMessage('Remove an entityError')
+      train.TypeYourMessage('Expecting TEXT Action: Remove an entityError')
       train.ClickScoreActionsButton()
       train.SelectTextAction('This is a TEXT ACTION')
     })

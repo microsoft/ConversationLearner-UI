@@ -23,7 +23,7 @@ export function CreateNewTrainDialog() { cy.Get('[data-testid="button-new-train-
 export function SearchBox() { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
 export function EntityDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-entity"]') }
 export function ActionDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-action"]') }
-export function ClickTraining(row) { cy.Get('[data-testid="train-dialogs-description"]').then(elements => { cy.wrap(elements[row]).Click() }) }
+export function ClickTraining(row) { cy.Get('[data-testid="train-dialogs-description"]').then(elements => { cy.wrap(elements[row]).Click({force: true}) }) }
 
 export function WaitForGridReadyThen(expectedRowCount, functionToRunAfterGridIsReady) {
   cy.Get('[data-testid="train-dialogs-turns"]', { timeout: 10000 })
