@@ -160,7 +160,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should select an action', () => {
-        train.SelectAction("Sorry Sandeep, I can't help you get a million dollars")
+        train.SelectAction("Sorry Sandeep, I can't help you get a million dollars", "Sorry $name, I can't help you get $want")
       })
 
       it('Should save the Train Dialog and verify the contents show up in the grid', () => {

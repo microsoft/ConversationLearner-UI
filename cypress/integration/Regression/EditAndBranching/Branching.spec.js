@@ -29,7 +29,7 @@ describe('Branching - Edit and Branching', () => {
     it('Should branch a turn', () => {
         train.BranchChatTurn('My name is Susan.', 'My name is Joseph.')
         train.ClickScoreActionsButton()
-        scorerModal.VerifyTextChatMessage('Hello Joseph')
+        train.VerifyTextChatMessage('Hello Joseph')
     })
 
     it('Should add another user input and Bot response', () => {

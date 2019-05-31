@@ -22,9 +22,9 @@ describe.skip('API Callbacks - CreateModels', () => {
     it('Should create custom trained entities that will be used by the API Callbacks', () => {
       entities.CreateNewEntity({ type: 'Custom Trained', name: '1stArg'})
       entities.CreateNewEntity({ type: 'Custom Trained', name: '2ndArg'})
-      // entities.CreateNewEntity({ type: 'Custom Trained', name: 'entityError'})
-      // entities.CreateNewEntity({ type: 'Custom Trained', name: 'logicError'})
-      // entities.CreateNewEntity({ type: 'Custom Trained', name: 'renderError'})
+      entities.CreateNewEntity({ type: 'Custom Trained', name: 'entityError', negatable: true})
+      entities.CreateNewEntity({ type: 'Custom Trained', name: 'logicError', negatable: true})
+      entities.CreateNewEntity({ type: 'Custom Trained', name: 'renderError', negatable: true})
     })
   })
 

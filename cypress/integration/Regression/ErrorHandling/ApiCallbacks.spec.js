@@ -12,16 +12,33 @@ import * as actions from '../../../support/Actions'
 import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
 
-describe.skip('Missing Action - ErrorHandling', () => {
+describe('API Callbacks - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
   context('Setup', () => {
-    it('Should import a model and wait for training to complete', () => {
+    it('Should import a model to test against and navigate to Train Dialogs view', () => {
       models.ImportModel('z-ApiCallbackErrs', 'z-ApiCallbacks.cl')
       modelPage.NavigateToTrainDialogs()
-      cy.WaitForTrainingStatusCompleted()
     })
   })
 
+  context('Train Dialog', () => {
+    it('Should create a new Train Dialog', () => {
+      train.CreateNewTrainDialog()
+    })
+
+    it('Should invoke "BadCard" API Callback and verify it is in the chat pane', () => {
+      train.TypeYourMessage('BadCard')
+      train.ClickScoreActionsButton()
+      train.SelectApiCardAction('BadCard', 'Malformed API Callback ‘BadCard’', 'Return value in Render function must be a string or BotBuilder Activity')
+    })
+
+    it('More to do here - waiting for fix for Bug 2136: API Errors not behaving like other errors', () => {
+    })
+
+    it('Should save the training and verify it is in the grid', () => {
+      train.SaveAsIsVerifyInGrid()
+    })
+  })
 
 })
