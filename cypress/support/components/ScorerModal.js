@@ -33,59 +33,6 @@ export function ClickEndSessionAction(expectedData) {
     .Click()
 }
 
-// To verify the last chat utterance leave expectedIndexOfMessage undefined
-export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
-  cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
-    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
-    let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find('div.format-markdown > p')
-    if (elements.length == 0) {
-      throw new Error(`Did not find expected Text Chat Message '${expectedMessage}'`)
-    }
-    
-    const expectedUtterance = expectedMessage.replace(/'/g, "’")
-    let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
-    helpers.ConLog('VerifyTextChatMessage', textContentWithoutNewlines)
-
-    if (helpers.TextContentWithoutNewlines(elements[0]) !== expectedUtterance) {
-      throw new Error(`Expected to find '${expectedUtterance}' in the text chat pane, instead we found '${textContentWithoutNewlines}'`)
-    }
-  })
-}
-
-// To verify the last chat utterance leave expectedIndexOfMessage undefined
-// Leave expectedMessage temporarily undefined so that you can copy the text
-// output from the screen or log to paste into your code.
-export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expectedIndexOfMessage) {
-  cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
-    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
-    let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find(`div.format-markdown > p:contains('${expectedCardTitle}')`).parent()
-    if (elements.length == 0) {
-      throw new Error(`Did not find expected '${expectedCardTitle}' card with '${expectedCardText}'`)
-    }
-    elements = Cypress.$(elements[0]).next('div.wc-list').find('div.wc-adaptive-card > div.ac-container > div.ac-container > div > p')
-    if (elements.length == 0) {
-      throw new Error(`Did not find expected content element for API Call card that should contain '${expectedCardText}'`)
-    }
-    
-    // Log the contents of the API Call card so that we can copy the exact string into the .spec.js file.
-    let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
-    helpers.ConLog('VerifyCardChatMessage', textContentWithoutNewlines)
-    
-    if (textContentWithoutNewlines !== expectedCardText) {
-      throw new Error(`Expected to find '${expectedCardTitle}' card with '${expectedCardText}', instead we found '${textContentWithoutNewlines}'`)
-    }
-  })
-}
-
-export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage) {
-  const expectedUtterance = 'EndSession: ' + expectedData.replace(/'/g, "’")
-  cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
-    if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
-    const element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
-    expect(helpers.TextContentWithoutNewlines(element)).to.equal(expectedUtterance)
-  })
-}
-
 export function VerifyContainsEnabledAction(expectedResponse) {
   cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
