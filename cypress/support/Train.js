@@ -86,6 +86,15 @@ export function AbandonBranchChanges() {
   homePage.ClickConfirmButton()
 }
 
+export function VerifyChatMessageCount(expectedCount) {
+  cy.Enqueue(() => {
+    let actualCount = GetAllChatMessages().length
+    if(actualCount != expectedCount) {
+      throw new Error(`Expecting the number of chat messages to be ${expectedCount} instead it is ${actualCount}`)
+    }
+  })
+}
+
 // -----------------------------------------------------------------------------
 // Selects FROM ALL chat messages, from both Bot and User.
 // Once clicked, more UI elements will become visible & enabled.

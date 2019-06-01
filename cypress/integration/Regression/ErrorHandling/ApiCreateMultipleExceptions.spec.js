@@ -11,6 +11,7 @@ import * as common from '../../../support/Common'
 import * as actions from '../../../support/Actions'
 import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
+import { createYield } from 'typescript';
 
 // This test suite is part 1 of 2. The second part is in ApiVerifyMultipleExceptions.
 describe('API Create Multiple Exceptions - ErrorHandling', () => {
@@ -29,7 +30,7 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
     })
 
     it('Should add a user turn to cause an error, dismiss the error and the TD and verify it returns to the TD grid pane view', () => {
-      train.TypeYourMessage('Create an entityError')
+      train.TypeYourMessage('This entityError will cause the Train Dialog to be discarded.')
       train.LabelTextAsEntity('entityError', 'entityError')
       train.ClickScoreActionsButton()
       train.VerifyErrorPopup("Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.")
@@ -47,6 +48,16 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
       train.TypeYourMessage('This can be an entityError')
       train.ClickScoreActionsButton()
       train.SelectApiTextAction('ExceptionAPI', 'ExceptionAPI: Hello with no exception')
+    })
+
+    it('Should add a user turn with an Entiy error, verify popup, confirm popup, and verify user turn is removed', () => {
+      train.TypeYourMessage('This entityError will cause the user turn to be discarded.')
+      train.LabelTextAsEntity('entityError', 'entityError')
+      train.ClickScoreActionsButton()
+      train.VerifyErrorPopup("Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.")
+      train.ClickPopupConfirmCancelOkButton()
+      cy.wait(2000)
+      train.VerifyChatMessageCount(20)
     })
 
     it('Should add a logicError turn and verify it renders a card with an error message in the chat pane', () => {
