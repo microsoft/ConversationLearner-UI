@@ -11,7 +11,6 @@ import * as common from '../../../support/Common'
 import * as actions from '../../../support/Actions'
 import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
-import { createYield } from 'typescript';
 
 // This test suite is part 1 of 2. The second part is in ApiVerifyMultipleExceptions.
 describe('API Create Multiple Exceptions - ErrorHandling', () => {
