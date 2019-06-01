@@ -78,7 +78,8 @@ jobs:
 
       # Run UI e2e tests
       # Need to add in --parallel once we have a license for it from Cypress
-      - run: npm run cypress -- run --record false --spec  "cypress/integration/Regression/**/*.spec.js"
+      #- run: npm run cypress -- run --record false --spec  "cypress/integration/Regression/**/*.spec.js"
+      - run: npm run cypress -- run --record false --spec  "cypress/integration/Regression/ErrorHandling/Api*MultipleExceptions.spec.js"
 
       - store_artifacts:
           path: results
