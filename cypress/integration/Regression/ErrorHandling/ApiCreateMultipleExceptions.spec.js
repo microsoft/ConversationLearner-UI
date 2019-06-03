@@ -49,16 +49,6 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
       train.SelectApiTextAction('ExceptionAPI', 'ExceptionAPI: Hello with no exception')
     })
 
-    it('Should add a user turn with an Entiy error, verify popup, confirm popup, and verify user turn is removed', () => {
-      train.TypeYourMessage('This entityError will cause the user turn to be discarded.')
-      train.LabelTextAsEntity('entityError', 'entityError')
-      train.ClickScoreActionsButton()
-      train.VerifyErrorPopup("Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.")
-      train.ClickPopupConfirmCancelOkButton()
-      cy.wait(2000)
-      train.VerifyChatMessageCount(20)
-    })
-
     it('Should add a logicError turn and verify it renders a card with an error message in the chat pane', () => {
       train.TypeYourMessage('This is a logicError')
       train.LabelTextAsEntity('logicError', '+logicError')
@@ -123,6 +113,16 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
       train.TypeYourMessage('An entityError shall go here as well')
       train.ClickScoreActionsButton()
       train.SelectApiTextAction('ExceptionAPI', 'ExceptionAPI: Hello with no exception')
+    })
+
+    it('Should add a user turn with an Entiy error, verify popup, confirm popup, and verify user turn is removed', () => {
+      train.TypeYourMessage('This entityError will cause the user turn to be discarded.')
+      train.LabelTextAsEntity('entityError', 'entityError')
+      train.ClickScoreActionsButton()
+      train.VerifyErrorPopup("Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.")
+      train.ClickPopupConfirmCancelOkButton()
+      cy.wait(2000)
+      train.VerifyChatMessageCount(22)
     })
 
     it('More to do here - waiting for fix for Bug 2136: API Errors not behaving like other errors', () => {
