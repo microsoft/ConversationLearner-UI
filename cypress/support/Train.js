@@ -87,7 +87,7 @@ export function AbandonBranchChanges() {
 }
 
 export function VerifyChatMessageCount(expectedCount) {
-  cy.Enqueue(() => {
+  cy.wrap(1, {timeout: 10000}).should(() => {
     let actualCount = GetAllChatMessages().length
     if(actualCount != expectedCount) {
       throw new Error(`Expecting the number of chat messages to be ${expectedCount} instead it is ${actualCount}`)
@@ -440,12 +440,16 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
   })
 }
 
-export function TypeYourMessage(message) {
+// The optional 'dontCountThisTurn' parameter is intended for the rare cases where 
+// we know the user turn will be discarded by the UI.
+export function TypeYourMessage(message, dontCountThisTurn = false) {
   cy.Get(TypeYourMessageSelector).type(`${message}{enter}`)
   cy.Enqueue(() => {
     if (!currentTrainingSummary.FirstInput) currentTrainingSummary.FirstInput = message
     currentTrainingSummary.LastInput = message
-    currentTrainingSummary.Turns++
+    if (!dontCountThisTurn) {
+      currentTrainingSummary.Turns++
+    }
   })
 }
 
