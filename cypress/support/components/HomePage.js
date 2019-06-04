@@ -12,7 +12,7 @@ export function VerifyPageTitle() { return cy.Get('[data-testid="model-list-titl
 export function NavigateToModelPage(name) { return cy.Get('[data-testid="model-list-model-name"]').ExactMatch(`${name}`).Click() }
 export function ClickNewModelButton() { return cy.Get('[data-testid="model-list-create-new-button"]', {timeout: 10000}).Click() }
 export function ClickImportModelButton() { return cy.Get('[data-testid="model-list-import-model-button"]', {timeout: 10000}).Click() }
-export function TypeModelName(name) { return cy.Get('[data-testid="model-creator-input-name"]').type(name) }
+export function TypeModelName(name) { return cy.Get('[data-testid="model-creator-input-name"]', {timeout: 10000}).type(name) }
 export function ClickSubmitButton() { return cy.Get('[data-testid="model-creator-submit-button"]').Click() }
 
 export function UploadImportModelFile(name) { return cy.UploadFile(name, `[data-testid="model-creator-import-file-picker"] > div > input[type="file"]`) }

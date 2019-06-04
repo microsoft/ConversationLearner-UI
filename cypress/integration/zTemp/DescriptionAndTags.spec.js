@@ -36,7 +36,7 @@ describe('Description and Tags - Train Dialog', () => {
         // Must have done some training in order to save the dialog.
         train.TypeYourMessage('Hello')
         train.ClickScoreActionsButton()
-        train.SelectAction("What's your name?")
+        train.SelectTextAction("What's your name?")
 
         train.SaveAsIsVerifyInGrid()
       })

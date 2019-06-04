@@ -115,10 +115,10 @@ import * as helpers from './Helpers.js'
       cy.wrap(700, { timeout: 60000 }).should('lte', 'MillisecondsSinceLastChange')
     })
 
-    Cypress.Commands.add('Click', { prevSubject: true, element: true }, (subject) => {
+    Cypress.Commands.add('Click', { prevSubject: true, element: true }, (subject, options) => {
       helpers.ConLog(`cy.Click()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       lastChangeTime = new Date().getTime()
-      cy.wrap(subject).click()
+      cy.wrap(subject).click(options)
         .then(() => {
           helpers.ConLog(`cy.Click()`, `done - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
           lastChangeTime = new Date().getTime()

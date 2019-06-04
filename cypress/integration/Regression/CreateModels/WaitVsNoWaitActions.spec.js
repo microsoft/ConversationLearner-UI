@@ -44,15 +44,15 @@ describe('Wait vs. Non Wait Actions - CreateModels', () => {
     it('Should be able to select a Wait action after selecting a Non-Wait Action', () => {
       train.TypeYourMessage('Duck')
       train.ClickScoreActionsButton()
-      train.SelectAction('Ducks say quack!')
-      train.SelectAction('Which animal would you like?')
+      train.SelectTextAction('Ducks say quack!')
+      train.SelectTextAction('Which animal would you like?')
     })
 
     it('Should be able to select a Wait action after selecting a different Non-Wait Action', () => {
       train.TypeYourMessage('Fish')
       train.ClickScoreActionsButton()
-      train.SelectAction('Fish just swim.')
-      train.SelectAction('Which animal would you like?')
+      train.SelectTextAction('Fish just swim.')
+      train.SelectTextAction('Which animal would you like?')
     })
 
     it('Should be able save the Train Dialog and find it in the grid', () => {

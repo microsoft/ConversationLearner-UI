@@ -41,7 +41,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should select an action', () => {
-        train.SelectAction(common.whatsYourName)
+        train.SelectTextAction(common.whatsYourName)
       })
     })
 
@@ -64,7 +64,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should select an action', () => {
-        train.SelectAction('Hey Sam', 'Hey $name')
+        train.SelectTextAction('Hey Sam', 'Hey $name')
       })
     })
 
@@ -86,7 +86,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should select an action', () => {
-        train.SelectAction('Hey Sam, what do you really want?', 'Hey $name, what do you really want?')
+        train.SelectTextAction('Hey Sam, what do you really want?', 'Hey $name, what do you really want?')
       })
     })
 
@@ -112,7 +112,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should select an action', () => {
-        train.SelectAction("Sorry Sam, I can't help you get world peace", "Sorry $name, I can't help you get $want")
+        train.SelectTextAction("Sorry Sam, I can't help you get world peace", "Sorry $name, I can't help you get $want")
       })
 
       it('Should save the Train Dialog and verify that it shows up in the grid', () => {
@@ -141,7 +141,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should select an action', () => {
-        train.SelectAction(common.whatsYourName)
+        train.SelectTextAction(common.whatsYourName)
       })
     })
 
@@ -160,7 +160,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should select an action', () => {
-        train.SelectAction("Sorry Sandeep, I can't help you get a million dollars", "Sorry $name, I can't help you get $want")
+        train.SelectTextAction("Sorry Sandeep, I can't help you get a million dollars", "Sorry $name, I can't help you get $want")
       })
 
       it('Should save the Train Dialog and verify the contents show up in the grid', () => {

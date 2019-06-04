@@ -27,7 +27,7 @@ describe('End Session', () => {
 
       train.TypeYourMessage('Hi')
       train.ClickScoreActionsButton()
-      train.SelectAction('Hello')
+      train.SelectTextAction('Hello')
 
       train.TypeYourMessage('Bye')
       train.ClickScoreActionsButton()
