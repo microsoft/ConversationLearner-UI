@@ -84,7 +84,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                         {<FormattedMessageId id={this.props.titleFM} />}
                     </span>
                 </div>
-                <div className="cl-action-creator-fieldset">
+                <div className="cl-fieldset">
                     <OF.TextField
                         data-testid="user-input-modal-new-message-input"
                         onGetErrorMessage={value => this.onGetInputErrorMessage(value)}

@@ -66,7 +66,7 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
                         {this.props.message}
                     </span>
                 </div>
-                <div className="cl-action-creator-fieldset">
+                <div className="cl-fieldset">
                     <OF.TextField
                         data-testid="user-input-modal-new-message-input"
                         onChanged={text => this.userInputChanged(text)}
