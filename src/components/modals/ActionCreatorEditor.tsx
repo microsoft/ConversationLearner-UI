@@ -11,6 +11,7 @@ import * as Util from '../../Utils/util'
 import * as ActionPayloadEditor from './ActionPayloadEditor'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
+import ActionDeleteModal from './ActionDeleteModal'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -70,10 +71,10 @@ const convertTemplateToOption = (template: CLM.Template): OF.IDropdownOption =>
         text: template.name
     })
 
-const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[]): IConditionalTag[] => {
+const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[], expand = true): IConditionalTag[] => {
     return entities
         .filter(e => ids.some(id => id === e.entityId))
-        .map(convertEntityToConditionalTags)
+        .map(e => convertEntityToConditionalTags(e, expand))
         .reduce((a, b) => [...a, ...b], [])
 }
 
@@ -112,9 +113,15 @@ const convertConditionalsToTags = (conditions: CLM.Condition[], entities: CLM.En
  * If entity is ENUM convert each value into EQUAL condition
  * Otherwise convert with no condition
  */
-const convertEntityToConditionalTags = (entity: CLM.EntityBase): IConditionalTag[] => {
-    if (entity.entityType === CLM.EntityType.ENUM && entity.enumValues) {
-        return entity.enumValues.map(enumValue =>
+const convertEntityToConditionalTags = (entity: CLM.EntityBase, expand = true): IConditionalTag[] => {
+    if (expand && entity.entityType === CLM.EntityType.ENUM && entity.enumValues) {
+        const enumEntityTag: IConditionalTag = {
+            key: entity.entityId,
+            name: entity.entityName,
+            condition: null,
+        }
+
+        const conditionalTags = entity.enumValues.map<IConditionalTag>(enumValue =>
             ({
                 key: enumValue.enumValueId!,
                 name: toConditionName(entity, enumValue),
@@ -124,6 +131,8 @@ const convertEntityToConditionalTags = (entity: CLM.EntityBase): IConditionalTag
                     condition: CLM.ConditionType.EQUAL,
                 }
             }))
+
+        return [enumEntityTag, ...conditionalTags]
     }
 
     return [{
@@ -255,6 +264,7 @@ interface ComponentState {
     isEntityEditorModalOpen: boolean
     isCardViewerModalOpen: boolean
     isConfirmDeleteModalOpen: boolean
+    isConfirmDeleteInUseModalOpen: boolean
     isConfirmEditModalOpen: boolean
     isConfirmDuplicateActionModalOpen: boolean
     validationWarnings: string[]
@@ -264,7 +274,7 @@ interface ComponentState {
     newOrEditedAction: CLM.ActionBase | null
     selectedActionTypeOptionKey: string | number
     availableExpectedEntityTags: OF.ITag[]
-    conditionalTags: OF.ITag[]
+    availableConditionalTags: OF.ITag[]
     expectedEntityTags: OF.ITag[]
     requiredEntityTagsFromPayload: OF.ITag[]
     requiredEntityTags: IConditionalTag[]
@@ -291,6 +301,7 @@ const initialState: Readonly<ComponentState> = {
     isEntityEditorModalOpen: false,
     isCardViewerModalOpen: false,
     isConfirmDeleteModalOpen: false,
+    isConfirmDeleteInUseModalOpen: false,
     isConfirmEditModalOpen: false,
     isConfirmDuplicateActionModalOpen: false,
     validationWarnings: [],
@@ -300,7 +311,7 @@ const initialState: Readonly<ComponentState> = {
     newOrEditedAction: null,
     selectedActionTypeOptionKey: actionTypeOptions[0].key,
     availableExpectedEntityTags: [],
-    conditionalTags: [],
+    availableConditionalTags: [],
     expectedEntityTags: [],
     requiredEntityTagsFromPayload: [],
     requiredEntityTags: [],
@@ -334,7 +345,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             apiOptions,
             cardOptions,
             availableExpectedEntityTags: availableExpectedEntityTags(entities),
-            conditionalTags: conditionalEntityTags(entities),
+            availableConditionalTags: conditionalEntityTags(entities),
             isEditing: !!this.props.action
         }
     }
@@ -382,7 +393,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     nextState = {
                         ...nextState,
                         availableExpectedEntityTags: availableExpectedEntityTags(nextProps.entities),
-                        conditionalTags: conditionalEntityTags(nextProps.entities),
+                        availableConditionalTags: conditionalEntityTags(nextProps.entities),
                     }
                 }
 
@@ -412,7 +423,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const action = nextProps.action
 
                 const payloadOptions = this.props.entities.map(convertEntityToOption)
-                const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities)
+                const negativeEntityTags = convertEntityIdsToTags(action.negativeEntities, nextProps.entities, false)
                 const expectedEntityTags = convertEntityIdsToTags((action.suggestedEntity ? [action.suggestedEntity] : []), nextProps.entities)
                 let selectedApiOptionKey: string | undefined
                 let selectedCardOptionKey: string | undefined
@@ -496,7 +507,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         return [...entities, ...newEntities.filter(ne => !entities.some(e => e.key === ne.key))]
                     }, [])
 
-                const requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities)
+                const requiredEntityTags = convertEntityIdsToTags(action.requiredEntities, nextProps.entities, false)
                     .filter(t => !requiredEntityTagsFromPayload.some(tag => tag.key === t.key))
 
                 if (action.requiredConditions) {
@@ -900,7 +911,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             this.setState({
                 isConfirmDuplicateActionModalOpen: true,
                 validationWarnings: [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND)],
-                newOrEditedAction: newOrEditedAction
+                newOrEditedAction,
             })
 
             return
@@ -928,8 +939,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             if (validationWarnings.length > 0) {
                 this.setState({
                     isConfirmEditModalOpen: true,
-                    validationWarnings: validationWarnings,
-                    newOrEditedAction: newOrEditedAction
+                    validationWarnings,
+                    newOrEditedAction,
                 })
             }
             else {
@@ -955,16 +966,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         try {
             const invalidTrainingDialogIds = await ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
-            if (invalidTrainingDialogIds) {
-                const validationWarnings = (invalidTrainingDialogIds.length > 0)
-                    ? [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING)]
-                    : []
+            if (invalidTrainingDialogIds && invalidTrainingDialogIds.length > 0) {
+                const validationWarnings = [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING)]
 
-                this.setState(
-                    {
-                        isConfirmDeleteModalOpen: true,
-                        validationWarnings: validationWarnings
-                    });
+                this.setState({
+                    isConfirmDeleteInUseModalOpen: true,
+                    validationWarnings,
+                });
+            }
+            else {
+                this.setState({
+                    isConfirmDeleteModalOpen: true,
+                    validationWarnings: [],
+                });
             }
         }
         catch (e) {
@@ -974,9 +988,16 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
+    onCancelDeleteInUse() {
+        this.setState({
+            isConfirmDeleteInUseModalOpen: false,
+        })
+    }
+
+    @OF.autobind
     onCancelDelete() {
         this.setState({
-            isConfirmDeleteModalOpen: false
+            isConfirmDeleteModalOpen: false,
         })
     }
 
@@ -1108,7 +1129,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onResolveRequiredEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
         return getSuggestedTags(
             filterText,
-            this.state.conditionalTags,
+            this.state.availableConditionalTags,
             [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags, ...this.state.expectedEntityTags],
             this.state.requiredEntityTags
         )
@@ -1135,7 +1156,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onResolveNegativeEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
         return getSuggestedTags(
             filterText,
-            this.state.conditionalTags,
+            this.state.availableConditionalTags,
             [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.requiredEntityTags]
         )
     }
@@ -1535,7 +1556,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 <TC.TagPicker
                                     data-testid="action-expected-entity"
                                     label="Expected Entity in User reply..."
-                                    onResolveSuggestions={(text, tags) => this.onResolveExpectedEntityTags(text, tags)}
+                                    onResolveSuggestions={this.onResolveExpectedEntityTags}
                                     onRenderItem={this.onRenderExpectedTag}
                                     getTextFromItem={item => item.name}
                                     onChange={this.onChangeExpectedEntityTags}
@@ -1663,13 +1684,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             />}
                     </div>
                 </div>
+                {/* If deleting action in use, used custom modal, otherwise use confirm cancel modal */}
+                <ActionDeleteModal
+                    open={this.state.isConfirmDeleteInUseModalOpen}
+                    onCancel={this.onCancelDeleteInUse}
+                    onConfirm={this.onConfirmDelete}
+                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
+                    message={this.validationWarning}
+                />
                 <ConfirmCancelModal
                     open={this.state.isConfirmDeleteModalOpen}
                     onCancel={this.onCancelDelete}
                     onConfirm={this.onConfirmDelete}
                     title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
-                    message={this.validationWarning}
-                    optionMessage={this.validationWarning ? 'Delete from all Train Dialogs' : undefined}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmEditModalOpen}

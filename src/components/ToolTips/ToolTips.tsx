@@ -31,6 +31,7 @@ export enum TipType {
     ACTION_SET_ENTITY_VALUE = 'actionSetEntityValue',
     ACTION_TYPE = 'actionType',
     ACTION_WAIT = 'isTerminal',
+    ACTION_DELETE_INUSE = 'actionDeleteInUse',
 
     CONVERSATION_IMPORTER = 'conversationImporter',
 
@@ -244,6 +245,33 @@ export function getTip(tipType: string) {
                         <dt><span className="cl-entity cl-entity--mismatch"><del>Disqualifying</del></span></dt>
                         <dd><FormattedMessageId id={FM.TOOLTIP_ACTION_ENTITIES_DISQUAL} /></dd>
                     </dl>
+                </div>
+            )
+        case TipType.ACTION_DELETE_INUSE:
+            return (
+                <div className={OF.FontClassNames.mediumPlus}>
+                    <h1 className={OF.FontClassNames.xLarge}><FormattedMessageId id={FM.ACTION_DELETE_INUSE_TITLE} /></h1>
+                    <p>There might be cases when you want to delete an action from your dialogs. In the picture below I would be deleting the action 'Will be removed'.</p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/actionDeletionBeforeRemoval.png"
+                        alt="Action Placeholder"
+                    />
+                    <p>If the action is used you can choose between two types of deletion.</p>
+                    <h2>Preserve Placeholder</h2>
+                    <p><FormattedMessageId id={FM.ACTION_DELETE_INUSE_PLACEHOLDER_PRESERVE} /></p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/actionDeletionPreservePlaceholders.png"
+                        alt="Action Placeholder"
+                    />
+                    <h2>Remove Placeholder</h2>
+                    <p><FormattedMessageId id={FM.ACTION_DELETE_INUSE_PLACEHOLDER_REMOVE} /></p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/actionDeletionRemovePlaceholders.png"
+                        alt="Action Placeholder"
+                    />
                 </div>
             )
         case TipType.ACTION_NEGATIVE:

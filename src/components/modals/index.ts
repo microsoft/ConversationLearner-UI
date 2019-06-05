@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import ActionCreatorEditor from './ActionCreatorEditor'
+import ActionDeleteModal from './ActionDeleteModal'
 import AppCreator from './AppCreator'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import ChatSessionModal from './ChatSessionModal'
@@ -43,6 +44,7 @@ export enum EditState {
 
 export {
     ActionCreatorEditor,
+    ActionDeleteModal,
     AppCreator,
     ConfirmCancelModal,
     ChatSessionModal,

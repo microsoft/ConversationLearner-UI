@@ -71,12 +71,12 @@ export type UpdateAction = {
     type: AT.EDIT_APP_EDITING_TAG_FULFILLED,
     activeApps: { [appId: string]: string }
 } | {
-    type: AT.SETTINGS_UPDATE,
+    type: AT.SETTINGS_UPDATE_PORT,
     port: number
 } | {
     type: AT.SETTINGS_RESET
 } | {
-    type: AT.SETTINGS_USE_CUSTOM_PORT
+    type: AT.SETTINGS_TOGGLE_USE_CUSTOM_PORT
 }
 
 export type DisplayAction = {

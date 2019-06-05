@@ -7,7 +7,6 @@ import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import './ConfirmCancelModal.css'
 
 // Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
 interface ReceivedProps {
@@ -16,7 +15,6 @@ interface ReceivedProps {
     onOk?: (option: boolean) => void
     open: boolean
     title: string
-    optionMessage?: string
     message?: () => React.ReactNode
 }
 
@@ -49,16 +47,6 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
             }}
         >
             {typeof props.message === 'function' && props.message()}
-            {props.optionMessage
-                && (
-                    <div className="cl-confirm-cancel_option" data-testid="confirm-cancel-option">
-                        <OF.Checkbox
-                            label={props.optionMessage}
-                            checked={option}
-                            onChange={() => setOption(o => !o)}
-                        />
-                    </div>
-                )}
             <OF.DialogFooter>
                 {props.onConfirm &&
                     <OF.PrimaryButton

@@ -56,4 +56,18 @@ describe('API Callbacks - Train', () => {
       train.SaveAsIsVerifyInGrid()
     })
   })
+
+  context('Edit Train Dialog', () => {
+    it('Should edit the Train Dialog', () => {
+      train.EditTraining('LogicWithNoArgs', 'TextCard', 'TextCard')
+    })
+
+    it('Should verify that all of the Bot responses were persisted and re-renders correctly', () => {
+      train.VerifyCardChatMessage('API Call:', 'LogicWithNoArgs()', 1)
+      train.VerifyCardChatMessage('API Call:', 'LogicWithArgs(ThingOne,ThingTwo)', 3)
+      train.VerifyTextChatMessage('The Logic Args: ‘ThingOne’, ‘ThingTwo’, ‘333’, ‘4444’, ‘five’, ‘six’, ‘seven’The Render Args: ‘ThingOne’, ‘ThingTwo’, ‘three’, ‘four’, ‘55555’, ‘666666’, ‘7777777’', 5)
+      train.VerifyCardChatMessage('Greetings', 'Have a great day!', 7)
+      train.ClickSaveCloseButton()
+    })    
+  })
 })

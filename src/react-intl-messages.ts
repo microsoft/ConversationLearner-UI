@@ -52,6 +52,11 @@ export enum FM {
     ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION = 'ActionCreationEditor.warningSetEntityCreation',
     ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT = 'ActionCreatorEditor.warningSetEntityEdit',
 
+    // ActionDeleteModal
+    ACTION_DELETE_INUSE_TITLE = 'ActionDelete.inUse.title',
+    ACTION_DELETE_INUSE_PLACEHOLDER_PRESERVE = 'ActionDelete.inUse.placeholderPreserve',
+    ACTION_DELETE_INUSE_PLACEHOLDER_REMOVE = 'ActionDelete.inUse.placeholderRemove', 
+
     // ActionDetails
     ACTIONDETAILSLIST_COLUMNS_RESPONSE = 'ActionDetailsList.columns.response',
     ACTIONDETAILSLIST_COLUMNS_ARGUMENTS = 'ActionDetailsList.columns.arguments',
@@ -619,7 +624,7 @@ export default {
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this Action?',
-        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
+        [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING]: 'This edit will invalidate one or more Training Dialogs.  If you proceed they will removed from training until fixed.',
         [FM.ACTIONCREATOREDITOR_CONFIRM_MISSINGLABEL_WARNING]: 'is a plain string not attached to an Entity',
@@ -638,6 +643,10 @@ export default {
         [FM.ACTIONSCORER_COLUMNS_ENTITIES]: 'Entities',
         [FM.ACTIONSCORER_COLUMNS_ISTERMINAL]: 'Wait',
         [FM.ACTIONSCORER_COLUMNS_TYPE]: 'Type',
+        
+        [FM.ACTION_DELETE_INUSE_TITLE]: 'Deleting actions used by train dialogs',
+        [FM.ACTION_DELETE_INUSE_PLACEHOLDER_PRESERVE]: 'This operation will preserves the reference to the action leaving a placeholder. All the dialogs using the action will become invalid.  This option can be useful to see where and how the action was used as you correct the dialogs or replace the action.',
+        [FM.ACTION_DELETE_INUSE_PLACEHOLDER_REMOVE]: 'This operation will remove the reference to the action. The dialog may become invalid if removal of the action affected memory or left a round unterminated. This option can be useful to if you think most of the dialogs will remain valid and you do not want to have to correct each dialog.',
 
         // ActionDetailsList
         [FM.ACTIONDETAILSLIST_COLUMNS_RESPONSE]: 'Response',
