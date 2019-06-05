@@ -453,6 +453,13 @@ export function mergeTrainDialogDescription(trainDialog1: CLM.TrainDialog, train
         ? trainDialog1.description : trainDialog2.description
 }
 
+export function mergeTrainDialogClientData(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): CLM.TrainDialogClientData{
+    const importHashes1 = trainDialog1.clientData ? trainDialog1.clientData.importHashes : []
+    const importHashes2 = trainDialog2.clientData ? trainDialog2.clientData.importHashes : []
+    
+    return { importHashes: [...importHashes1, ...importHashes2].filter((item, i, ar) => ar.indexOf(item) === i) }
+}
+
 // Merges primary into secondary and returns it
 export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): CLM.TrainDialog {
     if (!doesTrainDialogMatch(trainDialog1, trainDialog2)) {
@@ -482,6 +489,7 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
 
     mergedTrainDialog.description = mergeTrainDialogDescription(mergedTrainDialog, primaryTrainDialog)
     mergedTrainDialog.tags = mergeTrainDialogTags(mergedTrainDialog, primaryTrainDialog)
+    mergedTrainDialog.clientData = mergeTrainDialogClientData(mergedTrainDialog, primaryTrainDialog)
 
     return mergedTrainDialog
 }

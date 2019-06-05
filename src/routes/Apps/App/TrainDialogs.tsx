@@ -1055,10 +1055,21 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
+    hasTranscriptBeenImported(importHash: string): boolean {
+        return this.props.trainDialogs.find(td => td.clientData ? (td.clientData.importHashes.find(ih => ih === importHash) !== undefined) : false) !== undefined
+    }
     async onImport(transcript: BB.Activity[]): Promise<void> {
 
         this.setState({isImportWaitModalOpen: true})
 
+        const importHash = Util.hashText(JSON.stringify(transcript))
+
+        // If transcript has already been imported
+        if (this.hasTranscriptBeenImported(importHash)) {
+            this.setState({isImportWaitModalOpen: false})
+            await this.onStartTranscriptImport()
+            return
+        }
         let trainDialog: CLM.TrainDialog = {
             trainDialogId: undefined!,
             version: undefined!,
@@ -1072,7 +1083,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
             // It's initially invalid
-            validity: CLM.Validity.INVALID
+            validity: CLM.Validity.INVALID,
+            clientData: {importHashes: [importHash]}
         }
 
         let curRound: CLM.TrainRound | null = null

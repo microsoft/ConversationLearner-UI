@@ -21,7 +21,6 @@ import { Value } from 'slate'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { formatMessageId, isActionUnique } from '../../Utils/util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
@@ -907,10 +906,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const newOrEditedAction = this.convertStateToModel()
         const validationWarnings: string[] = []
 
-        if (!isActionUnique(newOrEditedAction, this.props.actions)) {
+        if (!Util.isActionUnique(newOrEditedAction, this.props.actions)) {
             this.setState({
                 isConfirmDuplicateActionModalOpen: true,
-                validationWarnings: [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND)],
+                validationWarnings: [Util.formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND)],
                 newOrEditedAction,
             })
 
@@ -925,7 +924,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const invalidTrainingDialogIds = await ((this.props.fetchActionEditValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, newOrEditedAction) as any) as Promise<string[]>)
                 if (invalidTrainingDialogIds) {
                     if (invalidTrainingDialogIds.length > 0) {
-                        validationWarnings.push(formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING))
+                        validationWarnings.push(Util.formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING))
                     }
                 }
             }
@@ -933,7 +932,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             // Note any untagged entities
             const untaggedEntities = this.untaggedEntities()
             untaggedEntities.forEach(e =>
-                validationWarnings.push(`"${e}" ${formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_MISSINGLABEL_WARNING)}`)
+                validationWarnings.push(`"${e}" ${Util.formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_MISSINGLABEL_WARNING)}`)
             )
 
             if (validationWarnings.length > 0) {
@@ -967,7 +966,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         try {
             const invalidTrainingDialogIds = await ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
             if (invalidTrainingDialogIds && invalidTrainingDialogIds.length > 0) {
-                const validationWarnings = [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING)]
+                const validationWarnings = [Util.formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING)]
 
                 this.setState({
                     isConfirmDeleteInUseModalOpen: true,
@@ -1285,9 +1284,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const { intl } = this.props
 
         const payloadError = this.state.entityWarning
-            ? formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_ENTITY)
+            ? Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_ENTITY)
             : this.state.isPayloadMissing
-                ? formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD) : null
+                ? Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD) : null
 
         // Disable payload if we're editing existing action and no API or CARD data available
         const isPayloadDisabled =
@@ -1342,8 +1341,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             && <div data-testid="action-set-entity-warning" className="cl-text--warning">
                                 <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
                                 {this.state.isEditing
-                                    ? <span>{formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT, { actionType: CLM.ActionTypes.SET_ENTITY })}</span>
-                                    : <span>{formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION)} </span>}
+                                    ? <span>{Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT, { actionType: CLM.ActionTypes.SET_ENTITY })}</span>
+                                    : <span>{Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION)} </span>}
                             </div>}
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
@@ -1628,7 +1627,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             className="cl-error-message-label"
                             style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}
                         >
-                            {formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD)}
+                            {Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD)}
                         </div>
                     </div>
                 </div>
@@ -1639,8 +1638,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton
                                 onClick={this.onClickTrainDialogs}
                                 iconProps={{ iconName: 'QueryList' }}
-                                ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION)}
-                                text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT)}
+                                ariaDescription={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION)}
+                                text={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT)}
                             />
                         }
                         <OF.DefaultButton
@@ -1657,19 +1656,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             disabled={this.saveDisabled()}
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
-                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION) :
-                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION)}
+                                Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION) :
+                                Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION)}
                             text={this.state.isEditing ?
-                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT) :
-                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT)}
+                                Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT) :
+                                Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT)}
                             iconProps={{ iconName: 'Accept' }}
                         />
 
                         <OF.DefaultButton
                             data-testid="action-creator-cancel-button"
                             onClick={this.onClickCancel}
-                            ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
-                            text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
+                            ariaDescription={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
+                            text={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
                             iconProps={{ iconName: 'Cancel' }}
                         />
 
@@ -1678,8 +1677,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 data-testid="action-creator-delete-button"
                                 className="cl-button-delete"
                                 onClick={this.onClickDelete}
-                                ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
-                                text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
+                                ariaDescription={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
+                                text={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
                                 iconProps={{ iconName: 'Delete' }}
                             />}
                     </div>
@@ -1689,26 +1688,26 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     open={this.state.isConfirmDeleteInUseModalOpen}
                     onCancel={this.onCancelDeleteInUse}
                     onConfirm={this.onConfirmDelete}
-                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
+                    title={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
                     message={this.validationWarning}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmDeleteModalOpen}
                     onCancel={this.onCancelDelete}
                     onConfirm={this.onConfirmDelete}
-                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
+                    title={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmEditModalOpen}
                     onCancel={this.onCancelEdit}
                     onConfirm={this.onConfirmEdit}
-                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE)}
+                    title={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE)}
                     message={this.validationWarning}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmDuplicateActionModalOpen}
                     onOk={this.onCancelDuplicate}
-                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION)}
+                    title={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION)}
                     message={this.validationWarning}
                 />
                 <EntityCreatorEditor
