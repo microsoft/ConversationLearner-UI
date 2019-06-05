@@ -1537,7 +1537,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             />
                         </div>
 
-                        <div className="cl-actioncreator-form-section">
+                        <div className="cl-action-creator-form-section">
                             <TC.Checkbox
                                 data-testid="action-creator-wait-checkbox"
                                 label="Wait for Response?"

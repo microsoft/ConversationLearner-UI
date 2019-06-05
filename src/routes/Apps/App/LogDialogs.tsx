@@ -82,12 +82,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 1500,
             isResizable: true,
             render: (trainDialog, component) => {
-
                 return <>
-                    <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-first-input">
-                        <span data-testid="train-dialogs-description">
-                            {DialogUtils.dialogSampleInput(trainDialog)}
-                        </span>
+                    <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-description">
+                        {DialogUtils.dialogSampleInput(trainDialog)}
                     </span>
                 </>
             },
@@ -549,7 +546,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
                 // Delete the teach session w/o saving
                 await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
-  
+
                 // Generate history
                 await this.onUpdateHistory(trainDialog, null, SelectionType.NONE)
             }
