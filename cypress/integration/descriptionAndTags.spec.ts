@@ -452,7 +452,7 @@ describe('Description and Tags', () => {
 
             cy.wait(['@getLogDialogs'])
 
-            cy.get(s.logDialogs.firstInput)
+            cy.get(s.logDialogs.description)
                 .contains(testData.input)
                 .click()
 

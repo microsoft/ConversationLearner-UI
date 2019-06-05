@@ -120,7 +120,7 @@ const selectors = {
     },
     logDialogs: {
         buttonCreate: '[data-testid="log-dialogs-new-button"]',
-        firstInput: '[data-testid="log-dialogs-first-input"]',
+        description: '[data-testid="log-dialogs-description"]',
     },
     logConversionConflictsModal: {
         modal: '[data-testid="log-conversion-conflicts-modal"]',
@@ -141,6 +141,8 @@ const selectors = {
         customNode: '.cl-entity-node--custom',
         nodeIndicator: '.cl-entity-node-indicator',
         buttonRemoveLabel: '[data-testid="entity-extractor-button-remove-label"]',
+        slateEditor: '[data-slate-editor="true"]',
+        tokenNode: '[data-testid="token-node-entity-value"]',
     },
     entityPicker: {
         inputSearch: '[data-testid="entity-picker-entity-search"]',
