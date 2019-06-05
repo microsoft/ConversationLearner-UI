@@ -1,7 +1,5 @@
 
 export const constants = {
-    // TODO: See why setting this as baseUrl in cypress.json doesn't work for cy.visit()
-    baseUrl: 'http://localhost:3000',
     spinner: {
         timeout: 120000
     },
