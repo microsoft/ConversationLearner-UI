@@ -33,6 +33,12 @@ describe('API Callbacks - ErrorHandling', () => {
       train.SelectApiCardAction('BadCard', 'Malformed API Callback ‘BadCard’', 'Return value in Render function must be a string or BotBuilder Activity')
     })
 
+    it('Should invoke "Malformed" API Callback and verify it is in the chat pane', () => {
+      train.TypeYourMessage('Malformed')
+      train.ClickScoreActionsButton()
+      train.SelectApiCardAction('Malformed', 'Malformed API Callback: ‘Malformed’', 'Logic portion of callback returns a value, but no Render portion defined')
+    })
+
     it('More to do here - waiting for fix for Bug 2136: API Errors not behaving like other errors', () => {
     })
 
@@ -41,4 +47,25 @@ describe('API Callbacks - ErrorHandling', () => {
     })
   })
 
+  context('Edit the Train Dialog to Verify the Errors Persisted', () => {
+    it('Should edit the Train Dialog that was persisted', () => {
+      train.EditTraining('BadCard', 'Malformed', 'Malformed')
+
+      // Bug 2137: Render Error appears to be lost when editing an existing Train Dialog
+      // When this bug is fixed remove these comments and the line below.
+      train.ClickReplayButton()
+    })
+
+    it('Should verify that all Bot responses persisted correctly', () => {
+      train.VerifyCardChatMessage('Malformed API Callback ‘BadCard’', 'Return value in Render function must be a string or BotBuilder Activity', 1)
+      train.VerifyCardChatMessage('Malformed API Callback: ‘Malformed’', 'Logic portion of callback returns a value, but no Render portion defined', 3)
+    })
+    
+    it('Should abandon the edit', () => {
+      train.AbandonDialog()
+    })
+
+    it('More to do here - waiting for fix for Bug 2136: API Errors not behaving like other errors', () => {
+    })
+  })
 })

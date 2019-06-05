@@ -61,7 +61,7 @@ describe('API Verify Multiple Exceptions - ErrorHandling', () => {
       train.SelectChatTurnExactMatch('This can be an entityError')
       train.RemoveEntityLabel('entityError', 'entityError')
       train.ClickSubmitChangesButton()
-      VerifyAllBotChatMessages()
+      VerifyAllBotChatMessages(undefined, true)
     })
 
     it('Should abandon the edit', () => {
@@ -75,23 +75,45 @@ describe('API Verify Multiple Exceptions - ErrorHandling', () => {
 
 // Bug 2142: TEST BLOCKER - API Callback error rendering is different between original TD rendering and when editing a Train Dialog
 // Once this bug is fixed the calls to "VerifyCardChatMessage" will fail due to the first parameter needing to be changed.
-function VerifyAllBotChatMessages(endsWithEntityDetectionError) {
-  train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 1)
-  train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', 3)
-  train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 5)
-  train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', 7)
-  train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', 9)
-  train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', 11)
-  train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 13)
-  if(endsWithEntityDetectionError) {
-    train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", 15)
+function VerifyAllBotChatMessages(endsWithEntityDetectionError, bug2151InPlay) {
+  let botIndex = -1
+  function NextBotIndex() { botIndex += 2; return botIndex; }
+
+  train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', NextBotIndex())
+  train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', NextBotIndex())
+  train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', NextBotIndex())
+  train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', NextBotIndex())
+
+  if(bug2151InPlay) {
+    train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", NextBotIndex())  
   } else {
-    train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', 15)
+    train.VerifyTextChatMessage('This is a TEXT ACTION', NextBotIndex())
+  }
+  train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', NextBotIndex())
+  train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', NextBotIndex())
+
+  if(bug2151InPlay) {
+    train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", NextBotIndex())
+  } else {
+    train.VerifyTextChatMessage('This is a TEXT ACTION', NextBotIndex())
+  }
+
+  train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', NextBotIndex())
+  train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', NextBotIndex())
+
+  if(endsWithEntityDetectionError) {
+    train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", NextBotIndex())
+  } else {
+    train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', NextBotIndex())
   }
 }
 
 function VerifyAllBotChatMessagesAreForEntityDetectionCallback() {
   for(let i = 1; i <= 15; i += 2) {
-    train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", i)
+    if (i == 9 || i == 15) {
+      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", i)  
+    } else {
+      train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", i)
+    }
   }
 }

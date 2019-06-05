@@ -48,7 +48,7 @@ describe('Entity Labeling - Create Model', () => {
       train.TypeYourMessage('This is Tag.')
       train.LabelTextAsEntity('Tag', 'multi')
       train.ClickScoreActionsButton()
-      train.SelectAction('Hello')
+      train.SelectTextAction('Hello')
 
       train.SaveAsIsVerifyInGrid()
 
@@ -66,7 +66,7 @@ describe('Entity Labeling - Create Model', () => {
       train.LabelTextAsEntity('Tag', 'multi', false)
       train.ClickScoreActionsButton()
       // TODO: Verify that the entity was labeled and now in memory.
-      train.SelectAction('Hello')
+      train.SelectTextAction('Hello')
       cy.WaitForTrainingStatusCompleted()
     })
     
@@ -83,7 +83,7 @@ describe('Entity Labeling - Create Model', () => {
       train.LabelTextAsEntity('Frog', 'multi', false)
       train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntitiesInMemory('multi', ['Tag', 'Frog'])
-      train.SelectAction('Hi')
+      train.SelectTextAction('Hi')
       cy.WaitForTrainingStatusCompleted()
     })
 
@@ -99,7 +99,7 @@ describe('Entity Labeling - Create Model', () => {
       train.VerifyEntityLabel('Tag', 'multi')
       train.VerifyEntityLabel('Frog', 'multi', 1)
       train.ClickScoreActionsButton()
-      train.SelectAction('Hi')
+      train.SelectTextAction('Hi')
 
       train.SaveAsIsVerifyInGrid()
     })
