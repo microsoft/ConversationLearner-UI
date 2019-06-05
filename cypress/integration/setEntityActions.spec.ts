@@ -25,7 +25,7 @@ describe('Set Entity Actions', () => {
 
     describe('model behavior', () => {
         before(() => {
-            cy.visit(constants.baseUrl)
+            cy.visit('/')
 
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
@@ -291,16 +291,16 @@ describe('Set Entity Actions', () => {
 
             // dependent on above
             it('when clicking the placeholder action it should create a default set entity action then take it', () => {
-                const setEntityPlaceholderText = `${testData.action.entityName}: ${testData.action.nonExistingEnumValue}`
+                const setEntityPlaceholderText = `${testData.action.entityName}: ${testData.action.nonExistingEnumValue.toUpperCase()}`
 
                 // Select set entity action
-                selectAction(s.trainDialog.actionScorerSetEntityActions, setEntityPlaceholderText)
+                util.selectAction(s.trainDialog.actionScorerSetEntityActions, setEntityPlaceholderText)
 
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
                 // Select other wait action
-                selectAction(s.trainDialog.actionScorerTextActions, testData.action.text)
+                util.selectAction(s.trainDialog.actionScorerTextActions, testData.action.text)
 
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
@@ -338,7 +338,7 @@ describe('Set Entity Actions', () => {
 
     describe('scenario using set entity actions', () => {
         before(() => {
-            cy.visit(constants.baseUrl)
+            cy.visit('/')
 
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
@@ -368,26 +368,26 @@ describe('Set Entity Actions', () => {
             cy.get(s.trainDialogs.buttonNew)
                 .click()
 
-            inputText(`Hi, I'd like a large coke and fries.`)
-            clickScoreActionButton()
-            selectAction(s.trainDialog.actionScorerSetEntityActions, 'drinkSize: LARGE')
-            selectAction(s.trainDialog.actionScorerTextActions, 'What size fries would you like?')
+            util.inputText(`Hi, I'd like a large coke and fries.`)
+            util.clickScoreActionButton()
+            util.selectAction(s.trainDialog.actionScorerSetEntityActions, 'drinkSize: LARGE')
+            util.selectAction(s.trainDialog.actionScorerTextActions, 'What size fries would you like?')
 
-            inputText(`Um, make that a medium.`)
-            clickScoreActionButton()
-            selectAction(s.trainDialog.actionScorerSetEntityActions, 'friesSize: MEDIUM')
-            selectAction(s.trainDialog.actionScorerTextActions, 'Ok, I have an order for a LARGE drink and MEDIUM fries. Is that correct?')
+            util.inputText(`Um, make that a medium.`)
+            util.clickScoreActionButton()
+            util.selectAction(s.trainDialog.actionScorerSetEntityActions, 'friesSize: MEDIUM')
+            util.selectAction(s.trainDialog.actionScorerTextActions, 'Ok, I have an order for a LARGE drink and MEDIUM fries. Is that correct?')
 
-            inputText(`Actually, make the fries a small`)
-            clickScoreActionButton()
-            selectAction(s.trainDialog.actionScorerSetEntityActions, 'orderConfirmation: NO')
-            selectAction(s.trainDialog.actionScorerSetEntityActions, 'friesSize: SMALL')
-            selectAction(s.trainDialog.actionScorerTextActions, 'Ok, I have an order for a LARGE drink and SMALL fries. Is that correct?')
+            util.inputText(`Actually, make the fries a small`)
+            util.clickScoreActionButton()
+            util.selectAction(s.trainDialog.actionScorerSetEntityActions, 'orderConfirmation: NO')
+            util.selectAction(s.trainDialog.actionScorerSetEntityActions, 'friesSize: SMALL')
+            util.selectAction(s.trainDialog.actionScorerTextActions, 'Ok, I have an order for a LARGE drink and SMALL fries. Is that correct?')
 
-            inputText(`Yep, that's correct.`)
-            clickScoreActionButton()
-            selectAction(s.trainDialog.actionScorerSetEntityActions, 'orderConfirmation: YES')
-            selectAction(s.trainDialog.actionScorerTextActions, `Ok, your order number is 58. Please wait over there.`)
+            util.inputText(`Yep, that's correct.`)
+            util.clickScoreActionButton()
+            util.selectAction(s.trainDialog.actionScorerSetEntityActions, 'orderConfirmation: YES')
+            util.selectAction(s.trainDialog.actionScorerTextActions, `Ok, your order number is 58. Please wait over there.`)
 
             cy.get(s.trainDialog.buttonSave)
                 .click()
@@ -402,28 +402,3 @@ describe('Set Entity Actions', () => {
     })
 })
 
-function selectAction(actionScorerSelector: string, actionResponseText: string) {
-    cy.get(actionScorerSelector)
-        .contains(actionResponseText)
-        .parents(s.trainDialog.actionScorer.rowField)
-        .find(s.trainDialog.buttonSelectAction)
-        .click()
-
-    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-        .should('not.exist')
-}
-
-function inputText(text: string) {
-    cy.get(s.trainDialog.inputWebChat)
-        .type(`${text}{enter}`)
-
-    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-        .should('not.exist')
-}
-
-function clickScoreActionButton() {
-    cy.get(s.trainDialog.buttonScoreActions)
-        .click();
-    cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
-        .should('not.exist');
-}

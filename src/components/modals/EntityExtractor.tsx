@@ -583,6 +583,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                     }
 
                     <OF.DefaultButton
+                        data-testid="entity-extractor-create-button"
                         onClick={this.onClickCreateEntity}
                         ariaDescription="Create Entity"
                         text="Create Entity"

@@ -23,7 +23,7 @@ describe('EntityPicker', () => {
         testData.phrase = `Phrase start ${testData.word1} ${testData.word2} ${testData.word3} ${testData.word4} end.`
 
         before(() => {
-            cy.visit(constants.baseUrl)
+            cy.visit('/')
 
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
@@ -173,7 +173,7 @@ describe('EntityPicker', () => {
         testData.phrase = `Phrase start ${testData.word1} ${testData.word2} ${testData.word3} ${testData.word4} end.`
 
         before(() => {
-            cy.visit(constants.baseUrl)
+            cy.visit('/')
 
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
@@ -368,6 +368,7 @@ describe('EntityPicker', () => {
                     .trigger(constants.events.selectWord, { detail: testData.word3 })
 
                 cy.get(s.entityPicker.inputSearch)
+                    .wait(50)
                     .type(testData.entitySearchPrefix)
             })
 

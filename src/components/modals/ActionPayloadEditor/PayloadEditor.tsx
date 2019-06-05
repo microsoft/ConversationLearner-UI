@@ -32,6 +32,7 @@ const fuseOptions: Fuse.FuseOptions = {
 
 export type SlateValue = any
 
+const testAttribute = 'data-testid'
 interface Props {
     options: IOption[]
     value: SlateValue
@@ -39,6 +40,7 @@ interface Props {
     placeholder: string
     onChange: (value: SlateValue) => void
     onSubmit: () => void
+    [testAttribute]: string
 }
 
 interface State {
@@ -363,7 +365,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
             highlighted: i === this.state.highlightIndex
         }))
 
-        return <div className="editor-container">
+        return <div className="editor-container" data-testid={this.props[testAttribute]}>
             <Picker
                 menuRef={this.onMenuRef}
                 {...this.state.menuProps}
