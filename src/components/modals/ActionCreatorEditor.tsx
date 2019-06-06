@@ -1310,6 +1310,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                                         onChange={eState => this.onChangePayloadEditor(eState, apiArgument)}
                                                                         onSubmit={() => this.onSubmitPayloadEditor()}
                                                                         disabled={isPayloadDisabled}
+                                                                        data-testid={`action-logic-argument-${apiArgument}`}
                                                                     />
                                                                 </React.Fragment>
                                                             )
@@ -1330,6 +1331,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                                         onChange={eState => this.onChangePayloadEditor(eState, apiArgument, true)}
                                                                         onSubmit={() => this.onSubmitPayloadEditor()}
                                                                         disabled={isPayloadDisabled}
+                                                                        data-testid={`action-render-argument-${apiArgument}`}
                                                                     />
                                                                 </React.Fragment>
                                                             )
@@ -1386,6 +1388,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                             onChange={eState => this.onChangePayloadEditor(eState, cardTemplateVariable.key)}
                                                             onSubmit={() => this.onSubmitPayloadEditor()}
                                                             disabled={isPayloadDisabled}
+                                                            data-testid={`action-card-argument-${cardTemplateVariable.key}`}
                                                         />
                                                     </React.Fragment>
                                                 )
@@ -1410,6 +1413,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         onChange={eState => this.onChangePayloadEditor(eState, TEXT_SLOT)}
                                         onSubmit={() => this.onSubmitPayloadEditor()}
                                         disabled={isPayloadDisabled}
+                                        data-testid="action-text-response-editor"
                                     />
                                 </div>
                                 {payloadError &&
@@ -1432,6 +1436,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         onChange={eState => this.onChangePayloadEditor(eState, TEXT_SLOT)}
                                         onSubmit={() => this.onSubmitPayloadEditor()}
                                         disabled={isPayloadDisabled}
+                                        data-testid={"action-end-session-editor"}
                                     />
                                 </div>
                                 {payloadError &&

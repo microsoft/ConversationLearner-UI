@@ -3,6 +3,12 @@ const selectors = {
         spinner: '.cl-spinner',
         dropDownOptions: 'button.ms-Dropdown-item',
     },
+    homePage: {
+        link: '#uiLink',
+    },
+    app: {
+        container: '.cl-app'
+    },
     officePicker: {
         buttonSuggestion: '.ms-Suggestions-itemButton',
         suggestions: '.ms-Suggestions',
@@ -18,19 +24,26 @@ const selectors = {
         inputFile: '[data-testid="model-creator-import-file-picker"] > div > input[type="file"]',
     },
     model: {
+        name: '[data-testid="app-index-model-name"]',
         buttonNavActions: '[data-testid="app-index-nav-link-actions"]',
         buttonNavEntities: '[data-testid="app-index-nav-link-entities"]',
         buttonNavTrainDialogs: '[data-testid=app-index-nav-link-train-dialogs]',
         buttonNavLogDialogs: '[data-testid="app-index-nav-link-log-dialogs"]',
+        buttonNavSettings: '[data-testid="app-index-nav-link-settings"]',
+    },
+    trainingStatus: {
+        completed: '[data-testid="training-status-completed"]',
     },
     entities: {
+        buttonCreate: '[data-testid="entities-button-create"]',
         name: '[data-testid="entities-name"]',
     },
     entity: {
+        dropDownType: '[data-testid="entity-creator-entity-type-dropdown"]',
         modal: '[data-testid="entity-creator-modal"]',
         name: '[data-testid="entity-creator-entity-name-text"]',
         enumValue: '[data-testid="entity-enum-value"]',
-        enumValueName: '[data-testid="entity-enum-value-value-name"]',
+        enumValueName: '[data-testid="entity-enum-value-value-name"][value=""]',
         enumValueButtonDelete: '[data-testid="entity-enum-value-button-delete"]',
         buttonDelete: '[data-testid="entity-button-delete"]',
         buttonCancel: '[data-testid="entity-button-cancel"]',
@@ -62,6 +75,9 @@ const selectors = {
         nonRemovableTags: '[data-testid="picker-tag-nonRemovable"]',
         checkBoxWaitForResponse: '[data-testid="action-creator-wait-checkbox"] button[role="checkbox"]',
         warningNoWaitExpected: '[data-testid="action-warning-nowait-expected"]',
+        logicArg: (argName: string) => `[data-testid="action-logic-argument-${argName}"] [contenteditable="true"]`,
+        renderArg: (argName: string) => `[data-testid="action-render-argument-${argName}"] [contenteditable="true"]`,
+        cardArg: (argName: string) => `[data-testid="action-card-argument-${argName}"] [contenteditable="true"]`,
     },
     actionDeleteModal: {
         deleteTypeA: '[data-testid="action-delete-type"] [data-testid="action-modal-delete-type-a"]',
@@ -89,6 +105,7 @@ const selectors = {
         actionScorerTextActions: '[data-testid="action-scorer-text-response"]',
         actionScorer: {
             rowField: '[data-automationid="DetailsRowFields"]',
+            buttonCreate: '[data-testid="action-scorer-add-action-button"]',
         },
     },
     mergeModal: {
@@ -122,6 +139,10 @@ const selectors = {
         buttonCreate: '[data-testid="log-dialogs-new-button"]',
         description: '[data-testid="log-dialogs-description"]',
     },
+    logDialog: {
+        buttonDone: '[data-testid="chat-session-modal-done-testing-button"]',
+        inputMessage: 'input[placeholder="Type your message..."]',
+    },
     logConversionConflictsModal: {
         modal: '[data-testid="log-conversion-conflicts-modal"]',
         conflictButtons: '[data-testid^="log-conversion-conflicts-conflict"]',
@@ -137,10 +158,14 @@ const selectors = {
         buttonDone: '[data-testid="chat-session-modal-done-testing-button"]',
     },
     extractionEditor: {
+        inputAlternateText: '[data-testid="entity-extractor-alternative-input-text"]',
         overlay: '.entity-labeler-overlay',
+        customButton: '[data-testid="custom-entity-name-button"]',
         customNode: '.cl-entity-node--custom',
         nodeIndicator: '.cl-entity-node-indicator',
         buttonRemoveLabel: '[data-testid="entity-extractor-button-remove-label"]',
+        buttonSubmitChanges: '[data-testid="submit-changes-button"]',
+        buttonCreate: '[data-testid="entity-extractor-create-button"]',
         slateEditor: '[data-slate-editor="true"]',
         tokenNode: '[data-testid="token-node-entity-value"]',
     },
@@ -152,11 +177,26 @@ const selectors = {
     webChat: {
         messageFromBot: '.wc-message-from-bot',
         messageFromBotException: '.wc-border-error-from-bot',
-        messageFromMe: 'wc-message-from-me',
+        messageFromMe: '.wc-message-from-me',
         messageFromMeException: '.wc-border-error-from-me',
         messageColorException: '.wc-message-color-exception',
         messageDownArrow: '.wc-message-downarrow',
-    }
+        buttonAddAction: '[data-testid="chat-edit-add-bot-response-button"]',
+        buttonAddInput: '[data-testid="chat-edit-add-user-input-button"]',
+        buttonBranch: '[data-testid="edit-dialog-modal-branch-button"]',
+    },
+    settings: {
+        buttonNewVersion: '[data-testid="settings-button-new-version"]',
+        buttonSave: '[data-testid="settings-button-save"]',
+        buttonDiscard: '[data-testid="settings-button-discard"]',
+        inputModelName: '[data-testid="settings-input-model-name"]',
+    },
+    packageCreatorModal: {
+        modal: '[data-testid="package-creator-modal"]',
+        inputVersionName: '[data-testid="package-creator-input-version-name"]',
+        buttonCreate: '[data-testid="package-creator-button-create"]',
+        buttonCancel: '[data-testid="package-creator-button-cancel"]',
+    },
 }
 
 export default selectors
