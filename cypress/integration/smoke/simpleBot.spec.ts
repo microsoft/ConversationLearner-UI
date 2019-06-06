@@ -4,7 +4,7 @@ import s from '../../support/selectors'
 
 describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
     const testData = {
-        modelName: util.generateUniqueModelName('simpleBot'),
+        modelName: 'apiCoverage',
         entityName01: 'entity01',
         entityName02: 'entity02',
         entityName03: 'entity03',
@@ -35,7 +35,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
             .click()
 
         cy.get(s.models.name)
-            .type(testData.modelName)
+            .type(util.generateUniqueModelName(testData.modelName))
 
         cy.get(s.models.submit)
             .click()
