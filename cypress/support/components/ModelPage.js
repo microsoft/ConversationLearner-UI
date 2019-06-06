@@ -21,6 +21,12 @@ export function NavigateToTrainDialogs() { cy.Get('[data-testid="app-index-nav-l
 export function NavigateToLogDialogs() { cy.Get('[data-testid="app-index-nav-link-log-dialogs"]').Click(); logDialogsGrid.VerifyPageTitle() }
 export function NavigateToSettings() { cy.Get('[data-testid="app-index-nav-link-settings"]').Click(); settings.VerifyPageTitle() }
 
+export function VerifyHomeLinkShowsIncidentTriangle() { cy.Get('[data-testid="app-index-nav-link-home"]').find('i[data-icon-name="IncidentTriangle"]') }
+
+// This really should be in a file named '.\cypress\support\components\HomePanel.js' but it would be the only code in it
+// so rather than create a 1 line .js file, we are putting it here.
+export function HomePanel_VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-errorpanel > div').ExactMatch(expectedMessage) }
+
 // To validate that this code works, search src\actions\appActions.ts for these and alter them:
 //   fetchApplicationTrainingStatusThunkAsync
 //   interval:

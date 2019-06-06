@@ -31,6 +31,7 @@ export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="to
 export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
 export function GetAllChatMessages() { return helpers.StringArrayFromElementText(AllChatMessagesSelector) }
 export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
+export function VerifyWarningMessage(expectedMessage) { cy.Get('[data-testid="dialog-modal-warning"]').find('span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
 export function VerifyErrorPopup(expectedMessage) { cy.Get('p.ms-Dialog-title').ExactMatch(expectedMessage) }
 export function ClickPopupConfirmCancelOkButton() { cy.Get('[data-testid="confirm-cancel-modal-ok"]').Click() }
