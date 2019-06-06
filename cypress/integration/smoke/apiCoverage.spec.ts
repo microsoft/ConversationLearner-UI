@@ -277,7 +277,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
         before(() => {
             // wait for training to complete for proper prediction of action
             cy.wait(5000)
-            cy.get(s.trainingStatus.completed, { timeout: constants.prediction.timeout })
+            cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
             cy.get(s.model.buttonNavLogDialogs)
                 .click()
 
@@ -358,7 +358,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
         before(() => {
             // Need to wait for training, realize extraction on first input
             cy.wait(5000)
-            cy.get(s.trainingStatus.completed, { timeout: constants.prediction.timeout })
+            cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
             cy.get(s.trainDialogs.buttonNew)
                 .click()
         })
