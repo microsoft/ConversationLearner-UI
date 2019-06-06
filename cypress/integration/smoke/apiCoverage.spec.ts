@@ -447,7 +447,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
                 .type(testData.versionName)
 
             // TODO: Maybe be intermittent "Too many request" error. Should hopefully go away when using rotating keys unless this is quota instead of throttle issue.
-            cy.wait(1000)
+            cy.wait(2000)
             cy.get(s.packageCreatorModal.buttonCreate)
                 .click()
         })
@@ -457,6 +457,8 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
             cy.get(s.settings.inputModelName)
                 .type(`{selectall}{backspace}${newName}`)
 
+            // TODO: Similar to above there hitting throttling errors: "Rate limit is exceeded. Try again in 1 seconds."
+            cy.wait(2000)
             cy.get(s.settings.buttonSave)
                 .click()
 
