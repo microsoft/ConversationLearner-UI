@@ -225,7 +225,13 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
 
     describe('edit the dialog', () => {
         before(() => {
-            cy.wait(2000)
+            // TODO: Find out cause and why it occurs
+            // We sometimes getting Bad Gateway error from LUIS
+            // "The application 608f85a1-6d1d-4622-84c3-6f08f028f0be is not published or doesn't exist."
+            // Talked to Shahin and think there is race condition of calling extract when editing before training has completed.
+            // For now, wait for training to complete before starting text
+            cy.wait(5000)
+            cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
             cy.get(s.trainDialogs.descriptions)
                 .contains(testData.dialog.description)
                 .click()
