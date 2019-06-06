@@ -181,7 +181,7 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
                 .should('not.exist')
         })
 
-        it('round 3 create enum entity and use placeholder action', () => {
+        it('round 3 - create enum entity and use placeholder action', () => {
             util.inputText(testData.dialog.input03)
 
             cy.get(s.extractionEditor.buttonCreate)
@@ -440,9 +440,8 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
             cy.get(s.packageCreatorModal.inputVersionName)
                 .type(testData.versionName)
 
-            // Getting "Too many request error" ?
+            // TODO: Maybe be intermittent "Too many request" error. Should hopefully go away when using rotating keys unless this is quota instead of throttle issue.
             cy.wait(1000)
-
             cy.get(s.packageCreatorModal.buttonCreate)
                 .click()
         })
@@ -457,7 +456,6 @@ describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
 
             cy.get(s.model.name)
                 .should('have.text', newName)
-
         })
     })
 })
