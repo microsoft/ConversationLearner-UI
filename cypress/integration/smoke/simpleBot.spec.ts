@@ -2,7 +2,7 @@ import * as util from '../../support/utilities'
 import constants from '../../support/constants'
 import s from '../../support/selectors'
 
-describe('Simple Bot - Exercise all major use cases', () => {
+describe('Scenario 01 - API Coverage - Exercise all major use cases', () => {
     const testData = {
         modelName: util.generateUniqueModelName('simpleBot'),
         entityName01: 'entity01',
@@ -275,8 +275,9 @@ describe('Simple Bot - Exercise all major use cases', () => {
 
     describe('create log dialog', () => {
         before(() => {
-            // wait for training to complete or all actions are disqualified
-            cy.wait(10000)
+            // wait for training to complete for proper prediction of action
+            cy.wait(5000)
+            cy.get(s.trainingStatus.completed, { timeout: constants.prediction.timeout })
             cy.get(s.model.buttonNavLogDialogs)
                 .click()
 
@@ -355,9 +356,9 @@ describe('Simple Bot - Exercise all major use cases', () => {
 
     describe('create new dialog', () => {
         before(() => {
-            // Need to wait for training to release extraction on first input
-            cy.wait(30000)
-            cy.get(s.trainingStatus.completed)
+            // Need to wait for training, realize extraction on first input
+            cy.wait(5000)
+            cy.get(s.trainingStatus.completed, { timeout: constants.prediction.timeout })
             cy.get(s.trainDialogs.buttonNew)
                 .click()
         })
@@ -449,7 +450,7 @@ describe('Simple Bot - Exercise all major use cases', () => {
         it('should rename model and save', () => {
             const newName = util.generateUniqueModelName(testData.modelName)
             cy.get(s.settings.inputModelName)
-                .type(newName)
+                .type(`{selectall}{backspace}${newName}`)
 
             cy.get(s.settings.buttonSave)
                 .click()
