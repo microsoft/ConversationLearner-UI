@@ -158,12 +158,12 @@ export function CreateAliasForAllChatTurns() {
   cy.Get('[data-testid="web-chat-utterances"]').as('allChatTurns')
 }
 
-export function VerifyChatTurnControls(element, index) {
+export function VerifyChatTurnControlButtons(element, index) {
   let turnIsUserTurn
   if (element.classList.contains('wc-message-from-me')) turnIsUserTurn = true
   else if (element.classList.contains('wc-message-from-bot')) turnIsUserTurn = false
   else {
-    helpers.Dump(`VerifyChatTurnControls()`, element)
+    helpers.Dump(`VerifyChatTurnControlButtons()`, element)
     throw 'Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)'
   }
 
@@ -172,20 +172,14 @@ export function VerifyChatTurnControls(element, index) {
 
   cy.Contains('[data-testid="chat-edit-add-bot-response-button"]', '+')
 
-  if (turnIsUserTurn) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`VerifyChatTurnControls()`, 'Branch Found')
+  if (turnIsUserTurn) cy.Get('[data-testid="edit-dialog-modal-branch-button"]').Contains('Branch').ConLog(`VerifyChatTurnControlButtons()`, 'Branch Found')
   else cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
 
   cy.Contains('[data-testid="chat-edit-add-user-input-button"]', '+')
 }
 
-// Provide any user message and any Bot message expected in chat.
-export function VerifyThereAreNoChatEditControls(userMessage, botMessage) {
-  // These confirm we are looking at the chat history we are expecting to validate.
-  cy.Get('.wc-message-from-me').contains(userMessage)
-  cy.Get('.wc-message-from-bot').contains(botMessage)
-
-  // These do the actual validation this function is intended to validate.
-  // We expect NO Chat Edit Controls at all on this page.
+// Verify that there are NO Chat Edit Controls at all on this page.
+export function VerifyThereAreNoChatEditControls() {
   cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
   cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+')
   cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
@@ -715,7 +709,10 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
   })
 }
 
-export function SelectAndVerifyEachChatTurn(index = 0) {
+export function SelectAndVerifyEachChatTurnHasExpectedButtons() { SelectAndVerifyEachChatTurn(VerifyChatTurnControlButtons) }
+export function SelectAndVerifyEachChatTurnHasNoButtons() { SelectAndVerifyEachChatTurn(VerifyThereAreNoChatEditControls) }
+
+function SelectAndVerifyEachChatTurn(verificationFunction, index = 0) {
   if (index == 0) { 
     CreateAliasForAllChatTurns() 
   }
@@ -723,8 +720,8 @@ export function SelectAndVerifyEachChatTurn(index = 0) {
   cy.Get('@allChatTurns').then(elements => {
     if (index < elements.length) {
       cy.wrap(elements[index]).Click().then(() => {
-        VerifyChatTurnControls(elements[index], index)
-        SelectAndVerifyEachChatTurn(index + 1)
+        verificationFunction(elements[index], index)
+        SelectAndVerifyEachChatTurn(verificationFunction, index + 1)
       })
     }
   })

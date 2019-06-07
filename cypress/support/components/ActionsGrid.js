@@ -27,6 +27,8 @@ export class Row {
       .as('responseDetailsRow')
   }
 
+  EditAction() { cy.Get('@responseDetailsRow').Click() }
+  
   VerifyActionType(actionType) {cy.Get('@responseDetailsRow').find('[data-testid="action-details-action-type"]').contains(actionType)}
   
   VerifyExpectedEntities(entities) { this._VerifyEntities('[data-testid="action-details-expected-entity"]', '[data-testid="action-details-empty-expected-entities"]', entities) }
