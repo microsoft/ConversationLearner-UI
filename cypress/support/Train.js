@@ -394,7 +394,7 @@ export function CreateNewTrainDialog() {
     }
     isBranched = false
   })
-  trainDialogsGrid.CreateNewTrainDialog()
+  trainDialogsGrid.ClickNewTrainDialogButton()
 }
 
 export function EditTraining(firstInput, lastInput, lastResponse) {
@@ -711,9 +711,10 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
 
 export function SelectAndVerifyEachChatTurnHasExpectedButtons() { SelectAndVerifyEachChatTurn(VerifyChatTurnControlButtons) }
 export function SelectAndVerifyEachChatTurnHasNoButtons() { SelectAndVerifyEachChatTurn(VerifyThereAreNoChatEditControls) }
+export function SelectAndVerifyEachBotChatTurnHasNoButtons() { SelectAndVerifyEachChatTurn( scorerModal.VerifyNoEnabledSelectActionButtons, 1, 2) }
 
-function SelectAndVerifyEachChatTurn(verificationFunction, index = 0) {
-  if (index == 0) { 
+function SelectAndVerifyEachChatTurn(verificationFunction, index = 0, increment = 1, initialized = false) {
+  if (!initialized) { 
     CreateAliasForAllChatTurns() 
   }
 
@@ -721,7 +722,7 @@ function SelectAndVerifyEachChatTurn(verificationFunction, index = 0) {
     if (index < elements.length) {
       cy.wrap(elements[index]).Click().then(() => {
         verificationFunction(elements[index], index)
-        SelectAndVerifyEachChatTurn(verificationFunction, index + 1)
+        SelectAndVerifyEachChatTurn(verificationFunction, index + increment, increment, true)
       })
     }
   })

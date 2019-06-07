@@ -19,7 +19,8 @@ export function VerifyPageTitle() {
 
 export function IsVisible() { return Cypress.$(`[data-testid="train-dialogs-title"]:contains('Train Dialogs'):visible`).length === 1 && !modelPage.IsOverlaid() }
 
-export function CreateNewTrainDialog() { cy.Get('[data-testid="button-new-train-dialog"]').Click() }
+export function ClickNewTrainDialogButton() { cy.Get('[data-testid="button-new-train-dialog"]').Click() }
+export function VerifyNewTrainDialogButtonIsDisabled() { cy.Get('[data-testid="button-new-train-dialog"]').should('be.disabled') }
 export function SearchBox() { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
 export function EntityDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-entity"]') }
 export function ActionDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-action"]') }
