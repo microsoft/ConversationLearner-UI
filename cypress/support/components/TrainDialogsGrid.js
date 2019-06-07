@@ -7,14 +7,23 @@ import * as modelPage from './ModelPage'
 import * as helpers from '../Helpers'
 
 // Path to product code: ConversationLearner-UI\src\routes\Apps\App\TrainDialogs.tsx
-export function VerifyPageTitle() { cy.Get('[data-testid="train-dialogs-title"]').contains('Train Dialogs').should('be.visible') }
+export function VerifyPageTitle() { 
+  cy.Get('[data-testid="train-dialogs-title"]').contains('Train Dialogs')
+  cy.Enqueue(() => {
+    if (modelPage.IsOverlaid()) {
+      helpers.ConLog('VerifyPageTitle', 'modelPage.IsOverlaid')
+      throw new Error('Expecting to find the Train Dialog Grid but there is an overlay on top of it.')
+    }
+  })
+}
+
 export function IsVisible() { return Cypress.$(`[data-testid="train-dialogs-title"]:contains('Train Dialogs'):visible`).length === 1 && !modelPage.IsOverlaid() }
 
 export function CreateNewTrainDialog() { cy.Get('[data-testid="button-new-train-dialog"]').Click() }
 export function SearchBox() { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
 export function EntityDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-entity"]') }
 export function ActionDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-action"]') }
-export function ClickTraining(row) { cy.Get('[data-testid="train-dialogs-description"]').then(elements => { cy.wrap(elements[row]).Click() }) }
+export function ClickTraining(row) { cy.Get('[data-testid="train-dialogs-description"]').then(elements => { cy.wrap(elements[row]).Click({force: true}) }) }
 
 export function WaitForGridReadyThen(expectedRowCount, functionToRunAfterGridIsReady) {
   cy.Get('[data-testid="train-dialogs-turns"]', { timeout: 10000 })

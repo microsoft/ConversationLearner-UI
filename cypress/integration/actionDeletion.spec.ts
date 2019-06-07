@@ -28,7 +28,7 @@ describe('Action Deletion', () => {
     }
 
     before(() => {
-        cy.visit(constants.baseUrl)
+        cy.visit('/')
         util.importModel(testData.modelName, testData.modelFile)
     })
 
@@ -56,7 +56,7 @@ describe('Action Deletion', () => {
             cy.server()
             cy.route('/sdk/app/*/traindialogs*').as('getTrainDialogs')
 
-            cy.get(s.confirmCancelModal.buttonConfirm)
+            cy.get(s.actionDeleteModal.buttonConfirm)
                 .click()
 
             // wait actual deletion
@@ -101,13 +101,14 @@ describe('Action Deletion', () => {
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(s.confirmCancelModal.optionRemovePlaceholder)
+                cy.get(s.actionDeleteModal.deleteTypeB)
+                    .siblings('label')
                     .click()
 
                 cy.server()
                 cy.route('/sdk/app/*/traindialogs*').as('getTrainDialogs')
 
-                cy.get(s.confirmCancelModal.buttonConfirm)
+                cy.get(s.actionDeleteModal.buttonConfirm)
                     .click()
 
                 // wait actual deletion
@@ -204,13 +205,14 @@ describe('Action Deletion', () => {
                     cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                         .should('not.exist')
 
-                    cy.get(s.confirmCancelModal.optionRemovePlaceholder)
+                    cy.get(s.actionDeleteModal.deleteTypeB)
+                        .siblings('label')
                         .click()
 
                     cy.server()
                     cy.route('/sdk/app/*/traindialogs*').as('getTrainDialogs')
 
-                    cy.get(s.confirmCancelModal.buttonConfirm)
+                    cy.get(s.actionDeleteModal.buttonConfirm)
                         .click()
 
                     // wait actual deletion
@@ -255,13 +257,14 @@ describe('Action Deletion', () => {
                     cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                         .should('not.exist')
 
-                    cy.get(s.confirmCancelModal.optionRemovePlaceholder)
+                    cy.get(s.actionDeleteModal.deleteTypeB)
+                        .siblings('label')
                         .click()
 
                     cy.server()
                     cy.route('/sdk/app/*/traindialogs*').as('getTrainDialogs')
 
-                    cy.get(s.confirmCancelModal.buttonConfirm)
+                    cy.get(s.actionDeleteModal.buttonConfirm)
                         .click()
 
                     // wait actual deletion
@@ -312,13 +315,14 @@ describe('Action Deletion', () => {
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
 
-                cy.get(s.confirmCancelModal.optionRemovePlaceholder)
+                cy.get(s.actionDeleteModal.deleteTypeB)
+                    .siblings('label')
                     .click()
 
                 cy.server()
                 cy.route('/sdk/app/*/traindialogs*').as('getTrainDialogs')
 
-                cy.get(s.confirmCancelModal.buttonConfirm)
+                cy.get(s.actionDeleteModal.buttonConfirm)
                     .click()
 
                 // wait actual deletion
@@ -358,9 +362,6 @@ describe('Action Deletion', () => {
                 // wait deletion calculation
                 cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                     .should('not.exist')
-
-                cy.get(s.confirmCancelModal.optionRemovePlaceholder)
-                    .click()
 
                 cy.server()
                 cy.route('/sdk/app/*/traindialogs*').as('getTrainDialogs')

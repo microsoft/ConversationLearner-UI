@@ -38,7 +38,7 @@ describe('Wait vs Non Wait Actions - Train', () => {
     })
 
     it('Should select a wait Action for the Bot Response', () => {
-      train.SelectAction('Which animal would you like?')
+      train.SelectTextAction('Which animal would you like?')
     })
   })
 
@@ -55,11 +55,11 @@ describe('Wait vs Non Wait Actions - Train', () => {
     })
 
     it('Should select a non-wait Action for the Bot Response', () => {
-      train.SelectAction('Cows say moo!')
+      train.SelectTextAction('Cows say moo!')
     })
 
     it('Should select a wait Action for the Bot Response which also verifies that the non-wait Action worked as expected', () => {
-      train.SelectAction('Which animal would you like?')
+      train.SelectTextAction('Which animal would you like?')
     })
   })
 
@@ -76,11 +76,11 @@ describe('Wait vs Non Wait Actions - Train', () => {
     })
 
     it('Should select a non-wait Action for the Bot Response', () => {
-      train.SelectAction(common.ducksSayQuack)
+      train.SelectTextAction(common.ducksSayQuack)
     })
 
     it('Should select a wait Action for the Bot Response which also verifies that the non-wait Action worked as expected', () => {
-      train.SelectAction('Which animal would you like?')
+      train.SelectTextAction('Which animal would you like?')
     })
 
     it('Should save the training and verify that it appears in the grid', () => {

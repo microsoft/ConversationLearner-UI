@@ -10,13 +10,13 @@ export const settingsReset = (): ActionObject =>
         type: AT.SETTINGS_RESET
     })
 
-export const settingsUpdate = (port: number): ActionObject =>
+export const settingsUpdatePort = (port: number): ActionObject =>
     ({
-        type: AT.SETTINGS_UPDATE,
+        type: AT.SETTINGS_UPDATE_PORT,
         port,
     })
 
-export const settingsUseCustomPort = (): ActionObject =>
+export const settingsToggleUseCustomPort = (): ActionObject =>
     ({
-        type: AT.SETTINGS_USE_CUSTOM_PORT
+        type: AT.SETTINGS_TOGGLE_USE_CUSTOM_PORT
     })

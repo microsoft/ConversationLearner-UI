@@ -322,7 +322,7 @@ export const fetchApplicationTrainingStatusThunkAsync = (appId: string) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC)
         const pollConfig: IPollConfig<TrainingStatus> = {
             id: appId,
-            maxDuration: 30000,
+            maxDuration: 60000,
             request: async () => {
                 const trainingStatus = await clClient.appGetTrainingStatus(appId)
                 console.debug(`${new Date().getTime()} Poll app: ${appId}: `, trainingStatus.trainingStatus)

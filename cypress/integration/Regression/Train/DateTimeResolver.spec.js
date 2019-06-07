@@ -39,7 +39,7 @@ describe('Date Time Resolver - Train', () => {
     })
 
     it('Should select the enabled action', () => {
-      train.SelectAction('When are you planning to travel?')
+      train.SelectTextAction('When are you planning to travel?')
     })
 
     it('Should type in the next user turn and label the departure and return dates', () => {
@@ -61,7 +61,7 @@ describe('Date Time Resolver - Train', () => {
     })
 
     it('Should select the enabled Bot response, save the Train Dialog, and verifiy the training shows up in the grid', () => {
-      train.SelectAction(botResponse, 'You are leaving on $departure and returning on $return')
+      train.SelectTextAction(botResponse, 'You are leaving on $departure and returning on $return')
       train.SaveAsIsVerifyInGrid()
     })
   })

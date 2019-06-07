@@ -67,10 +67,10 @@ describe('Description and Tags', () => {
                 trainDialog.ClickScoreActionsButton()
 
                 // Add temporary rounds to be deleted later
-                trainDialog.SelectAction(testData.actionResponse)
+                trainDialog.SelectTextAction(testData.actionResponse)
                 trainDialog.TypeYourMessage('Should be deleted')
                 trainDialog.ClickScoreActionsButton()
-                trainDialog.SelectAction(testData.actionResponse)
+                trainDialog.SelectTextAction(testData.actionResponse)
                 trainDialog.SaveAsIsVerifyInGrid()
 
                 // Verify tags and description in list
@@ -250,7 +250,7 @@ describe('Description and Tags', () => {
                 // Modify dialog to add user input
                 trainDialog.TypeYourMessage(testData.continuedInput)
                 trainDialog.ClickScoreActionsButton()
-                trainDialog.SelectAction(testData.actionResponse)
+                trainDialog.SelectTextAction(testData.actionResponse)
                 trainDialog.ClickSaveCloseButton()
 
                 // TODO: Should cy.reload() to ensure data was persisted
@@ -452,7 +452,7 @@ describe('Description and Tags', () => {
 
             cy.wait(['@getLogDialogs'])
 
-            cy.get(s.logDialogs.firstInput)
+            cy.get(s.logDialogs.description)
                 .contains(testData.input)
                 .click()
 

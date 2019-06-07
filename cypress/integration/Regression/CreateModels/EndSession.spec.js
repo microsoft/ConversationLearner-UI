@@ -37,13 +37,13 @@ describe('End Session - Create Model', () => {
     it('Should train model to respond to "Hi"', () => {
       train.TypeYourMessage('Hi')
       train.ClickScoreActionsButton()
-      train.SelectAction('Hello')
+      train.SelectTextAction('Hello')
     })
 
     it('Should train model to respond to "Yo"', () => {
       train.TypeYourMessage('Yo')
       train.ClickScoreActionsButton()
-      train.SelectAction('Okay')
+      train.SelectTextAction('Okay')
     })
     
     it('Should add a description and save the Train Dialog', () => {
@@ -85,7 +85,7 @@ describe('End Session - Create Model', () => {
     it('Should train model to respond to "Yo"', () => {
       train.TypeYourMessage('Yo')
       train.ClickScoreActionsButton()
-      train.SelectAction('Okay')
+      train.SelectTextAction('Okay')
     })
     
     it('Should train model to respond to "Bye"', () => {

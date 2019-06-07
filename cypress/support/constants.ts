@@ -1,12 +1,16 @@
 
+const SECOND = 1000
+const MINUTE = 60 * SECOND
+
 export const constants = {
-    // TODO: See why setting this as baseUrl in cypress.json doesn't work for cy.visit()
-    baseUrl: 'http://localhost:3000',
     spinner: {
-        timeout: 120000
+        timeout: 2 * MINUTE
     },
     prediction: {
-        timeout: 60000
+        timeout: 1 * MINUTE
+    },
+    training: {
+        timeout: 2 * MINUTE
     },
     keys: {
         tab: 9,

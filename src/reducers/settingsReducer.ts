@@ -7,13 +7,13 @@ import { AT } from '../types/ActionTypes'
 import { Reducer } from 'redux'
 import produce from 'immer'
 
-// TODO: Consolidate calculation, needs to match reduxStore
-const botPort = ports.defaultUiPort === ports.urlBotPort
+const useCustomPort = ports.defaultUiPort === ports.urlBotPort
+const botPort = useCustomPort
     ? ports.defaultBotPort
     : ports.urlBotPort
 
-const initialState: SettingsState = {
-    useCustomPort: false,
+export const initialState: SettingsState = {
+    useCustomPort,
     botPort,
     customPort: ports.defaultBotPort,
 }
@@ -22,14 +22,17 @@ const settingsReducer: Reducer<SettingsState> = produce((state: SettingsState, a
     switch (action.type) {
         case AT.SETTINGS_RESET:
             state.customPort = ports.defaultBotPort
+            if (state.useCustomPort) {
+                state.botPort = state.customPort
+            }
             return
-        case AT.SETTINGS_UPDATE:
+        case AT.SETTINGS_UPDATE_PORT:
             state.customPort = action.port
             if (state.useCustomPort) {
                 state.botPort = state.customPort
             }
             return
-        case AT.SETTINGS_USE_CUSTOM_PORT:
+        case AT.SETTINGS_TOGGLE_USE_CUSTOM_PORT:
             state.useCustomPort = !state.useCustomPort
             state.botPort = state.useCustomPort
                 ? state.customPort

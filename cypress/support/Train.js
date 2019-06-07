@@ -4,7 +4,7 @@
  */
 
 import * as homePage from './components/HomePage'
-import * as modalPage from './components/ModelPage'
+import * as modelPage from './components/ModelPage'
 import * as scorerModal from './components/ScorerModal'
 import * as trainDialogsGrid from './components/TrainDialogsGrid'
 import * as mergeModal from './components/MergeModal'
@@ -32,6 +32,8 @@ export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-change
 export function GetAllChatMessages() { return helpers.StringArrayFromElementText(AllChatMessagesSelector) }
 export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
+export function VerifyErrorPopup(expectedMessage) { cy.Get('p.ms-Dialog-title').ExactMatch(expectedMessage) }
+export function ClickPopupConfirmCancelOkButton() { cy.Get('[data-testid="confirm-cancel-modal-ok"]').Click() }
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="edit-dialog-modal-delete-turn-button"]').Click() }
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
 export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreActionsButtonSelector) }
@@ -43,7 +45,8 @@ export function ClickAbandonDeleteButton() { cy.Get('[data-testid="edit-dialog-m
 export function VerifyDeleteButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Delete') }
 export function VerifyAbandonBranchButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Abandon Branch') }
 export function ClickUndoButton() { cy.Get('[data-testid="edit-teach-dialog-undo-button"]').Click() }
-export function ClickConfirmAbandonDialogButton() { return cy.Get('.ms-Dialog-main').contains('abandon').parents('.ms-Dialog-main').contains('Confirm').Click() }
+export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }
+export function ClickReplayButton() { cy.Get('[data-testid="edit-dialog-modal-replay-button"]').Click() }
 
 export function VerifyDescription(expectedDescription) { cy.Get(`input.cl-borderless-text-input#description[value="${expectedDescription}"]`) }
 export function TypeDescription(description) { cy.Get('input.cl-borderless-text-input#description').clear().type(`${description}{enter}`) }
@@ -81,6 +84,15 @@ export function VerifyBranchButtonGroupContainsMessage(message) {
 export function AbandonBranchChanges() {
   ClickAbandonDeleteButton()
   homePage.ClickConfirmButton()
+}
+
+export function VerifyChatMessageCount(expectedCount) {
+  cy.wrap(1, {timeout: 10000}).should(() => {
+    let actualCount = GetAllChatMessages().length
+    if(actualCount != expectedCount) {
+      throw new Error(`Expecting the number of chat messages to be ${expectedCount} instead it is ${actualCount}`)
+    }
+  })
 }
 
 // -----------------------------------------------------------------------------
@@ -201,7 +213,7 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
   function LabelIt() {
     // This actually works if text is a word or a phrase.
     cy.Get('body').trigger('Test_SelectWord', { detail: text })
-    cy.Get('[data-testid="entity-picker-entity-search"]').type(`${entity}{enter}`)
+    cy.Get('[data-testid="fuse-match-option"]').contains(entity).Click()
   }
 
   if (itMustNotBeLabeledYet) {
@@ -326,7 +338,7 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
         const indexOfInsertedBotResponse = indexOfSelectedChatTurn + 1
         if (chatMessages[indexOfInsertedBotResponse] != newMessage) {
           scorerModal.ClickTextAction(newMessage)
-          scorerModal.VerifyTextChatMessage(newMessage, indexOfInsertedBotResponse)
+          VerifyTextChatMessage(newMessage, indexOfInsertedBotResponse)
         }
       })
     }
@@ -428,20 +440,24 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
   })
 }
 
-export function TypeYourMessage(message) {
+// The optional 'dontCountThisTurn' parameter is intended for the rare cases where 
+// we know the user turn will be discarded by the UI.
+export function TypeYourMessage(message, dontCountThisTurn = false) {
   cy.Get(TypeYourMessageSelector).type(`${message}{enter}`)
   cy.Enqueue(() => {
     if (!currentTrainingSummary.FirstInput) currentTrainingSummary.FirstInput = message
     currentTrainingSummary.LastInput = message
-    currentTrainingSummary.Turns++
+    if (!dontCountThisTurn) {
+      currentTrainingSummary.Turns++
+    }
   })
 }
 
 // lastResponse parameter is optional. It is necessary only when there are $entities
 // in the Action that produced the Bot's last response.
-export function SelectAction(expectedResponse, lastResponse) {
+export function SelectTextAction(expectedResponse, lastResponse) {
   scorerModal.ClickTextAction(expectedResponse)
-  scorerModal.VerifyTextChatMessage(expectedResponse)
+  VerifyTextChatMessage(expectedResponse)
   cy.Enqueue(() => {
     if (lastResponse) currentTrainingSummary.LastResponse = lastResponse
     else currentTrainingSummary.LastResponse = expectedResponse
@@ -450,20 +466,73 @@ export function SelectAction(expectedResponse, lastResponse) {
 
 export function SelectApiCardAction(apiName, expectedCardTitle, expectedCardText) {
   scorerModal.ClickApiAction(apiName, expectedCardText)
-  scorerModal.VerifyCardChatMessage(expectedCardTitle, expectedCardText)
-  cy.Enqueue(() => { currentTrainingSummary.LastResponse = expectedCardText })
+  VerifyCardChatMessage(expectedCardTitle, expectedCardText)
+  cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
 
 export function SelectApiTextAction(apiName, expectedResponse) {
   scorerModal.ClickApiAction(apiName, expectedResponse)
-  scorerModal.VerifyTextChatMessage(expectedResponse)
-  cy.Enqueue(() => { currentTrainingSummary.LastResponse = expectedResponse })
+  VerifyTextChatMessage(expectedResponse)
+  cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
 
 export function SelectEndSessionAction(expectedData) {
   scorerModal.ClickEndSessionAction(expectedData);
-  scorerModal.VerifyEndSessionChatMessage(expectedData)
-  cy.Enqueue(() => { currentTrainingSummary.LastResponse = 'EndSession: ' + expectedData; })
+  VerifyEndSessionChatMessage(expectedData)
+  cy.Enqueue(() => { currentTrainingSummary.LastResponse = expectedData })
+}
+
+// To verify the last chat utterance leave expectedIndexOfMessage undefined
+export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
+  cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
+    let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find('div.format-markdown > p')
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected Text Chat Message '${expectedMessage}' at index: ${expectedIndexOfMessage}`)
+    }
+    
+    const expectedUtterance = expectedMessage.replace(/'/g, "’")
+    let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
+    helpers.ConLog('VerifyTextChatMessage', textContentWithoutNewlines)
+
+    if (helpers.TextContentWithoutNewlines(elements[0]) !== expectedUtterance) {
+      throw new Error(`Expected to find '${expectedUtterance}' in the text chat pane, instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
+    }
+  })
+}
+
+// To verify the last chat utterance leave expectedIndexOfMessage undefined
+// Leave expectedMessage temporarily undefined so that you can copy the text
+// output from the screen or log to paste into your code.
+export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expectedIndexOfMessage) {
+  cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
+    let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find(`div.format-markdown > p:contains('${expectedCardTitle}')`).parent()
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected '${expectedCardTitle}' card with '${expectedCardText}' at index: ${expectedIndexOfMessage}`)
+    }
+    elements = Cypress.$(elements[0]).next('div.wc-list').find('div.wc-adaptive-card > div.ac-container > div.ac-container > div > p')
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected content element for API Call card that should contain '${expectedCardText}' at index: ${expectedIndexOfMessage}`)
+    }
+    
+    // Log the contents of the API Call card so that we can copy the exact string into the .spec.js file.
+    let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
+    helpers.ConLog('VerifyCardChatMessage', textContentWithoutNewlines)
+    
+    if (!textContentWithoutNewlines.includes(expectedCardText)) {
+      throw new Error(`Expected to find '${expectedCardTitle}' card with '${expectedCardText}', instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
+    }
+  })
+}
+
+export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage) {
+  const expectedUtterance = 'EndSession: ' + expectedData.replace(/'/g, "’")
+  cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
+    const element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
+    expect(helpers.TextContentWithoutNewlines(element)).to.equal(expectedUtterance)
+  })
 }
 
 // This method is used to score AND AUTO-SELECT the action after branching.
@@ -487,7 +556,7 @@ export function SaveAsIsVerifyInGrid() {
 
     cy.WaitForStableDOM()
     let renderingShouldBeCompleteTime = new Date().getTime() + 1000
-    cy.wrap(1).should(() => {
+    cy.wrap(1, {timeout: 10000}).should(() => {
       if (mergeModal.IsVisible()) {
         helpers.ConLog(funcName, 'mergeModal.IsVisible')
 
@@ -496,13 +565,15 @@ export function SaveAsIsVerifyInGrid() {
         throw new Error('The Merge Modal popped up, and we clicked the Save As Is button...need to retry and wait for the grid to become visible')
       }
 
-      if (modalPage.IsOverlaid()) {
+      if (modelPage.IsOverlaid()) {
         helpers.ConLog(funcName, 'modalPage.IsOverlaid')
         renderingShouldBeCompleteTime = new Date().getTime() + 1000
         throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
       } else if (new Date().getTime() < renderingShouldBeCompleteTime) {
+        // There is no overlay, but we will still wait until we've seen this condition for 
+        // at least 1 full second before we call it good.
         helpers.ConLog(funcName, 'Wait for no overlays for at least 1 second')
-        throw new Error('Waiting till no overlays show up for at least 1 second...retry')
+        throw new Error(`Waiting till no overlays show up for at least 1 second...retry '${funcName}'`)
       }
       helpers.ConLog(funcName, 'No overlays for at least 1 second')
     }).then(() => {
@@ -516,6 +587,9 @@ export function SaveAsIsVerifyInGrid() {
 function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   const funcName = 'VerifyTrainingSummaryIsInGrid'
   // Keep these lines of logging code in this method, they come in handy when things go bad.
+  helpers.ConLog(funcName, `FirstInput: ${trainingSummary.FirstInput}`)
+  helpers.ConLog(funcName, `LastInput: ${trainingSummary.LastInput}`)
+  helpers.ConLog(funcName, `LastResponse: ${trainingSummary.LastResponse}`)
   helpers.ConLog(funcName, `CreatedDate: ${trainingSummary.CreatedDate}`)
   helpers.ConLog(funcName, `LastModifiedDate: ${trainingSummary.LastModifiedDate}`)
   helpers.ConLog(funcName, `MomentTrainingStarted: ${trainingSummary.MomentTrainingStarted.format()}`)
@@ -524,13 +598,13 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
   let renderingShouldBeCompleteTime = new Date().getTime()
   cy.Get('[data-testid="train-dialogs-turns"]', {timeout: 10000})
     .should(elements => { 
-      if (modalPage.IsOverlaid()) {
+      if (modelPage.IsOverlaid()) {
         helpers.ConLog(funcName, 'modalPage.IsOverlaid')
         renderingShouldBeCompleteTime = new Date().getTime() + 1000
         throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
       } else if (new Date().getTime() < renderingShouldBeCompleteTime) {
         helpers.ConLog(funcName, 'Wait for no overlays for at least 1 second')
-        throw new Error('Waiting till no overlays show up for at least 1 second...retry')
+        throw new Error(`Waiting till no overlays show up for at least 1 second...retry '${funcName}'`)
       }
 
       if (elements.length != trainingSummary.TrainGridRowCount) { 
@@ -554,17 +628,17 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
         helpers.ConLog(funcName, `Turns[${i}]: ${turns[i]}`)
   
         if (((trainingSummary.LastModifiedDate && lastModifiedDates[i] == trainingSummary.LastModifiedDate) ||
-          helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
-          turns[i] == trainingSummary.Turns &&
-          ((trainingSummary.CreatedDate && createdDates[i] == trainingSummary.CreatedDate) ||
-            helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
-          firstInputs[i] == trainingSummary.FirstInput &&
-          lastInputs[i] == trainingSummary.LastInput &&
-          lastResponses[i] == trainingSummary.LastResponse)
-          
-          helpers.ConLog(funcName, 'Found all of the expected data. Validation PASSES!')
+            helpers.Moment(lastModifiedDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
+            turns[i] == trainingSummary.Turns &&
+            ((trainingSummary.CreatedDate && createdDates[i] == trainingSummary.CreatedDate) ||
+              helpers.Moment(createdDates[i]).isBetween(trainingSummary.MomentTrainingStarted, trainingSummary.MomentTrainingEnded)) &&
+            firstInputs[i] == trainingSummary.FirstInput &&
+            lastInputs[i] == trainingSummary.LastInput &&
+            lastResponses[i] == trainingSummary.LastResponse) {
 
+          helpers.ConLog(funcName, 'Found all of the expected data. Validation PASSES!')
           return; // Fully VALIDATED! We found what we expected.
+        }
       }
       throw new Error(`The grid should, but does not, contain a row with this data in it: FirstInput: ${trainingSummary.FirstInput} -- LastInput: ${trainingSummary.LastInput} -- LastResponse: ${trainingSummary.LastResponse} -- Turns: ${trainingSummary.Turns} -- LastModifiedDate: ${trainingSummary.LastModifiedDate} -- CreatedDate: ${trainingSummary.CreatedDate}`)
     })
