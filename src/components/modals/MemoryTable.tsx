@@ -69,7 +69,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             renderedValue = entityObject(valuesAsObject, renderedValue)
                         }
                         else {
-                            const resolutionClass = (value.memoryValue.builtinType && Object.keys(value.memoryValue.resolution).length > 0) ? 'cl-font--action' : ''
+                            const resolutionClass = (value.memoryValue.builtinType && value.memoryValue.resolution && Object.keys(value.memoryValue.resolution).length > 0) ? 'cl-font--action' : ''
                             renderedValue = <span>{value.prefix}<span className={`${changeClass} ${resolutionClass}`} data-testid="entity-memory-value">{value.displayText}</span></span>
 
                             // Decorate with resolution if it exists
