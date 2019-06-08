@@ -752,3 +752,23 @@ export function EditTrainingNEW(scenario, tags) {
   })
 }
 
+export function VerifyCloseIsTheOnlyEnabledButton() {
+  cy.Enqueue(() => {
+    let elements = Cypress.$('button:enabled')
+    //let enabledButtonElements = Cypress.$(allButonElements).find(':enabled')
+
+    if (elements.length != 1 ) {
+      let elementList = ''
+      for (let i = 0; i < elements.length; i++) {
+        elementList += '\n' + elements[i].outerHTML
+      }
+      helpers.ConLog('VerifyCloseIsTheOnlyEnabledButton', `List of button elements that are enabled:${elementList}`)
+      throw new Error(`We are expecting to find 1 and only 1 enabled Button on the page, instead we found ${elements.length} of them.`)
+    }
+
+    if (Cypress.$(elements[0]).find('[data-testid*="edit-teach-dialog-close-save-button"]').length != 1) {
+      helpers.ConLog('VerifyCloseIsTheOnlyEnabledButton', `Expected to find this attribute: data-testid="edit-teach-dialog-close-save-button" - we did not find it. Here is what we have: ${elements[0].outerHTML}`)
+      throw new Error('Although there was only one button that is enabled, it is not the expected button. Review the logs to get more details about this error.')
+    }
+  })
+}

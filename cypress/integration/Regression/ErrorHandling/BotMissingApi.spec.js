@@ -51,14 +51,17 @@ describe('Bot Missing API - ErrorHandling', () => {
       train.VerifyWarningMessage('Running Bot not compatible with this Model')
     })
     
-    it('Should verify the Action Scorer pane has no enabled buttons for any of the Bot turns', () => {
-      train.SelectAndVerifyEachBotChatTurnHasNoButtons()
-    })
-
     it('Should verify that the turns have no actionable buttons', () => {
       train.SelectAndVerifyEachChatTurnHasNoButtons()
     })
 
+    it('Should verify the Action Scorer pane has no enabled buttons for any of the Bot turns', () => {
+      train.SelectAndVerifyEachBotChatTurnHasNoButtons()
+    })
+
+    it('Should verify that there only the Close button is enabled', () => {
+      train.VerifyCloseIsTheOnlyEnabledButton()
+    })
     
     it('Should close the Train Dialog', () => {
       train.ClickSaveCloseButton()
