@@ -68,7 +68,7 @@ jobs:
 
       # Run sample
       - run: 
-          command: cd ../cl-samples && npm run test-ApiCallbacks > sample.txt
+          command: cd ../cl-samples && npm run test-ApiCallbacks
           background: true
 
       # Run UI
