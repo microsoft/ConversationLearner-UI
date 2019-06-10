@@ -9,7 +9,7 @@ import * as actionModal from '../../../support/components/ActionModal'
 import * as actionsGrid from '../../../support/components/ActionsGrid'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
-import * as scorerModal from '../../../support/components/ScorerModal'
+import * as logDialogsGrid from '../../../support/components/logDialogsGrid'
 import * as helpers from '../../../support/Helpers'
 
 describe('Bot Missing API - ErrorHandling', () => {
@@ -56,7 +56,7 @@ describe('Bot Missing API - ErrorHandling', () => {
     })
 
     it('Should verify the Action Scorer pane has no enabled buttons for any of the Bot turns', () => {
-      train.SelectAndVerifyEachBotChatTurnHasNoButtons()
+      train.SelectAndVerifyEachBotChatTurnHasNoSelectActionButtons()
     })
 
     it('Should verify that there only the Close button is enabled', () => {
@@ -67,5 +67,9 @@ describe('Bot Missing API - ErrorHandling', () => {
       train.ClickSaveCloseButton()
     })
 
+    it('Should verify cannot start a new Log Dialog', () => {
+      modelPage.NavigateToLogDialogs()
+      logDialogsGrid.VerifyNewLogDialogButtonIsDisabled()
+    })
   })
 })
