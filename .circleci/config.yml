@@ -77,7 +77,7 @@ jobs:
           background: true
 
       # Ensure bot and ui are running
-      - run: cd ../cl-samples && npx wait-on -- http://localhost:3978
+      # - run: npx wait-on -- http://localhost:3978
       - run: npx wait-on -- http://localhost:3000
       
       # Run UI e2e tests
