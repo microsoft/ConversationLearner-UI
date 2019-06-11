@@ -76,8 +76,13 @@ jobs:
           command: npm start
           background: true
 
+      # Ensure bot and ui are running
+      # - run: npx wait-on -- http://localhost:3978
+      - run: npx wait-on -- http://localhost:3000
+      
       # Run UI e2e tests
       # Need to add in --parallel once we have a license for it from Cypress
+      # - run: npm run cypress -- run --record false --spec  "cypress/integration/smoke/**/*.spec.*"
       - run: npm run cypress -- run --record false --spec  "cypress/integration/Regression/**/*.spec.js"
 
       - store_artifacts:

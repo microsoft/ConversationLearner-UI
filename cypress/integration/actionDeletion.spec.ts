@@ -28,7 +28,7 @@ describe('Action Deletion', () => {
     }
 
     before(() => {
-        cy.visit(constants.baseUrl)
+        cy.visit('/')
         util.importModel(testData.modelName, testData.modelFile)
     })
 

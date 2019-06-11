@@ -3,11 +3,13 @@
     grid-template-columns: min-content 1fr
 }
 
-.cl-tagpicker:hover .ms-BasePicker-text {
+.cl-tagpicker:hover .ms-BasePicker-text,
+.cl-tagpicker:hover .ms-BasePicker-text--static {
     border-color: var(--color-neutralDark);
 }
 
 .cl-tagpicker .ms-BasePicker-text.ms-BasePicker-text--static {
+    border-left: 1px solid var(--color-neutralTertiary);
     border-right: none;
     min-width: 0;
     flex-wrap: nowrap;

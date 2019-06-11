@@ -412,23 +412,27 @@ i[data-icon-name="Edit"]:hover {
 
 /** Modals */
 
-.cl-modal {
+.cl-modal > * {
+  height: 100%;
   display: grid;
   grid-template-rows: min-content 1fr min-content;
 }
 
-.cl-modal.cl-modal--teach {
+.cl-modal.cl-modal--teach > * {
   grid-template-rows: 1fr min-content;
   /* border-top: 8px solid var(--color-magentaDark); */
 }
 
-.cl-modal.cl-modal--log {
+.cl-modal.cl-modal--log > * {
   grid-template-rows: 1fr min-content;
   /* border-top: 8px solid var(--color-blueMid); */
 }
 
 .cl-modal.cl-modal--wide {
   width: 80%;
+}
+
+.cl-modal.cl-modal--wide > * {
   grid-row-gap: 2em;
   padding: 1em;
 }
@@ -609,15 +613,6 @@ i[data-icon-name="Edit"]:hover {
   align-items: end;
 }
 
-.cl-spinner
-{
-    width: 500px;
-    height: 500px;
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    position: relative;
-}
 .cl-screen-reader {
   position: absolute;
   left: -999em;

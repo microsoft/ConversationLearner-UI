@@ -21,7 +21,7 @@
   },
   "private": true,
   "dependencies": {
-    "@conversationlearner/models": "0.200.1",
+    "@conversationlearner/models": "0.200.2",
     "@conversationlearner/webchat": "0.145.0",
     "@cypress/webpack-preprocessor": "4.0.3",
     "adaptivecards": "1.0.0",
@@ -35,7 +35,7 @@
     "inline-css": "^2.4.1",
     "lodash": "^4.17.11",
     "moment": "^2.22.2",
-    "office-ui-fabric-react": "5.100.0",
+    "office-ui-fabric-react": "6.185.0",
     "react": "16.8.6",
     "react-d3-tree": "^1.12.2",
     "react-dom": "16.8.6",
@@ -95,7 +95,8 @@
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^7.1.0",
     "tslint-microsoft-contrib": "^5.2.1",
-    "typescript": "3.0.3"
+    "typescript": "3.0.3",
+    "wait-on": "3.2.0"
   },
   "scripts": {
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
@@ -111,7 +112,8 @@
     "tsc": "tsc",
     "builduipackage": "tsc -p ./publish/tsconfig.json --listFiles && tsc -p ./scripts/tsconfig.json --listFiles && node ./scripts/publish.js",
     "commit": "git-cz",
-    "servebuild": "tsc -p ./server/tsconfig.json && node ./server/server.js"
+    "servebuild": "tsc -p ./server/tsconfig.json && node ./server/server.js",
+    "wait-on": "wait-on"
   },
   "config": {
     "commitizen": {
