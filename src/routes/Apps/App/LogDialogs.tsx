@@ -17,7 +17,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../../types'
 import { SelectionType } from '../../../types/const'
-import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState, MergeModal } from '../../../components/modals'
+import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState, MergeModal, ConfirmCancelModal } from '../../../components/modals'
 import { ConflictPair } from '../../../components/modals/LogConversionConflictModal'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
@@ -121,6 +121,7 @@ interface ComponentState {
     sortColumn: IRenderableColumn
     chatSession: CLM.Session | null
     conflictPairs: ConflictPair[]
+    isConfirmDeleteModalOpen: boolean
     isChatSessionWindowOpen: boolean
     isEditDialogModalOpen: boolean
     isTeachDialogModalOpen: boolean
@@ -182,6 +183,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             sortColumn: columns[5],
             chatSession: null,
             conflictPairs: [],
+            isConfirmDeleteModalOpen: false,
             isChatSessionWindowOpen: false,
             isEditDialogModalOpen: false,
             isTeachDialogModalOpen: false,
@@ -840,7 +842,30 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
+    @OF.autobind
+    onClickDeleteAll() {
+        this.setState({
+            isConfirmDeleteModalOpen: true
+        })
+    }
+
+    @OF.autobind
+    async onClickCancelDelete() {
+        this.setState({
+            isConfirmDeleteModalOpen: false
+        })
+    }
+
+    @OF.autobind
+    async onClickConfirmDelete() {
+        this.props.deleteLogDialogsThunkAsync(this.props.app)
+        this.setState({
+            isConfirmDeleteModalOpen: false
+        })
+    }
+
     render() {
+        const { intl } = this.props
         const computedLogDialogs = this.getFilteredAndSortedDialogs()
         const editState = (this.props.editingPackageId !== this.props.app.devPackageId)
             ? EditState.INVALID_PACKAGE
@@ -885,6 +910,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         ariaDescription="Refresh"
                         text="Refresh"
                         iconProps={{ iconName: 'Sync' }}
+                    />
+
+                    <OF.DefaultButton
+                        data-testid="logdialogs-button-deleteall"
+                        className="cl-button-delete"
+                        onClick={this.onClickDeleteAll}
+                        ariaDescription={Util.formatMessageId(intl, FM.LOGDIALOGS_BUTTON_DELETEALL)}
+                        text={Util.formatMessageId(intl, FM.LOGDIALOGS_BUTTON_DELETEALL)}
+                        iconProps={{ iconName: 'Delete' }}
                     />
                 </div>
                 {
@@ -1004,6 +1038,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onAcceptConflictResolution={this.onAcceptConflictChanges}
                     onAbortConflictResolution={this.onAbortConflictChanges}
                 />
+                <ConfirmCancelModal
+                    open={this.state.isConfirmDeleteModalOpen}
+                    onCancel={this.onClickCancelDelete}
+                    onOk={this.onClickConfirmDelete}
+                    title={Util.formatMessageId(intl, FM.LOGDIALOGS_BUTTON_DELETEALL)}
+                />
             </div>
         );
     }
@@ -1051,6 +1091,7 @@ const mapDispatchToProps = (dispatch: any) => {
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,
         deleteLogDialogThunkAsync: actions.log.deleteLogDialogThunkAsync,
+        deleteLogDialogsThunkAsync: actions.log.deleteLogDialogsThunkAsync,
         deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
         deleteTrainDialogThunkAsync: actions.train.deleteTrainDialogThunkAsync,
         editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
