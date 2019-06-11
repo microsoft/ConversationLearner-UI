@@ -103,7 +103,7 @@ import * as helpers from './Helpers.js'
 
         if (elements.length > 0) {
           if (expectFailure) return true;
-          throw `selector: "${selector}" & textItShouldNotContain: "${textItShouldNotContain}" was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`
+          throw new Error(`selector: "${selector}" & textItShouldNotContain: "${textItShouldNotContain}" was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`)
         }
         helpers.ConLog(funcName, `PASSED - Selector was NOT Found as Expected`)
         if (expectFailure) return false;

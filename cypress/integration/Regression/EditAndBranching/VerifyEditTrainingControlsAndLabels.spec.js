@@ -36,11 +36,11 @@ describe('Verify Edit Training Controls And Labels - Edit And Branching', () => 
     })
 
     it('Should verify there are no edit controls visible in the chat pane', () => {
-      train.VerifyThereAreNoChatEditControls('My name is David.', 'Hello Susan')
+      train.VerifyThereAreNoChatEditControls()
     })
 
     it('Should verify each chat turn contains only the expected buttons based on position in the chat and User or Bot turn', () => {
-      train.SelectAndVerifyEachChatTurn()
+      train.SelectAndVerifyEachChatTurnHasExpectedButtons()
     })
 
     it('Should branch the Train Dialog at a specific chat turn', () => {

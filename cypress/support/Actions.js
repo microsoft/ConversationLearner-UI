@@ -56,7 +56,7 @@ export function CreateNewActionThenVerifyInGrid({
     logicArgs,  // provide an array of strings
     renderArgs, // provide an array of strings
     type = 'TEXT',
-    validateResponse: validateApiResponse  // The easiest way to get this is from the logs after a test run...search for 'ValidateApi'
+    validateResponse: validateApiResponse  // The easiest way to get this is from the logs after a test run...search for 'VerifyApi'
   }) {
   modelPage.NavigateToActions()
   actionsGrid.ClickNewAction()
@@ -72,14 +72,14 @@ export function CreateNewActionThenVerifyInGrid({
   // If we skip this step, the validations that follow will fail.
   let actionsGridrow = new actionsGrid.Row(type, responseNameData)
   
-  if (validateApiResponse) actionsGridrow.ValidateApi(validateApiResponse)
-  actionsGridrow.ValidateActionType(type)
-  actionsGridrow.ValidateRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
-  actionsGridrow.ValidateDisqualifyingEntities(expectedEntities, disqualifyingEntities)
-  actionsGridrow.ValidateExpectedEntities(expectedEntities)
+  if (validateApiResponse) actionsGridrow.VerifyApi(validateApiResponse)
+  actionsGridrow.VerifyActionType(type)
+  actionsGridrow.VerifyRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
+  actionsGridrow.VerifyDisqualifyingEntities(expectedEntities, disqualifyingEntities)
+  actionsGridrow.VerifyExpectedEntities(expectedEntities)
   
   // Type END_SESSION must have "Wait for Response" checked even if uncheckWaitForResponse is true.
-  actionsGridrow.ValidateWaitForResponse((type === 'END_SESSION') || !uncheckWaitForResponse)
+  actionsGridrow.VerifyWaitForResponse((type === 'END_SESSION') || !uncheckWaitForResponse)
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -123,8 +123,10 @@ function IsAlphaNumeric(string) {
   return true
 }
 
-export function DeleteAction(action) {
-  actionsGrid.Edit(action)
+export function DeleteAction(action, actionType="TEXT") {
+  let actionsGridrow = new actionsGrid.Row(actionType, action)
+  actionsGridrow.EditAction()
+  
   actionModal.ClickDeleteButton()
   actionModal.ClickConfirmButtom()
 }
