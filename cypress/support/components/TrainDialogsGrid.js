@@ -21,6 +21,7 @@ export function IsVisible() { return Cypress.$(`[data-testid="train-dialogs-titl
 
 export function ClickNewTrainDialogButton() { cy.Get('[data-testid="button-new-train-dialog"]').Click() }
 export function VerifyNewTrainDialogButtonIsDisabled() { cy.Get('[data-testid="button-new-train-dialog"]').should('be.disabled') }
+export function VerifyNewTrainDialogButtonIsEnabled() { cy.Get('[data-testid="button-new-train-dialog"]').should('be.enabled') }
 export function SearchBox() { cy.Get('label[for="traindialogs-input-search"]').contains('input.ms-SearchBox-field') }
 export function EntityDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-entity"]') }
 export function ActionDropDownFilter() { cy.Get('[data-testid="dropdown-filter-by-action"]') }

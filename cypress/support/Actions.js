@@ -123,8 +123,10 @@ function IsAlphaNumeric(string) {
   return true
 }
 
-export function DeleteAction(action) {
-  actionsGrid.Edit(action)
+export function DeleteAction(action, actionType="TEXT") {
+  let actionsGridrow = new actionsGrid.Row(actionType, action)
+  actionsGridrow.EditAction()
+  
   actionModal.ClickDeleteButton()
   actionModal.ClickConfirmButtom()
 }

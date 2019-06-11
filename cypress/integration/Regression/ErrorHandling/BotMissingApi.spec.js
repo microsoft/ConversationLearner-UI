@@ -5,6 +5,7 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as actions from '../../../support/Actions'
 import * as actionModal from '../../../support/components/ActionModal'
 import * as actionsGrid from '../../../support/components/ActionsGrid'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
@@ -67,9 +68,32 @@ describe('Bot Missing API - ErrorHandling', () => {
       train.ClickSaveCloseButton()
     })
 
-    it('Should verify cannot start a new Log Dialog', () => {
+    it('Should verify that the new Log Dialog button is disabled', () => {
       modelPage.NavigateToLogDialogs()
       logDialogsGrid.VerifyNewLogDialogButtonIsDisabled()
+    })
+  })
+
+  context('Fix Broken Model - Delete Action with Missing API', () => {
+    it('Should delete the action uses the missing API', () => {
+      modelPage.NavigateToActions()
+      actions.DeleteAction('RandomGreeting', 'API')
+    })
+
+    it('Should verify that Home link/panel no longer shows an IncidentTriangle and nor the error message', () => {
+      modelPage.NavigateToHome()
+      modelPage.VerifyHomeLinkDoesNotShowIncidentTriangle()
+      modelPage.HomePanel_VerifyNoErrorMessages()
+    })
+    
+    it('Should verify that the New Train Dialog button is enabled', () => {
+      modelPage.NavigateToTrainDialogs()
+      trainDialogsGrid.VerifyNewTrainDialogButtonIsEnabled()
+    })
+
+    it('Should verify that the new Log Dialog button is enabled', () => {
+      modelPage.NavigateToLogDialogs()
+      logDialogsGrid.VerifyNewLogDialogButtonIsEnabled()
     })
   })
 })
