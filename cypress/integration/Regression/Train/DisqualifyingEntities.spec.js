@@ -53,7 +53,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should verify the labeled Entity appears in the Memory pane', () => {
-        memoryTableComponent.VerifyEntitiesInMemory('name', ['Sam'])
+        memoryTableComponent.VerifyEntityValues('name', ['Sam'])
       })
 
       it('Should verify the Action list contains 2 enabled and 2 disabled Actions', () => {
@@ -75,7 +75,7 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should verify the labeled Entity still appears in the Memory pane', () => {
-        memoryTableComponent.VerifyEntitiesInMemory('name', ['Sam'])
+        memoryTableComponent.VerifyEntityValues('name', ['Sam'])
       })
     
       it('Should verify the Action list contains 2 enabled and 2 disabled Actions', () => {
@@ -97,11 +97,11 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       it('Should verify the 1st labeled Entity still appears in the Memory pane', () => {
-        memoryTableComponent.VerifyEntitiesInMemory('name', ['Sam'])
+        memoryTableComponent.VerifyEntityValues('name', ['Sam'])
       })
 
       it('Should verify that a 2nd labeled Entity also appears in the Memory pane', () => {
-        memoryTableComponent.VerifyEntitiesInMemory('want', ['world peace'])
+        memoryTableComponent.VerifyEntityValues('want', ['world peace'])
       })
 
       it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
