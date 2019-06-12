@@ -1338,7 +1338,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                         })}
                                                 </div>}
                                         </div>
-                                        : <div className="cl-errorpanel" data-testid="action-creator-editor-error">
+                                        : <div className="cl-errorpanel" data-testid="action-creator-editor-error-callback">
                                             <div>ERROR: Bot Missing Callback: {this.state.selectedApiOptionKey}</div>
                                         </div>)
                                 }
@@ -1393,7 +1393,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                     </React.Fragment>
                                                 )
                                             })
-                                        : <div className="cl-errorpanel">
+                                        : <div className="cl-errorpanel" data-testid="action-creator-editor-error-template">
                                             <div>ERROR: Bot Missing Template: {this.state.selectedCardOptionKey}</div>
                                         </div>)
                                 }
