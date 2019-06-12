@@ -95,10 +95,8 @@ export enum FM {
     APP_TRAINING_STATUS_EXPIRED = 'TrainingStatus.expired',
 
     // AppCreator
-    APPCREATOR_FIELDERROR_REQUIREDVALUE = 'AppCreator.fieldError.requiredValue',
     APPCREATOR_FIELDERROR_ALPHANUMERIC = 'AppCreator.fieldError.alphanumeric',
     APPCREATOR_FIELDERROR_DISTINCT = 'AppCreator.fieldError.distinct',
-    APPCREATOR_FIELDERROR_TOOLONG = 'AppCreator.fieldError.toolong',
     APPCREATOR_TITLE = 'AppCreator.title',
     APPCREATOR_COPY_TITLE = 'AppCreator.copytitle',
     APPCREATOR_IMPORT_TITLE = 'AppCreator.importtitle',
@@ -244,9 +242,6 @@ export enum FM {
 
     // EntityCreatorEditor
     ENTITYCREATOREDITOR_FIELDERROR_NOBLANK = 'EntityCreatorEditor.fieldError.noblank',
-    ENTITYCREATOREDITOR_FIELDERROR_MAX_LENGTH = 'EntityCreatorEditor.fieldError.maxLength',
-    ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE = 'EntityCreatorEditor.fieldError.requiredValue',
-    ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC = 'EntityCreatorEditor.fieldsError.alphanumerica',
     ENTITYCREATOREDITOR_FIELDERROR_DISTINCT = 'EntityCreatorEditor.fields.distinct',
     ENTITYCREATOREDITOR_FIELDERROR_RESERVED = 'EntityCreatorEditor.fields.reserved',
     ENTITYCREATOREDITOR_ENTITYOPTION_ENUM = 'EntityCreatorEditor.entityOption.enum',
@@ -312,6 +307,11 @@ export enum FM {
     EXTRACTCONFLICTMODAL_CONFLICTING_LABELS = 'ExtractConflictModal.conflictingLabels',
     EXTRACTCONFLICTMODAL_CALLTOACTION = 'ExtractConflictModal.callaction',
 
+    // FieldError
+    FIELDERROR_ALPHANUMERIC = 'FieldError.alphanumerica',
+    FIELDERROR_MAX_30 = 'fieldError.max30',
+    FIELDERROR_REQUIREDVALUE = 'fieldError.requiredValue',
+    
     // Import Cancel
     IMPORT_CANCEL_TITLE = 'ImportCancel.title',
     IMPORT_CANCEL_CHECKBOX_LABEL = 'ImportCancel.Checkbox.label',
@@ -411,7 +411,6 @@ export enum FM {
     SETTINGS_COPYBUTTONARIALDESCRIPTION = 'Settings.copyButtonArielDescription',
     SETTINGS_COPYBUTTONTEXT = 'Settings.copyButtonText',
     SETTINGS_EXPORTBUTTONARIALDESCRIPTION = 'Settings.exportButtonArielDescription',
-    SETTINGS_FIELDERROR_REQUIREDVALUE = 'Settings.fieldError.requiredValue',
     SETTINGS_FIELDERROR_ALPHANUMERIC = 'Settings.fieldError.alphanumeric',
     SETTINGS_FIELDERROR_DISTINCT = 'Settings.fieldError.distinct',
     SETTINGS_FIELDS_NAMELABEL = 'Settings.fields.nameLabel',
@@ -664,10 +663,9 @@ export default {
         [FM.ACTIONS_CREATEBUTTONTITLE]: 'New Action',
 
         // AppCreator
-        [FM.APPCREATOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
         [FM.APPCREATOR_FIELDERROR_ALPHANUMERIC]: 'Model name may only contain alphanumeric characters',
         [FM.APPCREATOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
-        [FM.APPCREATOR_FIELDERROR_TOOLONG]: 'Name length exceeds 30 characters.',
+        [FM.FIELDERROR_MAX_30]: 'Name length exceeds 30 characters.',
         [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner Model',
         [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner Model',
         [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner Model',
@@ -820,7 +818,6 @@ export default {
         [FM.SETTINGS_COPYBUTTONARIALDESCRIPTION]: 'Copy Model',
         [FM.SETTINGS_COPYBUTTONTEXT]: 'Copy',
         [FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION]: 'Export Model to File',
-        [FM.SETTINGS_FIELDERROR_REQUIREDVALUE]: 'Required Value',
         [FM.SETTINGS_FIELDERROR_ALPHANUMERIC]: 'Model names may only contain alphanumeric characters',
         [FM.SETTINGS_FIELDERROR_DISTINCT]: 'Name is already in use.',
         [FM.SETTINGS_FIELDS_NAMELABEL]: 'Name',
@@ -1016,9 +1013,6 @@ export default {
 
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
-        [FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
-        [FM.ENTITYCREATOREDITOR_FIELDERROR_MAX_LENGTH]: 'May not exceed 30 characters.',
-        [FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC]: 'May only contain alphanumeric characters with no spaces.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED]: 'Name is reserved.',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM]: 'Enum',
@@ -1080,11 +1074,15 @@ export default {
         [FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS]: 'Previously Submitted Labels',
         [FM.EXTRACTCONFLICTMODAL_CALLTOACTION]: `Clicking 'Accept' will replace the conflicting labels with the previously submitted labels.`,
 
-         // Import Cancel
+        // FieldError
+        [FM.FIELDERROR_ALPHANUMERIC]: 'May only contain alphanumeric characters with no spaces.',
+        [FM.FIELDERROR_MAX_30]: 'May not exceed 30 characters',
+        [FM.FIELDERROR_REQUIREDVALUE]: 'Required Value',
+   
+        // Import Cancel
         [FM.IMPORT_CANCEL_TITLE]: 'Are you sure you want to abandon this import?',
         [FM.IMPORT_CANCEL_CHECKBOX_LABEL]: 'Skip remaining imports',
     
-
         // LogConversionConflictModal
         [FM.LOGCONVERSIONCONFLICTMODAL_TITLE]: 'Incompatible Log Dialog',
         [FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE]: 'You attempted to save this log dialog as a train dialog but this dialog is incompatible with the current model due to conflicts in entity labels.  This may occur if the model has changed from the version of model used to create the log dialog. You need to update the dialog to match current model to convert it.',
@@ -1146,8 +1144,8 @@ export default {
 
         [FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER]: 'Entity value...',
         [FM.TEACHSESSIONINIT_TITLE]: 'Set Initial Entity Values',
-        [FM.TEACHSESSIONSTUB_TITLE]: 'Stub API Output',
-        [FM.TEACHSESSIONSTUB_DESCRIPTION]: 'Set Memory values as they should be after API call',
+        [FM.TEACHSESSIONSTUB_TITLE]: 'Stub API',
+        [FM.TEACHSESSIONSTUB_DESCRIPTION]: 'Memory values as they should be after API call',
 
         // TeachSessionModal
         [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this dialog?',

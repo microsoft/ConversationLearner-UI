@@ -1189,7 +1189,8 @@ export interface ReceivedProps {
     // Add a new train dialog to the Model (when EditDialogType === NEW)
     onCreateDialog: (newTrainDialog: CLM.TrainDialog) => void
     onDeleteDialog: () => void
-    onEditAPIStub: (trainDialog: CLM.TrainDialog, activity: Activity | null) => void
+    // LARS check this doesn't seem to be used?
+    onEditAPIStub: (trainDialog: CLM.TrainDialog, activity: Activity | null, apiStubName: string, filledEntities: CLM.FilledEntity[]) => void
     conflictPairs: ConflictPair[]
     onAcceptConflictResolution: (conflictPairs: ConflictPair[]) => Promise<void>
     onAbortConflictResolution: () => void

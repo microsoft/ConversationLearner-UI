@@ -125,11 +125,11 @@ class AppCreator extends React.Component<Props, ComponentState> {
         const MAX_NAME_LENGTH = 30
 
         if (value.length === 0) {
-            return Utils.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_REQUIREDVALUE)
+            return Utils.formatMessageId(intl, FM.FIELDERROR_REQUIREDVALUE)
         }
 
         if (value.length > MAX_NAME_LENGTH) {
-            return Utils.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_TOOLONG)
+            return Utils.formatMessageId(intl, FM.FIELDERROR_MAX_30)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
@@ -149,7 +149,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
     }
 
     onGetPasswordErrorMessage(value: string): string {
-        return value ? "" : Utils.formatMessageId(this.props.intl, FM.APPCREATOR_FIELDERROR_REQUIREDVALUE)
+        return value ? "" : Utils.formatMessageId(this.props.intl, FM.FIELDERROR_REQUIREDVALUE)
     }
 
     onChangeFile = (files: any) => {

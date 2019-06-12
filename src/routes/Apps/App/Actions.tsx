@@ -110,7 +110,7 @@ class Actions extends React.Component<Props, ComponentState> {
                 .filter(e => [...a.requiredEntities, ...a.negativeEntities, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(e.entityId))
             const entityMatch = entities.some(e => e.entityName.toLowerCase().includes(searchStringLower))
 
-            return (nameMatch || typeMatch || entityMatch) && !CLM.ActionBase.isStubbedAPI(a)
+            return (nameMatch || typeMatch || entityMatch)
         })
     }
 

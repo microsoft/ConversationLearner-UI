@@ -36,6 +36,23 @@ export interface EditHandlerArgs {
     selectionType?: SelectionType
 }
 
+interface TranscriptActionCall {
+    type: string,
+    actionName: string,
+    actionInput: TranscriptActionInput[]
+    actionOutput: TranscriptActionOutput[]
+}
+
+interface TranscriptActionInput {
+    entityName: string
+}
+
+
+interface TranscriptActionOutput {
+    entityName: string,
+    value: string
+}
+
 interface IRenderableColumn extends OF.IColumn {
     render: (x: CLM.TrainDialog, component: TrainDialogs) => React.ReactNode
     getSortValue: (trainDialog: CLM.TrainDialog, component: TrainDialogs) => string
@@ -148,6 +165,7 @@ interface ComponentState {
     isTreeViewModalOpen: boolean
     // If creating an API Stub, the initial filled entities, if set modal will open
     apiStubFilledEntityMap: CLM.FilledEntityMap | null
+    apiStubName: string | null
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
@@ -190,6 +208,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             importAutoMerge: false,
             isTreeViewModalOpen: false,
             apiStubFilledEntityMap: null,
+            apiStubName: null,
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
             selectedActivityIndex: null,
@@ -500,13 +519,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
             await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE, this.state.editType)
 
-            // Should I get input for API Stub?
+            // Should I get input for API Stub?  LARS - is this till needed?  Where not? LOG TOO
             if (editAPIStub) {
-                // If Stub API was chosen allow user to select API reponse
-                const action = this.props.actions.find(a => a.actionId === trainScorerStep.labelAction)
-                if (CLM.ActionBase.isStubbedAPI(action)) {
-                    this.onEditAPIStub(newTrainDialog, selectedActivity)
-                }
+                DialogEditing.onSelectAPIStub(trainDialog, newTrainDialog, trainScorerStep, selectedActivity, this.props.actions, this.onEditAPIStub)
             }
         }
         catch (error) {
@@ -717,15 +732,23 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     //---- API STUBS ----
     @OF.autobind
-    onEditAPIStub(trainDialog: CLM.TrainDialog, selectedActivity: Activity | null) {
+    onEditAPIStub(trainDialog: CLM.TrainDialog, selectedActivity: Activity | null, apiStubName: string | undefined, filledEntities: CLM.FilledEntity[] | undefined) {
         // If no selected activity, select the most recent one
         const activity = selectedActivity || this.state.history[this.state.history.length - 1]
         
         if (activity) {
-            const filledEntityMap = DialogEditing.getFilledEntityMapForActivity(trainDialog, activity, this.props.entities)
+            // When change from one API stub to another, filledEntities are passed in to keep stub results
+            let filledEntityMap = filledEntities ? CLM.FilledEntityMap.FromFilledEntities(filledEntities, this.props.entities) : null
+        
+            // Otherwise use filled entities in scorer step
+            if (!filledEntityMap && selectedActivity) {
+                const scorerStep = DialogEditing.scorerStepFromActivity(trainDialog, selectedActivity)
+                filledEntityMap = scorerStep ? CLM.FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, this.props.entities) : null
+            }
             const selectedActivityIndex = DialogUtils.matchedActivityIndex(activity, this.state.history)
             this.setState({
                 apiStubFilledEntityMap: filledEntityMap,
+                apiStubName: apiStubName || null,
                 selectedActivityIndex,
                 currentTrainDialog: trainDialog
             })
@@ -733,13 +756,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onCloseCreateAPIStub(filledEntityMap: CLM.FilledEntityMap | null) {
+    async onCloseCreateAPIStub(filledEntityMap: CLM.FilledEntityMap | null, apiName: string) {
         this.setState({
-            apiStubFilledEntityMap: null
+            apiStubFilledEntityMap: null,
+            apiStubName: null
         })
 
         if (filledEntityMap && this.state.currentTrainDialog) {
-            const scorerStep = await DialogEditing.getStubScorerStep(this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
+            const scorerStep = await DialogEditing.getStubScorerStep(apiName, this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
 
             // Editing history
             if (this.state.selectedActivityIndex) {
@@ -1058,6 +1082,58 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     hasTranscriptBeenImported(importHash: string): boolean {
         return this.props.trainDialogs.find(td => td.clientData ? (td.clientData.importHashes.find(ih => ih === importHash) !== undefined) : false) !== undefined
     }
+
+    async importActionOutput(actionResults: TranscriptActionOutput[]): Promise<CLM.FilledEntity[]> {
+        const filledEntities: CLM.FilledEntity[] = []
+        
+        for (const actionResult of actionResults) {
+            // Check if entity already exists
+            const foundEntity = this.props.entities.find(e => e.entityName === actionResult.entityName)
+            let entityId: string = ""
+            if (foundEntity) {
+                entityId = foundEntity.entityId
+            }
+            else {
+                // If it doesn't exist create a new one
+                const newEntity: CLM.EntityBase = {
+                    entityId: undefined!,
+                    entityName: actionResult.entityName,
+                    resolverType: "none",
+                    createdDateTime: new Date().toJSON(),
+                    lastModifiedDateTime: new Date().toJSON(),
+                    isMultivalue: false,
+                    isNegatible: false,
+                    negativeId: null,
+                    positiveId: null,
+                    entityType: CLM.EntityType.LOCAL,
+                    version: null,
+                    packageCreationId: null,
+                    packageDeletionId: null,
+                    doNotMemorize: false
+                }
+
+                entityId = await ((this.props.createEntityThunkAsync(this.props.app.appId, newEntity) as any) as Promise<string>)
+
+                if (!entityId) {
+                    throw new Error("Invalid Entity Definition")
+                }
+            
+            }
+            const memoryValue: CLM.MemoryValue = {
+                userText: actionResult.value,
+                displayText: null,
+                builtinType: null,
+                resolution: {}
+            }
+            const filledEntity: CLM.FilledEntity = {
+                entityId,
+                values: [memoryValue]
+            }
+            filledEntities.push(filledEntity)
+        }
+        return filledEntities
+    }
+
     async onImport(transcript: BB.Activity[]): Promise<void> {
 
         this.setState({isImportWaitModalOpen: true})
@@ -1088,16 +1164,25 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
 
         let curRound: CLM.TrainRound | null = null
-        transcript.forEach((activity: BB.Activity) => {
+        for (const activity of transcript) {
             // TODO: Handle conversation updates
             if (!activity.type || activity.type === "message") {
                 if (activity.from.role === "user") {
-                    let textVariation: CLM.TextVariation = {
+                    const textVariations: CLM.TextVariation[] = [{
                         text: activity.text,
                         labelEntities: []
+                    }]
+                    if (activity.channelData && activity.channelData.textVariations) {
+                        activity.channelData.textVariations.forEach((tv: any) => {
+                            let altTextVariation: CLM.TextVariation = {
+                                text: tv.text,
+                                labelEntities: []
+                            }
+                            textVariations.push(altTextVariation)
+                        })
                     }
                     let extractorStep: CLM.TrainExtractorStep = {
-                        textVariations: [textVariation]
+                        textVariations: textVariations
                     }
                     curRound = {
                         extractorStep,
@@ -1106,18 +1191,33 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     trainDialog.rounds.push(curRound)
                 }
                 else if (activity.from.role === "bot") {
+                    let action: CLM.ActionBase | undefined
+                    let filledEntities: CLM.FilledEntity[] = []
+                    let logicResult: CLM.LogicResult | undefined
+                    if (activity.channelData && activity.channelData.type === "ActionCall") {
+                        const actionCall = activity.channelData as TranscriptActionCall
+                        action = await DialogEditing.getStubAPIAction(this.props.app.appId, actionCall.actionName, this.props.actions, this.props.createActionThunkAsync as any)
+                        const apifilledEntities = await this.importActionOutput(actionCall.actionOutput)
+                        // Store stub API output in LogicResult
+                        logicResult = {
+                            logicValue: undefined,
+                            changedFilledEntities: apifilledEntities,
+                        }
+                    }
+                    else {
+                        action = DialogUtils.findActionByText(activity.text, this.props.actions)
+                    }
                     let scoreInput: CLM.ScoreInput = {
-                        filledEntities: [],
+                        filledEntities: filledEntities,
                         context: {},
                         maskedActions: []
                     }
                     // As a first pass, try to match by exact text
-                    const action = DialogUtils.findActionByText(activity.text, this.props.actions)
                     let scorerStep: CLM.TrainScorerStep = {
                         importText: action ? undefined : activity.text,
                         input: scoreInput,
                         labelAction: action ? action.actionId : CLM.CL_STUB_IMPORT_ACTION_ID,
-                        logicResult: undefined,
+                        logicResult: logicResult,
                         scoredAction: undefined
                     }
 
@@ -1129,7 +1229,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     }
                 }
             }
-        })
+        }
 
         // Extract entities
         if (this.props.entities.length > 0) {
@@ -1144,6 +1244,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.props.actions,
             this.props.trainDialogReplayAsync as any,
         )
+
+        DialogUtils.cleanTrainDialog(newTrainDialog)
 
         // Try to map action again now that we have entities
         DialogUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
@@ -1515,7 +1617,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onEndSessionActivity={this.onEndSessionActivity}
                         onReplayDialog={(trainDialog) => this.onReplayTrainDialog(trainDialog)}
                         onSetInitialEntities={this.onSetInitialEntities}
-                        onEditAPIStub={this.onEditAPIStub}
+                        onEditAPIStub={(trainDialog, activity, editHandlerArgs) => this.onEditAPIStub(trainDialog, activity, editHandlerArgs.apiStubName, editHandlerArgs.filledEntities)}
                         initialHistory={this.state.history}
                         editType={this.state.editType}
                         lastAction={this.state.lastAction}
@@ -1554,7 +1656,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}
                     onChangeAction={(trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainDialog, activity, trainScorerStep)}
-                    onEditAPIStub={(trainDialog: CLM.TrainDialog, activity: Activity) => this.onEditAPIStub(trainDialog, activity)}
+                    onEditAPIStub={(trainDialog: CLM.TrainDialog, activity: Activity, apiStubName: string, filledEntities: CLM.FilledEntity[]) => this.onEditAPIStub(trainDialog, activity, apiStubName, filledEntities)}
                     onBranchDialog={(trainDialog, activity, userInput) => this.onBranchTrainDialog(trainDialog, activity, userInput)}
                     onDeleteDialog={() => this.onDeleteTrainDialog()}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
@@ -1585,6 +1687,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     isOpen={this.state.apiStubFilledEntityMap !== null}
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
+                    apiStubName={this.state.apiStubName}
                     initMemories={this.state.apiStubFilledEntityMap}
                     handleClose={this.onCloseCreateAPIStub}
                 />
@@ -1630,6 +1733,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
         createActionThunkAsync: actions.action.createActionThunkAsync,
+        createEntityThunkAsync: actions.entity.createEntityThunkAsync,
         createTeachSessionThunkAsync: actions.teach.createTeachSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,

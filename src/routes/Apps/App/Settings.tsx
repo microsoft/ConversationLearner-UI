@@ -220,11 +220,11 @@ class Settings extends React.Component<Props, ComponentState> {
         const MAX_NAME_LENGTH = 30
 
         if (value.length === 0) {
-            return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_REQUIREDVALUE)
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_REQUIREDVALUE)
         }
 
         if (value.length > MAX_NAME_LENGTH) {
-            return Util.formatMessageId(this.props.intl, FM.APPCREATOR_FIELDERROR_TOOLONG)
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_MAX_30)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {

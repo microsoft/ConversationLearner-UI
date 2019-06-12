@@ -2,17 +2,18 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react';
+import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react';
+import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../Utils/util'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import FormattedMessageId from '../FormattedMessageId'
 import HelpIcon from '../HelpIcon'
 import { TipType } from '../ToolTips/ToolTips'
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { State } from '../../types';
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { FM } from '../../react-intl-messages'
@@ -21,6 +22,9 @@ import './TeachSessionInitState.css'
 interface ComponentState {
     filledEntityMap: CLM.FilledEntityMap
     isEntityEditorModalOpen: boolean
+    apiNameVal: string
+    // If editing an is exiting api stub
+    isNameFixed: boolean
 }
 
 class TeachSessionInitState extends React.Component<Props, ComponentState> {
@@ -29,13 +33,19 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         super(props)
         this.state = { 
             filledEntityMap: new CLM.FilledEntityMap(),
-            isEntityEditorModalOpen: false
+            isEntityEditorModalOpen: false,
+            apiNameVal: '',
+            isNameFixed: false
         }
     }
 
     componentWillReceiveProps(newProps: Props) {
         if (this.props.isOpen !== newProps.isOpen) {
-            this.setState({filledEntityMap: newProps.initMemories || new CLM.FilledEntityMap()})
+            this.setState({
+                filledEntityMap: newProps.initMemories || new CLM.FilledEntityMap(),
+                apiNameVal: newProps.apiStubName || '',
+                isNameFixed: newProps.apiStubName !== null
+            })
         }
     }
 
@@ -55,7 +65,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickCancel() {
-        this.props.handleClose(null)
+        this.props.handleClose(null, null)
     }
 
     @OF.autobind
@@ -69,7 +79,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
             }
         }
 
-        this.props.handleClose(this.state.filledEntityMap)
+        this.props.handleClose(this.state.filledEntityMap, this.state.apiNameVal)
     }
 
     @OF.autobind
@@ -178,6 +188,33 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
     getEditableEntities(): CLM.EntityBase[] {
         return this.props.entities.filter(entity => !entity.positiveId && !entity.doNotMemorize)
     }
+
+    @OF.autobind
+    onChangedName(text: string) {
+        this.setState({
+            apiNameVal: text
+        })
+    }
+
+    onGetNameErrorMessage(value: string): string {
+        const MAX_NAME_LENGTH = 30
+
+        if (value.length === 0) {
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_REQUIREDVALUE)
+        }
+
+        if (value.length > MAX_NAME_LENGTH) {
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_MAX_30)
+        }
+
+        if (!/^[a-zA-Z0-9-]+$/.test(value)) {
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_ALPHANUMERIC)
+        }
+
+        // TODO: Probably ok, but consider checking that name isn't in use
+        return ''
+    }
+
     render() {
         const { intl } = this.props
         const editableEntities = this.getEditableEntities()
@@ -191,18 +228,28 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                     <span className={OF.FontClassNames.xxLarge}>
                         <FormattedMessageId id={this.props.initMemories ? FM.TEACHSESSIONSTUB_TITLE : FM.TEACHSESSIONINIT_TITLE} />
                     </span>
-                    {this.props.initMemories &&
-                        <div className={OF.FontClassNames.medium}>
-                            <FormattedMessageId id={FM.TEACHSESSIONSTUB_DESCRIPTION}/>
-                            <HelpIcon tipType={TipType.STUB_API}/>
-                        </div>
-                    }
                 </div>
                 <div>
+                    {this.props.initMemories &&
+                        <div className="cl-init-state-fields cl-ux-flexpanel--left">
+                            <OF.TextField
+                                className={OF.FontClassNames.mediumPlus}
+                                readOnly={this.state.isNameFixed}
+                                onChanged={(text) => this.onChangedName(text)}
+                                label={Util.formatMessageId(intl, FM.SETTINGS_FIELDS_NAMELABEL)}
+                                onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
+                                value={this.state.apiNameVal}
+                            />
+                            <div className={OF.FontClassNames.mediumPlus}>
+                                <FormattedMessageId id={FM.TEACHSESSIONSTUB_DESCRIPTION}/>
+                                <HelpIcon tipType={TipType.STUB_API}/>
+                            </div>
+                        </div>
+                    }
                     {
                         editableEntities.map(entity => {
                                 return (
-                                    <div className="teachInitBlock" key={entity.entityId}>
+                                    <div className="cl-init-state-block" key={entity.entityId}>
                                         <OF.Label className="cl-label cl-font--emphasis" data-testid="teach-session-entity-name">{entity.entityName}</OF.Label>
                                         <OF.IconButton
                                             className="cl-icon-plain"
@@ -345,9 +392,10 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean,
     app: CLM.AppBase,
+    apiStubName: string | null
     editingPackageId: string
     initMemories: CLM.FilledEntityMap | null
-    handleClose: (filledEntityMap: CLM.FilledEntityMap | null) => void
+    handleClose: (filledEntityMap: CLM.FilledEntityMap | null, apiName: string | null) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

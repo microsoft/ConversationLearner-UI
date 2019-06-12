@@ -130,6 +130,7 @@ interface ComponentState {
     isTeachDialogModalOpen: boolean
     // If creating an API Stub, the initial filled entities, if set modal will open
     apiStubFilledEntityMap: CLM.FilledEntityMap | null
+    apiStubName: string | null
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
@@ -192,6 +193,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isEditDialogModalOpen: false,
             isTeachDialogModalOpen: false,
             apiStubFilledEntityMap: null,
+            apiStubName: null,
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
             selectedActivityIndex: null,
@@ -402,11 +404,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
             // Should I get input for API Stub?
             if (editAPIStub) {
-                // If Stub API was chosen allow user to select API reponse
-                const action = this.props.actions.find(a => a.actionId === trainScorerStep.labelAction)
-                if (CLM.ActionBase.isStubbedAPI(action)) {
-                    this.onEditAPIStub(newTrainDialog, selectedActivity)
-                }
+                DialogEditing.onSelectAPIStub(trainDialog, newTrainDialog, trainScorerStep, selectedActivity, this.props.actions, this.onEditAPIStub)
             }
         }
         catch (error) {
@@ -669,11 +667,25 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     //---- API STUBS ----
     @OF.autobind
-    onEditAPIStub(trainDialog: CLM.TrainDialog, selectedActivity: Activity | null) {
-        if (selectedActivity) {
-            const filledEntityMap = DialogEditing.getFilledEntityMapForActivity(trainDialog, selectedActivity, this.props.entities)
+    onEditAPIStub(trainDialog: CLM.TrainDialog, selectedActivity: Activity | null, apiStubName: string | undefined, filledEntities: CLM.FilledEntity[] | undefined) {
+        // If no selected activity, select the most recent one
+        const activity = selectedActivity || this.state.history[this.state.history.length - 1]
+        
+        if (activity) {
+            // When change from one API stub to another, filledEntities are passed in to keep stub results
+            let filledEntityMap = filledEntities ? CLM.FilledEntityMap.FromFilledEntities(filledEntities, this.props.entities) : null
+        
+            // Otherwise use filled entities in scorer step
+            if (!filledEntityMap && selectedActivity) {
+                const scorerStep = DialogEditing.scorerStepFromActivity(trainDialog, selectedActivity)
+                filledEntityMap = scorerStep ? CLM.FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, this.props.entities) : null
+            }
+            const selectedActivityIndex = DialogUtils.matchedActivityIndex(activity, this.state.history)
             this.setState({
-                apiStubFilledEntityMap: filledEntityMap
+                apiStubFilledEntityMap: filledEntityMap,
+                apiStubName: apiStubName || null,
+                selectedActivityIndex,
+                currentTrainDialog: trainDialog
             })
         }
     }
@@ -681,11 +693,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onCloseCreateAPIStub(filledEntityMap: CLM.FilledEntityMap | null) {
         this.setState({
-            apiStubFilledEntityMap: null
+            apiStubFilledEntityMap: null,
+            apiStubName: null
         })
 
         if (filledEntityMap && this.state.currentTrainDialog) {
-            const scorerStep = await DialogEditing.getStubScorerStep(this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
+            // LARS TODO let user specify API stub name
+            const scorerStep = await DialogEditing.getStubScorerStep("", this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
 
             // Editing history
             if (this.state.selectedActivityIndex) {
@@ -1004,7 +1018,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         originalTrainDialogId={null}
                         onClose={this.onCloseTeachSession}
                         onSetInitialEntities={null}
-                        onEditAPIStub={this.onEditAPIStub}
+                        onEditAPIStub={(trainDialog, activity, editHandlerArgs) => this.onEditAPIStub(trainDialog, activity, editHandlerArgs.apiStubName, editHandlerArgs.filledEntities)}
                         onEditTeach={(historyIndex, editHandlerArgs, tags, description, editHandler) => this.onEditTeach(historyIndex, editHandlerArgs ? editHandlerArgs : undefined, tags, description, editHandler)}
                         onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.isLastActivity!)}
                         onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)}
@@ -1049,7 +1063,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}
                     onChangeAction={(trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainDialog, activity, trainScorerStep)}
-                    onEditAPIStub={(trainDialog: CLM.TrainDialog, activity: Activity) => this.onEditAPIStub(trainDialog, activity)}
+                    onEditAPIStub={(trainDialog: CLM.TrainDialog, activity: Activity, apiStubName: string, filledEntities: CLM.FilledEntity[]) => this.onEditAPIStub(trainDialog, activity, apiStubName, filledEntities)}
                     onBranchDialog={null} // Never branch on LogDialogs
                     onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
                     onDeleteDialog={this.onDeleteLogDialog}
@@ -1067,6 +1081,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     isOpen={this.state.apiStubFilledEntityMap !== null}
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
+                    apiStubName={this.state.apiStubName}
                     initMemories={this.state.apiStubFilledEntityMap}
                     handleClose={this.onCloseCreateAPIStub}
                 />

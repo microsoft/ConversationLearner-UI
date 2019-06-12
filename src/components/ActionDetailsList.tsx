@@ -52,6 +52,11 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             }
             case CLM.ActionTypes.API_LOCAL: {
                 const apiAction = new CLM.ApiAction(action)
+                // If stub not expecting action to exist
+                if (apiAction.isStub) {
+                    return false
+                }
+                // Otherwise make sure callback exists
                 return !this.props.botInfo.callbacks.some(t => t.name === apiAction.name)
             }
             case CLM.ActionTypes.CARD: {
@@ -343,11 +348,12 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 const payloadRenderer = getActionPayloadRenderer(action, component, isValidationError)
                 return (
                     <div className="cl-action-error">
-                        {payloadRenderer}
                         {isValidationError &&
                             <div className={OF.FontClassNames.mediumPlus}>
                                 <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
-                            </div>}
+                            </div>
+                        }
+                        {payloadRenderer}
                     </div>
                 )
             }
@@ -361,8 +367,22 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             getSortValue: action => action.actionType.toLowerCase(),
             render: action => {
-                const actionType = action.actionType === CLM.ActionTypes.API_LOCAL ? "API" : action.actionType
-                return <span className={OF.FontClassNames.mediumPlus} data-testid="action-details-action-type">{actionType}</span>
+                let actionType = action.actionType.toString()
+                let addedStyle = "cl-actiontype-font"
+                if (actionType === CLM.ActionTypes.API_LOCAL) {
+                    if (CLM.ActionBase.isStubbedAPI(action)) {
+                        actionType = "API STUB"
+                        addedStyle = "cl-actiontype-font--warning"
+                    } else {
+                        actionType = "API"
+                    }
+                } 
+                return <span 
+                    className={`${OF.FontClassNames.mediumPlus} ${addedStyle}`} 
+                    data-testid="action-details-action-type"
+                >
+                    {actionType}
+                </span>
             }
         },
         {

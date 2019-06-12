@@ -40,6 +40,7 @@ export default class Component extends React.Component<Props, {}> {
 
         return <ApiPayloadRenderer
             name={apiAction.name}
+            isStub={apiAction.isStub || false}
             showLogicFunction={showLogicFunction}
             originalLogicArguments={logicArgumentsUsingEntityNames}
             substitutedLogicArguments={logicArgumentsUsingCurrentMemory}

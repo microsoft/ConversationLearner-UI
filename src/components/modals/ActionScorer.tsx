@@ -50,8 +50,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 // If I'm not in Teach or clicked on history item, highlight selected
                 let selected = false
                 if (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected) {
+                    const score: number | string = (action as CLM.ScoredAction).score
                     // If no selected actionId, first item is selected one
-                    if (!component.props.selectedActionId && index === 0) {
+                    if (!component.props.selectedActionId && score === 1) {
                         selected = true
                     }
                     else if (component.props.selectedActionId === action.actionId) {
@@ -122,10 +123,20 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: (action: CLM.ActionBase, component) => {
                 const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
 
-                if (CLM.ActionBase.isStubbedAPI(action)) {
-                    return <span className="cl-font--warning cl-action-scorer-warning">STUBBED API CALL</span>
+          /*      if (CLM.ActionBase.isStubbedAPI(action)) {
+                    const stubAction = new CLM.ApiAction(action)
+                    return (
+                        <div>
+                            <span className="cl-font--warning cl-action-scorer-warning">
+                                STUBBED API
+                            </span>
+                            <span>
+                                {stubAction.name}
+                            </span>
+                        </div>
+                    )
                 }
-                else if (action.actionType === CLM.ActionTypes.TEXT) {
+                else */if (action.actionType === CLM.ActionTypes.TEXT) {
                     const textAction = new CLM.TextAction(action)
                     return (
                         <ActionPayloadRenderers.TextPayloadRendererContainer
@@ -671,7 +682,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Handle deleted actions
         if (action.actionId === MISSING_ACTION) {
             if (column.key === 'select') {
-                const buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && index === 0) ? "Selected" : "Select";
+                const score: number | string = (action as CLM.ScoredAction).score
+                    
+                const buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && score === 1) ? "Selected" : "Select";
                 return (
                     <OF.PrimaryButton
                         disabled={true}
@@ -827,8 +840,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onSelectAPIStub() {
-        const stubAPIAction = await DialogEditing.getStubAPIAction(this.props.app.appId, this.props.actions, this.props.createActionThunkAsync as any)
-        this.handleActionSelection(stubAPIAction)
+        const stubAPIAction = await DialogEditing.getStubAPIAction(this.props.app.appId, "", this.props.actions, this.props.createActionThunkAsync as any)
+        await this.handleActionSelection(stubAPIAction)
     }
 
     render() {

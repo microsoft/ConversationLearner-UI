@@ -313,7 +313,7 @@ i[data-icon-name="Edit"]:hover {
 }
 
 .cl-font--warning {
-  background-color: #FDE7E9;
+  background-color: var(--color-errorBackground);
   margin: 5px;
   padding: 0.25em 0.5em;
 }
@@ -454,8 +454,9 @@ i[data-icon-name="Edit"]:hover {
 
 .cl-modal.cl-modal--importwait {
   height: 80px;
-  width: 350px;
+  width: 400px;
   padding: 20px;
+  text-align: center !important;
 }
 
 .cl-modal.cl-modal--wide {

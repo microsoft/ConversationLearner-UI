@@ -63,7 +63,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
     onGetNameErrorMessage(value: string): string {
         const { intl } = this.props
         if (value.length === 0) {
-            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_REQUIREDVALUE)
+            return Util.formatMessageId(intl, FM.FIELDERROR_REQUIREDVALUE)
 
         }
 

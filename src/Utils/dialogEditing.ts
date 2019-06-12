@@ -411,6 +411,8 @@ export interface EditHandlerArgs {
     trainScorerStep?: CLM.TrainScorerStep
     selectionType?: SelectionType
     isLastActivity?: boolean
+    apiStubName?: string
+    filledEntities?: CLM.FilledEntity[]
 }
 
 export async function onEditTeach(
@@ -460,6 +462,7 @@ export async function onEditTeach(
 // Returns stubAPIAction if it exists, otherwise creates it
 export async function getStubAPIAction(
     appId: string,
+    apiStubName: string | "",
     actions: CLM.ActionBase[],
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
 
@@ -468,7 +471,7 @@ export async function getStubAPIAction(
     if (stubAction) {
         return stubAction
     }
-    stubAction = CLM.ActionBase.getStubAction()
+    stubAction = CLM.ActionBase.createStubAction(apiStubName)
     const newAction = await createActionThunkAsync(appId, stubAction)
     if (!newAction) {
         throw new Error("Failed to create APIStub action")
@@ -477,45 +480,65 @@ export async function getStubAPIAction(
     return newAction
 }
 
-export function getFilledEntityMapForActivity(trainDialog: CLM.TrainDialog, selectedActivity: Activity, entities: CLM.EntityBase[]): CLM.FilledEntityMap | null {
+export function onSelectAPIStub(
+    trainDialog: CLM.TrainDialog,
+    newTrainDialog: CLM.TrainDialog,
+    trainScorerStep: CLM.TrainScorerStep,
+    selectedActivity: Activity,
+    actions: CLM.ActionBase[],
+    onEditAPIStub: (trainDialog: CLM.TrainDialog, selectedActivity: Activity | null, apiStubName: string | undefined, filledEntities: CLM.FilledEntity[] | undefined) => void
+    ): void {
+        
+    // If Stub API was chosen allow user to select API reponse
+    const action = actions.find(a => a.actionId === trainScorerStep.labelAction)
+    if (action && CLM.ActionBase.isStubbedAPI(action)) {
+
+        // If replaced step was also APIStub, used filled entities from that stub
+        const scorerStep = scorerStepFromActivity(trainDialog, selectedActivity)
+        const replacedAction = scorerStep 
+            ? actions.find(a => a.actionId === scorerStep.labelAction)
+            : null
+        const filledEntities = (scorerStep && scorerStep.logicResult && replacedAction && CLM.ActionBase.isStubbedAPI(replacedAction)) 
+            ? scorerStep.logicResult.changedFilledEntities
+            : undefined
+
+        const stubAction = new CLM.ApiAction(action)
+        onEditAPIStub(newTrainDialog, selectedActivity, stubAction.payload, filledEntities)
+    }
+}
+
+export function scorerStepFromActivity(trainDialog: CLM.TrainDialog, selectedActivity: Activity): CLM.TrainScorerStep | undefined {
 
     if (!selectedActivity) {
-        return null
+        return undefined
     }
 
     const clData: CLM.CLChannelData = selectedActivity.channelData.clData
     // If rounds were trimmed, selectedActivity could have been in deleted rounds
-
     if (clData.roundIndex !== null) {
         const round = trainDialog.rounds[clData.roundIndex]
         if (round.scorerSteps.length > 0) {
             // If a score round 
             if (typeof clData.scoreIndex === "number") {
-                const scorerStep = round.scorerSteps[clData.scoreIndex];
-                if (!scorerStep) {
-                    throw new Error(`Cannot get score step at index: ${clData.scoreIndex} from array of length: ${round.scorerSteps.length}`)
-                }
-                return CLM.FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, entities)
+                return round.scorerSteps[clData.scoreIndex];
             }
             // If user round, get filled entities from first scorer step
-            else {
-                const scorerStep = round.scorerSteps[0];
-                return CLM.FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, entities)
-            }
+            return round.scorerSteps[0]
         }
     }
-    return null
+    return undefined
 }
 
 // Returns stubAPIAction if it exists, otherwise creates it
 export async function getStubScorerStep(
+    apiStubName: string,
     appId: string,
     actions: CLM.ActionBase[],
     filledEntityMap: CLM.FilledEntityMap,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
 ): Promise<CLM.TrainScorerStep> {
     
-    const stubAPIAction = await getStubAPIAction(appId, actions, createActionThunkAsync)
+    const stubAPIAction = await getStubAPIAction(appId, apiStubName, actions, createActionThunkAsync)
     const filledEntities = filledEntityMap.FilledEntities()
 
     // Generate stub

@@ -817,6 +817,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     isOpen={this.state.isInitStateOpen}
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
+                    apiStubName={null}
                     initMemories={null}
                     handleClose={this.onCloseInitState}
                 />
@@ -866,7 +867,7 @@ export interface ReceivedProps {
     onEndSessionActivity: (tags: string[], description: string) => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any
     onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => Promise<void>) | null
-    onEditAPIStub: (trainDialog: CLM.TrainDialog, activity: Activity) => void
+    onEditAPIStub: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => void
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string
