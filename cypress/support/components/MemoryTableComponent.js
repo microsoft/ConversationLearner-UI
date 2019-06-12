@@ -15,7 +15,7 @@ function _VerifyEntitiesInMemory(entityName, deleted, entityValues, displaced) {
 
   let entityValueFont = '.cl-font--emphasis'
   if(deleted || displaced) {
-    entityValueFont = '.cl-font--deleted'  
+    entityValueFont = '.cl-font--deleted'
   }
 
   cy.Get(`${entityNameFont},[data-testid="entity-memory-name"]`)
