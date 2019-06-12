@@ -16,7 +16,7 @@ export function TypeDisqualifyingEntities(entityNames) { TypeMultipleEntities('.
 export function SelectType(type) { SelectFromDropdown('[data-testid="dropdown-action-type"]', type) }
 export function SelectApi(apiName) { SelectFromDropdown('[data-testid="dropdown-api-option"]', apiName) }
 
-export function VerifyErrorMessage(expectedMessage) { cy.Get('[data-testid="action-creator-editor-error"]').ExactMatch(expectedMessage) }
+export function VerifyErrorMessage(expectedMessage) { cy.Get('[data-testid="action-creator-editor-error-callback"]').ExactMatch(expectedMessage) }
 
 function SelectFromDropdown(selector, option)
 {
