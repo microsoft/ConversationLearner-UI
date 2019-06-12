@@ -411,8 +411,6 @@ export interface EditHandlerArgs {
     trainScorerStep?: CLM.TrainScorerStep
     selectionType?: SelectionType
     isLastActivity?: boolean
-    apiStubName?: string
-    filledEntities?: CLM.FilledEntity[]
 }
 
 export async function onEditTeach(
@@ -467,44 +465,35 @@ export async function getStubAPIAction(
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
 
 ): Promise<CLM.ActionBase> {
-    let stubAction = actions.find(a => CLM.ActionBase.isStubbedAPI(a))
+    // Check if it has been attached to real api call
+    const apiHash = Util.hashText(JSON.stringify(apiStubName))
+    let stubAction = actions.find(a => {return a.clientData && a.clientData.importHashes 
+        ? (a.clientData.importHashes.find(h => h === apiHash) !== undefined)
+        : false
+    })
+
+    // Otherwise look for matching stub action with same name
+    if (!stubAction) {
+        stubAction = actions.filter(a => CLM.ActionBase.isStubbedAPI(a))
+            .map(aa => new CLM.ApiAction(aa))
+            .find(aaa => aaa.name === apiStubName)
+    }
     if (stubAction) {
         return stubAction
     }
-    stubAction = CLM.ActionBase.createStubAction(apiStubName)
-    const newAction = await createActionThunkAsync(appId, stubAction)
+
+    // Otherwise c
+    const newStub = CLM.ActionBase.createStubAction(apiStubName)
+
+    // If stub was created by import, add hash for future matching
+    newStub.clientData = { importHashes: [apiHash]}
+
+    const newAction = await createActionThunkAsync(appId, newStub)
     if (!newAction) {
         throw new Error("Failed to create APIStub action")
     }
 
     return newAction
-}
-
-export function onSelectAPIStub(
-    trainDialog: CLM.TrainDialog,
-    newTrainDialog: CLM.TrainDialog,
-    trainScorerStep: CLM.TrainScorerStep,
-    selectedActivity: Activity,
-    actions: CLM.ActionBase[],
-    onEditAPIStub: (trainDialog: CLM.TrainDialog, selectedActivity: Activity | null, apiStubName: string | undefined, filledEntities: CLM.FilledEntity[] | undefined) => void
-    ): void {
-        
-    // If Stub API was chosen allow user to select API reponse
-    const action = actions.find(a => a.actionId === trainScorerStep.labelAction)
-    if (action && CLM.ActionBase.isStubbedAPI(action)) {
-
-        // If replaced step was also APIStub, used filled entities from that stub
-        const scorerStep = scorerStepFromActivity(trainDialog, selectedActivity)
-        const replacedAction = scorerStep 
-            ? actions.find(a => a.actionId === scorerStep.labelAction)
-            : null
-        const filledEntities = (scorerStep && scorerStep.logicResult && replacedAction && CLM.ActionBase.isStubbedAPI(replacedAction)) 
-            ? scorerStep.logicResult.changedFilledEntities
-            : undefined
-
-        const stubAction = new CLM.ApiAction(action)
-        onEditAPIStub(newTrainDialog, selectedActivity, stubAction.payload, filledEntities)
-    }
 }
 
 export function scorerStepFromActivity(trainDialog: CLM.TrainDialog, selectedActivity: Activity): CLM.TrainScorerStep | undefined {
@@ -543,9 +532,9 @@ export async function getStubScorerStep(
 
     // Generate stub
     let scoredAction: CLM.ScoredAction = {
-        actionId: undefined!,
-        payload: "",
-        isTerminal: false,
+        actionId: stubAPIAction.actionId,
+        payload: stubAPIAction.payload,
+        isTerminal: stubAPIAction.isTerminal,
         actionType: CLM.ActionTypes.API_LOCAL,
         score: 1
     }

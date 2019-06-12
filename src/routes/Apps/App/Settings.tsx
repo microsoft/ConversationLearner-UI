@@ -234,7 +234,7 @@ class Settings extends React.Component<Props, ComponentState> {
         // Check that name isn't in use
         const foundApp = this.props.apps.find(a => (a.appName === value && a.appId !== this.props.app.appId));
         if (foundApp) {
-            return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_DISTINCT)
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_DISTINCT)
         }
 
         return ''
@@ -266,7 +266,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind // LARS OF
+    @OF.autobind
     onClickCopy() {
         this.setState({
             isAppCopyModalOpen: true

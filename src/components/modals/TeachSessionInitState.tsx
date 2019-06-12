@@ -197,6 +197,11 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
     }
 
     onGetNameErrorMessage(value: string): string {
+        // Don't need to check if editing existing API stub
+        if (this.state.isNameFixed) {
+            return ''
+        }
+
         const MAX_NAME_LENGTH = 30
 
         if (value.length === 0) {
@@ -207,12 +212,21 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
             return Util.formatMessageId(this.props.intl, FM.FIELDERROR_MAX_30)
         }
 
-        if (!/^[a-zA-Z0-9-]+$/.test(value)) {
+        if (!/^[a-zA-Z0-9-_]+$/.test(value)) {
             return Util.formatMessageId(this.props.intl, FM.FIELDERROR_ALPHANUMERIC)
         }
 
-        // TODO: Probably ok, but consider checking that name isn't in use
+        if (this.props.actions.filter(a => CLM.ActionBase.isStubbedAPI(a))
+            .map(aa => new CLM.ApiAction(aa))
+            .find(aaa => aaa.name === value)) {
+                return Util.formatMessageId(this.props.intl, FM.FIELDERROR_DISTINCT)
+            }
+
         return ''
+    }
+
+    isSaveDisabled(): boolean {
+        return (this.onGetNameErrorMessage(this.state.apiNameVal) !== '')
     }
 
     render() {
@@ -340,6 +354,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             data-testid="teach-session-ok-button"
                             onClick={this.onClickSubmit}
+                            disabled={this.isSaveDisabled()}
                             ariaDescription={intl.formatMessage({
                                 id: FM.BUTTON_OK,
                                 defaultMessage: 'Ok'
@@ -392,6 +407,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean,
     app: CLM.AppBase,
+    actions: CLM.ActionBase[],
     apiStubName: string | null
     editingPackageId: string
     initMemories: CLM.FilledEntityMap | null

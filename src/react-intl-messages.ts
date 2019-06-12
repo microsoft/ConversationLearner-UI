@@ -96,7 +96,6 @@ export enum FM {
 
     // AppCreator
     APPCREATOR_FIELDERROR_ALPHANUMERIC = 'AppCreator.fieldError.alphanumeric',
-    APPCREATOR_FIELDERROR_DISTINCT = 'AppCreator.fieldError.distinct',
     APPCREATOR_TITLE = 'AppCreator.title',
     APPCREATOR_COPY_TITLE = 'AppCreator.copytitle',
     APPCREATOR_IMPORT_TITLE = 'AppCreator.importtitle',
@@ -242,7 +241,6 @@ export enum FM {
 
     // EntityCreatorEditor
     ENTITYCREATOREDITOR_FIELDERROR_NOBLANK = 'EntityCreatorEditor.fieldError.noblank',
-    ENTITYCREATOREDITOR_FIELDERROR_DISTINCT = 'EntityCreatorEditor.fields.distinct',
     ENTITYCREATOREDITOR_FIELDERROR_RESERVED = 'EntityCreatorEditor.fields.reserved',
     ENTITYCREATOREDITOR_ENTITYOPTION_ENUM = 'EntityCreatorEditor.entityOption.enum',
     ENTITYCREATOREDITOR_ENTITYOPTION_LUIS = 'EntityCreatorEditor.entityOption.new',
@@ -309,6 +307,7 @@ export enum FM {
 
     // FieldError
     FIELDERROR_ALPHANUMERIC = 'FieldError.alphanumerica',
+    FIELDERROR_DISTINCT = 'FieldError.distinct',
     FIELDERROR_MAX_30 = 'fieldError.max30',
     FIELDERROR_REQUIREDVALUE = 'fieldError.requiredValue',
     
@@ -412,7 +411,6 @@ export enum FM {
     SETTINGS_COPYBUTTONTEXT = 'Settings.copyButtonText',
     SETTINGS_EXPORTBUTTONARIALDESCRIPTION = 'Settings.exportButtonArielDescription',
     SETTINGS_FIELDERROR_ALPHANUMERIC = 'Settings.fieldError.alphanumeric',
-    SETTINGS_FIELDERROR_DISTINCT = 'Settings.fieldError.distinct',
     SETTINGS_FIELDS_NAMELABEL = 'Settings.fields.nameLabel',
     SETTINGS_FILEDS_APPIDLABEL = 'Settings.fields.appIdLabel',
     SETTINGS_FIELDS_MARKDOWNLABEL = 'Settings.fields.markdownLabel',
@@ -664,8 +662,6 @@ export default {
 
         // AppCreator
         [FM.APPCREATOR_FIELDERROR_ALPHANUMERIC]: 'Model name may only contain alphanumeric characters',
-        [FM.APPCREATOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
-        [FM.FIELDERROR_MAX_30]: 'Name length exceeds 30 characters.',
         [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner Model',
         [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner Model',
         [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner Model',
@@ -819,7 +815,6 @@ export default {
         [FM.SETTINGS_COPYBUTTONTEXT]: 'Copy',
         [FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION]: 'Export Model to File',
         [FM.SETTINGS_FIELDERROR_ALPHANUMERIC]: 'Model names may only contain alphanumeric characters',
-        [FM.SETTINGS_FIELDERROR_DISTINCT]: 'Name is already in use.',
         [FM.SETTINGS_FIELDS_NAMELABEL]: 'Name',
         [FM.SETTINGS_FILEDS_APPIDLABEL]: 'Model ID',
         [FM.SETTINGS_FIELDS_MARKDOWNLABEL]: 'Markdown',
@@ -1013,7 +1008,6 @@ export default {
 
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
-        [FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED]: 'Name is reserved.',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM]: 'Enum',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_LUIS]: 'Custom Trained',
@@ -1076,9 +1070,10 @@ export default {
 
         // FieldError
         [FM.FIELDERROR_ALPHANUMERIC]: 'May only contain alphanumeric characters with no spaces.',
+        [FM.FIELDERROR_DISTINCT]: 'Name is already in use.',
         [FM.FIELDERROR_MAX_30]: 'May not exceed 30 characters',
         [FM.FIELDERROR_REQUIREDVALUE]: 'Required Value',
-   
+
         // Import Cancel
         [FM.IMPORT_CANCEL_TITLE]: 'Are you sure you want to abandon this import?',
         [FM.IMPORT_CANCEL_CHECKBOX_LABEL]: 'Skip remaining imports',

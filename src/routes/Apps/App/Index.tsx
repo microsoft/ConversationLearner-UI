@@ -242,7 +242,7 @@ class Index extends React.Component<Props, ComponentState> {
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-actions" to={{ pathname: `${match.url}/actions`, state: { app } }}>
                                 <OF.Icon iconName="List" /><span>Actions</span>
                                 <span className="count">
-                                    {this.state.modelLoaded ? this.props.actions.filter(a => !CLM.ActionBase.isStubbedAPI(a)).length : ''}
+                                    {this.state.modelLoaded ? this.props.actions.length : ''}
                                 </span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-train-dialogs" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>

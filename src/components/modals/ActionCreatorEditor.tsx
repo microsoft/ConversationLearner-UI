@@ -893,6 +893,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             actionType: CLM.ActionTypes[this.state.selectedActionTypeOptionKey],
             entityId: this.state.selectedEntityOptionKey,
             enumValueId: this.state.selectedEnumValueOptionKey,
+            clientData: this.props.action ? this.props.action.clientData : undefined
         })
 
         if (this.state.isEditing && this.props.action) {

@@ -10,6 +10,8 @@ import * as Util from '../../Utils/util'
 import * as DialogEditing from '../../Utils/dialogEditing'
 import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
+import actionTypeRenderer from '../ActionTypeRenderer'
+import TeachSessionInitState from '../modals/TeachSessionInitState'
 import ActionCreatorEditor, { NewActionPreset } from './ActionCreatorEditor'
 import AdaptiveCardViewer , { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
 import { compareTwoStrings } from 'string-similarity'
@@ -91,7 +93,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             disabled={!isAvailable}
                             ariaDescription={buttonText}
                             text={buttonText}
-                            onClick={component.showAlreadySelectedPopUp}
+                            onClick={() => component.handleReselectAction(action)}
                         />
                     )
                 }
@@ -123,20 +125,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: (action: CLM.ActionBase, component) => {
                 const defaultEntityMap = Util.getDefaultEntityMap(component.props.entities)
 
-          /*      if (CLM.ActionBase.isStubbedAPI(action)) {
-                    const stubAction = new CLM.ApiAction(action)
-                    return (
-                        <div>
-                            <span className="cl-font--warning cl-action-scorer-warning">
-                                STUBBED API
-                            </span>
-                            <span>
-                                {stubAction.name}
-                            </span>
-                        </div>
-                    )
-                }
-                else */if (action.actionType === CLM.ActionTypes.TEXT) {
+                if (action.actionType === CLM.ActionTypes.TEXT) {
                     const textAction = new CLM.TextAction(action)
                     return (
                         <ActionPayloadRenderers.TextPayloadRendererContainer
@@ -270,15 +259,20 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 80,
             isResizable: true,
             getSortValue: action => action.actionType.toLowerCase(),
-            render: action => <span className={OF.FontClassNames.mediumPlus}>{action.actionType}</span>
+            render: (scoredBase, component) => {
+                let action = component.props.actions.find(a => a.actionId === scoredBase.actionId)
+                return actionTypeRenderer(action)
+            }
         },
     ]
 }
 
 interface ComponentState {
-    actionCreatorModalOpen: boolean
-    columns: OF.IColumn[],
-    actionForRender: CLM.ScoredBase[],
+    isActionCreatorModalOpen: boolean
+    apiStubName: string | null
+    apiStubCreatorFilledEntityMap: CLM.FilledEntityMap | null
+    columns: OF.IColumn[]
+    actionForRender: CLM.ScoredBase[]
     sortColumn: IRenderableColumn
     haveEdited: boolean
     cardViewerAction: CLM.ActionBase | null
@@ -294,7 +288,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         const columns = getColumns(this.props.intl)
         this.state = {
-            actionCreatorModalOpen: false,
+            isActionCreatorModalOpen: false,
+            apiStubName: null,
+            apiStubCreatorFilledEntityMap: null,
             columns,
             actionForRender: [],
             sortColumn: columns[2], // "score"
@@ -353,7 +349,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             }
 
             this.handleActionSelection(bestAction);
-        } else if (!this.state.actionCreatorModalOpen) {
+        } else if (!this.state.isActionCreatorModalOpen) {
             setTimeout(this.focusPrimaryButton, 100)
         }
     }
@@ -368,9 +364,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
+    //-------------------
+    // Action Creator
+    //-------------------
     onClickCancelActionEditor() {
         this.setState({
-            actionCreatorModalOpen: false,
+            isActionCreatorModalOpen: false,
         })
         this.props.onActionCreatorClosed()
     }
@@ -398,8 +397,34 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     @OF.autobind
     handleOpenActionModal() {
         this.setState({
-            actionCreatorModalOpen: true
+            isActionCreatorModalOpen: true
         })
+    }
+
+    //-------------------
+    // API Stub Creator
+    //-------------------
+    @OF.autobind
+    onOpenAPIStubCreator(apiStubName: string | null = null) {
+        this.setState({
+            apiStubName,
+            apiStubCreatorFilledEntityMap: CLM.FilledEntityMap.FromFilledEntities(this.props.scoreInput.filledEntities, this.props.entities)
+        })
+    }
+
+    @OF.autobind
+    async onCloseCreateAPIStub(filledEntityMap: CLM.FilledEntityMap | null, apiName: string) {
+        this.setState({
+            apiStubName: null,
+            apiStubCreatorFilledEntityMap: null
+        })
+        // If user cancelled
+        if (!filledEntityMap) {
+            return
+        }
+        const trainScorerStep = await DialogEditing.getStubScorerStep(apiName, this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
+        this.setState({ haveEdited: true })
+        this.props.onActionSelected(trainScorerStep)
     }
 
     @OF.autobind
@@ -448,8 +473,27 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
+    async handleReselectAction(scoredBase: CLM.ScoredBase) {
+        // If ApiStub let user reselect memory values
+        if (CLM.ActionBase.isStubbedAPI(scoredBase)) {
+            this.handleActionSelection(scoredBase)
+        }
+        // Otherwise tell them it has already been selected
+        else {
+            this.showAlreadySelectedPopUp()
+        }
+    }
+    @OF.autobind
     async handleActionSelection(scoredBase: CLM.ScoredBase) {
 
+        // If apiStub get stub data before selecting
+        if (CLM.ActionBase.isStubbedAPI(scoredBase)) {
+            const action = this.props.actions.find(a => a.actionId === scoredBase.actionId)
+            if (action) {
+                this.onOpenAPIStubCreator(new CLM.ApiAction(action).name)
+            }
+            return
+        }
         let scoredAction: CLM.ScoredAction | undefined
         if (scoredBase.actionId === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID) {
             // TODO: Schema refactor
@@ -838,12 +882,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         return scoredItems
     }
 
-    @OF.autobind
-    async onSelectAPIStub() {
-        const stubAPIAction = await DialogEditing.getStubAPIAction(this.props.app.appId, "", this.props.actions, this.props.createActionThunkAsync as any)
-        await this.handleActionSelection(stubAPIAction)
-    }
-
     render() {
         // In teach mode, hide scores after selection
         // so they can't be re-selected for non-terminal actions
@@ -891,7 +929,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                             />
                             <OF.DefaultButton
                                 data-testid="action-scorer-add-apistub-button"
-                                onClick={this.onSelectAPIStub}
+                                onClick={() => this.onOpenAPIStubCreator()}
                                 ariaDescription='Create API Stub'
                                 text='API Stub'
                                 iconProps={{ iconName: 'Handwriting' }}
@@ -915,7 +953,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 <ActionCreatorEditor
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
-                    open={this.state.actionCreatorModalOpen}
+                    open={this.state.isActionCreatorModalOpen}
                     action={null}
                     actions={this.props.actions}
                     newActionPreset={this.props.newActionPreset}
@@ -936,6 +974,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     open={this.state.isAlreadySelectedOpen}
                     onOk={this.onCloseAlreadySelectedPopUp}
                     title={Util.formatMessageId(intl, FM.LOGDIALOGS_ALREADYSELECTED)}
+                />
+                <TeachSessionInitState
+                    isOpen={this.state.apiStubCreatorFilledEntityMap != null}
+                    app={this.props.app}
+                    actions={this.props.actions}
+                    editingPackageId={this.props.editingPackageId}
+                    apiStubName={this.state.apiStubName}
+                    initMemories={this.state.apiStubCreatorFilledEntityMap}
+                    handleClose={this.onCloseCreateAPIStub}
                 />
             </div>
         )

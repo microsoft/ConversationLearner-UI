@@ -142,7 +142,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
         // Check that name isn't in use
         if (this.props.apps.find(a => a.appName === value)) {
-            return Utils.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
+            return Utils.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
         }
 
         return ""

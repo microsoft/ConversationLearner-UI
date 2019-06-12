@@ -1017,7 +1017,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
                                     isLastActivitySelected={isLastActivitySelected}
-                                    onChangeAction={(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
+                                    onChangeAction={this.onChangeAction}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
                                     newActionPreset={this.state.newActionPreset}//LARS rename
@@ -1189,8 +1189,6 @@ export interface ReceivedProps {
     // Add a new train dialog to the Model (when EditDialogType === NEW)
     onCreateDialog: (newTrainDialog: CLM.TrainDialog) => void
     onDeleteDialog: () => void
-    // LARS check this doesn't seem to be used?
-    onEditAPIStub: (trainDialog: CLM.TrainDialog, activity: Activity | null, apiStubName: string, filledEntities: CLM.FilledEntity[]) => void
     conflictPairs: ConflictPair[]
     onAcceptConflictResolution: (conflictPairs: ConflictPair[]) => Promise<void>
     onAbortConflictResolution: () => void

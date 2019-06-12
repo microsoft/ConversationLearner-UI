@@ -83,11 +83,6 @@ export default class Component extends React.Component<Props, State> {
                         </div>
                     </div> 
                 }
-                {this.props.isStub &&
-                    <span className="cl-font--warning cl-action-scorer-warning">
-                        STUBBED API
-                    </span>
-                }
             </div>
             {showToggle
                 && <div>

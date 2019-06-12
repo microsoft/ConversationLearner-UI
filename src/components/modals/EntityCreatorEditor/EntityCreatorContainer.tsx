@@ -443,7 +443,7 @@ class Container extends React.Component<Props, ComponentState> {
                     && foundEntity.doNotMemorize) {
                     return ''
                 }
-                return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT)
+                return Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
             }
         }
 
@@ -472,7 +472,7 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         if (this.state.enumValues.filter(v => v && v.enumValue === enumValue.enumValueId).length > 1) {
-            Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT)
+            Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
         }
 
         return ''

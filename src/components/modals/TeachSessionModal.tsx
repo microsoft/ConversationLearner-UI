@@ -457,12 +457,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onEditAPIStub() {
-        // Can be called with selectedActvityIndex as null, when API stub action is selected during teach session
-        this.props.onEditTeach(this.state.selectedActivityIndex, null, this.state.tags, this.state.description, this.props.onEditAPIStub)
-    }
-
-    @OF.autobind
     onAddTag(tag: string) {
         this.setState(prevState => ({
             tags: [...prevState.tags, tag]
@@ -724,7 +718,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         importCount={this.props.importCount}
                                         onEditExtraction={this.onEditExtraction}
                                         onEditAction={this.onEditScore}
-                                        onEditAPIStub={this.onEditAPIStub}
 
                                         allUniqueTags={this.props.allUniqueTags}
                                         tags={this.state.tags}
@@ -819,6 +812,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     editingPackageId={this.props.editingPackageId}
                     apiStubName={null}
                     initMemories={null}
+                    actions={this.props.actions}
                     handleClose={this.onCloseInitState}
                 />
                 <LogConversionConflictModal
@@ -867,7 +861,6 @@ export interface ReceivedProps {
     onEndSessionActivity: (tags: string[], description: string) => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any
     onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => Promise<void>) | null
-    onEditAPIStub: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => void
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string

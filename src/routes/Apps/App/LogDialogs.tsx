@@ -382,7 +382,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined, editAPIStub: boolean = true) {
+    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined) {
         if (!trainScorerStep) {
             throw new Error("missing args")
         }
@@ -401,11 +401,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             )
 
             await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
-
-            // Should I get input for API Stub?
-            if (editAPIStub) {
-                DialogEditing.onSelectAPIStub(trainDialog, newTrainDialog, trainScorerStep, selectedActivity, this.props.actions, this.onEditAPIStub)
-            }
         }
         catch (error) {
             console.warn(`Error when attempting to change an Action: `, error)
@@ -704,7 +699,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             // Editing history
             if (this.state.selectedActivityIndex) {
                 const selectedActivity = this.state.history[this.state.selectedActivityIndex]
-                await this.onChangeAction(this.state.currentTrainDialog, selectedActivity, scorerStep, false)
+                await this.onChangeAction(this.state.currentTrainDialog, selectedActivity, scorerStep)
             }
             // Editing a teach session
             else {
@@ -1018,7 +1013,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         originalTrainDialogId={null}
                         onClose={this.onCloseTeachSession}
                         onSetInitialEntities={null}
-                        onEditAPIStub={(trainDialog, activity, editHandlerArgs) => this.onEditAPIStub(trainDialog, activity, editHandlerArgs.apiStubName, editHandlerArgs.filledEntities)}
                         onEditTeach={(historyIndex, editHandlerArgs, tags, description, editHandler) => this.onEditTeach(historyIndex, editHandlerArgs ? editHandlerArgs : undefined, tags, description, editHandler)}
                         onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.isLastActivity!)}
                         onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)}
@@ -1063,7 +1057,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}
                     onChangeAction={(trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainDialog, activity, trainScorerStep)}
-                    onEditAPIStub={(trainDialog: CLM.TrainDialog, activity: Activity, apiStubName: string, filledEntities: CLM.FilledEntity[]) => this.onEditAPIStub(trainDialog, activity, apiStubName, filledEntities)}
                     onBranchDialog={null} // Never branch on LogDialogs
                     onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
                     onDeleteDialog={this.onDeleteLogDialog}
@@ -1080,6 +1073,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 <TeachSessionInitState
                     isOpen={this.state.apiStubFilledEntityMap !== null}
                     app={this.props.app}
+                    actions={this.props.actions}
                     editingPackageId={this.props.editingPackageId}
                     apiStubName={this.state.apiStubName}
                     initMemories={this.state.apiStubFilledEntityMap}

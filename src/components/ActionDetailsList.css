@@ -2,14 +2,3 @@
     display: grid;
     grid-template: auto / 1fr min-content;
 }
-
-.cl-actiontype-font {
-    padding: 0.25em;
-    margin: 5px;
-}
-
-.cl-actiontype-font--warning {
-    background-color: var(--color-errorBackground);
-    margin: 5px;
-    padding: 0.25em;
-}

@@ -197,10 +197,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         this.props.onScoredAction(scoredAction)
 
-        if (CLM.ActionBase.isStubbedAPI(scoredAction)) {
-            this.props.onEditAPIStub()
-        }
-        else if (!waitForUser) {
+        if (!waitForUser) {
             const uiScoreResponse = await ((this.props.runScorerThunkAsync(this.props.user.id, appId, teachId, uiScoreInput) as any) as Promise<CLM.UIScoreResponse>)
             const turnLookup = [...this.state.turnLookup]
 
@@ -500,7 +497,6 @@ export interface ReceivedProps {
     onEditExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onEditAction: (trainScorerStep: CLM.TrainScorerStep) => any
     onReplaceActivityText: (userText: string, index: number) => void
-    onEditAPIStub: () => void
     importIndex?: number
     importCount?: number
     allUniqueTags: string[]

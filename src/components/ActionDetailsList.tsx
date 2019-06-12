@@ -8,6 +8,8 @@ import * as Util from '../Utils/util'
 import * as ActionPayloadRenderers from './actionPayloadRenderers'
 import * as moment from 'moment'
 import * as CLM from '@conversationlearner/models'
+import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
+import actionTypeRenderer from './ActionTypeRenderer'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -15,7 +17,6 @@ import { State } from '../types'
 import { onRenderDetailsHeader } from './ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import './ActionDetailsList.css'
 
 interface ComponentState {
@@ -366,24 +367,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 100,
             isResizable: true,
             getSortValue: action => action.actionType.toLowerCase(),
-            render: action => {
-                let actionType = action.actionType.toString()
-                let addedStyle = "cl-actiontype-font"
-                if (actionType === CLM.ActionTypes.API_LOCAL) {
-                    if (CLM.ActionBase.isStubbedAPI(action)) {
-                        actionType = "API STUB"
-                        addedStyle = "cl-actiontype-font--warning"
-                    } else {
-                        actionType = "API"
-                    }
-                } 
-                return <span 
-                    className={`${OF.FontClassNames.mediumPlus} ${addedStyle}`} 
-                    data-testid="action-details-action-type"
-                >
-                    {actionType}
-                </span>
-            }
+            render: action => actionTypeRenderer(action)
         },
         {
             key: 'requiredEntities',
