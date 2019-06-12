@@ -75,7 +75,7 @@ describe('API Verify Multiple Exceptions - ErrorHandling', () => {
 
 // Bug 2142: TEST BLOCKER - API Callback error rendering is different between original TD rendering and when editing a Train Dialog
 // Once this bug is fixed the calls to "VerifyCardChatMessage" will fail due to the first parameter needing to be changed.
-function VerifyAllBotChatMessages(endsWithEntityDetectionError, bug2151InPlay) {
+function VerifyAllBotChatMessages(endsWithEntityDetectionError, bug2151HasBeenTriggered) {
   let botIndex = -1
   function NextBotIndex() { botIndex += 2; return botIndex; }
 
@@ -84,7 +84,7 @@ function VerifyAllBotChatMessages(endsWithEntityDetectionError, bug2151InPlay) {
   train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', NextBotIndex())
   train.VerifyTextChatMessage('ExceptionAPI: Hello with no exception', NextBotIndex())
 
-  if(bug2151InPlay) {
+  if(bug2151HasBeenTriggered) {
     train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", NextBotIndex())  
   } else {
     train.VerifyTextChatMessage('This is a TEXT ACTION', NextBotIndex())
@@ -92,7 +92,7 @@ function VerifyAllBotChatMessages(endsWithEntityDetectionError, bug2151InPlay) {
   train.VerifyCardChatMessage('Exception hit in Bot’s API Callback: ‘ExceptionAPI’', 'Error: ExceptionAPI: Render Error', NextBotIndex())
   train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:ExceptionAPI', 'Error: ExceptionAPI: Logic Error', NextBotIndex())
 
-  if(bug2151InPlay) {
+  if(bug2151HasBeenTriggered) {
     train.VerifyCardChatMessage('Exception hit in Bot’s API Callback:', "Error in Bot's EntityDetectionCallback:  An intentional error was invoked in the EntityDetectionCallback function.", NextBotIndex())
   } else {
     train.VerifyTextChatMessage('This is a TEXT ACTION', NextBotIndex())

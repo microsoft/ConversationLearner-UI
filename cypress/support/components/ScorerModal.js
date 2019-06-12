@@ -58,3 +58,15 @@ function VerifyEndSessionActionState(expectedData, selectButtonDataTestId, state
     .find(`[data-testid="${selectButtonDataTestId}"]`)
     .should(stateToVerify)
 }
+
+export function VerifyNoEnabledSelectActionButtons() {
+  cy.Enqueue(() => {
+    let length = Cypress.$('[data-testid="action-scorer-button-clickable"]').length 
+               + Cypress.$('[data-testid="action-scorer-button-selected"]').length
+               + Cypress.$('[data-testid="action-scorer-add-action-button"]').length
+               
+    if (length > 0 ) {
+      throw new Error(`We are expecting to find NO enabled Action Scorer buttons, instead we found ${length} of them.`)
+    }
+  })
+}
