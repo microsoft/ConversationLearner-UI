@@ -1,0 +1,9 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
+.cl-traindialogs-filter-search {
+    display: grid;
+    grid-template-columns: auto max-content;
+    grid-gap: 1em;
+}
