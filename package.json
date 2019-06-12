@@ -21,7 +21,7 @@
   },
   "private": true,
   "dependencies": {
-    "@conversationlearner/models": "0.200.2",
+    "@conversationlearner/models": "0.200.3",
     "@conversationlearner/webchat": "0.145.0",
     "@cypress/webpack-preprocessor": "4.0.3",
     "adaptivecards": "1.0.0",
