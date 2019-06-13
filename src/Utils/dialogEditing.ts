@@ -461,9 +461,9 @@ export async function onEditTeach(
 export async function getStubAPIAction(
     appId: string,
     apiStubName: string | "",
+    isTerminal: boolean,
     actions: CLM.ActionBase[],
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
-
 ): Promise<CLM.ActionBase> {
     // Check if it has been attached to real api call
     const apiHash = Util.hashText(JSON.stringify(apiStubName))
@@ -483,7 +483,7 @@ export async function getStubAPIAction(
     }
 
     // Otherwise c
-    const newStub = CLM.ActionBase.createStubAction(apiStubName)
+    const newStub = CLM.ActionBase.createStubAction(apiStubName, isTerminal)
 
     // If stub was created by import, add hash for future matching
     newStub.clientData = { importHashes: [apiHash]}
@@ -521,13 +521,14 @@ export function scorerStepFromActivity(trainDialog: CLM.TrainDialog, selectedAct
 // Returns stubAPIAction if it exists, otherwise creates it
 export async function getStubScorerStep(
     apiStubName: string,
+    isTerminal: boolean,
     appId: string,
     actions: CLM.ActionBase[],
     filledEntityMap: CLM.FilledEntityMap,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
 ): Promise<CLM.TrainScorerStep> {
     
-    const stubAPIAction = await getStubAPIAction(appId, apiStubName, actions, createActionThunkAsync)
+    const stubAPIAction = await getStubAPIAction(appId, apiStubName, isTerminal, actions, createActionThunkAsync)
     const filledEntities = filledEntityMap.FilledEntities()
 
     // Generate stub

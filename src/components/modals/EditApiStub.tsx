@@ -5,12 +5,13 @@
 import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
+import * as TC from '../tipComponents'
+import * as ToolTip from '../ToolTips/ToolTips'
 import * as Util from '../../Utils/util'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import FormattedMessageId from '../FormattedMessageId'
 import HelpIcon from '../HelpIcon'
 import MemorySetter from './MemorySetter'
-import { TipType } from '../ToolTips/ToolTips'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -25,7 +26,8 @@ interface ComponentState {
     isEntityEditorModalOpen: boolean
     apiNameVal: string
     // If editing an is exiting api stub
-    isNameFixed: boolean
+    editingExisting: boolean
+    isTerminal: boolean
 }
 
 class EditApiStub extends React.Component<Props, ComponentState> {
@@ -36,7 +38,8 @@ class EditApiStub extends React.Component<Props, ComponentState> {
             filledEntityMap: new CLM.FilledEntityMap(),
             isEntityEditorModalOpen: false,
             apiNameVal: '',
-            isNameFixed: false
+            editingExisting: false,
+            isTerminal: true
         }
     }
 
@@ -45,7 +48,7 @@ class EditApiStub extends React.Component<Props, ComponentState> {
             this.setState({
                 filledEntityMap: newProps.initMemories || new CLM.FilledEntityMap(),
                 apiNameVal: newProps.apiStubName || '',
-                isNameFixed: newProps.apiStubName !== null
+                editingExisting: newProps.apiStubName !== null
             })
         }
     }
@@ -66,7 +69,7 @@ class EditApiStub extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickCancel() {
-        this.props.handleClose(null, null)
+        this.props.handleClose(null, null, false)
     }
 
     @OF.autobind
@@ -80,7 +83,7 @@ class EditApiStub extends React.Component<Props, ComponentState> {
             }
         }
 
-        this.props.handleClose(this.state.filledEntityMap, this.state.apiNameVal)
+        this.props.handleClose(this.state.filledEntityMap, this.state.apiNameVal, this.state.isTerminal)
     }
 
     @OF.autobind
@@ -90,9 +93,16 @@ class EditApiStub extends React.Component<Props, ComponentState> {
         })
     }
 
+    @OF.autobind
+    onChangeWaitCheckbox() {
+        this.setState(prevState => ({
+            isTerminal: !prevState.isTerminal
+        }))
+    }
+
     onGetNameErrorMessage(value: string): string {
         // Don't need to check if editing existing API stub
-        if (this.state.isNameFixed) {
+        if (this.state.editingExisting) {
             return ''
         }
 
@@ -145,15 +155,27 @@ class EditApiStub extends React.Component<Props, ComponentState> {
                     <div className="cl-init-state-fields cl-ux-flexpanel--left">
                         <OF.TextField
                             className={OF.FontClassNames.mediumPlus}
-                            readOnly={this.state.isNameFixed}
+                            readOnly={this.state.editingExisting}
                             onChanged={(text) => this.onChangedName(text)}
                             label={Util.formatMessageId(intl, FM.SETTINGS_FIELDS_NAMELABEL)}
                             onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                             value={this.state.apiNameVal}
                         />
+                        {!this.state.editingExisting &&
+                            <div className="cl-actioncreator-form-section">
+                                <TC.Checkbox
+                                    data-testid="action-creator-wait-checkbox"
+                                    label="Wait for Response?"
+                                    checked={this.state.isTerminal}
+                                    onChange={this.onChangeWaitCheckbox}
+                                    style={{ marginTop: '1em', display: 'inline-block' }}
+                                    tipType={ToolTip.TipType.ACTION_WAIT}
+                                />
+                            </div>
+                        }
                         <div className={OF.FontClassNames.mediumPlus}>
                             <FormattedMessageId id={FM.TEACHSESSIONSTUB_DESCRIPTION}/>
-                            <HelpIcon tipType={TipType.STUB_API}/>
+                            <HelpIcon tipType={ToolTip.TipType.STUB_API}/>
                         </div>
                     </div>
                     <MemorySetter
@@ -231,7 +253,7 @@ export interface ReceivedProps {
     apiStubName: string | null
     editingPackageId: string
     initMemories: CLM.FilledEntityMap | null
-    handleClose: (filledEntityMap: CLM.FilledEntityMap | null, apiName: string | null) => void
+    handleClose: (filledEntityMap: CLM.FilledEntityMap | null, apiName: string | null, isTerminal: boolean) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

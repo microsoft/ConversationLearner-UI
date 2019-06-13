@@ -1118,7 +1118,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 labelEntities: []
                             }
                             // Currently system is limited to 20 text variations
-                            if (textVariations.length < 20) {
+                            if (textVariations.length < CLM.MAX_TEXT_VARIATIONS) {
                                 textVariations.push(altTextVariation)
                             }
                         })
@@ -1140,7 +1140,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     // If I didn't find an action and is API, create API stub
                     if (!action && activity.channelData && activity.channelData.type === "ActionCall") {
                         const actionCall = activity.channelData as TranscriptActionCall
-                        action = await DialogEditing.getStubAPIAction(this.props.app.appId, actionCall.actionName, this.props.actions, this.props.createActionThunkAsync as any)
+                        action = await DialogEditing.getStubAPIAction(this.props.app.appId, actionCall.actionName, true, /*LARS*/ this.props.actions, this.props.createActionThunkAsync as any)
 
                         // Store stub API output in LogicResult
                         logicResult = {

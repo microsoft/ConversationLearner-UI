@@ -413,7 +413,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onCloseCreateAPIStub(filledEntityMap: CLM.FilledEntityMap | null, apiName: string) {
+    async onCloseCreateAPIStub(filledEntityMap: CLM.FilledEntityMap | null, apiName: string, isTerminal: boolean) {
         this.setState({
             apiStubName: null,
             apiStubCreatorFilledEntityMap: null
@@ -422,7 +422,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         if (!filledEntityMap) {
             return
         }
-        const trainScorerStep = await DialogEditing.getStubScorerStep(apiName, this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
+        const trainScorerStep = await DialogEditing.getStubScorerStep(apiName, isTerminal, this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
         this.setState({ haveEdited: true })
         this.props.onActionSelected(trainScorerStep)
     }
