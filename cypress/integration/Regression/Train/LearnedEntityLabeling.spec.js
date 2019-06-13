@@ -38,7 +38,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
 
     it('Should find labeled Entity in memory', () => {
       train.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntitiesInMemory('name', ['David'])
+      memoryTableComponent.VerifyEntityValues('name', ['David'])
     })
 
     it('Should show one disabled and one enabled Action', () => {
@@ -58,7 +58,8 @@ describe('Learned Entity Labeling - Train Dialog', () => {
 
     it('Should find labeled Entity in memory', () => {
       train.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntitiesInMemory('name', ['Susan'], 'David')
+      memoryTableComponent.VerifyEntityValues('name', ['Susan'])
+      memoryTableComponent.VerifyDisplacedEntityValues('name', ['David'])
     })
 
     it('Should show one disabled and one enabled Action', () => {
@@ -89,7 +90,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
 
     it('Should find labeled Entity in memory', () => {
       train.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntitiesInMemory('name', ['Gabriella'])
+      memoryTableComponent.VerifyEntityValues('name', ['Gabriella'])
     })
 
     it('Should show one disabled and one enabled Action', () => {
