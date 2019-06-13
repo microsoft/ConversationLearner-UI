@@ -62,7 +62,7 @@ export function VerifyTags(tags) {
     tags.forEach(tag => {
       if (!tagsOnPage.find(tagOnPage => tag === tagOnPage)) missingTags.push(tag)
     })
-    if (missingTags.length > 0) throw `Failed to find these tags: ${missingTags}`
+    if (missingTags.length > 0) throw new Error(`Failed to find these tags: ${missingTags}`)
   })
 }
 
@@ -132,7 +132,7 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
       else helpers.ConLog(funcName, `NOT A MATCH`)
       helpers.ConLog(funcName, `NEXT`)
     }
-    throw `${funcName} - Failed to find the message in chat utterances`
+    throw new Error(`${funcName} - Failed to find the message in chat utterances`)
   })
 }
 
@@ -164,7 +164,7 @@ export function VerifyChatTurnControlButtons(element, index) {
   else if (element.classList.contains('wc-message-from-bot')) turnIsUserTurn = false
   else {
     helpers.Dump(`VerifyChatTurnControlButtons()`, element)
-    throw 'Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)'
+    throw new Error('Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)')
   }
 
   if (index > 0) cy.Contains('[data-testid="edit-dialog-modal-delete-turn-button"]', 'Delete Turn')
@@ -431,7 +431,7 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
         return
       }
     }
-    throw `Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`
+    throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`)
   })
 }
 
@@ -483,7 +483,7 @@ export function SelectEndSessionAction(expectedData) {
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = expectedData })
 }
 
-// To verify the last chat utterance leave expectedIndexOfMessage undefined
+// To verify the last chat utterance leave expectedIndexOfMessage undefined.
 export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
@@ -502,7 +502,7 @@ export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
   })
 }
 
-// To verify the last chat utterance leave expectedIndexOfMessage undefined
+// To verify the last chat utterance leave expectedIndexOfMessage undefined.
 // Leave expectedMessage temporarily undefined so that you can copy the text
 // output from the screen or log to paste into your code.
 export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expectedIndexOfMessage) {
@@ -527,27 +527,28 @@ export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expec
   })
 }
 
-// To verify the last chat utterance leave expectedIndexOfMessage undefined
-// Leave expectedMessage temporarily undefined so that you can copy the text
-// output from the screen or log to paste into your code.
+// To verify the last chat utterance leave expectedIndexOfMessage undefined.
 export function VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, expectedCardImage, expectedIndexOfMessage) {
+  const funcName = `VerifyPhotoCardChatMessage("${expectedCardTitle}", "${expectedCardText}", "${expectedCardImage}", ${expectedIndexOfMessage})`
   cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
-    let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find(`div.format-markdown > p:contains('${expectedCardTitle}')`).parent()
-    if (elements.length == 0) {
-      throw new Error(`Did not find expected '${expectedCardTitle}' card with '${expectedCardText}' and '${expectedCardImage}' at index: ${expectedIndexOfMessage}`)
-    }
-    elements = Cypress.$(elements[0]).next('div.wc-list').find('div.wc-adaptive-card > div.ac-container > div.ac-container > div > p')
-    if (elements.length == 0) {
-      throw new Error(`Did not find expected content element for API Call card that should contain '${expectedCardText}' at index: ${expectedIndexOfMessage}`)
+    let errorMessage = ''
+    
+    if (Cypress.$(allChatElements[expectedIndexOfMessage]).find(`p:contains('${expectedCardTitle}')`).length == 0) {
+      errorMessage += `Did not find expected card title: '${expectedCardTitle}' - `
     }
     
-    // Log the contents of the API Call card so that we can copy the exact string into the .spec.js file.
-    let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
-    helpers.ConLog('VerifyCardChatMessage', textContentWithoutNewlines)
+    if (Cypress.$(allChatElements[expectedIndexOfMessage]).find(`p:contains('${expectedCardText}')`).length == 0) {
+      errorMessage += `Did not find expected card text: '${expectedCardText}' - `
+    }
     
-    if (!textContentWithoutNewlines.includes(expectedCardText)) {
-      throw new Error(`Expected to find '${expectedCardTitle}' card with '${expectedCardText}', instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
+    if (Cypress.$(allChatElements[expectedIndexOfMessage]).find(`img[src="${expectedCardImage}"]`).length == 0) {
+      errorMessage += `Did not find expected image: '${expectedCardImage}' - `
+    }
+
+    if (errorMessage.length > 0)  {
+      helpers.ConLog(`VerifyPhotoCardChatMessage("${expectedCardTitle}", "${expectedCardText}", "${expectedCardImage}", ${expectedIndexOfMessage})`, `Chat Element at index ${expectedIndexOfMessage}: ${allChatElements[expectedIndexOfMessage].outerHTML}`)
+      throw new Error(`${errorMessage}at chat turn index ${expectedIndexOfMessage}`)
     }
   })
 }
@@ -779,7 +780,7 @@ export function EditTrainingNEW(scenario, tags) {
         return
       }
     }
-    throw `Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${scenario}' -- tags: ${tags}`
+    throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${scenario}' -- tags: ${tags}`)
   })
 }
 
