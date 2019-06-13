@@ -10,7 +10,7 @@ import * as actionModal from '../../../support/components/ActionModal'
 import * as actionsGrid from '../../../support/components/ActionsGrid'
 import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as train from '../../../support/Train'
-//import * as logDialogsGrid from '../../../support/components/logDialogsGrid'
+import * as logDialogsGrid from '../../../support/components/LogDialogsGrid'
 import * as helpers from '../../../support/Helpers'
 
 // describe('Bot Missing API - ErrorHandling', () => {
