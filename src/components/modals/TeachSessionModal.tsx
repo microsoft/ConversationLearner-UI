@@ -810,9 +810,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     isOpen={this.state.isInitStateOpen}
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
-                    apiStubName={null}
-                    initMemories={null}
-                    actions={this.props.actions}
                     handleClose={this.onCloseInitState}
                 />
                 <LogConversionConflictModal

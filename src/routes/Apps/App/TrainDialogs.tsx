@@ -1114,10 +1114,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     if (activity.channelData && activity.channelData.textVariations) {
                         activity.channelData.textVariations.forEach((tv: any) => {
                             let altTextVariation: CLM.TextVariation = {
-                                text: tv.text,
+                                text: tv.Text, // LARS temp till data fix
                                 labelEntities: []
                             }
-                            textVariations.push(altTextVariation)
+                            // Currently system is limited to 20 text variations
+                            if (textVariations.length < 20) {
+                                textVariations.push(altTextVariation)
+                            }
                         })
                     }
                     let extractorStep: CLM.TrainExtractorStep = {
@@ -1130,7 +1133,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     trainDialog.rounds.push(curRound)
                 }
                 else if (activity.from.role === "bot") {
-                    let action: CLM.ActionBase | undefined = DialogUtils.findActionByText(activity.text, this.props.actions)
+                    let action: CLM.ActionBase | undefined = DialogUtils.importedActionMatch(activity.text, this.props.actions)
                     let filledEntities: CLM.FilledEntity[] = []
                     let logicResult: CLM.LogicResult | undefined
 

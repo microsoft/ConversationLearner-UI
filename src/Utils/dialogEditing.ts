@@ -230,7 +230,7 @@ export async function onChangeAction(
             if (action) {
                 // Substitue entityIds back into import text to build import hash lookup
                 const filledEntityIdMap = DialogUtils.filledEntityIdMap(trainScorerStep.input.filledEntities, entities)
-                const importText = DialogUtils.importTextWithEntities(oldTrainScorerStep.importText, filledEntityIdMap)
+                const importText = DialogUtils.importTextWithEntityIds(oldTrainScorerStep.importText, filledEntityIdMap)
                 const importHash = Util.hashText(importText)
 
                 // Add new hash to action and save it

@@ -11,7 +11,7 @@ import * as DialogEditing from '../../Utils/dialogEditing'
 import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import actionTypeRenderer from '../ActionTypeRenderer'
-import TeachSessionInitState from '../modals/TeachSessionInitState'
+import EditApiStub from '../modals/EditApiStub'
 import ActionCreatorEditor, { NewActionPreset } from './ActionCreatorEditor'
 import AdaptiveCardViewer , { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
 import { compareTwoStrings } from 'string-similarity'
@@ -975,7 +975,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     onOk={this.onCloseAlreadySelectedPopUp}
                     title={Util.formatMessageId(intl, FM.LOGDIALOGS_ALREADYSELECTED)}
                 />
-                <TeachSessionInitState
+                <EditApiStub
                     isOpen={this.state.apiStubCreatorFilledEntityMap != null}
                     app={this.props.app}
                     actions={this.props.actions}

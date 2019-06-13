@@ -509,20 +509,7 @@ export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityM
     return map
 }
 
-// Find an action given text value
-export function findActionByText(text: string, actions: CLM.ActionBase[], filledEntityMap?: Map<string, string> | undefined): CLM.ActionBase | undefined {
-    return actions.find(action => {
-            if (action.actionType === CLM.ActionTypes.TEXT) {
-                const textAction = new CLM.TextAction(action)
-                const entityMap = generateEntityMapForAction(action, filledEntityMap)
-                const actionText = textAction.renderValue(entityMap)
-                return text === actionText
-            }
-            return false
-        })
-}
-
-export function importTextWithEntities(importText: string, valueMap: Map<string, string>) {
+export function importTextWithEntityIds(importText: string, valueMap: Map<string, string>) {
 
     let outText = importText.slice()
     valueMap.forEach((value: string, entityId: string) => {
@@ -535,6 +522,38 @@ export function filledEntityIdMap(filledEntities: CLM.FilledEntity[], entities: 
     const filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(filledEntities, entities)
     const filledIdMap = filledEntityMap.EntityMapToIdMap()
     return CLM.getEntityDisplayValueMap(filledIdMap)
+}
+
+function findActionByImportHash(importText: string, actionsWithHash: CLM.ActionBase[]): CLM.ActionBase | undefined {
+    const importHash = Util.hashText(importText)
+
+    // Try to find matching action with same hash
+    return actionsWithHash.find(a => {
+        // Filter above ensures these are not null
+        return a.clientData!.importHashes!.indexOf(importHash) > -1
+    })
+}
+
+// Try to find existing action for import based solely on raw text (no filled entites available)
+export function importedActionMatch(importText: string, actions: CLM.ActionBase[], filledEntityMap?: Map<string, string> | undefined): CLM.ActionBase | undefined {
+    // First try match via has of importText
+    // Filter out actions that have no hash lookups. If there are none, terminate early
+    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.importHashes && a.clientData.importHashes.length > 0)
+    const matchedAction = findActionByImportHash(importText, actionsWithHash)
+    if (matchedAction) {
+        return matchedAction
+    }
+    
+    // Next try by exact text match (note no filled entities available)
+    return actions.find(action => {
+            if (action.actionType === CLM.ActionTypes.TEXT) {
+                const textAction = new CLM.TextAction(action)
+                const entityMap = generateEntityMapForAction(action, filledEntityMap)
+                const actionText = textAction.renderValue(entityMap)
+                return importText === actionText
+            }
+            return false
+        })
 }
 
 // Look for imported actions in TrainDialog and attempt to replace them
@@ -556,14 +575,9 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
             // If it's a dummy action with imported text
             if (scorerStep.importText) {
                 // Convert import text to hash with entity Ids
-                const importText = importTextWithEntities(scorerStep.importText, filledIdMap)
-                const importHash = Util.hashText(importText)
+                const importText = importTextWithEntityIds(scorerStep.importText, filledIdMap)
+                const newAction = findActionByImportHash(importText, actionsWithHash)
 
-                // Try to find matching action with same hash
-                const newAction = actionsWithHash.find(a => {
-                    // Filter above ensures these are not null
-                    return a.clientData!.importHashes!.indexOf(importHash) > -1
-                })
                 // If action exists replace labelled action with match
                 if (newAction) {
                     scorerStep.labelAction = newAction.actionId

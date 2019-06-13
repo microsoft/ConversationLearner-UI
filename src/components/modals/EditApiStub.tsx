@@ -5,9 +5,12 @@
 import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../Utils/util'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import FormattedMessageId from '../FormattedMessageId'
-import MemorySetter from '../modals/MemorySetter'
+import HelpIcon from '../HelpIcon'
+import MemorySetter from './MemorySetter'
+import { TipType } from '../ToolTips/ToolTips'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -20,15 +23,30 @@ import './TeachSessionInitState.css'
 interface ComponentState {
     filledEntityMap: CLM.FilledEntityMap
     isEntityEditorModalOpen: boolean
+    apiNameVal: string
+    // If editing an is exiting api stub
+    isNameFixed: boolean
 }
 
-class TeachSessionInitState extends React.Component<Props, ComponentState> {
+class EditApiStub extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
         this.state = { 
             filledEntityMap: new CLM.FilledEntityMap(),
             isEntityEditorModalOpen: false,
+            apiNameVal: '',
+            isNameFixed: false
+        }
+    }
+
+    componentWillReceiveProps(newProps: Props) {
+        if (this.props.isOpen !== newProps.isOpen) {
+            this.setState({
+                filledEntityMap: newProps.initMemories || new CLM.FilledEntityMap(),
+                apiNameVal: newProps.apiStubName || '',
+                isNameFixed: newProps.apiStubName !== null
+            })
         }
     }
 
@@ -48,7 +66,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickCancel() {
-        this.props.handleClose(null)
+        this.props.handleClose(null, null)
     }
 
     @OF.autobind
@@ -62,7 +80,47 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
             }
         }
 
-        this.props.handleClose(this.state.filledEntityMap)
+        this.props.handleClose(this.state.filledEntityMap, this.state.apiNameVal)
+    }
+
+    @OF.autobind
+    onChangedName(text: string) {
+        this.setState({
+            apiNameVal: text
+        })
+    }
+
+    onGetNameErrorMessage(value: string): string {
+        // Don't need to check if editing existing API stub
+        if (this.state.isNameFixed) {
+            return ''
+        }
+
+        const MAX_NAME_LENGTH = 30
+
+        if (value.length === 0) {
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_REQUIREDVALUE)
+        }
+
+        if (value.length > MAX_NAME_LENGTH) {
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_MAX_30)
+        }
+
+        if (!/^[a-zA-Z0-9-_]+$/.test(value)) {
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_ALPHANUMERIC)
+        }
+
+        if (this.props.actions.filter(a => CLM.ActionBase.isStubbedAPI(a))
+            .map(aa => new CLM.ApiAction(aa))
+            .find(aaa => aaa.name === value)) {
+                return Util.formatMessageId(this.props.intl, FM.FIELDERROR_DISTINCT)
+            }
+
+        return ''
+    }
+
+    isSaveDisabled(): boolean {
+        return (this.onGetNameErrorMessage(this.state.apiNameVal) !== '')
     }
 
     @OF.autobind
@@ -80,14 +138,28 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
             >
                 <div className="cl-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>
-                        <FormattedMessageId id={FM.TEACHSESSIONINIT_TITLE} />
+                        <FormattedMessageId id={FM.TEACHSESSIONSTUB_TITLE}/>
                     </span>
                 </div>
                 <div>
+                    <div className="cl-init-state-fields cl-ux-flexpanel--left">
+                        <OF.TextField
+                            className={OF.FontClassNames.mediumPlus}
+                            readOnly={this.state.isNameFixed}
+                            onChanged={(text) => this.onChangedName(text)}
+                            label={Util.formatMessageId(intl, FM.SETTINGS_FIELDS_NAMELABEL)}
+                            onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
+                            value={this.state.apiNameVal}
+                        />
+                        <div className={OF.FontClassNames.mediumPlus}>
+                            <FormattedMessageId id={FM.TEACHSESSIONSTUB_DESCRIPTION}/>
+                            <HelpIcon tipType={TipType.STUB_API}/>
+                        </div>
+                    </div>
                     <MemorySetter
                         map={this.state.filledEntityMap.map}
                         onUpdate={this.updateFilledEntityMap}
-                    />  
+                    />               
                 </div>
                 <div className="cl-modal_footer cl-modal-buttons cl-modal_footer--border">
                     <div className="cl-modal-buttons_secondary">
@@ -102,6 +174,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             data-testid="teach-session-ok-button"
                             onClick={this.onClickSubmit}
+                            disabled={this.isSaveDisabled()}
                             ariaDescription={intl.formatMessage({
                                 id: FM.BUTTON_OK,
                                 defaultMessage: 'Ok'
@@ -154,8 +227,11 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     isOpen: boolean,
     app: CLM.AppBase,
+    actions: CLM.ActionBase[],
+    apiStubName: string | null
     editingPackageId: string
-    handleClose: (filledEntityMap: CLM.FilledEntityMap | null) => void
+    initMemories: CLM.FilledEntityMap | null
+    handleClose: (filledEntityMap: CLM.FilledEntityMap | null, apiName: string | null) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
@@ -163,4 +239,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TeachSessionInitState))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EditApiStub))

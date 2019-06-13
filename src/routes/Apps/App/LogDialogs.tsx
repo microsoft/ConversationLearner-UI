@@ -12,7 +12,6 @@ import * as moment from 'moment'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import produce from 'immer'
-import TeachSessionInitState from '../../../components/modals/TeachSessionInitState'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -128,9 +127,6 @@ interface ComponentState {
     isChatSessionWindowOpen: boolean
     isEditDialogModalOpen: boolean
     isTeachDialogModalOpen: boolean
-    // If creating an API Stub, the initial filled entities, if set modal will open
-    apiStubFilledEntityMap: CLM.FilledEntityMap | null
-    apiStubName: string | null
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
@@ -192,8 +188,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isChatSessionWindowOpen: false,
             isEditDialogModalOpen: false,
             isTeachDialogModalOpen: false,
-            apiStubFilledEntityMap: null,
-            apiStubName: null,
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
             selectedActivityIndex: null,
@@ -660,57 +654,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    //---- API STUBS ----
-    @OF.autobind
-    onEditAPIStub(trainDialog: CLM.TrainDialog, selectedActivity: Activity | null, apiStubName: string | undefined, filledEntities: CLM.FilledEntity[] | undefined) {
-        // If no selected activity, select the most recent one
-        const activity = selectedActivity || this.state.history[this.state.history.length - 1]
-        
-        if (activity) {
-            // When change from one API stub to another, filledEntities are passed in to keep stub results
-            let filledEntityMap = filledEntities ? CLM.FilledEntityMap.FromFilledEntities(filledEntities, this.props.entities) : null
-        
-            // Otherwise use filled entities in scorer step
-            if (!filledEntityMap && selectedActivity) {
-                const scorerStep = DialogEditing.scorerStepFromActivity(trainDialog, selectedActivity)
-                filledEntityMap = scorerStep ? CLM.FilledEntityMap.FromFilledEntities(scorerStep.input.filledEntities, this.props.entities) : null
-            }
-            const selectedActivityIndex = DialogUtils.matchedActivityIndex(activity, this.state.history)
-            this.setState({
-                apiStubFilledEntityMap: filledEntityMap,
-                apiStubName: apiStubName || null,
-                selectedActivityIndex,
-                currentTrainDialog: trainDialog
-            })
-        }
-    }
-
-    @OF.autobind
-    async onCloseCreateAPIStub(filledEntityMap: CLM.FilledEntityMap | null) {
-        this.setState({
-            apiStubFilledEntityMap: null,
-            apiStubName: null
-        })
-
-        if (filledEntityMap && this.state.currentTrainDialog) {
-            // LARS TODO let user specify API stub name
-            const scorerStep = await DialogEditing.getStubScorerStep("", this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
-
-            // Editing history
-            if (this.state.selectedActivityIndex) {
-                const selectedActivity = this.state.history[this.state.selectedActivityIndex]
-                await this.onChangeAction(this.state.currentTrainDialog, selectedActivity, scorerStep)
-            }
-            // Editing a teach session
-            else {
-                const newTrainDialog = Util.deepCopy(this.state.currentTrainDialog)
-                const lastRound = newTrainDialog.rounds[newTrainDialog.rounds.length - 1]
-                lastRound.scorerSteps[lastRound.scorerSteps.length - 1] = scorerStep
-                await this.onUpdateHistory(newTrainDialog, null, SelectionType.NONE)
-            }
-        }
-    }
-
     async onCloseEditDialogModal(reload: boolean = false) {
 
         this.setState({
@@ -1069,15 +1012,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     conflictPairs={this.state.conflictPairs}
                     onAcceptConflictResolution={this.onAcceptConflictChanges}
                     onAbortConflictResolution={this.onAbortConflictChanges}
-                />
-                <TeachSessionInitState
-                    isOpen={this.state.apiStubFilledEntityMap !== null}
-                    app={this.props.app}
-                    actions={this.props.actions}
-                    editingPackageId={this.props.editingPackageId}
-                    apiStubName={this.state.apiStubName}
-                    initMemories={this.state.apiStubFilledEntityMap}
-                    handleClose={this.onCloseCreateAPIStub}
                 />
             </div>
         );
