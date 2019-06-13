@@ -465,6 +465,12 @@ export function SelectApiCardAction(apiName, expectedCardTitle, expectedCardText
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
 
+export function SelectApiPhotoCardAction(apiName, expectedCardTitle, expectedCardText, expectedCardImage) {
+  scorerModal.ClickApiAction(apiName, expectedCardText)
+  VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, expectedCardImage)
+  cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
+}
+
 export function SelectApiTextAction(apiName, expectedResponse) {
   scorerModal.ClickApiAction(apiName, expectedResponse)
   VerifyTextChatMessage(expectedResponse)
@@ -505,6 +511,31 @@ export function VerifyCardChatMessage(expectedCardTitle, expectedCardText, expec
     let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find(`div.format-markdown > p:contains('${expectedCardTitle}')`).parent()
     if (elements.length == 0) {
       throw new Error(`Did not find expected '${expectedCardTitle}' card with '${expectedCardText}' at index: ${expectedIndexOfMessage}`)
+    }
+    elements = Cypress.$(elements[0]).next('div.wc-list').find('div.wc-adaptive-card > div.ac-container > div.ac-container > div > p')
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected content element for API Call card that should contain '${expectedCardText}' at index: ${expectedIndexOfMessage}`)
+    }
+    
+    // Log the contents of the API Call card so that we can copy the exact string into the .spec.js file.
+    let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
+    helpers.ConLog('VerifyCardChatMessage', textContentWithoutNewlines)
+    
+    if (!textContentWithoutNewlines.includes(expectedCardText)) {
+      throw new Error(`Expected to find '${expectedCardTitle}' card with '${expectedCardText}', instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
+    }
+  })
+}
+
+// To verify the last chat utterance leave expectedIndexOfMessage undefined
+// Leave expectedMessage temporarily undefined so that you can copy the text
+// output from the screen or log to paste into your code.
+export function VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, expectedCardImage, expectedIndexOfMessage) {
+  cy.Get('[data-testid="web-chat-utterances"]').then(allChatElements => {
+    if (!expectedIndexOfMessage) expectedIndexOfMessage = allChatElements.length - 1
+    let elements = Cypress.$(allChatElements[expectedIndexOfMessage]).find(`div.format-markdown > p:contains('${expectedCardTitle}')`).parent()
+    if (elements.length == 0) {
+      throw new Error(`Did not find expected '${expectedCardTitle}' card with '${expectedCardText}' and '${expectedCardImage}' at index: ${expectedIndexOfMessage}`)
     }
     elements = Cypress.$(elements[0]).next('div.wc-list').find('div.wc-adaptive-card > div.ac-container > div.ac-container > div > p')
     if (elements.length == 0) {
