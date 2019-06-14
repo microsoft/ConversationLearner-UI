@@ -466,8 +466,8 @@ i[data-icon-name="Edit"]:hover {
 }
 
 .cl-modal.cl-modal--large {
-  width: 90%;
-  height: 90%;
+  width: 98%;
+  height: 96%;
 }
 
 /** Matches width of webchat **/
@@ -678,11 +678,13 @@ i[data-icon-name="Edit"]:hover {
 .cl-chatmodal {
   height: 100%;
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 475px 1fr;
 }
+
 .cl-chatmodal_webchat {
   position: relative;
 }
+
 .cl-chatmodal_controls {
   border-left: 1px solid var(--cl-color-botchat-grey);
   display: grid;
