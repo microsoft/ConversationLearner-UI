@@ -7,6 +7,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
+import * as MarkdownIt from 'markdown-it'
 import { Template, RenderedActionArgument } from '@conversationlearner/models'
 import { State } from '../../../types'
 import * as AdaptiveCards from 'adaptivecards'
@@ -58,7 +59,10 @@ function getProcessedTemplate(template: Template, actionArguments: RenderedActio
     return JSON.parse(templateString);
 }
 
+
 class AdaptiveCardViewer extends React.Component<Props, {}> {
+
+    private md = new MarkdownIt()
 
     onDismiss = () => {
         this.props.onDismiss()
@@ -73,6 +77,12 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
             return null;
         }
         const template = getProcessedTemplate(this.props.template, this.props.actionArguments, this.props.hideUndefined)
+        
+        AdaptiveCards.AdaptiveCard.onProcessMarkdown = ((text, result) => {
+            result.outputHtml = this.md.render(text)
+            result.didProcess = true
+        })
+
         const adaptiveCard = new AdaptiveCards.AdaptiveCard()
         adaptiveCard.hostConfig = this.getAdaptiveCardHostConfig()
         adaptiveCard.parse(template)
