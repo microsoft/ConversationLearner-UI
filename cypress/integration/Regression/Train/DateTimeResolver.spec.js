@@ -39,7 +39,7 @@ describe('Date Time Resolver - Train', () => {
     })
 
     it('Should select the enabled action', () => {
-      train.SelectAction('When are you planning to travel?')
+      train.SelectTextAction('When are you planning to travel?')
     })
 
     it('Should type in the next user turn and label the departure and return dates', () => {
@@ -50,8 +50,8 @@ describe('Date Time Resolver - Train', () => {
 
     it('Should verify that we have the expected entities in memory after clicking Score Actions Button', () => {
       train.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntitiesInMemory('departure', ['tomorrow'])
-      memoryTableComponent.VerifyEntitiesInMemory('return', ['Sunday next week'])
+      memoryTableComponent.VerifyEntityValues('departure', ['tomorrow'])
+      memoryTableComponent.VerifyEntityValues('return', ['Sunday next week'])
     })
 
     // We caught "bug 1816 - Need to pass Timezone into LUIS when doing Entity Extraction" with this validation.
@@ -61,7 +61,7 @@ describe('Date Time Resolver - Train', () => {
     })
 
     it('Should select the enabled Bot response, save the Train Dialog, and verifiy the training shows up in the grid', () => {
-      train.SelectAction(botResponse, 'You are leaving on $departure and returning on $return')
+      train.SelectTextAction(botResponse, 'You are leaving on $departure and returning on $return')
       train.SaveAsIsVerifyInGrid()
     })
   })

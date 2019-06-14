@@ -59,7 +59,7 @@ describe('Entity Conflicts', () => {
 
                 // TODO: Selects score actions immediately, need to verify memory
                 // trainDialog.VerifyEntityLabel(labeledWord1, testData.entityName)
-                trainDialog.SelectAction(testData.actionResponse)
+                trainDialog.SelectTextAction(testData.actionResponse)
                 trainDialog.ClickAbandonDeleteButton()
 
                 cy.get(s.confirmCancelModal.buttonConfirm)
@@ -119,7 +119,7 @@ describe('Entity Conflicts', () => {
             })
 
             it('clicking Save As Train dialog should show conflict modal', () => {
-                cy.get(s.logDialogs.firstInput)
+                cy.get(s.logDialogs.description)
                     .contains(testData.userInput1)
                     .click()
 
@@ -186,7 +186,7 @@ describe('Entity Conflicts', () => {
                     cy.get(s.mergeModal.buttonSaveAsIs)
                         .click()
 
-                    cy.get(s.logDialogs.firstInput)
+                    cy.get(s.logDialogs.description)
                         .should('have.length', 3)
                 })
             })
@@ -195,7 +195,7 @@ describe('Entity Conflicts', () => {
         describe('insert operations', () => {
             describe('insert user input', () => {
                 it('should show log conversion conflict modal', () => {
-                    cy.get(s.logDialogs.firstInput)
+                    cy.get(s.logDialogs.description)
                         .contains(testData.userInput1)
                         .click()
 
@@ -208,7 +208,7 @@ describe('Entity Conflicts', () => {
 
             describe('insert bot action', () => {
                 it('should show log conversion conflict modal', () => {
-                    cy.get(s.logDialogs.firstInput)
+                    cy.get(s.logDialogs.description)
                         .contains(testData.userInput1)
                         .click()
 
@@ -251,7 +251,7 @@ describe('Entity Conflicts', () => {
 
         describe('continuing the dialog', () => {
             it('should show log conversion conflict modal', () => {
-                cy.get(s.logDialogs.firstInput)
+                cy.get(s.logDialogs.description)
                     .contains(testData.userInput1)
                     .click()
 
@@ -265,7 +265,7 @@ describe('Entity Conflicts', () => {
                     .click()
 
                 trainDialog.ClickScoreActionsButton()
-                trainDialog.SelectAction(testData.actionResponse)
+                trainDialog.SelectTextAction(testData.actionResponse)
                 trainDialog.ClickSaveCloseButton()
 
                 cy.WaitForStableDOM()

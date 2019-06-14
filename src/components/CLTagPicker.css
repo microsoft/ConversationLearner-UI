@@ -3,15 +3,31 @@
     grid-template-columns: min-content 1fr
 }
 
-.cl-tagpicker:hover .ms-BasePicker-text {
+.cl-tagpicker:hover .ms-BasePicker-text,
+.cl-tagpicker:hover .ms-BasePicker-text--static {
     border-color: var(--color-neutralDark);
 }
 
 .cl-tagpicker .ms-BasePicker-text.ms-BasePicker-text--static {
+    border-left: 1px solid var(--color-neutralTertiary);
     border-right: none;
     min-width: 0;
     flex-wrap: nowrap;
 }
 .cl-tagpicker .ms-BasePicker-text:not(.ms-BasePicker-text--static) {
     border-left: none;
+}
+
+.ms-BasePicker-text--static {
+    display: flex;
+    position: relative;
+    flex-wrap: wrap;
+    align-items: center;
+    box-sizing: border-box;
+    min-width: 180px;
+    min-height: 30px;
+    border-width: 1px;
+    border-style: solid;
+    border-image: initial;
+    border-color: rgb(0, 120, 212);
 }

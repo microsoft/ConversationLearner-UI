@@ -947,7 +947,7 @@ function render(title: FM, body: FM[], example: FM | null = null, tableItems: IT
 }
 
 export function prebuilt(memoryValue: CLM.MemoryValue, content: JSX.Element): JSX.Element {
-    if (!memoryValue.builtinType || Object.keys(memoryValue.resolution).length === 0) {
+    if (!memoryValue.builtinType || (memoryValue.resolution && Object.keys(memoryValue.resolution).length === 0)) {
         return content;
     }
     return (

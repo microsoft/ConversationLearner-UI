@@ -26,6 +26,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps, } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
+import './TrainDialogs.css'
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -147,6 +148,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
         }
     ]
 }
+
+const defaultEntityFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_ENTITIES), data: null })
+const defaultActionFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_ACTIONS) })
+const defaultTagFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
 
 interface ComponentState {
     columns: OF.IColumn[]
@@ -387,7 +392,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     // If editing an existing train dialog, return its Id, otherwise null
     sourceTrainDialogId(): string | null {
-        if (this.state.currentTrainDialog 
+        if (this.state.currentTrainDialog
             && this.state.editType !== EditDialogType.BRANCH
             && this.state.editType !== EditDialogType.NEW
             && this.state.editType !== EditDialogType.IMPORT) {
@@ -764,7 +769,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType, editDialogType: EditDialogType) {
-        const originalId = this.state.originalTrainDialog || this.state.currentTrainDialog 
+        const originalId = this.state.originalTrainDialog || this.state.currentTrainDialog
 
         try {
             const { teachWithHistory, activityIndex } = await DialogEditing.onUpdateHistory(
@@ -851,7 +856,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             const validity = DialogUtils.getTrainDialogValidity(newTrainDialog, this.state.history)
 
             const originalTrainDialogId = this.state.originalTrainDialog ? this.state.originalTrainDialog.trainDialogId : null
-            
+
             // Remove any data added for rendering 
             DialogUtils.cleanTrainDialog(newTrainDialog)
 
@@ -1276,10 +1281,26 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
+    private isFilter(): boolean {
+        return this.state.searchValue != ''
+            || this.state.entityFilter != null
+            || this.state.actionFilter != null
+            || this.state.tagsFilter != null
+    }
+
+    private onClickResetFilters(): void {
+        this.setState({
+            searchValue: '',
+            entityFilter: null,
+            actionFilter: null,
+            tagsFilter: null,
+        })
+    }
+
     getFilteredAndSortedDialogs(): CLM.TrainDialog[] {
         let filteredTrainDialogs: CLM.TrainDialog[] = []
 
-        if (!this.state.searchValue && !this.state.entityFilter && !this.state.actionFilter && !this.state.tagsFilter) {
+        if (!this.isFilter()) {
             filteredTrainDialogs = this.props.trainDialogs;
         } else {
             // TODO: Consider caching as not very efficient
@@ -1432,7 +1453,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             className="cl-rotate"
                             iconProps={{ iconName: 'BranchFork2' }}
                             onClick={this.onOpenTreeView}
-                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}                      
+                            ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
                             text={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
                         />
                     }
@@ -1449,7 +1470,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     openTrainDialog={this.openTrainDialog}
                 />
 
-                {trainDialogs.length === 0  &&
+                {trainDialogs.length === 0 &&
                     <div className="cl-page-placeholder">
                         <div className="cl-page-placeholder__content">
                             <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Train Dialog</div>
@@ -1471,15 +1492,26 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             <OF.Label htmlFor="train-dialogs-input-search" className={OF.FontClassNames.medium}>
                                 Search:
                             </OF.Label>
-                            <OF.SearchBox
-                                // TODO: This next line has no visible affect on the DOM, but test automation needs it!
-                                data-testid="train-dialogs-input-search"
-                                id="train-dialogs-input-search"
-                                value={this.state.searchValue}
-                                className={OF.FontClassNames.medium}
-                                onChange={(newValue) => this.onChangeSearchString(newValue)}
-                                onSearch={(newValue) => this.onChangeSearchString(newValue)}
-                            />
+                            <div className="cl-traindialogs-filter-search">
+                                <OF.SearchBox
+                                    // TODO: This next line has no visible affect on the DOM, but test automation needs it!
+                                    data-testid="train-dialogs-input-search"
+                                    id="train-dialogs-input-search"
+                                    value={this.state.searchValue}
+                                    className={OF.FontClassNames.medium}
+                                    onChange={(newValue) => this.onChangeSearchString(newValue)}
+                                    onSearch={(newValue) => this.onChangeSearchString(newValue)}
+                                />
+                                <OF.PrimaryButton
+                                    iconProps={{
+                                        iconName: "Clear"
+                                    }}
+                                    disabled={!this.isFilter()}
+                                    onClick={() => this.onClickResetFilters()}
+                                    ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_RESET)}
+                                    text={Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_RESET)}
+                                />
+                            </div>
                         </div>
                         <div className="cl-list-filters">
                             <OF.Dropdown
@@ -1494,7 +1526,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                         key: i,
                                         text: tag
                                     }))
-                                    .concat({ key: -1, text: Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
+                                    .concat(defaultTagFilter(this.props.intl))
                                 }
                             />
 
@@ -1509,7 +1541,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                     // Only show positive versions of negatable entities
                                     .filter(e => e.positiveId == null)
                                     .map(e => this.toEntityFilter(e))
-                                    .concat({ key: -1, text: Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES), data: null })
+                                    .concat(defaultEntityFilter(this.props.intl))
                                 }
                             />
 
@@ -1522,8 +1554,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
                                 options={this.props.actions
                                     .map(a => this.toActionFilter(a, this.props.entities))
-                                    .filter(s => s !== null)
-                                    .concat({ key: -1, text: Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS) })
+                                    .filter(Util.notNullOrUndefined)
+                                    .concat(defaultActionFilter(this.props.intl))
                                 }
                             />
                         </div>

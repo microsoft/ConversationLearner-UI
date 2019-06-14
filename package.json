@@ -21,7 +21,7 @@
   },
   "private": true,
   "dependencies": {
-    "@conversationlearner/models": "0.200.1",
+    "@conversationlearner/models": "0.200.3",
     "@conversationlearner/webchat": "0.145.0",
     "@cypress/webpack-preprocessor": "4.0.3",
     "@types/string-similarity": "^3.0.0",
@@ -39,7 +39,7 @@
     "lodash": "^4.17.11",
     "moment": "^2.22.2",
     "node-zip": "^1.1.1",
-    "office-ui-fabric-react": "5.100.0",
+    "office-ui-fabric-react": "6.185.0",
     "react": "16.8.6",
     "react-d3-tree": "^1.12.2",
     "react-dom": "16.8.6",
@@ -86,7 +86,7 @@
     "@types/react-router-dom": "^4.3.1",
     "@types/redux-auth-wrapper": "^2.0.8",
     "@types/uuid": "^3.4.4",
-    "commitizen": "2.10.1",
+    "commitizen": "3.1.1",
     "cross-env": "^5.2.0",
     "cypress": "^3.1.5",
     "express": "^4.16.4",
@@ -100,8 +100,9 @@
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^7.1.0",
     "tslint-microsoft-contrib": "^5.2.1",
-    "typescript": "3.1.6"
-},
+    "typescript": "3.1.6",
+    "wait-on": "3.2.0"
+  },
   "scripts": {
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "lintsdl": "tslint -c tslint.sdl.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
@@ -116,7 +117,8 @@
     "tsc": "tsc",
     "builduipackage": "tsc -p ./publish/tsconfig.json --listFiles && tsc -p ./scripts/tsconfig.json --listFiles && node ./scripts/publish.js",
     "commit": "git-cz",
-    "servebuild": "tsc -p ./server/tsconfig.json && node ./server/server.js"
+    "servebuild": "tsc -p ./server/tsconfig.json && node ./server/server.js",
+    "wait-on": "wait-on"
   },
   "config": {
     "commitizen": {

@@ -48,7 +48,7 @@ describe('Entity Labeling - Create Model', () => {
       train.TypeYourMessage('This is Tag.')
       train.LabelTextAsEntity('Tag', 'multi')
       train.ClickScoreActionsButton()
-      train.SelectAction('Hello')
+      train.SelectTextAction('Hello')
 
       train.SaveAsIsVerifyInGrid()
 
@@ -66,7 +66,7 @@ describe('Entity Labeling - Create Model', () => {
       train.LabelTextAsEntity('Tag', 'multi', false)
       train.ClickScoreActionsButton()
       // TODO: Verify that the entity was labeled and now in memory.
-      train.SelectAction('Hello')
+      train.SelectTextAction('Hello')
       cy.WaitForTrainingStatusCompleted()
     })
     
@@ -78,12 +78,12 @@ describe('Entity Labeling - Create Model', () => {
       cy.wait(30000)
 
       train.TypeYourMessage('This is Frog and Tag.')
-      memoryTableComponent.VerifyEntitiesInMemory('multi', ['Tag'])
+      memoryTableComponent.VerifyEntityValues('multi', ['Tag'])
       train.VerifyEntityLabel('Tag', 'multi')
       train.LabelTextAsEntity('Frog', 'multi', false)
       train.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntitiesInMemory('multi', ['Tag', 'Frog'])
-      train.SelectAction('Hi')
+      memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
+      train.SelectTextAction('Hi')
       cy.WaitForTrainingStatusCompleted()
     })
 
@@ -95,11 +95,11 @@ describe('Entity Labeling - Create Model', () => {
       cy.wait(30000)
 
       train.TypeYourMessage('This is Tag and Frog.')
-      memoryTableComponent.VerifyEntitiesInMemory('multi', ['Tag', 'Frog'])
+      memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
       train.VerifyEntityLabel('Tag', 'multi')
       train.VerifyEntityLabel('Frog', 'multi', 1)
       train.ClickScoreActionsButton()
-      train.SelectAction('Hi')
+      train.SelectTextAction('Hi')
 
       train.SaveAsIsVerifyInGrid()
     })

@@ -34,7 +34,7 @@ describe('Action Unavailable - ErrorHandling', () => {
 
     it('Should Score Actions to train the Bot to respond with "Hello Joe"', () => {
       train.ClickScoreActionsButton()
-      train.SelectAction('Hello Joe')
+      train.SelectTextAction('Hello Joe')
     })
 
     it('Should introduce an error in the Bot response by removing the entity label from "Joe"', () => {

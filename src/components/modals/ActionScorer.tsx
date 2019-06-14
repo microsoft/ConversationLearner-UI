@@ -621,6 +621,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             <OF.List
                 items={items}
                 onRenderCell={(item, index) => {
+                    if (!item) {
+                        return null
+                    }
+                    
                     return <span className={item.type}>{item.neg ? (<del>{item.name}</del>) : item.name}</span>
                 }}
             />

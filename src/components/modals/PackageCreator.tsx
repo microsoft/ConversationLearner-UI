@@ -18,26 +18,26 @@ import * as ToolTips from '../ToolTips/ToolTips'
 import * as Util from '../../Utils/util'
 
 interface ComponentState {
-    tagNameVal: string
+    versionName: string
     isLiveVal: boolean
 }
 
 class PackageCreator extends React.Component<Props, ComponentState> {
     state: ComponentState = {
-        tagNameVal: '',
+        versionName: '',
         isLiveVal: false
     }
 
     componentWillReceiveProps(nextProps: Props) {
         this.setState({
-            tagNameVal: '',
+            versionName: '',
             isLiveVal: false
         })
     }
 
     nameChanged(text: string) {
         this.setState({
-            tagNameVal: text
+            versionName: text
         })
     }
 
@@ -48,14 +48,14 @@ class PackageCreator extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickCreate() {
-        this.props.onSubmit(this.state.tagNameVal.trim(), this.state.isLiveVal)
+        this.props.onSubmit(this.state.versionName.trim(), this.state.isLiveVal)
     }
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
     // Also has benefit of native browser validation for required fields
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
-        if (event.keyCode === 13 && (!(this.onGetNameErrorMessage(this.state.tagNameVal)).length)) {
+        if (event.key === 'Enter' && (!(this.onGetNameErrorMessage(this.state.versionName)).length)) {
             this.onClickCreate();
         }
     }
@@ -64,7 +64,6 @@ class PackageCreator extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         if (value.length === 0) {
             return Util.formatMessageId(intl, FM.FIELDERROR_REQUIREDVALUE)
-
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
@@ -100,29 +99,28 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                 isBlocking={false}
                 containerClassName="cl-modal cl-modal--small"
             >
-                <div className="cl-page">
-                    <div className="cl-modal_header">
-                        <span className={OF.FontClassNames.xxLarge}>
-                            <FormattedMessageId id={FM.PACKAGECREATOR_TITLE} />
-                        </span>
-                    </div>
+                <div className="cl-modal_header" data-testid="package-creator-modal">
+                    <span className={OF.FontClassNames.xxLarge}>
+                        <FormattedMessageId id={FM.PACKAGECREATOR_TITLE} />
+                    </span>
+                </div>
+                <div className="cl-fieldset">
+                    <OF.TextField
+                        data-testid="package-creator-input-version-name"
+                        onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
+                        onChanged={text => this.nameChanged(text)}
+                        label={intl.formatMessage({
+                            id: FM.PACKAGECREATOR_TAG_LABEL,
+                            defaultMessage: 'Name'
+                        })}
+                        placeholder={intl.formatMessage({
+                            id: FM.PACKAGECREATOR_TAG_PLACEHOLDER,
+                            defaultMessage: 'Version Name...'
+                        })}
+                        onKeyDown={key => this.onKeyDown(key)}
+                        value={this.state.versionName}
+                    />
                     <div>
-                        <OF.TextField
-                            onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
-                            onChanged={text => this.nameChanged(text)}
-                            label={intl.formatMessage({
-                                id: FM.PACKAGECREATOR_TAG_LABEL,
-                                defaultMessage: 'Name'
-                            })}
-                            placeholder={intl.formatMessage({
-                                id: FM.PACKAGECREATOR_TAG_PLACEHOLDER,
-                                defaultMessage: 'Tag Name...'
-                            })}
-                            onKeyDown={key => this.onKeyDown(key)}
-                            value={this.state.tagNameVal}
-                        />
-                    </div>
-                    <div className="cl-entity-creator-checkbox">
                         <TC.Checkbox
                             label={intl.formatMessage({
                                 id: FM.PACKAGECREATOR_LIVE_LABEL,
@@ -133,36 +131,37 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                             tipType={ToolTips.TipType.PACKAGECREATOR_LIVE_TOGGLE}
                         />
                     </div>
-                    <div className="cl-modal_footer">
-                        <div className="cl-modal-buttons">
-                            <div className="cl-modal-buttons_primary">
-                                <OF.PrimaryButton
-                                    disabled={!this.state.tagNameVal || this.onGetNameErrorMessage(this.state.tagNameVal).length > 0}
-                                    onClick={this.onClickCreate}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.PACKAGECREATOR_CREATEBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Create'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.PACKAGECREATOR_CREATEBUTTON_TEXT,
-                                        defaultMessage: 'Create'
-                                    })}
-                                    iconProps={{ iconName: 'Add' }}
-                                />
-                                <OF.DefaultButton
-                                    onClick={this.onClickCancel}
-                                    ariaDescription={intl.formatMessage({
-                                        id: FM.PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION,
-                                        defaultMessage: 'Cancel'
-                                    })}
-                                    text={intl.formatMessage({
-                                        id: FM.PACKAGECREATOR_CANCELBUTTON_TEXT,
-                                        defaultMessage: 'Cancel'
-                                    })}
-                                    iconProps={{ iconName: 'Cancel' }}
-                                />
-                            </div>
-                        </div>
+                </div>
+                <div className="cl-modal_footer cl-modal-buttons">
+                    <div className="cl-modal-buttons_secondary" />
+                    <div className="cl-modal-buttons_primary">
+                        <OF.PrimaryButton
+                            data-testid="package-creator-button-create"
+                            disabled={!this.state.versionName || this.onGetNameErrorMessage(this.state.versionName).length > 0}
+                            onClick={this.onClickCreate}
+                            ariaDescription={intl.formatMessage({
+                                id: FM.PACKAGECREATOR_CREATEBUTTON_ARIADESCRIPTION,
+                                defaultMessage: 'Create'
+                            })}
+                            text={intl.formatMessage({
+                                id: FM.PACKAGECREATOR_CREATEBUTTON_TEXT,
+                                defaultMessage: 'Create'
+                            })}
+                            iconProps={{ iconName: 'Add' }}
+                        />
+                        <OF.DefaultButton
+                            data-testid="package-creator-button-cancel"
+                            onClick={this.onClickCancel}
+                            ariaDescription={intl.formatMessage({
+                                id: FM.PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION,
+                                defaultMessage: 'Cancel'
+                            })}
+                            text={intl.formatMessage({
+                                id: FM.PACKAGECREATOR_CANCELBUTTON_TEXT,
+                                defaultMessage: 'Cancel'
+                            })}
+                            iconProps={{ iconName: 'Cancel' }}
+                        />
                     </div>
                 </div>
             </Modal>

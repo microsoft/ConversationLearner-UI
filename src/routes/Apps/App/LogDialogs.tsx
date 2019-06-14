@@ -82,12 +82,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 1500,
             isResizable: true,
             render: (trainDialog, component) => {
-
                 return <>
-                    <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-first-input">
-                        <span data-testid="train-dialogs-description">
-                            {DialogUtils.dialogSampleInput(trainDialog)}
-                        </span>
+                    <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-description">
+                        {DialogUtils.dialogSampleInput(trainDialog)}
                     </span>
                 </>
             },

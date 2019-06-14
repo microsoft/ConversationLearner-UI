@@ -314,7 +314,7 @@ class Settings extends React.Component<Props, ComponentState> {
     getDeleteDialogBoxText = (modelName: string) => {
         return (
             <div>
-                <h1 className={`${OF.FontClassNames.xxLarge} cl-text--error`} style={{ fontWeight: OF.FontWeights.semibold }}>{Util.formatMessageId(this.props.intl, FM.SETTINGS_DELETEISPERMANENT)}</h1>
+                <h1 className={`${OF.FontClassNames.xxLarge} cl-text--error`} style={{ fontWeight: 100 }}>{Util.formatMessageId(this.props.intl, FM.SETTINGS_DELETEISPERMANENT)}</h1>
                 <p>Confirm permanent deletion of the <strong>{modelName}</strong> Model by entering its name.</p>
             </div>
         )
@@ -371,6 +371,7 @@ class Settings extends React.Component<Props, ComponentState> {
                 </span>
                 <div className="cl-settings-fields">
                     <OF.TextField
+                        data-testid="settings-input-model-name"
                         className={OF.FontClassNames.mediumPlus}
                         onChanged={(text) => this.onChangedName(text)}
                         label={Util.formatMessageId(intl, FM.SETTINGS_FIELDS_NAMELABEL)}
@@ -447,6 +448,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             />
                             <div>
                                 <OF.PrimaryButton
+                                    data-testid="settings-button-new-version"
                                     onClick={this.onClickNewTag}
                                     ariaDescription={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSIONS_CREATE)}
                                     text={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSIONS_CREATE)}
@@ -520,6 +522,7 @@ class Settings extends React.Component<Props, ComponentState> {
 
                     <div className="cl-buttons-row">
                         <OF.PrimaryButton
+                            data-testid="settings-button-save"
                             disabled={this.state.edited === false || this.onGetNameErrorMessage(this.state.appNameVal) !== ''}
                             onClick={this.onClickSave}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_SAVECHANGES)}
@@ -527,6 +530,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             iconProps={{ iconName: 'Accept' }}
                         />
                         <OF.DefaultButton
+                            data-testid="settings-button-discard"
                             disabled={this.state.edited === false}
                             onClick={this.onClickDiscard}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_DISCARD)}

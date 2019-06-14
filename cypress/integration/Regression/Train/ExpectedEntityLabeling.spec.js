@@ -42,7 +42,7 @@ describe('Expected Entity Labeling - Train', () => {
     })
 
     it('Should select an action', () => {
-      train.SelectAction(common.whatsYourName)
+      train.SelectTextAction(common.whatsYourName)
     })
   })
 
@@ -54,7 +54,7 @@ describe('Expected Entity Labeling - Train', () => {
     })
 
     it('Should verify the "name" Entity is in memory with its value', () => {
-      memoryTableComponent.VerifyEntitiesInMemory('name', ['David'])
+      memoryTableComponent.VerifyEntityValues('name', ['David'])
     })
 
     it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
@@ -63,7 +63,7 @@ describe('Expected Entity Labeling - Train', () => {
     })
 
     it('Should select an action', () => {
-      train.SelectAction('Hello David', 'Hello $name')
+      train.SelectTextAction('Hello David', 'Hello $name')
     })
 
     it('Should save the Train Dialog and verify that it shows up in the grid', () => {

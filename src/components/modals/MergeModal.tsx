@@ -79,7 +79,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
 
         const { intl } = this.props
 
-        const savedInput =  DialogUtils.dialogSampleInput(this.props.savedTrainDialog)
+        const savedInput = DialogUtils.dialogSampleInput(this.props.savedTrainDialog)
         const existingInput = DialogUtils.dialogSampleInput(this.props.existingTrainDialog)
         const isSavedLonger = DialogUtils.isPrimaryTrainDialog(this.props.savedTrainDialog, this.props.existingTrainDialog)
 
@@ -105,18 +105,18 @@ class MergeModal extends React.Component<Props, ComponentState> {
                     <div>
                         {Util.formatMessageId(intl, FM.MERGE_BODY3)}
                     </div>
-                </div>    
+                </div>
                 <div>
                     <OF.Label className="ms-Label--tight cl-label">
                         {Util.formatMessageId(intl, FM.MERGE_LABEL_SAVED)}
                     </OF.Label>
                     <div className="cl-merge-box cl-merge-box--readonly">
                         <DialogMetadata
-                                description={this.props.savedTrainDialog.description}
-                                userInput={savedInput}
-                                tags={this.props.savedTrainDialog.tags}
-                                allUniqueTags={[]}
-                                readOnly={true}
+                            description={this.props.savedTrainDialog.description}
+                            userInput={savedInput}
+                            tags={this.props.savedTrainDialog.tags}
+                            allUniqueTags={[]}
+                            readOnly={true}
                         />
                     </div>
                     <OF.Label className="ms-Label--tight cl-label">
@@ -124,11 +124,11 @@ class MergeModal extends React.Component<Props, ComponentState> {
                     </OF.Label>
                     <div className="cl-merge-box cl-merge-box--readonly">
                         <DialogMetadata
-                                description={this.props.existingTrainDialog.description}
-                                userInput={existingInput}
-                                tags={this.props.existingTrainDialog.tags}
-                                allUniqueTags={[]}
-                                readOnly={true}
+                            description={this.props.existingTrainDialog.description}
+                            userInput={existingInput}
+                            tags={this.props.existingTrainDialog.tags}
+                            allUniqueTags={[]}
+                            readOnly={true}
                         />
                     </div>
                     <OF.Label className="ms-Label--tight cl-label">
@@ -136,32 +136,37 @@ class MergeModal extends React.Component<Props, ComponentState> {
                     </OF.Label>
                     <div className="cl-merge-box">
                         <DialogMetadata
-                                description={this.state.description}
-                                tags={this.state.tags}
-                                userInput={isSavedLonger ? savedInput : existingInput}
-                                altInput={isSavedLonger ? existingInput : savedInput}
-                                allUniqueTags={this.props.allUniqueTags}
-                                onChangeDescription={this.onChangeDescription}
-                                onAddTag={this.onAddTag}
-                                onRemoveTag={this.onRemoveTag}
+                            description={this.state.description}
+                            tags={this.state.tags}
+                            userInput={isSavedLonger ? savedInput : existingInput}
+                            altInput={isSavedLonger ? existingInput : savedInput}
+                            allUniqueTags={this.props.allUniqueTags}
+                            onChangeDescription={this.onChangeDescription}
+                            onAddTag={this.onAddTag}
+                            onRemoveTag={this.onRemoveTag}
                         />
                     </div>
-                </div>              
-                <OF.DialogFooter>
-                    <OF.PrimaryButton
-                        onClick={() => this.props.onMerge(this.state.description, this.state.tags)}
-                        className="cl-rotate"
-                        text={Util.formatMessageId(intl, FM.MERGE_BUTTON_MERGE)}
-                        iconProps={{ iconName: 'Merge' }}
-                        data-testid="merge-modal-merge-button"
-                    />
-                    <OF.DefaultButton
-                        onClick={() => this.props.onCancel()}
-                        text={Util.formatMessageId(intl, FM.MERGE_BUTTON_SAVE)}
-                        iconProps={{ iconName: 'Accept' }}
-                        data-testid="merge-modal-save-as-is-button"
-                    />
-                </OF.DialogFooter>        
+                </div>
+                <div className='cl-modal_footer'>
+                    <div className="cl-modal-buttons">
+                        <div className="cl-modal-buttons_secondary" />
+                        <div className="cl-modal-buttons_primary">
+                            <OF.PrimaryButton
+                                onClick={() => this.props.onMerge(this.state.description, this.state.tags)}
+                                className="cl-rotate"
+                                text={Util.formatMessageId(intl, FM.MERGE_BUTTON_MERGE)}
+                                iconProps={{ iconName: 'Merge' }}
+                                data-testid="merge-modal-merge-button"
+                            />
+                            <OF.DefaultButton
+                                onClick={() => this.props.onCancel()}
+                                text={Util.formatMessageId(intl, FM.MERGE_BUTTON_SAVE)}
+                                iconProps={{ iconName: 'Accept' }}
+                                data-testid="merge-modal-save-as-is-button"
+                            />
+                        </div>
+                    </div>
+                </div>
             </Modal>
         )
     }

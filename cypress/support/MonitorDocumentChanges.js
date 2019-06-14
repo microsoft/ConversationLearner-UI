@@ -103,7 +103,7 @@ import * as helpers from './Helpers.js'
 
         if (elements.length > 0) {
           if (expectFailure) return true;
-          throw `selector: "${selector}" & textItShouldNotContain: "${textItShouldNotContain}" was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`
+          throw new Error(`selector: "${selector}" & textItShouldNotContain: "${textItShouldNotContain}" was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`)
         }
         helpers.ConLog(funcName, `PASSED - Selector was NOT Found as Expected`)
         if (expectFailure) return false;
@@ -115,10 +115,10 @@ import * as helpers from './Helpers.js'
       cy.wrap(700, { timeout: 60000 }).should('lte', 'MillisecondsSinceLastChange')
     })
 
-    Cypress.Commands.add('Click', { prevSubject: true, element: true }, (subject) => {
+    Cypress.Commands.add('Click', { prevSubject: true, element: true }, (subject, options) => {
       helpers.ConLog(`cy.Click()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       lastChangeTime = new Date().getTime()
-      cy.wrap(subject).click()
+      cy.wrap(subject).click(options)
         .then(() => {
           helpers.ConLog(`cy.Click()`, `done - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
           lastChangeTime = new Date().getTime()
