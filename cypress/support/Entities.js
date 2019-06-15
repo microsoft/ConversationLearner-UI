@@ -43,7 +43,7 @@ export function CreateNewEntityThenVerifyInGrid({
   if (name) { entitiesGridRow = new entitiesGrid.Row(name) }
   else { entitiesGridRow = new entitiesGrid.Row(`builtin-${type.toLowerCase()}`) }
 
-  entitiesGridRow.VerifyType(type)
+  //entitiesGridRow.VerifyType(type)
 
   if (resolverType) { entitiesGridRow.VerifyResolverType(resolverType) }
   else { entitiesGridRow.VerifyResolverNone() }

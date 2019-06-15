@@ -19,8 +19,8 @@ export class Row {
   VerifyType(type) { cy.Get('@entityDetailsRow').find('[data-testid="entities-type"]').contains(type) }
   VerifyResolverType(type) { cy.Get('@entityDetailsRow').find('[data-testid="entities-resolver"]').contains(type) }
   VerifyResolverNone() { cy.Get('@entityDetailsRow').find('[data-testid="entities-resolver-none"]') }
-  VerifyMultiValueChecked() { cy.Get('@entityDetailsRow').find('i.[data-icon-name="CheckMark"][data-testid="entities-multi-value"]') }
-  VerifyMultiValueUnChecked() { cy.Get('@entityDetailsRow').find('i.[data-icon-name="Remove"][data-testid="entities-multi-value"]') }
-  VerifyNegatableChecked() { cy.Get('@entityDetailsRow').find('i.[data-icon-name="CheckMark"][data-testid="entities-negatable"]') }
-  VerifyNegatableUnChecked() { cy.Get('@entityDetailsRow').find('i.[data-icon-name="Remove"][data-testid="entities-negatable"]') }
+  VerifyMultiValueChecked() { cy.Get('@entityDetailsRow').find('i[data-icon-name="CheckMark"][data-testid="entities-multi-value"]') }
+  VerifyMultiValueUnChecked() { cy.Get('@entityDetailsRow').find('i[data-icon-name="Remove"][data-testid="entities-multi-value"]') }
+  VerifyNegatableChecked() { cy.Get('@entityDetailsRow').find('i[data-icon-name="CheckMark"][data-testid="entities-negatable"]') }
+  VerifyNegatableUnChecked() { cy.Get('@entityDetailsRow').find('i[data-icon-name="Remove"][data-testid="entities-negatable"]') }
 }
