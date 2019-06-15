@@ -35,38 +35,38 @@ describe('All Entity Types - CreateModels', () => {
 
   context('Create Entities', () => {
     it('Should create a custom trained entity', () => {
-      entities.CreateNewEntity({ type: 'Custom Trained', name: 'customTrainedEntity'})
+      entities.CreateNewEntityThenVerifyInGrid({ type: 'Custom Trained', name: 'customTrainedEntity'})
     })
 
     it('Should create a custom trained multivalued entity', () => {
-      entities.CreateNewEntity({ type: 'Custom Trained', name: 'multiValuedEntity', multiValued: true })
+      entities.CreateNewEntityThenVerifyInGrid({ type: 'Custom Trained', name: 'multiValuedEntity', multiValued: true })
     })
 
     it('Should create a custom trained negatable entity', () => {
-      entities.CreateNewEntity({ type: 'Custom Trained', name: 'negatableEntity', negatable: true })
+      entities.CreateNewEntityThenVerifyInGrid({ type: 'Custom Trained', name: 'negatableEntity', negatable: true })
     })
 
     it('Should create a custom trained multivalued and negatable entity', () => {
-      entities.CreateNewEntity({ type: 'Custom Trained', name: 'multiValuedNegatableEntity', multiValued: true, negatable: true })
+      entities.CreateNewEntityThenVerifyInGrid({ type: 'Custom Trained', name: 'multiValuedNegatableEntity', multiValued: true, negatable: true })
     })
 
     it('Should create a programmatic entity', () => {
-      entities.CreateNewEntity({ type: 'Programmatic', name: 'programmaticEntity'})
+      entities.CreateNewEntityThenVerifyInGrid({ type: 'Programmatic', name: 'programmaticEntity'})
     })
 
     it('Should create a programmatic entity', () => {
-      entities.CreateNewEntity({ type: 'Programmatic', name: 'programmaticMultiValuedEntity', multiValued: true})
+      entities.CreateNewEntityThenVerifyInGrid({ type: 'Programmatic', name: 'programmaticMultiValuedEntity', multiValued: true})
     })
 
     // Alternate testing of multiValued and negatable on different days 
     // so that we test these in combination regularly.
     entities.pretrainedEntityTypes.forEach(entityType => { 
       it(`Should create the '${entityType}' pretrained entity type`, () => {
-        entities.CreateNewEntity({ type: entityType, multiValued: FlipFlop.Get() }) 
+        entities.CreateNewEntityThenVerifyInGrid({ type: entityType, multiValued: FlipFlop.Get() }) 
       })
 
       it(`Should create a custom trained entity with the '${entityType}' resolver type`, () => {
-        entities.CreateNewEntity({ type: 'Custom Trained', name: `ct-${entityType}`, resolverType: entityType, multiValued: FlipFlop.Get(), negatable: FlipFlop.Get() }) 
+        entities.CreateNewEntityThenVerifyInGrid({ type: 'Custom Trained', name: `ct-${entityType}`, resolverType: entityType, multiValued: FlipFlop.Get(), negatable: FlipFlop.Get() }) 
       })
     })
 
