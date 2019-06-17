@@ -331,7 +331,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         })
     }
 
-    autoSelect() {
+    async autoSelect() {
         // If not in interactive mode select action automatically
         if (this.props.autoTeach && this.props.dialogMode === CLM.DialogMode.Scorer) {
             // We assume if DialogMode is Scorer, then we must have ScoreResponse
@@ -348,7 +348,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 return;
             }
 
-            this.handleActionSelection(bestAction);
+            await this.handleActionSelection(bestAction);
         } else if (!this.state.isActionCreatorModalOpen) {
             setTimeout(this.focusPrimaryButton, 100)
         }
@@ -389,7 +389,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             // See if new action is available, then take it
             const isAvailable = this.isAvailable(newAction)
             if (isAvailable) {
-                this.handleActionSelection(newAction)
+                await this.handleActionSelection(newAction)
             }
         }
     }
@@ -453,7 +453,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    handleDefaultSelection() {
+    async handleDefaultSelection() {
         // Look for a valid action
         let scoredBase: CLM.ScoredBase | null = null
         const scoreResponse = this.props.scoreResponse
@@ -468,7 +468,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             }
         }
         if (scoredBase) {
-            this.handleActionSelection(scoredBase)
+            await this.handleActionSelection(scoredBase)
         }
     }
 
@@ -476,7 +476,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     async handleReselectAction(scoredBase: CLM.ScoredBase) {
         // If ApiStub let user reselect memory values
         if (CLM.ActionBase.isStubbedAPI(scoredBase)) {
-            this.handleActionSelection(scoredBase)
+            await this.handleActionSelection(scoredBase)
         }
         // Otherwise tell them it has already been selected
         else {
@@ -499,7 +499,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             // TODO: Schema refactor
             const setEntityAction = new CLM.SetEntityAction(scoredBase as CLM.ActionBase)
             const action = Util.getSetEntityActionForEnumValue(setEntityAction.entityId, setEntityAction.enumValueId)
-            const newAction = await (this.props.createActionThunkAsync(this.props.app.appId, action) as any as CLM.ActionBase)
+            const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action)) as any as CLM.ActionBase)
 
             scoredAction = {
                 actionId: newAction.actionId,

@@ -5,6 +5,7 @@
 import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../Utils/util'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import FormattedMessageId from '../FormattedMessageId'
 import MemorySetter from '../modals/MemorySetter'
@@ -71,7 +72,6 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        const { intl } = this.props
         return (
             <Modal
                 isOpen={this.props.isOpen}
@@ -102,27 +102,15 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             data-testid="teach-session-ok-button"
                             onClick={this.onClickSubmit}
-                            ariaDescription={intl.formatMessage({
-                                id: FM.BUTTON_OK,
-                                defaultMessage: 'Ok'
-                            })}
-                            text={intl.formatMessage({
-                                id: FM.BUTTON_OK,
-                                defaultMessage: 'Ok'
-                            })}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_OK)}
+                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_OK)}
                             iconProps={{ iconName: 'Accept' }}
                         />
                         <OF.DefaultButton
                             data-testid="teach-session-cancel-button"
                             onClick={this.onClickCancel}
-                            ariaDescription={intl.formatMessage({
-                                id: FM.BUTTON_CANCEL,
-                                defaultMessage: 'Cancel'
-                            })}
-                            text={intl.formatMessage({
-                                id: FM.BUTTON_CANCEL,
-                                defaultMessage: 'Cancel'
-                            })}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
+                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
                             iconProps={{ iconName: 'Cancel' }}
                         />
                     </div>

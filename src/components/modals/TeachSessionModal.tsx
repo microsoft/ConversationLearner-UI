@@ -642,7 +642,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     className={`cl-editdialog-error ${OF.FontClassNames.mediumPlus}`}
                     data-testid="dialog-modal-error-noselection"
                 >
-                    <FormattedMessageId id={FM.REPLAYERROR_EXISTS} />
+                    <FormattedMessageId id={FM.REPLAYERROR_ERROR} />
                 </div>
             )
         }

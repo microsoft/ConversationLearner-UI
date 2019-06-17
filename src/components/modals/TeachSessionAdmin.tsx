@@ -77,11 +77,11 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 
         // Next against other TrainDialogs
         for (const changedTextVariation of changedTextVariations) {
-            const conflict = await this.props.fetchTextVariationConflictThunkAsync(
+            const conflict = await ((this.props.fetchTextVariationConflictThunkAsync(
                 this.props.app.appId,
                 this.props.teachSession.teach!.trainDialogId,
                 changedTextVariation,
-                ignoreDialogId)
+                ignoreDialogId) as any) as Promise<CLM.ExtractResponse>)
             if (conflict) {
                 return true
             }

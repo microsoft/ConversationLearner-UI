@@ -22,7 +22,7 @@
   "private": true,
   "dependencies": {
     "@conversationlearner/models": "0.200.3",
-    "@conversationlearner/webchat": "0.147.0",
+    "@conversationlearner/webchat": "0.149.0",
     "@cypress/webpack-preprocessor": "4.0.3",
     "@types/markdown-it": "0.0.7",
     "@types/string-similarity": "^3.0.0",

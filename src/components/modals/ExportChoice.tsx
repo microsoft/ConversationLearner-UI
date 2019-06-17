@@ -21,8 +21,7 @@ import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
-enum ExportType 
-{
+enum ExportType {
     CL = ".cl",
     TRANSCRIPT = '.transcript'
 }

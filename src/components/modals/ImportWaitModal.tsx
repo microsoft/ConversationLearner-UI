@@ -6,7 +6,7 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import { connect } from 'react-redux'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import './LogConversionConflictModal.css'
+import './ImportWaitModal.css'
 
 interface ComponentState {
     userInputVal: string

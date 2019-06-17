@@ -920,28 +920,30 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return renderReplayError(replayError)
         }
 
-        // No Activity selected, but Replay error on an Activity
-        const replayErrorLevel = this.props.history ? DialogUtils.getReplayErrorLevel(this.props.history) : null
-        if (replayErrorLevel) {
-            if (replayErrorLevel === CLM.ReplayErrorLevel.WARNING) {
-                // Only show activity based warning if no trainDialog level warning
-                if (this.props.trainDialog.validity !== CLM.Validity.UNKNOWN
-                    && this.props.trainDialog.validity !== CLM.Validity.WARNING) {
-                    return (
-                        <div className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
-                            data-testid="dialog-modal-warning">
-                            <FormattedMessageId id={FM.REPLAYERROR_WARNING} />
-                        </div>
-                    )
-                }
-            }
-            else {
+        // No Activity selected, but Replay error exists on an Activity
+        const worstReplayError = this.props.history ? DialogUtils.getMostSevereReplayError(this.props.history) : null
+        if (worstReplayError) {
+            // Only show activity based warning if train dialog isn't invalid
+            if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.WARNING &&
+                this.props.trainDialog.validity !== CLM.Validity.INVALID) {
                 return (
-                    <div className={`cl-editdialog-error ${OF.FontClassNames.mediumPlus}`}
-                        data-testid="dialog-modal-error-noselection">
+                    <div 
+                        className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
+                        data-testid="dialog-modal-warning"
+                    >
+                        <FormattedMessageId id={FM.REPLAYERROR_WARNING} />
+                    </div>
+                )
+            }
+            else if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
+                return (
+                    <div 
+                        className={`cl-editdialog-error ${OF.FontClassNames.mediumPlus}`}
+                        data-testid="dialog-modal-error-noselection"
+                    >
                         {this.props.editType === EditDialogType.LOG_ORIGINAL
-                            ? <FormattedMessageId id={FM.REPLAYERROR_EXISTS_LOG} />
-                            : <FormattedMessageId id={FM.REPLAYERROR_EXISTS} />
+                            ? <FormattedMessageId id={FM.REPLAYERROR_ERROR_LOG} />
+                            : <FormattedMessageId id={FM.REPLAYERROR_ERROR} />
                         }
                     </div>
                 )
@@ -950,8 +952,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         if (this.props.trainDialog.validity === CLM.Validity.UNKNOWN) {
             return (
-                <div className={`cl-editdialog-caution ${OF.FontClassNames.mediumPlus}`}
-                    data-testid="dialog-modal-caution">
+                <div 
+                    className={`cl-editdialog-caution ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-caution"
+                >
                     <FormattedMessageId id={FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} />
                     <HelpIcon tipType={TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} customClass="cl-icon-orangebackground" />
                 </div>
@@ -959,8 +963,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         else if (this.props.trainDialog.validity === CLM.Validity.WARNING) {
             return (
-                <div className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
-                    data-testid="dialog-modal-warning">
+                <div 
+                    className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-warning"
+                >
                     <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY} />
                     <HelpIcon tipType={TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY} customClass="cl-icon-orangebackground" />
                 </div>

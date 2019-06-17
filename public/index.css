@@ -403,7 +403,7 @@ i[data-icon-name="Edit"]:hover {
 .cl-icon-plain {
   border: none !important;
   background-color: transparent !important;
-  color: var(--color-themePrimary);
+  color: var(--color-themePrimary) !important;
 }
 
 .cl-icon-plain:hover {
@@ -414,7 +414,7 @@ i[data-icon-name="Edit"]:hover {
 .cl-icon-warning {
   border: none !important;
   background-color: transparent !important;
-  color: var(--cl-color-error)
+  color: var(--cl-color-error) !important;
 }
 
 .cl-icon-warning:hover {
@@ -454,7 +454,7 @@ i[data-icon-name="Edit"]:hover {
 }
 
 .cl-modal.cl-modal--importwait {
-  height: 80px;
+  height: 90px;
   width: 400px;
   padding: 20px;
   text-align: center !important;

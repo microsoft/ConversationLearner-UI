@@ -1108,7 +1108,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
 
         let curRound: CLM.TrainRound | null = null
-        for (const activity of transcript) {
+        for (let index = 0; index < transcript.length; index = index + 1) {
+            const activity = transcript[index]
+            const nextActivity = transcript[index + 1]
             // TODO: Handle conversation updates
             if (!activity.type || activity.type === "message") {
                 if (activity.from.role === "user") {
@@ -1119,7 +1121,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     if (activity.channelData && activity.channelData.textVariations) {
                         activity.channelData.textVariations.forEach((tv: any) => {
                             let altTextVariation: CLM.TextVariation = {
-                                text: tv.Text, // LARS temp till data fix
+                                text: tv.text, 
                                 labelEntities: []
                             }
                             // Currently system is limited to 20 text variations
@@ -1145,7 +1147,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     // If I didn't find an action and is API, create API stub
                     if (!action && activity.channelData && activity.channelData.type === "ActionCall") {
                         const actionCall = activity.channelData as TranscriptActionCall
-                        action = await DialogEditing.getStubAPIAction(this.props.app.appId, actionCall.actionName, true, /*LARS*/ this.props.actions, this.props.createActionThunkAsync as any)
+                        const isTerminal = !nextActivity || nextActivity.from.role === "user"
+                        action = await DialogEditing.getStubAPIAction(this.props.app.appId, actionCall.actionName, isTerminal, this.props.actions, this.props.createActionThunkAsync as any)
 
                         // Store stub API output in LogicResult
                         logicResult = {
@@ -1278,22 +1281,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
-        })
-    }
-
-    private isFilter(): boolean {
-        return this.state.searchValue != ''
-            || this.state.entityFilter != null
-            || this.state.actionFilter != null
-            || this.state.tagsFilter != null
-    }
-
-    private onClickResetFilters(): void {
-        this.setState({
-            searchValue: '',
-            entityFilter: null,
-            actionFilter: null,
-            tagsFilter: null,
         })
     }
 
@@ -1657,6 +1644,22 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
             </div>
         )
+    }
+
+    private isFilter(): boolean {
+        return this.state.searchValue !== ''
+            || this.state.entityFilter != null
+            || this.state.actionFilter != null
+            || this.state.tagsFilter != null
+    }
+
+    private onClickResetFilters(): void {
+        this.setState({
+            searchValue: '',
+            entityFilter: null,
+            actionFilter: null,
+            tagsFilter: null,
+        })
     }
 
     // User has edited an Activity in a TeachSession

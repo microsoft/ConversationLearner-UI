@@ -197,27 +197,15 @@ class EditApiStub extends React.Component<Props, ComponentState> {
                             data-testid="teach-session-ok-button"
                             onClick={this.onClickSubmit}
                             disabled={this.isSaveDisabled()}
-                            ariaDescription={intl.formatMessage({
-                                id: FM.BUTTON_OK,
-                                defaultMessage: 'Ok'
-                            })}
-                            text={intl.formatMessage({
-                                id: FM.BUTTON_OK,
-                                defaultMessage: 'Ok'
-                            })}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_OK)}
+                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_OK)}
                             iconProps={{ iconName: 'Accept' }}
                         />
                         <OF.DefaultButton
                             data-testid="teach-session-cancel-button"
                             onClick={this.onClickCancel}
-                            ariaDescription={intl.formatMessage({
-                                id: FM.BUTTON_CANCEL,
-                                defaultMessage: 'Cancel'
-                            })}
-                            text={intl.formatMessage({
-                                id: FM.BUTTON_CANCEL,
-                                defaultMessage: 'Cancel'
-                            })}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
+                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
                             iconProps={{ iconName: 'Cancel' }}
                         />
                     </div>

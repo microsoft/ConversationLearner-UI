@@ -213,35 +213,36 @@ export function hasImportActions(trainDialog: CLM.TrainDialog): boolean {
 }
 
 // Does history have any replay errors
-export function getReplayErrorLevel(history: BotChat.Activity[]): CLM.ReplayErrorLevel | null {
+export function getMostSevereReplayError(history: BotChat.Activity[]): CLM.ReplayError| null {
     // Return most severe error level found
-    let replayErrorLevel: CLM.ReplayErrorLevel | null = null
+    let worstReplayError: CLM.ReplayError | null = null
     for (const h of history) {
         const clData: CLM.CLChannelData = h.channelData.clData
         if (clData && clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
-                return CLM.ReplayErrorLevel.BLOCKING
+                return clData.replayError
             }
             else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
-                replayErrorLevel = CLM.ReplayErrorLevel.ERROR
+                worstReplayError = clData.replayError
             }
-            else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING && replayErrorLevel !== CLM.ReplayErrorLevel.ERROR) {
-                replayErrorLevel = CLM.ReplayErrorLevel.WARNING
+            else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING && 
+                (!worstReplayError  ||worstReplayError.errorLevel !== CLM.ReplayErrorLevel.ERROR)) {
+                worstReplayError = clData.replayError
             }
         }
     }
-    return replayErrorLevel
+    return worstReplayError
 }
 
 // Given train dialog and rendered activity, return validity
 export function getTrainDialogValidity(trainDialog: CLM.TrainDialog, history: BotChat.Activity[]): CLM.Validity | undefined {
     // Look for individual replay errors
-    const replayErrorLevel = getReplayErrorLevel(history)
-    if (replayErrorLevel) {
-        if (replayErrorLevel === CLM.ReplayErrorLevel.BLOCKING || replayErrorLevel === CLM.ReplayErrorLevel.ERROR) {
+    const worstReplayError = getMostSevereReplayError(history)
+    if (worstReplayError) {
+        if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING || worstReplayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
             return CLM.Validity.INVALID
         }
-        if (replayErrorLevel === CLM.ReplayErrorLevel.WARNING) {
+        if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
             return CLM.Validity.WARNING
         }
     }
@@ -453,7 +454,7 @@ export function mergeTrainDialogDescription(trainDialog1: CLM.TrainDialog, train
         ? trainDialog1.description : trainDialog2.description
 }
 
-export function mergeTrainDialogClientData(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): CLM.TrainDialogClientData{
+export function mergeTrainDialogClientData(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): CLM.TrainDialogClientData {
     const importHashes1 = trainDialog1.clientData ? trainDialog1.clientData.importHashes : []
     const importHashes2 = trainDialog2.clientData ? trainDialog2.clientData.importHashes : []
     

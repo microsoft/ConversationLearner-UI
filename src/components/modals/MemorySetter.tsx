@@ -199,7 +199,6 @@ class MemorySetter extends React.Component<Props, {}> {
                                         }
                                         <OF.IconButton
                                             className="cl-icon-warning"
-                                            data-testid="teach-session-delete-button"
                                             onClick={() => this.onClickRemove(index, entity)}
                                             ariaDescription="Remove Value"
                                             iconProps={{ iconName: 'Delete' }}

@@ -348,14 +348,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 const isValidationError = component.validationError(action)
                 const payloadRenderer = getActionPayloadRenderer(action, component, isValidationError)
                 return (
-                    <div className="cl-action-error">
+                    <span>
                         {isValidationError &&
-                            <div className={OF.FontClassNames.mediumPlus}>
-                                <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
-                            </div>
+                            <OF.Icon
+                                className={`cl-icon cl-color-error`}
+                                iconName="IncidentTriangle"
+                            />
                         }
                         {payloadRenderer}
-                    </div>
+                    </span>
                 )
             }
         },

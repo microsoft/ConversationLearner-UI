@@ -1,5 +1,6 @@
 .cl-import-wait-body {
-    height: 44px;
+    padding-top: 2px;
+    height: 50px;
     margin-left: 3px;
     margin-right: 3px;
     width: 300px;

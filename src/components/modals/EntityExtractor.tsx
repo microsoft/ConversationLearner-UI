@@ -19,7 +19,6 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { setStateAsync, formatMessageId } from '../../Utils/util'
 import './EntityExtractor.css'
 
 interface ExtractResponseForDisplay {
@@ -347,7 +346,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         const foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text)
         if (foundResponse) {
             await this.props.updateExtractResponse(extractResponse)
-            await setStateAsync(this, { isPendingSubmit: true })
+            await Util.setStateAsync(this, { isPendingSubmit: true })
         } else {
             // Replace existing text variation (if any) with new one and maintain ordering
             const index = this.state.newTextVariations.findIndex((v: CLM.TextVariation) => v.text === extractResponse.text)
@@ -358,7 +357,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             const newVariation = CLM.ModelUtils.ToTextVariation(extractResponse)
             const newVariations = [...this.state.newTextVariations]
             newVariations[index] = newVariation
-            await setStateAsync(this, {
+            await Util.setStateAsync(this, {
                 newTextVariations: newVariations,
                 isPendingSubmit: true
             })
@@ -539,7 +538,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             data-testid="entity-extractor-alternative-input-text"
                             value={this.state.textVariationValue}
                             onChanged={this.onChangeTextVariation}
-                            placeholder={formatMessageId(this.props.intl, FM.TEXTVARIATION_PLACEHOLDER)}
+                            placeholder={Util.formatMessageId(this.props.intl, FM.TEXTVARIATION_PLACEHOLDER)}
                             onKeyPress={(event) => {
                                 if (event.key === 'Enter') {
                                     this.onSubmitTextVariation()
