@@ -62,7 +62,7 @@ describe('All Entity Types - CreateModels', () => {
     // so that we test these in combination regularly.
     entities.pretrainedEntityTypes.forEach(entityType => { 
       it(`Should create the '${entityType}' pretrained entity type`, () => {
-        entities.CreateNewEntityThenVerifyInGrid({ type: entityType, multiValued: FlipFlop.Get() }) 
+        entities.CreateNewEntityThenVerifyInGrid({ type: entityType, multiValued: FlipFlop.Get(), expectPopup: true }) 
       })
 
       it(`Should create a custom trained entity with the '${entityType}' resolver type`, () => {

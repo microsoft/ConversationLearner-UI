@@ -13,7 +13,7 @@ export function CreateNewEntity({
     negatable, 
     resolverType, 
     type = 'Custom Trained', 
-    expectPopup = false 
+    expectPopup 
   }) {
   modelPage.NavigateToEntities()
   entitiesGrid.ClickButtonNewEntity()
@@ -25,7 +25,7 @@ export function CreateNewEntity({
   if (resolverType) { entityModal.SelectResolverType(resolverType) }
 
   entityModal.ClickCreateButton()
-  if (expectPopup || (type != 'Custom Trained' && type != 'Programmatic')) entityModal.ClickOkButtonOnNoteAboutPreTrained()
+  if (expectPopup) { entityModal.ClickOkButtonOnNoteAboutPreTrained() }
 }
 
 export function CreateNewEntityThenVerifyInGrid({ 
@@ -34,7 +34,7 @@ export function CreateNewEntityThenVerifyInGrid({
     negatable, 
     resolverType, 
     type = 'Custom Trained', 
-    expectPopup = false 
+    expectPopup 
   }) {
 
   CreateNewEntity(arguments[0])
@@ -43,7 +43,10 @@ export function CreateNewEntityThenVerifyInGrid({
   if (name) { entitiesGridRow = new entitiesGrid.Row(name) }
   else { entitiesGridRow = new entitiesGrid.Row(`builtin-${type.toLowerCase()}`) }
 
-  //entitiesGridRow.VerifyType(type)
+  let typeForVerification = type
+  if (type == 'Custom Trained') { typeForVerification = 'CUSTOM' }
+  else if (type == 'Programmatic') { typeForVerification = 'PROGRAMMATIC' }
+  entitiesGridRow.VerifyType(typeForVerification)
 
   if (resolverType) { entitiesGridRow.VerifyResolverType(resolverType) }
   else { entitiesGridRow.VerifyResolverNone() }
