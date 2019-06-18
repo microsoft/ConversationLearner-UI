@@ -1120,12 +1120,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     }]
                     if (activity.channelData && activity.channelData.textVariations) {
                         activity.channelData.textVariations.forEach((tv: any) => {
-                            let altTextVariation: CLM.TextVariation = {
-                                text: tv.text, 
-                                labelEntities: []
-                            }
                             // Currently system is limited to 20 text variations
-                            if (textVariations.length < CLM.MAX_TEXT_VARIATIONS) {
+                            if (textVariations.length < CLM.MAX_TEXT_VARIATIONS && activity.text !== tv.text) {
+
+                                let altTextVariation: CLM.TextVariation = {
+                                    text: tv.text, 
+                                    labelEntities: []
+                                }
                                 textVariations.push(altTextVariation)
                             }
                         })

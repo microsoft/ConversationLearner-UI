@@ -1027,7 +1027,7 @@ const mapDispatchToProps = (dispatch: any) => {
         toggleAutoTeach: actions.teach.toggleAutoTeach
     }, dispatch);
 }
-const mapStateToProps = (state: State, ownProps: any) => {
+const mapStateToProps = (state: State) => {
     if (!state.bot.botInfo) {
         throw new Error(`You attempted to render the ActionScorer which requires botInfo, but botInfo was not defined. This is likely a problem with higher level component. Please open an issue.`)
     }
