@@ -109,14 +109,14 @@ function FlushLogEntries() {
 }
 
 function GetSuiteRootTitle(test) {
-  if (!test.parent) throw 'Did not find test.parent'
+  if (!test.parent) throw new Error('Did not find test.parent')
   
   if (test.parent.title === '') { return test.title }
   return GetSuiteRootTitle(test.parent)
 }
 
 function GetFullTestSuiteTitle(test) {
-  if (!test.parent) throw 'Did not find test.parent'
+  if (!test.parent) throw new Error('Did not find test.parent')
   
   if (test.parent.title === '') { return test.title }
   return `${GetFullTestSuiteTitle(test.parent)} - ${test.title}`
