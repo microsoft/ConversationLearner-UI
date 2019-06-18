@@ -7,29 +7,12 @@ import * as models from '../../../support/Models'
 import * as entities from '../../../support/Entities'
 import * as helpers from '../../../support/Helpers'
 
-// Alternately return true or false.
-// Starts out with different value depending on the day of the year.
-// Can't do this with simple variables due to the way Javascript Closures works.
-class FlipFlop {
-  static Get(){
-    if (FlipFlop.value === undefined) {
-      FlipFlop.value = (Cypress.moment().dayOfYear() % 2 === 0)
-    }
-    else {
-      FlipFlop.value = !FlipFlop.value
-    }
-
-    helpers.ConLog('FlipFlop', `value: ${FlipFlop.value}`)
-    return FlipFlop.value
-  }
-}
-
-describe('All Entity Types - CreateModels', () => {
+describe('All Entity Types 1 - CreateModels', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
     it('Should create a model to test against', () => {
-      models.CreateNewModel('z-allEntityTypes')
+      models.CreateNewModel('z-allEntityTypes1')
     })
   })
 
@@ -58,18 +41,16 @@ describe('All Entity Types - CreateModels', () => {
       entities.CreateNewEntityThenVerifyInGrid({ type: 'Programmatic', name: 'programmaticMultiValuedEntity', multiValued: true})
     })
 
-    // Alternate testing of multiValued and negatable on different days 
-    // so that we test these in combination regularly.
     entities.pretrainedEntityTypes.forEach(entityType => { 
       it(`Should create the '${entityType}' pretrained entity type`, () => {
-        entities.CreateNewEntityThenVerifyInGrid({ type: entityType, multiValued: FlipFlop.Get(), expectPopup: true }) 
+        entities.CreateNewEntityThenVerifyInGrid({ type: entityType, multiValued: false, expectPopup: true }) 
       })
 
       it(`Should create a custom trained entity with the '${entityType}' resolver type`, () => {
-        entities.CreateNewEntityThenVerifyInGrid({ type: 'Custom Trained', name: `ct-${entityType}`, resolverType: entityType, multiValued: FlipFlop.Get(), negatable: FlipFlop.Get() }) 
+        entities.CreateNewEntityThenVerifyInGrid({ type: 'Custom Trained', name: `ct-${entityType}`, resolverType: entityType, multiValued: false, negatable: false }) 
       })
     })
 
-    // Manually EXPORT this to fixtures folder and name it 'z-allEntityTypes'
+    // Manually EXPORT this to fixtures folder and name it 'z-allEntityTypes1'
   })
 })
