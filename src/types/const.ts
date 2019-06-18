@@ -22,7 +22,7 @@ export enum SelectionType {
 
 export const CL_IMPORT_ID = '9c110735ea8b440d8f31c5c68ffb767d'
 
-export const LOCATION_HOST : Readonly<string> = location.hostname
+export const BOT_HOST_NAME : Readonly<string> = location.hostname
 
 const LOCATION_PORT : string = location.port === '' ? '80' : location.port
 
