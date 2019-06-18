@@ -22,8 +22,12 @@ export enum SelectionType {
 
 export const CL_IMPORT_ID = '9c110735ea8b440d8f31c5c68ffb767d'
 
+export const LOCATION_HOST : Readonly<string> = location.hostname
+
+const LOCATION_PORT : string = location.port === '' ? '80' : location.port
+
 export const ports: Readonly<any> = {
-    urlBotPort: parseInt(location.port, 10),
+    urlBotPort: parseInt(LOCATION_PORT, 10),
     defaultUiPort: 3000,
     defaultBotPort: 3978,
 }

@@ -5,7 +5,7 @@
 import ClClient, { ClientHeaders } from './client'
 import { AT } from '../types/ActionTypes'
 import { ErrorInjector } from '../Utils/ErrorInjector'
-import { ports } from '../types/const'
+import { ports, LOCATION_HOST } from '../types/const'
 //import DebugErrors from '../components/modals/DebugErrors'
 
 let sdkPort = ports.urlBotPort
@@ -27,7 +27,7 @@ export const getInstance = (actionType: AT): ClClient => {
     // TODO: Refactor out the force error argument and need to take in paramter. This should be implemented in another layer as extension not modification
     // TODO: Allow configuration whole URI for SDK to enable communicating with hosted version (Likely change to getter function like access token)
 
-    const getBaseUrl = () => `//localhost:${sdkPort}/sdk`
+    const getBaseUrl = () => `//${LOCATION_HOST}:${sdkPort}/sdk`
     return new ClClient(getBaseUrl, () => getClientHeaders(), {}, forceError)
 }
 
