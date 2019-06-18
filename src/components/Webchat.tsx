@@ -13,6 +13,7 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs'
 import { Activity, Message } from 'botframework-directlinejs'
 import { EditDialogType } from './modals/.'
 import actions from '../actions'
+import { BOT_HOST_NAME } from '../types/const'
 
 export function renderActivity(
     activityProps: BotChat.WrappedActivityProps,
@@ -173,7 +174,7 @@ class Webchat extends React.Component<Props, {}> {
             const dl = new BotChat.DirectLine({
                 secret: 'secret',
                 token: 'token',
-                domain: `//localhost:${this.props.settings.botPort}/directline`,
+                domain: `//${BOT_HOST_NAME}:${this.props.settings.botPort}/directline`,
                 webSocket: false // defaults to true,
             })
 
