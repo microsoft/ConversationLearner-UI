@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
 */
 export function VerifyPageTitle() { cy.Get('[data-testid="create-an-action-title"]').contains('Create an Action').should('be.visible') }
-export function CheckWaitForResponse() { throw 'CheckWaitForResponse is NOT supported' } // Since this is a button and not a real check box it is difficult/ugly to manage the state. This defaults to checked.
+export function CheckWaitForResponse() { throw new Error('CheckWaitForResponse is NOT supported') } // Since this is a button and not a real check box it is difficult/ugly to manage the state. This defaults to checked.
 export function UncheckWaitForResponse() { cy.Get('.cl-modal_body').within(() => { cy.Get('.ms-Checkbox-text').click() }) }
 export function ClickCreateButton() { cy.Get('[data-testid="action-creator-create-button"]').Click() }
 export function ClickDeleteButton() { cy.Get('[data-testid="action-creator-delete-button"]').Click() }
