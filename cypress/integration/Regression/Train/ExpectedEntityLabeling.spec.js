@@ -54,7 +54,7 @@ describe('Expected Entity Labeling - Train', () => {
     })
 
     it('Should verify the "name" Entity is in memory with its value', () => {
-      memoryTableComponent.VerifyEntitiesInMemory('name', ['David'])
+      memoryTableComponent.VerifyEntityValues('name', ['David'])
     })
 
     it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {

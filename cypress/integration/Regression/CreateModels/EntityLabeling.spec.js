@@ -78,11 +78,11 @@ describe('Entity Labeling - Create Model', () => {
       cy.wait(30000)
 
       train.TypeYourMessage('This is Frog and Tag.')
-      memoryTableComponent.VerifyEntitiesInMemory('multi', ['Tag'])
+      memoryTableComponent.VerifyEntityValues('multi', ['Tag'])
       train.VerifyEntityLabel('Tag', 'multi')
       train.LabelTextAsEntity('Frog', 'multi', false)
       train.ClickScoreActionsButton()
-      memoryTableComponent.VerifyEntitiesInMemory('multi', ['Tag', 'Frog'])
+      memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
       train.SelectTextAction('Hi')
       cy.WaitForTrainingStatusCompleted()
     })
@@ -95,7 +95,7 @@ describe('Entity Labeling - Create Model', () => {
       cy.wait(30000)
 
       train.TypeYourMessage('This is Tag and Frog.')
-      memoryTableComponent.VerifyEntitiesInMemory('multi', ['Tag', 'Frog'])
+      memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
       train.VerifyEntityLabel('Tag', 'multi')
       train.VerifyEntityLabel('Frog', 'multi', 1)
       train.ClickScoreActionsButton()
