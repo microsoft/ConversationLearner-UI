@@ -378,10 +378,12 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
   
 .wc-border-error-from-me {
   border-right: 8px solid var(--cl-color-error);
+  box-sizing: content-box; 
 }
 
 .wc-border-warning-from-me {
   border-right: 8px solid var(--cl-color-warning);
+  box-sizing: content-box;
 }
 
 .wc-message-from-me.wc-message-from {
@@ -449,10 +451,12 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
 
 .wc-border-error-from-bot {
   border-left: 8px solid var(--cl-color-error);
+  box-sizing: content-box; 
 }
 
 .wc-border-warning-from-bot {
   border-left: 8px solid var(--cl-color-warning);
+  box-sizing: content-box; 
 }
 
 .wc-message-from-bot .wc-message-content {

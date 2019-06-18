@@ -37,14 +37,14 @@ export function renderActivity(
     const userFillColor = editType === EditDialogType.IMPORT ? "import" : isLogDialog ? 'log' : 'train'
     let messageColor = `wc-message-color-${activityProps.fromMe ? userFillColor : 'bot'}`
     let messageFillColor = `wc-message-fillcolor-${activityProps.fromMe ? userFillColor : 'bot'}`
-
+    let messageBorder = ''
     if (clData) {
         if (clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
-                wrapperClassName += ` wc-border-warning-from-${who}`;
+                messageBorder = ` wc-border-warning-from-${who}`;
             }
             else { // ERROR or BLOCKING
-                wrapperClassName += ` wc-border-error-from-${who}`;
+                messageBorder = ` wc-border-error-from-${who}`;
             }
             if (clData.replayError.type === CLM.ReplayErrorType.Exception) {
                 messageColor = `wc-message-color-exception`
@@ -65,7 +65,7 @@ export function renderActivity(
             role="button"
         >
             <div
-                className={`wc-message wc-message-from-${who} ${messageColor}`}
+                className={`wc-message wc-message-from-${who} ${messageColor} ${messageBorder}`}
                 ref={div => setRef(div)}
                 data-testid="web-chat-utterances"
             >
