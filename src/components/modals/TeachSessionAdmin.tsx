@@ -11,7 +11,6 @@ import DialogMetadata from './DialogMetadata'
 import ActionScorer from './ActionScorer'
 import EntityExtractor from './EntityExtractor'
 import MemoryTable from './MemoryTable'
-import TrainingStatusContainer from '../TrainingStatusContainer'
 import FormattedMessageId from '../FormattedMessageId'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
@@ -319,9 +318,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         onAddTag={this.props.onAddTag}
                         onRemoveTag={this.props.onRemoveTag}
                     />
-                    <TrainingStatusContainer
-                        app={this.props.app}
-                    />
+                    <b></b>
                 </div>
                 {(renderData.dialogMode === CLM.DialogMode.Extractor || renderData.dialogMode === CLM.DialogMode.Wait) &&
                     (
