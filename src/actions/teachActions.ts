@@ -10,7 +10,6 @@ import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import { AxiosError } from 'axios'
 import { fetchAllTrainDialogsThunkAsync } from './trainActions'
-import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { EntityLabelConflictError } from '../types/errors'
 
 // --------------------------
@@ -367,7 +366,6 @@ export const runScorerThunkAsync = (key: string, appId: string, teachId: string,
         try {
             const uiScoreResponse = await clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
             dispatch(runScorerFulfilled(key, appId, teachId, uiScoreResponse))
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return uiScoreResponse
         }
         catch (e) {
