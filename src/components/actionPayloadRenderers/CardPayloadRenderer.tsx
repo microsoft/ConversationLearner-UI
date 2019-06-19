@@ -90,12 +90,11 @@ export default class Component extends React.Component<Props, State> {
                         checked={this.state.isOriginalVisible}
                         onChanged={this.onChangedVisible}
                     />}
-                <OF.PrimaryButton
+                <OF.IconButton
                     disabled={this.props.isValidationError}
-                    className="cl-button--viewCard"
+                    className="ms-Button--primary cl-button--viewCard"
                     onClick={() => this.props.onClickViewCard(this.state.isOriginalVisible)}
                     ariaDescription="ViewCard"
-                    text=""
                     iconProps={{ iconName: 'RedEye' }}
                 />
             </div>

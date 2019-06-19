@@ -349,7 +349,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    presetText(rawText: string | null, useNewLine = true): string {
+    presetText(rawText: string | null): string {
         if (!rawText) {
             return ""
         }
@@ -357,17 +357,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .trim()
             .split('&nbsp;').join(" ") // Switch to actual spaces
             .split(" </").join("</")  // Markdown can't have space before end
-            .split("\n").join(useNewLine ? "\n\n" : "")
+            .split("\n").join("")
             .split("<b>").join("**")
             .split("</b>").join("**")
             .split("<i>").join("*")
             .split("</i>").join("*")
             .split("<strong>").join("**_")
             .split("</strong>").join("_**")
-            .split("<br>").join(useNewLine ? "\n\n" : "")
-            .split("<br/>").join(useNewLine ? "\n\n" : "")
-            .split("<br />").join(useNewLine ? "\n\n" : "")
-            .split('&gt;').join(useNewLine ? "\n\n" : "")
+            .split("<br>").join("")
+            .split("<br/>").join("")
+            .split("<br />").join("")
+            .split('&gt;').join("")
+            .replace(/[\n\r]+/g, '')  // Adaptive cards can't handle newlines
     }
 
     componentDidMount() {
@@ -728,7 +729,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         // LARS TEMP CCI
         if (this.props.newActionPreset) {
             if (template.variables.length > 0) {
-                const semiSplit = this.presetText(this.props.newActionPreset.text, false).split(';')
+                const semiSplit = this.presetText(this.props.newActionPreset.text).split(';')
 
                 // Assume first value is question followed by first button
                 let firstSplit = semiSplit[0].split('?')
@@ -764,6 +765,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onClickViewCard() {
+        if (!this.state.selectedCardOptionKey) {
+            this.onNextCard()
+        }
         this.setState({
             isCardViewerModalOpen: true
         })
@@ -773,6 +777,24 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.setState({
             isCardViewerModalOpen: false
         })
+    }
+
+    onNextCard = () => {
+        let index = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
+        index = index + 1
+        if (index === this.state.cardOptions.length) {
+            index = 0
+        }
+        this.onChangedCardOption(this.state.cardOptions[index])
+    }
+
+    onPreviousCard = () => {
+        let index = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
+        index = index - 1
+        if (index < 0) {
+            index = this.state.cardOptions.length - 1
+        }
+        this.onChangedCardOption(this.state.cardOptions[index])
     }
 
     getActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }): CLM.IActionArgument[] {
@@ -1359,11 +1381,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
                                         tipType={ToolTip.TipType.ACTION_API1}
                                     />
-                                    <OF.PrimaryButton
-                                        className="cl-inputWithButton-button"
+                                    <OF.IconButton
+                                        className="ms-Button--primary cl-inputWithButton-button"
                                         onClick={() => this.onClickSyncBotInfo()}
                                         ariaDescription="Refresh"
-                                        text=""
                                         iconProps={{ iconName: 'Sync' }}
                                     />
                                 </div>
@@ -1437,19 +1458,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         placeHolder={this.state.cardOptions.length === 0 ? 'NONE DEFINED' : 'Template name...'}
                                         tipType={ToolTip.TipType.ACTION_CARD}
                                     />
-                                    <OF.PrimaryButton
-                                        className="cl-inputWithButton-button"
+                                    <OF.IconButton
+                                        className="ms-Button--primary cl-inputWithButton-button"
                                         onClick={() => this.onClickViewCard()}
                                         ariaDescription="Refresh"
-                                        text=""
                                         iconProps={{ iconName: 'RedEye' }}
-                                        disabled={this.state.selectedCardOptionKey == null}
+                                        disabled={this.state.cardOptions.length == 0}
                                     />
-                                    <OF.PrimaryButton
-                                        className="cl-inputWithButton-button"
+                                    <OF.IconButton
+                                        className="ms-Button--primary cl-inputWithButton-button"
                                         onClick={() => this.onClickSyncBotInfo()}
                                         ariaDescription="Refresh"
-                                        text=""
                                         iconProps={{ iconName: 'Sync' }}
                                     />
                                 </div>
@@ -1732,6 +1751,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 <AdaptiveCardViewer
                     open={this.state.isCardViewerModalOpen && this.state.selectedCardOptionKey !== null}
                     onDismiss={() => this.onCloseCardViewer()}
+                    onNext={() => this.onNextCard()}
+                    onPrevious={() => this.onPreviousCard()}
                     template={this.state.selectedCardOptionKey !== null
                         ? this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)
                         : undefined}

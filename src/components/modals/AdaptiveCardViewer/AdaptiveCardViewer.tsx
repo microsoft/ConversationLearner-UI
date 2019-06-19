@@ -3,16 +3,20 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
+import * as MarkdownIt from 'markdown-it'
+import * as AdaptiveCards from 'adaptivecards'
+import * as Util from '../../../Utils/util'
+import adaptiveCardHostConfig from './AdaptiveCardHostConfig'
+import { FM } from '../../../react-intl-messages'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import * as MarkdownIt from 'markdown-it'
 import { Template, RenderedActionArgument } from '@conversationlearner/models'
 import { State } from '../../../types'
-import * as AdaptiveCards from 'adaptivecards'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import adaptiveCardHostConfig from './AdaptiveCardHostConfig'
+import './AdaptiveCardViewer.css'
 
 // Returns raw text of rendered template
 // Used to make distance comparison when importing conversations
@@ -59,7 +63,6 @@ function getProcessedTemplate(template: Template, actionArguments: RenderedActio
     return JSON.parse(templateString);
 }
 
-
 class AdaptiveCardViewer extends React.Component<Props, {}> {
 
     private md = new MarkdownIt()
@@ -76,27 +79,64 @@ class AdaptiveCardViewer extends React.Component<Props, {}> {
         if (!this.props.open || !this.props.template) {
             return null;
         }
-        const template = getProcessedTemplate(this.props.template, this.props.actionArguments, this.props.hideUndefined)
-        
-        AdaptiveCards.AdaptiveCard.onProcessMarkdown = ((text, result) => {
-            result.outputHtml = this.md.render(text)
-            result.didProcess = true
-        })
+        let card: HTMLElement | null = null
 
-        const adaptiveCard = new AdaptiveCards.AdaptiveCard()
-        adaptiveCard.hostConfig = this.getAdaptiveCardHostConfig()
-        adaptiveCard.parse(template)
-        const card = adaptiveCard.render()
+        try {
+            const template = getProcessedTemplate(this.props.template, this.props.actionArguments, this.props.hideUndefined)
+            
+            AdaptiveCards.AdaptiveCard.onProcessMarkdown = ((text, result) => {
+                result.outputHtml = this.md.render(text)
+                result.didProcess = true
+            })
+
+            const adaptiveCard = new AdaptiveCards.AdaptiveCard()
+            adaptiveCard.hostConfig = this.getAdaptiveCardHostConfig()
+            adaptiveCard.parse(template)
+            card = adaptiveCard.render()
+        }
+        catch (e) {
+            // Ignore error, show error message below
+        }
         return (
             <Modal
                 isOpen={this.props.open}
                 onDismiss={this.onDismiss}
                 isBlocking={false}
-                containerClassName="cl-modal"
+                containerClassName="cl-modal cl-adaptivecardviewer-modal"
             >
-                <div className="cl-wc-disabled wc-app wc-card wc-adaptive-card">
-                    <div dangerouslySetInnerHTML={{__html: card.outerHTML}} />
+                <div className={this.props.onNext ? "cl-adaptivecardviewer-body" : ""}>
+                    <div className="cl-wc-disabled wc-app wc-card wc-adaptive-card">
+                        {card 
+                            ? <div dangerouslySetInnerHTML={{__html: card.outerHTML}} />
+                            : `Unable to render Card Template with the given variables: ${this.props.template.name}`
+                        }  
+                    </div>
                 </div>
+                {this.props.onNext && this.props.onPrevious && 
+                    <div className="cl-modal_footer cl-modal-buttons">
+                        <div className="cl-modal-buttons_secondary">
+                            <OF.DefaultButton
+                                onClick={this.props.onPrevious}
+                                iconProps={{ iconName: 'ChevronLeftSmall' }}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
+                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
+                            />
+                            <OF.DefaultButton
+                                onClick={this.props.onNext}
+                                iconProps={{ iconName: 'ChevronRightSmall' }}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
+                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
+                            />
+                        </div>
+                        <div className="cl-modal-buttons_primary">
+                            <OF.DefaultButton
+                                onClick={() => this.props.onDismiss()}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
+                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
+                            />
+                        </div>
+                    </div>
+                }
             </Modal>
         );
     }
@@ -107,6 +147,8 @@ interface ReceivedProps {
     template: Template | undefined
     actionArguments: RenderedActionArgument[]
     onDismiss: () => void
+    onNext?: () => void 
+    onPrevious?: () => void 
     hideUndefined: boolean
 }
 

@@ -22,6 +22,8 @@ html {
   border-bottom: 1px solid #a6a6a6 !important;
 }
 
+
+
 .cl-button--viewCard {
   margin-right: 10px;
   border-radius: 20px;
@@ -576,6 +578,7 @@ i[data-icon-name="Edit"]:hover {
   position: relative;
   overflow-y: auto;
 }
+
 .cl-modal_body > * {
   position: absolute;
   width: 100%;
