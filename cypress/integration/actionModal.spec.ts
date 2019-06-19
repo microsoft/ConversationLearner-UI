@@ -24,6 +24,7 @@ describe('action modal', () => {
 
     beforeEach(() => {
         cy.reload()
+        cy.wait(500)
         cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
             .should('not.exist')
             
@@ -55,7 +56,7 @@ describe('action modal', () => {
         // TODO: Need to use special branch of samples which has callbacks.
         it('selecting API and callback should arguments for that callback', () => {
             util.selectDropDownOption(s.action.dropDownType, 'API')
-            util.selectDropDownOption(s.action.dropDownApiCallback, 'SetEntity')
+            util.selectDropDownOption(s.action.dropDownApiCallback, 'Add')
         })
 
         it('selecting Card should show template names', () => {

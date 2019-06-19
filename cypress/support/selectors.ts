@@ -73,7 +73,7 @@ const selectors = {
         tagPickerDisqualified: '[data-testid="action-disqualifying-entities"]',
         setEntityWarning: '[data-testid="action-set-entity-warning"]',
         nonRemovableTags: '[data-testid="picker-tag-nonRemovable"]',
-        checkBoxWaitForResponse: '[data-testid="action-creator-wait-checkbox"] button[role="checkbox"]',
+        checkBoxWaitForResponse: '[data-testid="action-creator-wait-checkbox"] .ms-Checkbox',
         warningNoWaitExpected: '[data-testid="action-warning-nowait-expected"]',
         logicArg: (argName: string) => `[data-testid="action-logic-argument-${argName}"] [contenteditable="true"]`,
         renderArg: (argName: string) => `[data-testid="action-render-argument-${argName}"] [contenteditable="true"]`,
