@@ -5,6 +5,7 @@
 
 export function VerifyPageTitle() { cy.Get('[data-testid="entities-title"]').contains('Entities').should('be.visible') }
 export function ClickButtonNewEntity() { cy.Get('[data-testid="entities-button-create"]').Click() }
+export function EditEntity(name) { new Row(name).EditEntity() }
 
 export class Row {
   constructor(entityName) {

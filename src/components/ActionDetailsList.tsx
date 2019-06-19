@@ -401,7 +401,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             getSortValue: action => '',
             render: (action, component) => {
                 if (!action.suggestedEntity) {
-                    return <OF.Icon iconName="Remove" className="cl-icon" data-testid="action-details-empty-expected-entities" />
+                    return <OF.Icon iconName="Remove" className="cl-icon" data-testid="action-details-empty-expected-entity" />
                 }
 
                 const entityId = action.suggestedEntity
