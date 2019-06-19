@@ -28,10 +28,46 @@ export function SelectResolverType(resolverType) {
 }
 
 export class Row {
-  constructor(entityName) {
-    cy.Get('[data-testid="entities-name"]')
-      .ExactMatch(entityName)
+  constructor(response) {
+    cy.Get('[data-testid="action-scorer-text-response"]')
+      .ExactMatch(response)
       .parents('div.ms-DetailsRow-fields')
-      .as('entityDetailsRow')
-  }    
+      .as('actionDetailsRow')
+  }
+
+  VerifyActionType(type) { cy.Get('@actionDetailsRow').find('[data-testid="action-details-action-type"]').ExactMatch(type) }
+  
+  VerifyRequiredEntities(entities) {
+    if (entities === undefined) {
+      cy.Get('@actionDetailsRow').find('[data-testid="action-details-empty-required-entities"]')
+      return
+    }
+    
+    entities.forEach(entity => {
+      cy.Get('@actionDetailsRow').find('[data-testid="action-details-required-entity"]').ExactMatch(entity)
+    }) 
+  }
+
+  VerifyDisqualifyingEntities(entities) {
+    if (entities === undefined) {
+      cy.Get('@actionDetailsRow').find('[data-testid="action-details-empty-disqualifying-entities"]')
+      return
+    }
+    
+    entities.forEach(entity => {
+      cy.Get('@actionDetailsRow').find('[data-testid="action-details-disqualifying-entity"]').ExactMatch(entity)
+    }) 
+  }
+
+  VerifyExpectedEntity(entity) {
+    if (entity === undefined) {
+      cy.Get('@actionDetailsRow').find('[data-testid="action-details-empty-expected-entity"]')
+      return
+    }
+    
+    entities.forEach(entity => {
+      cy.Get('@actionDetailsRow').find('[data-testid="action-details-expected-entity"]').ExactMatch(entity)
+    }) 
+  }
+
 }

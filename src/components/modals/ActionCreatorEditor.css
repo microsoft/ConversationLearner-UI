@@ -1,4 +1,4 @@
-.cl-action-creator--expected-entities .ms-TagItem-text--highlight {
+.cl-action-creator--expected-entity .ms-TagItem-text--highlight {
     background-color: var(--color-successBackground);
 }
 .cl-action-creator--disqualifying-entities .ms-TagItem-text--highlight {

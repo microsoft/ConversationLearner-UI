@@ -28,7 +28,7 @@ describe('Disqualifying Entities - CreateModels', () => {
     context('Create Actions', () => {
       // NOTE: the {enter} in these strings are necessary to triger the entity detection.
       it('Should create an Action with an expected entity and a disqualifying entity', () => {
-        actions.CreateNewActionThenVerifyInGrid({ responseNameData: common.whatsYourName, expectedEntities: ['name'], disqualifyingEntities: ['name'] })
+        actions.CreateNewActionThenVerifyInGrid({ responseNameData: common.whatsYourName, expectedEntity: 'name', disqualifyingEntities: ['name'] })
       })
 
       it('Should create an Action with 2 disqualifying entities', () => {
@@ -36,7 +36,7 @@ describe('Disqualifying Entities - CreateModels', () => {
       })
 
       it('Should create an Action with an expected entity and 2 disqualifying entities', () => {
-        actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'Hey $name{enter}, what do you really want?', expectedEntities: ['want'], disqualifyingEntities: ['sweets', 'want'] })
+        actions.CreateNewActionThenVerifyInGrid({ responseNameData: 'Hey $name{enter}, what do you really want?', expectedEntity: 'want', disqualifyingEntities: ['sweets', 'want'] })
       })
 
       it('Should create an Action with 2 implicitly required entities', () => {

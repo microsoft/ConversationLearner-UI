@@ -31,15 +31,15 @@ export class Row {
   
   VerifyActionType(actionType) {cy.Get('@responseDetailsRow').find('[data-testid="action-details-action-type"]').contains(actionType)}
   
-  VerifyExpectedEntities(entities) { this._VerifyEntities('[data-testid="action-details-expected-entity"]', '[data-testid="action-details-empty-expected-entities"]', entities) }
+  VerifyExpectedEntity(entity) { this._VerifyEntities('[data-testid="action-details-expected-entity"]', '[data-testid="action-details-empty-expected-entity"]', entity) }
 
   // The UI automatically populates the Required Entities field with entities found in the response text,
   // so the additionalRequiredEntities parameter allows the caller to specify entities not found in the response text.
   VerifyRequiredEntities(requiredEntitiesFromResponse, additionalRequiredEntities) { this._VerifyEntities('[data-testid="action-details-required-entity"]', '[data-testid="action-details-empty-required-entities"]', requiredEntitiesFromResponse, additionalRequiredEntities) }
   
-  // The UI automatically populates the Disqualtifying Entities field with the expected entities,
-  // so the disqualifyingEntities parameter allows the caller to specify entities not found in expectedEntities.
-  VerifyDisqualifyingEntities(expectedEntities, disqualifyingEntities) { this._VerifyEntities('[data-testid="action-details-disqualifying-entity"]', '[data-testid="action-details-empty-disqualifying-entities"]', expectedEntities, disqualifyingEntities) }
+  // The UI automatically populates the Disqualtifying Entities field with the expected entity,
+  // so the disqualifyingEntities parameter allows the caller to specify entities not found in expectedEntity.
+  VerifyDisqualifyingEntities(expectedEntity, disqualifyingEntities) { this._VerifyEntities('[data-testid="action-details-disqualifying-entity"]', '[data-testid="action-details-empty-disqualifying-entities"]', expectedEntity, disqualifyingEntities) }
   
   // In order to get the 'validateResponse' parameter right, first run a test with this undefined,
   // then look in the log to see the actual value, then add it to the code.
@@ -61,11 +61,15 @@ export class Row {
 
   _VerifyEntitiesIsEmpty(selector) { cy.Get('@responseDetailsRow').find(selector) }
 
+  // entities1 can be either and array or a single entity string or undefined
   _VerifyEntities(selector, emptySelector, entities1, entities2) {
     if (!entities1 && !entities2) return this._VerifyEntitiesIsEmpty(emptySelector)
 
     let entities = []
-    if (entities1) { entities = entities1 }
+    if (entities1) { 
+      if (!Array.isArray(entities1)) { entities = [entities1] }
+      else { entities = entities1 }
+    }
     if (entities2) { entities = [...entities, ...entities2] }
     entities = helpers.RemoveDuplicates(entities)
 
