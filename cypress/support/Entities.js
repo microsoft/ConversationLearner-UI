@@ -6,6 +6,7 @@
 import * as modelPage from '../support/components/ModelPage'
 import * as entitiesGrid from './components/EntitiesGrid'
 import * as entityModal from '../support/components/EntityModal'
+import * as actionsGrid from './components/ActionsGrid'
 
 export const pretrainedEntityTypes = [
   "datetimeV2",
@@ -76,4 +77,3 @@ export function SelectEntityType(type) {
   entityModal.ClickEntityTypeDropdown()
   entityModal.ClickEntityType(type)
 }
-
