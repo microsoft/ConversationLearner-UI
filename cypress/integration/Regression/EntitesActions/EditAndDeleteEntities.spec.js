@@ -32,16 +32,27 @@ describe('Edit and Delete Entities - EntitiesActions', () => {
       actionsGrid.VerifyActionRow('Hey $name', 'TEXT', ['name'], ['sweets', 'want'], undefined, true)
       actionsGrid.VerifyActionRow('Hey $name, what do you really want?', 'TEXT', ['name'], ['want', 'sweets'], 'want', true)
       actionsGrid.VerifyActionRow('name:$name sweets:$sweets want:$want', 'END_SESSION', ['name', 'sweets', 'want'], undefined, undefined, true)
-      actionsGrid.VerifyActionRow('prompt', 'CARD', ['name'], undefined, undefined, true)
-      actionsGrid.VerifyActionRow('RenderTheArgs', 'API', ['name', 'sweets', 'want'], undefined, undefined, false)
+      actionsGrid.VerifyActionRow('prompt', 'CARD', ['name'], undefined, undefined, true, 'question:Hi $name')
+      actionsGrid.VerifyActionRow('RenderTheArgs', 'API', ['name', 'sweets', 'want'], undefined, undefined, false, 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"')
       actionsGrid.VerifyActionRow("Sorry $name, I can't help you get $want", 'TEXT', ['name', 'want'], undefined, undefined, true)
     })
 
-    it('Should ', () => {
+    it('Should verify "Blocked Actions" tab contains expected Action details', () => {
+      entityModal.SelectBlockedActionsTab()
+      actionsGrid.VerifyActionRow('Something to do with $name', 'TEXT', undefined, ['name'], undefined, true)
+      actionsGrid.VerifyActionRow("What's your name?", 'TEXT', undefined, ['name'], 'name', true)
     })
 
-    it('Should ', () => {
+    it('Should verify that filter Train Dialog on entity button works', () => {
     })
+  })
+
+    // it('Should ', () => {
+    //   actionsGrid.VerifyActionRow()
+    //   actionsGrid.VerifyActionRow()
+    //   actionsGrid.VerifyActionRow()
+    //   actionsGrid.VerifyActionRow()
+    // })
 
     it('Should ', () => {
     })
