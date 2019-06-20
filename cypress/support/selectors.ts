@@ -197,6 +197,9 @@ const selectors = {
         buttonCreate: '[data-testid="package-creator-button-create"]',
         buttonCancel: '[data-testid="package-creator-button-cancel"]',
     },
+    payloadEditor: {
+        mentionNodeCompleted: '.mention-node--completed',
+    }
 }
 
 export default selectors
