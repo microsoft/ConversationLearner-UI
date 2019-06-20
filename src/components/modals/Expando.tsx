@@ -13,7 +13,7 @@ interface Props {
     onToggle: () => void
 }
 
-class Expando extends React.Component<Props, {}> {
+class Expando extends React.Component<Props> {
     render() {
         return (
             <div 

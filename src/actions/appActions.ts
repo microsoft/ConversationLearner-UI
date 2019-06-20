@@ -13,7 +13,6 @@ import { Poller, IPollConfig } from '../services/poller'
 import { delay } from '../Utils/util'
 import { setUpdatedAppDefinition } from './sourceActions'
 
-
 const createApplicationAsync = (userId: string, application: CLM.AppBase): ActionObject => {
     return {
         type: AT.CREATE_APPLICATION_ASYNC,
@@ -313,7 +312,6 @@ export const fetchApplicationsThunkAsync = (userId: string) => {
 }
 
 const poller = new Poller({ interval: 2000 })
-
 
 const fetchApplicationTrainingStatusAsync = (appId: string): ActionObject => {
     return {

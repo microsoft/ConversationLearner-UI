@@ -10,7 +10,7 @@ interface Props {
     className: string
 }
 
-class DisabledInputButton extends React.Component<Props, {}> {
+class DisabledInputButton extends React.Component<Props> {
     render() {
         return (
             <div

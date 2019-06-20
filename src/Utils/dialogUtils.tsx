@@ -226,7 +226,7 @@ export function getMostSevereReplayError(history: BotChat.Activity[]): CLM.Repla
                 worstReplayError = clData.replayError
             }
             else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING && 
-                (!worstReplayError  ||worstReplayError.errorLevel !== CLM.ReplayErrorLevel.ERROR)) {
+                (!worstReplayError || worstReplayError.errorLevel !== CLM.ReplayErrorLevel.ERROR)) {
                 worstReplayError = clData.replayError
             }
         }

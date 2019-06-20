@@ -220,19 +220,29 @@ export async function onChangeAction(
     // Replay logic functions on train dialog
     const replayedDialog = await trainDialogReplay(appId, newTrainDialog)
 
-    // If importing 
+    // If importing a dialog
     if (editType === EditDialogType.IMPORT) {
 
-        // If replacing step with import text
+        const replacedAction = actions.find(a => a.actionId === oldTrainScorerStep.labelAction)
+        let importHash: string | null = null
+        
+        // If replacing imported action
         if (oldTrainScorerStep.importText) {
-            // Attach hash of import text to selected action for future lookups
+            // Substitue entityIds back into import text to build import hash lookup
+            const filledEntityIdMap = DialogUtils.filledEntityIdMap(trainScorerStep.input.filledEntities, entities)
+            const importText = DialogUtils.importTextWithEntityIds(oldTrainScorerStep.importText, filledEntityIdMap)
+            importHash = Util.hashText(importText)
+        }
+        // If replacing stub action
+        else if (CLM.ActionBase.isStubbedAPI(replacedAction)) {
+            const apiAction = new CLM.ApiAction(replacedAction as any)
+            importHash = Util.hashText(apiAction.name)
+        }
+
+        // Attach hash of import text to selected action for future lookups
+        if (importHash) { 
             const action = actions.find(a => a.actionId === trainScorerStep.labelAction)
             if (action) {
-                // Substitue entityIds back into import text to build import hash lookup
-                const filledEntityIdMap = DialogUtils.filledEntityIdMap(trainScorerStep.input.filledEntities, entities)
-                const importText = DialogUtils.importTextWithEntityIds(oldTrainScorerStep.importText, filledEntityIdMap)
-                const importHash = Util.hashText(importText)
-
                 // Add new hash to action and save it
                 const newAction = Util.deepCopy(action)
                 if (!newAction.clientData || !newAction.clientData.importHashes) {
@@ -250,7 +260,6 @@ export async function onChangeAction(
             DialogUtils.replaceImportActions(replayedDialog, actions, entities)
         }
     }
-
     return replayedDialog
 }
 
@@ -466,7 +475,7 @@ export async function getStubAPIAction(
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
 ): Promise<CLM.ActionBase> {
     // Check if it has been attached to real api call
-    const apiHash = Util.hashText(JSON.stringify(apiStubName))
+    const apiHash = Util.hashText(apiStubName)
     let stubAction = actions.find(a => {return a.clientData && a.clientData.importHashes 
         ? (a.clientData.importHashes.find(h => h === apiHash) !== undefined)
         : false

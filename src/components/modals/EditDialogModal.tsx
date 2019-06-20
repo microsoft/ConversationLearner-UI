@@ -336,7 +336,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             this.props.clearWebchatScrollPosition()
 
             // If there's an error when I try to continue, reset webchat to ignore new input
-            await this.props.setErrorDismissCallback(this.resetWebchat)
+            this.props.setErrorDismissCallback(this.resetWebchat)
 
             // For now always add button response to bottom of dialog even
             // when card is selected.  
@@ -358,7 +358,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 if (this.showInternalLabelConflict()) {
                     return
                 }
-                await this.props.onContinueDialog(newTrainDialog, userInput)
+                this.props.onContinueDialog(newTrainDialog, userInput)
             }
         }
     }
@@ -901,8 +901,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const replayError = DialogUtils.getReplayError(this.state.selectedActivity)
         if (this.props.editState === EditState.INVALID_BOT) {
             return (
-                <div className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
-                    data-testid="dialog-modal-warning">
+                <div 
+                    className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-warning"
+                >
                     <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT} />
                     <HelpIcon tipType={TipType.INVALID_BOT} />
                 </div>
@@ -910,8 +912,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         if (this.props.editState === EditState.INVALID_PACKAGE) {
             return (
-                <div className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
-                    data-testid="dialog-modal-warning">
+                <div 
+                    className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-warning"
+                >
                     <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE} />
                 </div>
             )

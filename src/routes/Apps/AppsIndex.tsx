@@ -18,7 +18,7 @@ import AppIndex from './App/Index'
 import AppsList from './AppsList'
 import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
 
-class AppsIndex extends React.Component<Props, {}> {
+class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
         if (this.props.user.id !== null && this.props.user.id.length > 0) {
             this.props.fetchApplicationsThunkAsync(this.props.user.id)

@@ -20,7 +20,7 @@ interface Props {
 /**
  * Purpose of the container is to convert extractResponses into sub parts such as grouping predictedEntities into pre-builts and custom entities
  */
-class ExtractorResponseEditorContainer extends React.Component<Props, {}> {
+class ExtractorResponseEditorContainer extends React.Component<Props> {
     onChangeCustomEntities = (customEntities: IGenericEntity<IGenericEntityData<CLM.PredictedEntity>>[], entities: CLM.EntityBase[]): void => {
         // TODO: Need to find out why entities sometimes come back with builtinType populated and other times have entityType populated
         // This should be normalized so we can only check one property here.

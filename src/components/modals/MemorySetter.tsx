@@ -14,7 +14,7 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './TeachSessionInitState.css'
 
-class MemorySetter extends React.Component<Props, {}> {
+class MemorySetter extends React.Component<Props> {
 
     constructor(props: Props) {
         super(props)

@@ -14,6 +14,8 @@ import { Activity, Message } from 'botframework-directlinejs'
 import { EditDialogType } from './modals/.'
 import actions from '../actions'
 
+const SUBMIT_KEY = 'submit'
+
 export function renderActivity(
     activityProps: BotChat.WrappedActivityProps,
     children: React.ReactNode,
@@ -179,7 +181,7 @@ class Webchat extends React.Component<Props> {
                 ...dl,
                 postActivity: (activity: any) => {
                     this.props.onPostActivity(activity)
-                    if (this.props.disableDL && (activity.value && activity.value['submit'])) {
+                    if (this.props.disableDL && (activity.value && activity.value[SUBMIT_KEY])) {
                         return Observable.empty()
                     }
                     return dl.postActivity(activity)

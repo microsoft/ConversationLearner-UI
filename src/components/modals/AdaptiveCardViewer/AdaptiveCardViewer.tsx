@@ -63,7 +63,7 @@ function getProcessedTemplate(template: Template, actionArguments: RenderedActio
     return JSON.parse(templateString);
 }
 
-class AdaptiveCardViewer extends React.Component<Props, {}> {
+class AdaptiveCardViewer extends React.Component<Props> {
 
     private md = new MarkdownIt()
 

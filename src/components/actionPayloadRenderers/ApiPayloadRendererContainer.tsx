@@ -14,7 +14,7 @@ interface Props {
     callback: Callback | undefined
 }
 
-export default class Component extends React.Component<Props, {}> {
+export default class Component extends React.Component<Props> {
     render() {
         const { apiAction, entities, memories, callback } = this.props
         const defaultEntityMap = Util.getDefaultEntityMap(entities)

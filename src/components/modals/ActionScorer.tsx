@@ -499,7 +499,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             // TODO: Schema refactor
             const setEntityAction = new CLM.SetEntityAction(scoredBase as CLM.ActionBase)
             const action = Util.getSetEntityActionForEnumValue(setEntityAction.entityId, setEntityAction.enumValueId)
-            const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action)) as any as CLM.ActionBase)
+            const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as CLM.ActionBase)
 
             scoredAction = {
                 actionId: newAction.actionId,

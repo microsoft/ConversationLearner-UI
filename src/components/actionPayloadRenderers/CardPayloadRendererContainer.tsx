@@ -15,7 +15,7 @@ interface Props {
     onClickViewCard: (cardAction: CardAction, showOriginal: boolean) => void
 }
 
-export default class Component extends React.Component<Props, {}> {
+export default class Component extends React.Component<Props> {
     onClickViewCard = (showOriginal: boolean) => {
         this.props.onClickViewCard(this.props.cardAction, showOriginal)
     }

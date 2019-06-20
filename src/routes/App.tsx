@@ -205,4 +205,4 @@ const stateProps = returntypeof(mapStateToProps)
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps
 
-export default connect<typeof stateProps, typeof dispatchProps, {}>(mapStateToProps, mapDispatchToProps)(App)
+export default connect<typeof stateProps, typeof dispatchProps>(mapStateToProps, mapDispatchToProps)(App)

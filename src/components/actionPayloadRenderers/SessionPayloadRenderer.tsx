@@ -15,7 +15,7 @@ interface Props {
     memories: Memory[] | null
 }
 
-export default class Component extends React.Component<Props, {}> {
+export default class Component extends React.Component<Props> {
 
     render() {
         const { entities, memories, sessionAction } = this.props

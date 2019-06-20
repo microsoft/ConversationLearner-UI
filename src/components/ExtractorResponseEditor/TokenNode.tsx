@@ -17,7 +17,7 @@ interface EntityComponentProps {
 interface Props extends EntityComponentProps {
 }
 
-class TokenNode extends React.Component<Props, {}> {
+class TokenNode extends React.Component<Props> {
     onMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
         // On second click the detail is 2, we prevent default to avoid actual double click
         // https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail

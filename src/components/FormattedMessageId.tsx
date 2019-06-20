@@ -11,7 +11,7 @@ interface Props {
     id: FM,
 }
 
-class FormattedMessageId extends React.Component<Props, {}> {
+class FormattedMessageId extends React.Component<Props> {
     render() {
         return (
             <FormattedMessage

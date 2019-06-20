@@ -14,7 +14,7 @@ interface Props {
     className?: string
 }
 
-class AddButtonScore extends React.Component<Props, {}> {
+class AddButtonScore extends React.Component<Props> {
     render() {
         return (
             <div

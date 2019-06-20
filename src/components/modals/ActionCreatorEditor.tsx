@@ -17,6 +17,7 @@ import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
 import CLTagPicker from '../CLTagPicker'
 import HelpIcon from '../HelpIcon'
+import { compareTwoStrings } from 'string-similarity'
 import { Value } from 'slate'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
@@ -372,12 +373,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        if (this.props.newActionPreset) {
-            let values = Plain.deserialize(this.presetText(this.props.newActionPreset.text))
-            this.onChangePayloadEditor(values, TEXT_SLOT)
-            this.setState({isTerminal: this.props.newActionPreset.isTerminal})
-        }
+        this.initializeActionPresets(this.props)
     }
+
     componentWillReceiveProps(nextProps: Props) {
         let nextState: Partial<ComponentState> = {}
 
@@ -544,11 +542,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         // Set initial text value (used for dummy import actions)
         if (nextProps.open === true && this.props.open === false) { 
-            if (nextProps.newActionPreset) {
-                let values = Plain.deserialize(this.presetText(nextProps.newActionPreset.text))
-                this.onChangePayloadEditor(values, TEXT_SLOT)
-                this.setState({isTerminal: nextProps.newActionPreset.isTerminal})
-            }
+            this.initializeActionPresets(nextProps)
+        }
+    }
+
+    initializeActionPresets(props: Props) {
+        if (props.newActionPreset) {
+            let values = Plain.deserialize(this.presetText(props.newActionPreset.text))
+            this.onChangePayloadEditor(values, TEXT_SLOT)
+            this.setState({isTerminal: props.newActionPreset.isTerminal})
         }
     }
 
@@ -1089,7 +1091,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
+    @OF.autobind
+    async onChangedActionType(actionTypeOption: OF.IDropdownOption) {
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
         const isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload && textPayload.document.text.length === 0)
         const isTerminal = actionTypeOption.key === CLM.ActionTypes.END_SESSION
@@ -1098,7 +1101,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 ? false
                 : this.state.isTerminal
 
-        this.setState({
+        await Util.setStateAsync(this, {
             isPayloadMissing,
             isTerminal,
             selectedActionTypeOptionKey: actionTypeOption.key,
@@ -1115,6 +1118,26 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             requiredEntityTags: [],
             negativeEntityTags: [],
         })
+
+        if (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD && this.props.newActionPreset) {
+            
+            // Pre-select card that is closest matching to template
+            let bestScore = 0
+            let bestCard: OF.IDropdownOption | null = null
+            for (let cardOption of this.state.cardOptions) {
+                const template = this.props.botInfo.templates.find(t => t.name === cardOption.key)
+                const score = (template && template.body)
+                    ? compareTwoStrings(this.props.newActionPreset.text, template.body)
+                    : 0
+                if (score > bestScore) {
+                    bestScore = score
+                    bestCard = cardOption
+                }
+            }
+            if (bestCard) {
+                this.onChangedCardOption(bestCard)
+            }
+        }
     }
 
     onResolveExpectedEntityTags = (filterText: string, selectedTags: OF.ITag[] | undefined): OF.ITag[] => {
@@ -1463,7 +1486,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         onClick={() => this.onClickViewCard()}
                                         ariaDescription="Refresh"
                                         iconProps={{ iconName: 'RedEye' }}
-                                        disabled={this.state.cardOptions.length == 0}
+                                        disabled={this.state.cardOptions.length === 0}
                                     />
                                     <OF.IconButton
                                         className="ms-Button--primary cl-inputWithButton-button"
