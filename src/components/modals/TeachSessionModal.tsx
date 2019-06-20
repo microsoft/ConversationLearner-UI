@@ -784,6 +784,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         open={this.state.isImportAbandonOpen}
                         onCancel={this.onClickCancelDelete}
                         onConfirm={this.onClickConfirmDelete}
+                        isLastImport={this.props.importIndex === this.props.importCount}
                     />
                     <ConfirmCancelModal
                         data-testid="teach-session-confirm-cancel"

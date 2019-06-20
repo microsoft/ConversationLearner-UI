@@ -519,12 +519,6 @@ export function importTextWithEntityIds(importText: string, valueMap: Map<string
     return outText
 }
 
-export function filledEntityIdMap(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): Map<string, string> {
-    const filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(filledEntities, entities)
-    const filledIdMap = filledEntityMap.EntityMapToIdMap()
-    return CLM.getEntityDisplayValueMap(filledIdMap)
-}
-
 function findActionByImportHash(importText: string, actionsWithHash: CLM.ActionBase[]): CLM.ActionBase | undefined {
     const importHash = Util.hashText(importText)
 
@@ -564,6 +558,12 @@ export function importedActionMatch(importText: string, actions: CLM.ActionBase[
         })
 }
 
+export function filledEntityIdMap(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): Map<string, string> {
+    const filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(filledEntities, entities)
+    const filledIdMap = filledEntityMap.EntityMapToIdMap()
+    return CLM.getEntityDisplayValueMap(filledIdMap)
+}
+
 // Look for imported actions in TrainDialog and attempt to replace them
 // with existing actions.  Return true if any replacement occurred
 export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): boolean {
@@ -578,13 +578,23 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
     let match = false
     trainDialog.rounds.forEach(round => {
         round.scorerSteps.forEach(scorerStep => {
-            const filledIdMap = filledEntityIdMap(scorerStep.input.filledEntities, entities)
+            let importHash: string | null = null
 
-            // If it's a dummy action with imported text
+            // If replacing imported action
             if (scorerStep.importText) {
-                // Convert import text to hash with entity Ids
-                const importText = importTextWithEntityIds(scorerStep.importText, filledIdMap)
-                const newAction = findActionByImportHash(importText, actionsWithHash)
+                // Substitue entityIds back into import text to build import hash lookup
+                const filledEntityMap = filledEntityIdMap(scorerStep.input.filledEntities, entities)
+                const importText = importTextWithEntityIds(scorerStep.importText, filledEntityMap)
+                importHash = Util.hashText(importText)
+            }
+            // If replacing stub action
+            else if (scorerStep.labelAction && CLM.ActionBase.isStubbedAPI(scorerStep.scoredAction)) {
+                const apiAction = new CLM.ApiAction(scorerStep.scoredAction as any)
+                importHash = Util.hashText(apiAction.name)
+            }
+            
+            if (importHash) {
+                const newAction = findActionByImportHash(importHash, actionsWithHash)
 
                 // If action exists replace labelled action with match
                 if (newAction) {

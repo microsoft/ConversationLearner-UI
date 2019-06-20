@@ -1113,6 +1113,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     open={this.state.isImportAbandonOpen}
                     onCancel={this.onClickAbandonCancel}
                     onConfirm={this.onClickAbandonApprove}
+                    isLastImport={this.props.importIndex === this.props.importCount}
                 />
                 {this.state.cantReplayMessage &&
                     <ConfirmCancelModal

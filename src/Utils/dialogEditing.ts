@@ -491,7 +491,7 @@ export async function getStubAPIAction(
         return stubAction
     }
 
-    // Otherwise c
+    // Otherwise create new stub
     const newStub = CLM.ActionBase.createStubAction(apiStubName, isTerminal)
 
     // If stub was created by import, add hash for future matching

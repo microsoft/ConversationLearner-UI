@@ -37,11 +37,13 @@ class ImportCancelModal extends React.Component<Props, ComponentState> {
                     isBlocking: false
                 }}
             >
-            <OF.Checkbox
-                label={Util.formatMessageId(this.props.intl, FM.IMPORT_CANCEL_CHECKBOX_LABEL)}
-                checked={this.state.stopImport}
-                onChange={this.onChangeCheckbox}
-            />
+            {!this.props.isLastImport &&
+                <OF.Checkbox
+                    label={Util.formatMessageId(this.props.intl, FM.IMPORT_CANCEL_CHECKBOX_LABEL)}
+                    checked={this.state.stopImport}
+                    onChange={this.onChangeCheckbox}
+                />
+            }
             <OF.DialogFooter>
                     <OF.PrimaryButton
                         onClick={() => this.props.onConfirm(this.state.stopImport)}
@@ -65,6 +67,7 @@ export interface ReceivedProps {
     onConfirm: Function
     onCancel: Function
     open: boolean
+    isLastImport: boolean
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
