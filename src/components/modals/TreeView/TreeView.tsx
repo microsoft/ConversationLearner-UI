@@ -35,20 +35,19 @@ interface ComponentState {
     selectedNode: TreeNode | null
     expandedNode: TreeNode | null
     translateX: number | null,
-    treeContainer: any,
     treeElement: any,
     fullScreen: boolean,
     showBanner: boolean,
 }
 
 class TreeView extends React.Component<Props, ComponentState> {
+    private treeContainerRef = React.createRef<any>()
 
     state: ComponentState = {
         tree: null,
         selectedNode: null,
         expandedNode: null,
         translateX: null,
-        treeContainer: null,
         treeElement: null,
         fullScreen: false,
         showBanner: true
@@ -61,13 +60,13 @@ class TreeView extends React.Component<Props, ComponentState> {
         if (this.props.trainDialogs !== prevProps.trainDialogs) {
             this.updateTree()
         }
-        if (this.state.treeContainer) {
+        if (this.treeContainerRef.current) {
             if (!this.state.translateX || (this.state.selectedNode !== prevState.selectedNode)) {
                 if (this.state.selectedNode) {
                     this.setState({translateX: NODE_WIDTH})
                 }
                 else {
-                        const dimensions = this.state.treeContainer.getBoundingClientRect();
+                        const dimensions = this.treeContainerRef.current.getBoundingClientRect();
                         this.setState({
                             translateX: dimensions.width / 2.5,
                         })
@@ -344,11 +343,6 @@ class TreeView extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    setContainerRef(treeContainer: any): void {
-        this.setState({treeContainer})
-    }
-
-    @OF.autobind
     toggleFullScreen(): void {
         this.setState({fullScreen: !this.state.fullScreen})
     }
@@ -387,9 +381,9 @@ class TreeView extends React.Component<Props, ComponentState> {
                     <div className="cl-treeview-columnRight">
                         <div 
                             className="cl-treeview-container"
-                            ref={this.setContainerRef}
+                            ref={this.treeContainerRef}
                         >
-                            {this.state.tree && this.state.treeContainer &&
+                            {this.state.tree && this.treeContainerRef.current &&
                                 <Tree 
                                     data={this.state.tree!}
                                     ref={this.setTreeRef}

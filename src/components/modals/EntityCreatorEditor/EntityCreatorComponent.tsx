@@ -85,7 +85,14 @@ interface ReceivedProps {
 
 type Props = ReceivedProps & InjectedIntlProps
 
-const EditComponent: React.SFC<Props> = (props) => {
+const EditComponent: React.FC<Props> = (props) => {
+    const nameRef = React.createRef<OF.ITextField>()
+    React.useEffect(() => {
+        if (nameRef.current) {
+            nameRef.current.focus()
+        }
+    }, [nameRef.current])
+
     return <div className="cl-entity-creator-form">
         <TC.Dropdown
             data-testid="entity-creator-entity-type-dropdown"
@@ -112,7 +119,7 @@ const EditComponent: React.SFC<Props> = (props) => {
             required={true}
             value={props.name}
             disabled={props.isNameDisabled}
-            componentRef={setFocused}
+            componentRef={nameRef}
             autoComplete="off"
         />
         {props.entityTypeKey === CLM.EntityType.LUIS &&
@@ -331,10 +338,6 @@ const Component: React.SFC<Props> = (props) => {
             </div>}
         />
     </OF.Modal>
-}
-
-function setFocused(ref: OF.ITextField) {
-    if (ref) ref.focus()
 }
 
 export default Component
