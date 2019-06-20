@@ -32,6 +32,7 @@ import { FM } from '../../react-intl-messages'
 import './ActionCreatorEditor.css'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
+const CARD_MATCH_THRESHOLD = 0.25
 
 const convertEntityToDropdownOption = (entity: CLM.EntityBase): OF.IDropdownOption =>
     ({
@@ -551,6 +552,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             let values = Plain.deserialize(this.presetText(props.newActionPreset.text))
             this.onChangePayloadEditor(values, TEXT_SLOT)
             this.setState({isTerminal: props.newActionPreset.isTerminal})
+
+            // If a good card match exists switch to card view
+            const bestCard = this.bestCardMatch(props.newActionPreset.text, CARD_MATCH_THRESHOLD)
+            if (bestCard) {
+                let index = actionTypeOptions.findIndex(ao => ao.key === CLM.ActionTypes.CARD)
+                this.onChangedActionType(actionTypeOptions[index])
+            }
         }
     }
 
@@ -1119,25 +1127,31 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             negativeEntityTags: [],
         })
 
+        // If have preset text, pick the best matching card
         if (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD && this.props.newActionPreset) {
-            
-            // Pre-select card that is closest matching to template
-            let bestScore = 0
-            let bestCard: OF.IDropdownOption | null = null
-            for (let cardOption of this.state.cardOptions) {
-                const template = this.props.botInfo.templates.find(t => t.name === cardOption.key)
-                const score = (template && template.body)
-                    ? compareTwoStrings(this.props.newActionPreset.text, template.body)
-                    : 0
-                if (score > bestScore) {
-                    bestScore = score
-                    bestCard = cardOption
-                }
-            }
+            const bestCard = this.bestCardMatch(this.props.newActionPreset.text)
             if (bestCard) {
                 this.onChangedCardOption(bestCard)
             }
         }
+    }
+
+    // Return card that best matches the given text
+    bestCardMatch(text: string, threshold: number = 0): OF.IDropdownOption | null {
+        // Pre-select card that is closest matching to template
+        let bestScore = 0
+        let bestCard: OF.IDropdownOption | null = null
+        for (let cardOption of this.state.cardOptions) {
+            const template = this.props.botInfo.templates.find(t => t.name === cardOption.key)
+            const score = (template && template.body)
+                ? compareTwoStrings(text, template.body)
+                : 0
+            if (score > threshold && score > bestScore) {
+                bestScore = score
+                bestCard = cardOption
+            }
+        }
+        return bestCard
     }
 
     onResolveExpectedEntityTags = (filterText: string, selectedTags: OF.ITag[] | undefined): OF.ITag[] => {

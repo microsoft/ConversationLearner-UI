@@ -529,10 +529,17 @@ function findActionByImportHash(importText: string, actionsWithHash: CLM.ActionB
     const importHash = Util.hashText(importText)
 
     // Try to find matching action with same hash
-    return actionsWithHash.find(a => {
+    let matchedActions = actionsWithHash.filter(a => {
         // Filter above ensures these are not null
         return a.clientData!.importHashes!.indexOf(importHash) > -1
     })
+
+    // If more than one, prefer the one that isn't a stub
+    if (matchedActions.length > 1) {
+        matchedActions = matchedActions.filter(ma => !CLM.ActionBase.isStubbedAPI(ma))
+    }
+
+    return matchedActions[0]
 }
 
 // Try to find existing action for import based solely on raw text (no filled entites available)
