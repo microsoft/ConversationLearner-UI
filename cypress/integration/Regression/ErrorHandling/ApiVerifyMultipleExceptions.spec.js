@@ -14,7 +14,7 @@ import * as helpers from '../../../support/Helpers'
 
 // This test suite is part 1 of 2. The second part is in ApiCreateMultipleExceptions.
 describe('API Verify Multiple Exceptions - ErrorHandling', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
   
   context('Setup', () => {
     it('Should import a model to test against and navigate to Train Dialogs view', () => {

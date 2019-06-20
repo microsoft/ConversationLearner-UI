@@ -11,7 +11,7 @@ import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
 describe('Two Consecutive User Inputs - ErrorHandling', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {

@@ -5,20 +5,10 @@
 
 // Use this in an `afterEach` function to cause all remaining tests of a suite to be skipped when
 // the test that just finished running failed.
-//
-// CAUTION: This MUST NOT be called using an arrow/lambda function. Examples:
-//   WRONG: afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
-//   RIGHT: afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-//   RIGHT: afterEach(function() {
-//            helpers.SkipRemainingTestsOfSuiteIfFailed()
-//            DoSomeOtherWork()
-//          })
-export function SkipRemainingTestsOfSuiteIfFailed() { 
-  if (this.currentTest == undefined) {
-    throw new Error('Test Code Error: Cannot use arrow/lambda function to call the SkipRemainingTestsOfSuiteIfFailed() function.')
-  }
-  if (this.currentTest.state === 'failed') {
-    this.skip() 
+export function SkipRemainingTestsOfSuiteIfFailed() {
+  const runnable = cy.state('runnable')
+  if (runnable.ctx.currentTest.state === 'failed') {
+    runnable.skip()
   }
 }
 
@@ -44,7 +34,7 @@ export function StringArrayFromElementText(selector, retainMarkup = false) {
   let elements = Cypress.$(selector)
   ConLog(`StringArrayFromElementText(${selector})`, elements.length)
   let returnValues = []
-  for (let i = 0; i < elements.length; i++)  {
+  for (let i = 0; i < elements.length; i++) {
     let text = retainMarkup ? elements[i].innerHTML : TextContentWithoutNewlines(elements[i])
     returnValues.push(text)
     ConLog(`StringArrayFromElementText(${selector})`, text)
@@ -82,10 +72,10 @@ let buildKey = undefined
 export function GetBuildKey() {
   if (!buildKey) {
     buildKey = Cypress.env('BUILD_NUM')
-ConLog('GetBuildKey', `BUILD_NUM: ${Cypress.env('BUILD_NUM')} -- ${buildKey}`)
+    ConLog('GetBuildKey', `BUILD_NUM: ${Cypress.env('BUILD_NUM')} -- ${buildKey}`)
     if (buildKey) {
       buildKey = String.fromCharCode('a'.charCodeAt() + buildKey % 26)
-ConLog('GetBuildKey', `buildKey: ${buildKey}`)
+      ConLog('GetBuildKey', `buildKey: ${buildKey}`)
     } else {
       // There is no BUILD_NUM environment variable so this is a local test run.
       // For local test runs always using the same build key works.

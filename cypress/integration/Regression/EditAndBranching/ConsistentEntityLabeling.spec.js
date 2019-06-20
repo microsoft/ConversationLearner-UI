@@ -11,7 +11,7 @@ import * as helpers from '../../../support/Helpers'
 describe('Consistent Entity Labeling - Edit And Branching', () => {
   const textEntityPairs = [{text: 'Tag', entity: 'multi'}, {text: 'Frog', entity: 'multi'}]
 
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
   
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {

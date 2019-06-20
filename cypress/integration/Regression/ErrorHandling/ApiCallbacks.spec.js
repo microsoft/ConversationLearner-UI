@@ -13,7 +13,7 @@ import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
 
 describe('API Callbacks - ErrorHandling', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
   
   context('Setup', () => {
     it('Should import a model to test against and navigate to Train Dialogs view', () => {

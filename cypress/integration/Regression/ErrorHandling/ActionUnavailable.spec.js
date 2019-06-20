@@ -11,7 +11,7 @@ import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
 describe('Action Unavailable - ErrorHandling', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
   context('Setup', () => {
     it('Create a model to test against', () => {

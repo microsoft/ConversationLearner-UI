@@ -16,7 +16,7 @@ import * as helpers from '../../../support/Helpers'
 // it continues from where the 1st test case left off by using the
 // model created by that test scenario.
 describe('Learned Entity Labeling - Train Dialog', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {

@@ -13,7 +13,8 @@ const helpers = require('../../support/Helpers')
 describe('Test UI View and Logs - Tools', () => {
   // The difference between the 1st and 2nd is where we place the call to SkipRemainingTestsOfSuiteIfFailed()
   context('1st Test Suite Root', () => {
-    afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+    afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
+
     describe('Level 2-1', () => {
       it('The FIRST Test', () => {
         expect(true).to.equal(true)
@@ -42,7 +43,7 @@ describe('Test UI View and Logs - Tools', () => {
   // The difference between the 1st and 2nd is where we place the call to SkipRemainingTestsOfSuiteIfFailed()
   context('2nd Test Suite Root', () => {
     describe('Level 2-1', () => {
-      afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+      afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
       it('The FIRST Test', () => {
         expect(true).to.equal(true)
       })
@@ -67,12 +68,12 @@ describe('Test UI View and Logs - Tools', () => {
     })
   })
 
-  beforeEach(function() {
+  beforeEach(function () {
     helpers.ConLog('beforeEach', `${this.currentTest.title} - Start`)
   })
 
   // Log some of Moca's objects
-  afterEach(function() {
+  afterEach(function () {
     const funcName = 'afterEach'
     // helpers.Dump(funcName, this.currentTest)
     // helpers.Dump(funcName, this.currentTest.ctx)

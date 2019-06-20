@@ -9,7 +9,7 @@ import * as actions from '../../support/Actions'
 import * as helpers from '../../support/Helpers'
 
 describe('aAPITemp - CreateModels', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
   context('Setup', () => {
     it('Should import a model to test against', () => {

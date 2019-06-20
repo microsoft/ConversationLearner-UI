@@ -11,7 +11,7 @@ import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
 describe('Wait Non Wait Error Handling', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
   
   it('Imports a model to test against and verifies no errors on Model page', () => {
     models.ImportModel('z-errWaitNoWait', 'z-waitNoWait.cl')

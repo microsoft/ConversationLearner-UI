@@ -10,7 +10,7 @@ import * as trainDialogsGrid from '../../../support/components/TrainDialogsGrid'
 import * as helpers from '../../../support/Helpers'
 
 describe('Verify Edit Training Controls And Labels - Edit And Branching', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
   let originalTrainDialogCount = 0
 
   context('Setup', () => {

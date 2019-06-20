@@ -10,7 +10,7 @@ import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
 describe('Wait vs. Non Wait Actions - CreateModels', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
   context('Setup', () => {
     it('Should create a model to test against', () => {

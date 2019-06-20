@@ -13,7 +13,7 @@ import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
 describe('Entity Labeling - Create Model', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
   
   context('Create', () => {
     it('Create a model to test against', () => {

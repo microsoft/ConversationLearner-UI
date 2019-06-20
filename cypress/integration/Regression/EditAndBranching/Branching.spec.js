@@ -10,7 +10,7 @@ import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
 describe('Branching - Edit and Branching', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
   
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {

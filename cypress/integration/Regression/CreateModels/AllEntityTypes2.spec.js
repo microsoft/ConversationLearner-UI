@@ -8,7 +8,7 @@ import * as entities from '../../../support/Entities'
 import * as helpers from '../../../support/Helpers'
 
 describe('All Entity Types 2 - CreateModels', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
   context('Setup', () => {
     it('Should create a model to test against', () => {

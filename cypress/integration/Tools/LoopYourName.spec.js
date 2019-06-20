@@ -27,7 +27,7 @@ describe("Loop What's Your Name - Log", () => {
       context(`Iteration #${i + 1}`, () => {
         // If one of these fails, we need to reload the page so we are at a good starting point again.
         afterEach(function() { if (this.currentTest.state === 'failed') { cy.reload() } })
-        afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+        afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
         it('Should create a new log dialog', () => {
           logDialogsGrid.CreateNewLogDialogButton()

@@ -11,7 +11,7 @@ import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
 describe('Date Time Resolver - Train', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
   const today = Cypress.moment()
   const tomorrow = today.add(1, 'days').format("YYYY-MM-DD")

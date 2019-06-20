@@ -13,7 +13,7 @@ import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
 
 describe('Missing Action - ErrorHandling', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
   
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {

@@ -13,7 +13,7 @@ import * as helpers from '../../../support/Helpers'
 const preliminaryTrainingDescription = 'Preliminary Training to cause some expected behaviors in future Train Dialogs'
 
 describe('End Session - Create Model', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
   
   context('Should create a new model', () => {
     it('Create a model to test against', () => {

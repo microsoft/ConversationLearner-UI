@@ -12,7 +12,7 @@ import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
 describe('API Callbacks - Train', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
   context('Setup', () => {
     it('Should import a model to test against and navigate to Train Dialogs view', () => {

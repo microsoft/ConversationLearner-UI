@@ -11,7 +11,7 @@ import * as memoryTableComponent from '../../../support/components/MemoryTableCo
 import * as helpers from '../../../support/Helpers'
 
 describe('API Memory Manipulation - Train', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
   context('Setup', () => {
     it('Should import a model to test against', () => {

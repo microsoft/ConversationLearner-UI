@@ -10,7 +10,7 @@ import * as helpers from '../../../support/Helpers'
 
 // We need to skip this test until the Bug 2132 is fixed.
 describe.skip('API Callbacks - CreateModels', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
   context('Setup', () => {
     it('Should create a model to test against', () => {

@@ -14,7 +14,7 @@ import * as logDialogsGrid from '../../../support/components/LogDialogsGrid'
 import * as helpers from '../../../support/Helpers'
 
 describe('Bot Missing API - ErrorHandling', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
   context('Setup', () => {
     it('Should import a model to test against', () => {

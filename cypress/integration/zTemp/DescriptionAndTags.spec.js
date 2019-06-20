@@ -4,7 +4,7 @@ import * as train from '../../support/Train'
 import * as helpers from '../../support/Helpers'
 
 describe('Description and Tags - Train Dialog', () => {
-  afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  afterEach(() => helpers.SkipRemainingTestsOfSuiteIfFailed())
 
   it('Imports a model to test against', () => {
     // import the saved model for tags and description testing
