@@ -80,12 +80,12 @@ import * as helpers from './Helpers.js'
     })
 
     // The last "expectFailure" parameter is used only for testing that this function works.
-    // To use it set up the conditions where the selector (and optional text if appropriate)
+    // To use it, set up the conditions where the selector (and optional text if appropriate)
     // does exist on the page and call this with "expectFailure" set to true. If this finds
     // the selector then this method will return true, otherwise false.
     // Without setting "expectFailure" this method will throw an exception on failure.
     Cypress.Commands.add('DoesNotContain', { prevSubject: 'optional' }, (subject, selector, textItShouldNotContain, expectFailure = false) => {
-      const funcName = `cy.DoesNotContain(${subject}, ${selector}, ${textItShouldNotContain})`
+      const funcName = `cy.DoesNotContain(${subject}, ${selector}, ${textItShouldNotContain}, ${expectFailure})`
       helpers.ConLog(funcName, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       cy.wrap(700, { timeout: 60000 }).should('lte', 'MillisecondsSinceLastChange').then(() => {
         helpers.ConLog(funcName, `DOM Is Stable`)
@@ -96,14 +96,23 @@ import * as helpers from './Helpers.js'
 
         helpers.ConLog(funcName, `Found ${elements.length} for selector: ${selector}`)
 
-        if ((elements.length > 0) && textItShouldNotContain) {
-          elements = Cypress.$(elements).find(`:contains(${textItShouldNotContain})`)
-          helpers.ConLog(funcName, `Found ${elements.length} containing text: ${textItShouldNotContain}`)
+        let foundCount = 0
+        if ((elements.length > 0)) {
+          if (!textItShouldNotContain) { foundCount = elements.length }
+          else {
+            for (let i = 0; i < elements.length; i++) {
+              let elementText = helpers.TextContentWithoutNewlines(elements[i])
+              if (elementText.includes(textItShouldNotContain)) {
+                helpers.ConLog(funcName, `Found "${textItShouldNotContain}" in this element >>> ${elements[i].outerHTML}`)
+                foundCount ++;
+              }
+            }
+          }
         }
 
-        if (elements.length > 0) {
+        if (foundCount > 0) {
           if (expectFailure) return true;
-          throw new Error(`selector: "${selector}" & textItShouldNotContain: "${textItShouldNotContain}" was expected to be missing from the DOM, instead we found ${elements.length} instances of it.`)
+          throw new Error(`selector: "${selector}" & textItShouldNotContain: "${textItShouldNotContain}" was expected to be missing from the DOM, instead we found ${foundCount} instances of it.`)
         }
         helpers.ConLog(funcName, `PASSED - Selector was NOT Found as Expected`)
         if (expectFailure) return false;
