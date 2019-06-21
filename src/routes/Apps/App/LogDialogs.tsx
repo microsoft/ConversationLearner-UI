@@ -50,12 +50,6 @@ function getTagName(logDialog: CLM.LogDialog, component: LogDialogs): string {
     return tagName;
 }
 
-function getFirstInput(logDialog: CLM.LogDialog): string | void {
-    if (logDialog.rounds && logDialog.rounds.length > 0) {
-        return logDialog.rounds[0].extractorStep.text
-    }
-}
-
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     return [
         {
@@ -81,16 +75,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 100,
             maxWidth: 1500,
             isResizable: true,
-            render: (trainDialog, component) => {
+            render: (logDialog, component) => {
                 return <>
                     <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-description">
-                        {DialogUtils.dialogSampleInput(trainDialog)}
+                        {DialogUtils.dialogSampleInput(logDialog)}
                     </span>
                 </>
             },
             getSortValue: logDialog => {
-                const firstInput = getFirstInput(logDialog)
-                return firstInput ? firstInput.toLowerCase() : ''
+                return DialogUtils.dialogSampleInput(logDialog)
             }
         },
         {
@@ -126,7 +119,7 @@ interface ComponentState {
     isChatSessionWindowOpen: boolean
     isEditDialogModalOpen: boolean
     isTeachDialogModalOpen: boolean
-    isDeleteButtonDisabled: boolean
+    selectionCount: number
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
@@ -199,7 +192,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             isChatSessionWindowOpen: false,
             isEditDialogModalOpen: false,
             isTeachDialogModalOpen: false,
-            isDeleteButtonDisabled: true,
+            selectionCount: 0,
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
             selectedHistoryIndex: null,
@@ -217,9 +210,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onSelectionChanged() {
-        console.log({ selection: this.selection.getSelection() })
-        const isDeleteButtonDisabled = this.selection.getSelectedCount() === 0
-        this.setState({ isDeleteButtonDisabled })
+        const selectionCount = this.selection.getSelectedCount()
+        this.setState({ selectionCount })
     }
 
     sortLogDialogs(
@@ -914,7 +906,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickDeleteAll() {
+    onClickDeleteSelected() {
         this.setState({
             isConfirmDeleteModalOpen: true
         })
@@ -929,7 +921,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onClickConfirmDelete() {
-        this.props.deleteLogDialogsThunkAsync(this.props.app)
+        const logDialogs = this.selection.getSelection() as CLM.LogDialog[]
+        const logDialogIds = logDialogs.map(logDialog => logDialog.logDialogId)
+        this.props.deleteLogDialogsThunkAsync(this.props.app, logDialogIds, this.props.editingPackageId)
         this.setState({
             isConfirmDeleteModalOpen: false
         })
@@ -986,10 +980,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     <OF.DefaultButton
                         data-testid="logdialogs-button-deleteall"
                         className="cl-button-delete"
-                        disabled={this.state.isDeleteButtonDisabled}
-                        onClick={this.onClickDeleteAll}
-                        ariaDescription={Util.formatMessageId(intl, FM.LOGDIALOGS_BUTTON_DELETEALL)}
-                        text={Util.formatMessageId(intl, FM.LOGDIALOGS_BUTTON_DELETEALL)}
+                        disabled={this.state.selectionCount === 0}
+                        onClick={this.onClickDeleteSelected}
+                        ariaDescription={Util.formatMessageId(intl, FM.LOGDIALOGS_BUTTON_DELETESELECTED, { selectionCount: this.state.selectionCount })}
+                        text={Util.formatMessageId(intl, FM.LOGDIALOGS_BUTTON_DELETESELECTED, { selectionCount: this.state.selectionCount })}
                         iconProps={{ iconName: 'Delete' }}
                     />
                 </div>
@@ -1032,6 +1026,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                                 columns={this.state.columns}
                                 checkboxVisibility={OF.CheckboxVisibility.onHover}
                                 onColumnHeaderClick={this.onClickColumnHeader}
+                                onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div> }
                                 onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
                                 onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
                             />
@@ -1115,7 +1110,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     open={this.state.isConfirmDeleteModalOpen}
                     onCancel={this.onClickCancelDelete}
                     onOk={this.onClickConfirmDelete}
-                    title={Util.formatMessageId(intl, FM.LOGDIALOGS_BUTTON_DELETEALL)}
+                    title={Util.formatMessageId(intl, FM.LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED, { selectionCount: this.state.selectionCount })}
                 />
             </div>
         );

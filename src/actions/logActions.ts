@@ -39,7 +39,7 @@ export const deleteLogDialogThunkAsync = (app: AppBase, logDialogId: string, pac
         const clClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC)
 
         try {
-            await clClient.logDialogsDelete(app.appId, logDialogId)
+            await clClient.logDialogsDelete(app.appId, [logDialogId])
             dispatch(deleteLogDialogFulfilled(logDialogId))
         }
         catch (e) {
@@ -70,19 +70,20 @@ const deleteLogDialogsRejected = (): ActionObject => {
     }
 }
 
-export const deleteLogDialogsThunkAsync = (app: AppBase) => {
+export const deleteLogDialogsThunkAsync = (app: AppBase, logDialogIds: string[], packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteLogDialogsAsync(app.appId))
         const clClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC)
 
         try {
-            await clClient.logDialogsDelete(app.appId)
+            await clClient.logDialogsDelete(app.appId, logDialogIds)
             dispatch(deleteLogDialogsFulfilled())
         }
         catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_LOG_DIALOGS_ASYNC))
             dispatch(deleteLogDialogsRejected())
+            dispatch(fetchAllLogDialogsThunkAsync(app, packageId));
         }
     }
 }
