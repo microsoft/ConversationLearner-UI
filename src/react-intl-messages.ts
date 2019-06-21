@@ -324,6 +324,7 @@ export enum FM {
     LOGDIALOGS_CREATED_DATE_TIME = 'LogDialogs.createdDateTime',
     LOGDIALOGS_LAST_MODIFIED_DATE_TIME = 'LogDialogs.lastModifiedDateTime',
     LOGDIALOGS_ALREADYSELECTED = 'LogDialogs.alreadySelected',
+    LOGDIALOGS_BUTTON_DELETEALL = 'LogDialogs.button.deleteAll',
 
     // LogDialogAdmin
     LOGDIALOGADMIN_CONFIRMTITLE = 'LogDialogAdmin.confirmTitle',
@@ -759,6 +760,7 @@ export default {
         [FM.LOGDIALOGS_CREATED_DATE_TIME]: 'Created',
         [FM.LOGDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
         [FM.LOGDIALOGS_ALREADYSELECTED]: 'Action already selected',
+        [FM.LOGDIALOGS_BUTTON_DELETEALL]: 'Delete All',
 
         // LogDialogAdmin
         [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the Bot and convert it into a new Train Dialog',
