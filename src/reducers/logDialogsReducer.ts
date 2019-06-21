@@ -23,7 +23,7 @@ const logDialogsReducer = produce((state: LogDialogState, action: ActionObject) 
             // Delete log dialog optimistically.  Will reload train dialogs on failure
             return state.filter(dialog => dialog.logDialogId !== action.logDialogId);
         case AT.DELETE_LOG_DIALOGS_FULFILLED:
-            return []
+            return state.filter(dialog => action.logDialogIds.some(ldId => ldId === dialog.logDialogId));
         case AT.UPDATE_SOURCE_LOG_DIALOG:
             // Update log dialog this train dialog was created from.
             // Used to hide converted log dialogs from the UI
