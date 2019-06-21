@@ -171,6 +171,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     private selection: OF.ISelection = new OF.Selection({
+        getKey: (logDialog) => (logDialog as CLM.LogDialog).logDialogId,
         onSelectionChanged: this.onSelectionChanged
     })
 
@@ -301,8 +302,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+        // If any of the filters changed, recompute filtered dialogs based on updated filers
         if (prevState.searchValue !== this.state.searchValue) {
-            let logDialogs = this.getFilteredDialogs(
+            const logDialogs = this.getFilteredDialogs(
                 this.state.logDialogs,
                 this.props.entities,
                 this.props.actions,
@@ -313,15 +315,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             })
         }
 
+        // If the sort column changed, recompute dialog sort order
         if (prevState.sortColumn.key !== this.state.sortColumn.key
             || prevState.sortColumn.isSortedDescending !== this.state.sortColumn.isSortedDescending) {
-            let logDialogs = this.getFilteredDialogs(
-                this.state.logDialogs,
-                this.props.entities,
-                this.props.actions,
-                this.state.searchValue)
-
-            logDialogs = this.sortLogDialogs(logDialogs, this.state.columns, this.state.sortColumn)
+            const logDialogs = this.sortLogDialogs(this.state.logDialogs, this.state.columns, this.state.sortColumn)
 
             this.setState({
                 logDialogs
@@ -913,14 +910,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onClickCancelDelete() {
+    onClickCancelDelete() {
         this.setState({
             isConfirmDeleteModalOpen: false
         })
     }
 
     @OF.autobind
-    async onClickConfirmDelete() {
+    onClickConfirmDelete() {
         const logDialogs = this.selection.getSelection() as CLM.LogDialog[]
         const logDialogIds = logDialogs.map(logDialog => logDialog.logDialogId)
         this.props.deleteLogDialogsThunkAsync(this.props.app, logDialogIds, this.props.editingPackageId)
