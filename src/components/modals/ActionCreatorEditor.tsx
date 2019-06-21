@@ -1571,6 +1571,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 iconProps={{ iconName: 'QueryList' }}
                                 ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION)}
                                 text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT)}
+                                data-testid="action-creator-editor-train-dialog-filter-button"
                             />
                         }
                         <OF.DefaultButton

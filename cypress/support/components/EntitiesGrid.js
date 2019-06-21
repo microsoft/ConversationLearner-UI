@@ -25,3 +25,12 @@ export class Row {
   VerifyNegatableChecked() { cy.Get('@entityDetailsRow').find('i[data-icon-name="CheckMark"][data-testid="entities-negatable"]') }
   VerifyNegatableUnChecked() { cy.Get('@entityDetailsRow').find('i[data-icon-name="Remove"][data-testid="entities-negatable"]') }
 }
+
+export function VerifyEntityNotInGrid(name) {
+  cy.Get('[data-testid="entities-name"]').DoesNotContain('name')
+  // cy.Enqueue(() => {
+  //   if (Cypress.$(`[data-testid="entities-name"]:contains(${name})`).length != 0) {
+  //     throw new Error(`Entity "${name}" should not be in the grid.`)
+  //   }
+  // })
+}

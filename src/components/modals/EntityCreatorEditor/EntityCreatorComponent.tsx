@@ -247,6 +247,7 @@ const Component: React.SFC<Props> = (props) => {
                         iconProps={{ iconName: 'QueryList' }}
                         ariaDescription={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION)}
                         text={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT)}
+                        data-testid="entity-creator-component-train-dialog-filter-button"
                     />
                 }
             </div>

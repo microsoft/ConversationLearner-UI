@@ -1108,6 +1108,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                     onClick={() => this.onClickResetFilters()}
                                     ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_RESET)}
                                     text={Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_RESET)}
+                                    data-testid="train-dialogs-clear-filter-button"
                                 />
                             </div>
                         </div>

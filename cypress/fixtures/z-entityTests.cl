@@ -297,6 +297,124 @@
       "initialFilledEntities": [],
       "createdDateTime": "2019-06-19T03:21:36.2992948+00:00",
       "lastModifiedDateTime": "2019-06-19T03:21:57+00:00"
+    },
+    {
+      "tags": [],
+      "description": "",
+      "trainDialogId": "289a2359-c39f-4111-bc73-951dbf36f305",
+      "rounds": [
+        {
+          "extractorStep": {
+            "textVariations": [
+              {
+                "text": "We will delete this entity.",
+                "labelEntities": [
+                  {
+                    "entityId": "8b3f059b-c37f-4826-ba7f-9e88e92c1cdf",
+                    "startCharIndex": 20,
+                    "endCharIndex": 25,
+                    "entityText": "entity",
+                    "resolution": {},
+                    "builtinType": "LUIS"
+                  }
+                ]
+              }
+            ]
+          },
+          "scorerSteps": [
+            {
+              "input": {
+                "filledEntities": [
+                  {
+                    "entityId": "8b3f059b-c37f-4826-ba7f-9e88e92c1cdf",
+                    "values": [
+                      {
+                        "userText": "entity",
+                        "displayText": "entity",
+                        "builtinType": "LUIS",
+                        "resolution": {}
+                      }
+                    ]
+                  }
+                ],
+                "context": {},
+                "maskedActions": []
+              },
+              "labelAction": "4b790d93-867b-4c08-bf63-b9e1ab241e3f",
+              "metrics": {
+                "predictMetrics": {
+                  "blisTime": 0.013550996780395507,
+                  "contextDialogBlisTime": 0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "extractorStep": {
+            "textVariations": [
+              {
+                "text": "Will also delete this entity.",
+                "labelEntities": [
+                  {
+                    "entityId": "ad3a5e85-6219-4225-abd7-fdcd080ca4fd",
+                    "startCharIndex": 22,
+                    "endCharIndex": 27,
+                    "entityText": "entity",
+                    "resolution": {},
+                    "builtinType": "LUIS"
+                  }
+                ]
+              }
+            ]
+          },
+          "scorerSteps": [
+            {
+              "input": {
+                "filledEntities": [
+                  {
+                    "entityId": "8b3f059b-c37f-4826-ba7f-9e88e92c1cdf",
+                    "values": [
+                      {
+                        "userText": "entity",
+                        "displayText": "entity",
+                        "builtinType": "LUIS",
+                        "resolution": {}
+                      }
+                    ]
+                  },
+                  {
+                    "entityId": "ad3a5e85-6219-4225-abd7-fdcd080ca4fd",
+                    "values": [
+                      {
+                        "userText": "entity",
+                        "displayText": "entity",
+                        "builtinType": "LUIS",
+                        "resolution": {}
+                      }
+                    ]
+                  }
+                ],
+                "context": {},
+                "maskedActions": []
+              },
+              "labelAction": "4b790d93-867b-4c08-bf63-b9e1ab241e3f",
+              "metrics": {
+                "predictMetrics": {
+                  "blisTime": 0.010617494583129882,
+                  "contextDialogBlisTime": 0
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "clientData": {
+        "importHashes": []
+      },
+      "initialFilledEntities": [],
+      "createdDateTime": "2019-06-20T22:58:59.761742+00:00",
+      "lastModifiedDateTime": "2019-06-21T01:02:40+00:00"
     }
   ],
   "actions": [
@@ -513,6 +631,15 @@
       "entityType": "LUIS",
       "isMultivalue": true,
       "isNegatible": true,
+      "resolverType": "none"
+    },
+    {
+      "entityId": "ad3a5e85-6219-4225-abd7-fdcd080ca4fd",
+      "createdDateTime": "2019-06-21T01:01:32.1004583+00:00",
+      "entityName": "canBeDeletedToo",
+      "entityType": "LUIS",
+      "isMultivalue": false,
+      "isNegatible": false,
       "resolverType": "none"
     }
   ],

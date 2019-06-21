@@ -54,6 +54,8 @@ export function TypeDescription(description) { cy.Get('input.cl-borderless-text-
 export function ClickAddTagButton() { cy.Get('[data-testid="tags-input-add-tag-button"]').Click() }
 export function VerifyNoTags() { cy.Get('div.cl-tags > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
 
+export function ClickClearFilterButton() { cy.Get('[data-testid="train-dialogs-clear-filter-button"]').Click() }
+
 export function VerifyTags(tags) { 
   cy.Enqueue(() => {
     helpers.ConLog('VerifyTags', 'Start')
@@ -788,4 +790,39 @@ export function VerifyCloseIsTheOnlyEnabledButton() {
   cy.Get('[data-testid="edit-dialog-modal-replay-button"]').should('be.disabled')
   cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').should('be.disabled')
   cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').should('be.enabled')
+}
+
+export function VerifyListOfTrainDialogs(expectedTurns) {
+  const funcName = 'VerifyListOfTrainDialogs'
+  cy.Enqueue(() => {
+    const firstInputs = trainDialogsGrid.GetFirstInputs()
+    const lastInputs = trainDialogsGrid.GetLastInputs()
+    const lastResponses = trainDialogsGrid.GetLastResponses()
+
+    let errors = false
+    expectedTurns.forEach(turn => {
+      helpers.ConLog(funcName, `Find - "${turn.firstInput}", "${turn.lastInput}", "${turn.lastResponse}"`)
+      let found = false
+      for (let i = 0; i < firstInputs.length; i++) {
+        if (firstInputs[i] == turn.firstInput && lastInputs[i] == turn.lastInput && lastResponses[i] == turn.lastResponse) {
+          found = true
+          helpers.ConLog(funcName, `Found on row ${i}`)
+          break;
+        }
+      }
+      
+      if (!found) {
+        helpers.ConLog(funcName, 'ERROR - NOT Found')
+        errors = true
+      }
+    })
+    
+    if (errors) {
+      throw new Error('Did not find 1 or more of the expected Train Dialogs in the grid. Refer to the log file for details.')
+    }
+    
+    if (firstInputs.length > expectedTurns.length) {
+      throw new Error(`Found all of the expected Train Dialogs, however there are an additional ${firstInputs.length - expectedTurns.length} Train Dialogs in the grid that we were not expecting. Refer to the log file for details.`)
+    }
+  })
 }

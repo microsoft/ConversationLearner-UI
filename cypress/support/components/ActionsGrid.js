@@ -112,3 +112,4 @@ export function VerifyActionRow(response, type, requiredEntities, disqualifyingE
   actionsGridRow.VerifyExpectedEntity(expectedEntity)
   actionsGridRow.VerifyWaitForResponse(wait)
 }
+
