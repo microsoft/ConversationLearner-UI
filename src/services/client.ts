@@ -452,7 +452,14 @@ export default class ClClient {
         return logDialog
     }
 
-    async logDialogsDelete(appId: string, logDialogIds: string[]): Promise<void> {
+    async logDialogsDelete(appId: string, logDialogId: string): Promise<void> {
+        await this.send({
+            method: 'delete',
+            url: `/app/${appId}/logdialog/${logDialogId}`
+        })
+    }
+
+    async logDialogsDeleteMany(appId: string, logDialogIds: string[]): Promise<void> {
         const logDialogIdQueryString = logDialogIds.map(id => `id=${id}`).join("&")
         await this.send({
             method: 'delete',

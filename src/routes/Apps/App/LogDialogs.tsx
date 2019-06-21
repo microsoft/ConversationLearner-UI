@@ -764,7 +764,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     await this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId)
                 }
                 else {
-                    throw new Error("Could not find LogDialag associated with conversion to TrainDialog")
+                    throw new Error("Could not find LogDialog associated with conversion to TrainDialog")
                 }
             }
         }

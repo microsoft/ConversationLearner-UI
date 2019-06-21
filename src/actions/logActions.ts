@@ -39,7 +39,7 @@ export const deleteLogDialogThunkAsync = (app: AppBase, logDialogId: string, pac
         const clClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC)
 
         try {
-            await clClient.logDialogsDelete(app.appId, [logDialogId])
+            await clClient.logDialogsDelete(app.appId, logDialogId)
             dispatch(deleteLogDialogFulfilled(logDialogId))
         }
         catch (e) {
@@ -77,7 +77,7 @@ export const deleteLogDialogsThunkAsync = (app: AppBase, logDialogIds: string[],
         const clClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOGS_ASYNC)
 
         try {
-            await clClient.logDialogsDelete(app.appId, logDialogIds)
+            await clClient.logDialogsDeleteMany(app.appId, logDialogIds)
             dispatch(deleteLogDialogsFulfilled(logDialogIds))
         }
         catch (e) {
