@@ -27,7 +27,7 @@ export class Row {
 }
 
 export function VerifyEntityNotInGrid(name) {
-  cy.DoesNotContain('[data-testid="entities-name"]', 'name')
+  cy.DoesNotContainExact('[data-testid="entities-name"]', name)
   // cy.Enqueue(() => {
   //   if (Cypress.$(`[data-testid="entities-name"]:contains(${name})`).length != 0) {
   //     throw new Error(`Entity "${name}" should not be in the grid.`)

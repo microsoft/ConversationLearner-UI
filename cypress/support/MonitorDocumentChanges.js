@@ -85,6 +85,19 @@ import * as helpers from './Helpers.js'
     // the selector then this method will return true, otherwise false.
     // Without setting "expectFailure" this method will throw an exception on failure.
     Cypress.Commands.add('DoesNotContain', { prevSubject: 'optional' }, (subject, selector, textItShouldNotContain, expectFailure = false) => {
+      DoesNotContain(subject, selector, textItShouldNotContain, expectFailure, false)
+    })
+
+    // The last "expectFailure" parameter is used only for testing that this function works.
+    // To use it, set up the conditions where the selector (and optional text if appropriate)
+    // does exist on the page and call this with "expectFailure" set to true. If this finds
+    // the selector then this method will return true, otherwise false.
+    // Without setting "expectFailure" this method will throw an exception on failure.
+    Cypress.Commands.add('DoesNotContainExact', { prevSubject: 'optional' }, (subject, selector, textItShouldNotContain, expectFailure = false) => {
+      DoesNotContain(subject, selector, textItShouldNotContain, expectFailure, true)
+    })
+
+    function DoesNotContain(subject, selector, textItShouldNotContain, expectFailure, exactMatch) {
       const funcName = `cy.DoesNotContain(${subject}, ${selector}, ${textItShouldNotContain}, ${expectFailure})`
       helpers.ConLog(funcName, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)
       cy.wrap(700, { timeout: 60000 }).should('lte', 'MillisecondsSinceLastChange').then(() => {
@@ -102,7 +115,7 @@ import * as helpers from './Helpers.js'
           else {
             for (let i = 0; i < elements.length; i++) {
               let elementText = helpers.TextContentWithoutNewlines(elements[i])
-              if (elementText.includes(textItShouldNotContain)) {
+              if ((exactMatch && elementText === textItShouldNotContain) || (!exactMatch && elementText.includes(textItShouldNotContain))) {
                 helpers.ConLog(funcName, `Found "${textItShouldNotContain}" in this element >>> ${elements[i].outerHTML}`)
                 foundCount ++;
               }
@@ -117,7 +130,7 @@ import * as helpers from './Helpers.js'
         helpers.ConLog(funcName, `PASSED - Selector was NOT Found as Expected`)
         if (expectFailure) return false;
       })
-    })
+    }
 
     Cypress.Commands.add('WaitForStableDOM', () => {
       helpers.ConLog(`cy.WaitForStableDOM()`, `Start - Last DOM change was ${MillisecondsSinceLastChange()} milliseconds ago`)

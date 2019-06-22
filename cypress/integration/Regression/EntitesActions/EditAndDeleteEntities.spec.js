@@ -24,8 +24,6 @@ describe('Edit and Delete Entities - EntitiesActions', () => {
   context('"canBeDeleted" Entity', () => {
     it('Should edit an existing entity and verify the Entity Type field is disabled', () => {
       modelPage.NavigateToEntities()
-      entitiesGrid.VerifyEntityNotInGrid('joe')
-      entitiesGrid.VerifyEntityNotInGrid('name')
       entitiesGrid.EditEntity('canBeDeleted')
       entityModal.VerifyEntityTypeDisabled()
     })
