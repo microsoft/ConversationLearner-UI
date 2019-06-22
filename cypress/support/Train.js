@@ -794,6 +794,7 @@ export function VerifyCloseIsTheOnlyEnabledButton() {
 
 export function VerifyListOfTrainDialogs(expectedTurns) {
   const funcName = 'VerifyListOfTrainDialogs'
+  cy.log('Verify List of Train Dialogs', expectedTurns)
   cy.Enqueue(() => {
     const firstInputs = trainDialogsGrid.GetFirstInputs()
     const lastInputs = trainDialogsGrid.GetLastInputs()

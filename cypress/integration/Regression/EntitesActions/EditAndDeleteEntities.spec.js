@@ -21,30 +21,6 @@ describe('Edit and Delete Entities - EntitiesActions', () => {
     })
   })
 
-  context('"canBeDeleted" Entity', () => {
-    it('Should edit an existing entity and verify the Entity Type field is disabled', () => {
-      modelPage.NavigateToEntities()
-      entitiesGrid.EditEntity('canBeDeleted')
-      entityModal.VerifyEntityTypeDisabled()
-    })
-
-    it('Should verify "Required For Action" tab contains expected Action details', () => {
-      entityModal.SelectRequiredForActionsTab()
-      entityModal.VerifyEmptyGrid()
-    })
-
-    it('Should verify "Blocked Actions" tab contains expected Action details', () => {
-      entityModal.SelectBlockedActionsTab()
-      entityModal.VerifyEmptyGrid()
-    })
-
-    it('Should be able to delete this entity', () => {
-      entityModal.ClickDeleteButton()
-      entityModal.ClickConfirmButtonOnDeleteConfirmPopUp()
-      entitiesGrid.VerifyEntityNotInGrid('canBeDeleted')
-    })
-  })
-
   context('"name" Entity', () => {
     it('Should edit an existing entity and verify the Entity Type field is disabled', () => {
       modelPage.NavigateToEntities()
@@ -132,19 +108,87 @@ describe('Edit and Delete Entities - EntitiesActions', () => {
       entityModal.SelectBlockedActionsTab()
       actionsGrid.VerifyActionRow('Hey $name', 'TEXT', ['name'], ['sweets', 'want'], undefined, true)
       actionsGrid.VerifyActionRow('Hey $name, what do you really want?', 'TEXT', ['name'], ['want', 'sweets'], 'want', true)
-      })
+    })
 
-      it('Should not be able to delete this entity', () => {
-        entityModal.ClickDeleteButton()
-        entityModal.ClickCancelButtonOnUnableToDeletePopUp()
-      })
-  
-      it('Should verify that filter Train Dialog on entity button works', () => {
+    it('Should not be able to delete this entity', () => {
+      entityModal.ClickDeleteButton()
+      entityModal.ClickCancelButtonOnUnableToDeletePopUp()
+    })
+
+    it('Should verify that filter Train Dialog on entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyListOfTrainDialogs([
         {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"},
         {firstInput: 'I want a car!', lastInput: 'I want a car!', lastResponse: "What's your name?"}
       ])
+    })
+  })
+
+  context('"canBeDeleted" Entity', () => {
+    it('Should edit an existing entity and verify the Entity Type field is disabled', () => {
+      modelPage.NavigateToEntities()
+      entitiesGrid.EditEntity('canBeDeleted')
+      entityModal.VerifyEntityTypeDisabled()
+    })
+
+    it('Should verify "Required For Action" tab contains expected Action details', () => {
+      entityModal.SelectRequiredForActionsTab()
+      entityModal.VerifyEmptyGrid()
+    })
+
+    it('Should verify "Blocked Actions" tab contains expected Action details', () => {
+      entityModal.SelectBlockedActionsTab()
+      entityModal.VerifyEmptyGrid()
+    })
+
+    it('Should delete this entity and verify that it is no longer in the grid', () => {
+      entityModal.ClickDeleteButton()
+      entityModal.ClickConfirmButtonOnDeleteConfirmPopUp()
+      entitiesGrid.VerifyEntityNotInGrid('canBeDeleted')
+    })
+  })
+
+  context('"canBeDeletedToo" Entity', () => {
+    it('Should edit an existing entity and verify the Entity Type field is disabled', () => {
+      modelPage.NavigateToEntities()
+      entitiesGrid.EditEntity('canBeDeletedToo')
+      entityModal.VerifyEntityTypeDisabled()
+    })
+
+    it('Should verify "Required For Action" tab contains expected Action details', () => {
+      entityModal.SelectRequiredForActionsTab()
+      entityModal.VerifyEmptyGrid()
+    })
+
+    it('Should verify "Blocked Actions" tab contains expected Action details', () => {
+      entityModal.SelectBlockedActionsTab()
+      entityModal.VerifyEmptyGrid()
+    })
+
+    it('Should be able to delete this entity and cancel when prompted to confirm', () => {
+      entityModal.ClickDeleteButton()
+      entityModal.ClickCancelButtonOnDeleteConfirmPopUp()
+    })
+
+    it('Should verify that filter Train Dialog on entity button works', () => {
+      entityModal.ClickTrainDialogFilterButton()
+      train.VerifyListOfTrainDialogs([
+        {firstInput: 'We will delete this entity.', lastInput: 'Will also delete this entity.', lastResponse: "What's your name?"}
+      ])
+    })
+
+    it('Should edit Train Dialog and delete it', () => {
+      train.EditTraining('We will delete this entity.', 'Will also delete this entity.', "What's your name?")
+      train.ClickAbandonDeleteButton()
+      train.ClickConfirmAbandonDialogButton()
+    })
+
+    it('Should edit the entity and verify that we can delete it with only a confirmation and no warning ', () => {
+      modelPage.NavigateToEntities()
+      entitiesGrid.EditEntity('canBeDeletedToo')
+      entityModal.ClickDeleteButton()
+      entityModal.ClickConfirmButtonOnDeleteConfirmPopUp()
+      entitiesGrid.VerifyEntityNotInGrid('canBeDeletedToo')
     })
   })
 

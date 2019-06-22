@@ -6,6 +6,7 @@
 export function VerifyPageTitle() { cy.Get('[data-testid="entities-title"]').contains('Entities').should('be.visible') }
 export function ClickButtonNewEntity() { cy.Get('[data-testid="entities-button-create"]').Click() }
 export function EditEntity(name) { new Row(name).EditEntity() }
+export function VerifyEntityNotInGrid(name) { cy.DoesNotContainExact('[data-testid="entities-name"]', name) }
 
 export class Row {
   constructor(entityName) {
@@ -26,11 +27,3 @@ export class Row {
   VerifyNegatableUnChecked() { cy.Get('@entityDetailsRow').find('i[data-icon-name="Remove"][data-testid="entities-negatable"]') }
 }
 
-export function VerifyEntityNotInGrid(name) {
-  cy.DoesNotContainExact('[data-testid="entities-name"]', name)
-  // cy.Enqueue(() => {
-  //   if (Cypress.$(`[data-testid="entities-name"]:contains(${name})`).length != 0) {
-  //     throw new Error(`Entity "${name}" should not be in the grid.`)
-  //   }
-  // })
-}
