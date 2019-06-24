@@ -1,0 +1,6 @@
+.cl-edit-api-stub-fields {
+    display: grid;
+    grid-auto-flow: row;
+    grid-gap: 1em 0;
+}
+

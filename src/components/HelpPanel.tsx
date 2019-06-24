@@ -13,7 +13,7 @@ import { setTipType } from '../actions/displayActions'
 import FormattedMessageId from '../components/FormattedMessageId'
 import { FM } from '../react-intl-messages'
 
-class HelpPanel extends React.Component<Props, {}> {
+class HelpPanel extends React.Component<Props> {
     onDismiss(): void {
         this.props.setTipType(ToolTip.TipType.NONE)
     }

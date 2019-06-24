@@ -3,24 +3,23 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { returntypeof } from 'react-redux-typescript'
-import actions from '../../../actions'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import { State, AppCreatorType } from '../../../types'
 import * as OF from 'office-ui-fabric-react'
-import { Expando, AppCreator, TextboxRestrictable, PackageCreator, ErrorInjectionEditor, PackageTable } from '../../../components/modals'
-import FormattedMessageId from '../../../components/FormattedMessageId'
-import { saveAs } from 'file-saver'
-import { AppBase, AppDefinition, TrainingStatusCode } from '@conversationlearner/models'
-import './Settings.css'
-import { FM } from '../../../react-intl-messages'
-import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'office-ui-fabric-react/lib/Utilities'
+import * as CLM from '@conversationlearner/models'
 import * as TC from '../../../components/tipComponents'
 import * as ToolTip from '../../../components/ToolTips/ToolTips'
-import HelpIcon from '../../../components/HelpIcon'
 import * as Util from '../../../Utils/util'
+import actions from '../../../actions'
+import ExportChoice from '../../../components/modals/ExportChoice'
+import FormattedMessageId from '../../../components/FormattedMessageId'
+import HelpIcon from '../../../components/HelpIcon'
+import { connect } from 'react-redux'
+import { State, AppCreatorType } from '../../../types'
+import { Expando, AppCreator, TextboxRestrictable, PackageCreator, ErrorInjectionEditor, PackageTable } from '../../../components/modals'
+import { bindActionCreators } from 'redux'
+import { returntypeof } from 'react-redux-typescript'
+import { FM } from '../../../react-intl-messages'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+import './Settings.css'
 
 interface ComponentState {
     localeVal: string
@@ -38,6 +37,7 @@ interface ComponentState {
     isPackageExpandoOpen: boolean,
     isSettingsExpandoOpen: boolean,
     isAppCopyModalOpen: boolean
+    isExportChoiceOpen: boolean
     isConfirmDeleteAppModalOpen: boolean
     isPackageCreatorOpen: boolean
 }
@@ -63,11 +63,12 @@ class Settings extends React.Component<Props, ComponentState> {
             isSettingsExpandoOpen: false,
             isAppCopyModalOpen: false,
             isConfirmDeleteAppModalOpen: false,
+            isExportChoiceOpen: false,
             isPackageCreatorOpen: false,
         }
     }
 
-    updateAppState(app: AppBase) {
+    updateAppState(app: CLM.AppBase) {
         this.setState({
             localeVal: app.locale,
             appIdVal: app.appId,
@@ -99,7 +100,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }
     }
 
-    @autobind
+    @OF.autobind
     onChangedName(text: string) {
         this.setState({
             appNameVal: text,
@@ -107,7 +108,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onChangedBotId(text: string) {
         this.setState({
             newBotVal: text,
@@ -115,7 +116,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onChangedMarkdown(text: string) {
         this.setState({
             markdownVal: text,
@@ -123,7 +124,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onChangedVideo(text: string) {
         this.setState({
             videoVal: text,
@@ -131,7 +132,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onClickAddBot() {
         const newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
         this.setState({
@@ -140,29 +141,29 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onClickCopyApp() {
         this.setState({
             isAppCopyModalOpen: true
         })
     }
 
-    @autobind
+    @OF.autobind
     onCancelAppCopyModal() {
         this.setState({
             isAppCopyModalOpen: false
         })
     }
 
-    @autobind
-    async onSubmitAppCopyModal(app: AppBase) {
-        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<AppDefinition>)
+    @OF.autobind
+    async onSubmitAppCopyModal(app: CLM.AppBase) {
+        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
         this.setState({
             isAppCopyModalOpen: false
         }, () => this.props.onCreateApp(app, appDefinition))
     }
 
-    @autobind
+    @OF.autobind
     onToggleLoggingOn() {
         this.setState({
             isLoggingOnVal: !this.state.isLoggingOnVal,
@@ -170,7 +171,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onRenderBotListRow(item?: any, index?: number) {
         return (
             <div>
@@ -179,7 +180,7 @@ class Settings extends React.Component<Props, ComponentState> {
         )
     }
 
-    @autobind
+    @OF.autobind
     onClickDiscard() {
         const app = this.props.app
         this.setState({
@@ -195,10 +196,10 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onClickSave() {
         const app = this.props.app
-        const modifiedApp: AppBase = {
+        const modifiedApp: CLM.AppBase = {
             ...app,
             appName: this.state.appNameVal,
             metadata: {
@@ -210,7 +211,7 @@ class Settings extends React.Component<Props, ComponentState> {
             // packageVersions: DON'T SEND
             // devPackageId: DON'T SEND
             trainingFailureMessage: null,
-            trainingStatus: TrainingStatusCode.Completed
+            trainingStatus: CLM.TrainingStatusCode.Completed
         }
         this.props.editApplicationThunkAsync(modifiedApp)
     }
@@ -219,11 +220,11 @@ class Settings extends React.Component<Props, ComponentState> {
         const MAX_NAME_LENGTH = 30
 
         if (value.length === 0) {
-            return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_REQUIREDVALUE)
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_REQUIREDVALUE)
         }
 
         if (value.length > MAX_NAME_LENGTH) {
-            return Util.formatMessageId(this.props.intl, FM.APPCREATOR_FIELDERROR_TOOLONG)
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_MAX_30)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
@@ -233,7 +234,7 @@ class Settings extends React.Component<Props, ComponentState> {
         // Check that name isn't in use
         const foundApp = this.props.apps.find(a => (a.appName === value && a.appId !== this.props.app.appId));
         if (foundApp) {
-            return Util.formatMessageId(this.props.intl, FM.SETTINGS_FIELDERROR_DISTINCT)
+            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_DISTINCT)
         }
 
         return ''
@@ -265,28 +266,37 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
-    async onClickExport() {
-        const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<AppDefinition>)
-        const blob = new Blob([JSON.stringify(appDefinition)], { type: "text/plain;charset=utf-8" })
-        saveAs(blob, `${this.props.app.appName}.cl`);
-    }
-
-    @autobind
+    @OF.autobind
     onClickCopy() {
         this.setState({
             isAppCopyModalOpen: true
         })
     }
 
-    @autobind
+    //--- EXPORT ------
+    @OF.autobind
+    onClickExport() {
+        this.setState({
+            isExportChoiceOpen: true
+        })
+    }
+
+    @OF.autobind
+    onCloseExportModal() {
+        this.setState({
+            isExportChoiceOpen: false
+        })
+    }
+
+    //--- DELETE ------
+    @OF.autobind
     onClickDelete() {
         this.setState({
             isConfirmDeleteAppModalOpen: true
         })
     }
 
-    @autobind
+    @OF.autobind
     onConfirmDeleteApp() {
         this.props.onDeleteApp(this.props.app.appId)
         this.setState({
@@ -294,7 +304,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onCancelDeleteModal() {
         this.setState({
             isConfirmDeleteAppModalOpen: false
@@ -321,7 +331,6 @@ class Settings extends React.Component<Props, ComponentState> {
                 }
             })
     }
-
 
     @OF.autobind
     onClickNewTag() {
@@ -370,13 +379,13 @@ class Settings extends React.Component<Props, ComponentState> {
                         value={this.state.appNameVal}
                     />
                     <div className="cl-buttons-row">
-                        <OF.PrimaryButton
+                        <OF.DefaultButton
                             onClick={this.onClickExport}
-                            ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION)}
-                            text={Util.formatMessageId(intl, FM.SETTINGS_EXPORTBUTTONTEXT)}
+                            ariaDescription={Util.formatMessageId(intl, FM.BUTTON_EXPORT)}
+                            text={Util.formatMessageId(intl, FM.BUTTON_EXPORT)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
-                        <OF.PrimaryButton
+                        <OF.DefaultButton
                             onClick={this.onClickCopy}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONARIALDESCRIPTION)}
                             text={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONTEXT)}
@@ -408,7 +417,9 @@ class Settings extends React.Component<Props, ComponentState> {
                             <a
                                 href={`https://www.luis.ai/applications/${this.props.app.luisAppId}/versions/0.1/manage/endpoints`}
                                 rel="noopener noreferrer"
-                                target="_blank">
+                                target="_blank"
+                                role="button"
+                            >
                                 <OF.DefaultButton
                                     iconProps={{ iconName: "OpenInNewWindow" }}
                                     ariaDescription={Util.formatMessageId(this.props.intl, FM.SETTINGS_LUIS_LINK)}
@@ -555,6 +566,13 @@ class Settings extends React.Component<Props, ComponentState> {
                     onOK={this.onConfirmDeleteApp}
                     onCancel={this.onCancelDeleteModal}
                 />
+                {this.state.isExportChoiceOpen &&
+                    <ExportChoice
+                        app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
+                        onClose={this.onCloseExportModal}
+                    />
+                }
             </div>
         );
     }
@@ -576,14 +594,17 @@ const mapStateToProps = (state: State) => {
 
     return {
         user: state.user.user,
-        apps: state.apps.all
+        apps: state.apps.all,
+        trainDialogs: state.trainDialogs,
+        entities: state.entities,
+        actions: state.actions
     }
 }
 
 export interface ReceivedProps {
-    app: AppBase,
+    app: CLM.AppBase,
     editingPackageId: string,
-    onCreateApp: (app: AppBase, source: AppDefinition) => void
+    onCreateApp: (app: CLM.AppBase, source: CLM.AppDefinition) => void
     onDeleteApp: (id: string) => void
 }
 

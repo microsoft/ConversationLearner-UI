@@ -10,13 +10,18 @@ import * as DialogEditing from '../../../Utils/dialogEditing'
 import * as DialogUtils from '../../../Utils/dialogUtils'
 import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
+import * as BB from 'botbuilder'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
+import ConversationImporter from '../../../components/modals/ConversationImporter'
+import TranscriptValidatorPicker from '../../../components/modals/TranscriptValidatorPicker'
+import ImportWaitModal from '../../../components/modals/ImportWaitModal'
+import TranscriptTestWaitModal from '../../../components/modals/TranscriptValidatorModal'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { returntypeof } from 'react-redux-typescript'
-import { State } from '../../../types'
+import { State, ErrorType } from '../../../types'
 import { SelectionType } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState, MergeModal } from '../../../components/modals'
 import { injectIntl, InjectedIntl, InjectedIntlProps, } from 'react-intl'
@@ -24,6 +29,31 @@ import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import './TrainDialogs.css'
+
+export interface EditHandlerArgs {
+    userInput?: string,
+    extractResponse?: CLM.ExtractResponse, 
+    textVariations?: CLM.TextVariation[],
+    trainScorerStep?: CLM.TrainScorerStep
+    selectionType?: SelectionType
+}
+
+interface TranscriptActionCall {
+    type: string,
+    actionName: string,
+    actionInput: TranscriptActionInput[]
+    actionOutput: TranscriptActionOutput[]
+}
+
+interface TranscriptActionInput {
+    entityName: string
+}
+
+
+interface TranscriptActionOutput {
+    entityName: string,
+    value: string
+}
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: CLM.TrainDialog, component: TrainDialogs) => React.ReactNode
@@ -125,6 +155,12 @@ const defaultEntityFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.forma
 const defaultActionFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_ACTIONS) })
 const defaultTagFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
 
+interface ValidationResults {
+    passed: number,
+    failed: number,
+    invalidTranscript: number
+}
+
 interface ComponentState {
     columns: OF.IColumn[]
     sortColumn: IRenderableColumn
@@ -132,6 +168,15 @@ interface ComponentState {
     lastAction: CLM.ActionBase | null
     isTeachDialogModalOpen: boolean
     isEditDialogModalOpen: boolean
+    isTranscriptImportOpen: boolean
+    isTranscriptValidateOpen: boolean
+    isImportWaitModalOpen: boolean
+    isTestWaitModalOpen: boolean
+    transcriptIndex: number
+    transcriptFiles: File[] | undefined
+    validationResults: ValidationResults | null
+    importAutoCreate: boolean
+    importAutoMerge: boolean
     isTreeViewModalOpen: boolean
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
@@ -167,6 +212,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             lastAction: null,
             isTeachDialogModalOpen: false,
             isEditDialogModalOpen: false,
+            isTranscriptImportOpen: false,
+            isTranscriptValidateOpen: false,
+            isImportWaitModalOpen: false,
+            isTestWaitModalOpen: false,
+            transcriptIndex: 0,
+            transcriptFiles: undefined,
+            validationResults: null,
+            importAutoCreate: false,
+            importAutoMerge: false,
             isTreeViewModalOpen: false,
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
@@ -307,7 +361,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     onSelectEntityFilter(item: OF.IDropdownOption) {
         this.setState({
-            entityFilter: (-1 != item.key) ? item : null
+            entityFilter: (item.key !== -1) ? item : null
         })
     }
 
@@ -327,7 +381,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 lastTeachSession: { ...this.props.teachSession }
             })
 
-            await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+            await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
 
             // Create new one with initial entities
             await this.onClickNewTeachSession(initialFilledEntityMap)
@@ -336,7 +390,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     async onClickNewTeachSession(initialFilledEntityMap: CLM.FilledEntityMap | null = null) {
         try {
-            await this.props.createTeachSessionThunkAsync(this.props.app.appId, initialFilledEntityMap)
+            await ((this.props.createTeachSessionThunkAsync(this.props.app.appId, initialFilledEntityMap) as any) as Promise<void>)
 
             this.setState({
                 isTeachDialogModalOpen: true,
@@ -354,14 +408,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     sourceTrainDialogId(): string | null {
         if (this.state.currentTrainDialog
             && this.state.editType !== EditDialogType.BRANCH
-            && this.state.editType !== EditDialogType.NEW) {
-            return this.state.currentTrainDialog.trainDialogId
-        }
+            && this.state.editType !== EditDialogType.NEW
+            && this.state.editType !== EditDialogType.IMPORT) {
+                return this.state.currentTrainDialog.trainDialogId
+            }
         return null
     }
 
     @OF.autobind
-    async onCloseTeachSession(save: boolean, tags: string[] = [], description: string = '') {
+    async onCloseTeachSession(save: boolean, tags: string[] = [], description: string = '', stopImport: boolean = false) {
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session unless it was already closed with and EndSessionAction
             if (this.props.teachSession.dialogMode !== CLM.DialogMode.EndSession) {
@@ -377,35 +432,29 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     newTrainDialog.description = description
 
                     // Check to see if new TrainDialog can be merged with an existing TrainDialog
-                    const matchingTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
-
-                    if (matchingTrainDialog) {
-                        this.setState({
-                            mergeExistingTrainDialog: matchingTrainDialog,
-                            mergeNewTrainDialog: newTrainDialog,
-                            isTeachDialogModalOpen: false
-                        })
-
+                    const matchedTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
+                    if (matchedTrainDialog) {
+                        await this.handlePotentialMerge(newTrainDialog, matchedTrainDialog)
                         return
                     }
                     else {
                         // If editing an existing Train Dialog, replace existing with the new one
                         if (sourceTrainDialogId) {
-                            await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog)
+                            await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog) as any) as Promise<void>)
                         }
                         // Otherwise just update the tags and description
                         else {
-                            await this.props.editTrainDialogThunkAsync(this.props.app.appId, { trainDialogId: newTrainDialog.trainDialogId, tags, description })
+                            await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, { trainDialogId: newTrainDialog.trainDialogId, tags, description }) as any) as Promise<void>)
                         }
                     }
                 }
                 // Just delete the teach session without saving
                 else {
-                    await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+                    await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
                 }
             }
         }
-        this.setState({
+        await Util.setStateAsync(this, {
             isTeachDialogModalOpen: false,
             history: [],
             lastAction: null,
@@ -413,6 +462,32 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // originalTrainDialogId - do not clear. Need for later 
             dialogKey: this.state.dialogKey + 1
         })
+
+        if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
+            if (stopImport) {
+                this.setState({transcriptFiles: undefined})
+            }
+            else {
+                await this.onStartTranscriptImport()
+            }
+        }
+    }
+
+    async handlePotentialMerge(newTrainDialog: CLM.TrainDialog, matchedTrainDialog: CLM.TrainDialog) {
+
+        // If importing and auto merge set, do the merge automatically
+        if (this.state.editType === EditDialogType.IMPORT && this.state.importAutoMerge) {
+            // Use default merged tages and descriptions by passing in nulls
+            await this.mergeTrainDialogs(newTrainDialog, matchedTrainDialog, null, null)
+        }
+        // Otherwise ask the user if they want to merge
+        else {
+            this.setState({
+                mergeExistingTrainDialog: matchedTrainDialog,
+                mergeNewTrainDialog: newTrainDialog,
+                isTeachDialogModalOpen: false
+            })
+        }
     }
 
     @OF.autobind
@@ -437,7 +512,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined) {
+    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined, skipAPIStubEdit?: boolean) {
         if (!trainScorerStep) {
             throw new Error(`You attempted to change an Action but the step you are editing was undefined. Please open an issue.`)
         }
@@ -447,10 +522,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 trainDialog,
                 selectedActivity,
                 trainScorerStep,
+                this.state.editType,
                 this.props.app.appId,
                 this.props.entities,
                 this.props.actions,
                 this.props.trainDialogReplayThunkAsync as any,
+                this.props.editActionThunkAsync as any
             )
 
             await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE, this.state.editType)
@@ -471,7 +548,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 trainDialog,
                 selectedActivity,
                 textVariations,
-
+                this.state.editType,
                 this.props.app.appId,
                 this.props.entities,
                 this.props.actions,
@@ -602,6 +679,30 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
+    async mergeTrainDialogs(newTrainDialog: CLM.TrainDialog, matchedTrainDialog: CLM.TrainDialog, description: string | null, tags: string[] | null) {
+
+        // If editing an existing train dialog, extract its dialogId
+        const sourceTrainDialogId = this.sourceTrainDialogId()
+
+        await ((this.props.trainDialogMergeThunkAsync(this.props.app.appId, newTrainDialog, matchedTrainDialog, description, tags, sourceTrainDialogId) as any) as Promise<void>)
+
+        await Util.setStateAsync(this, {
+            mergeExistingTrainDialog: null,
+            mergeNewTrainDialog: null,
+            isTeachDialogModalOpen: false,
+            history: [],
+            lastAction: null,
+            currentTrainDialog: null,
+            // originalTrainDialogId - do not clear. Need for later 
+            dialogKey: this.state.dialogKey + 1
+        })
+
+        if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
+            await this.onStartTranscriptImport()
+        }
+    }
+
+    @OF.autobind
     async onCloseMergeModal(shouldMerge: boolean, description: string = "", tags: string[] = []) {
 
         if (!this.state.mergeNewTrainDialog || !this.state.mergeExistingTrainDialog) {
@@ -612,24 +713,29 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const sourceTrainDialogId = this.sourceTrainDialogId()
 
         if (shouldMerge) {
-            await this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags, sourceTrainDialogId)
+            await this.mergeTrainDialogs(this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags)
         }
         else {
             // If editing an existing Train Dialog, replace existing with the new one
             if (sourceTrainDialogId) {
-                await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, this.state.mergeNewTrainDialog)
+                await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, this.state.mergeNewTrainDialog) as any) as Promise<void>)
+            }
+
+            await Util.setStateAsync(this, {
+                mergeExistingTrainDialog: null,
+                mergeNewTrainDialog: null,
+                isTeachDialogModalOpen: false,
+                history: [],
+                lastAction: null,
+                currentTrainDialog: null,
+                // originalTrainDialogId - do not clear. Need for later 
+                dialogKey: this.state.dialogKey + 1
+            })
+    
+            if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
+                await this.onStartTranscriptImport()
             }
         }
-        this.setState({
-            mergeExistingTrainDialog: null,
-            mergeNewTrainDialog: null,
-            isTeachDialogModalOpen: false,
-            history: [],
-            lastAction: null,
-            currentTrainDialog: null,
-            // originalTrainDialogId - do not clear. Need for later 
-            dialogKey: this.state.dialogKey + 1
-        })
     }
 
     onDeleteTrainDialog() {
@@ -644,7 +750,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const deleteDialogId = this.state.currentTrainDialog.trainDialogId
         this.props.deleteTrainDialogThunkAsync(this.props.app, deleteDialogId)
         this.props.fetchApplicationTrainingStatusThunkAsync(this.props.app.appId)
-        void this.onCloseEditDialogModal();
+        void this.onCloseEditDialogModal()
     }
 
     // End Session activity selected.  Switch from Teach to Edit
@@ -664,7 +770,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
 
                 // Delete the teach session w/o saving
-                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+                await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
 
                 // Generate history
                 await this.onUpdateHistory(trainDialog, null, SelectionType.NONE, this.state.editType)
@@ -690,11 +796,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.fetchHistoryThunkAsync as any
             )
 
-            const editType = (editDialogType !== EditDialogType.NEW && editDialogType !== EditDialogType.BRANCH)
-                ? EditDialogType.TRAIN_EDITED
+            const editType = 
+                (editDialogType !== EditDialogType.NEW && 
+                editDialogType !== EditDialogType.BRANCH &&
+                editDialogType !== EditDialogType.IMPORT) 
+                ? EditDialogType.TRAIN_EDITED 
                 : editDialogType
 
-            this.setState({
+            await Util.setStateAsync(this, {
                 history: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: newTrainDialog,
@@ -715,14 +824,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         try {
             if (this.props.teachSession && this.props.teachSession.teach) {
                 // Delete the teach session w/o saving
-                await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+                await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
             }
 
             const conflictIgnoreId = this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null
             const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput, conflictIgnoreId) as any) as Promise<CLM.TeachWithHistory>)
 
-            const editType = (this.state.editType !== EditDialogType.NEW && this.state.editType !== EditDialogType.BRANCH) ?
-                EditDialogType.TRAIN_EDITED : this.state.editType
+            const editType = 
+                (this.state.editType !== EditDialogType.NEW && 
+                this.state.editType !== EditDialogType.BRANCH &&
+                this.state.editType !== EditDialogType.IMPORT) 
+                ? EditDialogType.TRAIN_EDITED : this.state.editType
 
             // Update currentTrainDialog with tags and description
             const currentTrainDialog = this.state.currentTrainDialog ? {
@@ -730,8 +842,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 tags: newTrainDialog.tags,
                 description: newTrainDialog.description
             } : null
-
-
+            
             // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
             this.setState({
                 history: teachWithHistory.history,
@@ -749,13 +860,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     // Replace the current trainDialog with a new one
-    async onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) {
+    async onReplaceTrainDialog(newTrainDialog: CLM.TrainDialog) {
 
         this.setState({
             isEditDialogModalOpen: false,
         })
 
         try {
+            const validity = DialogUtils.getTrainDialogValidity(newTrainDialog, this.state.history)
+
             const originalTrainDialogId = this.state.originalTrainDialog ? this.state.originalTrainDialog.trainDialogId : null
 
             // Remove any data added for rendering 
@@ -768,58 +881,60 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             // Check to see if it can be merged with an existing TrainDialog
             const matchedTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, originalTrainDialogId)
             if (matchedTrainDialog) {
-                // Open model to ask user if they want to merge
-                this.setState({
-                    mergeExistingTrainDialog: matchedTrainDialog,
-                    mergeNewTrainDialog: newTrainDialog
-                })
+                await this.handlePotentialMerge(newTrainDialog, matchedTrainDialog)
                 return
             }
             // Otherwise save as a new TrainDialog
             else {
-                await this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog)
+                await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<void>)
+                await this.onCloseEditDialogModal()
             }
         }
         catch (error) {
             console.warn(`Error when attempting to replace an edited train dialog: `, error)
         }
-
-        await this.onCloseEditDialogModal()
     }
 
     // Create a new trainDialog 
-    async onCreateTrainDialog(newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) {
+    async onCreateTrainDialog(newTrainDialog: CLM.TrainDialog) {
 
         this.setState({
             isEditDialogModalOpen: false,
         })
 
-        newTrainDialog.validity = validity
+        newTrainDialog.validity =  DialogUtils.getTrainDialogValidity(newTrainDialog, this.state.history)
 
         // Remove dummy scorer rounds used for rendering
         newTrainDialog.rounds.forEach(r => r.scorerSteps = r.scorerSteps.filter(ss => {
             return ss.labelAction !== undefined
         }))
 
-        try {
-            await ((this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>);
+        // Check to see if new TrainDialog can be merged with an existing TrainDialog
+        const matchedTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs)
+        if (matchedTrainDialog) {
+            await this.handlePotentialMerge(newTrainDialog, matchedTrainDialog)
         }
-        catch (error) {
-            console.warn(`Error when attempting to create a train dialog: `, error)
-        }
+        else {
+            try {
+                await ((this.props.createTrainDialogThunkAsync(this.props.app.appId, newTrainDialog) as any) as Promise<CLM.TrainDialog>);
+            }
+            catch (error) {
+                console.warn(`Error when attempting to create a train dialog: `, error)
+            }
 
-        void this.onCloseEditDialogModal()
+            void this.onCloseEditDialogModal()
+        }
     }
 
     @OF.autobind
     async openTrainDialog(trainDialog: CLM.TrainDialog, roundIndex: number, scoreIndex: number | null) {
 
         const selectedActivityIndex = DialogUtils.activityIndexFromRound(trainDialog, roundIndex, scoreIndex) || null
-        this.onClickTrainDialogItem(trainDialog, selectedActivityIndex)
+        await this.onClickTrainDialogItem(trainDialog, EditDialogType.TRAIN_ORIGINAL, selectedActivityIndex)
     }
 
     @OF.autobind
-    async onClickTrainDialogItem(trainDialog: CLM.TrainDialog, selectedActivityIndex: number | null = null) {
+    async onClickTrainDialogItem(trainDialog: CLM.TrainDialog, editType: EditDialogType = EditDialogType.TRAIN_ORIGINAL, selectedActivityIndex: number | null = null) {
         this.props.clearWebchatScrollPosition()
         const trainDialogWithDefinitions: CLM.TrainDialog = {
             ...trainDialog,
@@ -847,7 +962,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: trainDialog,
                 originalTrainDialog: this.state.currentTrainDialog,
-                editType: EditDialogType.TRAIN_ORIGINAL,
+                editType,
                 isEditDialogModalOpen: true,
                 selectedActivityIndex
             })
@@ -858,18 +973,407 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    async onCloseEditDialogModal(reload: boolean = false) {
+    //----------------------
+    // Transcript validation
+    //-----------------------
+    @OF.autobind
+    onClickValidate(): void {
+        this.setState({
+            isTranscriptValidateOpen: true,
+            transcriptIndex: 0
+        })
+    }
+
+    @OF.autobind
+    async onCloseValidate(transcriptsToValidate: File[] | null): Promise<void> {
+        await Util.setStateAsync(this, {
+            isTranscriptValidateOpen: false,
+            transcriptFiles: transcriptsToValidate,
+            validationResults: { passed: 0, failed: 0, invalidTranscript: 0}
+        })
+        await this.onStartTranscriptValidate()
+    }
+
+    @OF.autobind
+    async onStartTranscriptValidate() {
+
+        if (!this.state.transcriptFiles || this.state.transcriptFiles.length === 0) {
+            return
+        }
+
+        // Check if I'm done importing files
+        if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
+            this.setState({transcriptFiles: undefined})
+            return
+        }
+
+        // Pop the next file
+        const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
+        this.setState({transcriptIndex: this.state.transcriptIndex + 1})
+
+        let source = await this.readFileAsync(transcriptFile)
+        try {
+            const sourceJson = JSON.parse(source)
+            await this.onValidate(sourceJson)
+        }
+        catch (e) {
+            const error = e as Error
+            this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
+            this.setState({
+                transcriptFiles: undefined,
+                isTestWaitModalOpen: false
+            })
+        }
+    }
+
+    async onValidate(transcript: BB.Activity[]): Promise<void> {
+
+        this.setState({isTestWaitModalOpen: true})
+
+        const turnValidations: CLM.TurnValidation[] = []
+        let turnValidation: CLM.TurnValidation = { inputText: "", actionHashes: []}
+        let invalidTranscript = false
+        for (let activity of transcript) {
+            // TODO: Handle conversation updates
+            if (!activity.type || activity.type === "message") {
+                if (activity.from.role === "user") {
+                    // If already have user input push it
+                    if (turnValidation.inputText !== "") {
+                        turnValidations.push(turnValidation)
+                    }
+                    turnValidation = { inputText: activity.text, actionHashes: []}
+                }
+                else if (activity.from.role === "bot") {
+                    if (turnValidation) {
+                        const actionHash = Util.hashText(activity.text)
+                        turnValidation.actionHashes.push(actionHash)
+                    }
+                    else {
+                        invalidTranscript = true
+                        break
+                    }
+                }
+            }
+        }
+
+        if (invalidTranscript) {
+            Util.setStateAsync(this, {validationResults: {...this.state.validationResults, invalidTranscript: this.state.validationResults!.invalidTranscript + 1}})               
+        }
+        else {
+            const isValid = await this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, turnValidations)
+            if (isValid) {
+                Util.setStateAsync(this, {validationResults: {...this.state.validationResults, passed: this.state.validationResults!.passed + 1}})
+            }
+            else {
+                Util.setStateAsync(this, {validationResults: {...this.state.validationResults, failed: this.state.validationResults!.failed + 1}})
+            }
+        }
+        this.onStartTranscriptValidate()
+    }
+
+    //-----------------------------
+    // Transcript import
+    //-----------------------------
+    @OF.autobind
+    onClickImportConversation(): void {
+        this.setState({
+            isTranscriptImportOpen: true
+        })
+    }
+
+    @OF.autobind
+    async onCloseImportConversation(transcriptsToImport: File[] | null, importAutoCreate: boolean, importAutoMerge: boolean): Promise<void> {
+        await Util.setStateAsync(this, {
+            isTranscriptImportOpen: false,
+            transcriptFiles: transcriptsToImport,
+            transcriptIndex: 0,
+            importAutoCreate,
+            importAutoMerge
+        })
+        await this.onStartTranscriptImport()
+    }
+
+    readFileAsync(file: File): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+        
+            reader.onload = (e: Event) => {
+                resolve(reader.result as any);
+            };
+        
+            reader.onerror = reject;
+        
+            reader.readAsText(file);
+        })
+    }
+
+    @OF.autobind
+    async onStartTranscriptImport() {
+        if (!this.state.transcriptFiles || this.state.transcriptFiles.length === 0) {
+            return
+        }
+
+        // Check if I'm done importing files
+        if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
+            this.setState({transcriptFiles: undefined})
+            return
+        }
+
+        // Pop the next file
+        const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
+        this.setState({transcriptIndex: this.state.transcriptIndex + 1})
+
+        let source = await this.readFileAsync(transcriptFile)
+        try {
+            const sourceJson = JSON.parse(source)
+            await this.onImport(sourceJson)
+        }
+        catch (e) {
+            const error = e as Error
+            this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
+            this.setState({
+                transcriptFiles: undefined,
+                isImportWaitModalOpen: false}
+            )
+        }
+    }
+
+    hasTranscriptBeenImported(importHash: string): boolean {
+        return this.props.trainDialogs.find(td => td.clientData ? (td.clientData.importHashes.find(ih => ih === importHash) !== undefined) : false) !== undefined
+    }
+
+    async importActionOutput(actionResults: TranscriptActionOutput[]): Promise<CLM.FilledEntity[]> {
+        const filledEntities: CLM.FilledEntity[] = []
+        
+        for (const actionResult of actionResults) {
+            // Check if entity already exists
+            const foundEntity = this.props.entities.find(e => e.entityName === actionResult.entityName)
+            let entityId: string = ""
+            if (foundEntity) {
+                entityId = foundEntity.entityId
+            }
+            else {
+                // If it doesn't exist create a new one
+                const newEntity: CLM.EntityBase = {
+                    entityId: undefined!,
+                    entityName: actionResult.entityName,
+                    resolverType: "none",
+                    createdDateTime: new Date().toJSON(),
+                    lastModifiedDateTime: new Date().toJSON(),
+                    isMultivalue: false,
+                    isNegatible: false,
+                    negativeId: null,
+                    positiveId: null,
+                    entityType: CLM.EntityType.LOCAL,
+                    version: null,
+                    packageCreationId: null,
+                    packageDeletionId: null,
+                    doNotMemorize: false
+                }
+
+                entityId = await ((this.props.createEntityThunkAsync(this.props.app.appId, newEntity) as any) as Promise<string>)
+
+                if (!entityId) {
+                    throw new Error("Invalid Entity Definition")
+                }
+            
+            }
+            const memoryValue: CLM.MemoryValue = {
+                userText: actionResult.value,
+                displayText: null,
+                builtinType: null,
+                resolution: {}
+            }
+            const filledEntity: CLM.FilledEntity = {
+                entityId,
+                values: [memoryValue]
+            }
+            filledEntities.push(filledEntity)
+        }
+        return filledEntities
+    }
+
+    async onImport(transcript: BB.Activity[]): Promise<void> {
+
+        this.setState({isImportWaitModalOpen: true})
+
+        const transcriptHash = Util.hashText(JSON.stringify(transcript))
+
+        // If transcript has already been imported, go to next one
+        if (this.hasTranscriptBeenImported(transcriptHash)) {
+            this.setState({isImportWaitModalOpen: false})
+            await this.onStartTranscriptImport()
+            return
+        }
+        let trainDialog: CLM.TrainDialog = {
+            trainDialogId: undefined!,
+            version: undefined!,
+            packageCreationId: undefined!,
+            packageDeletionId: undefined!,
+            sourceLogDialogId: undefined!,
+            initialFilledEntities: [],
+            rounds: [],
+            tags: [], 
+            description: '',
+            createdDateTime: new Date().toJSON(),
+            lastModifiedDateTime: new Date().toJSON(),
+            // It's initially invalid
+            validity: CLM.Validity.INVALID,
+            clientData: {importHashes: [transcriptHash]}
+        }
+
+        let curRound: CLM.TrainRound | null = null
+        for (let index = 0; index < transcript.length; index = index + 1) {
+            const activity = transcript[index]
+            const nextActivity = transcript[index + 1]
+            // TODO: Handle conversation updates
+            if (!activity.type || activity.type === "message") {
+                if (activity.from.role === "user") {
+                    const textVariations: CLM.TextVariation[] = [{
+                        text: activity.text,
+                        labelEntities: []
+                    }]
+                    if (activity.channelData && activity.channelData.textVariations) {
+                        activity.channelData.textVariations.forEach((tv: any) => {
+                            // Currently system is limited to 20 text variations
+                            if (textVariations.length < CLM.MAX_TEXT_VARIATIONS && activity.text !== tv.text) {
+
+                                let altTextVariation: CLM.TextVariation = {
+                                    text: tv.text, 
+                                    labelEntities: []
+                                }
+                                textVariations.push(altTextVariation)
+                            }
+                        })
+                    }
+                    let extractorStep: CLM.TrainExtractorStep = {
+                        textVariations: textVariations
+                    }
+                    curRound = {
+                        extractorStep,
+                        scorerSteps: []
+                    }
+                    trainDialog.rounds.push(curRound)
+                }
+                else if (activity.from.role === "bot") {
+                    let action: CLM.ActionBase | undefined = DialogUtils.importedActionMatch(activity.text, this.props.actions)
+                    let filledEntities: CLM.FilledEntity[] = []
+                    let logicResult: CLM.LogicResult | undefined
+
+                    // If I didn't find an action and is API, create API stub
+                    if (!action && activity.channelData && activity.channelData.type === "ActionCall") {
+                        const actionCall = activity.channelData as TranscriptActionCall
+                        const isTerminal = !nextActivity || nextActivity.from.role === "user"
+                        action = await DialogEditing.getStubAPIAction(this.props.app.appId, actionCall.actionName, isTerminal, this.props.actions, this.props.createActionThunkAsync as any)
+
+                        // Store stub API output in LogicResult
+                        logicResult = {
+                            logicValue: undefined,
+                            changedFilledEntities: await this.importActionOutput(actionCall.actionOutput),
+                        }
+                    }
+
+                    let scoreInput: CLM.ScoreInput = {
+                        filledEntities: filledEntities,
+                        context: {},
+                        maskedActions: []
+                    }
+                    // As a first pass, try to match by exact text
+                    let scorerStep: CLM.TrainScorerStep = {
+                        importText: action ? undefined : activity.text,
+                        input: scoreInput,
+                        labelAction: action ? action.actionId : CLM.CL_STUB_IMPORT_ACTION_ID,
+                        logicResult: logicResult,
+                        scoredAction: undefined
+                    }
+
+                    if (curRound) {
+                        curRound.scorerSteps.push(scorerStep)
+                    }
+                    else {
+                        throw new Error("Dialogs must start with User turn (role='user')")
+                    }
+                }
+            }
+        }
+
+        // Extract entities
+        if (this.props.entities.length > 0) {
+            await this.addEntityExtractions(trainDialog)
+        }
+
+        // Replay to fill in memory
+        const newTrainDialog = await DialogEditing.onReplayTrainDialog(
+            trainDialog,
+            this.props.app.appId,
+            this.props.entities,
+            this.props.actions,
+            this.props.trainDialogReplayAsync as any,
+        )
+
+        DialogUtils.cleanTrainDialog(newTrainDialog)
+
+        // Try to map action again now that we have entities
+        DialogUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
+
+        await Util.setStateAsync(this, {
+            originalTrainDialog: newTrainDialog
+        })
+
+        // If auto importing and new dialog has matched all actions
+        if (this.state.importAutoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
+            // Fetch history as needed for validation checks
+            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            await Util.setStateAsync(this, { 
+                history: teachWithHistory.history,
+                editType: EditDialogType.IMPORT})
+            await this.onCreateTrainDialog(newTrainDialog)
+        }
+        else {
+            await this.onClickTrainDialogItem(newTrainDialog, EditDialogType.IMPORT)
+        }
+
+        this.setState({isImportWaitModalOpen: false})
+    }
+
+    async addEntityExtractions(trainDialog: CLM.TrainDialog) {
+        // TODO: Consider checking locally stored TrainDialogs first for matches to lighten load on server
+
+        // Generate list of all unique user utterances
+        const userInput: string[] = []
+        trainDialog.rounds.forEach(round => round.extractorStep.textVariations.forEach(textVariation => userInput.push(textVariation.text)))
+        const uniqueInput = [...new Set(userInput)]
+
+        // Get extraction results
+        const extractResponses = await ((this.props.fetchExtractionsThunkAsync(this.props.app.appId, uniqueInput) as any) as Promise<CLM.ExtractResponse[]>)
+
+        if (!extractResponses) {
+            throw new Error("Failed to process entity extractions")
+        }
+
+        // Now swap in any extract values
+        trainDialog.rounds.forEach(round => round.extractorStep.textVariations
+            .forEach(textVariation => {
+                const extractResponse = extractResponses.find(er => er.text === textVariation.text)
+                if (extractResponse && extractResponse.predictedEntities.length > 0) {
+                    textVariation.labelEntities = CLM.ModelUtils.ToLabeledEntities(extractResponse.predictedEntities)
+                }
+            })
+        )
+    }
+
+    async onCloseEditDialogModal(reload: boolean = false, stopImport: boolean = false) {
 
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session w/o saving
-            await this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app)
+            await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
         }
 
         if (reload && this.state.originalTrainDialog) {
             // Reload local copy
             await ((this.props.fetchTrainDialogThunkAsync(this.props.app.appId, this.state.originalTrainDialog.trainDialogId, true) as any) as Promise<CLM.TrainDialog>)
         }
-        this.setState({
+        await Util.setStateAsync(this, {
             isEditDialogModalOpen: false,
             selectedActivityIndex: null,
             currentTrainDialog: null,
@@ -878,28 +1382,21 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             lastAction: null,
             dialogKey: this.state.dialogKey + 1
         })
+
+        if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
+            if (stopImport) {
+                this.setState({transcriptFiles: undefined})
+            }
+            else {
+                await this.onStartTranscriptImport()
+            }
+        }
     }
 
     onChangeSearchString(newValue: string) {
         const lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
-        })
-    }
-
-    private isFilter(): boolean {
-        return this.state.searchValue != ''
-            || this.state.entityFilter != null
-            || this.state.actionFilter != null
-            || this.state.tagsFilter != null
-    }
-
-    private onClickResetFilters(): void {
-        this.setState({
-            searchValue: '',
-            entityFilter: null,
-            actionFilter: null,
-            tagsFilter: null,
         })
     }
 
@@ -968,7 +1465,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
                 const tagFilter = this.state.tagsFilter
                 if (tagFilter && tagFilter.key !== null
-                    && !t.tags.map(t => t.toLowerCase()).includes(tagFilter.text.toLowerCase())) {
+                    && !t.tags.map(tag => tag.toLowerCase()).includes(tagFilter.text.toLowerCase())) {
                     return false
                 }
 
@@ -1037,6 +1534,21 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         componentRef={component => this.newTeachSessionButton = component!}
                         iconProps={{ iconName: 'Add' }}
                     />
+                    <OF.DefaultButton
+                        iconProps={{
+                            iconName: "DownloadDocument"
+                        }}
+                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                        onClick={this.onClickImportConversation}
+                        ariaDescription="Import"
+                        text="Import"
+                    />
+                    <OF.DefaultButton
+                        onClick={this.onClickValidate}
+                        ariaDescription={Util.formatMessageId(intl, FM.BUTTON_TEST)}
+                        text={Util.formatMessageId(intl, FM.BUTTON_TEST)}
+                        iconProps={{ iconName: 'TestCase' }}
+                    />
                     {this.state.isTreeViewModalOpen ?
                         <OF.DefaultButton
                             className="cl-rotate"
@@ -1055,7 +1567,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         />
                     }
                 </div>
-
                 <TreeView
                     open={this.state.isTreeViewModalOpen}
                     app={this.props.app}
@@ -1194,7 +1705,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
                         allUniqueTags={this.props.allUniqueTags}
-
+                        importIndex={this.state.transcriptIndex}
+                        importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : undefined}
                         conflictPairs={[]}
                         onAbortConflictResolution={() => { }}
                         onAcceptConflictResolution={async () => { }}
@@ -1220,31 +1732,77 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     history={this.state.history}
                     initialSelectedActivityIndex={this.state.selectedActivityIndex}
                     editType={this.state.editType}
-                    onCloseModal={(reload) => this.onCloseEditDialogModal(reload)}
+                    onCloseModal={(reload, stopImport) => this.onCloseEditDialogModal(reload, stopImport)}
                     onInsertAction={(trainDialog, activity, isLastActivity, selectionType) => this.onInsertAction(trainDialog, activity, isLastActivity, selectionType)}
                     onInsertInput={(trainDialog, activity, userInput, selectionType) => this.onInsertInput(trainDialog, activity, userInput, selectionType)}
                     onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
                     onChangeExtraction={(trainDialog, activity, extractResponse, textVariations) => this.onChangeExtraction(trainDialog, activity, extractResponse, textVariations)}
-                    onChangeAction={(trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainDialog, activity, trainScorerStep)}
+                    onChangeAction={this.onChangeAction}
                     onBranchDialog={(trainDialog, activity, userInput) => this.onBranchTrainDialog(trainDialog, activity, userInput)}
                     onDeleteDialog={() => this.onDeleteTrainDialog()}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
-                    onSaveDialog={(editedTrainDialog, validity) => this.onReplaceTrainDialog(editedTrainDialog, validity)}
+                    onSaveDialog={(editedTrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
-                    onCreateDialog={(newTrainDialog, validity) => this.onCreateTrainDialog(newTrainDialog, validity)}
+                    onCreateDialog={(newTrainDialog) => this.onCreateTrainDialog(newTrainDialog)}
                     allUniqueTags={this.props.allUniqueTags}
-
+                    importIndex={this.state.transcriptIndex}
+                    importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : undefined}
                     conflictPairs={[]}
                     onAbortConflictResolution={() => { }}
                     onAcceptConflictResolution={async () => { }}
                 />
+                {this.state.isTranscriptImportOpen && 
+                    <ConversationImporter
+                        app={this.props.app}
+                        open={true}
+                        onClose={this.onCloseImportConversation}
+                    />
+                }
+                {this.state.isTranscriptValidateOpen && 
+                    <TranscriptValidatorPicker
+                        app={this.props.app}
+                        open={true}
+                        onClose={this.onCloseValidate}
+                    />
+                }
+                {this.state.isImportWaitModalOpen &&
+                    <ImportWaitModal
+                        importIndex={this.state.transcriptIndex}
+                        importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
+                    />
+                }
+                {this.state.isTestWaitModalOpen &&
+                    <TranscriptTestWaitModal
+                        importIndex={this.state.transcriptIndex}
+                        importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
+                        passed={this.state.validationResults ? this.state.validationResults.passed : 0}
+                        failed={this.state.validationResults ? this.state.validationResults.failed : 0}
+                        onClose={() => this.setState({isTestWaitModalOpen: false})}
+                    />
+                }
             </div>
-        );
+        )
+    }
+
+    private isFilter(): boolean {
+        return this.state.searchValue !== ''
+            || this.state.entityFilter != null
+            || this.state.actionFilter != null
+            || this.state.tagsFilter != null
+    }
+
+    private onClickResetFilters(): void {
+        this.setState({
+            searchValue: '',
+            entityFilter: null,
+            actionFilter: null,
+            tagsFilter: null,
+        })
     }
 
     // User has edited an Activity in a TeachSession
     private async onEditTeach(
-        historyIndex: number,
+        historyIndex: number | null,
         args: DialogEditing.EditHandlerArgs | undefined,
         tags: string[],
         description: string,
@@ -1279,21 +1837,30 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
+        createActionThunkAsync: actions.action.createActionThunkAsync,
+        createEntityThunkAsync: actions.entity.createEntityThunkAsync,
         createTeachSessionThunkAsync: actions.teach.createTeachSessionThunkAsync,
         createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,
         deleteTrainDialogThunkAsync: actions.train.deleteTrainDialogThunkAsync,
         deleteTeachSessionThunkAsync: actions.teach.deleteTeachSessionThunkAsync,
         deleteMemoryThunkAsync: actions.teach.deleteMemoryThunkAsync,
+        editActionThunkAsync: actions.action.editActionThunkAsync,
         editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
         extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
+        fetchExtractionsThunkAsync: actions.app.fetchExtractionsThunkAsync,
+        fetchTranscriptValidationThunkAsync: actions.app.fetchTranscriptValidationThunkAsync,
         trainDialogMergeThunkAsync: actions.train.trainDialogMergeThunkAsync,
         trainDialogReplaceThunkAsync: actions.train.trainDialogReplaceThunkAsync,
+        trainDialogReplayAsync: actions.train.trainDialogReplayThunkAsync,
         scoreFromHistoryThunkAsync: actions.train.scoreFromHistoryThunkAsync,
         trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,
+        setErrorDisplay: actions.display.setErrorDisplay,
+        spinnerAdd: actions.display.spinnerAdd,
+        spinnerRemove: actions.display.spinnerRemove
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
@@ -1321,8 +1888,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
+const stateProps = returntypeof(mapStateToProps)
+const dispatchProps = returntypeof(mapDispatchToProps)
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TrainDialogs))

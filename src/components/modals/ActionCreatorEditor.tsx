@@ -7,30 +7,32 @@ import * as CLM from '@conversationlearner/models'
 import * as ToolTip from '../ToolTips/ToolTips'
 import * as TC from '../tipComponents'
 import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../Utils/util'
 import * as ActionPayloadEditor from './ActionPayloadEditor'
-import { Value } from 'slate'
-import { returntypeof } from 'react-redux-typescript'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
-import { formatMessageId, isActionUnique } from '../../Utils/util'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import ActionDeleteModal from './ActionDeleteModal'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
+import CLTagPicker from '../CLTagPicker'
+import HelpIcon from '../HelpIcon'
+import { compareTwoStrings } from 'string-similarity'
+import { Value } from 'slate'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
-import CLTagPicker from '../CLTagPicker'
-import './ActionCreatorEditor.css'
-import HelpIcon from '../HelpIcon'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
+import './ActionCreatorEditor.css'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
+const CARD_MATCH_THRESHOLD = 0.25
 
 const convertEntityToDropdownOption = (entity: CLM.EntityBase): OF.IDropdownOption =>
     ({
@@ -241,6 +243,11 @@ interface IConditionalTag extends OF.ITag {
     condition: CLM.Condition | null
 }
 
+export interface NewActionPreset {
+    text: string, 
+    isTerminal: boolean
+}
+
 interface ComponentState {
     entityOptions: OF.IDropdownOption[]
     enumValueOptions: OF.IDropdownOption[]
@@ -342,6 +349,32 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             availableConditionalTags: conditionalEntityTags(entities),
             isEditing: !!this.props.action
         }
+    }
+
+    presetText(rawText: string | null): string {
+        if (!rawText) {
+            return ""
+        }
+        return rawText
+            .trim()
+            .split('&nbsp;').join(" ") // Switch to actual spaces
+            .split(" </").join("</")  // Markdown can't have space before end
+            .split("\n").join("")
+            .split("<b>").join("**")
+            .split("</b>").join("**")
+            .split("<i>").join("*")
+            .split("</i>").join("*")
+            .split("<strong>").join("**_")
+            .split("</strong>").join("_**")
+            .split("<br>").join("")
+            .split("<br/>").join("")
+            .split("<br />").join("")
+            .split('&gt;').join("")
+            .replace(/[\n\r]+/g, '')  // Adaptive cards can't handle newlines
+    }
+
+    componentDidMount() {
+        this.initializeActionPresets(this.props)
     }
 
     componentWillReceiveProps(nextProps: Props) {
@@ -507,6 +540,26 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         // TODO: Find solution without casting, should be set state merge with partial state
         this.setState(prevState => nextState as ComponentState)
+
+        // Set initial text value (used for dummy import actions)
+        if (nextProps.open === true && this.props.open === false) { 
+            this.initializeActionPresets(nextProps)
+        }
+    }
+
+    initializeActionPresets(props: Props) {
+        if (props.newActionPreset) {
+            let values = Plain.deserialize(this.presetText(props.newActionPreset.text))
+            this.onChangePayloadEditor(values, TEXT_SLOT)
+            this.setState({isTerminal: props.newActionPreset.isTerminal})
+
+            // If a good card match exists switch to card view
+            const bestCard = this.bestCardMatch(props.newActionPreset.text, CARD_MATCH_THRESHOLD)
+            if (bestCard) {
+                let index = actionTypeOptions.findIndex(ao => ao.key === CLM.ActionTypes.CARD)
+                this.onChangedActionType(actionTypeOptions[index])
+            }
+        }
     }
 
     areSlateValuesChanged(slateValuesMap: SlateValueMap, prevSlateValuesMap: SlateValueMap) {
@@ -665,7 +718,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChangedCardOption = (cardOption: OF.IDropdownOption) => {
+    async onChangedCardOption(cardOption: OF.IDropdownOption) {
         const template = this.props.botInfo.templates.find(t => t.name === cardOption.key)
         if (!template) {
             throw new Error(`Could not find template with name: ${cardOption.key}`)
@@ -678,10 +731,43 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 return values
             }, {})
 
-        this.setState({
+        await Util.setStateAsync(this, {
             selectedCardOptionKey: cardOption.key,
             slateValuesMap: newSlateValues
         })
+
+        // LARS TEMP CCI
+        if (this.props.newActionPreset) {
+            if (template.variables.length > 0) {
+                const semiSplit = this.presetText(this.props.newActionPreset.text).split(';')
+
+                // Assume first value is question followed by first button
+                let firstSplit = semiSplit[0].split('?')
+                // If no question mark, assume is first period
+                if (firstSplit.length === 1) {
+                    firstSplit = semiSplit[0].split('.')
+                } 
+                const rawTitle = firstSplit.slice(0, firstSplit.length - 1).join()
+
+                const title = Plain.deserialize(`${rawTitle}?`)
+                this.onChangePayloadEditor(title, template.variables[0].key)
+
+                // Gather button text
+                let rawButtons: string[]
+                if (firstSplit[1]) {
+                    rawButtons = [firstSplit[firstSplit.length - 1], ...semiSplit.slice(1, semiSplit.length)]
+                }
+                else {
+                    rawButtons = semiSplit.slice(1, semiSplit.length)
+                }
+                const buttons = rawButtons.map(t => Plain.deserialize(t))
+                buttons.forEach((button, index) => {
+                    if ((index + 1) < template.variables.length) {
+                        this.onChangePayloadEditor(button, template.variables[index + 1].key)
+                    }
+                })
+            }
+        }
     }
 
     onClickSyncBotInfo() {
@@ -689,6 +775,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onClickViewCard() {
+        if (!this.state.selectedCardOptionKey) {
+            this.onNextCard()
+        }
         this.setState({
             isCardViewerModalOpen: true
         })
@@ -698,6 +787,24 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.setState({
             isCardViewerModalOpen: false
         })
+    }
+
+    onNextCard = () => {
+        let index = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
+        index = index + 1
+        if (index === this.state.cardOptions.length) {
+            index = 0
+        }
+        this.onChangedCardOption(this.state.cardOptions[index])
+    }
+
+    onPreviousCard = () => {
+        let index = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
+        index = index - 1
+        if (index < 0) {
+            index = this.state.cardOptions.length - 1
+        }
+        this.onChangedCardOption(this.state.cardOptions[index])
     }
 
     getActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }): CLM.IActionArgument[] {
@@ -727,7 +834,6 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     convertStateToModel(): CLM.ActionBase {
         let payload: string | null = null
-
 
         /**
          * If action type if TEXT
@@ -819,6 +925,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             actionType: CLM.ActionTypes[this.state.selectedActionTypeOptionKey],
             entityId: this.state.selectedEntityOptionKey,
             enumValueId: this.state.selectedEnumValueOptionKey,
+            clientData: this.props.action ? this.props.action.clientData : undefined
         })
 
         if (this.state.isEditing && this.props.action) {
@@ -832,10 +939,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const newOrEditedAction = this.convertStateToModel()
         const validationWarnings: string[] = []
 
-        if (!isActionUnique(newOrEditedAction, this.props.actions)) {
+        if (!Util.isActionUnique(newOrEditedAction, this.props.actions)) {
             this.setState({
                 isConfirmDuplicateActionModalOpen: true,
-                validationWarnings: [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND)],
+                validationWarnings: [Util.formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND)],
                 newOrEditedAction,
             })
 
@@ -850,7 +957,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const invalidTrainingDialogIds = await ((this.props.fetchActionEditValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, newOrEditedAction) as any) as Promise<string[]>)
                 if (invalidTrainingDialogIds) {
                     if (invalidTrainingDialogIds.length > 0) {
-                        validationWarnings.push(formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING))
+                        validationWarnings.push(Util.formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_WARNING))
                     }
                 }
             }
@@ -858,7 +965,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             // Note any untagged entities
             const untaggedEntities = this.untaggedEntities()
             untaggedEntities.forEach(e =>
-                validationWarnings.push(`"${e}" ${formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_MISSINGLABEL_WARNING)}`)
+                validationWarnings.push(`"${e}" ${Util.formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_MISSINGLABEL_WARNING)}`)
             )
 
             if (validationWarnings.length > 0) {
@@ -892,7 +999,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         try {
             const invalidTrainingDialogIds = await ((this.props.fetchActionDeleteValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.action.actionId) as any) as Promise<string[]>)
             if (invalidTrainingDialogIds && invalidTrainingDialogIds.length > 0) {
-                const validationWarnings = [formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING)]
+                const validationWarnings = [Util.formatMessageId(this.props.intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING)]
 
                 this.setState({
                     isConfirmDeleteInUseModalOpen: true,
@@ -992,7 +1099,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChangedActionType = (actionTypeOption: OF.IDropdownOption) => {
+    @OF.autobind
+    async onChangedActionType(actionTypeOption: OF.IDropdownOption) {
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
         const isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload && textPayload.document.text.length === 0)
         const isTerminal = actionTypeOption.key === CLM.ActionTypes.END_SESSION
@@ -1001,7 +1109,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 ? false
                 : this.state.isTerminal
 
-        this.setState({
+        await Util.setStateAsync(this, {
             isPayloadMissing,
             isTerminal,
             selectedActionTypeOptionKey: actionTypeOption.key,
@@ -1018,6 +1126,32 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             requiredEntityTags: [],
             negativeEntityTags: [],
         })
+
+        // If have preset text, pick the best matching card
+        if (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD && this.props.newActionPreset) {
+            const bestCard = this.bestCardMatch(this.props.newActionPreset.text)
+            if (bestCard) {
+                this.onChangedCardOption(bestCard)
+            }
+        }
+    }
+
+    // Return card that best matches the given text
+    bestCardMatch(text: string, threshold: number = 0): OF.IDropdownOption | null {
+        // Pre-select card that is closest matching to template
+        let bestScore = 0
+        let bestCard: OF.IDropdownOption | null = null
+        for (let cardOption of this.state.cardOptions) {
+            const template = this.props.botInfo.templates.find(t => t.name === cardOption.key)
+            const score = (template && template.body)
+                ? compareTwoStrings(text, template.body)
+                : 0
+            if (score > threshold && score > bestScore) {
+                bestScore = score
+                bestCard = cardOption
+            }
+        }
+        return bestCard
     }
 
     onResolveExpectedEntityTags = (filterText: string, selectedTags: OF.ITag[] | undefined): OF.ITag[] => {
@@ -1210,9 +1344,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const { intl } = this.props
 
         const payloadError = this.state.entityWarning
-            ? formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_ENTITY)
+            ? Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_ENTITY)
             : this.state.isPayloadMissing
-                ? formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD) : null
+                ? Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_PAYLOAD) : null
 
         // Disable payload if we're editing existing action and no API or CARD data available
         const isPayloadDisabled =
@@ -1267,8 +1401,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             && <div data-testid="action-set-entity-warning" className="cl-text--warning">
                                 <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
                                 {this.state.isEditing
-                                    ? <span>{formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT, { actionType: CLM.ActionTypes.SET_ENTITY })}</span>
-                                    : <span>{formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION)} </span>}
+                                    ? <span>{Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT, { actionType: CLM.ActionTypes.SET_ENTITY })}</span>
+                                    : <span>{Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION)} </span>}
                             </div>}
 
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.API_LOCAL
@@ -1284,11 +1418,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
                                         tipType={ToolTip.TipType.ACTION_API1}
                                     />
-                                    <OF.PrimaryButton
-                                        className="cl-inputWithButton-button"
+                                    <OF.IconButton
+                                        className="ms-Button--primary cl-inputWithButton-button"
                                         onClick={() => this.onClickSyncBotInfo()}
                                         ariaDescription="Refresh"
-                                        text=""
                                         iconProps={{ iconName: 'Sync' }}
                                     />
                                 </div>
@@ -1339,7 +1472,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                                 </div>}
                                         </div>
                                         : <div className="cl-errorpanel" data-testid="action-creator-editor-error-callback">
-                                            <div>ERROR: Bot Missing Callback: {this.state.selectedApiOptionKey}</div>
+                                            <div>
+                                                {this.props.action && CLM.ActionBase.isStubbedAPI(this.props.action) 
+                                                ? `Stub API: ${this.state.selectedApiOptionKey}`
+                                                : `ERROR: Bot Missing Callback: ${this.state.selectedApiOptionKey}`}
+                                            </div>
                                         </div>)
                                 }
                             </div>
@@ -1358,19 +1495,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         placeHolder={this.state.cardOptions.length === 0 ? 'NONE DEFINED' : 'Template name...'}
                                         tipType={ToolTip.TipType.ACTION_CARD}
                                     />
-                                    <OF.PrimaryButton
-                                        className="cl-inputWithButton-button"
+                                    <OF.IconButton
+                                        className="ms-Button--primary cl-inputWithButton-button"
                                         onClick={() => this.onClickViewCard()}
                                         ariaDescription="Refresh"
-                                        text=""
                                         iconProps={{ iconName: 'RedEye' }}
-                                        disabled={this.state.selectedCardOptionKey == null}
+                                        disabled={this.state.cardOptions.length === 0}
                                     />
-                                    <OF.PrimaryButton
-                                        className="cl-inputWithButton-button"
+                                    <OF.IconButton
+                                        className="ms-Button--primary cl-inputWithButton-button"
                                         onClick={() => this.onClickSyncBotInfo()}
                                         ariaDescription="Refresh"
-                                        text=""
                                         iconProps={{ iconName: 'Sync' }}
                                     />
                                 </div>
@@ -1558,7 +1693,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             className="cl-error-message-label"
                             style={{ display: !this.state.isTerminal && this.state.expectedEntityTags.length ? "block" : "none", gridGap: "0" }}
                         >
-                            {formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD)}
+                            {Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_NONEMPTYFIELD)}
                         </div>
                     </div>
                 </div>
@@ -1569,8 +1704,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton
                                 onClick={this.onClickTrainDialogs}
                                 iconProps={{ iconName: 'QueryList' }}
-                                ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION)}
-                                text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT)}
+                                ariaDescription={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION)}
+                                text={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT)}
                             />
                         }
                         <OF.DefaultButton
@@ -1587,19 +1722,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             disabled={this.saveDisabled()}
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
-                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION) :
-                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION)}
+                                Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION) :
+                                Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION)}
                             text={this.state.isEditing ?
-                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT) :
-                                formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT)}
+                                Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT) :
+                                Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT)}
                             iconProps={{ iconName: 'Accept' }}
                         />
 
                         <OF.DefaultButton
                             data-testid="action-creator-cancel-button"
                             onClick={this.onClickCancel}
-                            ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
-                            text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
+                            ariaDescription={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION)}
+                            text={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT)}
                             iconProps={{ iconName: 'Cancel' }}
                         />
 
@@ -1608,8 +1743,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 data-testid="action-creator-delete-button"
                                 className="cl-button-delete"
                                 onClick={this.onClickDelete}
-                                ariaDescription={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
-                                text={formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
+                                ariaDescription={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_ARIADESCRIPTION)}
+                                text={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT)}
                                 iconProps={{ iconName: 'Delete' }}
                             />}
                     </div>
@@ -1619,26 +1754,26 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     open={this.state.isConfirmDeleteInUseModalOpen}
                     onCancel={this.onCancelDeleteInUse}
                     onConfirm={this.onConfirmDelete}
-                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
+                    title={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
                     message={this.validationWarning}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmDeleteModalOpen}
                     onCancel={this.onCancelDelete}
                     onConfirm={this.onConfirmDelete}
-                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
+                    title={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE)}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmEditModalOpen}
                     onCancel={this.onCancelEdit}
                     onConfirm={this.onConfirmEdit}
-                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE)}
+                    title={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE)}
                     message={this.validationWarning}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmDuplicateActionModalOpen}
                     onOk={this.onCancelDuplicate}
-                    title={formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION)}
+                    title={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION)}
                     message={this.validationWarning}
                 />
                 <EntityCreatorEditor
@@ -1653,6 +1788,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 <AdaptiveCardViewer
                     open={this.state.isCardViewerModalOpen && this.state.selectedCardOptionKey !== null}
                     onDismiss={() => this.onCloseCardViewer()}
+                    onNext={() => this.onNextCard()}
+                    onPrevious={() => this.onPreviousCard()}
                     template={this.state.selectedCardOptionKey !== null
                         ? this.props.botInfo.templates.find(t => t.name === this.state.selectedCardOptionKey)
                         : undefined}
@@ -1692,6 +1829,7 @@ export interface ReceiveProps {
     open: boolean
     action: CLM.ActionBase | null
     actions: CLM.ActionBase[]
+    newActionPreset?: NewActionPreset
     handleEdit: (action: CLM.ActionBase) => void
     handleClose: () => void
     handleDelete: (action: CLM.ActionBase, removeFromDialogs: boolean) => void

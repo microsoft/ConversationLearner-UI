@@ -108,6 +108,10 @@ export type DisplayAction = {
 } | {
     type: AT.SET_WEBCHAT_SCROLL_POSITION,
     position: number
+}| {
+    type: AT.SPINNER_ADD
+}| {
+    type: AT.SPINNER_REMOVE
 } | {
     type: AT.CLEAR_WEBCHAT_SCROLL_POSITION
 } | {
@@ -292,6 +296,15 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_TUTORIALS_FULFILLED,
     tutorials: CLM.AppBase[]
+} | {
+    type: AT.FETCH_EXTRACTIONS_ASYNC
+} | {
+    type: AT.FETCH_EXTRACTIONS_FULFILLED,
+    extractResponses: CLM.ExtractResponse[]
+} | {
+    type: AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC
+} | {
+    type: AT.FETCH_TRANSCRIPT_VALIDATION_FULFILLED
 }
 
 export type CreateAction = {

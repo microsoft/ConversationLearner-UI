@@ -115,7 +115,7 @@
 .cl-treeview-scorerStep {
   display: block;
   font-size: 16px;
-  background-color: #f4f4f4;
+  background-color: var(--cl-color-botchat-grey);
   border-style: none solid solid solid;
   border-color: black;
   border-width: 0.5px;

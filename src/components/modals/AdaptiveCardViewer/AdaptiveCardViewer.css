@@ -1,0 +1,12 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
+.cl-adaptivecardviewer-modal {
+    padding: 20px;
+}
+
+.cl-adaptivecardviewer-body {
+    height: 500px;
+    overflow-y: auto;
+}

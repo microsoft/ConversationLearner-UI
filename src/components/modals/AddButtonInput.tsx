@@ -15,10 +15,13 @@ interface Props {
     editType: EditDialogType
 }
 
-class AddButtonInput extends React.Component<Props, {}> {
+class AddButtonInput extends React.Component<Props> {
     render() {
         const fillType = (this.props.editType === EditDialogType.LOG_ORIGINAL || this.props.editType === EditDialogType.LOG_EDITED)
-            ? "log" : "train"
+            ? "log" 
+            : (this.props.editType === EditDialogType.IMPORT)
+            ? "import"
+            : "train"
 
         return (
             <div

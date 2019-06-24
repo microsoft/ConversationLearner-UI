@@ -59,7 +59,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
     onGetInputErrorMessage(value: string, max_supported = 125 /* Quarter of LUIS's 500 limit */): string {
         const { intl } = this.props
         if (value.length === 0) {
-            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_REQUIREDVALUE)
+            return Util.formatMessageId(intl, FM.FIELDERROR_REQUIREDVALUE)
         }
 
         if (value.length > max_supported) {

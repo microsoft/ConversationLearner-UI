@@ -20,7 +20,7 @@ export enum SelectionType {
     NONE = "NONE"
 }
 
-export const CL_IMPORT_ID = '9c110735ea8b440d8f31c5c68ffb767d'
+export const CL_IMPORT_TUTORIALS_USER_ID = '9c110735ea8b440d8f31c5c68ffb767d'
 
 export const BOT_HOST_NAME : Readonly<string> = location.hostname
 

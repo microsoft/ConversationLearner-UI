@@ -12,7 +12,7 @@ interface Props {
     open: boolean;
 }
 
-class ErrorInjectionEditor extends React.Component<Props, {}> {
+class ErrorInjectionEditor extends React.Component<Props> {
     render() {
         return (
             <Dialog

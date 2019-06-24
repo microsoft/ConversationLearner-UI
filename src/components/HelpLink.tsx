@@ -10,7 +10,7 @@ import { State } from '../types'
 import { setTipType } from '../actions/displayActions'
 import { TipType } from './ToolTips/ToolTips'
 
-class HelpLink extends React.Component<Props, {}> {
+class HelpLink extends React.Component<Props> {
     render() {
         return (
             <a className="cl-link" onClick={() => { this.props.setTipType(this.props.tipType) }}>

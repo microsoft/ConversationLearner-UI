@@ -49,8 +49,8 @@ class Dashboard extends React.Component<Props, ComponentState> {
         const appId = this.props.app.appId
 
         // Create a new tag for the current application and set it to live.
-        await this.props.createAppTagThunkAsync(appId, newTagName, true)
-        await this.props.promoteUpdatedAppDefinitionThunkAsync(appId, updatedAppDefinition)
+        await (this.props.createAppTagThunkAsync(appId, newTagName, true) as any as Promise<void>)
+        await (this.props.promoteUpdatedAppDefinitionThunkAsync(appId, updatedAppDefinition) as any as Promise<void>)
     }
 
     render() {

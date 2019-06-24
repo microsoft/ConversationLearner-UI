@@ -17,6 +17,7 @@ const initialState: AppsState = {
 };
 
 const appsReducer: Reducer<AppsState> = produce((state: AppsState, action: ActionObject) => {
+    let app: App | undefined
     switch (action.type) {
         case AT.USER_LOGOUT:
             return { ...initialState }
@@ -25,7 +26,7 @@ const appsReducer: Reducer<AppsState> = produce((state: AppsState, action: Actio
             state.activeApps = action.uiAppList.activeApps
             return
         case AT.FETCH_APPLICATION_TRAININGSTATUS_ASYNC: {
-            const app = state.all.find(a => a.appId === action.appId) as App | undefined
+            app = state.all.find(a => a.appId === action.appId) as App | undefined
             // User may have deleted the app
             if (!app) {
                 return
@@ -35,7 +36,7 @@ const appsReducer: Reducer<AppsState> = produce((state: AppsState, action: Actio
             return
         }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_EXPIRED: {
-            const app = state.all.find(a => a.appId === action.appId) as App | undefined
+            app = state.all.find(a => a.appId === action.appId) as App | undefined
             // User may have delete the app
             if (!app) {
                 return
@@ -45,7 +46,7 @@ const appsReducer: Reducer<AppsState> = produce((state: AppsState, action: Actio
             return
         }
         case AT.FETCH_APPLICATION_TRAININGSTATUS_FULFILLED: {
-            const app = state.all.find(a => a.appId === action.appId) as App | undefined
+            app = state.all.find(a => a.appId === action.appId) as App | undefined
             // User may have delete the app
             if (!app) {
                 return
@@ -84,7 +85,7 @@ const appsReducer: Reducer<AppsState> = produce((state: AppsState, action: Actio
         // TODO: We're expecting more handlers here, as we're simply updating lastModifiedDateTime...
         case AT.EDIT_TRAINDIALOG_FULFILLED:
 
-            const app = state.all.find(a => a.appId === action.appId) as App | undefined
+            app = state.all.find(a => a.appId === action.appId) as App | undefined
             // User may have delete the app
             if (!app) {
                 return

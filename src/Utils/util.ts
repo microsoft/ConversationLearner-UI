@@ -105,8 +105,7 @@ export function earlierDateOrTimeToday(timestamp: string): string {
 export function isActionUnique(newAction: CLM.ActionBase, actions: CLM.ActionBase[]): boolean {
     const normalizedNewAction = normalizeActionAndStringify(newAction)
     const normalizedExistingActions = actions.map(action => normalizeActionAndStringify(action))
-    const isUnique = !normalizedExistingActions.some(straw => straw === normalizedNewAction)
-    return isUnique
+    return !normalizedExistingActions.some(straw => straw === normalizedNewAction)
 }
 
 function normalizeActionAndStringify(newAction: CLM.ActionBase) {
@@ -182,24 +181,6 @@ export const setEntityActionDisplay = (action: CLM.ActionBase, entities: CLM.Ent
     return [name, value]
 }
 
-export const getSetEntityActionsFromEnumEntity = (entity: CLM.EntityBase): CLM.ActionBase[] => {
-    if (entity.entityType !== CLM.EntityType.ENUM) {
-        throw new Error(`You attempted to create set entity actions from an entity that was not an ENUM. Entity: ${entity.entityName} - ${entity.entityType}`)
-    }
-
-    if (!entity.enumValues) {
-        throw new Error(`You attempted to create set entity actions from an entity which had no enum values. Entity: ${entity.entityName} - ${entity.entityType}`)
-    }
-
-    return entity.enumValues.map(evo => {
-        if (!evo.enumValueId) {
-            throw new Error(`You attempted to create a set entity action from entity whose enum values have not yet been saved and don't have valid id. Please save the entity first. Entity: ${entity.entityName} - ${entity.entityType}`)
-        }
-
-        return getSetEntityActionForEnumValue(entity.entityId, evo.enumValueId)
-    })
-}
-
 export const PLACEHOLDER_SET_ENTITY_ACTION_ID = 'PLACEHOLDER_SET_ENTITY_ACTION_ID'
 export const getSetEntityActionForEnumValue = (entityId: string, enumValueId: string): CLM.ActionBase => {
     const setEntityPayload: CLM.SetEntityPayload = {
@@ -227,4 +208,38 @@ export const getSetEntityActionForEnumValue = (entityId: string, enumValueId: st
         entityId,
         enumValueId,
     }
+}
+
+export const getSetEntityActionsFromEnumEntity = (entity: CLM.EntityBase): CLM.ActionBase[] => {
+    if (entity.entityType !== CLM.EntityType.ENUM) {
+        throw new Error(`You attempted to create set entity actions from an entity that was not an ENUM. Entity: ${entity.entityName} - ${entity.entityType}`)
+    }
+
+    if (!entity.enumValues) {
+        throw new Error(`You attempted to create set entity actions from an entity which had no enum values. Entity: ${entity.entityName} - ${entity.entityType}`)
+    }
+
+    return entity.enumValues.map(evo => {
+        if (!evo.enumValueId) {
+            throw new Error(`You attempted to create a set entity action from entity whose enum values have not yet been saved and don't have valid id. Please save the entity first. Entity: ${entity.entityName} - ${entity.entityType}`)
+        }
+
+        return getSetEntityActionForEnumValue(entity.entityId, evo.enumValueId)
+    })
+}
+
+// Calculate a 32 bit FNV-1a hash
+// Ref.: http://isthe.com/chongo/tech/comp/fnv/
+export function hashText(text: string) {
+    // tslint:disable:no-bitwise 
+    let l = text.length
+    let hval = 0x811C9DC5  // seed
+
+    for (let i = 0; i < l; i = i + 1) {
+        hval ^= text.charCodeAt(i)
+        hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24)
+    }
+
+    // Return 8 digit hex string
+    return `0000000${(hval >>> 0).toString(16)}`.substr(-8)
 }

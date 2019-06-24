@@ -13,7 +13,7 @@ import './SpinnerWindow.css'
 // Enable to see what API calls I'm waiting for
 const debug = false;
 
-class SpinnerWindow extends React.Component<Props, {}> {
+class SpinnerWindow extends React.Component<Props> {
     render() {
         return (
             <React.Fragment>

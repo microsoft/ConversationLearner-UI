@@ -1,6 +1,8 @@
 
- .teachInitBlock {
+ .cl-memory-setter-block {
     margin-top: 10px;
+    padding-left: 1em;
+    padding-right: 1em;
     border-top-color: var(--color-neutralTertiaryAlt);
     border-top-width: 1px;
     border-top-style: solid;

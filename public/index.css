@@ -22,6 +22,8 @@ html {
   border-bottom: 1px solid #a6a6a6 !important;
 }
 
+
+
 .cl-button--viewCard {
   margin-right: 10px;
   border-radius: 20px;
@@ -31,7 +33,7 @@ html {
 }
 
 .cl-button-blockwebchat {
-  left: 339px;
+  left: 413px;
   position: relative;
 }
 
@@ -313,7 +315,7 @@ i[data-icon-name="Edit"]:hover {
 }
 
 .cl-font--warning {
-  background-color: #FDE7E9;
+  background-color: var(--color-errorBackground);
   margin: 5px;
   padding: 0.25em 0.5em;
 }
@@ -342,6 +344,10 @@ i[data-icon-name="Edit"]:hover {
 
 .cl-wc-message--log {
   background-color: var(--cl-color-user-log);
+}
+
+.cl-wc-message--import {
+  background-color: var(--cl-color-user-import);
 }
 
 .cl-wc-message--bot {
@@ -377,6 +383,16 @@ i[data-icon-name="Edit"]:hover {
   left: 0px;
 }
 
+.cl-wc-addaction {
+  color: green !important;
+  border: none !important;
+  position: absolute !important;
+  background-color: transparent !important;
+  top: 27px;
+  z-index: 1000;
+  right: -4px;
+}
+
 .cl-wc-branchturn {
   border: none !important;
   position: absolute !important;
@@ -389,10 +405,21 @@ i[data-icon-name="Edit"]:hover {
 .cl-icon-plain {
   border: none !important;
   background-color: transparent !important;
-  color: var(--color-themePrimary);
+  color: var(--color-themePrimary) !important;
 }
 
 .cl-icon-plain:hover {
+  color: var(--color-red);
+}
+
+
+.cl-icon-warning {
+  border: none !important;
+  background-color: transparent !important;
+  color: var(--cl-color-error) !important;
+}
+
+.cl-icon-warning:hover {
   color: var(--color-red);
 }
 
@@ -428,6 +455,13 @@ i[data-icon-name="Edit"]:hover {
   /* border-top: 8px solid var(--color-blueMid); */
 }
 
+.cl-modal.cl-modal--importwait {
+  height: 90px;
+  width: 400px;
+  padding: 20px;
+  text-align: center !important;
+}
+
 .cl-modal.cl-modal--wide {
   width: 80%;
 }
@@ -438,8 +472,8 @@ i[data-icon-name="Edit"]:hover {
 }
 
 .cl-modal.cl-modal--large {
-  width: 90%;
-  height: 90%;
+  width: 98%;
+  height: 96%;
 }
 
 /** Matches width of webchat **/
@@ -544,6 +578,7 @@ i[data-icon-name="Edit"]:hover {
   position: relative;
   overflow-y: auto;
 }
+
 .cl-modal_body > * {
   position: absolute;
   width: 100%;
@@ -558,7 +593,7 @@ i[data-icon-name="Edit"]:hover {
 
 .cl-modal.cl-modal--teach .cl-modal_footer {
   padding: 1em;
-  /* background-color: var(--color-magentaDark); */
+  /* background-color: var(--cl-color-user-train); */
 }
 
 .cl-modal.cl-modal--log .cl-modal_footer{
@@ -587,10 +622,13 @@ i[data-icon-name="Edit"]:hover {
   vertical-align: sub;
 }
 .cl-dialog-title.cl-dialog-title--log i[role="presentation"] {
-  background-color: var(--color-green);
+  background-color: var(--cl-color-user-log);
 }
 .cl-dialog-title.cl-dialog-title--train i[role="presentation"] {
-  background-color: var(--color-magentaDark);
+  background-color: var(--cl-color-user-train);
+}
+.cl-dialog-title.cl-dialog-title--import i[role="presentation"] {
+  background-color: var(--cl-color-user-import);
 }
 
 .cl-inputWithButton-input {
@@ -613,6 +651,23 @@ i[data-icon-name="Edit"]:hover {
   align-items: end;
 }
 
+.cl-file-picker {
+  display: grid;
+  grid-template: auto / min-content 1fr;
+  grid-gap: 1em;
+  width: 100%;
+}
+
+.cl-file-picker-button {
+  white-space: nowrap;
+}
+
+.cl-form {
+  display: grid;
+  grid-gap: 0.5em;
+  justify-items: left;
+}
+
 .cl-screen-reader {
   position: absolute;
   left: -999em;
@@ -621,11 +676,13 @@ i[data-icon-name="Edit"]:hover {
 .cl-chatmodal {
   height: 100%;
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 475px 1fr;
 }
+
 .cl-chatmodal_webchat {
   position: relative;
 }
+
 .cl-chatmodal_controls {
   border-left: 1px solid var(--cl-color-botchat-grey);
   display: grid;
@@ -827,11 +884,19 @@ i[data-icon-name="Edit"]:hover {
   display: grid;
   grid-gap: 0.8em;
 }
+
 .cl-dialog-admin__header {
   display: grid;
   grid-template: auto / max-content minmax(min-content, 1fr) minmax(214px, max-content);
   grid-gap: 1rem;
 }
+
+.cl-dialog-importcount {
+  font-size: 15px;
+  text-align: right;
+  margin-top: -4px;
+}
+
 .cl-dialog-admin__content {
   display: grid;
   grid-gap: 1rem;

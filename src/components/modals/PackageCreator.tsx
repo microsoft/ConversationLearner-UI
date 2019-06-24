@@ -63,7 +63,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
     onGetNameErrorMessage(value: string): string {
         const { intl } = this.props
         if (value.length === 0) {
-            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_REQUIREDVALUE)
+            return Util.formatMessageId(intl, FM.FIELDERROR_REQUIREDVALUE)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
@@ -73,11 +73,11 @@ class PackageCreator extends React.Component<Props, ComponentState> {
         // Check that name isn't in use
         const foundName = this.props.packageReferences.find(pr => pr.packageVersion === value)
         if (foundName) {
-            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
+            return Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
         }
 
         if ("Master".toLowerCase() === value.toLowerCase().trim()) {
-            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
+            return Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
         }
 
         return ''
