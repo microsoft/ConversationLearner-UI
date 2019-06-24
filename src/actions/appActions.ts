@@ -479,13 +479,13 @@ const validateTranscriptFulfilled = (): ActionObject =>
         type: AT.FETCH_TRANSCRIPT_VALIDATION_FULFILLED
     })
 
-export const fetchTranscriptValidationThunkAsync = (appId: string, packageId: string, turnValidations: CLM.TurnValidation[]) => {
+export const fetchTranscriptValidationThunkAsync = (appId: string, packageId: string, userId: string, turnValidations: CLM.TurnValidation[]) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC)
         dispatch(validateTranscriptAsync())
 
         try {
-            const isValid = await clClient.validateTranscript(appId, packageId, turnValidations)
+            const isValid = await clClient.validateTranscript(appId, packageId, userId, turnValidations)
             dispatch(validateTranscriptFulfilled())
             return isValid
         }

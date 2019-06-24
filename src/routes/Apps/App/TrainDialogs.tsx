@@ -1060,7 +1060,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             Util.setStateAsync(this, {validationResults: {...this.state.validationResults, invalidTranscript: this.state.validationResults!.invalidTranscript + 1}})               
         }
         else {
-            const isValid = await this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, turnValidations)
+            const isValid = await this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, turnValidations)
             if (isValid) {
                 Util.setStateAsync(this, {validationResults: {...this.state.validationResults, passed: this.state.validationResults!.passed + 1}})
             }
@@ -1545,8 +1545,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                     <OF.DefaultButton
                         onClick={this.onClickValidate}
-                        ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_TEST_BUTTON)}
-                        text={Util.formatMessageId(intl, FM.TRAINDIALOGS_TEST_BUTTON)}
+                        ariaDescription={Util.formatMessageId(intl, FM.BUTTON_TEST)}
+                        text={Util.formatMessageId(intl, FM.BUTTON_TEST)}
                         iconProps={{ iconName: 'TestCase' }}
                     />
                     {this.state.isTreeViewModalOpen ?

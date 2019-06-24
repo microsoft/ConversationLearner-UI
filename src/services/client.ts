@@ -604,10 +604,10 @@ export default class ClClient {
     }
 
     // AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC
-    async validateTranscript(appId: string, packageId: string, turnValidations: CLM.TurnValidation[]): Promise<boolean> {
+    async validateTranscript(appId: string, packageId: string, userId: string, turnValidations: CLM.TurnValidation[]): Promise<boolean> {
         const response = await this.send<boolean>({
             method: 'post',
-            url: `/app/${appId}/validatetranscript?packageId=${packageId}`,
+            url: `/app/${appId}/validatetranscript?userId=${userId}&packageId=${packageId}`,
             data: turnValidations
         })
         return response.data

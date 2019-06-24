@@ -94,8 +94,8 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             data-testid="transcript-locate-file-button"
                             className="cl-file-picker-button"
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.CONVERSATION_IMPORTER_FILES)} 
-                            text={Util.formatMessageId(this.props.intl, FM.CONVERSATION_IMPORTER_FILES)} 
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_LOCATE_FILES)} 
+                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_LOCATE_FILES)} 
                             iconProps={{ iconName: 'DocumentSearch' }}
                             onClick={() => this.fileInput.click()}
                         />
@@ -126,16 +126,18 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                         <div className="cl-modal-buttons_primary">
                             <OF.PrimaryButton
                                 disabled={invalidImport}
-                                data-testid="transcript-submit-button"
+                                data-testid="import-submit-button"
+                                iconProps={{iconName: "DownloadDocument"}}
                                 onClick={() => this.props.onClose(this.state.files, this.state.autoImport, this.state.autoMerge)}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_IMPORT)}
                                 text={Util.formatMessageId(this.props.intl, FM.BUTTON_IMPORT)}
                             />
                             <OF.DefaultButton
-                                data-testid="transcript-cancel-button"
+                                data-testid="import-cancel-button"
                                 onClick={() => this.props.onClose(null, false, false)}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
                                 text={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
+                                iconProps={{ iconName: 'Cancel' }}
                             />
                         </div>
                     </div>

@@ -145,6 +145,7 @@ export enum FM {
     BUTTON_EXPORT = 'Button.EXPORT',
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
+    BUTTON_LOCATE_FILES = 'Button.LOCATE_FILES',
     BUTTON_OK = 'Button.OK',
     BUTTON_REPLAY = 'Button.REPLAY',
     BUTTON_SAVE = 'Button.SAVE',
@@ -155,6 +156,7 @@ export enum FM {
     BUTTON_UNDO = 'Button.UNDO',
     BUTTON_SELECT = 'Button.SELECT',
     BUTTON_SELECTED = 'Button.SELECTED',
+    BUTTON_TEST = 'Button.TEST',
     BUTTON_NEXT = 'Button.next',
     BUTTON_PREVIOUS = 'Button.previous',
 
@@ -172,7 +174,6 @@ export enum FM {
     // Conversation Importer
     CONVERSATION_IMPORTER_TITLE = 'ConversationImporter.title',
     CONVERSATION_IMPORTER_DESCRIPTION = 'ConversationImporter.description',
-    CONVERSATION_IMPORTER_FILES = 'ConversationImporte.Button.files',
     CONVERSATION_IMPORTER_AUTOIMPORT = 'ConversationImporte.autoimport',
     CONVERSATION_IMPORTER_AUTOMERGE = 'ConversationImporte.automerge',
 
@@ -571,7 +572,6 @@ export enum FM {
     TRAINDIALOGS_FILTERING_RESET = 'TrainDialogs.Filters.reset',
     TRAINDIALOGS_LISTVIEW_BUTTON = 'TrainDialogs.ListView.Button',
     TRAINDIALOGS_TREEVIEW_BUTTON = 'TrainDialogs.TreeView.Button',
-    TRAINDIALOGS_TEST_BUTTON = 'TrainDialogs.Test.Button',
 
     // TreeView
     TREEVIEW_TOGGLE_FULLSCREEN = 'TreeView.ToggleFullScreen',
@@ -733,6 +733,7 @@ export default {
         [FM.BUTTON_EXPORT]: 'Export',
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
+        [FM.BUTTON_LOCATE_FILES]: 'Locate File(s)',
         [FM.BUTTON_OK]: 'OK',
         [FM.BUTTON_REPLAY]: 'Replay',
         [FM.BUTTON_SAVE]: 'Save',
@@ -743,6 +744,7 @@ export default {
         [FM.BUTTON_UNDO]: 'Undo',
         [FM.BUTTON_SELECT]: 'Select',
         [FM.BUTTON_SELECTED]: 'Selected',
+        [FM.BUTTON_TEST]: 'Test',
         [FM.BUTTON_NEXT]: 'Next',
         [FM.BUTTON_PREVIOUS]: 'Previous',
 
@@ -953,7 +955,6 @@ export default {
         [FM.TRAINDIALOGS_FILTERING_RESET]: 'Clear',
         [FM.TRAINDIALOGS_LISTVIEW_BUTTON]: 'List View',
         [FM.TRAINDIALOGS_TREEVIEW_BUTTON]: 'Tree View',
-        [FM.TRAINDIALOGS_TEST_BUTTON]: 'Test',
 
         // TreeView
         [FM.TREEVIEW_TOGGLE_FULLSCREEN]: 'Toggle Fullscreen',
@@ -999,7 +1000,6 @@ export default {
         // Conversation Importer
         [FM.CONVERSATION_IMPORTER_TITLE]: 'Import Conversations...',
         [FM.CONVERSATION_IMPORTER_DESCRIPTION]: 'Create Train Dialogs from .transcript files',
-        [FM.CONVERSATION_IMPORTER_FILES]: 'Locate File(s)',
         [FM.CONVERSATION_IMPORTER_AUTOIMPORT]: 'Auto Import',
         [FM.CONVERSATION_IMPORTER_AUTOMERGE]: 'Auto Merge',
 

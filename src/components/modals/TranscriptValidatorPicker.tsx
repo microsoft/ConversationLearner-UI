@@ -87,8 +87,8 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             data-testid="transcript-locate-file-button"
                             className="cl-file-picker-button"
-                            ariaDescription={'Test'} 
-                            text={'Test'} 
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_LOCATE_FILES)} 
+                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_LOCATE_FILES)} 
                             iconProps={{ iconName: 'DocumentSearch' }}
                             onClick={() => this.fileInput.click()}
                         />
@@ -111,14 +111,16 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                                 disabled={invalidImport}
                                 data-testid="transcript-submit-button"
                                 onClick={() => this.props.onClose(this.state.files, this.state.autoImport, this.state.autoMerge)}
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_IMPORT)}
-                                text={"Start"}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
+                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
+                                iconProps={{ iconName: 'TestCase' }}
                             />
                             <OF.DefaultButton
                                 data-testid="transcript-cancel-button"
                                 onClick={() => this.props.onClose(null, false, false)}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
                                 text={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
+                                iconProps={{ iconName: 'Cancel' }}
                             />
                         </div>
                     </div>
