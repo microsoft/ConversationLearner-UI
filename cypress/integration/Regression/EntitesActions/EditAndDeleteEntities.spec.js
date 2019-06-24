@@ -191,6 +191,4 @@ describe('Edit and Delete Entities - EntitiesActions', () => {
       entitiesGrid.VerifyEntityNotInGrid('canBeDeletedToo')
     })
   })
-
-
 })
