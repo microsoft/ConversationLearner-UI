@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Fuse from 'fuse.js'
@@ -43,15 +47,15 @@ const fuseOptions: Fuse.FuseOptions = {
     ]
 }
 
-class component extends React.Component<Props, State> {
-    inputRef = React.createRef<HTMLInputElement>()
-    suggestedTagsRef = React.createRef<HTMLDivElement>()
-    fuse: Fuse
-
+class Component extends React.Component<Props, State> {
     static defaultProps = {
         maxTags: 20,
         magTagLength: 100
     }
+
+    inputRef = React.createRef<HTMLInputElement>()
+    suggestedTagsRef = React.createRef<HTMLDivElement>()
+    fuse: Fuse
 
     state: Readonly<State> = {
         hasMaxTags: false,
@@ -216,7 +220,7 @@ class component extends React.Component<Props, State> {
         })
     }
 
-    /** Use mouseDown instead of click in order to fire event before blur which removes element from DOM */
+    // Use mouseDown instead of click in order to fire event before blur which removes element from DOM */
     onMouseDownSuggestedTag = (event: React.MouseEvent<HTMLDivElement>, tag: string) => {
         this.props.onAdd(tag)
         this.setState({
@@ -228,6 +232,67 @@ class component extends React.Component<Props, State> {
         event.preventDefault()
     }
 
+    render() {
+        const { matchedOptions, highlightIndex, hasMaxTags, showForm, pendingTagIsDuplicate } = this.state
+        const dataTestId = this.props['data-testid']
+
+        return (
+            <div className="cl-tags" data-testid={dataTestId} >
+                {this.props.tags.map((tag, i) =>
+                    <div className="cl-tags__tag" key={i}>
+                        <span>{tag}</span>
+                        {!this.props.readOnly &&
+                            <button onClick={() => this.props.onRemove(tag)}>
+                                <OF.Icon iconName="Clear" />
+                            </button>
+                        }
+                    </div>
+                )}
+                {!this.props.readOnly && !hasMaxTags && (!showForm
+                    ? <button className="cl-tags__button-add" id={this.props.id} onClick={() => this.onClickAdd()} data-testid="tags-input-add-tag-button" >
+                        {this.props.tags.length === 0
+                            ? <FormattedMessageId id={FM.TAGSINPUT_ADD} />
+                            : <OF.Icon iconName="Add" />}
+                    </button>
+                    : <>
+                        <form onSubmit={this.onSubmit} className="cl-tags__form">
+                            <input 
+                                type="text"
+                                ref={this.inputRef}
+                                id={this.props.id}
+                                value={this.state.inputValue}
+                                onChange={this.onChangeInput}
+                                onKeyDown={this.onKeyDownInput}
+                                onBlur={this.onBlurInput}
+                                autoComplete="off"
+                                spellCheck={false}
+                                maxLength={this.props.magTagLength}
+                                data-testid="tags-input-tag-input"
+                            />
+                            <div className="cl-tags__suggested-tags-container">
+                                {matchedOptions.length !== 0
+                                    && <div className="cl-tags__suggested-tags" ref={this.suggestedTagsRef}>
+                                        {matchedOptions.map((matchedOption, i) =>
+                                            <div
+                                                key={i}
+                                                role="button"
+                                                className={`cl-tags__suggested-tags__button ${highlightIndex === i ? 'cl-tags__suggested-tags__button--highlight' : ''}`}
+                                                onMouseDown={event => this.onMouseDownSuggestedTag(event, matchedOption.original.text)}
+                                            >
+                                                <FuseMatch matches={matchedOption.matchedStrings} />
+                                            </div>
+                                        )}
+                                    </div>
+                                }
+                            </div>
+                        </form>
+                        {pendingTagIsDuplicate && <div className="cl-tags-error"><OF.Icon iconName="Warning" /> <FormattedMessageId id={FM.TAGSINPUT_ERROR_DUPLICATE} /></div>}
+                    </>)
+                }
+            </div>
+        )
+    }
+    
     private scrollHighlightedElementIntoView(resultsElement: HTMLDivElement) {
         const selectedElement = resultsElement.querySelector('.cl-tags__suggested-tags__button--highlight') as HTMLUListElement
         if (selectedElement) {
@@ -260,65 +325,6 @@ class component extends React.Component<Props, State> {
                 original: tag
             }))
     }
-
-    render() {
-        const { matchedOptions, highlightIndex, hasMaxTags, showForm, pendingTagIsDuplicate } = this.state
-        const dataTestId = this.props['data-testid']
-
-        return (
-            <div className="cl-tags" data-testid={dataTestId} >
-                {this.props.tags.map((tag, i) =>
-                    <div className="cl-tags__tag" key={i}>
-                        <span>{tag}</span>
-                        {!this.props.readOnly &&
-                            <button onClick={() => this.props.onRemove(tag)}>
-                                <OF.Icon iconName="Clear" />
-                            </button>
-                        }
-                    </div>
-                )}
-                {!this.props.readOnly && !hasMaxTags && (!showForm
-                    ? <button className="cl-tags__button-add" id={this.props.id} onClick={() => this.onClickAdd()} data-testid="tags-input-add-tag-button" >
-                        {this.props.tags.length === 0
-                            ? <FormattedMessageId id={FM.TAGSINPUT_ADD} />
-                            : <OF.Icon iconName="Add" />}
-                    </button>
-                    : <>
-                        <form onSubmit={this.onSubmit} className="cl-tags__form">
-                            <input type="text"
-                                ref={this.inputRef}
-                                id={this.props.id}
-                                value={this.state.inputValue}
-                                onChange={this.onChangeInput}
-                                onKeyDown={this.onKeyDownInput}
-                                onBlur={this.onBlurInput}
-                                autoComplete="off"
-                                spellCheck={false}
-                                maxLength={this.props.magTagLength}
-                                data-testid="tags-input-tag-input"
-                            />
-                            <div className="cl-tags__suggested-tags-container">
-                                {matchedOptions.length !== 0
-                                    && <div className="cl-tags__suggested-tags" ref={this.suggestedTagsRef}>
-                                        {matchedOptions.map((matchedOption, i) =>
-                                            <div
-                                                key={i}
-                                                className={`cl-tags__suggested-tags__button ${highlightIndex === i ? 'cl-tags__suggested-tags__button--highlight' : ''}`}
-                                                onMouseDown={event => this.onMouseDownSuggestedTag(event, matchedOption.original.text)}
-                                            >
-                                                <FuseMatch matches={matchedOption.matchedStrings} />
-                                            </div>
-                                        )}
-                                    </div>
-                                }
-                            </div>
-                        </form>
-                        {pendingTagIsDuplicate && <div className="cl-tags-error"><OF.Icon iconName="Warning" /> <FormattedMessageId id={FM.TAGSINPUT_ERROR_DUPLICATE} /></div>}
-                    </>)
-                }
-            </div>
-        )
-    }
 }
 
-export default component
+export default Component

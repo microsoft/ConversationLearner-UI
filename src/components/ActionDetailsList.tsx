@@ -8,6 +8,8 @@ import * as Util from '../Utils/util'
 import * as ActionPayloadRenderers from './actionPayloadRenderers'
 import * as moment from 'moment'
 import * as CLM from '@conversationlearner/models'
+import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
+import actionTypeRenderer from './ActionTypeRenderer'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -15,7 +17,6 @@ import { State } from '../types'
 import { onRenderDetailsHeader } from './ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import AdaptiveCardViewer from './modals/AdaptiveCardViewer/AdaptiveCardViewer'
 import './ActionDetailsList.css'
 
 interface ComponentState {
@@ -52,6 +53,11 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             }
             case CLM.ActionTypes.API_LOCAL: {
                 const apiAction = new CLM.ApiAction(action)
+                // If stub not expecting action to exist
+                if (apiAction.isStub) {
+                    return false
+                }
+                // Otherwise make sure callback exists
                 return !this.props.botInfo.callbacks.some(t => t.name === apiAction.name)
             }
             case CLM.ActionTypes.CARD: {
@@ -342,13 +348,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 const isValidationError = component.validationError(action)
                 const payloadRenderer = getActionPayloadRenderer(action, component, isValidationError)
                 return (
-                    <div className="cl-action-error">
-                        {payloadRenderer}
+                    <span>
                         {isValidationError &&
-                            <div className={OF.FontClassNames.mediumPlus}>
-                                <OF.Icon className="cl-icon cl-color-error" iconName="IncidentTriangle" />
-                            </div>}
-                    </div>
+                            <OF.Icon
+                                className={`cl-icon cl-color-error`}
+                                iconName="IncidentTriangle"
+                            />
+                        }
+                        {payloadRenderer}
+                    </span>
                 )
             }
         },
@@ -360,10 +368,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 100,
             isResizable: true,
             getSortValue: action => action.actionType.toLowerCase(),
-            render: action => {
-                const actionType = action.actionType === CLM.ActionTypes.API_LOCAL ? "API" : action.actionType
-                return <span className={OF.FontClassNames.mediumPlus} data-testid="action-details-action-type">{actionType}</span>
-            }
+            render: action => actionTypeRenderer(action)
         },
         {
             key: 'requiredEntities',

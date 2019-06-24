@@ -3,22 +3,22 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react'
+import * as Utils from '../../../Utils/util'
+import actions from '../../../actions'
+import ActionDetailsList from '../../../components/ActionDetailsList'
+import FormattedMessageId from '../../../components/FormattedMessageId'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import actions from '../../../actions'
-import ActionDetailsList from '../../../components/ActionDetailsList'
-import * as OF from 'office-ui-fabric-react'
-import * as Utils from '../../../Utils/util'
-import FormattedMessageId from '../../../components/FormattedMessageId'
-import { AppBase, ActionBase } from '@conversationlearner/models'
 import { ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
-    actionSelected: ActionBase | null
+    actionSelected: CLM.ActionBase | null
     actionIDToDelete: string | null
     isConfirmDeleteActionModalOpen: boolean
     isActionEditorModalOpen: boolean
@@ -48,7 +48,7 @@ class Actions extends React.Component<Props, ComponentState> {
         this.focusNewActionButton()
     }
 
-    onSelectAction(action: ActionBase) {
+    onSelectAction(action: CLM.ActionBase) {
         if (this.props.editingPackageId === this.props.app.devPackageId) {
             this.setState({
                 actionSelected: action,
@@ -75,8 +75,8 @@ class Actions extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickDeleteActionEditor(action: ActionBase, removeFromDialogs: boolean) {
-        Utils.setStateAsync(this, {
+    async onClickDeleteActionEditor(action: CLM.ActionBase, removeFromDialogs: boolean) {
+        await Utils.setStateAsync(this, {
             isActionEditorOpen: false,
             actionSelected: null
         })
@@ -86,9 +86,9 @@ class Actions extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickSubmitActionEditor(action: ActionBase) {
+    async onClickSubmitActionEditor(action: CLM.ActionBase) {
         const wasEditing = this.state.actionSelected
-        Utils.setStateAsync(this, {
+        await Utils.setStateAsync(this, {
             isActionEditorOpen: false,
             actionSelected: null
         })
@@ -106,7 +106,7 @@ class Actions extends React.Component<Props, ComponentState> {
         }
     }
 
-    getFilteredActions(): ActionBase[] {
+    getFilteredActions(): CLM.ActionBase[] {
         //runs when user changes the text 
         const searchStringLower = this.state.searchValue.toLowerCase()
         return this.props.actions.filter(a => {
@@ -116,7 +116,7 @@ class Actions extends React.Component<Props, ComponentState> {
                 .filter(e => [...a.requiredEntities, ...a.negativeEntities, ...(a.suggestedEntity ? [a.suggestedEntity] : [])].includes(e.entityId))
             const entityMatch = entities.some(e => e.entityName.toLowerCase().includes(searchStringLower))
 
-            return nameMatch || typeMatch || entityMatch
+            return (nameMatch || typeMatch || entityMatch)
         })
     }
 
@@ -128,7 +128,7 @@ class Actions extends React.Component<Props, ComponentState> {
 
     render() {
         // TODO: Look to move this up to the set state calls instead of forcing it to be on every render
-        const { actions } = this.props
+        const { actions: allActions } = this.props
         const computedActions = this.getFilteredActions()
         return (
             <div className="cl-page">
@@ -158,7 +158,7 @@ class Actions extends React.Component<Props, ComponentState> {
                         componentRef={this.newActionButtonRef}
                     />
                 </div>
-                {actions.length === 0
+                {allActions.length === 0
                     ? <div className="cl-page-placeholder">
                         <div className="cl-page-placeholder__content">
                             <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`} data-testid="create-an-action-title">Create an Action</div>
@@ -229,7 +229,7 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    app: AppBase
+    app: CLM.AppBase
     editingPackageId: string
 }
 

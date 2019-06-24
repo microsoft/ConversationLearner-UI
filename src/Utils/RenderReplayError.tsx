@@ -21,6 +21,15 @@ export function renderReplayError(replayError: CLM.ReplayError): React.ReactNode
                     </div>
                 </div>
             )
+        case CLM.ReplayErrorType.ActionStub:
+            return (
+                <div className="cl-editdialog-error">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_ACTION_STUB} />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_ACTION_STUB} customClass="cl-icon-redbackground" />
+                    </div>
+                </div>
+            )
         case CLM.ReplayErrorType.EntityEmpty:
             return (
                 <div className="cl-editdialog-error">
@@ -73,6 +82,15 @@ export function renderReplayError(replayError: CLM.ReplayError): React.ReactNode
                     <div className={OF.FontClassNames.mediumPlus}>
                         <FormattedMessageId id={FM.REPLAYERROR_DESC_API_EXCEPTION} />
                         <HelpIcon tipType={TipType.REPLAYERROR_DESC_API_EXCEPTION} customClass="cl-icon-redbackground" />
+                    </div>
+                </div>
+            )
+        case CLM.ReplayErrorType.APIStub:
+            return (
+                <div className="cl-editdialog-warning">
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <FormattedMessageId id={FM.REPLAYERROR_DESC_API_STUB} />
+                        <HelpIcon tipType={TipType.REPLAYERROR_DESC_API_STUB} customClass="cl-icon-redbackground" />
                     </div>
                 </div>
             )

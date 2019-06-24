@@ -97,7 +97,7 @@ class TreeView extends React.Component<Props, ComponentState> {
 
         setTimeout(
             () => this.state.treeElement.setState({ isTransitioning: false }),
-            this.state.treeElement.props.transitionDuration + 10,
+            this.state.treeElement.props.transitionDuration as number + 10,
         );
         this.state.treeElement.internalState.targetNode = targetNode;
     }
@@ -385,7 +385,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                         >
                             {this.state.tree && this.treeContainerRef.current &&
                                 <Tree 
-                                    data={this.state.tree!}
+                                    data={this.state.tree}
                                     ref={this.setTreeRef}
                                     orientation='vertical'
                                     allowForeignObjects={true}

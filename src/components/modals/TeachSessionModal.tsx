@@ -7,7 +7,7 @@ import * as BotChat from '@conversationlearner/webchat'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
-import { EditHandlerArgs } from '../../Utils/dialogEditing'
+import * as DialogEditing from '../../Utils/dialogEditing'
 import * as CLM from '@conversationlearner/models'
 import AddButtonInput from './AddButtonInput'
 import AddButtonScore from './AddButtonScore'
@@ -17,6 +17,7 @@ import UserInputModal from './UserInputModal'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
 import FormattedMessageId from '../FormattedMessageId'
+import ImportCancelModal from './ImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
 import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
 import { returntypeof } from 'react-redux-typescript'
@@ -36,6 +37,7 @@ import './TeachSessionModal.css'
 
 interface ComponentState {
     isConfirmDeleteOpen: boolean,
+    isImportAbandonOpen: boolean,
     isUserInputModalOpen: boolean,
     addUserInputSelectionType: SelectionType
     isInitStateOpen: boolean,
@@ -61,6 +63,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     state: ComponentState = {
         isConfirmDeleteOpen: false,
+        isImportAbandonOpen: false,
         isUserInputModalOpen: false,
         addUserInputSelectionType: SelectionType.NONE,
         isInitStateOpen: false,
@@ -82,7 +85,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     private callbacksId: string | null = null;
 
     componentDidMount() {
-        this.callbacksId = ErrorHandler.registerCallbacks(
+        this.callbacksId = ErrorHandler.RegisterCallbacks(
             [
                 { actionType: AT.POST_SCORE_FEEDBACK_ASYNC, callback: this.onDismissError },
                 { actionType: AT.RUN_SCORER_ASYNC, callback: this.onDismissError },
@@ -100,13 +103,13 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     componentWillUnmount() {
         if (this.callbacksId) {
-            ErrorHandler.deleteCallbacks(this.callbacksId)
+            ErrorHandler.DeleteCallbacks(this.callbacksId)
         }
     }
 
     @OF.autobind
     onDismissError(errorType: AT): void {
-        this.props.onClose(false);
+        this.props.onClose(false)
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -196,6 +199,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    //---- INIT STATE ----
     @OF.autobind
     onInitStateClicked() {
         this.setState({
@@ -204,7 +208,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onCloseInitState(filledEntityMap?: CLM.FilledEntityMap) {
+    async onCloseInitState(filledEntityMap: CLM.FilledEntityMap | null) {
         if (filledEntityMap && this.props.onSetInitialEntities) {
             await this.props.onSetInitialEntities(filledEntityMap)
         }
@@ -214,34 +218,42 @@ class TeachModal extends React.Component<Props, ComponentState> {
         })
     }
 
+    //---- ABANDON ----
     @OF.autobind
-    onClickAbandonTeach() {
-        if (this.state.nextActivityIndex) {
+    async onClickAbandonTeach() {
+        if (this.props.editType === EditDialogType.IMPORT) {
+            this.setState({
+                isImportAbandonOpen: true
+            })
+        }
+        else if (this.state.nextActivityIndex) {
             this.setState({
                 isConfirmDeleteOpen: true
             })
         } else {
-            this.onClickConfirmDelete()
+            await this.onClickConfirmDelete(false)
         }
     }
 
     @OF.autobind
     onClickSave() {
-        this.props.onClose(true, this.state.tags, this.state.description)
+        this.props.onClose(true, this.state.tags, this.state.description, false)
     }
 
     @OF.autobind
-    async onClickConfirmDelete() {
+    async onClickConfirmDelete(stopImport: boolean) {
         await Util.setStateAsync(this, {
-            isConfirmDeleteOpen: false
+            isConfirmDeleteOpen: false,
+            isImportAbandonOpen: false
         })
-        this.props.onClose(false)
+        this.props.onClose(false, undefined, undefined, stopImport)
     }
 
     @OF.autobind
     onClickCancelDelete() {
         this.setState({
-            isConfirmDeleteOpen: false
+            isConfirmDeleteOpen: false,
+            isImportAbandonOpen: false
         })
     }
 
@@ -334,64 +346,22 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
             // If there's an error when I try to continue, reset webchat to ignore new input
             await this.props.setErrorDismissCallback(this.onClickUndoInput)
-            await this.props.runExtractorThunkAsync(
+            await (this.props.runExtractorThunkAsync(
                 this.props.app.appId,
                 CLM.DialogType.TEACH,
                 this.props.teachSession.teach.teachId,
                 null,
                 userInput,
-                this.props.originalTrainDialogId)
+                this.props.originalTrainDialogId) as any as Promise<void>)
         }
     }
 
     // TODO: this is redundant with EditDialogAdmin
     @OF.autobind
-    getPrevMemories(): CLM.Memory[] {
-
-        if (!this.state.selectedHistoryActivity || !this.props.sourceTrainDialog) {
-            throw new Error("historyRender missing data")
-        }
-
-        const clData: CLM.CLChannelData = this.state.selectedHistoryActivity.channelData.clData
-        const roundIndex = clData.roundIndex!
-
-        if (roundIndex === null) {
-            throw new Error(`Cannot get previous memories because roundIndex is null. This is likely a problem with code. Please open an issue.`)
-        }
-
-        let memories: CLM.Memory[] = [];
-        const prevIndex = roundIndex - 1;
-        if (prevIndex >= 0) {
-            const round = this.props.sourceTrainDialog.rounds[prevIndex];
-            if (round.scorerSteps.length > 0) {
-                const scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
-                memories = scorerStep.input.filledEntities.map<CLM.Memory>(fe => {
-                    const entity = this.props.entities.find(e => e.entityId === fe.entityId)
-                    if (!entity) {
-                        throw new Error(`Could not find entity by id: ${fe.entityId} in list of entities`)
-                    }
-                    return {
-                        entityName: entity.entityName,
-                        entityValues: fe.values
-                    }
-                })
-            }
-        }
-        return memories;
-    }
-
-    // TODO: this is redundant with EditDialogAdmin
-    @OF.autobind
-    historyRender(): DialogUtils.DialogRenderData {
-        let selectedAction: CLM.ActionBase | undefined
-        let scorerStep: CLM.TrainScorerStep | CLM.LogScorerStep | undefined
-        let scoreResponse: CLM.ScoreResponse | undefined
-        let round: CLM.TrainRound | CLM.LogRound | undefined
-        let memories: CLM.Memory[] = [];
-        let prevMemories: CLM.Memory[] = [];
+    getRenderData(): DialogUtils.DialogRenderData {
 
         if (this.state.selectedHistoryActivity === null || !this.props.sourceTrainDialog) {
-            throw new Error("historyRender missing data")
+            throw new Error("getRenderData missing data")
         }
 
         const clData: CLM.CLChannelData = this.state.selectedHistoryActivity.channelData.clData
@@ -399,109 +369,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         const scoreIndex = clData.scoreIndex
         const senderType = clData.senderType
 
-        if (roundIndex !== null && roundIndex < this.props.sourceTrainDialog.rounds.length) {
-            round = this.props.sourceTrainDialog.rounds[roundIndex];
-            if (round.scorerSteps.length > 0 && typeof scoreIndex === "number") {
-                scorerStep = round.scorerSteps[scoreIndex];
-                if (!scorerStep) {
-                    throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
-                }
-
-                const actionId = scorerStep!.labelAction
-                selectedAction = this.props.actions.find(action => action.actionId === actionId);
-
-                if (!selectedAction) {
-                    // Action may have been deleted.  If so create dummy action to render
-                    selectedAction = {
-                        actionId: actionId || 'MISSING ACTION',
-                        createdDateTime: new Date().toJSON(),
-                        payload: 'MISSING ACTION',
-                        isTerminal: false,
-                        actionType: CLM.ActionTypes.TEXT,
-                        requiredEntitiesFromPayload: [],
-                        requiredEntities: [],
-                        requiredConditions: [],
-                        negativeEntities: [],
-                        negativeConditions: [],
-                        suggestedEntity: undefined,
-                        version: 0,
-                        packageCreationId: 0,
-                        packageDeletionId: 0,
-                        entityId: undefined,
-                        enumValueId: undefined,
-                    }
-                }
-
-                memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
-                    const entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                    const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
-                    return {
-                        entityName: entityName,
-                        entityValues: fe.values
-                    }
-                });
-
-                // Get prevmemories
-                prevMemories = this.getPrevMemories();
-
-                const scoredAction: CLM.ScoredAction = {
-                    actionId: selectedAction.actionId,
-                    payload: selectedAction.payload,
-                    isTerminal: selectedAction.isTerminal,
-                    score: 1,
-                    actionType: selectedAction.actionType
-                }
-
-                // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
-                const unscoredActions = this.props.actions
-                    .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
-                    .map<CLM.UnscoredAction>(action =>
-                        ({
-                            actionId: action.actionId,
-                            payload: action.payload,
-                            isTerminal: action.isTerminal,
-                            reason: CLM.ScoreReason.NotCalculated,
-                            actionType: action.actionType
-                        }));
-
-                scoreResponse = {
-                    metrics: {
-                        wallTime: 0
-                    },
-                    scoredActions: [scoredAction],
-                    unscoredActions: unscoredActions
-                }
-            }
-            // Extraction step
-            else {
-                // If scorer step exists, use it to populate memory
-                scorerStep = round.scorerSteps[0];
-                if (scorerStep) {
-                    memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
-                        const entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                        const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
-                        return {
-                            entityName: entityName,
-                            entityValues: fe.values
-                        }
-                    });
-
-                    // Get prevmemories
-                    prevMemories = this.getPrevMemories()
-                }
-            }
-            return {
-                dialogMode: (senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
-                scoreInput: scorerStep ? scorerStep.input : undefined,
-                scoreResponse: scoreResponse,
-                roundIndex,
-                memories: DialogUtils.filterDummyEntities(memories),
-                prevMemories: DialogUtils.filterDummyEntities(prevMemories),
-                extractResponses: [],
-                textVariations: round.extractorStep.textVariations
-            }
-        }
-        throw new Error("Fail to render")
+        return DialogUtils.getDialogRenderData(this.props.sourceTrainDialog, this.props.entities, this.props.actions, roundIndex, scoreIndex, senderType)
     }
 
     @OF.autobind
@@ -657,6 +525,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
         switch (this.props.editType) {
             case EditDialogType.NEW:
                 return Util.formatMessageId(intl, FM.BUTTON_ABANDON)
+            case EditDialogType.IMPORT:
+                return Util.formatMessageId(intl, FM.BUTTON_ABANDON_IMPORT)
             case EditDialogType.BRANCH:
                 return Util.formatMessageId(intl, FM.BUTTON_ABANDON_BRANCH)
             case EditDialogType.LOG_EDITED:
@@ -675,6 +545,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     renderSaveText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
                 return Util.formatMessageId(intl, FM.BUTTON_SAVE)
             case EditDialogType.BRANCH:
                 return Util.formatMessageId(intl, FM.BUTTON_SAVE_BRANCH)
@@ -694,6 +565,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     renderConfirmText(intl: ReactIntl.InjectedIntl) {
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
             case EditDialogType.BRANCH:
                 return Util.formatMessageId(intl, FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE)
             case EditDialogType.LOG_EDITED:
@@ -770,7 +642,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     className={`cl-editdialog-error ${OF.FontClassNames.mediumPlus}`}
                     data-testid="dialog-modal-error-noselection"
                 >
-                    <FormattedMessageId id={FM.REPLAYERROR_EXISTS} />
+                    <FormattedMessageId id={FM.REPLAYERROR_ERROR} />
                 </div>
             )
         }
@@ -834,7 +706,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                         nextActivityIndex={this.state.nextActivityIndex}
                                         selectedActivityIndex={this.state.selectedActivityIndex}
                                         isLastActivitySelected={isLastActivitySelected}
-                                        historyRenderData={this.state.selectedHistoryActivity ? this.historyRender : null}
+                                        historyRenderData={this.state.selectedHistoryActivity ? this.getRenderData : null}
                                         onScoredAction={this.onScoredAction}
                                         onReplaceActivityText={(userText, index) => {
                                             this.setState({
@@ -842,7 +714,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                                 replaceActivityText: userText
                                             })
                                         }}
-
+                                        importIndex={this.props.importIndex}
+                                        importCount={this.props.importCount}
                                         onEditExtraction={this.onEditExtraction}
                                         onEditAction={this.onEditScore}
 
@@ -907,6 +780,12 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     </div>
+                    <ImportCancelModal
+                        open={this.state.isImportAbandonOpen}
+                        onCancel={this.onClickCancelDelete}
+                        onConfirm={this.onClickConfirmDelete}
+                        isLastImport={this.props.importIndex === this.props.importCount}
+                    />
                     <ConfirmCancelModal
                         data-testid="teach-session-confirm-cancel"
                         open={this.state.isConfirmDeleteOpen}
@@ -930,6 +809,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 </Modal>
                 <TeachSessionInitState
                     isOpen={this.state.isInitStateOpen}
+                    app={this.props.app}
+                    editingPackageId={this.props.editingPackageId}
                     handleClose={this.onCloseInitState}
                 />
                 <LogConversionConflictModal
@@ -968,16 +849,16 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     isOpen: boolean
-    onClose: (save: boolean, tags?: string[], description?: string) => void
-    onEditTeach: (historyIndex: number, args: EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any) => void
-    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
-    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
-    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
-    onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: EditHandlerArgs) => any
+    onClose: (save: boolean, tags?: string[], description?: string, stopImport?: boolean) => void
+    onEditTeach: (historyIndex: number | null, args: DialogEditing.EditHandlerArgs | null, tags: string[], description: string, editHandler: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any) => void
+    onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
+    onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
+    onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
+    onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, args: DialogEditing.EditHandlerArgs) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
     onEndSessionActivity: (tags: string[], description: string) => any
     onReplayDialog: (trainDialog: CLM.TrainDialog) => any
-    onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => void) | null
+    onSetInitialEntities: ((initialFilledEntityMap: CLM.FilledEntityMap) => Promise<void>) | null
     app: CLM.AppBase
     teachSession: TeachSessionState
     editingPackageId: string
@@ -991,7 +872,8 @@ export interface ReceivedProps {
     initialHistory: Activity[]
     lastAction: CLM.ActionBase | null
     allUniqueTags: string[]
-
+    importIndex?: number
+    importCount?: number
     conflictPairs: ConflictPair[]
     onAcceptConflictResolution: (conflictPairs: ConflictPair[]) => Promise<void>
     onAbortConflictResolution: () => void

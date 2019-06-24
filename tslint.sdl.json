@@ -4,12 +4,21 @@
     ],
     "defaultSeverity": "error",
     "rules": {
+        "function-name": [ 
+            true, 
+            { 
+                "method-regex": "^[a-z][\\w\\d]+$", 
+                "private-method-regex": "^[a-z][\\w\\d]+$", 
+                "protected-method-regex": "^[a-z][\\w\\d]+$", 
+                "static-method-regex": "^[A-Z][\\w\\d]+$", 
+                "function-regex": "^[a-z][\\w\\d]+$" 
+            } 
+        ],
         "one-line": [
             true,
             "check-open-brace",
             "check-whitespace"
         ],
-
         "no-banned-terms": true,
         "no-delete-expression": true,
         "no-document-domain": true,

@@ -3,9 +3,8 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
-import { PartialTrainDialog } from '../types/models'
+import { PartialTrainDialog, AppInput } from '../types/models'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
-import { AppInput } from '../types/models'
 
 export interface ClientHeaders {
     botChecksum: string
@@ -178,6 +177,15 @@ export default class ClClient {
         }>({
             method: 'post',
             url: `/app/${appId}/edit/${tagName}`
+        })
+        return response.data
+    }
+
+    async appExtract(appId: string, userUtterances: string[]): Promise<CLM.ExtractResponse[]> {
+        const response = await this.send<CLM.ExtractResponse[]>({
+            method: 'post',
+            url: `/app/${appId}/extract`,
+            data: userUtterances
         })
         return response.data
     }
@@ -425,10 +433,10 @@ export default class ClClient {
         return response.data.appList.apps
     }
 
-    async history(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): Promise<CLM.TeachWithHistory> {
+    async history(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean): Promise<CLM.TeachWithHistory> {
         const response = await this.send<CLM.TeachWithHistory>({
             method: 'post',
-            url: `/app/${appId}/history?username=${userName}&userid=${userId}`,
+            url: `/app/${appId}/history?username=${userName}&userid=${userId}&useMarkdown=${useMarkdown}`,
             data: trainDialog
         })
         return response.data
@@ -584,7 +592,7 @@ export default class ClClient {
         return response.data
     }
 
-    //AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
+    // AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
     // filteredDialog = dialog to ignore when checking for conflicting labels
     async teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string, filteredDialog: string | null): Promise<CLM.TeachWithHistory> {
         let url = `/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`
@@ -600,6 +608,16 @@ export default class ClClient {
             }
         })
 
+        return response.data
+    }
+
+    // AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC
+    async validateTranscript(appId: string, packageId: string, userId: string, turnValidations: CLM.TurnValidation[]): Promise<boolean> {
+        const response = await this.send<boolean>({
+            method: 'post',
+            url: `/app/${appId}/validatetranscript?userId=${userId}&packageId=${packageId}`,
+            data: turnValidations
+        })
         return response.data
     }
 

@@ -25,7 +25,11 @@ export const CLTagItem = (props: ICLPickerItemProps<ITag>) => (
             {props.children}
         </span>
         {!props.disabled && !props.locked &&
-            <span className={'ms-TagItem-close'} onClick={props.onRemoveItem}>
+            <span 
+                className={'ms-TagItem-close'} 
+                onClick={props.onRemoveItem}
+                role="button"
+            >
                 <Icon iconName='Cancel' />
             </span>
         }

@@ -11,7 +11,7 @@ import { setTipType } from '../actions/displayActions'
 import { TipType } from './ToolTips/ToolTips'
 import { IconButton } from 'office-ui-fabric-react'
 
-class HelpIcon extends React.Component<Props, {}> {
+class HelpIcon extends React.Component<Props> {
     render() {
         return (
             <IconButton

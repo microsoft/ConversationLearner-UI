@@ -11,10 +11,8 @@ import FuseMatch from '../../ExtractorResponseEditor/FuseMatch'
 interface Props {
     matchedOptions: MatchedOption<IOption>[]
     isVisible: boolean
-    bottom: number
     left: number
     top: number
-    searchText: string
     onClickOption: (option: IOption) => void
 }
 
@@ -22,9 +20,8 @@ interface PropsWithRef extends Props {
     menuRef: React.Ref<HTMLDivElement>
 }
 
-
 class Picker extends React.Component<PropsWithRef> {
-    listRef=  React.createRef<HTMLDivElement>()
+    listRef =  React.createRef<HTMLDivElement>()
 
     componentDidUpdate() {
         if (this.listRef.current) {

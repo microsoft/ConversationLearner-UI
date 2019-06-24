@@ -201,7 +201,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                 </div>
 
                 <div className="cl-modal_footer cl-modal-buttons">
-                    <div className="cl-modal-buttons_secondary"></div>
+                    <div className="cl-modal-buttons_secondary"/>
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
                             data-testid="log-conversion-conflicts-modal-accept"

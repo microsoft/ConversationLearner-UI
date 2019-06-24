@@ -7,26 +7,34 @@ import * as ActionPayloadRenderers from '../actionPayloadRenderers'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react';
 import * as Util from '../../Utils/util'
+import * as DialogEditing from '../../Utils/dialogEditing'
+import actions from '../../actions'
+import ConfirmCancelModal from './ConfirmCancelModal'
+import actionTypeRenderer from '../ActionTypeRenderer'
+import EditApiStub from '../modals/EditApiStub'
+import ActionCreatorEditor, { NewActionPreset } from './ActionCreatorEditor'
+import AdaptiveCardViewer , { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
+import { compareTwoStrings } from 'string-similarity'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { returntypeof } from 'react-redux-typescript';
 import { State } from '../../types'
-import { createActionThunkAsync } from '../../actions/actionActions'
-import { toggleAutoTeach } from '../../actions/teachActions'
-import ActionCreatorEditor from './ActionCreatorEditor'
 import { onRenderDetailsHeader } from '../ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
-import ConfirmCancelModal from './ConfirmCancelModal'
 import './ActionScorer.css'
 
-const ACTION_BUTTON = 'action_button'
 const MISSING_ACTION = 'missing_action'
 
+interface ActionForRender extends CLM.ScoredBase {
+    similarityScore?: number
+    score?: number
+    reason?: CLM.ScoreReason | null
+}
+
 interface IRenderableColumn extends OF.IColumn {
-    getSortValue: (action: CLM.ScoredBase, component: ActionScorer) => number | string
-    render: (x: CLM.ScoredBase, component: ActionScorer, index: number) => React.ReactNode
+    getSortValue: (actionForRender: ActionForRender, component: ActionScorer) => number | string
+    render: (scoreBase: CLM.ScoredBase, component: ActionScorer, index: number) => React.ReactNode
 }
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
@@ -44,8 +52,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 // If I'm not in Teach or clicked on history item, highlight selected
                 let selected = false
                 if (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected) {
+                    const score: number | string = (action as CLM.ScoredAction).score
                     // If no selected actionId, first item is selected one
-                    if (!component.props.selectedActionId && index === 0) {
+                    if (!component.props.selectedActionId && score === 1) {
                         selected = true
                     }
                     else if (component.props.selectedActionId === action.actionId) {
@@ -84,7 +93,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             disabled={!isAvailable}
                             ariaDescription={buttonText}
                             text={buttonText}
-                            onClick={component.showAlreadySelectedPopUp}
+                            onClick={() => component.handleReselectAction(action)}
                         />
                     )
                 }
@@ -173,18 +182,25 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: true,
             isSorted: true,
             isSortedDescending: true,
-            getSortValue: (scoredBase, component) => {
+            getSortValue: (actionForRender, component) => {
 
-                // TODO: Fix type so we can use typed property access
-                const score = scoredBase['score']
+                let score: number | undefined
+
+                // If an import action, sort by string similarity to existing actions
+                if (component.props.newActionPreset) {
+                    score = actionForRender.similarityScore || 0
+                }
+                else {
+                    score = actionForRender.score
+                }
 
                 // If score base does not have score it's either not scorable or not available
                 // prioritize not scorable over not available but both at bottom of list
                 if (!score) {
-                    if (scoredBase['reason'] === CLM.ScoreReason.NotAvailable) {
+                    if (actionForRender.reason === CLM.ScoreReason.NotAvailable) {
                         return -100;
                     } else {
-                        const isAvailable = component.isUnscoredActionAvailable(scoredBase as CLM.UnscoredAction);
+                        const isAvailable = component.isUnscoredActionAvailable(actionForRender as CLM.UnscoredAction);
                         return isAvailable
                             ? -1
                             : -10
@@ -243,15 +259,20 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 80,
             isResizable: true,
             getSortValue: action => action.actionType.toLowerCase(),
-            render: action => <span className={OF.FontClassNames.mediumPlus}>{action.actionType}</span>
+            render: (scoredBase, component) => {
+                let action = component.props.actions.find(a => a.actionId === scoredBase.actionId)
+                return actionTypeRenderer(action)
+            }
         },
     ]
 }
 
 interface ComponentState {
-    actionModalOpen: boolean
-    columns: OF.IColumn[],
-    scoredItems: CLM.ScoredBase[],
+    isActionCreatorModalOpen: boolean
+    apiStubName: string | null
+    apiStubCreatorFilledEntityMap: CLM.FilledEntityMap | null
+    columns: OF.IColumn[]
+    actionForRender: CLM.ScoredBase[]
     sortColumn: IRenderableColumn
     haveEdited: boolean
     cardViewerAction: CLM.ActionBase | null
@@ -267,9 +288,11 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         const columns = getColumns(this.props.intl)
         this.state = {
-            actionModalOpen: false,
+            isActionCreatorModalOpen: false,
+            apiStubName: null,
+            apiStubCreatorFilledEntityMap: null,
             columns,
-            scoredItems: [],
+            actionForRender: [],
             sortColumn: columns[2], // "score"
             haveEdited: false,
             cardViewerAction: null,
@@ -283,7 +306,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             this.autoSelect()
             this.setState({
                 haveEdited: false,
-                scoredItems: this.getScoredItems()
+                actionForRender: this.getActionsForRender()
             })
         }
     }
@@ -291,7 +314,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     componentDidMount() {
         this.autoSelect();
         this.setState({
-            scoredItems: this.getScoredItems()
+            actionForRender: this.getActionsForRender()
         })
     }
 
@@ -308,15 +331,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         })
     }
 
-    autoSelect() {
+    async autoSelect() {
         // If not in interactive mode select action automatically
         if (this.props.autoTeach && this.props.dialogMode === CLM.DialogMode.Scorer) {
             // We assume if DialogMode is Scorer, then we must have ScoreResponse
             // TODO: Fix this with better types
             const scoreResponse = this.props.scoreResponse
-            const actions = [...scoreResponse.scoredActions as CLM.ScoredBase[], ...scoreResponse.unscoredActions]
+            const allActions = [...scoreResponse.scoredActions as CLM.ScoredBase[], ...scoreResponse.unscoredActions]
             // Since actions are sorted by score descending (max first), assume first scored action is the "best" action
-            const bestAction = actions[0];
+            const bestAction = allActions[0];
 
             // Make sure there is an available action
             if ((bestAction as CLM.UnscoredAction).reason === CLM.ScoreReason.NotAvailable) {
@@ -325,8 +348,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 return;
             }
 
-            this.handleActionSelection(bestAction);
-        } else if (!this.state.actionModalOpen) {
+            await this.handleActionSelection(bestAction);
+        } else if (!this.state.isActionCreatorModalOpen) {
             setTimeout(this.focusPrimaryButton, 100)
         }
     }
@@ -341,14 +364,19 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
+    //-------------------
+    // Action Creator
+    //-------------------
     onClickCancelActionEditor() {
         this.setState({
-            actionModalOpen: false
+            isActionCreatorModalOpen: false,
         })
+        this.props.onActionCreatorClosed()
     }
 
     async onClickSubmitActionEditor(action: CLM.ActionBase) {
         await Util.setStateAsync(this, { actionModalOpen: false })
+        this.props.onActionCreatorClosed()
 
         const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
         if (newAction
@@ -361,7 +389,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             // See if new action is available, then take it
             const isAvailable = this.isAvailable(newAction)
             if (isAvailable) {
-                this.handleActionSelection(newAction)
+                await this.handleActionSelection(newAction)
             }
         }
     }
@@ -369,8 +397,34 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     @OF.autobind
     handleOpenActionModal() {
         this.setState({
-            actionModalOpen: true
+            isActionCreatorModalOpen: true
         })
+    }
+
+    //-------------------
+    // API Stub Creator
+    //-------------------
+    @OF.autobind
+    onOpenAPIStubCreator(apiStubName: string | null = null) {
+        this.setState({
+            apiStubName,
+            apiStubCreatorFilledEntityMap: CLM.FilledEntityMap.FromFilledEntities(this.props.scoreInput.filledEntities, this.props.entities)
+        })
+    }
+
+    @OF.autobind
+    async onCloseCreateAPIStub(filledEntityMap: CLM.FilledEntityMap | null, apiName: string, isTerminal: boolean) {
+        this.setState({
+            apiStubName: null,
+            apiStubCreatorFilledEntityMap: null
+        })
+        // If user cancelled
+        if (!filledEntityMap) {
+            return
+        }
+        const trainScorerStep = await DialogEditing.getStubScorerStep(apiName, isTerminal, this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
+        this.setState({ haveEdited: true })
+        this.props.onActionSelected(trainScorerStep)
     }
 
     @OF.autobind
@@ -399,7 +453,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    handleDefaultSelection() {
+    async handleDefaultSelection() {
         // Look for a valid action
         let scoredBase: CLM.ScoredBase | null = null
         const scoreResponse = this.props.scoreResponse
@@ -414,18 +468,38 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             }
         }
         if (scoredBase) {
-            this.handleActionSelection(scoredBase);
+            await this.handleActionSelection(scoredBase)
         }
     }
 
     @OF.autobind
+    async handleReselectAction(scoredBase: CLM.ScoredBase) {
+        // If ApiStub let user reselect memory values
+        if (CLM.ActionBase.isStubbedAPI(scoredBase)) {
+            await this.handleActionSelection(scoredBase)
+        }
+        // Otherwise tell them it has already been selected
+        else {
+            this.showAlreadySelectedPopUp()
+        }
+    }
+    @OF.autobind
     async handleActionSelection(scoredBase: CLM.ScoredBase) {
+
+        // If apiStub get stub data before selecting
+        if (CLM.ActionBase.isStubbedAPI(scoredBase)) {
+            const action = this.props.actions.find(a => a.actionId === scoredBase.actionId)
+            if (action) {
+                this.onOpenAPIStubCreator(new CLM.ApiAction(action).name)
+            }
+            return
+        }
         let scoredAction: CLM.ScoredAction | undefined
         if (scoredBase.actionId === Util.PLACEHOLDER_SET_ENTITY_ACTION_ID) {
             // TODO: Schema refactor
             const setEntityAction = new CLM.SetEntityAction(scoredBase as CLM.ActionBase)
             const action = Util.getSetEntityActionForEnumValue(setEntityAction.entityId, setEntityAction.enumValueId)
-            const newAction = await (this.props.createActionThunkAsync(this.props.app.appId, action) as any as CLM.ActionBase)
+            const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as CLM.ActionBase)
 
             scoredAction = {
                 actionId: newAction.actionId,
@@ -453,8 +527,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             scoredAction: scoredAction
         };
 
-        this.setState({ haveEdited: true });
-        this.props.onActionSelected(trainScorerStep);
+        this.setState({ haveEdited: true })
+        this.props.onActionSelected(trainScorerStep)
     }
 
     isConditionMet(condition: CLM.Condition): { match: boolean, name: string } {
@@ -563,7 +637,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
             // If selected action is EndSession, it's ok to replace it with another EndSession
             // If no selected actionId, first item is selected one
-            const selectedActionId = this.props.selectedActionId || (this.state.scoredItems.length > 0 ? this.state.scoredItems[0].actionId : null)
+            const selectedActionId = this.props.selectedActionId || (this.state.actionForRender.length > 0 ? this.state.actionForRender[0].actionId : null)
             if (selectedActionId) {
                 let selectedAction = this.props.actions.find(a => a.actionId === selectedActionId)
                 if (selectedAction && selectedAction.actionType === CLM.ActionTypes.END_SESSION) {
@@ -627,6 +701,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
         return true;
     }
+
     calculateReason(unscoredAction: CLM.UnscoredAction): CLM.ScoreReason {
 
         if (this.props.dialogType !== CLM.DialogType.TEACH
@@ -652,32 +727,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     renderItemColumn(action: CLM.ScoredBase, index: number, column: IRenderableColumn) {
-        // Null is action create button
-        if (action.actionId === ACTION_BUTTON) {
-            if (column.key === 'select') {
-                // Will focus on new action button if no scores
-                const ref = (index === 0)
-                    ? this.primaryScoreButtonRef
-                    : undefined
 
-                return (
-                    <OF.PrimaryButton
-                        data-testid="action-scorer-add-action-button"
-                        onClick={this.handleOpenActionModal}
-                        ariaDescription='Cancel'
-                        text='Action'
-                        iconProps={{ iconName: 'CirclePlus' }}
-                        componentRef={ref}
-                    />
-                )
-            } else {
-                return ''
-            }
-        }
         // Handle deleted actions
-        else if (action.actionId === MISSING_ACTION) {
+        if (action.actionId === MISSING_ACTION) {
             if (column.key === 'select') {
-                const buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && index === 0) ? "Selected" : "Select";
+                const score: number | string = (action as CLM.ScoredAction).score
+                    
+                const buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && score === 1) ? "Selected" : "Select";
                 return (
                     <OF.PrimaryButton
                         disabled={true}
@@ -686,17 +742,22 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     />
                 )
             } else if (column.key === 'actionResponse') {
-                return <span className="cl-font--warning">MISSING ACTION</span>;
+                if (this.props.newActionPreset) {
+                    return <span className="cl-font--warning cl-action-scorer-warning">IMPORTED ACTION</span>;
+                }
+                else {
+                    return <span className="cl-font--warning cl-action-scorer-warning">MISSING ACTION</span>;
+                }
             }
             else if (column.key === 'actionScore') {
-                return column.render(action as CLM.ScoredBase, this, index)
+                return column.render(action, this, index)
             }
             else {
                 return ''
             }
         }
 
-        return column.render(action as CLM.ScoredBase, this, index)
+        return column.render(action, this, index)
     }
 
     // Create dummy item for injecting non-actions into list
@@ -710,12 +771,33 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
-    getScoredItems(): CLM.ScoredBase[] {
+    // Calculate distance between imported bot action and given action
+    calcSimilarity(scoredBase: CLM.ScoredBase): number {
+        if (!this.props.newActionPreset || scoredBase.actionId === MISSING_ACTION) {
+            return 0
+        }
+        const defaultEntityMap = Util.getDefaultEntityMap(this.props.entities)
+        let actionText = ""
+        if (scoredBase.actionType === CLM.ActionTypes.TEXT) {
+            actionText = CLM.ActionBase.GetPayload(scoredBase, defaultEntityMap)
+        }
+        else if (scoredBase.actionType === CLM.ActionTypes.CARD) {
+            const cardAction = new CLM.CardAction(scoredBase as any)
+            const template = this.props.botInfo.templates.find((t) => t.name === cardAction.templateName)
+            if (template) {
+                const renderedActionArguments = cardAction.renderArguments(defaultEntityMap, { fallbackToOriginal: true })
+                actionText = getRawTemplateText(template, renderedActionArguments)
+            }
+        }
+        return compareTwoStrings(actionText, this.props.newActionPreset.text)
+    }
+
+    getActionsForRender(): ActionForRender[] {
         if (!this.props.scoreResponse) {
             return []
         }
 
-        let scoredItems = [...this.props.scoreResponse.scoredActions as CLM.ScoredBase[], ...this.props.scoreResponse.unscoredActions]
+        let scoredItems = [...this.props.scoreResponse.scoredActions as ActionForRender[], ...this.props.scoreResponse.unscoredActions as ActionForRender[]]
 
         // Need to reassemble to scored item has full action info and reason
         scoredItems = scoredItems.map(scoredBase => {
@@ -734,7 +816,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Add any new actions that weren't included in scores
         // NOTE: This will go away when we always rescore the step
         const missingActions = this.props.actions.filter(a => scoredItems.find(si => si.actionId === a.actionId) == null)
-        const missingItems = missingActions.map<CLM.ScoredBase>(action =>
+        const missingItems = missingActions.map<ActionForRender>(action =>
             ({
                 ...action,
                 reason: CLM.ScoreReason.NotCalculated,
@@ -763,7 +845,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             ))
 
         const missingSetEntityItems = missingSetEntityActions
-            .map<CLM.ScoredBase>(action =>
+            .map<ActionForRender>(action =>
                 ({
                     ...action,
                     reason: CLM.ScoreReason.NotCalculated,
@@ -771,6 +853,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 }))
 
         scoredItems = [...scoredItems, ...missingSetEntityItems]
+
+        // If imported action selected, pre-calculate sort scores
+        if (this.props.newActionPreset) { 
+            scoredItems = scoredItems.map(si => ({
+                ...si,
+                similarityScore: this.calcSimilarity(si), 
+            }))
+        }
 
         if (this.state.sortColumn) {
             const sortColumn = this.state.sortColumn
@@ -792,11 +882,6 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     ? isFirstGreaterThanSecond * -1
                     : isFirstGreaterThanSecond
             });
-        }
-
-        // If editing allowed add Action creation button
-        if (!this.props.autoTeach && this.props.canEdit) {
-            scoredItems.push(this.makeDummyItem(ACTION_BUTTON, 0));
         }
 
         return scoredItems
@@ -823,7 +908,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
         return (
             <div>
-                {this.state.scoredItems.length === 1 && (!this.props.autoTeach && this.props.canEdit)
+                {this.state.actionForRender.length === 0 && (!this.props.autoTeach && this.props.canEdit)
                     ? <div className="cl-action-scorer-placeholder">
                         <div className={`cl-action-scorer-placeholder__description`}>
                             <h1 className={OF.FontClassNames.xxLarge}>Create an Action</h1>
@@ -837,9 +922,27 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                             />
                         </div>
                     </div>
-                    : <OF.DetailsList
+                    : 
+                    <div>
+                        <div className="cl-modal-buttons_primary">
+                            <OF.DefaultButton
+                                data-testid="action-scorer-add-action-button"
+                                onClick={this.handleOpenActionModal}
+                                ariaDescription='Create Action'
+                                text='Action'
+                                iconProps={{ iconName: 'CirclePlus' }}
+                            />
+                            <OF.DefaultButton
+                                data-testid="action-scorer-add-apistub-button"
+                                onClick={() => this.onOpenAPIStubCreator()}
+                                ariaDescription='Create API Stub'
+                                text='API Stub'
+                                iconProps={{ iconName: 'Handwriting' }}
+                            />
+                        </div>
+                    <OF.DetailsList
                         className={OF.FontClassNames.mediumPlus}
-                        items={this.state.scoredItems}
+                        items={this.state.actionForRender}
                         columns={this.state.columns}
                         checkboxVisibility={OF.CheckboxVisibility.hidden}
                         onRenderItemColumn={this.renderItemColumn}
@@ -849,14 +952,16 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                             defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
                             onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                     />
+                    </div>
                 }
 
                 <ActionCreatorEditor
                     app={this.props.app}
                     editingPackageId={this.props.editingPackageId}
-                    open={this.state.actionModalOpen}
+                    open={this.state.isActionCreatorModalOpen}
                     action={null}
                     actions={this.props.actions}
+                    newActionPreset={this.props.newActionPreset}
                     handleClose={() => this.onClickCancelActionEditor()}
                     // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete 
                     handleDelete={action => { }}
@@ -874,6 +979,15 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     open={this.state.isAlreadySelectedOpen}
                     onOk={this.onCloseAlreadySelectedPopUp}
                     title={Util.formatMessageId(intl, FM.LOGDIALOGS_ALREADYSELECTED)}
+                />
+                <EditApiStub
+                    isOpen={this.state.apiStubCreatorFilledEntityMap != null}
+                    app={this.props.app}
+                    actions={this.props.actions}
+                    editingPackageId={this.props.editingPackageId}
+                    apiStubName={this.state.apiStubName}
+                    initMemories={this.state.apiStubCreatorFilledEntityMap}
+                    handleClose={this.onCloseCreateAPIStub}
                 />
             </div>
         )
@@ -894,7 +1008,7 @@ export interface ReceivedProps {
     app: CLM.AppBase
     editingPackageId: string,
     historyItemSelected: boolean,
-    dialogType: CLM.DialogType,  // LARS = make this not train dialog specific
+    dialogType: CLM.DialogType,  // TODO = make this not train dialog specific
     autoTeach: boolean,
     dialogMode: CLM.DialogMode,
     scoreResponse: CLM.ScoreResponse,
@@ -903,16 +1017,18 @@ export interface ReceivedProps {
     memories: CLM.Memory[],
     canEdit: boolean,
     isEndSessionAvailable: boolean,
+    newActionPreset?: NewActionPreset 
     onActionSelected: (trainScorerStep: CLM.TrainScorerStep) => void,
+    onActionCreatorClosed: () => void
 }
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        createActionThunkAsync,
-        toggleAutoTeach,
+        createActionThunkAsync: actions.action.createActionThunkAsync,
+        toggleAutoTeach: actions.teach.toggleAutoTeach
     }, dispatch);
 }
-const mapStateToProps = (state: State, ownProps: any) => {
+const mapStateToProps = (state: State) => {
     if (!state.bot.botInfo) {
         throw new Error(`You attempted to render the ActionScorer which requires botInfo, but botInfo was not defined. This is likely a problem with higher level component. Please open an issue.`)
     }

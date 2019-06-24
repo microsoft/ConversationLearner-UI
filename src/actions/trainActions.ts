@@ -17,6 +17,24 @@ import { EntityLabelConflictError } from '../types/errors'
 // --------------------------
 // CreateTrainDialog
 // --------------------------
+const createTrainDialogAsync = (appId: string, trainDialog: CLM.TrainDialog): ActionObject =>
+    ({
+        type: AT.CREATE_TRAIN_DIALOG_ASYNC,
+        appId,
+        trainDialog
+    })
+
+const createTrainDialogFulfilled = (trainDialog: CLM.TrainDialog): ActionObject =>
+    ({
+        type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
+        trainDialog: trainDialog
+    })
+
+const createTrainDialogRejected = (): ActionObject =>
+    ({
+        type: AT.CREATE_TRAIN_DIALOG_REJECTED
+    })
+
 export const createTrainDialogThunkAsync = (appId: string, trainDialog: CLM.TrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_TRAIN_DIALOG_ASYNC)
@@ -44,27 +62,25 @@ export const createTrainDialogThunkAsync = (appId: string, trainDialog: CLM.Trai
     }
 }
 
-const createTrainDialogAsync = (appId: string, trainDialog: CLM.TrainDialog): ActionObject =>
-    ({
-        type: AT.CREATE_TRAIN_DIALOG_ASYNC,
-        appId,
-        trainDialog
-    })
-
-const createTrainDialogFulfilled = (trainDialog: CLM.TrainDialog): ActionObject =>
-    ({
-        type: AT.CREATE_TRAIN_DIALOG_FULFILLED,
-        trainDialog: trainDialog
-    })
-
-const createTrainDialogRejected = (): ActionObject =>
-    ({
-        type: AT.CREATE_TRAIN_DIALOG_REJECTED
-    })
-
 // --------------------------
 // EditTrainDialog
 // --------------------------
+const editTrainDialogAsync = (appId: string, trainDialog: PartialTrainDialog): ActionObject => {
+    return {
+        type: AT.EDIT_TRAINDIALOG_ASYNC,
+        appId: appId,
+        trainDialog: trainDialog
+    }
+}
+
+const editTrainDialogFulfilled = (appId: string, trainDialog: PartialTrainDialog): ActionObject => {
+    return {
+        type: AT.EDIT_TRAINDIALOG_FULFILLED,
+        appId,
+        trainDialog: trainDialog
+    }
+}
+
 export const editTrainDialogThunkAsync = (appId: string, trainDialog: PartialTrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_ASYNC)
@@ -87,25 +103,25 @@ export const editTrainDialogThunkAsync = (appId: string, trainDialog: PartialTra
     }
 }
 
-const editTrainDialogAsync = (appId: string, trainDialog: PartialTrainDialog): ActionObject => {
-    return {
-        type: AT.EDIT_TRAINDIALOG_ASYNC,
-        appId: appId,
-        trainDialog: trainDialog
-    }
-}
-
-const editTrainDialogFulfilled = (appId: string, trainDialog: PartialTrainDialog): ActionObject => {
-    return {
-        type: AT.EDIT_TRAINDIALOG_FULFILLED,
-        appId,
-        trainDialog: trainDialog
-    }
-}
-
 // ----------------------------------------
 // FetchTrainDialog
 // ----------------------------------------
+const fetchTrainDialogAsync = (appId: string, trainDialogId: string): ActionObject => {
+    return {
+        type: AT.FETCH_TRAIN_DIALOG_ASYNC,
+        appId: appId,
+        trainDialogId: trainDialogId
+    }
+}
+
+const fetchTrainDialogFulfilled = (trainDialog: CLM.TrainDialog, replaceLocal: boolean): ActionObject => {
+    return {
+        type: AT.FETCH_TRAIN_DIALOG_FULFILLED,
+        trainDialog,
+        replaceLocal
+    }
+}
+
 export const fetchTrainDialogThunkAsync = (appId: string, trainDialogId: string, replaceLocal: boolean) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOG_ASYNC)
@@ -123,25 +139,29 @@ export const fetchTrainDialogThunkAsync = (appId: string, trainDialogId: string,
     }
 }
 
-const fetchTrainDialogAsync = (appId: string, trainDialogId: string): ActionObject => {
-    return {
-        type: AT.FETCH_TRAIN_DIALOG_ASYNC,
-        appId: appId,
-        trainDialogId: trainDialogId
-    }
-}
-
-const fetchTrainDialogFulfilled = (trainDialog: CLM.TrainDialog, replaceLocal: boolean): ActionObject => {
-    return {
-        type: AT.FETCH_TRAIN_DIALOG_FULFILLED,
-        trainDialog,
-        replaceLocal
-    }
-}
-
 // --------------------------
 // ScoreFromHistory
 // --------------------------
+const scoreFromHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog): ActionObject => {
+    return {
+        type: AT.FETCH_SCOREFROMHISTORY_ASYNC,
+        appId,
+        trainDialog
+    }
+}
+
+const scoreFromHistoryFulfilled = (uiScoreResponse: CLM.UIScoreResponse): ActionObject => {
+    return {
+        type: AT.FETCH_SCOREFROMHISTORY_FULFILLED,
+        uiScoreResponse
+    }
+}
+
+const scoreFromHistoryRejected = (): ActionObject =>
+    ({
+        type: AT.FETCH_SCOREFROMHISTORY_REJECTED
+    })
+
 export const scoreFromHistoryThunkAsync = (appId: string, trainDialog: CLM.TrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_SCOREFROMHISTORY_ASYNC)
@@ -168,29 +188,30 @@ export const scoreFromHistoryThunkAsync = (appId: string, trainDialog: CLM.Train
     }
 }
 
-const scoreFromHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog): ActionObject => {
-    return {
-        type: AT.FETCH_SCOREFROMHISTORY_ASYNC,
-        appId,
-        trainDialog
-    }
-}
-
-const scoreFromHistoryFulfilled = (uiScoreResponse: CLM.UIScoreResponse): ActionObject => {
-    return {
-        type: AT.FETCH_SCOREFROMHISTORY_FULFILLED,
-        uiScoreResponse
-    }
-}
-
-const scoreFromHistoryRejected = (): ActionObject =>
-    ({
-        type: AT.FETCH_SCOREFROMHISTORY_REJECTED
-    })
-
 // --------------------------
 // ExtractFromHistory
 // --------------------------
+const extractFromHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): ActionObject => {
+    return {
+        type: AT.FETCH_EXTRACTFROMHISTORY_ASYNC,
+        appId,
+        trainDialog,
+        userInput
+    }
+}
+
+const extractFromHistoryFulfilled = (extractResponse: CLM.ExtractResponse): ActionObject => {
+    return {
+        type: AT.FETCH_EXTRACTFROMHISTORY_FULFILLED,
+        extractResponse
+    }
+}
+
+const  extractFromHistoryRejected = (): ActionObject =>
+    ({
+        type: AT.FETCH_EXTRACTFROMHISTORY_REJECTED
+    })
+
 export const extractFromHistoryThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_EXTRACTFROMHISTORY_ASYNC)
@@ -217,31 +238,56 @@ export const extractFromHistoryThunkAsync = (appId: string, trainDialog: CLM.Tra
     }
 }
 
-const extractFromHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): ActionObject => {
+// ----------------------------------------
+// Fetch AllTrainDialogs
+// ----------------------------------------
+const fetchAllTrainDialogsAsync = (appId: string): ActionObject => {
     return {
-        type: AT.FETCH_EXTRACTFROMHISTORY_ASYNC,
-        appId,
-        trainDialog,
-        userInput
+        type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
+        appId: appId
     }
 }
 
-const extractFromHistoryFulfilled = (extractResponse: CLM.ExtractResponse): ActionObject => {
+const fetchAllTrainDialogsFulfilled = (trainDialogs: CLM.TrainDialog[]): ActionObject => {
     return {
-        type: AT.FETCH_EXTRACTFROMHISTORY_FULFILLED,
-        extractResponse
+        type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
+        allTrainDialogs: trainDialogs
     }
 }
 
-const  extractFromHistoryRejected = (): ActionObject =>
-    ({
-        type: AT.FETCH_EXTRACTFROMHISTORY_REJECTED
-    })
+export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC)
+        dispatch(fetchAllTrainDialogsAsync(appId))
+
+        try {
+            const trainDialogs = await clClient.trainDialogs(appId)
+            dispatch(fetchAllTrainDialogsFulfilled(trainDialogs))
+            return trainDialogs
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRAIN_DIALOGS_ASYNC))
+            return null;
+        }
+    }
+}
 
 // --------------------------
 // TrainDialogMerge
 // --------------------------
-export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.TrainDialog, existingTrainDialog: CLM.TrainDialog, description: string, tags: string[], sourceTrainDialogId: string | null) => {
+const trainDialogMergeAsync = (): ActionObject => {
+    return {
+        type: AT.EDIT_TRAINDIALOG_MERGE_ASYNC
+    }
+}
+
+const trainDialogMergeFulfilled = (): ActionObject => {
+    return {
+        type: AT.EDIT_TRAINDIALOG_MERGE_FULFILLED
+    }
+}
+
+export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.TrainDialog, existingTrainDialog: CLM.TrainDialog, newDescription: string | null, newTags: string[] | null, sourceTrainDialogId: string | null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_MERGE_ASYNC)
         dispatch(trainDialogMergeAsync())
@@ -251,16 +297,18 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
 
             // Create merged train dialog
             const mergedTrainDialog = DialogUtils.mergeTrainDialogs(newTrainDialog, existingTrainDialog)
-            mergedTrainDialog.description = description
-            mergedTrainDialog.tags = tags
+            mergedTrainDialog.description = newDescription || mergedTrainDialog.description
+            mergedTrainDialog.tags = newTags || mergedTrainDialog.tags
             
             // If merged into exisiting TrainDialog (as it was longer)
             if (mergedTrainDialog.trainDialogId === existingTrainDialog.trainDialogId) {
                 // Update existing train dialog with merged train dialog, and delete other dialogs
                 mergedTrainDialog.lastModifiedDateTime = `${new Date().toISOString().slice(0, 19)}+00:00`
                 promises.push(clClient.trainDialogEdit(appId, mergedTrainDialog))
-                promises.push(clClient.trainDialogsDelete(appId, newTrainDialog.trainDialogId))
-
+                
+                if (newTrainDialog.trainDialogId) {
+                    promises.push(clClient.trainDialogsDelete(appId, newTrainDialog.trainDialogId))
+                }
                 // If newTrainDialog was an edit of an original, delete the original
                 if (sourceTrainDialogId) {
                     promises.push(clClient.trainDialogsDelete(appId, sourceTrainDialogId))
@@ -278,7 +326,9 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
                         trainDialogId: sourceTrainDialogId,
                     }
                     promises.push(clClient.trainDialogEdit(appId, updatedSourceDialog))
-                    promises.push(clClient.trainDialogsDelete(appId, existingTrainDialog.trainDialogId))
+                    if (existingTrainDialog.trainDialogId) {
+                        promises.push(clClient.trainDialogsDelete(appId, existingTrainDialog.trainDialogId))
+                    }
                     await Promise.all(promises)
                 }
                 // Otherwise, replace the newTrainDialog with the merged one
@@ -307,22 +357,24 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
     }
 }
 
-const trainDialogMergeAsync = (): ActionObject => {
-    return {
-        type: AT.EDIT_TRAINDIALOG_MERGE_ASYNC
-    }
-}
-
-const trainDialogMergeFulfilled = (): ActionObject => {
-    return {
-        type: AT.EDIT_TRAINDIALOG_MERGE_FULFILLED
-    }
-}
-
 // --------------------------
 // TrainDialogReplace
 // --------------------------
-export const trainDialogReplaceThunkAsync = (appId: string,  destinationTrainDialogId: string, newTrainDialog: CLM.TrainDialog,) => {
+const trainDialogReplaceAsync = (): ActionObject => {
+    return {
+        type: AT.EDIT_TRAINDIALOG_REPLACE_ASYNC
+    }
+}
+
+const trainDialogReplaceFulfilled = (updatedTrainDialog: CLM.TrainDialog, deletedTrainDialogId: string | null): ActionObject => {
+    return {
+        type: AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED,
+        updatedTrainDialog,
+        deletedTrainDialogId
+    }
+}
+
+export const trainDialogReplaceThunkAsync = (appId: string,  destinationTrainDialogId: string, newTrainDialog: CLM.TrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_REPLACE_ASYNC)
         dispatch(trainDialogReplaceAsync())
@@ -356,23 +408,24 @@ export const trainDialogReplaceThunkAsync = (appId: string,  destinationTrainDia
     }
 }
 
-const trainDialogReplaceAsync = (): ActionObject => {
-    return {
-        type: AT.EDIT_TRAINDIALOG_REPLACE_ASYNC
-    }
-}
-
-const trainDialogReplaceFulfilled = (updatedTrainDialog: CLM.TrainDialog, deletedTrainDialogId: string | null): ActionObject => {
-    return {
-        type: AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED,
-        updatedTrainDialog,
-        deletedTrainDialogId
-    }
-}
-
 // --------------------------
 // TrainDialogReplay
 // --------------------------
+const trainDialogReplayAsync = (appId: string, trainDialog: CLM.TrainDialog): ActionObject => {
+    return {
+        type: AT.FETCH_TRAINDIALOGREPLAY_ASYNC,
+        appId,
+        trainDialog
+    }
+}
+
+const trainDialogReplayFulfilled = (trainDialog: CLM.TrainDialog): ActionObject => {
+    return {
+        type: AT.FETCH_TRAINDIALOGREPLAY_FULFILLED,
+        trainDialog
+    }
+}
+
 export const trainDialogReplayThunkAsync = (appId: string, trainDialog: CLM.TrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_TRAINDIALOGREPLAY_ASYNC)
@@ -391,24 +444,25 @@ export const trainDialogReplayThunkAsync = (appId: string, trainDialog: CLM.Trai
     }
 }
 
-const trainDialogReplayAsync = (appId: string, trainDialog: CLM.TrainDialog): ActionObject => {
-    return {
-        type: AT.FETCH_TRAINDIALOGREPLAY_ASYNC,
-        appId,
-        trainDialog
-    }
-}
-
-const trainDialogReplayFulfilled = (trainDialog: CLM.TrainDialog): ActionObject => {
-    return {
-        type: AT.FETCH_TRAINDIALOGREPLAY_FULFILLED,
-        trainDialog
-    }
-}
-
 // --------------------------
 // fetchTextVariationConflict
 // --------------------------
+const fetchTextVariationConflictAsync = (appId: string, trainDialogId: string, textVariation: CLM.TextVariation): ActionObject => {
+    return {
+        type: AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC,
+        appId,
+        trainDialogId,
+        textVariation
+    }
+}
+
+const fetchTextVariationConflictFulfilled = (extractResponse: CLM.ExtractResponse | null): ActionObject => {
+    return {
+        type: AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED,
+        extractResponse
+    }
+}
+
 export const fetchTextVariationConflictThunkAsync = (appId: string, trainDialogId: string, textVariation: CLM.TextVariation, filteredDialogId: string | null) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC)
@@ -427,22 +481,6 @@ export const fetchTextVariationConflictThunkAsync = (appId: string, trainDialogI
     }
 }
 
-const fetchTextVariationConflictAsync = (appId: string, trainDialogId: string, textVariation: CLM.TextVariation): ActionObject => {
-    return {
-        type: AT.FETCH_TEXTVARIATION_CONFLICT_ASYNC,
-        appId,
-        trainDialogId,
-        textVariation
-    }
-}
-
-const fetchTextVariationConflictFulfilled = (extractResponse: CLM.ExtractResponse | null): ActionObject => {
-    return {
-        type: AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED,
-        extractResponse
-    }
-}
-
 export const setTextVariationConflict = (extractResponse: CLM.ExtractResponse): ActionObject => {
     return {
         type: AT.SET_TEXTVARIATION_CONFLICT,
@@ -453,23 +491,6 @@ export const setTextVariationConflict = (extractResponse: CLM.ExtractResponse): 
 // --------------------------
 // DeleteTrainDialog
 // --------------------------
-export const deleteTrainDialogThunkAsync = (app: CLM.AppBase, trainDialogId: string) => {
-    return async (dispatch: Dispatch<any>) => {
-        dispatch(deleteTrainDialogAsync(trainDialogId, app.appId))
-        const clClient = ClientFactory.getInstance(AT.DELETE_TRAIN_DIALOG_ASYNC)
-
-        try {
-            await clClient.trainDialogsDelete(app.appId, trainDialogId)
-            dispatch(deleteTrainDialogFulfilled(trainDialogId))
-            dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
-        } catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_TRAIN_DIALOG_REJECTED))
-            dispatch(deleteTrainDialogRejected())
-            dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
-        }
-    }
-}
 const deleteTrainDialogAsync = (trainDialogId: string, appId: string): ActionObject => {
     return {
         type: AT.DELETE_TRAIN_DIALOG_ASYNC,
@@ -490,61 +511,27 @@ const deleteTrainDialogFulfilled = (trainDialogId: string): ActionObject => {
         trainDialogId
     }
 }
-
-// ----------------------------------------
-// Fetch AllTrainDialogs
-// ----------------------------------------
-export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
+export const deleteTrainDialogThunkAsync = (app: CLM.AppBase, trainDialogId: string) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.FETCH_TRAIN_DIALOGS_ASYNC)
-        dispatch(fetchAllTrainDialogsAsync(appId))
+        dispatch(deleteTrainDialogAsync(trainDialogId, app.appId))
+        const clClient = ClientFactory.getInstance(AT.DELETE_TRAIN_DIALOG_ASYNC)
 
         try {
-            const trainDialogs = await clClient.trainDialogs(appId)
-            dispatch(fetchAllTrainDialogsFulfilled(trainDialogs))
-            return trainDialogs
+            await clClient.trainDialogsDelete(app.appId, trainDialogId)
+            dispatch(deleteTrainDialogFulfilled(trainDialogId))
+            dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId));
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRAIN_DIALOGS_ASYNC))
-            return null;
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_TRAIN_DIALOG_REJECTED))
+            dispatch(deleteTrainDialogRejected())
+            dispatch(fetchAllTrainDialogsThunkAsync(app.appId));
         }
-    }
-}
-
-const fetchAllTrainDialogsAsync = (appId: string): ActionObject => {
-    return {
-        type: AT.FETCH_TRAIN_DIALOGS_ASYNC,
-        appId: appId
-    }
-}
-
-const fetchAllTrainDialogsFulfilled = (trainDialogs: CLM.TrainDialog[]): ActionObject => {
-    return {
-        type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
-        allTrainDialogs: trainDialogs
     }
 }
 
 // ----------------------------------------
 // History
 // ----------------------------------------
-export const fetchHistoryThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string) => {
-    return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.FETCH_HISTORY_ASYNC)
-        dispatch(fetchHistoryAsync(appId, trainDialog, userName, userId))
-
-        try {
-            const teachWithHistory = await clClient.history(appId, trainDialog, userName, userId)
-            dispatch(fetchHistoryFulfilled(teachWithHistory))
-            return teachWithHistory
-        } catch (e) {
-            const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_HISTORY_ASYNC))
-            throw e
-        }
-    }
-}
-
 const fetchHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
     return {
         type: AT.FETCH_HISTORY_ASYNC,
@@ -560,5 +547,22 @@ const fetchHistoryFulfilled = (teachWithHistory: CLM.TeachWithHistory): ActionOb
     return {
         type: AT.FETCH_HISTORY_FULFILLED,
         teachWithHistory: teachWithHistory
+    }
+}
+
+export const fetchHistoryThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean = true) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_HISTORY_ASYNC)
+        dispatch(fetchHistoryAsync(appId, trainDialog, userName, userId))
+
+        try {
+            const teachWithHistory = await clClient.history(appId, trainDialog, userName, userId, useMarkdown)
+            dispatch(fetchHistoryFulfilled(teachWithHistory))
+            return teachWithHistory
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_HISTORY_ASYNC))
+            throw e
+        }
     }
 }

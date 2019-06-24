@@ -74,20 +74,6 @@ export const getNodesByPath = (path: number[], root: any, nodes: any[] = []): an
     return getNodesByPath(nextPath, nextRoot, nodes)
 }
 
-export const getAllEntitiesFromValue = (value: any): IOption[] => {
-    const tree = value.toJSON().document
-
-    return depthFirstSearch(tree, n => n.type === NodeTypes.Mention && n.data.completed === true, n => false)
-        .map<IOption>(n => n.data.option)
-}
-
-export const getNonOptionalEntitiesFromValue = (value: any): IOption[] => {
-    const tree = value.toJSON().document
-
-    return depthFirstSearch(tree, n => n.type === NodeTypes.Mention && n.data.completed === true, n => n.type === NodeTypes.Optional)
-        .map<IOption>(n => n.data.option)
-}
-
 interface INode {
     kind: string
     type: string
@@ -112,4 +98,18 @@ const depthFirstSearch = (root: INode, predicate: (n: INode) => boolean, exclude
             .reduce((a, b) => [...a, ...b], [])
 
     return [...nodes, ...childNodes]
+}
+
+export const getNonOptionalEntitiesFromValue = (value: any): IOption[] => {
+    const tree = value.toJSON().document
+
+    return depthFirstSearch(tree, n => n.type === NodeTypes.Mention && n.data.completed === true, n => n.type === NodeTypes.Optional)
+        .map<IOption>(n => n.data.option)
+}
+
+export const getAllEntitiesFromValue = (value: any): IOption[] => {
+    const tree = value.toJSON().document
+
+    return depthFirstSearch(tree, n => n.type === NodeTypes.Mention && n.data.completed === true, n => false)
+        .map<IOption>(n => n.data.option)
 }

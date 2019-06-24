@@ -85,6 +85,21 @@ export const editActionThunkAsync = (appId: string, action: ActionBase) => {
     }
 }
 
+const deleteActionAsync = (appId: string, actionId: string): ActionObject => {
+    return {
+        type: AT.DELETE_ACTION_ASYNC,
+        actionId: actionId,
+        appId: appId
+    }
+}
+
+const deleteActionFulfilled = (actionId: string): ActionObject => {
+    return {
+        type: AT.DELETE_ACTION_FULFILLED,
+        actionId: actionId
+    }
+}
+
 export const deleteActionThunkAsync = (appId: string, actionId: string, removeFromDialogs: boolean) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteActionAsync(appId, actionId))
@@ -106,21 +121,6 @@ export const deleteActionThunkAsync = (appId: string, actionId: string, removeFr
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_ACTION_ASYNC))
             return false;
         }
-    }
-}
-
-const deleteActionAsync = (appId: string, actionId: string): ActionObject => {
-    return {
-        type: AT.DELETE_ACTION_ASYNC,
-        actionId: actionId,
-        appId: appId
-    }
-}
-
-const deleteActionFulfilled = (actionId: string): ActionObject => {
-    return {
-        type: AT.DELETE_ACTION_FULFILLED,
-        actionId: actionId
     }
 }
 
@@ -155,6 +155,21 @@ export const fetchAllActionsThunkAsync = (appId: string) => {
     }
 }
 
+const fetchActionDeleteValidationAsync = (appId: string, packageId: string, actionId: string): ActionObject => {
+    return {
+        type: AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC,
+        appId: appId,
+        packageId: packageId,
+        actionId: actionId
+    }
+}
+
+const fetchActionDeleteValidationFulfilled = (): ActionObject => {
+    return {
+        type: AT.FETCH_ACTION_DELETE_VALIDATION_FULFILLED
+    }
+}
+
 export const fetchActionDeleteValidationThunkAsync = (appId: string, packageId: string, actionId: string) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC)
@@ -172,18 +187,18 @@ export const fetchActionDeleteValidationThunkAsync = (appId: string, packageId: 
     }
 }
 
-const fetchActionDeleteValidationAsync = (appId: string, packageId: string, actionId: string): ActionObject => {
+const fetchActionEditValidationAsync = (appId: string, packageId: string, action: ActionBase): ActionObject => {
     return {
-        type: AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC,
+        type: AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC,
         appId: appId,
         packageId: packageId,
-        actionId: actionId
+        action: action
     }
 }
 
-const fetchActionDeleteValidationFulfilled = (): ActionObject => {
+const fetchActionEditValidationFulfilled = (): ActionObject => {
     return {
-        type: AT.FETCH_ACTION_DELETE_VALIDATION_FULFILLED
+        type: AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED
     }
 }
 
@@ -201,20 +216,5 @@ export const fetchActionEditValidationThunkAsync = (appId: string, packageId: st
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC))
             return null;
         }
-    }
-}
-
-const fetchActionEditValidationAsync = (appId: string, packageId: string, action: ActionBase): ActionObject => {
-    return {
-        type: AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC,
-        appId: appId,
-        packageId: packageId,
-        action: action
-    }
-}
-
-const fetchActionEditValidationFulfilled = (): ActionObject => {
-    return {
-        type: AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED
     }
 }

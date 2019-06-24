@@ -15,8 +15,10 @@ import DisabledInputButtom from './DisabledInputButton'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import FormattedMessageId from '../FormattedMessageId'
+import ImportCancelModal from './ImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
 import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
+import { NewActionPreset } from './ActionCreatorEditor'
 import { formatMessageId, equal, deepCopy } from '../../Utils/util'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
@@ -34,8 +36,10 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
+    isImportAbandonOpen: boolean
     cantReplayMessage: FM | null
     isUserInputModalOpen: boolean
+    newActionPreset?: NewActionPreset
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
     isSaveConflictModalOpen: boolean
@@ -50,8 +54,10 @@ interface ComponentState {
 
 const initialState: ComponentState = {
     isConfirmAbandonOpen: false,
+    isImportAbandonOpen: false,
     cantReplayMessage: null,
     isUserInputModalOpen: false,
+    newActionPreset: undefined,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
     isSaveConflictModalOpen: false,
@@ -226,6 +232,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    //---- BRANCH ----
     @OF.autobind
     onClickBranch() {
         if (this.canReplay(this.state.selectedActivity!)) {
@@ -282,12 +289,27 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    //---- ABANDON ----
     @OF.autobind
     onClickAbandon() {
-        this.setState({
-            isConfirmAbandonOpen: true
-        })
+        if (this.props.editType === EditDialogType.IMPORT) {
+            this.setState({
+                isImportAbandonOpen: true
+            })
+        }
+        else {
+            this.setState({
+                isConfirmAbandonOpen: true
+            })
+        }
+    }
 
+    @OF.autobind
+    onClickAbandonCancel() {
+        this.setState({
+            isConfirmAbandonOpen: false,
+            isImportAbandonOpen: false
+        })
     }
 
     // User is continuing the train dialog by typing something new
@@ -314,7 +336,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             this.props.clearWebchatScrollPosition()
 
             // If there's an error when I try to continue, reset webchat to ignore new input
-            await this.props.setErrorDismissCallback(this.resetWebchat)
+            this.props.setErrorDismissCallback(this.resetWebchat)
 
             // For now always add button response to bottom of dialog even
             // when card is selected.  
@@ -336,7 +358,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 if (this.showInternalLabelConflict()) {
                     return
                 }
-                await this.props.onContinueDialog(newTrainDialog, userInput)
+                this.props.onContinueDialog(newTrainDialog, userInput)
             }
         }
     }
@@ -344,6 +366,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     // TEMP: until server can exclude label conflicts with self, we need
     // to check for them and force save before we can add a turn 
     showInternalLabelConflict(): boolean {
+
+        // Can avoid check on import as won't have pre-existing dialog
+        if (this.props.editType === EditDialogType.IMPORT) {
+            return false
+        }
         if (this.props.originalTrainDialog && this.state.currentTrainDialog) {
             const conflict = DialogUtils.hasInternalLabelConflict(this.props.originalTrainDialog, this.state.currentTrainDialog)
             if (conflict) {
@@ -355,8 +382,11 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
     onWebChatSelectActivity(activity: Activity) {
         this.setState({
-            selectedActivity: activity
+            selectedActivity: activity,
         })
+
+        const newActionPreset = this.getNewActionPreset(activity)
+        this.setState({newActionPreset})
     }
 
     onPendingStatusChanged(changed: boolean) {
@@ -401,33 +431,31 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return false
     }
 
-    // Does history have any replay errors
-    replayErrorLevel(): CLM.ReplayErrorLevel | null {
-        if (!this.props.history || this.props.history.length === 0) {
-            return null
-        }
-
-        // Return most severe error level found
-        let replayErrorLevel: CLM.ReplayErrorLevel | null = null
-        for (const h of this.props.history) {
-            const clData: CLM.CLChannelData = h.channelData.clData
-            if (clData && clData.replayError) {
-                if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
-                    return CLM.ReplayErrorLevel.BLOCKING
-                }
-                else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
-                    replayErrorLevel = CLM.ReplayErrorLevel.ERROR
-                }
-                else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING && replayErrorLevel !== CLM.ReplayErrorLevel.ERROR) {
-                    replayErrorLevel = CLM.ReplayErrorLevel.WARNING
-                }
-            }
-        }
-        return replayErrorLevel
-    }
-
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
         return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType, this.state.selectedActivity != null)
+    }
+
+    getNewActionPreset(activity: Activity): NewActionPreset | undefined {
+        const clData: CLM.CLChannelData = activity.channelData.clData
+        const senderType = clData.senderType
+        const scoreIndex = clData.scoreIndex || 0
+        const roundIndex = clData.roundIndex
+
+        const curRound = this.props.trainDialog.rounds[roundIndex!]
+
+        if (!curRound || senderType !== CLM.SenderType.Bot) {
+            return undefined
+        }
+
+        const importText = curRound.scorerSteps[scoreIndex].importText
+        const isTerminal = senderType === CLM.SenderType.Bot 
+            ? curRound.scorerSteps.length === scoreIndex + 1
+            : false
+
+        if (importText) {
+            return { text: importText, isTerminal }
+        }
+        return undefined
     }
 
     @OF.autobind
@@ -463,12 +491,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             senderType !== CLM.SenderType.User ||
             (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)
 
-        const hideBranch =
-            !canBranch ||
+        const hideBranch =  
+            !canBranch || 
             !this.props.onBranchDialog ||
             this.state.pendingExtractionChanges ||
             this.props.editState !== EditState.CAN_EDIT
-
+        
         const isLastActivity = activity === this.props.history[this.props.history.length - 1]
         const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
         const isEndSession = isLastActivity && this.state.hasEndSession
@@ -542,11 +570,14 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         const lastScorerStep = lastRound.scorerSteps[lastRound.scorerSteps.length - 1]
-        const lastAction = this.props.actions.find(a => a.actionId === lastScorerStep.labelAction)
 
-        // Disable if last round's last scorer step isn't terminal
-        if (!lastAction || !lastAction.isTerminal) {
-            return true
+        // If not an unresolved import action
+        if (!lastScorerStep.importText) {
+            const lastAction = this.props.actions.find(a => a.actionId === lastScorerStep.labelAction)
+            // Disable if last round's last scorer step isn't terminal
+            if (!lastAction || !lastAction.isTerminal) {
+                return true
+            }
         }
 
         return false
@@ -571,35 +602,31 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickAbandonCancel() {
-        this.setState({
-            isConfirmAbandonOpen: false
-        })
-    }
-
-    @OF.autobind
-    onClickAbandonApprove() {
+    onClickAbandonApprove(stopImporting: boolean = false) {
         const dialogChanged = this.isDialogChanged()
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
                 this.props.onDeleteDialog()
                 break;
+            case EditDialogType.IMPORT:
+                this.props.onCloseModal(false, stopImporting) // false -> no need to reload original
+                break;
             case EditDialogType.BRANCH:
-                this.props.onCloseModal(false) // false -> no need to reload original
+                this.props.onCloseModal(false, stopImporting) // false -> no need to reload original
                 break;
             case EditDialogType.LOG_EDITED:
-                this.props.onCloseModal(false) // false -> no need to reload original
+                this.props.onCloseModal(false, stopImporting) // false -> no need to reload original
                 break;
             case EditDialogType.LOG_ORIGINAL:
                 this.props.onDeleteDialog()
                 break;
             case EditDialogType.TRAIN_EDITED:
-                this.props.onCloseModal(true) // true -> Reload original TrainDialog
+                this.props.onCloseModal(true, stopImporting) // true -> Reload original TrainDialog
                 break;
             case EditDialogType.TRAIN_ORIGINAL:
                 dialogChanged
-                    ? this.props.onCloseModal(true)
+                    ? this.props.onCloseModal(true, stopImporting)
                     : this.props.onDeleteDialog()
                 break;
             default:
@@ -611,7 +638,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
-                return formatMessageId(intl, FM.BUTTON_ABANDON)
+            return formatMessageId(intl, FM.BUTTON_ABANDON)
+            case EditDialogType.IMPORT:
+                return formatMessageId(intl, FM.BUTTON_ABANDON_IMPORT)
             case EditDialogType.BRANCH:
                 return formatMessageId(intl, FM.BUTTON_ABANDON_BRANCH)
             case EditDialogType.LOG_EDITED:
@@ -634,6 +663,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
             case EditDialogType.BRANCH:
             case EditDialogType.LOG_EDITED:
             case EditDialogType.TRAIN_EDITED:
@@ -644,26 +674,9 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 return dialogChanged
                     ? "Cancel"
                     : "Delete"
+            default:
+                return ""
         }
-    }
-
-    trainDialogValidity(): CLM.Validity | undefined {
-        // Look for individual replay errors
-        const replayErrorLevel = this.replayErrorLevel()
-        if (replayErrorLevel) {
-            if (replayErrorLevel === CLM.ReplayErrorLevel.BLOCKING || replayErrorLevel === CLM.ReplayErrorLevel.ERROR) {
-                return CLM.Validity.INVALID
-            }
-            if (replayErrorLevel === CLM.ReplayErrorLevel.WARNING) {
-                return CLM.Validity.WARNING
-            }
-        }
-        // Didn't find any errors on individual rounds so state is now valid
-        if (this.props.trainDialog.validity === CLM.Validity.INVALID) {
-            return CLM.Validity.VALID
-        }
-        // Unless previous validity state was WARNING or UNKNOWN and then I don't know
-        return this.props.trainDialog.validity
     }
 
     isDialogChanged() {
@@ -687,7 +700,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             tags: this.state.tags,
             description: this.state.description
         }
-        this.props.onSaveDialog(trainDialog, this.trainDialogValidity())
+        this.props.onSaveDialog(trainDialog)
     }
 
     @OF.autobind
@@ -699,26 +712,26 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         const dialogChanged = this.isDialogChanged()
-        const trainDialogValidity = this.trainDialogValidity()
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
             case EditDialogType.BRANCH:
-                this.props.onCreateDialog(trainDialog, trainDialogValidity)
+                this.props.onCreateDialog(trainDialog)
                 break;
             case EditDialogType.LOG_EDITED:
-                this.props.onSaveDialog(trainDialog, trainDialogValidity)
+                this.props.onSaveDialog(trainDialog)
                 break;
             case EditDialogType.LOG_ORIGINAL:
-                this.props.onCloseModal(false)  // false - No need to reload original
+                this.props.onCloseModal(false, false)  // false - No need to reload original
                 break;
             case EditDialogType.TRAIN_EDITED:
-                this.props.onSaveDialog(trainDialog, trainDialogValidity)
+                this.props.onSaveDialog(trainDialog)
                 break;
             case EditDialogType.TRAIN_ORIGINAL:
                 dialogChanged
-                    ? this.props.onSaveDialog(trainDialog, trainDialogValidity)
-                    : this.props.onCloseModal(false)  // false - No need to reload original
+                    ? this.props.onSaveDialog(trainDialog)
+                    : this.props.onCloseModal(false, false)  // false - No need to reload original
                 break;
             default:
         }
@@ -749,6 +762,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         switch (this.props.editType) {
             // Save buttons
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
             case EditDialogType.BRANCH:
             case EditDialogType.LOG_EDITED:
             case EditDialogType.TRAIN_EDITED:
@@ -767,6 +781,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
+            case EditDialogType.IMPORT:
                 return formatMessageId(intl, FM.BUTTON_SAVE)
             case EditDialogType.BRANCH:
                 return formatMessageId(intl, FM.BUTTON_SAVE_BRANCH)
@@ -789,6 +804,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const dialogChanged = this.isDialogChanged()
 
         switch (this.props.editType) {
+            case EditDialogType.IMPORT:
             case EditDialogType.NEW:
             case EditDialogType.BRANCH:
             case EditDialogType.LOG_EDITED:
@@ -800,6 +816,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 return dialogChanged
                     ? "Accept"
                     : "Cancel"
+            default:
+                return ""
         }
     }
 
@@ -822,6 +840,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             case EditDialogType.TRAIN_ORIGINAL:
                 return formatMessageId(intl, FM.EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE)
             default:
+                // EditDialogType.IMPORT Handled by ImportCancelModal
                 return ""
         }
     }
@@ -882,8 +901,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const replayError = DialogUtils.getReplayError(this.state.selectedActivity)
         if (this.props.editState === EditState.INVALID_BOT) {
             return (
-                <div className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
-                    data-testid="dialog-modal-warning">
+                <div 
+                    className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-warning"
+                >
                     <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_INVALID_BOT} />
                     <HelpIcon tipType={TipType.INVALID_BOT} />
                 </div>
@@ -891,8 +912,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         if (this.props.editState === EditState.INVALID_PACKAGE) {
             return (
-                <div className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
-                    data-testid="dialog-modal-warning">
+                <div 
+                    className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-warning"
+                >
                     <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE} />
                 </div>
             )
@@ -901,28 +924,30 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             return renderReplayError(replayError)
         }
 
-        // No Activity selected, but Replay error on an Activity
-        const replayErrorLevel = this.replayErrorLevel()
-        if (this.replayErrorLevel()) {
-            if (replayErrorLevel === CLM.ReplayErrorLevel.WARNING) {
-                // Only show activity based warning if no trainDialog level warning
-                if (this.props.trainDialog.validity !== CLM.Validity.UNKNOWN
-                    && this.props.trainDialog.validity !== CLM.Validity.WARNING) {
-                    return (
-                        <div className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
-                            data-testid="dialog-modal-warning">
-                            <FormattedMessageId id={FM.REPLAYERROR_WARNING} />
-                        </div>
-                    )
-                }
-            }
-            else {
+        // No Activity selected, but Replay error exists on an Activity
+        const worstReplayError = this.props.history ? DialogUtils.getMostSevereReplayError(this.props.history) : null
+        if (worstReplayError) {
+            // Only show activity based warning if train dialog isn't invalid
+            if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.WARNING &&
+                this.props.trainDialog.validity !== CLM.Validity.INVALID) {
                 return (
-                    <div className={`cl-editdialog-error ${OF.FontClassNames.mediumPlus}`}
-                        data-testid="dialog-modal-error-noselection">
+                    <div 
+                        className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
+                        data-testid="dialog-modal-warning"
+                    >
+                        <FormattedMessageId id={FM.REPLAYERROR_WARNING} />
+                    </div>
+                )
+            }
+            else if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
+                return (
+                    <div 
+                        className={`cl-editdialog-error ${OF.FontClassNames.mediumPlus}`}
+                        data-testid="dialog-modal-error-noselection"
+                    >
                         {this.props.editType === EditDialogType.LOG_ORIGINAL
-                            ? <FormattedMessageId id={FM.REPLAYERROR_EXISTS_LOG} />
-                            : <FormattedMessageId id={FM.REPLAYERROR_EXISTS} />
+                            ? <FormattedMessageId id={FM.REPLAYERROR_ERROR_LOG} />
+                            : <FormattedMessageId id={FM.REPLAYERROR_ERROR} />
                         }
                     </div>
                 )
@@ -931,8 +956,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         if (this.props.trainDialog.validity === CLM.Validity.UNKNOWN) {
             return (
-                <div className={`cl-editdialog-caution ${OF.FontClassNames.mediumPlus}`}
-                    data-testid="dialog-modal-caution">
+                <div 
+                    className={`cl-editdialog-caution ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-caution"
+                >
                     <FormattedMessageId id={FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} />
                     <HelpIcon tipType={TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY} customClass="cl-icon-orangebackground" />
                 </div>
@@ -940,8 +967,10 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         else if (this.props.trainDialog.validity === CLM.Validity.WARNING) {
             return (
-                <div className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
-                    data-testid="dialog-modal-warning">
+                <div 
+                    className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
+                    data-testid="dialog-modal-warning"
+                >
                     <FormattedMessageId id={FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY} />
                     <HelpIcon tipType={TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY} customClass="cl-icon-orangebackground" />
                 </div>
@@ -998,10 +1027,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     trainDialog={this.props.trainDialog}
                                     selectedActivity={this.state.selectedActivity}
                                     isLastActivitySelected={isLastActivitySelected}
-                                    onChangeAction={(trainScorerStep: CLM.TrainScorerStep) => this.onChangeAction(trainScorerStep)}
+                                    onChangeAction={this.onChangeAction}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
-
+                                    newActionPreset={this.state.newActionPreset}
+                                    importIndex={this.props.importIndex}
+                                    importCount={this.props.importCount}
                                     allUniqueTags={this.props.allUniqueTags}
                                     tags={this.state.tags}
                                     onAddTag={this.onAddTag}
@@ -1009,6 +1040,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
                                     description={this.state.description}
                                     onChangeDescription={this.onChangeDescription}
+                                    onActionCreatorClosed={() => this.setState({newActionPreset: undefined})}
                                 />
                             </div>
                             {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay" />}
@@ -1077,6 +1109,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onConfirm={this.onClickAbandonApprove}
                     title={this.renderConfirmText(intl)}
                 />
+                <ImportCancelModal
+                    open={this.state.isImportAbandonOpen}
+                    onCancel={this.onClickAbandonCancel}
+                    onConfirm={this.onClickAbandonApprove}
+                    isLastImport={this.props.importIndex === this.props.importCount}
+                />
                 {this.state.cantReplayMessage &&
                     <ConfirmCancelModal
                         open={true}
@@ -1116,7 +1154,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,
         setWebchatScrollPosition: actions.display.setWebchatScrollPosition,
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
         setErrorDismissCallback: actions.display.setErrorDismissCallback
@@ -1147,19 +1184,21 @@ export interface ReceivedProps {
     // If starting with activity selected
     initialSelectedActivityIndex: number | null
     allUniqueTags: string[]
+    importIndex?: number
+    importCount?: number
 
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, isLastActivity: boolean, selectionType: SelectionType) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any
     onChangeExtraction: (trainDialog: CLM.TrainDialog, activity: Activity, extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => any
     onChangeAction: (trainDialog: CLM.TrainDialog, activity: Activity, trainScorerStep: CLM.TrainScorerStep) => any
     onDeleteTurn: (trainDialog: CLM.TrainDialog, activity: Activity) => any
-    onCloseModal: (reload: boolean) => void
+    onCloseModal: (reload: boolean, stopImport: boolean) => void
     onBranchDialog: ((trainDialog: CLM.TrainDialog, activity: Activity, userText: string) => void) | null,
     onContinueDialog: (newTrainDialog: CLM.TrainDialog, initialUserInput: CLM.UserInput) => void
-    onSaveDialog: (newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) => void
+    onSaveDialog: (newTrainDialog: CLM.TrainDialog) => void
     onReplayDialog: (newTrainDialog: CLM.TrainDialog) => void
     // Add a new train dialog to the Model (when EditDialogType === NEW)
-    onCreateDialog: (newTrainDialog: CLM.TrainDialog, validity?: CLM.Validity) => void
+    onCreateDialog: (newTrainDialog: CLM.TrainDialog) => void
     onDeleteDialog: () => void
     conflictPairs: ConflictPair[]
     onAcceptConflictResolution: (conflictPairs: ConflictPair[]) => Promise<void>

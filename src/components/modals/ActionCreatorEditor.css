@@ -5,16 +5,6 @@
     background-color: var(--color-successBackground);
 }
 
-.cl-action-creator-file-picker {
-    display: grid;
-    grid-template: auto / min-content 1fr;
-    grid-gap: 1em;
-}
-
-.cl-action-creator-file-button {
-    white-space: nowrap;
-}
-
 .cl-action-creator-fieldset {
     display: grid;
     grid-gap: 1em;

@@ -14,7 +14,7 @@ export interface ErrorCallback {
 export class ErrorHandler {
     private static callbacks: ErrorCallback[] = [];
 
-    public static registerCallbacks(callbacks: ErrorCallback[]): string {
+    public static RegisterCallbacks(callbacks: ErrorCallback[]): string {
         const guid = CLM.ModelUtils.generateGUID();
 
         callbacks.forEach(cb => {
@@ -25,11 +25,11 @@ export class ErrorHandler {
         return guid;
     }
 
-    public static deleteCallbacks(guid: string): void {
+    public static DeleteCallbacks(guid: string): void {
         this.callbacks = this.callbacks.filter(cb => cb.guid !== guid);
     }
 
-    public static handleError(actionType: AT) {
+    public static HandleError(actionType: AT) {
         const callbacks = this.callbacks.filter(cb => cb.actionType === actionType);
         callbacks.forEach(cb => cb.callback(actionType));
     }

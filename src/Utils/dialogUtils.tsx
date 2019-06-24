@@ -5,6 +5,8 @@
 import * as CLM from '@conversationlearner/models'
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
+import * as Util from '../Utils/util'
+import * as BotChat from '@conversationlearner/webchat'
 import { deepCopy, getDefaultEntityMap } from './util'
 import { Activity } from 'botframework-directlinejs'
 import TagsReadOnly from '../components/TagsReadOnly'
@@ -198,6 +200,60 @@ export function trainDialogRenderDescription(trainDialog: CLM.TrainDialog): Reac
     return trainDialog.description ? <i>{trainDialog.description}</i> : dialogSampleInput(trainDialog)
 }
 
+// Returns true if train dialog has any stub import actions
+export function hasImportActions(trainDialog: CLM.TrainDialog): boolean {
+    for (const round of trainDialog.rounds) {
+        for (const scorerStep of round.scorerSteps) {
+            if (scorerStep.labelAction === CLM.CL_STUB_IMPORT_ACTION_ID) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
+// Does history have any replay errors
+export function getMostSevereReplayError(history: BotChat.Activity[]): CLM.ReplayError| null {
+    // Return most severe error level found
+    let worstReplayError: CLM.ReplayError | null = null
+    for (const h of history) {
+        const clData: CLM.CLChannelData = h.channelData.clData
+        if (clData && clData.replayError) {
+            if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
+                return clData.replayError
+            }
+            else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
+                worstReplayError = clData.replayError
+            }
+            else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING && 
+                (!worstReplayError || worstReplayError.errorLevel !== CLM.ReplayErrorLevel.ERROR)) {
+                worstReplayError = clData.replayError
+            }
+        }
+    }
+    return worstReplayError
+}
+
+// Given train dialog and rendered activity, return validity
+export function getTrainDialogValidity(trainDialog: CLM.TrainDialog, history: BotChat.Activity[]): CLM.Validity | undefined {
+    // Look for individual replay errors
+    const worstReplayError = getMostSevereReplayError(history)
+    if (worstReplayError) {
+        if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING || worstReplayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
+            return CLM.Validity.INVALID
+        }
+        if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
+            return CLM.Validity.WARNING
+        }
+    }
+    // Didn't find any errors on individual rounds so state is now valid
+    if (trainDialog.validity === CLM.Validity.INVALID) {
+        return CLM.Validity.VALID
+    }
+    // Unless previous validity state was WARNING or UNKNOWN and then I don't know
+    return trainDialog.validity
+}
+
 export function cleanTrainDialog(trainDialog: CLM.TrainDialog) {
     // Remove actionless dummy step (used for rendering) if they exist
     for (const round of trainDialog.rounds) {
@@ -359,9 +415,18 @@ export function findMatchingTrainDialog(trainDialog: CLM.TrainDialog, trainDialo
     return null
 }
 
-// Returns true if trainDialog1 is longer than trainDialog2
-export function isTrainDialogLonger(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): boolean {
+// Returns true if trainDialog1 is more important than trainDialog2
+export function isPrimaryTrainDialog(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): boolean {
 
+    // Default to existing train dialog
+    if (!trainDialog1.trainDialogId) {
+        return false
+    }
+    if (!trainDialog2.trainDialogId) {
+        return true
+    }
+
+    // Then pick one with more rounds
     if (trainDialog1.rounds.length > trainDialog2.rounds.length) {
         return true
     }
@@ -369,6 +434,7 @@ export function isTrainDialogLonger(trainDialog1: CLM.TrainDialog, trainDialog2:
         return false
     }
 
+    // Then pick the one with more scorer steps
     const lastRound1 = trainDialog1.rounds[trainDialog1.rounds.length - 1]
     const lastRound2 = trainDialog2.rounds[trainDialog2.rounds.length - 1]
     if (lastRound1.scorerSteps.length < lastRound2.scorerSteps.length) {
@@ -388,34 +454,307 @@ export function mergeTrainDialogDescription(trainDialog1: CLM.TrainDialog, train
         ? trainDialog1.description : trainDialog2.description
 }
 
-// Merges smaller dialog into larger one and returns it
+export function mergeTrainDialogClientData(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): CLM.TrainDialogClientData {
+    const importHashes1 = trainDialog1.clientData ? trainDialog1.clientData.importHashes : []
+    const importHashes2 = trainDialog2.clientData ? trainDialog2.clientData.importHashes : []
+    
+    return { importHashes: [...importHashes1, ...importHashes2].filter((item, i, ar) => ar.indexOf(item) === i) }
+}
+
+// Merges primary into secondary and returns it
 export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): CLM.TrainDialog {
     if (!doesTrainDialogMatch(trainDialog1, trainDialog2)) {
         throw new Error("Attempting to merge non-matching Train Dialogs")
     }
 
-    // Merge from smallest into largest
-    const d1Longer = isTrainDialogLonger(trainDialog1, trainDialog2)
-    const smallTrainDialog = d1Longer ? trainDialog2 : trainDialog1
+    // Merge from secondary into primary
+    const d1Longer = isPrimaryTrainDialog(trainDialog1, trainDialog2)
+    const primaryTrainDialog = d1Longer ? trainDialog2 : trainDialog1
     // Make copy of the one that I'm altering
-    const largeTrainDialog = deepCopy(d1Longer ? trainDialog1 : trainDialog2)
+    const mergedTrainDialog = deepCopy(d1Longer ? trainDialog1 : trainDialog2)
 
     // Copy text variations from small dialog onto large one
     let roundIndex = 0
-    while (roundIndex < smallTrainDialog.rounds.length) { 
-        const roundSmall = smallTrainDialog.rounds[roundIndex]
-        const roundLarge = largeTrainDialog.rounds[roundIndex]
+    while (roundIndex < primaryTrainDialog.rounds.length && roundIndex < mergedTrainDialog.rounds.length) { 
+        const roundSmall = primaryTrainDialog.rounds[roundIndex]
+        const roundLarge = mergedTrainDialog.rounds[roundIndex]
         const extractorStepSmall = roundSmall.extractorStep
         const extractorStepLarge = roundLarge.extractorStep
 
         // Add novel text variatitions to large dialog
         const newTextVariations = extractorStepSmall.textVariations.filter(tvs => !extractorStepLarge.textVariations.find(tvl => tvl.text === tvs.text))
-        roundLarge.extractorStep.textVariations = [...roundLarge.extractorStep.textVariations, ...newTextVariations]
+        roundLarge.extractorStep.textVariations = [...roundLarge.extractorStep.textVariations, ...newTextVariations].slice(0, CLM.MAX_TEXT_VARIATIONS)
         
         roundIndex = roundIndex + 1
     }
 
-    largeTrainDialog.description = mergeTrainDialogDescription(largeTrainDialog, smallTrainDialog)
-    largeTrainDialog.tags = mergeTrainDialogTags(largeTrainDialog, smallTrainDialog)
-    return largeTrainDialog
+    mergedTrainDialog.description = mergeTrainDialogDescription(mergedTrainDialog, primaryTrainDialog)
+    mergedTrainDialog.tags = mergeTrainDialogTags(mergedTrainDialog, primaryTrainDialog)
+    mergedTrainDialog.clientData = mergeTrainDialogClientData(mergedTrainDialog, primaryTrainDialog)
+
+    return mergedTrainDialog
+}
+
+// Genereate entity map for an action, filling in any missing entities with a blank value
+export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityMap: Map<string, string> = new Map<string, string>()): Map<string, string> {
+    const map = new Map<string, string>()
+    action.requiredEntities.forEach(e => {
+        let value = filledEntityMap.get(e)
+        if (value) {
+            map.set(e, value)
+        }
+        else {
+            map.set(e, "")
+        }
+    })
+    return map
+}
+
+export function importTextWithEntityIds(importText: string, valueMap: Map<string, string>) {
+
+    let outText = importText.slice()
+    valueMap.forEach((value: string, entityId: string) => {
+        outText = outText.replace(value, entityId)
+    })
+    return outText
+}
+
+function findActionByImportHash(importText: string, actionsWithHash: CLM.ActionBase[]): CLM.ActionBase | undefined {
+    const importHash = Util.hashText(importText)
+
+    // Try to find matching action with same hash
+    let matchedActions = actionsWithHash.filter(a => {
+        // Filter above ensures these are not null
+        return a.clientData!.importHashes!.indexOf(importHash) > -1
+    })
+
+    // If more than one, prefer the one that isn't a stub
+    if (matchedActions.length > 1) {
+        matchedActions = matchedActions.filter(ma => !CLM.ActionBase.isStubbedAPI(ma))
+    }
+
+    return matchedActions[0]
+}
+
+// Try to find existing action for import based solely on raw text (no filled entites available)
+export function importedActionMatch(importText: string, actions: CLM.ActionBase[], filledEntityMap?: Map<string, string> | undefined): CLM.ActionBase | undefined {
+    // First try match via has of importText
+    // Filter out actions that have no hash lookups. If there are none, terminate early
+    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.importHashes && a.clientData.importHashes.length > 0)
+    const matchedAction = findActionByImportHash(importText, actionsWithHash)
+    if (matchedAction) {
+        return matchedAction
+    }
+    
+    // Next try by exact text match (note no filled entities available)
+    return actions.find(action => {
+            if (action.actionType === CLM.ActionTypes.TEXT) {
+                const textAction = new CLM.TextAction(action)
+                const entityMap = generateEntityMapForAction(action, filledEntityMap)
+                const actionText = textAction.renderValue(entityMap)
+                return importText === actionText
+            }
+            return false
+        })
+}
+
+export function filledEntityIdMap(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): Map<string, string> {
+    const filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(filledEntities, entities)
+    const filledIdMap = filledEntityMap.EntityMapToIdMap()
+    return CLM.getEntityDisplayValueMap(filledIdMap)
+}
+
+// Look for imported actions in TrainDialog and attempt to replace them
+// with existing actions.  Return true if any replacement occurred
+export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): boolean {
+
+    // Filter out actions that have no hash lookups. If there are none, terminate early
+    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.importHashes && a.clientData.importHashes.length > 0)
+    if (actionsWithHash.length === 0) {
+        return false
+    }
+
+    // Now swap any actions that match
+    let match = false
+    trainDialog.rounds.forEach(round => {
+        round.scorerSteps.forEach(scorerStep => {
+            let importHash: string | null = null
+
+            // If replacing imported action
+            if (scorerStep.importText) {
+                // Substitue entityIds back into import text to build import hash lookup
+                const filledEntityMap = filledEntityIdMap(scorerStep.input.filledEntities, entities)
+                const importText = importTextWithEntityIds(scorerStep.importText, filledEntityMap)
+                importHash = Util.hashText(importText)
+            }
+            // If replacing stub action
+            else if (scorerStep.labelAction && CLM.ActionBase.isStubbedAPI(scorerStep.scoredAction)) {
+                const apiAction = new CLM.ApiAction(scorerStep.scoredAction as any)
+                importHash = Util.hashText(apiAction.name)
+            }
+            
+            if (importHash) {
+                const newAction = findActionByImportHash(importHash, actionsWithHash)
+
+                // If action exists replace labelled action with match
+                if (newAction) {
+                    scorerStep.labelAction = newAction.actionId
+                    delete scorerStep.importText
+                    match = true
+                }
+            }
+        })
+    })
+    return match
+}
+
+export function filledEntitiesToMemory(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): CLM.Memory[] {
+    return filledEntities.map<CLM.Memory>(fe => {
+        const entity = entities.find(e => e.entityId === fe.entityId)
+        const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
+        return {
+            entityName: entityName,
+            entityValues: fe.values
+        }
+    })
+}
+
+export function getPrevMemories(trainDialog: CLM.TrainDialog, entities: CLM.EntityBase[], roundIndex: number, scoreIndex: number | null): CLM.Memory[] {
+
+    let scorerStep: CLM.TrainScorerStep | null = null
+
+    // If user input is selected (score index will be null)
+    if (scoreIndex === null) {
+        // Prev memory is from end of last round
+        const prevIndex = roundIndex - 1
+        if (prevIndex >= 0) {
+            const round = trainDialog.rounds[prevIndex]
+            if (round.scorerSteps.length > 0) {
+                scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
+            }
+        }
+    }
+    // If first bot response
+    else if (scoreIndex === 0) {
+        // Prev memory is current step
+        const round = trainDialog.rounds[roundIndex]
+        scorerStep = round.scorerSteps[0]
+    }
+    // Is bot response after a non-wait bot response
+    else { 
+        // Prev memory comes from previous score
+        const round = trainDialog.rounds[roundIndex]
+        scorerStep = round.scorerSteps[scoreIndex - 1]
+    }
+    
+    if (scorerStep) {
+        return filledEntitiesToMemory(scorerStep.input.filledEntities, entities)
+    } 
+    return []
+}
+
+export function getDialogRenderData(
+    trainDialog: CLM.TrainDialog, 
+    entities: CLM.EntityBase[], 
+    actions: CLM.ActionBase[],
+    roundIndex: number | null, 
+    scoreIndex: number | null,
+    senderType: CLM.SenderType | null
+    ): DialogRenderData {
+    let scorerStep: CLM.TrainScorerStep | undefined
+    let scoreResponse: CLM.ScoreResponse | undefined
+    let round: CLM.TrainRound | undefined
+    let memories: CLM.Memory[] = [];
+    let prevMemories: CLM.Memory[] = [];
+
+    if (roundIndex !== null && roundIndex < trainDialog.rounds.length) {
+        round = trainDialog.rounds[roundIndex];
+        if (round.scorerSteps.length > 0) {
+            // If a score round 
+            if (typeof scoreIndex === "number") {
+                scorerStep = round.scorerSteps[scoreIndex];
+                if (!scorerStep) {
+                    throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
+                }
+
+                let selectedAction = actions.find(action => action.actionId === scorerStep!.labelAction);
+
+                if (!selectedAction) {
+                    // Action may have been deleted.  If so create dummy action to render
+                    selectedAction = {
+                        actionId: scorerStep.labelAction || 'MISSING ACTION',
+                        createdDateTime: new Date().toJSON(),
+                        payload: 'MISSING ACTION',
+                        isTerminal: false,
+                        actionType: CLM.ActionTypes.TEXT,
+                        requiredEntitiesFromPayload: [],
+                        requiredEntities: [],
+                        requiredConditions: [],
+                        negativeEntities: [],
+                        negativeConditions: [],
+                        suggestedEntity: undefined,
+                        version: 0,
+                        packageCreationId: 0,
+                        packageDeletionId: 0,
+                        entityId: undefined,
+                        enumValueId: undefined,
+                    }
+                }
+
+                memories = filledEntitiesToMemory(scorerStep.input.filledEntities, entities)
+                prevMemories = getPrevMemories(trainDialog, entities, roundIndex, scoreIndex)
+
+                // If originated from LogDialog, I'll have score response data
+                if (scorerStep.uiScoreResponse) {
+                    scoreResponse = scorerStep.uiScoreResponse
+                }
+                // Otherwise generate it
+                else {
+                    const scoredAction: CLM.ScoredAction = {
+                        actionId: selectedAction.actionId,
+                        payload: selectedAction.payload,
+                        isTerminal: selectedAction.isTerminal,
+                        score: 1,
+                        actionType: selectedAction.actionType
+                    }
+
+                    // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
+                    const unscoredActions = actions
+                        .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
+                        .map<CLM.UnscoredAction>(action =>
+                            ({
+                                actionId: action.actionId,
+                                payload: action.payload,
+                                isTerminal: action.isTerminal,
+                                reason: CLM.ScoreReason.NotCalculated,
+                                actionType: action.actionType
+                            }));
+
+                    scoreResponse = {
+                        metrics: {
+                            wallTime: 0
+                        },
+                        scoredActions: [scoredAction],
+                        unscoredActions: unscoredActions
+                    }
+                }
+            }
+            // If user round, get filled entities from first scorer step
+            else {
+                memories = filledEntitiesToMemory(round.scorerSteps[0].input.filledEntities, entities)
+                prevMemories = getPrevMemories(trainDialog, entities, roundIndex, scoreIndex)
+            }
+        }
+    }
+
+    return {
+        dialogMode: (senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
+        scoreInput: scorerStep ? scorerStep.input : undefined,
+        scoreResponse: scoreResponse,
+        roundIndex,
+        textVariations: round ? round.extractorStep.textVariations : [],
+        memories: filterDummyEntities(memories),
+        prevMemories: filterDummyEntities(prevMemories),
+        extractResponses: []
+    }
 }
