@@ -413,11 +413,11 @@ export type DeleteAction = {
 } | {
     type: AT.DELETE_TRAIN_DIALOG_REJECTED
 } | DeleteLogDialogAsyncAction
-| DeleteLogDialogFulfilledAction
-| DeleteLogDialogRejectedAction
-| DeleteLogDialogsAsyncAction
-| DeleteLogDialogsFulfilledAction
-| DeleteLogDialogsRejectedAction
+    | DeleteLogDialogFulfilledAction
+    | DeleteLogDialogRejectedAction
+    | DeleteLogDialogsAsyncAction
+    | DeleteLogDialogsFulfilledAction
+    | DeleteLogDialogsRejectedAction
 | {
     type: AT.DELETE_CHAT_SESSION_ASYNC,
     session: CLM.Session,

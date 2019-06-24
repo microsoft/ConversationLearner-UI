@@ -825,7 +825,6 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         createEntityThunkAsync: actions.entity.createEntityThunkAsync,
         editEntityThunkAsync: actions.entity.editEntityThunkAsync,
-        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         fetchEntityDeleteValidationThunkAsync: actions.entity.fetchEntityDeleteValidationThunkAsync,
         fetchEntityEditValidationThunkAsync: actions.entity.fetchEntityEditValidationThunkAsync
     }, dispatch);
