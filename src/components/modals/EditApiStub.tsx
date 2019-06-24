@@ -17,7 +17,6 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { FM } from '../../react-intl-messages'
 import './EditApiStub.css'
 
@@ -141,7 +140,7 @@ class EditApiStub extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.isOpen}
                 isBlocking={true}
                 containerClassName="cl-modal cl-modal--medium"
@@ -219,7 +218,7 @@ class EditApiStub extends React.Component<Props, ComponentState> {
                     handleDelete={() => { }}
                     entityTypeFilter={null}
                 />
-            </Modal>
+            </OF.Modal>
         );
     }
 }

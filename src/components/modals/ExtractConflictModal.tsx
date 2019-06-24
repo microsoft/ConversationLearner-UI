@@ -6,7 +6,6 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { FM } from '../../react-intl-messages'
 import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -27,7 +26,7 @@ type Props = ReceivedProps & InjectedIntlProps
 const ExtractConflictModal: React.SFC<Props> = (props) => {
     const { intl } = props
     return (
-        <Modal
+        <OF.Modal
             isOpen={props.open}
             className={OF.FontClassNames.mediumPlus}
             containerClassName="cl-modal cl-modal--small"
@@ -102,7 +101,7 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
                     />
                 </div>
             </div>
-        </Modal>
+        </OF.Modal>
     )
 }
 

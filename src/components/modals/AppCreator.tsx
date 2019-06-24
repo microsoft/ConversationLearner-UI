@@ -10,7 +10,6 @@ import { returntypeof } from 'react-redux-typescript'
 import { getLuisApplicationCultures } from '../../epics/apiHelpers'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State, ErrorType, AppCreatorType } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
@@ -210,7 +209,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
         const invalidName = this.onGetNameErrorMessage(this.state.appNameVal) !== ""
         const invalidImport = invalidName || this.state.file === null
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open}
                 onDismiss={() => this.onClickCancel()}
                 isBlocking={false}
@@ -315,7 +314,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </OF.Modal>
         )
     }
 }
