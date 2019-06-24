@@ -218,7 +218,6 @@ const mapDispatchToProps = (dispatch: any) => {
         createActionThunkAsync: actions.action.createActionThunkAsync,
         editActionThunkAsync: actions.action.editActionThunkAsync,
         deleteActionThunkAsync: actions.action.deleteActionThunkAsync,
-        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {

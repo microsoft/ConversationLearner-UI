@@ -431,7 +431,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         fetchTextVariationConflictThunkAsync: actions.train.fetchTextVariationConflictThunkAsync,
         getScoresThunkAsync: actions.teach.getScoresThunkAsync,
         runScorerThunkAsync: actions.teach.runScorerThunkAsync,

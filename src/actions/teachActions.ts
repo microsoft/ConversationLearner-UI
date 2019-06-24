@@ -11,6 +11,7 @@ import { setErrorDisplay } from './displayActions'
 import { AxiosError } from 'axios'
 import { fetchAllTrainDialogsThunkAsync } from './trainActions'
 import { EntityLabelConflictError } from '../types/errors'
+import { fetchApplicationTrainingStatusThunkAsync } from './appActions';
 
 // --------------------------
 // createTeachSession
@@ -161,6 +162,11 @@ export const deleteTeachSessionThunkAsync = (
             // If saving return the new train dialog
             const newTrainDialog = save ? await clClient.trainDialog(app.appId, teachSession.trainDialogId) : null
             dispatch(deleteTeachSessionFulfilled(teachSession, newTrainDialog, sourceTrainDialogId));
+
+            if (save) {
+                dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId))
+            }
+            
             return newTrainDialog
 
         } catch (e) {
