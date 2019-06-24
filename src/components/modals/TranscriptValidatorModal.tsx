@@ -6,7 +6,6 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, } from 'react-intl'
 import './TranscriptValidatorModal.css'
@@ -19,7 +18,7 @@ class TranscriptValidatorModal extends React.Component<Props, ComponentState> {
 
     render() {
         return (
-            <Modal
+            <OF.Modal
                 isOpen={true}
                 isBlocking={true}
                 containerClassName='cl-modal cl-modal--transcriptvalidator'
@@ -63,7 +62,7 @@ class TranscriptValidatorModal extends React.Component<Props, ComponentState> {
                             />
                         </div>
                     </div>
-            </Modal>
+            </OF.Modal>
         )
     }
 }

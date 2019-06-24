@@ -14,7 +14,6 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { FM } from '../../react-intl-messages'
 
 interface ComponentState {
@@ -72,7 +71,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
 
     render() {
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.isOpen}
                 isBlocking={true}
                 containerClassName="cl-modal cl-modal--medium"
@@ -123,7 +122,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                     handleDelete={() => { }}
                     entityTypeFilter={null}
                 />
-            </Modal>
+            </OF.Modal>
         );
     }
 }

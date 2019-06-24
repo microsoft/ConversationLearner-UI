@@ -12,7 +12,6 @@ import { FM } from '../../../react-intl-messages'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { Template, RenderedActionArgument } from '@conversationlearner/models'
 import { State } from '../../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -98,7 +97,7 @@ class AdaptiveCardViewer extends React.Component<Props> {
             // Ignore error, show error message below
         }
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open}
                 onDismiss={this.onDismiss}
                 isBlocking={false}
@@ -137,7 +136,7 @@ class AdaptiveCardViewer extends React.Component<Props> {
                         </div>
                     </div>
                 }
-            </Modal>
+            </OF.Modal>
         );
     }
 }

@@ -9,10 +9,9 @@ import * as CLM from '@conversationlearner/models'
 import FormattedMessageId from '../FormattedMessageId'
 import HelpIcon from '../HelpIcon'
 import { TipType } from '../ToolTips/ToolTips'
-import { returntypeof } from 'react-redux-typescript';
+import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -64,7 +63,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
     render() {
         const invalidImport = this.state.files === null
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open}
                 onDismiss={() => this.props.onClose(null, false, false)}
                 isBlocking={false}
@@ -142,7 +141,7 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </OF.Modal>
         )
     }
 }

@@ -13,7 +13,6 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { EditDialogType } from '.'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import { AppBase } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
@@ -74,7 +73,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
                 containerClassName="cl-modal cl-modal--narrow cl-modal--log"
@@ -137,7 +136,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                     onOk={() => this.setState({ isSessionEndModalOpen: false })}
                     title={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_TIMEOUT_TITLE)}
                 />
-            </Modal>
+            </OF.Modal>
         );
     }
 }

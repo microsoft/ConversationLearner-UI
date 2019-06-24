@@ -5,7 +5,6 @@
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import './ImportWaitModal.css'
 
 interface ComponentState {
@@ -16,7 +15,7 @@ class ImportWaitModal extends React.Component<Props, ComponentState> {
 
     render() {
         return (
-            <Modal
+            <OF.Modal
                 isOpen={true}
                 isBlocking={true}
                 containerClassName='cl-modal cl-modal--importwait'
@@ -27,7 +26,7 @@ class ImportWaitModal extends React.Component<Props, ComponentState> {
                         />
                         {`Importing ${this.props.importIndex} of ${this.props.importCount}...`}
                     </div>
-            </Modal>
+            </OF.Modal>
         )
     }
 }

@@ -3,21 +3,20 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../../Utils/util'
+import Tree from 'react-d3-tree';
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import * as Util from '../../../Utils/util'
-import Tree from 'react-d3-tree';
 import { TreeNodeLabel, TreeNode, TreeScorerStep } from './TreeNodeLabel'
 import { TreeNodeExpanded } from './TreeNodeExpanded'
-import './TreeView.css';
 import { EditDialogType, EditState } from '..'
+import './TreeView.css';
 
 const userShape = {
     shape: 'circle',
@@ -416,7 +415,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                     {this.state.expandedNode &&
-                        <Modal
+                        <OF.Modal
                             isOpen={true}
                             containerClassName='cl-modal'
                         >
@@ -439,7 +438,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                                     </div>
                                 </div>
                             </div>
-                        </Modal>
+                        </OF.Modal>
                     }
                 </div>
             </div>

@@ -3,9 +3,9 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
 import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner'
 import { State } from '../../types'
 import './SpinnerWindow.css'
@@ -17,7 +17,7 @@ class SpinnerWindow extends React.Component<Props> {
     render() {
         return (
             <React.Fragment>
-                <Modal
+                <OF.Modal
                     isOpen={this.props.displaySpinner.length > 0}
                     isBlocking={true}
                     containerClassName='cl-spinner'
@@ -29,7 +29,7 @@ class SpinnerWindow extends React.Component<Props> {
                             {this.props.displaySpinner.join("\n\n")}
                         </div>
                     }
-                </Modal>
+                </OF.Modal>
                 <div role="alert" aria-live="assertive" className="cl-spinner-aria">
                     {this.props.displaySpinner.length > 0 && <span className="cl-screen-reader" data-testid="spinner">Loading</span>}
                 </div>
