@@ -32,7 +32,7 @@ export interface IPollerOptions {
 const global = window
 export class Poller {
     // Need some random character for visual difference in logs. Could use uuid() library but don't want dependency
-    // For Console.log : private id = Symbol(Math.floor(Math.random() * 100))
+    // private id = Symbol(Math.floor(Math.random() * 100))
     private polls: ActivePoll[] = []
     constructor(options: IPollerOptions) {
         global.setInterval(async () => await this.poll(), options.interval)
@@ -42,7 +42,7 @@ export class Poller {
         const { id, maxDuration } = pollConfig
         const start = new Date().getTime()
         const end = start + maxDuration
-        const activeApp = this.polls.find(p => p.id === id)
+        const activeApp = this.polls.find(p => p && p.id === id)
 
         if (activeApp) {
             // console.log(`Poller: ${this.id.toString()} - Existing polling found for id: ${id} increasing end from ${activeApp.end} to: ${end}`)
@@ -68,6 +68,7 @@ export class Poller {
 
     private async poll() {
         const now = (new Date()).getTime()
+        // TODO: Think the issue is poll being mapped to undefined, then future operation tries to access that poll id.
         // Alternate approach is to split this into three phases: Filter those expired, await all requests, then filter all resolved.
         this.polls = (await Promise.all(this.polls.map(async poll => {
             const { end } = poll

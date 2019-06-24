@@ -13,22 +13,19 @@ interface Props {
     isVisible: boolean
     left: number
     top: number
-    menuRef: (element: HTMLDivElement) => void
     onClickOption: (option: IOption) => void
 }
 
-interface State {
-    listRef: React.RefObject<HTMLDivElement>
+interface PropsWithRef extends Props {
+    menuRef: React.Ref<HTMLDivElement>
 }
 
-export default class Picker extends React.Component<Props, State> {
-    state: State = {
-        listRef: React.createRef<HTMLDivElement>()
-    }
+class Picker extends React.Component<PropsWithRef> {
+    listRef =  React.createRef<HTMLDivElement>()
 
     componentDidUpdate() {
-        if (this.state.listRef.current) {
-            this.scrollHighlightedElementIntoView(this.state.listRef.current)
+        if (this.listRef.current) {
+            this.scrollHighlightedElementIntoView(this.listRef.current)
         }
     }
 
@@ -56,7 +53,7 @@ export default class Picker extends React.Component<Props, State> {
             ref={this.props.menuRef}
             style={style}
         >
-            <div className="mention-picker-list" ref={this.state.listRef}>
+            <div className="mention-picker-list" ref={this.listRef}>
                 {this.props.matchedOptions.length === 0
                     ? <div className="mention-picker-button">No Results</div>
                     : this.props.matchedOptions.map((matchedOption, i) =>
@@ -73,3 +70,5 @@ export default class Picker extends React.Component<Props, State> {
         </div>
     }
 }
+
+export default React.forwardRef<HTMLDivElement, Props>((props, ref) => <Picker {...props} menuRef={ref} />)

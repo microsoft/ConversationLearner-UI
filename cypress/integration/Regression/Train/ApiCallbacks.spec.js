@@ -52,6 +52,13 @@ describe('API Callbacks - Train', () => {
       train.SelectApiCardAction('TextCard', 'Greetings', 'Have a great day!')
     })
 
+    it('Should invoke "PhotoCard" API Callback and verify it is in the chat pane', () => {
+      train.TypeYourMessage('PhotoCard')
+      train.ClickScoreActionsButton()
+      train.SelectApiPhotoCardAction('PhotoCard', 'Photo Card', 'Here is a photo for you to enjoy', 'https://picsum.photos/380/220')
+    })
+
+
     it('Should save the training and verify it is in the grid', () => {
       train.SaveAsIsVerifyInGrid()
     })
@@ -59,7 +66,7 @@ describe('API Callbacks - Train', () => {
 
   context('Edit Train Dialog', () => {
     it('Should edit the Train Dialog', () => {
-      train.EditTraining('LogicWithNoArgs', 'TextCard', 'TextCard')
+      train.EditTraining('LogicWithNoArgs', 'PhotoCard', 'PhotoCard')
     })
 
     it('Should verify that all of the Bot responses were persisted and re-renders correctly', () => {

@@ -70,16 +70,16 @@ export function CreateNewActionThenVerifyInGrid({
 
   // Get the row that we are going to validate and assign a Cypress Alias to it.
   // If we skip this step, the validations that follow will fail.
-  let actionsGridrow = new actionsGrid.Row(type, responseNameData)
+  let actionsGridRow = new actionsGrid.Row(type, responseNameData)
   
-  if (validateApiResponse) actionsGridrow.VerifyApi(validateApiResponse)
-  actionsGridrow.VerifyActionType(type)
-  actionsGridrow.VerifyRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
-  actionsGridrow.VerifyDisqualifyingEntities(expectedEntities, disqualifyingEntities)
-  actionsGridrow.VerifyExpectedEntities(expectedEntities)
+  if (validateApiResponse) actionsGridRow.VerifyApi(validateApiResponse)
+  actionsGridRow.VerifyActionType(type)
+  actionsGridRow.VerifyRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
+  actionsGridRow.VerifyDisqualifyingEntities(expectedEntities, disqualifyingEntities)
+  actionsGridRow.VerifyExpectedEntities(expectedEntities)
   
   // Type END_SESSION must have "Wait for Response" checked even if uncheckWaitForResponse is true.
-  actionsGridrow.VerifyWaitForResponse((type === 'END_SESSION') || !uncheckWaitForResponse)
+  actionsGridRow.VerifyWaitForResponse((type === 'END_SESSION') || !uncheckWaitForResponse)
 }
 
 // ------------------------------------------------------------------------------------------------

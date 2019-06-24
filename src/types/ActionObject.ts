@@ -415,6 +415,9 @@ export type DeleteAction = {
 } | DeleteLogDialogAsyncAction
 | DeleteLogDialogFulfilledAction
 | DeleteLogDialogRejectedAction
+| DeleteLogDialogsAsyncAction
+| DeleteLogDialogsFulfilledAction
+| DeleteLogDialogsRejectedAction
 | {
     type: AT.DELETE_CHAT_SESSION_ASYNC,
     session: CLM.Session,
@@ -456,6 +459,18 @@ export type DeleteLogDialogFulfilledAction = {
 }
 export type DeleteLogDialogRejectedAction = {
     type: AT.DELETE_LOG_DIALOG_REJECTED,
+}
+
+export type DeleteLogDialogsAsyncAction = {
+    type: AT.DELETE_LOG_DIALOGS_ASYNC,
+    appId: string,
+    logDialogIds: string[],
+}
+export type DeleteLogDialogsFulfilledAction = {
+    type: AT.DELETE_LOG_DIALOGS_FULFILLED,
+}
+export type DeleteLogDialogsRejectedAction = {
+    type: AT.DELETE_LOG_DIALOGS_REJECTED,
 }
 
 export type TeachAction = {

@@ -64,6 +64,6 @@ export function VerifyIncidentTriangleFoundInTrainDialogsGrid(firstInput, lastIn
         return
       }
     }
-    throw `Can't Find Training to Verify it contains errors. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`
+    throw new Error(`Can't Find Training to Verify it contains errors. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`)
   })
 }

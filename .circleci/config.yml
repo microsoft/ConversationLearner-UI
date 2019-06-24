@@ -60,7 +60,7 @@ jobs:
       - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
 
       # Clone the Samples BOT
-      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b test ../cl-samples
+      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
       
       # Install and build sample Bot application
       - run: cd ../cl-samples && npm ci
@@ -68,7 +68,7 @@ jobs:
 
       # Run sample
       - run: 
-          command: cd ../cl-samples && npm run test-ApiCallbacks
+          command: cd ../cl-samples && npm run test-apicallbacks
           background: true
 
       # Run UI
@@ -77,6 +77,8 @@ jobs:
           background: true
 
       # Ensure bot and ui are running
+      # TODO: Find out why this fails.
+      # For some reason this times out as failure even though the bot is running and request should succeed
       # - run: npx wait-on -- http://localhost:3978
       - run: npx wait-on -- http://localhost:3000
       

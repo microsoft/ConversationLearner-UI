@@ -20,9 +20,9 @@ describe('Disqualifying Entities - CreateModels', () => {
 
   context('Create Entities', () => {
     it('Should create 3 simple custom trained entities', () => {
-      entities.CreateNewEntity({ name: 'name' })
-      entities.CreateNewEntity({ name: 'want' })
-      entities.CreateNewEntity({ name: 'sweets' })
+      entities.CreateNewEntityThenVerifyInGrid({ name: 'name' })
+      entities.CreateNewEntityThenVerifyInGrid({ name: 'want' })
+      entities.CreateNewEntityThenVerifyInGrid({ name: 'sweets' })
     })
 
     context('Create Actions', () => {

@@ -20,7 +20,7 @@ describe("What's Your Name - CreateModels", () => {
 
   context('Entity and Actions', () => {
     it('Should create a simple text Entity called "name"', () => {
-      entities.CreateNewEntity({ name: 'name' })
+      entities.CreateNewEntityThenVerifyInGrid({ name: 'name' })
     })
 
     it('Should create a simple Action that expectes the "name" Entity as a user response', () => {

@@ -14,8 +14,12 @@
 //            DoSomeOtherWork()
 //          })
 export function SkipRemainingTestsOfSuiteIfFailed() { 
-  if (this.currentTest == undefined) throw 'Test Code Error: Cannot use arrow/lambda function to call the SkipRemainingTestsOfSuiteIfFailed() function.'
-  if (this.currentTest.state === 'failed') this.skip() 
+  if (this.currentTest == undefined) {
+    throw new Error('Test Code Error: Cannot use arrow/lambda function to call the SkipRemainingTestsOfSuiteIfFailed() function.')
+  }
+  if (this.currentTest.state === 'failed') {
+    this.skip() 
+  }
 }
 
 // NOTE: the '-+-' is a signature for filtering console output

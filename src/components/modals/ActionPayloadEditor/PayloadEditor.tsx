@@ -59,7 +59,7 @@ const initialState: Readonly<State> = {
 
 export default class PayloadEditor extends React.Component<Props, State> {
     fuse: Fuse
-    menu: HTMLElement
+    menuRef = React.createRef<HTMLDivElement>()
     plugins: any[]
 
     constructor(props: Props) {
@@ -103,7 +103,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
 
         // If we've somehow executed before the menu onRef and don't have a reference to the menu element return
         // We need to menu to compute the position so there is no point to continue
-        const menu = this.menu
+        const menu = this.menuRef.current
         if (!menu) {
             return
         }
@@ -117,7 +117,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
             return
         }
 
-        const relativeParent = Utilities.getRelativeParent(this.menu.parentElement)
+        const relativeParent = Utilities.getRelativeParent(menu.parentElement)
         const relativeRect = relativeParent.getBoundingClientRect()
 
         const selection = window.getSelection()
@@ -285,10 +285,6 @@ export default class PayloadEditor extends React.Component<Props, State> {
         return true
     }
 
-    onMenuRef = (element: HTMLElement) => {
-        this.menu = element
-    }
-
     onClickOption = (option: IOption) => {
         const change = this.props.value.change()
         this.onCompleteNode(undefined, change, option)
@@ -307,7 +303,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
 
         return <div className="editor-container" data-testid={this.props[testAttribute]}>
             <Picker
-                menuRef={this.onMenuRef}
+                ref={this.menuRef}
                 {...this.state.menuProps}
                 matchedOptions={matchedOptions}
                 onClickOption={this.onClickOption}
@@ -374,7 +370,9 @@ export default class PayloadEditor extends React.Component<Props, State> {
             .collapseToStartOfNextText()
 
         // Reset Scroll position of menuRef
-        this.menu.scrollTop = 0
+        if (this.menuRef.current) {
+            this.menuRef.current.scrollTop = 0
+        }
 
         // Reset highlight index to be ready for next node
         this.setState({

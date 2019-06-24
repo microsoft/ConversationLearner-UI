@@ -20,8 +20,8 @@ describe('Date Time Resolver - CreateModels', () => {
 
   context('Entities and Actions', () => {
     it('Create 2 datetimeV2 resolver type Entities', () => {
-      entities.CreateNewEntity({ name: 'departure', resolverType: 'datetimeV2', expectPopup: true })
-      entities.CreateNewEntity({ name: 'return', resolverType: 'datetimeV2' })
+      entities.CreateNewEntityThenVerifyInGrid({ name: 'departure', resolverType: 'datetimeV2', expectPopup: true })
+      entities.CreateNewEntityThenVerifyInGrid({ name: 'return', resolverType: 'datetimeV2' })
     })
 
     it('Should create an Action that requires both of our datetimeV2 Entities', () => {

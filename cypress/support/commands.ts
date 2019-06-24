@@ -78,7 +78,7 @@ Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expect
     helpers.ConLog(`ExactMatch('${expectedText}')`, `elementText: '${elementText}'`)
     if (elementText === expectedText) return elements[i]
   }
-  throw `Exact Match '${expectedText}' NOT Found`
+  throw new Error(`Exact Match '${expectedText}' NOT Found`)
 })
 
 Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expectedText) => {

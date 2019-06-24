@@ -21,7 +21,7 @@ describe('Entity Labeling - Create Model', () => {
     })
 
     it('Create a Multivalue Entity', () => {
-      entities.CreateNewEntity({ name: 'multi', multiValued: true })
+      entities.CreateNewEntityThenVerifyInGrid({ name: 'multi', multiValued: true })
     })
 
     it('Create two Actions', () => {
