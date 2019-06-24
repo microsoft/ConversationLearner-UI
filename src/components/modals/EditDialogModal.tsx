@@ -20,9 +20,7 @@ import Webchat, { renderActivity } from '../Webchat'
 import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
 import { NewActionPreset } from './ActionCreatorEditor'
 import { formatMessageId, equal, deepCopy } from '../../Utils/util'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
-import { TooltipHost, DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip'
 import { EditDialogAdmin, EditDialogType, EditState } from '.'
 import { Activity } from 'botframework-directlinejs'
 import { SelectionType } from '../../types/const'
@@ -533,8 +531,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     />
                 }
                 {!hideBranch &&
-                    <TooltipHost
-                        directionalHint={DirectionalHint.topCenter}
+                    <OF.TooltipHost
+                        directionalHint={OF.DirectionalHint.topCenter}
                         tooltipProps={{
                             onRenderContent: () =>
                                 <FormattedMessageId id={FM.TOOLTIP_BRANCH_BUTTON} />
@@ -547,7 +545,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                             onClick={this.onClickBranch}
                             ariaDescription={formatMessageId(this.props.intl, FM.EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION)}
                         />
-                    </TooltipHost>
+                    </OF.TooltipHost>
                 }
             </div>
         )
@@ -988,7 +986,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const isLastActivitySelected = this.state.selectedActivity ? this.state.selectedActivity === this.props.history[this.props.history.length - 1] : false
         const containerClassName = `cl-modal cl-modal--large cl-modal--${this.props.editType === EditDialogType.LOG_EDITED ? "teach" : "log"}`
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open}
                 isBlocking={true}
                 containerClassName={containerClassName}
@@ -1065,8 +1063,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     iconProps={{ iconName: 'Accept' }}
                                 />
                             }
-                            <TooltipHost
-                                directionalHint={DirectionalHint.topCenter}
+                            <OF.TooltipHost
+                                directionalHint={OF.DirectionalHint.topCenter}
                                 tooltipProps={{
                                     onRenderContent: () =>
                                         <FormattedMessageId id={FM.TOOLTIP_REPLAY} />
@@ -1080,7 +1078,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     text={formatMessageId(intl, FM.BUTTON_REPLAY)}
                                     iconProps={{ iconName: 'Refresh' }}
                                 />
-                            </TooltipHost>
+                            </OF.TooltipHost>
 
                             <OF.PrimaryButton
                                 data-testid="edit-teach-dialog-close-save-button"
@@ -1148,7 +1146,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onCancel={this.onSaveConflictCancel}
                     onOk={this.onSaveConflictSave}
                 />
-            </Modal>
+            </OF.Modal>
         );
     }
 }

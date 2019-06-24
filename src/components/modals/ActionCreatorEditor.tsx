@@ -22,7 +22,6 @@ import { Value } from 'slate'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
 import { withRouter } from 'react-router-dom'
@@ -1377,7 +1376,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             ? this.props.botInfo.callbacks.find(t => t.name === this.state.selectedApiOptionKey)
             : undefined
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open}
                 isBlocking={false}
                 containerClassName="cl-modal cl-modal--medium"
@@ -1798,7 +1797,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         : []}
                     hideUndefined={false}
                 />
-            </Modal>
+            </OF.Modal>
         );
     }
 }

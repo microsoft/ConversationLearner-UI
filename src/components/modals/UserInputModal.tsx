@@ -3,16 +3,15 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../Utils/util'
+import FormattedMessageId from '../FormattedMessageId'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import * as OF from 'office-ui-fabric-react'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
-import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import * as Util from '../../Utils/util'
 
 interface ComponentState {
     userInputVal: string
@@ -73,7 +72,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         const invalidName = this.onGetInputErrorMessage(this.state.userInputVal) !== ""
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open}
                 onDismiss={() => this.onClickCancel()}
                 isBlocking={false}
@@ -116,7 +115,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </OF.Modal>
         )
     }
 }

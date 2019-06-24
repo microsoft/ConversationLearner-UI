@@ -25,7 +25,6 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { ErrorHandler } from '../../Utils/ErrorHandler'
 import { AT } from '../../types/ActionTypes'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State, TeachSessionState } from '../../types'
 import { renderReplayError } from '../../Utils/RenderReplayError'
 import { Activity } from 'botframework-directlinejs'
@@ -665,7 +664,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         const isLastActivitySelected = this.state.selectedActivityIndex ? this.state.selectedActivityIndex === (this.state.nextActivityIndex - 1) : false
         return (
             <div>
-                <Modal
+                <OF.Modal
                     isOpen={this.props.isOpen}
                     isBlocking={true}
                     containerClassName="cl-modal cl-modal--large cl-modal--teach"
@@ -806,7 +805,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                         onCancel={() => { this.onCancelAddUserInput() }}
                         onSubmit={this.onSubmitAddUserInput}
                     />
-                </Modal>
+                </OF.Modal>
                 <TeachSessionInitState
                     isOpen={this.state.isInitStateOpen}
                     app={this.props.app}

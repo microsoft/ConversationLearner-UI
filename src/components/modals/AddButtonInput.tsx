@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { TooltipHost, DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip'
+import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import FormattedMessageId from '../FormattedMessageId'
 import { EditDialogType } from '.'
@@ -30,8 +30,8 @@ class AddButtonInput extends React.Component<Props> {
                 onClick={this.props.onClick}
                 data-testid="chat-edit-add-user-input-button"
             >
-                <TooltipHost
-                    directionalHint={DirectionalHint.topCenter}
+                <OF.TooltipHost
+                    directionalHint={OF.DirectionalHint.topCenter}
                     tooltipProps={{
                         onRenderContent: () =>
                             <FormattedMessageId id={FM.TOOLTIP_ADD_USER_INPUT_BUTTON} />
@@ -46,7 +46,7 @@ class AddButtonInput extends React.Component<Props> {
                         />
                         <text className="cl-addbutton-addinput-text" x="5" y="14">+</text>
                     </svg>
-                </TooltipHost>
+                </OF.TooltipHost>
             </div>
 
         )

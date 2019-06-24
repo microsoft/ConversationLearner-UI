@@ -13,10 +13,9 @@ import FormattedMessageId from '../FormattedMessageId'
 import HelpIcon from '../HelpIcon'
 import { saveAs } from 'file-saver'
 import { TipType } from '../ToolTips/ToolTips'
-import { returntypeof } from 'react-redux-typescript';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -80,7 +79,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
 
     render() {
         return (
-            <Modal
+            <OF.Modal
                 isOpen={true}
                 onDismiss={this.props.onClose}
                 isBlocking={false}
@@ -138,7 +137,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </OF.Modal>
         )
     }
 }

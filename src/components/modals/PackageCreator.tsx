@@ -6,7 +6,6 @@ import * as React from 'react'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as OF from 'office-ui-fabric-react'
 import { PackageReference } from '@conversationlearner/models'
 import { State } from '../../types'
@@ -93,7 +92,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open}
                 onDismiss={() => this.onClickCancel()}
                 isBlocking={false}
@@ -164,7 +163,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                         />
                     </div>
                 </div>
-            </Modal>
+            </OF.Modal>
         )
     }
 }
