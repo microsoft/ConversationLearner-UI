@@ -145,7 +145,7 @@ interface ComponentState {
 }
 
 class Entities extends React.Component<Props, ComponentState> {
-    newEntityButton: OF.IButton
+    newEntityButtonRef = React.createRef<OF.IButton>()
     state: ComponentState
 
     constructor(props: Props) {
@@ -161,7 +161,13 @@ class Entities extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        this.newEntityButton.focus()
+        this.focusNewEntityButton()
+    }
+
+    private focusNewEntityButton() {
+        if (this.newEntityButtonRef.current) {
+            this.newEntityButtonRef.current.focus()
+        }
     }
 
     @OF.autobind
@@ -171,7 +177,7 @@ class Entities extends React.Component<Props, ComponentState> {
             entitySelected: null
         })
         this.props.deleteEntityThunkAsync(this.props.app.appId, entity)
-        setTimeout(() => this.newEntityButton.focus(), 1000)
+        setTimeout(() => this.focusNewEntityButton(), 1000)
     }
 
     @OF.autobind
@@ -189,7 +195,7 @@ class Entities extends React.Component<Props, ComponentState> {
             entitySelected: null
         })
         setTimeout(() => {
-            this.newEntityButton.focus();
+            this.focusNewEntityButton();
         }, 500);
     }
 
@@ -285,7 +291,7 @@ class Entities extends React.Component<Props, ComponentState> {
                             defaultMessage: 'New Entity'
                         })}
                         iconProps={{ iconName: 'Add' }}
-                        componentRef={component => this.newEntityButton = component!}
+                        componentRef={this.newEntityButtonRef}
                     />
                 </div>
                 {entities.length === 0
