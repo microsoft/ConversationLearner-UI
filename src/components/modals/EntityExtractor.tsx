@@ -47,7 +47,7 @@ interface ComponentState {
 // TODO: Need to re-define TextVariation / ExtractResponse class defs so we don't need
 // to do all the messy conversion back and forth
 class EntityExtractor extends React.Component<Props, ComponentState> {
-    private doneExtractingButton: any = null;
+    private doneExtractingButtonRef = React.createRef<OF.IButton>()
 
     constructor(p: any) {
         super(p);
@@ -72,8 +72,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     focusPrimaryButton(): void {
-        if (this.doneExtractingButton) {
-            this.doneExtractingButton.focus();
+        if (this.doneExtractingButtonRef.current) {
+            this.doneExtractingButtonRef.current.focus();
         }
         else {
             setTimeout(this.focusPrimaryButton, 100)
@@ -532,7 +532,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             onClick={this.onSubmitTextVariation}
                             ariaDescription={'Add'}
                             text={'Add'}
-                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                            componentRef={this.doneExtractingButtonRef}
                             iconProps={{ iconName: 'Add' }}
                         />
                         <OF.TextField
@@ -561,7 +561,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                 onClick={this.onClickSubmitExtractions}
                                 ariaDescription={'Submit Changes'}
                                 text={'Submit Changes'}
-                                componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                                componentRef={this.doneExtractingButtonRef}
                                 iconProps={{ iconName: 'Accept' }}
                             />
                             <OF.PrimaryButton
@@ -578,7 +578,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Score Actions'}
                             text={'Score Actions'}
-                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                            componentRef={this.doneExtractingButtonRef}
                         />
                     }
 
