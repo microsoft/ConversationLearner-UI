@@ -571,6 +571,7 @@ export enum FM {
     TRAINDIALOGS_FILTERING_RESET = 'TrainDialogs.Filters.reset',
     TRAINDIALOGS_LISTVIEW_BUTTON = 'TrainDialogs.ListView.Button',
     TRAINDIALOGS_TREEVIEW_BUTTON = 'TrainDialogs.TreeView.Button',
+    TRAINDIALOGS_TEST_BUTTON = 'TrainDialogs.Test.Button',
 
     // TreeView
     TREEVIEW_TOGGLE_FULLSCREEN = 'TreeView.ToggleFullScreen',
@@ -952,6 +953,7 @@ export default {
         [FM.TRAINDIALOGS_FILTERING_RESET]: 'Clear',
         [FM.TRAINDIALOGS_LISTVIEW_BUTTON]: 'List View',
         [FM.TRAINDIALOGS_TREEVIEW_BUTTON]: 'Tree View',
+        [FM.TRAINDIALOGS_TEST_BUTTON]: 'Test',
 
         // TreeView
         [FM.TREEVIEW_TOGGLE_FULLSCREEN]: 'Toggle Fullscreen',

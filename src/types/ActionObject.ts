@@ -301,6 +301,10 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_EXTRACTIONS_FULFILLED,
     extractResponses: CLM.ExtractResponse[]
+} | {
+    type: AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC
+} | {
+    type: AT.FETCH_TRANSCRIPT_VALIDATION_FULFILLED
 }
 
 export type CreateAction = {

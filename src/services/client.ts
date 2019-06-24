@@ -584,7 +584,7 @@ export default class ClClient {
         return response.data
     }
 
-    //AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
+    // AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
     // filteredDialog = dialog to ignore when checking for conflicting labels
     async teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string, filteredDialog: string | null): Promise<CLM.TeachWithHistory> {
         let url = `/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`
@@ -600,6 +600,16 @@ export default class ClClient {
             }
         })
 
+        return response.data
+    }
+
+    // AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC
+    async validateTranscript(appId: string, packageId: string, turnValidations: CLM.TurnValidation[]): Promise<boolean> {
+        const response = await this.send<boolean>({
+            method: 'post',
+            url: `/app/${appId}/validatetranscript?packageId=${packageId}`,
+            data: turnValidations
+        })
         return response.data
     }
 

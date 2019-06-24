@@ -15,7 +15,9 @@ import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
 import ConversationImporter from '../../../components/modals/ConversationImporter'
+import TranscriptValidatorPicker from '../../../components/modals/TranscriptValidatorPicker'
 import ImportWaitModal from '../../../components/modals/ImportWaitModal'
+import TranscriptTestWaitModal from '../../../components/modals/TranscriptValidatorModal'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { returntypeof } from 'react-redux-typescript'
@@ -153,6 +155,12 @@ const defaultEntityFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.forma
 const defaultActionFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_ACTIONS) })
 const defaultTagFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
 
+interface ValidationResults {
+    passed: number,
+    failed: number,
+    invalidTranscript: number
+}
+
 interface ComponentState {
     columns: OF.IColumn[]
     sortColumn: IRenderableColumn
@@ -161,9 +169,12 @@ interface ComponentState {
     isTeachDialogModalOpen: boolean
     isEditDialogModalOpen: boolean
     isTranscriptImportOpen: boolean
+    isTranscriptValidateOpen: boolean
     isImportWaitModalOpen: boolean
-    importIndex: number
-    importFiles: File[] | undefined
+    isTestWaitModalOpen: boolean
+    transcriptIndex: number
+    transcriptFiles: File[] | undefined
+    validationResults: ValidationResults | null
     importAutoCreate: boolean
     importAutoMerge: boolean
     isTreeViewModalOpen: boolean
@@ -202,9 +213,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTeachDialogModalOpen: false,
             isEditDialogModalOpen: false,
             isTranscriptImportOpen: false,
+            isTranscriptValidateOpen: false,
             isImportWaitModalOpen: false,
-            importIndex: 0,
-            importFiles: undefined,
+            isTestWaitModalOpen: false,
+            transcriptIndex: 0,
+            transcriptFiles: undefined,
+            validationResults: null,
             importAutoCreate: false,
             importAutoMerge: false,
             isTreeViewModalOpen: false,
@@ -449,9 +463,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             dialogKey: this.state.dialogKey + 1
         })
 
-        if (this.state.importFiles && this.state.importFiles.length > 0) {
+        if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
             if (stopImport) {
-                this.setState({importFiles: undefined})
+                this.setState({transcriptFiles: undefined})
             }
             else {
                 await this.onStartTranscriptImport()
@@ -683,7 +697,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             dialogKey: this.state.dialogKey + 1
         })
 
-        if (this.state.importFiles && this.state.importFiles.length > 0) {
+        if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
             await this.onStartTranscriptImport()
         }
     }
@@ -718,7 +732,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 dialogKey: this.state.dialogKey + 1
             })
     
-            if (this.state.importFiles && this.state.importFiles.length > 0) {
+            if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
                 await this.onStartTranscriptImport()
             }
         }
@@ -959,6 +973,107 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
+    //----------------------
+    // Transcript validation
+    //-----------------------
+    @OF.autobind
+    onClickValidate(): void {
+        this.setState({
+            isTranscriptValidateOpen: true,
+            transcriptIndex: 0
+        })
+    }
+
+    @OF.autobind
+    async onCloseValidate(transcriptsToValidate: File[] | null): Promise<void> {
+        await Util.setStateAsync(this, {
+            isTranscriptValidateOpen: false,
+            transcriptFiles: transcriptsToValidate,
+            validationResults: { passed: 0, failed: 0, invalidTranscript: 0}
+        })
+        await this.onStartTranscriptValidate()
+    }
+
+    @OF.autobind
+    async onStartTranscriptValidate() {
+
+        if (!this.state.transcriptFiles || this.state.transcriptFiles.length === 0) {
+            return
+        }
+
+        // Check if I'm done importing files
+        if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
+            this.setState({transcriptFiles: undefined})
+            return
+        }
+
+        // Pop the next file
+        const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
+        this.setState({transcriptIndex: this.state.transcriptIndex + 1})
+
+        let source = await this.readFileAsync(transcriptFile)
+        try {
+            const sourceJson = JSON.parse(source)
+            await this.onValidate(sourceJson)
+        }
+        catch (e) {
+            const error = e as Error
+            this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
+            this.setState({
+                transcriptFiles: undefined,
+                isTestWaitModalOpen: false
+            })
+        }
+    }
+
+    async onValidate(transcript: BB.Activity[]): Promise<void> {
+
+        this.setState({isTestWaitModalOpen: true})
+
+        const turnValidations: CLM.TurnValidation[] = []
+        let turnValidation: CLM.TurnValidation = { inputText: "", actionHashes: []}
+        let invalidTranscript = false
+        for (let activity of transcript) {
+            // TODO: Handle conversation updates
+            if (!activity.type || activity.type === "message") {
+                if (activity.from.role === "user") {
+                    // If already have user input push it
+                    if (turnValidation.inputText !== "") {
+                        turnValidations.push(turnValidation)
+                    }
+                    turnValidation = { inputText: activity.text, actionHashes: []}
+                }
+                else if (activity.from.role === "bot") {
+                    if (turnValidation) {
+                        const actionHash = Util.hashText(activity.text)
+                        turnValidation.actionHashes.push(actionHash)
+                    }
+                    else {
+                        invalidTranscript = true
+                        break
+                    }
+                }
+            }
+        }
+
+        if (invalidTranscript) {
+            Util.setStateAsync(this, {validationResults: {...this.state.validationResults, invalidTranscript: this.state.validationResults!.invalidTranscript + 1}})               
+        }
+        else {
+            const isValid = await this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, turnValidations)
+            if (isValid) {
+                Util.setStateAsync(this, {validationResults: {...this.state.validationResults, passed: this.state.validationResults!.passed + 1}})
+            }
+            else {
+                Util.setStateAsync(this, {validationResults: {...this.state.validationResults, failed: this.state.validationResults!.failed + 1}})
+            }
+        }
+        this.onStartTranscriptValidate()
+    }
+
+    //-----------------------------
+    // Transcript import
+    //-----------------------------
     @OF.autobind
     onClickImportConversation(): void {
         this.setState({
@@ -970,8 +1085,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async onCloseImportConversation(transcriptsToImport: File[] | null, importAutoCreate: boolean, importAutoMerge: boolean): Promise<void> {
         await Util.setStateAsync(this, {
             isTranscriptImportOpen: false,
-            importFiles: transcriptsToImport,
-            importIndex: 0,
+            transcriptFiles: transcriptsToImport,
+            transcriptIndex: 0,
             importAutoCreate,
             importAutoMerge
         })
@@ -994,19 +1109,19 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onStartTranscriptImport() {
-        if (!this.state.importFiles || this.state.importFiles.length === 0) {
+        if (!this.state.transcriptFiles || this.state.transcriptFiles.length === 0) {
             return
         }
 
         // Check if I'm done importing files
-        if (this.state.importIndex === this.state.importFiles.length) {
-            this.setState({importFiles: undefined})
+        if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
+            this.setState({transcriptFiles: undefined})
             return
         }
 
         // Pop the next file
-        const transcriptFile = this.state.importFiles[this.state.importIndex]
-        this.setState({importIndex: this.state.importIndex + 1})
+        const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
+        this.setState({transcriptIndex: this.state.transcriptIndex + 1})
 
         let source = await this.readFileAsync(transcriptFile)
         try {
@@ -1017,7 +1132,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             const error = e as Error
             this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
             this.setState({
-                importFiles: undefined,
+                transcriptFiles: undefined,
                 isImportWaitModalOpen: false}
             )
         }
@@ -1268,9 +1383,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             dialogKey: this.state.dialogKey + 1
         })
 
-        if (this.state.importFiles && this.state.importFiles.length > 0) {
+        if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
             if (stopImport) {
-                this.setState({importFiles: undefined})
+                this.setState({transcriptFiles: undefined})
             }
             else {
                 await this.onStartTranscriptImport()
@@ -1424,9 +1539,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             iconName: "DownloadDocument"
                         }}
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
-                        onClick={() => this.onClickImportConversation()}
+                        onClick={this.onClickImportConversation}
                         ariaDescription="Import"
                         text="Import"
+                    />
+                    <OF.DefaultButton
+                        onClick={this.onClickValidate}
+                        ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_TEST_BUTTON)}
+                        text={Util.formatMessageId(intl, FM.TRAINDIALOGS_TEST_BUTTON)}
+                        iconProps={{ iconName: 'TestCase' }}
                     />
                     {this.state.isTreeViewModalOpen ?
                         <OF.DefaultButton
@@ -1584,8 +1705,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
                         allUniqueTags={this.props.allUniqueTags}
-                        importIndex={this.state.importIndex}
-                        importCount={this.state.importFiles ? this.state.importFiles.length : undefined}
+                        importIndex={this.state.transcriptIndex}
+                        importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : undefined}
                         conflictPairs={[]}
                         onAbortConflictResolution={() => { }}
                         onAcceptConflictResolution={async () => { }}
@@ -1624,8 +1745,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={(newTrainDialog) => this.onCreateTrainDialog(newTrainDialog)}
                     allUniqueTags={this.props.allUniqueTags}
-                    importIndex={this.state.importIndex}
-                    importCount={this.state.importFiles ? this.state.importFiles.length : undefined}
+                    importIndex={this.state.transcriptIndex}
+                    importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : undefined}
                     conflictPairs={[]}
                     onAbortConflictResolution={() => { }}
                     onAcceptConflictResolution={async () => { }}
@@ -1637,10 +1758,26 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onClose={this.onCloseImportConversation}
                     />
                 }
+                {this.state.isTranscriptValidateOpen && 
+                    <TranscriptValidatorPicker
+                        app={this.props.app}
+                        open={true}
+                        onClose={this.onCloseValidate}
+                    />
+                }
                 {this.state.isImportWaitModalOpen &&
                     <ImportWaitModal
-                        importIndex={this.state.importIndex}
-                        importCount={this.state.importFiles ? this.state.importFiles.length : 0}
+                        importIndex={this.state.transcriptIndex}
+                        importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
+                    />
+                }
+                {this.state.isTestWaitModalOpen &&
+                    <TranscriptTestWaitModal
+                        importIndex={this.state.transcriptIndex}
+                        importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
+                        passed={this.state.validationResults ? this.state.validationResults.passed : 0}
+                        failed={this.state.validationResults ? this.state.validationResults.failed : 0}
+                        onClose={() => this.setState({isTestWaitModalOpen: false})}
                     />
                 }
             </div>
@@ -1715,6 +1852,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         fetchExtractionsThunkAsync: actions.app.fetchExtractionsThunkAsync,
+        fetchTranscriptValidationThunkAsync: actions.app.fetchTranscriptValidationThunkAsync,
         trainDialogMergeThunkAsync: actions.train.trainDialogMergeThunkAsync,
         trainDialogReplaceThunkAsync: actions.train.trainDialogReplaceThunkAsync,
         trainDialogReplayAsync: actions.train.trainDialogReplayThunkAsync,
@@ -1750,8 +1888,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
+const stateProps = returntypeof(mapStateToProps)
+const dispatchProps = returntypeof(mapDispatchToProps)
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
 export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TrainDialogs))

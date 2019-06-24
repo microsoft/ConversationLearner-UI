@@ -12,7 +12,7 @@ import { connect } from 'react-redux'
 import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import './TeachSessionInitState.css'
+import './MemorySetter.css'
 
 class MemorySetter extends React.Component<Props> {
 
@@ -136,7 +136,7 @@ class MemorySetter extends React.Component<Props> {
             <div>
                 {editableEntities.map(entity => {
                     return (
-                        <div className="cl-init-state-block" key={entity.entityId}>
+                        <div className="cl-memory-setter-block" key={entity.entityId}>
                             <OF.Label className="cl-label cl-font--emphasis" data-testid="teach-session-entity-name">{entity.entityName}</OF.Label>
                             <OF.IconButton
                                 className="cl-icon-plain"

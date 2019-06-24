@@ -19,7 +19,7 @@ import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { FM } from '../../react-intl-messages'
-import './TeachSessionInitState.css'
+import './EditApiStub.css'
 
 interface ComponentState {
     filledEntityMap: CLM.FilledEntityMap
@@ -152,7 +152,7 @@ class EditApiStub extends React.Component<Props, ComponentState> {
                     </span>
                 </div>
                 <div>
-                    <div className="cl-init-state-fields cl-ux-flexpanel--left">
+                    <div className="cl-edit-api-stub-fields cl-ux-flexpanel--left">
                         <OF.TextField
                             className={OF.FontClassNames.mediumPlus}
                             readOnly={this.state.editingExisting}

@@ -16,7 +16,6 @@ import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { FM } from '../../react-intl-messages'
-import './TeachSessionInitState.css'
 
 interface ComponentState {
     filledEntityMap: CLM.FilledEntityMap

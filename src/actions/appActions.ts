@@ -465,3 +465,35 @@ export const fetchExtractionsThunkAsync = (appId: string, userUtterances: string
         }
     }
 }
+
+// --------------------------
+// ValidateTranscript
+// --------------------------
+const validateTranscriptAsync = (): ActionObject =>
+    ({
+        type: AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC
+    })
+
+const validateTranscriptFulfilled = (): ActionObject =>
+    ({
+        type: AT.FETCH_TRANSCRIPT_VALIDATION_FULFILLED
+    })
+
+export const fetchTranscriptValidationThunkAsync = (appId: string, packageId: string, turnValidations: CLM.TurnValidation[]) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC)
+        dispatch(validateTranscriptAsync())
+
+        try {
+            const isValid = await clClient.validateTranscript(appId, packageId, turnValidations)
+            dispatch(validateTranscriptFulfilled())
+            return isValid
+        }
+        catch (e) {
+            const error = e as AxiosError
+            // LARS todo -create error message
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC))
+            throw error
+        }
+    }
+}

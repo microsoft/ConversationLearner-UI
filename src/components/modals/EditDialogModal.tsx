@@ -1030,7 +1030,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onChangeAction={this.onChangeAction}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
-                                    newActionPreset={this.state.newActionPreset}//LARS rename
+                                    newActionPreset={this.state.newActionPreset}
                                     importIndex={this.props.importIndex}
                                     importCount={this.props.importCount}
                                     allUniqueTags={this.props.allUniqueTags}

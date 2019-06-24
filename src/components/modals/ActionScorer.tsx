@@ -1007,7 +1007,7 @@ export interface ReceivedProps {
     app: CLM.AppBase
     editingPackageId: string,
     historyItemSelected: boolean,
-    dialogType: CLM.DialogType,  // LARS = make this not train dialog specific
+    dialogType: CLM.DialogType,  // TODO = make this not train dialog specific
     autoTeach: boolean,
     dialogMode: CLM.DialogMode,
     scoreResponse: CLM.ScoreResponse,
