@@ -33,6 +33,8 @@ export enum TipType {
     ACTION_WAIT = 'isTerminal',
     ACTION_DELETE_INUSE = 'actionDeleteInUse',
 
+    CONVERSATION_IMPORTER = 'conversationImporter',
+
     EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY = "EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY",
     EDITDIALOGMODAL_WARNING_NEED_REPLAY = "EDITDIALOGMODAL_WARNING_NEED_REPLAY",
 
@@ -49,6 +51,8 @@ export enum TipType {
     ENTITY_VALUE = 'entityValues',
     ENTITY_RESOLVER = 'entityResolver',
 
+    EXPORT_CHOICE = 'EXPORT_CHOICE',
+
     INVALID_BOT = 'INVALID_BOT',
     LOGGING_TOGGLE = 'loggingToggle',
     LUIS_AUTHORING_KEY = 'luisAuthoringKey',
@@ -57,6 +61,9 @@ export enum TipType {
 
     MEMORY_CONVERTER = 'memoryConverter',
     MEMORY_MANAGER = 'memoryManager',
+ 
+    MODEL_VERSION_EDITING = 'modelVersionEditing',
+    MODEL_VERSION_LIVE = 'modelVersionLIve',
 
     PACKAGECREATOR_LIVE_TOGGLE = 'packageCreatorLiveToggle',
 
@@ -67,14 +74,15 @@ export enum TipType {
     REPLAYERROR_DESC_API_BADCARD = "REPLAYERROR_DESC_API_BADCARD",
     REPLAYERROR_DESC_API_EXCEPTION = "REPLAYERROR_DESC_API_EXCEPTION",
     REPLAYERROR_DESC_API_MALFORMED = "REPLAYERROR_DESC_API_MALFORMED",
+    REPLAYERROR_DESC_API_STUB = "REPLAYERROR_DESC_API_STUB",
     REPLAYERROR_DESC_API_UNDEFINED = "REPLAYERROR_DESC_API_UNDEFINED",
     REPLAYERROR_DESC_ENTITY_UNDEFINED = "REPLAYERROR_DESC_ENTITY_UNDEFINED",
     REPLAYERROR_DESC_ENTITY_EMPTY = "REPLAYERROR_DESC_ENTITY_EMPTY",
     REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE = "REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE",
     REPLAYERROR_DESC_ACTION_UNDEFINED = "REPLAYERROR_DESC_ACTION_UNDEFINED",
+    REPLAYERROR_DESC_ACTION_STUB = "REPLAYERROR_DESC_ACTION_STUB",
 
-    MODEL_VERSION_EDITING = 'modelVersionEditing',
-    MODEL_VERSION_LIVE = 'modelVersionLIve'
+    STUB_API = 'STUB_API'
 }
 
 export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps, defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) {
@@ -166,7 +174,22 @@ const memoryManagerSample =
     memoryManager.Copy(entityNameFrom: string, entityNameTo: string): void
 
     // Info about the current running Session
-    memoryManager.SessionInfo(): SessionInfo`;
+    memoryManager.SessionInfo(): SessionInfo`
+
+const transriptSample =
+    `
+    [
+        {
+            "from": { "role": "user" },
+            "type": "message",
+            "text": "i'm hungry"
+        },
+        {
+            "from": { "role": "bot" },
+            "type": "message",
+            "text": "What would you like on your pizza?"
+        }
+    ]`
 
 export function getTip(tipType: string) {
     switch (tipType) {
@@ -329,6 +352,28 @@ export function getTip(tipType: string) {
         case TipType.ACTION_WAIT:
             return render(FM.TOOLTIP_ACTION_WAIT_TITLE, [FM.TOOLTIP_ACTION_WAIT]);
 
+        case TipType.CONVERSATION_IMPORTER:
+            return (
+                <div>
+                    <h2>Import .transcript file</h2>
+                    <p>Used to create Train Dialogs from pre-existing "user/user" or "bot/user" conversations that were created outside Conversation Learner</p>
+                    <p>Imported files must in OBI format</p>
+
+                    <h4>Minimally:</h4>
+                    <pre>{transriptSample}</pre>
+                    <div>
+                        <a
+                            href={`https://github.com/microsoft/botframework-obi/tree/master/fileformats/transcript`}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            role="button"
+                        >
+                            More on .transcript format
+                        </a>
+                    </div>
+                </div>
+            )
+
         case TipType.EDITDIALOGMODAL_WARNING_NEED_REPLAY:
             return (
                 <div>
@@ -488,6 +533,32 @@ export function getTip(tipType: string) {
                     />
                 </div>
             )
+
+        case TipType.EXPORT_CHOICE:
+            return (
+                <div>
+                    <h2>Model Export</h2>
+                    <p>A Conversation Learner Model can be exported in two formats:</p>
+                    <h3>.cl file</h3>
+                    <p>Exports entire Conversation Learner Model (Train Dialogs, Entities and Actions).  Exported file can be imported back into Conversation Learner</p>
+                    <h3>.transcript files</h3>
+                    <p>Exports just Train Dialogs as "user/bot" conversations in OBI format.  Suitable for importing into tools other than Conversation Learner</p>
+
+                    <h4>For Example:</h4>
+                    <pre>{transriptSample}</pre>
+                    <div>
+                        <a
+                            href={`https://github.com/microsoft/botframework-obi/tree/master/fileformats/transcript`}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            role="button"
+                        >
+                            More on .transcript format
+                        </a>
+                    </div>
+                </div>
+            )
+
         case TipType.MEMORY_CONVERTER:
             return (
                 <div>
@@ -591,7 +662,6 @@ export function getTip(tipType: string) {
                         <li>Copy the "Authoring Key" and use it as the LUIS_AUTHORING_KEY value for your model</li>
                     </ol>
 
-
                     <img
                         className="cl-panelimage"
                         src="https://blisstorage.blob.core.windows.net/uiimages/authoringkey.gif"
@@ -688,6 +758,19 @@ export function getTip(tipType: string) {
                     <ol>
                         <li>Remove return value from Logic portion of API</li>
                         <li>Add Render portion to API</li>
+                    </ol>
+                    <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
+                </div>
+            )
+
+        case TipType.REPLAYERROR_DESC_API_STUB:
+            return (
+                <div>
+                    <h2>Error: API call is just a stub</h2>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Delete the API stub</li>
+                        <li>Replace Stub will an actual API call</li>
                     </ol>
                     <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
                 </div>
@@ -799,6 +882,32 @@ export function getTip(tipType: string) {
                         <li>Replace selected Action with a different Action</li>
                         <li>Create a new Action</li>
                     </ol>
+                </div>
+            )
+
+        case TipType.REPLAYERROR_DESC_ACTION_STUB:
+            return (
+                <div>
+                    <h2>Error: Action not assigned yet</h2>
+                    <p>This reponse was imported and does not yet have an action assigned to it</p>
+                    <p>Ways to fix:</p>
+                    <ol>
+                        <li>Assign an existing action</li>
+                        <li>Create a new action</li>
+                        <li>Delete this utterance</li>
+                    </ol>
+                </div>
+            )
+
+        case TipType.STUB_API:
+            return (
+                <div>
+                    <h2>Stub APIs</h2>
+                    <p>Stub APIs can be used as placeholders for real API calls.  This can be useful if you want to define your conversation flow before writing any code.</p>
+                    <p>In an API Stub you specify what should be in the Bot's memory after the API is called.</p>
+                    <p>For example, you may need an API call to check whether an item is in stock (say for a pizza bot).  Your temporary stub call can move an item from the "Toppings" Entity to the "OutOfStock" Entity </p>
+                    <p>API Stubs must be replaced with actual API callbacks for your Bot to function.</p>
+                    <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
                 </div>
             )
 

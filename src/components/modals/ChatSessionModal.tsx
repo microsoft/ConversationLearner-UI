@@ -13,8 +13,6 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { EditDialogType } from '.'
-import { FontClassNames, Icon } from 'office-ui-fabric-react'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { State } from '../../types'
 import { AppBase } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
@@ -43,7 +41,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onClickDone() {
         if (this.props.chatSession.current !== null) {
-            await this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId)
+            await (this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId) as any as Promise<void>)
         }
 
         this.props.onClose()
@@ -53,7 +51,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     async onClickAbandon() {
         if (this.props.chatSession.current !== null) {
             const deleteAssociatedLogDialog = this.state.hasChatActivity
-            await this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId, deleteAssociatedLogDialog)
+            await (this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId, deleteAssociatedLogDialog) as any as Promise<void>)
         }
 
         this.props.onClose()
@@ -75,7 +73,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open && this.props.error == null}
                 isBlocking={true}
                 containerClassName="cl-modal cl-modal--narrow cl-modal--log"
@@ -83,8 +81,8 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                 <div className="cl-modal_body">
                     <div className="cl-sessionmodal">
                         <div className="cl-sessionmodal-title">
-                            <div className={`cl-dialog-title cl-dialog-title--log ${FontClassNames.xxLarge}`}>
-                                <Icon iconName="UserFollowed" />Log Dialog
+                            <div className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
+                                <OF.Icon iconName="UserFollowed" />Log Dialog
                             </div>
                         </div>
                         <div className="cl-chatmodal_webchat" data-testid="chat-session-modal-webchat">
@@ -138,7 +136,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
                     onOk={() => this.setState({ isSessionEndModalOpen: false })}
                     title={Util.formatMessageId(intl, FM.CHATSESSIONMODAL_TIMEOUT_TITLE)}
                 />
-            </Modal>
+            </OF.Modal>
         );
     }
 }
@@ -146,7 +144,6 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         deleteChatSessionThunkAsync: actions.chat.deleteChatSessionThunkAsync,
         editChatSessionExpireThunkAsync: actions.chat.editChatSessionExpireThunkAsync,
-        deleteLogDialogThunkAsync: actions.log.deleteLogDialogThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

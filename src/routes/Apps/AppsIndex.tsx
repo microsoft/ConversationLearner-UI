@@ -16,9 +16,9 @@ import { AppBase, AppDefinition } from '@conversationlearner/models'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
-import { CL_IMPORT_ID } from '../../types/const'
+import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
 
-class AppsIndex extends React.Component<Props, {}> {
+class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
         if (this.props.user.id !== null && this.props.user.id.length > 0) {
             this.props.fetchApplicationsThunkAsync(this.props.user.id)
@@ -54,13 +54,13 @@ class AppsIndex extends React.Component<Props, {}> {
     }
 
     onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
-        const app: AppBase = await this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any
+        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
     }
 
     onImportTutorial = (tutorial: AppBase) => {
-        const srcUserId = CL_IMPORT_ID;
+        const srcUserId = CL_IMPORT_TUTORIALS_USER_ID;
         const destUserId = this.props.user.id;
 
         // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.

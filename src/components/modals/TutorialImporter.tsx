@@ -4,14 +4,13 @@
  */
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
+import * as ReactMarkdown from 'react-markdown'
+import FormattedMessageId from '../FormattedMessageId'
+import ReactPlayer from 'react-player'
 import { FM } from '../../react-intl-messages'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { AppBase } from '@conversationlearner/models'
 import { formatMessageId } from '../../Utils/util'
-import FormattedMessageId from '../FormattedMessageId'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
-import ReactPlayer from 'react-player'
-import * as ReactMarkdown from 'react-markdown'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (app: AppBase, component: TutorialImporter) => React.ReactNode
@@ -121,7 +120,7 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
         const { intl } = this.props
         const tutorials = this.sortTutorials()
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open}
                 isBlocking={false}
                 containerClassName="cl-modal cl-modal--medium"
@@ -179,7 +178,7 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
                         }
                     </div>
                 </div>
-            </Modal>
+            </OF.Modal>
         );
 
     }

@@ -61,6 +61,7 @@
     --cl-color-botchat-grey: #dbdee1;
     --cl-color-user-train: #5c005c;
     --cl-color-user-log: #107c10;
+    --cl-color-user-import: #2E0860;
     --color-wc-bot: #eceff1;
     --cl-color-error: var(--color-error);
     --cl-color-caution: var(--color-orangeLighter);

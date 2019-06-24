@@ -19,7 +19,6 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { setStateAsync, formatMessageId } from '../../Utils/util'
 import './EntityExtractor.css'
 
 interface ExtractResponseForDisplay {
@@ -47,7 +46,7 @@ interface ComponentState {
 // TODO: Need to re-define TextVariation / ExtractResponse class defs so we don't need
 // to do all the messy conversion back and forth
 class EntityExtractor extends React.Component<Props, ComponentState> {
-    private doneExtractingButton: any = null;
+    private doneExtractingButtonRef = React.createRef<OF.IButton>()
 
     constructor(p: any) {
         super(p);
@@ -72,8 +71,8 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     focusPrimaryButton(): void {
-        if (this.doneExtractingButton) {
-            this.doneExtractingButton.focus();
+        if (this.doneExtractingButtonRef.current) {
+            this.doneExtractingButtonRef.current.focus();
         }
         else {
             setTimeout(this.focusPrimaryButton, 100)
@@ -347,7 +346,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         const foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text)
         if (foundResponse) {
             await this.props.updateExtractResponse(extractResponse)
-            await setStateAsync(this, { isPendingSubmit: true })
+            await Util.setStateAsync(this, { isPendingSubmit: true })
         } else {
             // Replace existing text variation (if any) with new one and maintain ordering
             const index = this.state.newTextVariations.findIndex((v: CLM.TextVariation) => v.text === extractResponse.text)
@@ -358,7 +357,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             const newVariation = CLM.ModelUtils.ToTextVariation(extractResponse)
             const newVariations = [...this.state.newTextVariations]
             newVariations[index] = newVariation
-            await setStateAsync(this, {
+            await Util.setStateAsync(this, {
                 newTextVariations: newVariations,
                 isPendingSubmit: true
             })
@@ -412,14 +411,14 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
 
         const userInput: CLM.UserInput = { text: text }
-        await this.props.runExtractorThunkAsync(
+        await (this.props.runExtractorThunkAsync(
             this.props.app.appId,
             extractType,
             extractId,
             this.props.roundIndex,
             userInput,
             this.props.originalTrainDialogId
-        )
+        ) as any as Promise<void>)
 
         this.setState({
             isPendingSubmit: true,
@@ -498,7 +497,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             ? <div className="editor-container__icons">
                                 <button
                                     type="button"
-                                    className={`editor-button-delete ${OF.FontClassNames.large}`}
+                                    className={`cl-icon-warning ${OF.FontClassNames.large}`}
                                     onClick={() => this.onRemoveExtractResponse(extractResponse)}
                                 >
                                     <OF.Icon iconName="Delete" />
@@ -532,14 +531,14 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             onClick={this.onSubmitTextVariation}
                             ariaDescription={'Add'}
                             text={'Add'}
-                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                            componentRef={this.doneExtractingButtonRef}
                             iconProps={{ iconName: 'Add' }}
                         />
                         <OF.TextField
                             data-testid="entity-extractor-alternative-input-text"
                             value={this.state.textVariationValue}
                             onChanged={this.onChangeTextVariation}
-                            placeholder={formatMessageId(this.props.intl, FM.TEXTVARIATION_PLACEHOLDER)}
+                            placeholder={Util.formatMessageId(this.props.intl, FM.TEXTVARIATION_PLACEHOLDER)}
                             onKeyPress={(event) => {
                                 if (event.key === 'Enter') {
                                     this.onSubmitTextVariation()
@@ -561,7 +560,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                 onClick={this.onClickSubmitExtractions}
                                 ariaDescription={'Submit Changes'}
                                 text={'Submit Changes'}
-                                componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                                componentRef={this.doneExtractingButtonRef}
                                 iconProps={{ iconName: 'Accept' }}
                             />
                             <OF.PrimaryButton
@@ -578,7 +577,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             onClick={this.onClickSubmitExtractions}
                             ariaDescription={'Score Actions'}
                             text={'Score Actions'}
-                            componentRef={(ref: any) => { this.doneExtractingButton = ref }}
+                            componentRef={this.doneExtractingButtonRef}
                         />
                     }
 

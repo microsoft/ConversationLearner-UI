@@ -4,10 +4,11 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
-import { deepCopy } from './util'
+import * as Util from './util'
 import * as DialogUtils from './dialogUtils'
 import { Activity } from 'botframework-directlinejs'
 import { SelectionType, User } from '../types'
+import { EditDialogType } from '../components/modals';
 
 export async function onInsertAction(
     trainDialog: CLM.TrainDialog,
@@ -31,7 +32,7 @@ export async function onInsertAction(
 
     // Created shorted version of TrainDialog at insert point
     // Copy, Remove rounds / scorer steps below insert
-    const history = deepCopy(trainDialog)
+    const history = Util.deepCopy(trainDialog)
     history.definitions = definitions
     history.rounds = history.rounds.slice(0, roundIndex + 1)
 
@@ -77,7 +78,7 @@ export async function onInsertAction(
     }
 
     // Insert new Action into Full TrainDialog
-    const newTrainDialog = deepCopy(trainDialog)
+    const newTrainDialog = Util.deepCopy(trainDialog)
     newTrainDialog.definitions = definitions
     const curRound = newTrainDialog.rounds[roundIndex]
 
@@ -131,7 +132,7 @@ export async function onInsertInput(
     }
 
     // Copy, Remove rounds / scorer steps below insert
-    const partialTrainDialog = deepCopy(trainDialog)
+    const partialTrainDialog = Util.deepCopy(trainDialog)
     partialTrainDialog.definitions = definitions
     partialTrainDialog.rounds = partialTrainDialog.rounds.slice(0, roundIndex + 1)
     const lastRound = partialTrainDialog.rounds[partialTrainDialog.rounds.length - 1]
@@ -150,7 +151,7 @@ export async function onInsertInput(
     const extractorStep: CLM.TrainExtractorStep = { textVariations }
 
     // Copy original and insert new round for the text
-    let newTrainDialog = deepCopy(trainDialog)
+    let newTrainDialog = Util.deepCopy(trainDialog)
     newTrainDialog.definitions = definitions
 
     let scorerSteps: CLM.TrainScorerStep[]
@@ -194,11 +195,12 @@ export async function onChangeAction(
     trainDialog: CLM.TrainDialog,
     selectedActivity: Activity,
     trainScorerStep: CLM.TrainScorerStep,
-
+    editType: EditDialogType,
     appId: string,
     entities: CLM.EntityBase[],
     actions: CLM.ActionBase[],
     trainDialogReplay: (appId: string, trainDialog: CLM.TrainDialog) => Promise<CLM.TrainDialog>,
+    editActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<void>
 ) {
     const clData: CLM.CLChannelData = selectedActivity.channelData.clData
     const roundIndex = clData.roundIndex!
@@ -209,13 +211,55 @@ export async function onChangeAction(
         trainDialogs: []
     }
 
-    const newTrainDialog = deepCopy(trainDialog)
+    const newTrainDialog = Util.deepCopy(trainDialog)
+
+    const oldTrainScorerStep = newTrainDialog.rounds[roundIndex].scorerSteps[scoreIndex]
     newTrainDialog.rounds[roundIndex].scorerSteps[scoreIndex] = trainScorerStep
     newTrainDialog.definitions = definitions;
 
     // Replay logic functions on train dialog
     const replayedDialog = await trainDialogReplay(appId, newTrainDialog)
 
+    // If importing a dialog
+    if (editType === EditDialogType.IMPORT) {
+
+        const replacedAction = actions.find(a => a.actionId === oldTrainScorerStep.labelAction)
+        let importHash: string | null = null
+        
+        // If replacing imported action
+        if (oldTrainScorerStep.importText) {
+            // Substitue entityIds back into import text to build import hash lookup
+            const filledEntityIdMap = DialogUtils.filledEntityIdMap(trainScorerStep.input.filledEntities, entities)
+            const importText = DialogUtils.importTextWithEntityIds(oldTrainScorerStep.importText, filledEntityIdMap)
+            importHash = Util.hashText(importText)
+        }
+        // If replacing stub action
+        else if (CLM.ActionBase.isStubbedAPI(replacedAction)) {
+            const apiAction = new CLM.ApiAction(replacedAction as any)
+            importHash = Util.hashText(apiAction.name)
+        }
+
+        // Attach hash of import text to selected action for future lookups
+        if (importHash) { 
+            const action = actions.find(a => a.actionId === trainScorerStep.labelAction)
+            if (action) {
+                // Add new hash to action and save it
+                const newAction = Util.deepCopy(action)
+                if (!newAction.clientData || !newAction.clientData.importHashes) {
+                    newAction.clientData = { importHashes: []}
+                }
+                newAction.clientData!.importHashes!.push(importHash)
+                await editActionThunkAsync(appId, newAction)
+
+                // Test if new lookup can be used on any other imported actions
+                DialogUtils.replaceImportActions(replayedDialog, [...actions, newAction], entities)
+            }
+        }
+        else {
+            // Attempt to replace import actions with real actions
+            DialogUtils.replaceImportActions(replayedDialog, actions, entities)
+        }
+    }
     return replayedDialog
 }
 
@@ -223,7 +267,7 @@ export async function onChangeExtraction(
     trainDialog: CLM.TrainDialog,
     selectedActivity: Activity,
     textVariations: CLM.TextVariation[],
-
+    editType: EditDialogType,
     appId: string,
     entities: CLM.EntityBase[],
     actions: CLM.ActionBase[],
@@ -237,16 +281,20 @@ export async function onChangeExtraction(
         trainDialogs: []
     }
 
-    const newTrainDialog = deepCopy(trainDialog)
+    const newTrainDialog = Util.deepCopy(trainDialog)
     newTrainDialog.definitions = definitions;
     newTrainDialog.rounds[roundIndex].extractorStep.textVariations = textVariations;
 
     // Replay logic functions on train dialog
     const replayedDialog = await trainDialogReplay(appId, newTrainDialog)
 
+    // If importing attempt to replace any stub actions
+    if (editType === EditDialogType.IMPORT) {
+        DialogUtils.replaceImportActions(replayedDialog, actions, entities)
+    }
+
     return replayedDialog
 }
-
 
 export async function onDeleteTurn(
     trainDialog: CLM.TrainDialog,
@@ -262,7 +310,7 @@ export async function onDeleteTurn(
     const roundIndex = clData.roundIndex!
     const scoreIndex = clData.scoreIndex
 
-    const newTrainDialog: CLM.TrainDialog = deepCopy(trainDialog)
+    const newTrainDialog: CLM.TrainDialog = Util.deepCopy(trainDialog)
     newTrainDialog.definitions = {
         entities,
         actions,
@@ -305,7 +353,7 @@ export async function onReplayTrainDialog(
     actions: CLM.ActionBase[],
     trainDialogReplay: (appId: string, trainDialog: CLM.TrainDialog) => Promise<CLM.TrainDialog>
 ): Promise<CLM.TrainDialog> {
-    const newTrainDialog = deepCopy(trainDialog)
+    const newTrainDialog = Util.deepCopy(trainDialog)
     newTrainDialog.definitions = {
         entities,
         actions,
@@ -375,7 +423,7 @@ export interface EditHandlerArgs {
 }
 
 export async function onEditTeach(
-    historyIndex: number,
+    historyIndex: number | null,
     args: EditHandlerArgs | undefined,
     tags: string[],
     description: string,
@@ -410,9 +458,110 @@ export async function onEditTeach(
 
     // Generate history
     const teachWithHistory = await fetchHistoryAsync(app.appId, trainDialog, user.name, user.id)
-    const selectedActivity = teachWithHistory.history[historyIndex]
+    // If no index given, select last activity
+    const selectedActivity = historyIndex ? teachWithHistory.history[historyIndex] : teachWithHistory.history[teachWithHistory.history.length - 1]
     const clData: CLM.CLChannelData = { ...selectedActivity.channelData.clData, activityIndex: historyIndex }
     selectedActivity.channelData.clData = clData
 
     await editHandler(trainDialog, selectedActivity, args)
+} 
+
+// Returns stubAPIAction if it exists, otherwise creates it
+export async function getStubAPIAction(
+    appId: string,
+    apiStubName: string | "",
+    isTerminal: boolean,
+    actions: CLM.ActionBase[],
+    createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
+): Promise<CLM.ActionBase> {
+    // Check if it has been attached to real api call
+    const apiHash = Util.hashText(apiStubName)
+    let stubAction = actions.find(a => {return a.clientData && a.clientData.importHashes 
+        ? (a.clientData.importHashes.find(h => h === apiHash) !== undefined)
+        : false
+    })
+
+    // Otherwise look for matching stub action with same name
+    if (!stubAction) {
+        stubAction = actions.filter(a => CLM.ActionBase.isStubbedAPI(a))
+            .map(aa => new CLM.ApiAction(aa))
+            .find(aaa => aaa.name === apiStubName)
+    }
+    if (stubAction) {
+        return stubAction
+    }
+
+    // Otherwise create new stub
+    const newStub = CLM.ActionBase.createStubAction(apiStubName, isTerminal)
+
+    // If stub was created by import, add hash for future matching
+    newStub.clientData = { importHashes: [apiHash]}
+
+    const newAction = await createActionThunkAsync(appId, newStub)
+    if (!newAction) {
+        throw new Error("Failed to create APIStub action")
+    }
+
+    return newAction
+}
+
+export function scorerStepFromActivity(trainDialog: CLM.TrainDialog, selectedActivity: Activity): CLM.TrainScorerStep | undefined {
+
+    if (!selectedActivity) {
+        return undefined
+    }
+
+    const clData: CLM.CLChannelData = selectedActivity.channelData.clData
+    // If rounds were trimmed, selectedActivity could have been in deleted rounds
+    if (clData.roundIndex !== null) {
+        const round = trainDialog.rounds[clData.roundIndex]
+        if (round.scorerSteps.length > 0) {
+            // If a score round 
+            if (typeof clData.scoreIndex === "number") {
+                return round.scorerSteps[clData.scoreIndex];
+            }
+            // If user round, get filled entities from first scorer step
+            return round.scorerSteps[0]
+        }
+    }
+    return undefined
+}
+
+// Returns stubAPIAction if it exists, otherwise creates it
+export async function getStubScorerStep(
+    apiStubName: string,
+    isTerminal: boolean,
+    appId: string,
+    actions: CLM.ActionBase[],
+    filledEntityMap: CLM.FilledEntityMap,
+    createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
+): Promise<CLM.TrainScorerStep> {
+    
+    const stubAPIAction = await getStubAPIAction(appId, apiStubName, isTerminal, actions, createActionThunkAsync)
+    const filledEntities = filledEntityMap.FilledEntities()
+
+    // Generate stub
+    let scoredAction: CLM.ScoredAction = {
+        actionId: stubAPIAction.actionId,
+        payload: stubAPIAction.payload,
+        isTerminal: stubAPIAction.isTerminal,
+        actionType: CLM.ActionTypes.API_LOCAL,
+        score: 1
+    }
+    let scoreInput: CLM.ScoreInput = {
+        filledEntities: [],
+        context: {},
+        maskedActions: []
+    }
+    // Store stub API output in LogicResult
+    let logicResult: CLM.LogicResult = {
+        logicValue: undefined,
+        changedFilledEntities: filledEntities,
+    }
+    return {
+        input: scoreInput,
+        labelAction: stubAPIAction.actionId,
+        logicResult,
+        scoredAction: scoredAction
+    }
 }

@@ -423,15 +423,15 @@ class Container extends React.Component<Props, ComponentState> {
         const { intl } = this.props
 
         if (value.length === 0) {
-            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE)
+            return Util.formatMessageId(intl, FM.FIELDERROR_REQUIREDVALUE)
         }
 
         if (value.length > entityNameMaxLength) {
-            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_MAX_LENGTH)
+            return Util.formatMessageId(intl, FM.FIELDERROR_MAX_30)
         }
 
         if (!/^[a-zA-Z0-9-]+$/.test(value)) {
-            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC)
+            return Util.formatMessageId(intl, FM.FIELDERROR_ALPHANUMERIC)
         }
 
         // Check that name isn't in use
@@ -443,7 +443,7 @@ class Container extends React.Component<Props, ComponentState> {
                     && foundEntity.doNotMemorize) {
                     return ''
                 }
-                return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT)
+                return Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
             }
         }
 
@@ -468,11 +468,11 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         if (!/^[a-zA-Z0-9-]+$/.test(enumValue.enumValue)) {
-            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC)
+            return Util.formatMessageId(intl, FM.FIELDERROR_ALPHANUMERIC)
         }
 
         if (this.state.enumValues.filter(v => v && v.enumValue === enumValue.enumValueId).length > 1) {
-            Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT)
+            Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
         }
 
         return ''

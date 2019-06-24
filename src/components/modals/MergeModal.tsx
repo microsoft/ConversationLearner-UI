@@ -8,7 +8,6 @@ import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import * as OF from 'office-ui-fabric-react'
 import DialogMetadata from './DialogMetadata'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './MergeModal.css'
@@ -81,10 +80,10 @@ class MergeModal extends React.Component<Props, ComponentState> {
 
         const savedInput = DialogUtils.dialogSampleInput(this.props.savedTrainDialog)
         const existingInput = DialogUtils.dialogSampleInput(this.props.existingTrainDialog)
-        const isSavedLonger = DialogUtils.isTrainDialogLonger(this.props.savedTrainDialog, this.props.existingTrainDialog)
+        const isSavedLonger = DialogUtils.isPrimaryTrainDialog(this.props.savedTrainDialog, this.props.existingTrainDialog)
 
         return (
-            <Modal
+            <OF.Modal
                 containerClassName='cl-modal cl-modal--small'
                 isOpen={this.props.open}
                 isBlocking={true}
@@ -167,7 +166,7 @@ class MergeModal extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </OF.Modal>
         )
     }
 }

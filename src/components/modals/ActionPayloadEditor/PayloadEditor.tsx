@@ -59,7 +59,7 @@ const initialState: Readonly<State> = {
 
 export default class PayloadEditor extends React.Component<Props, State> {
     fuse: Fuse
-    menu: HTMLElement
+    menuRef = React.createRef<HTMLDivElement>()
     plugins: any[]
 
     constructor(props: Props) {
@@ -103,7 +103,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
 
         // If we've somehow executed before the menu onRef and don't have a reference to the menu element return
         // We need to menu to compute the position so there is no point to continue
-        const menu = this.menu
+        const menu = this.menuRef.current
         if (!menu) {
             return
         }
@@ -117,7 +117,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
             return
         }
 
-        const relativeParent = Utilities.getRelativeParent(this.menu.parentElement)
+        const relativeParent = Utilities.getRelativeParent(menu.parentElement)
         const relativeRect = relativeParent.getBoundingClientRect()
 
         const selection = window.getSelection()
@@ -240,6 +240,86 @@ export default class PayloadEditor extends React.Component<Props, State> {
         return true
     }
 
+    onEscape(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
+        if (!this.state.menuProps.isVisible) {
+            return
+        }
+
+        const inline = change.value.inlines.find((i: any) => i.type === NodeTypes.Mention)
+        if (!inline) {
+            return
+        }
+
+        change.removeNodeByKey(inline.key)
+
+        return true
+    }
+
+    onTab(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
+        if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
+            return
+        }
+
+        const matchedOption = this.state.matchedOptions[this.state.highlightIndex]
+        if (!matchedOption) {
+            throw new Error(`You attempted to access matched option at index ${this.state.highlightIndex}, but there are only ${this.state.matchedOptions.length} items`)
+        }
+
+        return this.onCompleteNode(event, change, matchedOption.original)
+    }
+
+    onChangePickerProps = (menuProps: Partial<IPickerProps>) => {
+        // Note: Helpful to debug menu behavior
+        // console.log(`onChangePickerProps: `, menuProps)
+
+        const matchedOptions = (typeof menuProps.searchText !== 'string' || menuProps.searchText === "")
+            ? this.getDefaultMatchedOptions(this.state.highlightIndex)
+            : this.fuse.search<FuseResult<IOption>>(menuProps.searchText)
+                .map(result => convertMatchedTextIntoMatchedOption(result.item.name, result.matches[0].indices, result.item))
+
+        this.setState(prevState => ({
+            matchedOptions,
+            menuProps: { ...prevState.menuProps, ...menuProps }
+        }))
+
+        return true
+    }
+
+    onClickOption = (option: IOption) => {
+        const change = this.props.value.change()
+        this.onCompleteNode(undefined, change, option)
+
+        this.setState(prevState => ({
+            menuProps: { ...prevState.menuProps, isVisible: false }
+        }))
+        this.props.onChange(change.value)
+    }
+
+    render() {
+        const matchedOptions = this.state.matchedOptions.map((o, i) => ({
+            ...o,
+            highlighted: i === this.state.highlightIndex
+        }))
+
+        return <div className="editor-container" data-testid={this.props[testAttribute]}>
+            <Picker
+                ref={this.menuRef}
+                {...this.state.menuProps}
+                matchedOptions={matchedOptions}
+                onClickOption={this.onClickOption}
+            />
+            <Editor
+                className={`editor ${this.props.disabled ? 'editor--disabled' : ''} ${(this.props.value && this.props.value.isFocused) ? 'editor--active' : ''}`}
+                placeholder={this.props.placeholder}
+                value={this.props.value}
+                onChange={this.onChangeValue}
+                onKeyDown={this.onKeyDown}
+                plugins={this.plugins}
+                readOnly={this.props.disabled}
+            />
+        </div>
+    }
+
     private onCompleteNode(event: React.KeyboardEvent<HTMLInputElement> | undefined, change: any, option: IOption) {
         if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
             return undefined
@@ -290,7 +370,9 @@ export default class PayloadEditor extends React.Component<Props, State> {
             .collapseToStartOfNextText()
 
         // Reset Scroll position of menuRef
-        this.menu.scrollTop = 0
+        if (this.menuRef.current) {
+            this.menuRef.current.scrollTop = 0
+        }
 
         // Reset highlight index to be ready for next node
         this.setState({
@@ -298,89 +380,5 @@ export default class PayloadEditor extends React.Component<Props, State> {
         })
 
         return true
-    }
-
-    onEscape(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
-        if (!this.state.menuProps.isVisible) {
-            return
-        }
-
-        const inline = change.value.inlines.find((i: any) => i.type === NodeTypes.Mention)
-        if (!inline) {
-            return
-        }
-
-        change.removeNodeByKey(inline.key)
-
-        return true
-    }
-
-    onTab(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
-        if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
-            return
-        }
-
-        const matchedOption = this.state.matchedOptions[this.state.highlightIndex]
-        if (!matchedOption) {
-            throw new Error(`You attempted to access matched option at index ${this.state.highlightIndex}, but there are only ${this.state.matchedOptions.length} items`)
-        }
-
-        return this.onCompleteNode(event, change, matchedOption.original)
-    }
-
-    onChangePickerProps = (menuProps: Partial<IPickerProps>) => {
-        // Note: Helpful to debug menu behavior
-        // console.log(`onChangePickerProps: `, menuProps)
-
-        const matchedOptions = (typeof menuProps.searchText !== 'string' || menuProps.searchText === "")
-            ? this.getDefaultMatchedOptions(this.state.highlightIndex)
-            : this.fuse.search<FuseResult<IOption>>(menuProps.searchText)
-                .map(result => convertMatchedTextIntoMatchedOption(result.item.name, result.matches[0].indices, result.item))
-
-        this.setState(prevState => ({
-            matchedOptions,
-            menuProps: { ...prevState.menuProps, ...menuProps }
-        }))
-
-        return true
-    }
-
-    onMenuRef = (element: HTMLElement) => {
-        this.menu = element
-    }
-
-    onClickOption = (option: IOption) => {
-        const change = this.props.value.change()
-        this.onCompleteNode(undefined, change, option)
-
-        this.setState(prevState => ({
-            menuProps: { ...prevState.menuProps, isVisible: false }
-        }))
-        this.props.onChange(change.value)
-    }
-
-    render() {
-        const matchedOptions = this.state.matchedOptions.map((o, i) => ({
-            ...o,
-            highlighted: i === this.state.highlightIndex
-        }))
-
-        return <div className="editor-container" data-testid={this.props[testAttribute]}>
-            <Picker
-                menuRef={this.onMenuRef}
-                {...this.state.menuProps}
-                matchedOptions={matchedOptions}
-                onClickOption={this.onClickOption}
-            />
-            <Editor
-                className={`editor ${this.props.disabled ? 'editor--disabled' : ''} ${(this.props.value && this.props.value.isFocused) ? 'editor--active' : ''}`}
-                placeholder={this.props.placeholder}
-                value={this.props.value}
-                onChange={this.onChangeValue}
-                onKeyDown={this.onKeyDown}
-                plugins={this.plugins}
-                readOnly={this.props.disabled}
-            />
-        </div>
     }
 }

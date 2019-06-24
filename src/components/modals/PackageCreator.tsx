@@ -6,7 +6,6 @@ import * as React from 'react'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import * as OF from 'office-ui-fabric-react'
 import { PackageReference } from '@conversationlearner/models'
 import { State } from '../../types'
@@ -63,7 +62,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
     onGetNameErrorMessage(value: string): string {
         const { intl } = this.props
         if (value.length === 0) {
-            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_REQUIREDVALUE)
+            return Util.formatMessageId(intl, FM.FIELDERROR_REQUIREDVALUE)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
@@ -73,11 +72,11 @@ class PackageCreator extends React.Component<Props, ComponentState> {
         // Check that name isn't in use
         const foundName = this.props.packageReferences.find(pr => pr.packageVersion === value)
         if (foundName) {
-            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
+            return Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
         }
 
         if ("Master".toLowerCase() === value.toLowerCase().trim()) {
-            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_DISTINCT)
+            return Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
         }
 
         return ''
@@ -93,7 +92,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
     render() {
         const { intl } = this.props
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open}
                 onDismiss={() => this.onClickCancel()}
                 isBlocking={false}
@@ -164,7 +163,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                         />
                     </div>
                 </div>
-            </Modal>
+            </OF.Modal>
         )
     }
 }

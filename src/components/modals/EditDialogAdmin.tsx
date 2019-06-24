@@ -13,6 +13,7 @@ import ActionScorer from './ActionScorer'
 import MemoryTable from './MemoryTable'
 import FormattedMessageId from '../FormattedMessageId'
 import TrainingStatusContainer from '../TrainingStatusContainer'
+import { NewActionPreset } from './ActionCreatorEditor'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -101,7 +102,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
     async hasConflicts(textVariations: CLM.TextVariation[]): Promise<boolean> {
 
         // Generate list of textVariations that have changed
-        const renderData = this.getRenderData()
+        const renderData = DialogUtils.getDialogRenderData(this.props.trainDialog, this.props.entities, this.props.actions, this.state.roundIndex, this.state.scoreIndex, this.state.senderType)
         const originalTextVariations = renderData.textVariations
         const changedTextVariations: CLM.TextVariation[] = []
         textVariations.map(tv => {
@@ -151,188 +152,6 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         this.props.onSubmitExtraction(extractResponse, textVariations)
     }
 
-    getPrevMemories(): CLM.Memory[] {
-        if (this.state.roundIndex === null) {
-            throw new Error(`Cannot get previous memories because roundIndex is null. This is likely a problem with code. Please open an issue.`)
-        }
-
-        let memories: CLM.Memory[] = [];
-        const prevIndex = this.state.roundIndex - 1;
-        if (prevIndex >= 0) {
-            const round = this.props.trainDialog.rounds[prevIndex];
-            if (round.scorerSteps.length > 0) {
-                const scorerStep = round.scorerSteps[round.scorerSteps.length - 1];
-                memories = scorerStep.input.filledEntities.map<CLM.Memory>(fe => {
-                    const entity = this.props.entities.find(e => e.entityId === fe.entityId)
-                    if (!entity) {
-                        throw new Error(`Could not find entity by id: ${fe.entityId} in list of entities`)
-                    }
-                    return {
-                        entityName: entity.entityName,
-                        entityValues: fe.values
-                    }
-                })
-            }
-        }
-        return memories;
-    }
-
-    getMemories(): CLM.Memory[] {
-
-        if (!this.state.roundIndex) {
-            return []
-        }
-
-        // Find round with scorer step.  Usually part of current round, but 
-        // when editing, not all rounds have scorer steps, so may need to 
-        // look forward
-        let curRound = this.state.roundIndex
-        let filledEntities: CLM.FilledEntity[] | null = null
-
-        while (!filledEntities) {
-            if (this.props.trainDialog.rounds[curRound].scorerSteps.length > 0) {
-                filledEntities = this.props.trainDialog.rounds[curRound].scorerSteps[0].input.filledEntities
-            }
-            else if (curRound < this.props.trainDialog.rounds.length) {
-                curRound = curRound + 1
-            }
-            else {
-                // No round with scorer step after this extraction step
-                return []
-            }
-        }
-
-        return filledEntities.map<CLM.Memory>((fe) => {
-            const entity = this.props.entities.find(e => e.entityId === fe.entityId);
-            const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
-            return {
-                entityName: entityName,
-                entityValues: fe.values
-            }
-        })
-    }
-
-    getRenderData(): DialogUtils.DialogRenderData {
-        let scorerStep: CLM.TrainScorerStep | undefined
-        let scoreResponse: CLM.ScoreResponse | undefined
-        let round: CLM.TrainRound | undefined
-        let memories: CLM.Memory[] = [];
-        let prevMemories: CLM.Memory[] = [];
-
-        if (this.state.roundIndex !== null && this.state.roundIndex < this.props.trainDialog.rounds.length) {
-            round = this.props.trainDialog.rounds[this.state.roundIndex];
-            if (round.scorerSteps.length > 0) {
-                // If a score round 
-                if (typeof this.state.scoreIndex === "number") {
-                    scorerStep = round.scorerSteps[this.state.scoreIndex];
-                    if (!scorerStep) {
-                        throw new Error(`Cannot get score step at index: ${this.state.scoreIndex} from array of length: ${round.scorerSteps.length}`)
-                    }
-
-                    let selectedAction = this.props.actions.find(action => action.actionId === scorerStep!.labelAction);
-
-                    if (!selectedAction) {
-                        // Action may have been deleted.  If so create dummy action to render
-                        selectedAction = {
-                            actionId: scorerStep.labelAction || 'MISSING ACTION',
-                            createdDateTime: new Date().toJSON(),
-                            payload: 'MISSING ACTION',
-                            isTerminal: false,
-                            actionType: CLM.ActionTypes.TEXT,
-                            requiredEntitiesFromPayload: [],
-                            requiredEntities: [],
-                            requiredConditions: [],
-                            negativeEntities: [],
-                            negativeConditions: [],
-                            suggestedEntity: undefined,
-                            version: 0,
-                            packageCreationId: 0,
-                            packageDeletionId: 0,
-                            entityId: undefined,
-                            enumValueId: undefined,
-                        }
-                    }
-
-                    const filledEntities = scorerStep.logicResult
-                        ? [...scorerStep.input.filledEntities, ...scorerStep.logicResult.changedFilledEntities]
-                        : [...scorerStep.input.filledEntities]
-
-                    memories = filledEntities.map<CLM.Memory>((fe) => {
-                        const entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                        const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
-                        return {
-                            entityName: entityName,
-                            entityValues: fe.values
-                        }
-                    });
-
-                    // Get prevmemories
-                    prevMemories = this.getPrevMemories();
-
-                    // If originated from LogDialog, I'll have score response data
-                    if (scorerStep.uiScoreResponse) {
-                        scoreResponse = scorerStep.uiScoreResponse
-                    }
-                    // Otherwise generate it
-                    else {
-                        const scoredAction: CLM.ScoredAction = {
-                            actionId: selectedAction.actionId,
-                            payload: selectedAction.payload,
-                            isTerminal: selectedAction.isTerminal,
-                            score: 1,
-                            actionType: selectedAction.actionType
-                        }
-
-                        // Generate list of all actions (apart from selected) for ScoreResponse as I have no scores
-                        const unscoredActions = this.props.actions
-                            .filter(a => !selectedAction || a.actionId !== selectedAction.actionId)
-                            .map<CLM.UnscoredAction>(action =>
-                                ({
-                                    actionId: action.actionId,
-                                    payload: action.payload,
-                                    isTerminal: action.isTerminal,
-                                    reason: CLM.ScoreReason.NotCalculated,
-                                    actionType: action.actionType
-                                }));
-
-                        scoreResponse = {
-                            metrics: {
-                                wallTime: 0
-                            },
-                            scoredActions: [scoredAction],
-                            unscoredActions: unscoredActions
-                        }
-                    }
-                }
-                // If user round, get filled entities from first scorer step
-                else {
-                    scorerStep = round.scorerSteps[0];
-                    memories = scorerStep.input.filledEntities.map<CLM.Memory>((fe) => {
-                        const entity = this.props.entities.find(e => e.entityId === fe.entityId);
-                        const entityName = entity ? entity.entityName : 'UNKNOWN ENTITY'
-                        return {
-                            entityName: entityName,
-                            entityValues: fe.values
-                        }
-                    })
-
-                    // Get prevmemories
-                    prevMemories = this.getPrevMemories()
-                }
-            }
-        }
-
-        return {
-            dialogMode: (this.state.senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
-            scoreInput: scorerStep ? scorerStep.input : undefined,
-            scoreResponse: scoreResponse,
-            roundIndex: this.state.roundIndex,
-            textVariations: round ? round.extractorStep.textVariations : [],
-            memories: DialogUtils.filterDummyEntities(memories),
-            prevMemories: DialogUtils.filterDummyEntities(prevMemories)
-        }
-    }
-
     renderHelpText(isLogDialog: boolean) {
         if (isLogDialog) {
             return (
@@ -371,24 +190,37 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
             )
         }
     }
+
     render() {
         if (!this.props.trainDialog) {
             return null;
         }
 
         const isLogDialog = (this.props.editType === EditDialogType.LOG_EDITED || this.props.editType === EditDialogType.LOG_ORIGINAL)
-        const editTypeClass = isLogDialog ? 'log' : 'train'
+        const editTypeClass = this.props.editType === EditDialogType.IMPORT ? "import" : isLogDialog ? 'log' : 'train'
         const hasEndSession = DialogUtils.hasEndSession(this.props.trainDialog, this.props.actions)
-        const renderData = this.getRenderData()
-
+        const renderData = DialogUtils.getDialogRenderData(this.props.trainDialog, this.props.entities, this.props.actions, this.state.roundIndex, this.state.scoreIndex, this.state.senderType)
         return (
             <div className={`cl-dialog-admin`}>
                 <div className="cl-dialog-admin__header">
                     <div data-testid="traindialog-title" className={`cl-dialog-title cl-dialog-title--${editTypeClass} ${OF.FontClassNames.xxLarge}`}>
                         <OF.Icon
-                            iconName={isLogDialog ? 'UserFollowed' : 'EditContact'}
+                            iconName={this.props.editType === EditDialogType.IMPORT
+                                ? 'DownloadDocument'
+                                :  isLogDialog 
+                                ? 'UserFollowed' 
+                                : 'EditContact'}
                         />
-                        {isLogDialog ? 'Log Dialog' : 'Train Dialog'}
+                        {this.props.editType === EditDialogType.IMPORT
+                            ? "Import"
+                            : isLogDialog 
+                            ? 'Log Dialog' 
+                            : 'Train Dialog'}
+                        {this.props.editType === EditDialogType.IMPORT &&
+                            <div className="cl-dialog-importcount">
+                                {`${this.props.importIndex} of ${this.props.importCount}`}
+                            </div>
+                        }
                     </div>
                     <DialogMetadata
                         description={this.props.description}
@@ -406,7 +238,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                     ? (
                         <div className="cl-dialog-admin__content">
                             <div
-                                className={`cl-wc-message cl-wc-message--user cl-wc-message--${isLogDialog ? 'log' : 'train'}`}
+                                className={`cl-wc-message cl-wc-message--user cl-wc-message--${editTypeClass}`}
                             >
                                 <FormattedMessageId
                                     data-testid="modal-user-input"
@@ -500,12 +332,14 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 isEndSessionAvailable={!hasEndSession && this.props.isLastActivitySelected}
                                 dialogType={CLM.DialogType.TRAINDIALOG}
                                 autoTeach={false}
+                                newActionPreset={this.props.newActionPreset}
                                 dialogMode={renderData.dialogMode}
                                 scoreResponse={renderData.scoreResponse}
                                 scoreInput={renderData.scoreInput}
                                 selectedActionId={undefined}  // Will always be first one when editing
                                 memories={renderData.memories}
                                 onActionSelected={this.props.onChangeAction}
+                                onActionCreatorClosed={this.props.onActionCreatorClosed}
                             />
                         </div>
                     </div>
@@ -537,22 +371,26 @@ interface ComponentState {
 }
 
 export interface ReceivedProps {
-    app: CLM.AppBase,
-    editingPackageId: string,
-    trainDialog: CLM.TrainDialog,
+    app: CLM.AppBase
+    editingPackageId: string
+    trainDialog: CLM.TrainDialog
     // If editing a log dialog, this was the source
     editingLogDialogId: string | null
     // Train Dialog that this edit originally came from
-    originalTrainDialogId: string | null,
-    selectedActivity: Activity | null,
-    isLastActivitySelected: boolean,
-    editState: EditState,
-    editType: EditDialogType,
-    onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void,
+    originalTrainDialogId: string | null
+    selectedActivity: Activity | null
+    isLastActivitySelected: boolean
+    editState: EditState
+    editType: EditDialogType
+    // If creating an action with a pre-filled text value
+    newActionPreset?: NewActionPreset
+    onChangeAction: (trainScorerStep: CLM.TrainScorerStep) => void
     onSubmitExtraction: (extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => void
     onPendingStatusChanged: (changed: boolean) => void
+    onActionCreatorClosed: () => void
+    importIndex?: number
+    importCount?: number
     allUniqueTags: string[]
-
     tags: string[]
     onAddTag: (tag: string) => void
     onRemoveTag: (tag: string) => void

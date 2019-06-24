@@ -4,7 +4,6 @@
  */
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
 import { FM } from '../../react-intl-messages'
 import * as CLM from '@conversationlearner/models'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
@@ -87,7 +86,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
         const currentConflictPair = this.props.conflictPairs[this.state.currentConflictPairIndex]
         const { intl } = this.props
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open}
                 className={OF.FontClassNames.mediumPlus}
                 containerClassName="cl-modal cl-modal--medium"
@@ -201,7 +200,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                 </div>
 
                 <div className="cl-modal_footer cl-modal-buttons">
-                    <div className="cl-modal-buttons_secondary"></div>
+                    <div className="cl-modal-buttons_secondary"/>
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
                             data-testid="log-conversion-conflicts-modal-accept"
@@ -217,7 +216,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                         />
                     </div>
                 </div>
-            </Modal>
+            </OF.Modal>
         )
     }
 }

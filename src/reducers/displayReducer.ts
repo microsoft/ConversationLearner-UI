@@ -76,6 +76,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.DELETE_ENTITY_ASYNC:
         case AT.DELETE_MEMORY_ASYNC:
         // case AT.DELETE_LOG_DIALOG_ASYNC: Don't block
+        // case AT.DELETE_LOG_DIALOGS_ASYNC: Don't block
         case AT.DELETE_TEACH_SESSION_ASYNC: 
         // case AT.DELETE_TRAIN_DIALOG_ASYNC: Don't block
 
@@ -115,6 +116,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.GET_SCORES_ASYNC:
         case AT.RUN_SCORER_ASYNC:
         case AT.POST_SCORE_FEEDBACK_ASYNC:
+        case AT.SPINNER_ADD:
             state.displaySpinner.push(spinnerName(action.type))
             return
         case AT.CREATE_ACTION_FULFILLED:
@@ -136,6 +138,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.DELETE_ENTITY_FULFILLED:
         case AT.DELETE_MEMORY_FULFILLED:
         // case AT.DELETE_LOG_DIALOG_FULFILLED: Doesn't block
+        // case AT.DELETE_LOG_DIALOGS_FULFILLED: Doesn't block
         case AT.DELETE_TEACH_SESSION_FULFILLED:
         // case AT.DELETE_TRAIN_DIALOG_FULFILLED: Doesn't block
         case AT.DELETE_TRAIN_DIALOG_REJECTED:
@@ -176,6 +179,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.GET_SCORES_FULFILLED:
         case AT.RUN_SCORER_FULFILLED:
         case AT.POST_SCORE_FEEDBACK_FULFILLED:
+        case AT.SPINNER_REMOVE:
             state.displaySpinner = removeSpinner(state.displaySpinner, action.type)
             return
         default:

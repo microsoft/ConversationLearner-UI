@@ -10,7 +10,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { fetchTutorialsThunkAsync } from '../../actions/appActions'
 import { AppBase, AppDefinition } from '@conversationlearner/models'
-import { CL_IMPORT_ID, State, AppCreatorType } from '../../types'
+import { CL_IMPORT_TUTORIALS_USER_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'office-ui-fabric-react'
 import AppsListComponent from './AppsListComponent'
@@ -52,7 +52,7 @@ class AppsList extends React.Component<Props, ComponentState> {
     async onClickImportDemoApps() {
         const tutorials = this.state.tutorials !== null
             ? this.state.tutorials
-            : await ((this.props.fetchTutorialsThunkAsync(CL_IMPORT_ID) as any) as Promise<AppBase[]>)
+            : await ((this.props.fetchTutorialsThunkAsync(CL_IMPORT_TUTORIALS_USER_ID) as any) as Promise<AppBase[]>)
 
         this.setState({
             tutorials: tutorials,

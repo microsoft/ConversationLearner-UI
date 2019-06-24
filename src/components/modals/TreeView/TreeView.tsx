@@ -3,21 +3,20 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../../Utils/util'
+import Tree from 'react-d3-tree';
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import * as Util from '../../../Utils/util'
-import Tree from 'react-d3-tree';
 import { TreeNodeLabel, TreeNode, TreeScorerStep } from './TreeNodeLabel'
 import { TreeNodeExpanded } from './TreeNodeExpanded'
-import './TreeView.css';
 import { EditDialogType, EditState } from '..'
+import './TreeView.css';
 
 const userShape = {
     shape: 'circle',
@@ -35,20 +34,19 @@ interface ComponentState {
     selectedNode: TreeNode | null
     expandedNode: TreeNode | null
     translateX: number | null,
-    treeContainer: any,
     treeElement: any,
     fullScreen: boolean,
     showBanner: boolean,
 }
 
 class TreeView extends React.Component<Props, ComponentState> {
+    private treeContainerRef = React.createRef<any>()
 
     state: ComponentState = {
         tree: null,
         selectedNode: null,
         expandedNode: null,
         translateX: null,
-        treeContainer: null,
         treeElement: null,
         fullScreen: false,
         showBanner: true
@@ -61,13 +59,13 @@ class TreeView extends React.Component<Props, ComponentState> {
         if (this.props.trainDialogs !== prevProps.trainDialogs) {
             this.updateTree()
         }
-        if (this.state.treeContainer) {
+        if (this.treeContainerRef.current) {
             if (!this.state.translateX || (this.state.selectedNode !== prevState.selectedNode)) {
                 if (this.state.selectedNode) {
                     this.setState({translateX: NODE_WIDTH})
                 }
                 else {
-                        const dimensions = this.state.treeContainer.getBoundingClientRect();
+                        const dimensions = this.treeContainerRef.current.getBoundingClientRect();
                         this.setState({
                             translateX: dimensions.width / 2.5,
                         })
@@ -98,7 +96,7 @@ class TreeView extends React.Component<Props, ComponentState> {
 
         setTimeout(
             () => this.state.treeElement.setState({ isTransitioning: false }),
-            this.state.treeElement.props.transitionDuration + 10,
+            this.state.treeElement.props.transitionDuration as number + 10,
         );
         this.state.treeElement.internalState.targetNode = targetNode;
     }
@@ -344,11 +342,6 @@ class TreeView extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    setContainerRef(treeContainer: any): void {
-        this.setState({treeContainer})
-    }
-
-    @OF.autobind
     toggleFullScreen(): void {
         this.setState({fullScreen: !this.state.fullScreen})
     }
@@ -387,11 +380,11 @@ class TreeView extends React.Component<Props, ComponentState> {
                     <div className="cl-treeview-columnRight">
                         <div 
                             className="cl-treeview-container"
-                            ref={this.setContainerRef}
+                            ref={this.treeContainerRef}
                         >
-                            {this.state.tree && this.state.treeContainer &&
+                            {this.state.tree && this.treeContainerRef.current &&
                                 <Tree 
-                                    data={this.state.tree!}
+                                    data={this.state.tree}
                                     ref={this.setTreeRef}
                                     orientation='vertical'
                                     allowForeignObjects={true}
@@ -422,7 +415,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                     {this.state.expandedNode &&
-                        <Modal
+                        <OF.Modal
                             isOpen={true}
                             containerClassName='cl-modal'
                         >
@@ -445,7 +438,7 @@ class TreeView extends React.Component<Props, ComponentState> {
                                     </div>
                                 </div>
                             </div>
-                        </Modal>
+                        </OF.Modal>
                     }
                 </div>
             </div>

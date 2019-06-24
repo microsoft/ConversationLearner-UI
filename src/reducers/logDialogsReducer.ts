@@ -4,12 +4,11 @@
  */
 import { ActionObject, LogDialogState } from '../types'
 import { AT } from '../types/ActionTypes'
-import { Reducer } from 'redux'
 import produce from 'immer'
 
 const initialState: LogDialogState = [];
 
-const logDialogsReducer: Reducer<LogDialogState> = produce((state: LogDialogState, action: ActionObject) => {
+const logDialogsReducer = produce((state: LogDialogState, action: ActionObject) => {
     switch (action.type) {
         case AT.USER_LOGOUT:
             return [...initialState]
@@ -23,6 +22,8 @@ const logDialogsReducer: Reducer<LogDialogState> = produce((state: LogDialogStat
         case AT.DELETE_LOG_DIALOG_FULFILLED:
             // Delete log dialog optimistically.  Will reload train dialogs on failure
             return state.filter(dialog => dialog.logDialogId !== action.logDialogId);
+        case AT.DELETE_LOG_DIALOGS_ASYNC:
+            return state.filter(dialog => !action.logDialogIds.some(ldId => ldId === dialog.logDialogId));
         case AT.UPDATE_SOURCE_LOG_DIALOG:
             // Update log dialog this train dialog was created from.
             // Used to hide converted log dialogs from the UI

@@ -15,6 +15,8 @@ import { EditDialogType } from './modals/.'
 import actions from '../actions'
 import { BOT_HOST_NAME } from '../types/const'
 
+const SUBMIT_KEY = 'submit'
+
 export function renderActivity(
     activityProps: BotChat.WrappedActivityProps,
     children: React.ReactNode,
@@ -34,24 +36,22 @@ export function renderActivity(
             (activityProps.activity as Message).attachmentLayout || 'list',
             activityProps.onClickActivity && 'clickable'].filter(Boolean).join(' ')
 
-    const contentClassName = 'wc-message-content'
     const clData: CLM.CLChannelData | null = activityProps.activity.channelData ? activityProps.activity.channelData.clData : null
-
-    let messageColor = `wc-message-color-${activityProps.fromMe ? (isLogDialog ? 'log' : 'train') : 'bot'}`
-    let messageFillColor = `wc-message-fillcolor-${activityProps.fromMe ? (isLogDialog ? 'log' : 'train') : 'bot'}`
-
+    const userFillColor = editType === EditDialogType.IMPORT ? "import" : isLogDialog ? 'log' : 'train'
+    let messageColor = `wc-message-color-${activityProps.fromMe ? userFillColor : 'bot'}`
+    let messageFillColor = `wc-message-fillcolor-${activityProps.fromMe ? userFillColor : 'bot'}`
+    let messageBorder = ''
     if (clData) {
         if (clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {
-                wrapperClassName += ` wc-border-warning-from-${who}`;
+                messageBorder = ` wc-border-warning-from-${who}`;
             }
             else { // ERROR or BLOCKING
-                wrapperClassName += ` wc-border-error-from-${who}`;
+                messageBorder = ` wc-border-error-from-${who}`;
             }
             if (clData.replayError.type === CLM.ReplayErrorType.Exception) {
                 messageColor = `wc-message-color-exception`
                 messageFillColor = `wc-message-fillcolor-exception`
-
             }
         }
     }
@@ -68,11 +68,11 @@ export function renderActivity(
             role="button"
         >
             <div
-                className={`wc-message wc-message-from-${who} ${messageColor}`}
+                className={`wc-message wc-message-from-${who} ${messageColor} ${messageBorder}`}
                 ref={div => setRef(div)}
                 data-testid="web-chat-utterances"
             >
-                <div className={contentClassName}>
+                <div className='wc-message-content'>
                     <svg className={`wc-message-callout ${messageFillColor}`}>
                         <path className="point-left" d="m0,6 l6 6 v-12 z" />
                         <path className="point-right" d="m6,6 l-6 6 v-12 z" />
@@ -100,7 +100,7 @@ export function renderActivity(
     )
 }
 
-class Webchat extends React.Component<Props, {}> {
+class Webchat extends React.Component<Props> {
 
     static defaultProps: ReceivedProps = {
         isOpen: false,
@@ -182,7 +182,7 @@ class Webchat extends React.Component<Props, {}> {
                 ...dl,
                 postActivity: (activity: any) => {
                     this.props.onPostActivity(activity)
-                    if (this.props.disableDL && (activity.value && activity.value['submit'])) {
+                    if (this.props.disableDL && (activity.value && activity.value[SUBMIT_KEY])) {
                         return Observable.empty()
                     }
                     return dl.postActivity(activity)

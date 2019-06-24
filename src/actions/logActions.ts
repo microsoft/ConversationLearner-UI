@@ -51,6 +51,46 @@ export const deleteLogDialogThunkAsync = (app: AppBase, logDialogId: string, pac
     }
 }
 
+const deleteLogDialogsAsync = (appId: string, logDialogIds: string[]): ActionObject => {
+    return {
+        type: AT.DELETE_LOG_DIALOGS_ASYNC,
+        appId,
+        logDialogIds,
+    }
+}
+
+const deleteLogDialogsFulfilled = (): ActionObject => {
+    return {
+        type: AT.DELETE_LOG_DIALOGS_FULFILLED,
+    }
+}
+
+const deleteLogDialogsRejected = (): ActionObject => {
+    return {
+        type: AT.DELETE_LOG_DIALOGS_REJECTED,
+    }
+}
+
+export const deleteLogDialogsThunkAsync = (app: AppBase, logDialogIds: string[], packageId: string) => {
+    return async (dispatch: Dispatch<any>) => {
+        dispatch(deleteLogDialogsAsync(app.appId, logDialogIds))
+        const clClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOGS_ASYNC)
+
+        try {
+            await clClient.logDialogsDeleteMany(app.appId, logDialogIds)
+            dispatch(deleteLogDialogsFulfilled())
+        }
+        catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.DELETE_LOG_DIALOGS_ASYNC))
+            dispatch(deleteLogDialogsRejected())
+        }
+        finally {
+            dispatch(fetchAllLogDialogsThunkAsync(app, packageId))
+        }
+    }
+}
+
 //-------------------------------------
 // fetchAllLogDialogs
 //-------------------------------------

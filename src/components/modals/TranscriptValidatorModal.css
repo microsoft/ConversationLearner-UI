@@ -1,0 +1,18 @@
+.cl-transcript-validator-body {
+    padding-top: 2px;
+    height: 50px;
+    margin-left: 3px;
+    margin-right: 3px;
+    width: 320px;
+}
+
+.cl-transcript-validator-result {
+  font-size: 24px;
+}
+
+.cl-modal.cl-modal--transcriptvalidator {
+    height: 220px;
+    width: 400px;
+    padding: 20px;
+    text-align: center !important;
+}

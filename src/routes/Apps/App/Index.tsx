@@ -115,7 +115,7 @@ class Index extends React.Component<Props, ComponentState> {
     botValidationErrors(botInfo: CLM.BotInfo, actionList: CLM.ActionBase[]): string[] {
         // Check for missing APIs
         const actionsMissingCallbacks = actionList
-            .filter(a => a.actionType === CLM.ActionTypes.API_LOCAL)
+            .filter(a => a.actionType === CLM.ActionTypes.API_LOCAL && !CLM.ActionBase.isStubbedAPI(a))
             .map(a => new CLM.ApiAction(a))
             .filter(a => !botInfo.callbacks || !botInfo.callbacks.some(cb => cb.name === a.name))
 
@@ -240,7 +240,10 @@ class Index extends React.Component<Props, ComponentState> {
                                 <OF.Icon iconName="List" /><span>Entities</span><span className="count">{this.state.modelLoaded ? this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).filter(e => !e.doNotMemorize).length : ''}</span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-actions" to={{ pathname: `${match.url}/actions`, state: { app } }}>
-                                <OF.Icon iconName="List" /><span>Actions</span><span className="count">{this.state.modelLoaded ? this.props.actions.length : ''}</span>
+                                <OF.Icon iconName="List" /><span>Actions</span>
+                                <span className="count">
+                                    {this.state.modelLoaded ? this.props.actions.length : ''}
+                                </span>
                             </NavLink>
                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-train-dialogs" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
                                 <OF.Icon iconName="List" />

@@ -95,10 +95,7 @@ export enum FM {
     APP_TRAINING_STATUS_EXPIRED = 'TrainingStatus.expired',
 
     // AppCreator
-    APPCREATOR_FIELDERROR_REQUIREDVALUE = 'AppCreator.fieldError.requiredValue',
     APPCREATOR_FIELDERROR_ALPHANUMERIC = 'AppCreator.fieldError.alphanumeric',
-    APPCREATOR_FIELDERROR_DISTINCT = 'AppCreator.fieldError.distinct',
-    APPCREATOR_FIELDERROR_TOOLONG = 'AppCreator.fieldError.toolong',
     APPCREATOR_TITLE = 'AppCreator.title',
     APPCREATOR_COPY_TITLE = 'AppCreator.copytitle',
     APPCREATOR_IMPORT_TITLE = 'AppCreator.importtitle',
@@ -139,12 +136,16 @@ export enum FM {
     BUTTON_ABANDON = 'Button.ABANDON',
     BUTTON_ABANDON_EDIT = 'Button.ABANDON_EDIT',
     BUTTON_ABANDON_BRANCH = 'Button.ABANDON_BRANCH',
+    BUTTON_ABANDON_IMPORT = 'Button.ABANDON_IMPORT',
     BUTTON_ACCEPT = 'Button.ACCEPT',
     BUTTON_CANCEL = 'Button.CANCEL',
     BUTTON_CLOSE = 'Button.CLOSE',
+    BUTTON_CONFIRM = 'Button.CONFIRM',
     BUTTON_DELETE = 'Button.DELETE',
+    BUTTON_EXPORT = 'Button.EXPORT',
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
+    BUTTON_LOCATE_FILES = 'Button.LOCATE_FILES',
     BUTTON_OK = 'Button.OK',
     BUTTON_REPLAY = 'Button.REPLAY',
     BUTTON_SAVE = 'Button.SAVE',
@@ -155,6 +156,7 @@ export enum FM {
     BUTTON_UNDO = 'Button.UNDO',
     BUTTON_SELECT = 'Button.SELECT',
     BUTTON_SELECTED = 'Button.SELECTED',
+    BUTTON_TEST = 'Button.TEST',
     BUTTON_NEXT = 'Button.next',
     BUTTON_PREVIOUS = 'Button.previous',
 
@@ -168,6 +170,12 @@ export enum FM {
     // ConfirmCancelModal
     CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT = 'ConfirmCancelModal.primaryButton.text',
     CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT = 'ConfirmCancelModal.defaultButton.text',
+
+    // Conversation Importer
+    CONVERSATION_IMPORTER_TITLE = 'ConversationImporter.title',
+    CONVERSATION_IMPORTER_DESCRIPTION = 'ConversationImporter.description',
+    CONVERSATION_IMPORTER_AUTOIMPORT = 'ConversationImporte.autoimport',
+    CONVERSATION_IMPORTER_AUTOMERGE = 'ConversationImporte.automerge',
 
     // Custom Errors
     CUSTOMERROR_NETWORK_ERROR = 'CustomError.networkError',
@@ -234,10 +242,6 @@ export enum FM {
 
     // EntityCreatorEditor
     ENTITYCREATOREDITOR_FIELDERROR_NOBLANK = 'EntityCreatorEditor.fieldError.noblank',
-    ENTITYCREATOREDITOR_FIELDERROR_MAX_LENGTH = 'EntityCreatorEditor.fieldError.maxLength',
-    ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE = 'EntityCreatorEditor.fieldError.requiredValue',
-    ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC = 'EntityCreatorEditor.fieldsError.alphanumerica',
-    ENTITYCREATOREDITOR_FIELDERROR_DISTINCT = 'EntityCreatorEditor.fields.distinct',
     ENTITYCREATOREDITOR_FIELDERROR_RESERVED = 'EntityCreatorEditor.fields.reserved',
     ENTITYCREATOREDITOR_ENTITYOPTION_ENUM = 'EntityCreatorEditor.entityOption.enum',
     ENTITYCREATOREDITOR_ENTITYOPTION_LUIS = 'EntityCreatorEditor.entityOption.new',
@@ -289,6 +293,11 @@ export enum FM {
     ERROR_PRIMARYBUTTON_TEXT = 'Error.text',
     ERROR_TOOMANYCHARACTERS = 'Error.tooManyChars',
 
+    // ExportChoice 
+    EXPORT_CHOICE_TITLE = 'ExportChoice.title',
+    EXPORT_CHOICE_DESCRIPTION = 'ExportChoice.description',
+    EXPORT_CHOICE_LABEL = 'ExportChoice.label',
+
     // ExtractConflictModal
     EXTRACTCONFLICTMODAL_TITLE = 'ExtractConflictModal.title',
     EXTRACTCONFLICTMODAL_SUBTITLE = 'ExtractConflictModal.subtitle',
@@ -297,6 +306,16 @@ export enum FM {
     EXTRACTCONFLICTMODAL_CONFLICTING_LABELS = 'ExtractConflictModal.conflictingLabels',
     EXTRACTCONFLICTMODAL_CALLTOACTION = 'ExtractConflictModal.callaction',
 
+    // FieldError
+    FIELDERROR_ALPHANUMERIC = 'FieldError.alphanumerica',
+    FIELDERROR_DISTINCT = 'FieldError.distinct',
+    FIELDERROR_MAX_30 = 'fieldError.max30',
+    FIELDERROR_REQUIREDVALUE = 'fieldError.requiredValue',
+    
+    // Import Cancel
+    IMPORT_CANCEL_TITLE = 'ImportCancel.title',
+    IMPORT_CANCEL_CHECKBOX_LABEL = 'ImportCancel.Checkbox.label',
+
     // LogConversionConflictModal
     LOGCONVERSIONCONFLICTMODAL_TITLE = 'LogConversionConflictModal.title',
     LOGCONVERSIONCONFLICTMODAL_SUBTITLE = 'LogConversionConflictModal.subTitle',
@@ -304,13 +323,6 @@ export enum FM {
     LOGCONVERSIONCONFLICTMODAL_BUTTON_EXPLANATION = 'LogConversionConflictModal.buttonExplanation',
     LOGCONVERSIONCONFLICTMODAL_ACCEPT = 'LogConversionConflictModal.accept',
     LOGCONVERSIONCONFLICTMODAL_ABORT = 'LogConversionConflictModal.abort',
-
-    // LogDialogModal
-    LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'LogDialogModal.defaultButton.ariaDescription',
-    LOGDIALOGMODAL_DEFAULTBUTTON_TEXT = 'LogDialogModal.defaultButton.text',
-    LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'LogDialogModal.primaryButton.ariaDescription',
-    LOGDIALOGMODAL_PRIMARYBUTTON_TEXT = 'LogDialogModal.primaryButton.text',
-    LOGDIALOGMODAL_CONFIRMDELETE_TITLE = 'LogDialogModal.confirmDelete.title',
 
     // LogDialogs
     LOGDIALOGS_TITLE = 'LogDialogs.title',
@@ -324,16 +336,11 @@ export enum FM {
     LOGDIALOGS_CREATED_DATE_TIME = 'LogDialogs.createdDateTime',
     LOGDIALOGS_LAST_MODIFIED_DATE_TIME = 'LogDialogs.lastModifiedDateTime',
     LOGDIALOGS_ALREADYSELECTED = 'LogDialogs.alreadySelected',
+    LOGDIALOGS_BUTTON_DELETESELECTED = 'LogDialogs.button.deleteSelected',
+    LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED = 'LogDialogs.confirmCancel.deleteSelected',
 
     // LogDialogAdmin
     LOGDIALOGADMIN_CONFIRMTITLE = 'LogDialogAdmin.confirmTitle',
-
-    // LogOut
-    LOGOUT_TITLE = 'LogoutModal.title',
-    LOGOUT_PRIMARYBUTTON_ARIADESCRIPTION = 'LogoutModal.primaryButton.ariaDescription',
-    LOGOUT_PRIMARYBUTTON_TEXT = 'LogoutModal.primaryButton.text',
-    LOGOUT_DEFAULTBUTTON_ARIADESCRIPTION = 'LogoutModal.defaultButton.ariaDescription',
-    LOGOUT_DEFAULTBUTTON_TEXT = 'LogoutModal.defaultButton.text',
 
     // MemoryTable
     MEMORYTABLE_EMPTY = 'MemoryTable.empty',
@@ -360,8 +367,8 @@ export enum FM {
     PACKAGECREATOR_CANCELBUTTON_TEXT = 'PackageCreator.cancelButton.text',
 
     // ReplayErrorList
-    REPLAYERROR_EXISTS = 'ReplayError.exists',
-    REPLAYERROR_EXISTS_LOG = 'ReplayErrorLog.exists',
+    REPLAYERROR_ERROR = 'ReplayError.exists',
+    REPLAYERROR_ERROR_LOG = 'ReplayErrorLog.exists',
     REPLAYERROR_WARNING = 'ReplayError.warning',
     REPLAYERROR_LOGDIALOG_VALIDATION_TITLE = 'ReplayError.logdialogvalidation.title',
     REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE = 'ReplayError.logdialogvalidation.message',
@@ -370,10 +377,12 @@ export enum FM {
     REPLAYERROR_EDIT_TITLE = 'ReplayError.edit.title',
     REPLAYERROR_BRANCH_TITLE = 'ReplayError.branch.title',
     REPLAYERROR_DESC_ACTION_UNDEFINED = 'ReplayError.Desc.actionUndefined',
+    REPLAYERROR_DESC_ACTION_STUB = 'ReplayError.Desc.actionStub',
     REPLAYERROR_DESC_ACTION_AFTER_WAIT = 'ReplayError.Desc.actionAfterWait',
     REPLAYERROR_DESC_API_BADCARD = 'ReplayError.Desc.apiBadCard',
     REPLAYERROR_DESC_API_EXCEPTION = 'ReplayError.Desc.apiException',
     REPLAYERROR_DESC_API_MALFORMED = 'ReplayError.Desc.apiMalformed',
+    REPLAYERROR_DESC_API_STUB = 'ReplayError.Desc.apiStub',
     REPLAYERROR_DESC_API_UNDEFINED = 'ReplayError.Desc.apiUndefined',
     REPLAYERROR_DESC_INPUT_AFTER_NONWAIT = 'ReplayError.Desc.inputAfterNonWait',
     REPLAYERROR_DESC_ENTITY_UNDEFINED = 'ReplayError.Desc.entityUndefined',
@@ -390,10 +399,7 @@ export enum FM {
     SETTINGS_COPYBUTTONARIALDESCRIPTION = 'Settings.copyButtonArielDescription',
     SETTINGS_COPYBUTTONTEXT = 'Settings.copyButtonText',
     SETTINGS_EXPORTBUTTONARIALDESCRIPTION = 'Settings.exportButtonArielDescription',
-    SETTINGS_EXPORTBUTTONTEXT = 'Settings.exportButtonText',
-    SETTINGS_FIELDERROR_REQUIREDVALUE = 'Settings.fieldError.requiredValue',
     SETTINGS_FIELDERROR_ALPHANUMERIC = 'Settings.fieldError.alphanumeric',
-    SETTINGS_FIELDERROR_DISTINCT = 'Settings.fieldError.distinct',
     SETTINGS_FIELDS_NAMELABEL = 'Settings.fields.nameLabel',
     SETTINGS_FILEDS_APPIDLABEL = 'Settings.fields.appIdLabel',
     SETTINGS_FIELDS_MARKDOWNLABEL = 'Settings.fields.markdownLabel',
@@ -435,6 +441,8 @@ export enum FM {
     // TeachSessionInit
     TEACHSESSIONINIT_INPUT_PLACEHOLDER = 'TeachSessionInit.input.placeholder',
     TEACHSESSIONINIT_TITLE = 'TeachSessionInit.title',
+    TEACHSESSIONSTUB_TITLE = 'TeachSessionStub.title',
+    TEACHSESSIONSTUB_DESCRIPTION = 'TeachSessionStub.description',
 
     // TeachSessionModal
     TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE = 'TeachSessionModal.teach.confirmDelete.title',
@@ -643,10 +651,7 @@ export default {
         [FM.ACTIONS_CREATEBUTTONTITLE]: 'New Action',
 
         // AppCreator
-        [FM.APPCREATOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
         [FM.APPCREATOR_FIELDERROR_ALPHANUMERIC]: 'Model name may only contain alphanumeric characters',
-        [FM.APPCREATOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
-        [FM.APPCREATOR_FIELDERROR_TOOLONG]: 'Name length exceeds 30 characters.',
         [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner Model',
         [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner Model',
         [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner Model',
@@ -707,12 +712,16 @@ export default {
         [FM.BUTTON_ABANDON]: 'Abandon',
         [FM.BUTTON_ABANDON_BRANCH]: 'Abandon Branch',
         [FM.BUTTON_ABANDON_EDIT]: 'Abandon Edit',
+        [FM.BUTTON_ABANDON_IMPORT]: 'Abandon Import',
         [FM.BUTTON_ACCEPT]: 'Accept',
         [FM.BUTTON_CANCEL]: 'Cancel',
         [FM.BUTTON_CLOSE]: 'Close',
+        [FM.BUTTON_CONFIRM]: 'Confirm',
         [FM.BUTTON_DELETE]: 'Delete',
+        [FM.BUTTON_EXPORT]: 'Export',
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
+        [FM.BUTTON_LOCATE_FILES]: 'Locate File(s)',
         [FM.BUTTON_OK]: 'OK',
         [FM.BUTTON_REPLAY]: 'Replay',
         [FM.BUTTON_SAVE]: 'Save',
@@ -723,6 +732,7 @@ export default {
         [FM.BUTTON_UNDO]: 'Undo',
         [FM.BUTTON_SELECT]: 'Select',
         [FM.BUTTON_SELECTED]: 'Selected',
+        [FM.BUTTON_TEST]: 'Test',
         [FM.BUTTON_NEXT]: 'Next',
         [FM.BUTTON_PREVIOUS]: 'Previous',
 
@@ -759,14 +769,16 @@ export default {
         [FM.LOGDIALOGS_CREATED_DATE_TIME]: 'Created',
         [FM.LOGDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
         [FM.LOGDIALOGS_ALREADYSELECTED]: 'Action already selected',
+        [FM.LOGDIALOGS_BUTTON_DELETESELECTED]: 'Delete Selected ({selectionCount})',
+        [FM.LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED]: 'This will permanentaly delete {selectionCount} log dialog(s). Are you sure?',
 
         // LogDialogAdmin
         [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the Bot and convert it into a new Train Dialog',
 
         // ReplayErrorList
-        [FM.REPLAYERROR_EXISTS]: 'This Train Dialog has errors that must be fixed before it can be used to train your model',
-        [FM.REPLAYERROR_EXISTS_LOG]: 'This Log Dialog has errors that must be fixed before it can be converted to a Train Dialog',
-        [FM.REPLAYERROR_WARNING]: 'This Train Dialog has some potential errors',
+        [FM.REPLAYERROR_ERROR]: 'This Train Dialog has errors that must be fixed before it can be used to train your model',
+        [FM.REPLAYERROR_ERROR_LOG]: 'This Log Dialog has errors that must be fixed before it can be converted to a Train Dialog',
+        [FM.REPLAYERROR_WARNING]: 'This Train Dialog has some issues to address',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_TITLE]: 'Model definition has changed',
         [FM.REPLAYERROR_LOGDIALOG_VALIDATION_MESSAGE]: 'This Log Dialog was created with a earlier version of the model.  The following incompatibilities were found:',
         [FM.REPLAYERROR_CONVERT_TITLE]: 'Unable to convert to Train Dialog',
@@ -775,9 +787,11 @@ export default {
         [FM.REPLAYERROR_BRANCH_TITLE]: 'Unable to Branch',
         [FM.REPLAYERROR_DESC_ACTION_AFTER_WAIT]: 'Action follows a Wait Action',
         [FM.REPLAYERROR_DESC_ACTION_UNDEFINED]: 'Action does not exist',
+        [FM.REPLAYERROR_DESC_ACTION_STUB]: 'Action not yet assigned to this imported response',
         [FM.REPLAYERROR_DESC_API_BADCARD]: 'API Render function returned a malformed Activity',
         [FM.REPLAYERROR_DESC_API_EXCEPTION]: 'API in Bot encountered an exception',
         [FM.REPLAYERROR_DESC_API_MALFORMED]: 'Logic portion of callback returns a value, but no Render portion defined',
+        [FM.REPLAYERROR_DESC_API_STUB]: 'Stub API should be replaced with a real API callback',
         [FM.REPLAYERROR_DESC_API_UNDEFINED]: 'API does not exist on running Bot',
         [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'User Input following a non-Wait Action',
         [FM.REPLAYERROR_DESC_ENTITY_UNDEFINED]: 'Entity does not exist',
@@ -794,10 +808,7 @@ export default {
         [FM.SETTINGS_COPYBUTTONARIALDESCRIPTION]: 'Copy Model',
         [FM.SETTINGS_COPYBUTTONTEXT]: 'Copy',
         [FM.SETTINGS_EXPORTBUTTONARIALDESCRIPTION]: 'Export Model to File',
-        [FM.SETTINGS_EXPORTBUTTONTEXT]: 'Export',
-        [FM.SETTINGS_FIELDERROR_REQUIREDVALUE]: 'Required Value',
         [FM.SETTINGS_FIELDERROR_ALPHANUMERIC]: 'Model names may only contain alphanumeric characters',
-        [FM.SETTINGS_FIELDERROR_DISTINCT]: 'Name is already in use.',
         [FM.SETTINGS_FIELDS_NAMELABEL]: 'Name',
         [FM.SETTINGS_FILEDS_APPIDLABEL]: 'Model ID',
         [FM.SETTINGS_FIELDS_MARKDOWNLABEL]: 'Markdown',
@@ -975,6 +986,12 @@ export default {
         // ConfirmCancelModal
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
+        
+        // Conversation Importer
+        [FM.CONVERSATION_IMPORTER_TITLE]: 'Import Conversations...',
+        [FM.CONVERSATION_IMPORTER_DESCRIPTION]: 'Create Train Dialogs from .transcript files',
+        [FM.CONVERSATION_IMPORTER_AUTOIMPORT]: 'Auto Import',
+        [FM.CONVERSATION_IMPORTER_AUTOMERGE]: 'Auto Merge',
 
         // DialogMetadata
         [FM.DIALOGMETADATA_TAGS_LABEL]: 'Tags',
@@ -985,10 +1002,6 @@ export default {
 
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
-        [FM.ENTITYCREATOREDITOR_FIELDERROR_REQUIREDVALUE]: 'Required Value',
-        [FM.ENTITYCREATOREDITOR_FIELDERROR_MAX_LENGTH]: 'May not exceed 30 characters.',
-        [FM.ENTITYCREATOREDITOR_FIELDERROR_ALPHANUMERIC]: 'May only contain alphanumeric characters with no spaces.',
-        [FM.ENTITYCREATOREDITOR_FIELDERROR_DISTINCT]: 'Name is already in use.',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED]: 'Name is reserved.',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM]: 'Enum',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_LUIS]: 'Custom Trained',
@@ -1036,6 +1049,11 @@ export default {
         [FM.ERROR_PRIMARYBUTTON_TEXT]: 'Ok',
         [FM.ERROR_TOOMANYCHARACTERS]: 'Current value exceeds maximum supported length.',
 
+        // ExportChoice
+        [FM.EXPORT_CHOICE_TITLE]: 'Export Model',
+        [FM.EXPORT_CHOICE_DESCRIPTION]: 'Save Model data to a file on disk',
+        [FM.EXPORT_CHOICE_LABEL]: 'Export Format',
+
         // ExtractConflictModal
         [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Inconsistent Entity Labels',
         [FM.EXTRACTCONFLICTMODAL_SUBTITLE]: 'You attempted to submit an input with entities labelled differently than another input in the current or a previous train dialog. Input labels must be consistent to ensure the Bot processes them correctly.',
@@ -1044,6 +1062,16 @@ export default {
         [FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS]: 'Previously Submitted Labels',
         [FM.EXTRACTCONFLICTMODAL_CALLTOACTION]: `Clicking 'Accept' will replace the conflicting labels with the previously submitted labels.`,
 
+        // FieldError
+        [FM.FIELDERROR_ALPHANUMERIC]: 'May only contain alphanumeric characters with no spaces.',
+        [FM.FIELDERROR_DISTINCT]: 'Name is already in use.',
+        [FM.FIELDERROR_MAX_30]: 'May not exceed 30 characters',
+        [FM.FIELDERROR_REQUIREDVALUE]: 'Required Value',
+
+        // Import Cancel
+        [FM.IMPORT_CANCEL_TITLE]: 'Are you sure you want to abandon this import?',
+        [FM.IMPORT_CANCEL_CHECKBOX_LABEL]: 'Skip remaining imports',
+    
         // LogConversionConflictModal
         [FM.LOGCONVERSIONCONFLICTMODAL_TITLE]: 'Incompatible Log Dialog',
         [FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE]: 'You attempted to save this log dialog as a train dialog but this dialog is incompatible with the current model due to conflicts in entity labels.  This may occur if the model has changed from the version of model used to create the log dialog. You need to update the dialog to match current model to convert it.',
@@ -1051,20 +1079,6 @@ export default {
         [FM.LOGCONVERSIONCONFLICTMODAL_BUTTON_EXPLANATION]: "Clicking 'Accept' will use the previously submitted labels for all conflicts.",
         [FM.LOGCONVERSIONCONFLICTMODAL_ACCEPT]: 'Accept',
         [FM.LOGCONVERSIONCONFLICTMODAL_ABORT]: 'Abort',
-
-        // LogDialogModal
-        [FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
-        [FM.LOGDIALOGMODAL_DEFAULTBUTTON_TEXT]: 'Delete',
-        [FM.LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done',
-        [FM.LOGDIALOGMODAL_PRIMARYBUTTON_TEXT]: 'Done',
-        [FM.LOGDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Log Dialog?',
-
-        // LogoutModal
-        [FM.LOGOUT_TITLE]: 'Log Out',
-        [FM.LOGOUT_PRIMARYBUTTON_ARIADESCRIPTION]: 'Log Out',
-        [FM.LOGOUT_PRIMARYBUTTON_TEXT]: 'Log Out',
-        [FM.LOGOUT_DEFAULTBUTTON_ARIADESCRIPTION]: 'Cancel',
-        [FM.LOGOUT_DEFAULTBUTTON_TEXT]: 'Cancel',
 
         // MemoryTable
         [FM.MEMORYTABLE_EMPTY]: 'Empty',
@@ -1103,8 +1117,10 @@ export default {
         [FM.TEACHSESSIONADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
         [FM.TEACHSESSIONADMIN_ACTION_TITLE]: 'Action',
 
-        [FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER]: 'Initial value...',
+        [FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER]: 'Entity value...',
         [FM.TEACHSESSIONINIT_TITLE]: 'Set Initial Entity Values',
+        [FM.TEACHSESSIONSTUB_TITLE]: 'Stub API',
+        [FM.TEACHSESSIONSTUB_DESCRIPTION]: 'Memory values as they should be after API call',
 
         // TeachSessionModal
         [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this dialog?',

@@ -3,11 +3,10 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Modal } from 'office-ui-fabric-react/lib/Modal'
-import * as OF from 'office-ui-fabric-react'
 import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
@@ -55,7 +54,7 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
 
     render() {
         return (
-            <Modal
+            <OF.Modal
                 isOpen={this.props.open}
                 onDismiss={() => this.onClickCancel()}
                 isBlocking={false}
@@ -95,7 +94,7 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </OF.Modal>
         )
     }
 }
