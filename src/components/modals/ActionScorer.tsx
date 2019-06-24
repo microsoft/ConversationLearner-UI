@@ -90,7 +90,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 }
                 else {
                     const refFn = (index === 0)
-                        ? (ref: any) => { component.primaryScoreButton = ref }
+                        ? component.primaryScoreButtonRef
                         : undefined
                     return (
                         <OF.PrimaryButton
@@ -260,7 +260,7 @@ interface ComponentState {
 }
 
 class ActionScorer extends React.Component<Props, ComponentState> {
-    primaryScoreButton: OF.IButton | null = null;
+    primaryScoreButtonRef = React.createRef<OF.IButton>()
 
     constructor(p: Props) {
         super(p);
@@ -333,8 +333,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     focusPrimaryButton(): void {
-        if (this.primaryScoreButton) {
-            this.primaryScoreButton.focus();
+        if (this.primaryScoreButtonRef.current) {
+            this.primaryScoreButtonRef.current.focus();
         }
         else {
             setTimeout(this.focusPrimaryButton, 100)
@@ -657,8 +657,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             if (column.key === 'select') {
                 // Will focus on new action button if no scores
                 const ref = (index === 0)
-                    ? (r: OF.IButton) => { this.primaryScoreButton = r }
-                    : undefined;
+                    ? this.primaryScoreButtonRef
+                    : undefined
+
                 return (
                     <OF.PrimaryButton
                         data-testid="action-scorer-add-action-button"

@@ -27,7 +27,7 @@ interface ComponentState {
 }
 
 class Actions extends React.Component<Props, ComponentState> {
-    newActionButton: OF.IButton
+    private newActionButtonRef = React.createRef<OF.IButton>()
 
     constructor(p: any) {
         super(p);
@@ -45,7 +45,7 @@ class Actions extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        this.newActionButton.focus();
+        this.focusNewActionButton()
     }
 
     onSelectAction(action: ActionBase) {
@@ -70,7 +70,7 @@ class Actions extends React.Component<Props, ComponentState> {
             isActionEditorOpen: false,
             actionSelected: null
         }, () => {
-            setTimeout(() => this.newActionButton.focus(), 500)
+            setTimeout(() => this.focusNewActionButton(), 500)
         })
     }
 
@@ -82,7 +82,7 @@ class Actions extends React.Component<Props, ComponentState> {
         })
 
         this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId, removeFromDialogs)
-        setTimeout(() => this.newActionButton.focus(), 1000)
+        setTimeout(() => this.focusNewActionButton(), 1000)
     }
 
     @OF.autobind
@@ -97,7 +97,13 @@ class Actions extends React.Component<Props, ComponentState> {
             ? () => this.props.editActionThunkAsync(this.props.app.appId, action)
             : () => this.props.createActionThunkAsync(this.props.app.appId, action)
         apiFunc()
-        setTimeout(() => this.newActionButton.focus(), 500)
+        setTimeout(() => this.focusNewActionButton(), 500)
+    }
+
+    private focusNewActionButton() {
+        if (this.newActionButtonRef.current) {
+            this.newActionButtonRef.current.focus()
+        }
     }
 
     getFilteredActions(): ActionBase[] {
@@ -149,7 +155,7 @@ class Actions extends React.Component<Props, ComponentState> {
                             defaultMessage: 'New Action'
                         })}
                         iconProps={{ iconName: 'Add' }}
-                        componentRef={component => this.newActionButton = component!}
+                        componentRef={this.newActionButtonRef}
                     />
                 </div>
                 {actions.length === 0
