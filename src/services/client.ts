@@ -459,6 +459,14 @@ export default class ClClient {
         })
     }
 
+    async logDialogsDeleteMany(appId: string, logDialogIds: string[]): Promise<void> {
+        const logDialogIdQueryString = logDialogIds.map(id => `id=${id}`).join("&")
+        await this.send({
+            method: 'delete',
+            url: `/app/${appId}/logdialog?${logDialogIdQueryString}`
+        })
+    }
+
     async logDialogsUpdateExtractStep(appId: string, logDialogId: string, turnIndex: number, userInput: CLM.UserInput): Promise<CLM.UIExtractResponse> {
         const response = await this.send({
             method: 'put',

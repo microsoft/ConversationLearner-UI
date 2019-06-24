@@ -305,13 +305,6 @@ export enum FM {
     LOGCONVERSIONCONFLICTMODAL_ACCEPT = 'LogConversionConflictModal.accept',
     LOGCONVERSIONCONFLICTMODAL_ABORT = 'LogConversionConflictModal.abort',
 
-    // LogDialogModal
-    LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION = 'LogDialogModal.defaultButton.ariaDescription',
-    LOGDIALOGMODAL_DEFAULTBUTTON_TEXT = 'LogDialogModal.defaultButton.text',
-    LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION = 'LogDialogModal.primaryButton.ariaDescription',
-    LOGDIALOGMODAL_PRIMARYBUTTON_TEXT = 'LogDialogModal.primaryButton.text',
-    LOGDIALOGMODAL_CONFIRMDELETE_TITLE = 'LogDialogModal.confirmDelete.title',
-
     // LogDialogs
     LOGDIALOGS_TITLE = 'LogDialogs.title',
     LOGDIALOGS_SUBTITLE = 'LogDialogs.subtitle',
@@ -324,16 +317,11 @@ export enum FM {
     LOGDIALOGS_CREATED_DATE_TIME = 'LogDialogs.createdDateTime',
     LOGDIALOGS_LAST_MODIFIED_DATE_TIME = 'LogDialogs.lastModifiedDateTime',
     LOGDIALOGS_ALREADYSELECTED = 'LogDialogs.alreadySelected',
+    LOGDIALOGS_BUTTON_DELETESELECTED = 'LogDialogs.button.deleteSelected',
+    LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED = 'LogDialogs.confirmCancel.deleteSelected',
 
     // LogDialogAdmin
     LOGDIALOGADMIN_CONFIRMTITLE = 'LogDialogAdmin.confirmTitle',
-
-    // LogOut
-    LOGOUT_TITLE = 'LogoutModal.title',
-    LOGOUT_PRIMARYBUTTON_ARIADESCRIPTION = 'LogoutModal.primaryButton.ariaDescription',
-    LOGOUT_PRIMARYBUTTON_TEXT = 'LogoutModal.primaryButton.text',
-    LOGOUT_DEFAULTBUTTON_ARIADESCRIPTION = 'LogoutModal.defaultButton.ariaDescription',
-    LOGOUT_DEFAULTBUTTON_TEXT = 'LogoutModal.defaultButton.text',
 
     // MemoryTable
     MEMORYTABLE_EMPTY = 'MemoryTable.empty',
@@ -759,6 +747,8 @@ export default {
         [FM.LOGDIALOGS_CREATED_DATE_TIME]: 'Created',
         [FM.LOGDIALOGS_LAST_MODIFIED_DATE_TIME]: 'Last Modified',
         [FM.LOGDIALOGS_ALREADYSELECTED]: 'Action already selected',
+        [FM.LOGDIALOGS_BUTTON_DELETESELECTED]: 'Delete Selected ({selectionCount})',
+        [FM.LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED]: 'This will permanentaly delete {selectionCount} log dialog(s). Are you sure?',
 
         // LogDialogAdmin
         [FM.LOGDIALOGADMIN_CONFIRMTITLE]: 'This will attempt to replay the Log Dialog against the Bot and convert it into a new Train Dialog',
@@ -1051,20 +1041,6 @@ export default {
         [FM.LOGCONVERSIONCONFLICTMODAL_BUTTON_EXPLANATION]: "Clicking 'Accept' will use the previously submitted labels for all conflicts.",
         [FM.LOGCONVERSIONCONFLICTMODAL_ACCEPT]: 'Accept',
         [FM.LOGCONVERSIONCONFLICTMODAL_ABORT]: 'Abort',
-
-        // LogDialogModal
-        [FM.LOGDIALOGMODAL_DEFAULTBUTTON_ARIADESCRIPTION]: 'Delete',
-        [FM.LOGDIALOGMODAL_DEFAULTBUTTON_TEXT]: 'Delete',
-        [FM.LOGDIALOGMODAL_PRIMARYBUTTON_ARIADESCRIPTION]: 'Done',
-        [FM.LOGDIALOGMODAL_PRIMARYBUTTON_TEXT]: 'Done',
-        [FM.LOGDIALOGMODAL_CONFIRMDELETE_TITLE]: 'Are you sure you want to delete this Log Dialog?',
-
-        // LogoutModal
-        [FM.LOGOUT_TITLE]: 'Log Out',
-        [FM.LOGOUT_PRIMARYBUTTON_ARIADESCRIPTION]: 'Log Out',
-        [FM.LOGOUT_PRIMARYBUTTON_TEXT]: 'Log Out',
-        [FM.LOGOUT_DEFAULTBUTTON_ARIADESCRIPTION]: 'Cancel',
-        [FM.LOGOUT_DEFAULTBUTTON_TEXT]: 'Cancel',
 
         // MemoryTable
         [FM.MEMORYTABLE_EMPTY]: 'Empty',
