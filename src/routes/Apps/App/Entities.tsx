@@ -63,7 +63,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     display = "ENUM"
                 }
                 return (
-                    <span className={OF.FontClassNames.mediumPlus}>
+                    <span data-testid="entities-type" className={OF.FontClassNames.mediumPlus}>
                         {display}
                     </span>)
             }
@@ -86,11 +86,11 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 const display = entity.resolverType === undefined || entity.resolverType === null ? "none" : entity.resolverType
                 if (display.toLowerCase() === "none") {
                     return (
-                        <OF.Icon iconName="Remove" className="cl-icon" />
+                        <OF.Icon iconName="Remove" data-testid="entities-resolver-none" className="cl-icon" />
                     )
                 }
                 return (
-                    <span className={OF.FontClassNames.mediumPlus}>
+                    <span data-testid="entities-resolver" className={OF.FontClassNames.mediumPlus}>
                         {display}
                     </span>)
             }
@@ -106,7 +106,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 70,
             isResizable: false,
             getSortValue: entity => entity.isMultivalue ? 'a' : 'b',
-            render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} className="cl-icon" />
+            render: entity => <OF.Icon iconName={entity.isMultivalue ? "CheckMark" : "Remove"} data-testid="entities-multi-value" className="cl-icon" />
         },
         {
             key: 'isNegatable',
@@ -119,7 +119,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             maxWidth: 70,
             isResizable: false,
             getSortValue: entity => entity.isNegatible ? 'a' : 'b',
-            render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} className="cl-icon" />
+            render: entity => <OF.Icon iconName={entity.isNegatible ? "CheckMark" : "Remove"} data-testid="entities-negatable" className="cl-icon" />
         },
         {
             key: 'created',

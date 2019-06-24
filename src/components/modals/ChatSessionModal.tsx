@@ -146,7 +146,6 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         deleteChatSessionThunkAsync: actions.chat.deleteChatSessionThunkAsync,
         editChatSessionExpireThunkAsync: actions.chat.editChatSessionExpireThunkAsync,
-        deleteLogDialogThunkAsync: actions.log.deleteLogDialogThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
