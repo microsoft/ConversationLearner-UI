@@ -1000,35 +1000,33 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                                 />
                             </div>
                         </div>
-                        : <React.Fragment>
-                            <div>
-                                <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
-                                    Search:
-                                </OF.Label>
-                                <OF.SearchBox
-                                    id="logdialogs-input-search"
-                                    data-testid="logdialogs-search-box"
-                                    className={OF.FontClassNames.mediumPlus}
-                                    onChange={(newValue) => this.onChange(newValue)}
-                                    onSearch={(newValue) => this.onChange(newValue)}
-                                />
-                            </div>
-
-                            <OF.DetailsList
-                                data-testid="logdialogs-details-list"
-                                key={this.state.dialogKey}
+                        : <div>
+                            <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
+                                Search:
+                            </OF.Label>
+                            <OF.SearchBox
+                                id="logdialogs-input-search"
+                                data-testid="logdialogs-search-box"
                                 className={OF.FontClassNames.mediumPlus}
-                                items={this.state.logDialogs}
-                                selection={this.selection}
-                                columns={this.state.columns}
-                                checkboxVisibility={OF.CheckboxVisibility.onHover}
-                                onColumnHeaderClick={this.onClickColumnHeader}
-                                onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div> }
-                                onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
-                                onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
+                                onChange={(newValue) => this.onChange(newValue)}
+                                onSearch={(newValue) => this.onChange(newValue)}
                             />
-                        </React.Fragment>
+                        </div>
                 }
+
+                <OF.DetailsList
+                    data-testid="logdialogs-details-list"
+                    key={this.state.dialogKey}
+                    className={`${OF.FontClassNames.mediumPlus} ${this.state.logDialogs.length === 0 ? 'cl-hidden' : ''}`}
+                    items={this.state.logDialogs}
+                    selection={this.selection}
+                    columns={this.state.columns}
+                    checkboxVisibility={OF.CheckboxVisibility.onHover}
+                    onColumnHeaderClick={this.onClickColumnHeader}
+                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                    onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
+                    onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
+                />
 
                 <ChatSessionModal
                     app={this.props.app}

@@ -451,10 +451,10 @@ export type DeleteLogDialogRejectedAction = {
 export type DeleteLogDialogsAsyncAction = {
     type: AT.DELETE_LOG_DIALOGS_ASYNC,
     appId: string,
+    logDialogIds: string[],
 }
 export type DeleteLogDialogsFulfilledAction = {
     type: AT.DELETE_LOG_DIALOGS_FULFILLED,
-    logDialogIds: string[],
 }
 export type DeleteLogDialogsRejectedAction = {
     type: AT.DELETE_LOG_DIALOGS_REJECTED,

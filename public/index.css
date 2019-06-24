@@ -942,3 +942,7 @@ i[data-icon-name="Edit"]:hover {
 .cl-float-left {
   float: left;
 }
+
+.cl-hidden {
+  visibility: hidden
+}
