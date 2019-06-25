@@ -145,7 +145,7 @@ const defaultAcceptConflictResolutionFn = async () => { throw new Error(`acceptC
 // TODO: This component is highly redundant with TrainDialogs.  Should collapse
 class LogDialogs extends React.Component<Props, ComponentState> {
     acceptConflictResolutionFn: (conflictFreeDialog: CLM.TrainDialog) => Promise<void> = defaultAcceptConflictResolutionFn
-    newChatSessionButton: OF.IButton
+    newChatSessionButtonRef = React.createRef<OF.IButton>()
     state: ComponentState
 
     static GetConflicts(rounds: CLM.TrainRound[], previouslySubmittedTextVariations: CLM.TextVariation[]) {
@@ -263,7 +263,13 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        this.newChatSessionButton.focus()
+        this.focusNewChatButton()
+    }
+
+    private focusNewChatButton() {
+        if (this.newChatSessionButtonRef.current) {
+            this.newChatSessionButtonRef.current.focus()
+        }
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -969,7 +975,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onClick={this.onClickNewChatSession}
                         ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
-                        componentRef={component => this.newChatSessionButton = component!}
+                        componentRef={this.newChatSessionButtonRef}
                         iconProps={{ iconName: 'Add' }}
                     />
                     <OF.DefaultButton

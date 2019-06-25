@@ -198,7 +198,7 @@ interface ComponentState {
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
-    newTeachSessionButton: OF.IButton
+    newTeachSessionButtonRef = React.createRef<OF.IButton>()
     state: ComponentState
 
     constructor(props: Props) {
@@ -238,7 +238,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        this.newTeachSessionButton.focus();
+        this.focusNewTeachSessionButton()
         if (this.props.filteredAction) {
             this.setState({
                 actionFilter: this.toActionFilter(this.props.filteredAction, this.props.entities)
@@ -248,6 +248,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.setState({
                 entityFilter: this.toEntityFilter(this.props.filteredEntity)
             })
+        }
+    }
+
+    private focusNewTeachSessionButton() {
+        if (this.newTeachSessionButtonRef.current) {
+            this.newTeachSessionButtonRef.current.focus();
         }
     }
 
@@ -272,7 +278,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         // If train dialogs have been updated, update selected trainDialog too
         if (this.props.trainDialogs !== newProps.trainDialogs) {
-            this.newTeachSessionButton.focus();
+            this.focusNewTeachSessionButton();
         }
     }
 
@@ -1540,7 +1546,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onClick={() => this.onClickNewTeachSession()}
                         ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
-                        componentRef={component => this.newTeachSessionButton = component!}
+                        componentRef={this.newTeachSessionButtonRef}
                         iconProps={{ iconName: 'Add' }}
                     />
                     <OF.DefaultButton
