@@ -53,8 +53,6 @@ export const createEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
                 dispatch(fetchAllEntitiesThunkAsync(appId));
             }
 
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId));
-
             return posEntity.entityId
             
         } catch (e) {

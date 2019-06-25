@@ -169,9 +169,9 @@ interface ComponentState {
     isTeachDialogModalOpen: boolean
     isEditDialogModalOpen: boolean
     isTranscriptImportOpen: boolean
-    isTranscriptValidateOpen: boolean
+    isTranscriptValidatePickerOpen: boolean
     isImportWaitModalOpen: boolean
-    isTestWaitModalOpen: boolean
+    isTranscriptTestWaitOpen: boolean
     transcriptIndex: number
     transcriptFiles: File[] | undefined
     validationResults: ValidationResults | null
@@ -198,7 +198,7 @@ interface ComponentState {
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
-    newTeachSessionButton: OF.IButton
+    newTeachSessionButtonRef = React.createRef<OF.IButton>()
     state: ComponentState
 
     constructor(props: Props) {
@@ -213,9 +213,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTeachDialogModalOpen: false,
             isEditDialogModalOpen: false,
             isTranscriptImportOpen: false,
-            isTranscriptValidateOpen: false,
+            isTranscriptValidatePickerOpen: false,
             isImportWaitModalOpen: false,
-            isTestWaitModalOpen: false,
+            isTranscriptTestWaitOpen: false,
             transcriptIndex: 0,
             transcriptFiles: undefined,
             validationResults: null,
@@ -238,7 +238,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     componentDidMount() {
-        this.newTeachSessionButton.focus();
+        this.focusNewTeachSessionButton()
         if (this.props.filteredAction) {
             this.setState({
                 actionFilter: this.toActionFilter(this.props.filteredAction, this.props.entities)
@@ -248,6 +248,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.setState({
                 entityFilter: this.toEntityFilter(this.props.filteredEntity)
             })
+        }
+    }
+
+    private focusNewTeachSessionButton() {
+        if (this.newTeachSessionButtonRef.current) {
+            this.newTeachSessionButtonRef.current.focus();
         }
     }
 
@@ -272,7 +278,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         // If train dialogs have been updated, update selected trainDialog too
         if (this.props.trainDialogs !== newProps.trainDialogs) {
-            this.newTeachSessionButton.focus();
+            this.focusNewTeachSessionButton();
         }
     }
 
@@ -979,19 +985,27 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     onClickValidate(): void {
         this.setState({
-            isTranscriptValidateOpen: true,
+            isTranscriptValidatePickerOpen: true,
             transcriptIndex: 0
         })
     }
 
     @OF.autobind
-    async onCloseValidate(transcriptsToValidate: File[] | null): Promise<void> {
+    async onCloseTranscriptValidationPicker(transcriptsToValidate: File[] | null): Promise<void> {
         await Util.setStateAsync(this, {
-            isTranscriptValidateOpen: false,
+            isTranscriptValidatePickerOpen: false,
             transcriptFiles: transcriptsToValidate,
             validationResults: { passed: 0, failed: 0, invalidTranscript: 0}
         })
         await this.onStartTranscriptValidate()
+    }
+
+    @OF.autobind
+    onEndTranscriptTest(): void {
+        this.setState({
+            isTranscriptTestWaitOpen: false,
+            transcriptFiles: undefined
+        })
     }
 
     @OF.autobind
@@ -1021,14 +1035,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
             this.setState({
                 transcriptFiles: undefined,
-                isTestWaitModalOpen: false
+                isTranscriptTestWaitOpen: false
             })
         }
     }
 
     async onValidate(transcript: BB.Activity[]): Promise<void> {
 
-        this.setState({isTestWaitModalOpen: true})
+        this.setState({isTranscriptTestWaitOpen: true})
 
         const turnValidations: CLM.TurnValidation[] = []
         let turnValidation: CLM.TurnValidation = { inputText: "", actionHashes: []}
@@ -1061,7 +1075,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         else {
             const isValid = await this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, turnValidations)
-            if (isValid) {
+            // Need to check that dialog as still open as user may canceled the test
+            if (isValid && this.state.isTranscriptTestWaitOpen) {
                 Util.setStateAsync(this, {validationResults: {...this.state.validationResults, passed: this.state.validationResults!.passed + 1}})
             }
             else {
@@ -1531,7 +1546,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onClick={() => this.onClickNewTeachSession()}
                         ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
-                        componentRef={component => this.newTeachSessionButton = component!}
+                        componentRef={this.newTeachSessionButtonRef}
                         iconProps={{ iconName: 'Add' }}
                     />
                     <OF.DefaultButton
@@ -1759,11 +1774,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onClose={this.onCloseImportConversation}
                     />
                 }
-                {this.state.isTranscriptValidateOpen && 
+                {this.state.isTranscriptValidatePickerOpen && 
                     <TranscriptValidatorPicker
                         app={this.props.app}
                         open={true}
-                        onClose={this.onCloseValidate}
+                        onClose={this.onCloseTranscriptValidationPicker}
                     />
                 }
                 {this.state.isImportWaitModalOpen &&
@@ -1772,13 +1787,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
                     />
                 }
-                {this.state.isTestWaitModalOpen &&
+                {this.state.isTranscriptTestWaitOpen &&
                     <TranscriptTestWaitModal
                         importIndex={this.state.transcriptIndex}
                         importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
                         passed={this.state.validationResults ? this.state.validationResults.passed : 0}
                         failed={this.state.validationResults ? this.state.validationResults.failed : 0}
-                        onClose={() => this.setState({isTestWaitModalOpen: false})}
+                        onClose={this.onEndTranscriptTest}
                     />
                 }
             </div>

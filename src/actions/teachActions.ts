@@ -10,8 +10,8 @@ import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import { AxiosError } from 'axios'
 import { fetchAllTrainDialogsThunkAsync } from './trainActions'
-import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { EntityLabelConflictError } from '../types/errors'
+import { fetchApplicationTrainingStatusThunkAsync } from './appActions';
 
 // --------------------------
 // createTeachSession
@@ -162,6 +162,11 @@ export const deleteTeachSessionThunkAsync = (
             // If saving return the new train dialog
             const newTrainDialog = save ? await clClient.trainDialog(app.appId, teachSession.trainDialogId) : null
             dispatch(deleteTeachSessionFulfilled(teachSession, newTrainDialog, sourceTrainDialogId));
+
+            if (save) {
+                dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId))
+            }
+            
             return newTrainDialog
 
         } catch (e) {
@@ -367,7 +372,6 @@ export const runScorerThunkAsync = (key: string, appId: string, teachId: string,
         try {
             const uiScoreResponse = await clClient.teachSessionUpdateScorerStep(appId, teachId, uiScoreInput)
             dispatch(runScorerFulfilled(key, appId, teachId, uiScoreResponse))
-            dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
             return uiScoreResponse
         }
         catch (e) {

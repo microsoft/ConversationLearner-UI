@@ -12,7 +12,6 @@ import EntityExtractor from './EntityExtractor'
 import ActionScorer from './ActionScorer'
 import MemoryTable from './MemoryTable'
 import FormattedMessageId from '../FormattedMessageId'
-import TrainingStatusContainer from '../TrainingStatusContainer'
 import { NewActionPreset } from './ActionCreatorEditor'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
@@ -230,9 +229,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         onAddTag={this.props.onAddTag}
                         onRemoveTag={this.props.onRemoveTag}
                     />
-                    <TrainingStatusContainer
-                        app={this.props.app}
-                    />
+                    <b></b>
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === CLM.SenderType.User
                     ? (
