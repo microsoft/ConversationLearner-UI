@@ -351,7 +351,6 @@ class Entities extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         deleteEntityThunkAsync: actions.entity.deleteEntityThunkAsync,
-        fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync
     }, dispatch)
 }
 const mapStateToProps = (state: State) => {
