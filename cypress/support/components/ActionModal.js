@@ -10,7 +10,7 @@ export function ClickDeleteButton() { cy.Get('[data-testid="action-creator-delet
 export function ClickCancelButtom() { cy.Get('[data-testid="action-creator-cancel-button"]').Click() }
 export function ClickConfirmButtom() { cy.Get('button > div > div > div').ExactMatch('Confirm').Click() }
 
-export function TypeExpectedEntity(entityNames) { TypeMultipleEntities('.cl-action-creator--expected-entities', entityNames) }
+export function TypeExpectedEntity(entityName) { TypeMultipleEntities('.cl-action-creator--expected-entity', [entityName]) }
 export function TypeRequiredEntities(entityNames) { TypeMultipleEntities('.cl-action-creator--required-entities', entityNames) }
 export function TypeDisqualifyingEntities(entityNames) { TypeMultipleEntities('.cl-action-creator--disqualifying-entities', entityNames) }
 export function SelectType(type) { SelectFromDropdown('[data-testid="dropdown-action-type"]', type) }

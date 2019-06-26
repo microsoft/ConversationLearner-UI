@@ -24,7 +24,7 @@ describe("What's Your Name - CreateModels", () => {
     })
 
     it('Should create a simple Action that expectes the "name" Entity as a user response', () => {
-      actions.CreateNewActionThenVerifyInGrid({ responseNameData: common.whatsYourName, expectedEntities: ['name'] })
+      actions.CreateNewActionThenVerifyInGrid({ responseNameData: common.whatsYourName, expectedEntity: 'name' })
     })
 
     it('Should create another simple Action that says, "Hello $name"', () => {
