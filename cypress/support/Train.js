@@ -35,7 +35,7 @@ export function VerifyWarningMessage(expectedMessage) { cy.Get('[data-testid="di
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
 export function VerifyErrorPopup(expectedMessage) { cy.Get('p.ms-Dialog-title').ExactMatch(expectedMessage) }
 export function ClickPopupConfirmCancelOkButton() { cy.Get('[data-testid="confirm-cancel-modal-ok"]').Click() }
-export function ClickDeleteChatTurn() { cy.Get('[data-testid="edit-dialog-modal-delete-turn-button"]').Click() }
+export function ClickDeleteChatTurn() { cy.Get('[data-testid="chat-edit-delete-turn-button"]').Click() }
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
 export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreActionsButtonSelector) }
 
@@ -169,8 +169,8 @@ export function VerifyChatTurnControlButtons(element, index) {
     throw new Error('Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)')
   }
 
-  if (index > 0) cy.Contains('[data-testid="edit-dialog-modal-delete-turn-button"]', 'Delete Turn')
-  else cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
+  if (index > 0) cy.Contains('[data-testid="chat-edit-delete-turn-button"]', 'Delete Turn')
+  else cy.DoesNotContain('[data-testid="chat-edit-delete-turn-button"]')
 
   cy.Contains('[data-testid="chat-edit-add-bot-response-button"]', '+')
 
@@ -182,14 +182,14 @@ export function VerifyChatTurnControlButtons(element, index) {
 
 // Verify that there are NO Chat Edit Controls at all on this page.
 export function VerifyThereAreNoChatEditControls() {
-  cy.DoesNotContain('[data-testid="edit-dialog-modal-delete-turn-button"]')
+  cy.DoesNotContain('[data-testid="chat-edit-delete-turn-button"]')
   cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]', '+')
   cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
   cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]', '+')
 }
 
 export function VerifyEndSessionChatTurnControls() {
-  cy.Contains('[data-testid="edit-dialog-modal-delete-turn-button"]', 'Delete Turn')
+  cy.Contains('[data-testid="chat-edit-delete-turn-button"]', 'Delete Turn')
   cy.DoesNotContain('[data-testid="chat-edit-add-bot-response-button"]')
   cy.DoesNotContain('[data-testid="edit-dialog-modal-branch-button"]')
   cy.DoesNotContain('[data-testid="chat-edit-add-user-input-button"]')

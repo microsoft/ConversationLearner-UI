@@ -510,6 +510,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                 }
                 {canDeleteRound &&
                     <OF.IconButton
+                        data-testid="chat-edit-delete-turn-button"
                         className={`cl-wc-deleteturn ${isUser ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
                         iconProps={{ iconName: 'Delete' }}
                         onClick={this.onDeleteTurn}
