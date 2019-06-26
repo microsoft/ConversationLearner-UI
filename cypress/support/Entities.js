@@ -20,6 +20,9 @@ export const pretrainedEntityTypes = [
   "url",
   "email",
   "phonenumber",
+  "geographyV2",
+  "personName",
+  "keyPhrase",
 ]
 
 export function CreateNewEntity({ 

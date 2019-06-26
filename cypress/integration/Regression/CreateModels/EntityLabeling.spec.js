@@ -84,7 +84,15 @@ describe('Entity Labeling - Create Model', () => {
       train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
       train.SelectTextAction('Hi')
+      //cy.WaitForTrainingStatusCompleted()
+    })
+
+    // This block of code was added on 06/25/2019 when this code was consistently failing
+    // without doing this. It was even failing if I waited 5 minutes without saving and re-editing it.
+    it('Save the training and re-edit it to later verify both Tag and Frog are recognized and labeled as the Tag Entity', () => {
+      train.SaveAsIsVerifyInGrid()
       cy.WaitForTrainingStatusCompleted()
+      train.EditTraining('This is Tag.', 'This is Frog and Tag.', 'Hi')
     })
 
     it('Reverse the labeled words and once again label them as the same entity.', () => {
@@ -97,7 +105,7 @@ describe('Entity Labeling - Create Model', () => {
       train.TypeYourMessage('This is Tag and Frog.')
       memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
       train.VerifyEntityLabel('Tag', 'multi')
-      train.VerifyEntityLabel('Frog', 'multi', 1)
+      train.VerifyEntityLabel('Frog', 'multi')
       train.ClickScoreActionsButton()
       train.SelectTextAction('Hi')
 
