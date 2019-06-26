@@ -17,7 +17,7 @@ import * as helpers from '../support/Helpers'
 
 export function CreateNewAction({ 
     responseNameData, // TEXT-response, API-name, CARD-name, END_SESSION-data
-    expectedEntities, 
+    expectedEntity, 
     requiredEntities, 
     disqualifyingEntities, 
     uncheckWaitForResponse, 
@@ -41,7 +41,7 @@ export function CreateNewAction({
       if (renderArgs) actionModal.TypeApiRenderArgs(renderArgs)
       break;
   }
-  if (expectedEntities) actionModal.TypeExpectedEntity(expectedEntities)
+  if (expectedEntity) actionModal.TypeExpectedEntity(expectedEntity)
   if (requiredEntities) actionModal.TypeRequiredEntities(requiredEntities)
   if (disqualifyingEntities) actionModal.TypeDisqualifyingEntities(disqualifyingEntities)
   actionModal.ClickCreateButton()
@@ -49,7 +49,7 @@ export function CreateNewAction({
  
 export function CreateNewActionThenVerifyInGrid({ 
     responseNameData, // TEXT-response, API-name, CARD-name, END_SESSION-data
-    expectedEntities, 
+    expectedEntity, 
     requiredEntities, 
     disqualifyingEntities, 
     uncheckWaitForResponse, 
@@ -75,8 +75,8 @@ export function CreateNewActionThenVerifyInGrid({
   if (validateApiResponse) actionsGridRow.VerifyApi(validateApiResponse)
   actionsGridRow.VerifyActionType(type)
   actionsGridRow.VerifyRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
-  actionsGridRow.VerifyDisqualifyingEntities(expectedEntities, disqualifyingEntities)
-  actionsGridRow.VerifyExpectedEntities(expectedEntities)
+  actionsGridRow.VerifyDisqualifyingEntities(expectedEntity, disqualifyingEntities)
+  actionsGridRow.VerifyExpectedEntity(expectedEntity)
   
   // Type END_SESSION must have "Wait for Response" checked even if uncheckWaitForResponse is true.
   actionsGridRow.VerifyWaitForResponse((type === 'END_SESSION') || !uncheckWaitForResponse)

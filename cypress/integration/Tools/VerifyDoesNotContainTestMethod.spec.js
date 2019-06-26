@@ -11,7 +11,7 @@ import * as train from '../../support/Train'
 // The problem with that method is that if it has a bug and does not find
 // the element we were expecting to not be on the page it passes, so this
 // will verify that our method is working as we expect.
-describe('Verify the "DoesNotContain" test function - Tools', () => {
+describe('Verify the DoesNotContain test function - Tools', () => {
   it('test', () => {
     models.ImportModel('z-editContols', 'z-learnedEntLabel.cl')
     modelPage.NavigateToTrainDialogs()
@@ -19,7 +19,7 @@ describe('Verify the "DoesNotContain" test function - Tools', () => {
     train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
     train.CaptureOriginalChatMessages()
 
-    train.SelectChatTurn('My name is Susan.')
+    train.SelectChatTurnExactMatch('My name is Susan.')
     train.VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector()
 
     train.ClickSaveCloseButton()

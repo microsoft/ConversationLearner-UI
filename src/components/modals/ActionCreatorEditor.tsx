@@ -1616,7 +1616,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CARD
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.END_SESSION
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.SET_ENTITY
-                            && (<div className="cl-action-creator--expected-entities">
+                            && (<div className="cl-action-creator--expected-entity">
                                 <TC.TagPicker
                                     data-testid="action-expected-entity"
                                     label="Expected Entity in User reply..."
@@ -1705,6 +1705,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 iconProps={{ iconName: 'QueryList' }}
                                 ariaDescription={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION)}
                                 text={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT)}
+                                data-testid="action-creator-editor-train-dialog-filter-button"
                             />
                         }
                         <OF.DefaultButton
