@@ -17,14 +17,14 @@ import TreeView from '../../../components/modals/TreeView/TreeView'
 import ConversationImporter from '../../../components/modals/ConversationImporter'
 import TranscriptValidatorPicker from '../../../components/modals/TranscriptValidatorPicker'
 import ImportWaitModal from '../../../components/modals/ImportWaitModal'
-import TranscriptTestWaitModal from '../../../components/modals/TranscriptValidatorModal'
+import TranscriptValidatorModal from '../../../components/modals/TranscriptValidatorModal'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { returntypeof } from 'react-redux-typescript'
 import { State, ErrorType } from '../../../types'
 import { SelectionType } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState, MergeModal } from '../../../components/modals'
-import { injectIntl, InjectedIntl, InjectedIntlProps, } from 'react-intl'
+import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
@@ -39,8 +39,8 @@ export interface EditHandlerArgs {
 }
 
 interface TranscriptActionCall {
-    type: string,
-    actionName: string,
+    type: string
+    actionName: string
     actionInput: TranscriptActionInput[]
     actionOutput: TranscriptActionOutput[]
 }
@@ -48,7 +48,6 @@ interface TranscriptActionCall {
 interface TranscriptActionInput {
     entityName: string
 }
-
 
 interface TranscriptActionOutput {
     entityName: string,
@@ -157,12 +156,6 @@ const defaultEntityFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.forma
 const defaultActionFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_ACTIONS) })
 const defaultTagFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
 
-interface ValidationResults {
-    passed: number,
-    failed: number,
-    invalidTranscript: number
-}
-
 interface ComponentState {
     columns: OF.IColumn[]
     sortColumn: IRenderableColumn
@@ -176,7 +169,7 @@ interface ComponentState {
     isTranscriptTestWaitOpen: boolean
     transcriptIndex: number
     transcriptFiles: File[] | undefined
-    validationResults: ValidationResults | null
+    transcriptValidationResults: CLM.TranscriptValidationResult[]
     importAutoCreate: boolean
     importAutoMerge: boolean
     isTreeViewModalOpen: boolean
@@ -220,7 +213,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTranscriptTestWaitOpen: false,
             transcriptIndex: 0,
             transcriptFiles: undefined,
-            validationResults: null,
+            transcriptValidationResults: [],
             importAutoCreate: false,
             importAutoMerge: false,
             isTreeViewModalOpen: false,
@@ -997,7 +990,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         await Util.setStateAsync(this, {
             isTranscriptValidatePickerOpen: false,
             transcriptFiles: transcriptsToValidate,
-            validationResults: { passed: 0, failed: 0, invalidTranscript: 0}
+            transcriptValidationResults: []
         })
         await this.onStartTranscriptValidate()
     }
@@ -1030,7 +1023,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let source = await this.readFileAsync(transcriptFile)
         try {
             const sourceJson = JSON.parse(source)
-            await this.onValidate(sourceJson)
+            await this.onValidate(transcriptFile.name, sourceJson)
         }
         catch (e) {
             const error = e as Error
@@ -1042,27 +1035,27 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    async onValidate(transcript: BB.Activity[]): Promise<void> {
+    async onValidate(fileName: string, transcript: BB.Activity[]): Promise<void> {
 
         this.setState({isTranscriptTestWaitOpen: true})
 
-        const turnValidations: CLM.TurnValidation[] = []
-        let turnValidation: CLM.TurnValidation = { inputText: "", actionHashes: []}
+        const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
+        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", actionHashes: []}
         let invalidTranscript = false
         for (let activity of transcript) {
             // TODO: Handle conversation updates
             if (!activity.type || activity.type === "message") {
                 if (activity.from.role === "user") {
                     // If already have user input push it
-                    if (turnValidation.inputText !== "") {
-                        turnValidations.push(turnValidation)
+                    if (transcriptValidationTurn.inputText !== "") {
+                        transcriptValidationTurns.push(transcriptValidationTurn)
                     }
-                    turnValidation = { inputText: activity.text, actionHashes: []}
+                    transcriptValidationTurn = { inputText: activity.text, actionHashes: []}
                 }
                 else if (activity.from.role === "bot") {
-                    if (turnValidation) {
+                    if (transcriptValidationTurn) {
                         const actionHash = Util.hashText(activity.text)
-                        turnValidation.actionHashes.push(actionHash)
+                        transcriptValidationTurn.actionHashes.push(actionHash)
                     }
                     else {
                         invalidTranscript = true
@@ -1072,18 +1065,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
         }
 
+        let transcriptValidationResult: CLM.TranscriptValidationResult
         if (invalidTranscript) {
-            Util.setStateAsync(this, {validationResults: {...this.state.validationResults, invalidTranscript: this.state.validationResults!.invalidTranscript + 1}})               
+            transcriptValidationResult = { validity: CLM.Validity.WARNING, logDialogId: null }
         }
         else {
-            const isValid = await this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, turnValidations)
-            // Need to check that dialog as still open as user may canceled the test
-            if (isValid && this.state.isTranscriptTestWaitOpen) {
-                Util.setStateAsync(this, {validationResults: {...this.state.validationResults, passed: this.state.validationResults!.passed + 1}})
-            }
-            else {
-                Util.setStateAsync(this, {validationResults: {...this.state.validationResults, failed: this.state.validationResults!.failed + 1}})
-            }
+            transcriptValidationResult = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<CLM.TranscriptValidationResult>)
+        }
+        // Need to check that dialog as still open as user may canceled the test
+        if (this.state.isTranscriptTestWaitOpen) {
+            Util.setStateAsync(this, {transcriptValidationResults: [...this.state.transcriptValidationResults, transcriptValidationResult]})
         }
         this.onStartTranscriptValidate()
     }
@@ -1790,11 +1781,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                 }
                 {this.state.isTranscriptTestWaitOpen &&
-                    <TranscriptTestWaitModal
+                    <TranscriptValidatorModal
                         importIndex={this.state.transcriptIndex}
                         importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
-                        passed={this.state.validationResults ? this.state.validationResults.passed : 0}
-                        failed={this.state.validationResults ? this.state.validationResults.failed : 0}
+                        transcriptValidationResults={this.state.transcriptValidationResults}
                         onClose={this.onEndTranscriptTest}
                     />
                 }
