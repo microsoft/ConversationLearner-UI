@@ -1116,7 +1116,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 <ConfirmCancelModal
                     open={this.state.isConfirmDeleteModalOpen}
                     onCancel={this.onClickCancelDelete}
-                    onOk={this.onClickConfirmDelete}
+                    onConfirm={this.onClickConfirmDelete}
                     title={Util.formatMessageId(intl, FM.LOGDIALOGS_CONFIRMCANCEL_DELETESELECTED, { selectionCount: this.state.selectionCount })}
                 />
             </div>
