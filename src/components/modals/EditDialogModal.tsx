@@ -108,7 +108,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     // Did trainDialog end on an EndSession
     hasSessionEnded(trainDialog: CLM.TrainDialog): boolean {
 
-        if (!trainDialog) {
+        if (!trainDialog || trainDialog.rounds.length === 0) {
             return false
         }
 

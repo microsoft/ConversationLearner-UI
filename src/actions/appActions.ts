@@ -479,15 +479,15 @@ const validateTranscriptFulfilled = (): ActionObject =>
         type: AT.FETCH_TRANSCRIPT_VALIDATION_FULFILLED
     })
 
-export const fetchTranscriptValidationThunkAsync = (appId: string, packageId: string, userId: string, turnValidations: CLM.TurnValidation[]) => {
+export const fetchTranscriptValidationThunkAsync = (appId: string, packageId: string, userId: string, transcriptValidationTurns: CLM.TranscriptValidationTurn[]) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC)
         dispatch(validateTranscriptAsync())
 
         try {
-            const isValid = await clClient.validateTranscript(appId, packageId, userId, turnValidations)
+            const transcriptValidationResult = await clClient.validateTranscript(appId, packageId, userId, transcriptValidationTurns)
             dispatch(validateTranscriptFulfilled())
-            return isValid
+            return transcriptValidationResult
         }
         catch (e) {
             const error = e as AxiosError
