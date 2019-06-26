@@ -105,6 +105,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 </>
             },
             getSortValue: trainDialog => trainDialog.description
+                ? trainDialog.description
+                : DialogUtils.dialogSampleInput(trainDialog)
         },
         {
             key: `tags`,
