@@ -552,6 +552,13 @@ export const convertGenericEntityToPredictedEntity = (entities: CLM.EntityBase[]
         throw new Error(`Could not find entity with id: ${option.id} in list of entities: ${entities}`)
     }
 
+    // There was old bug about start and end indices on textVariations not matching the actual text
+    // The variations should be generated as these customEntities go out and get converted to an extractResponse
+    // Then eventually saved on the dialog round
+    if (text.length !== (ge.endIndex - ge.startIndex)) {
+        throw new Error(`Entity labeling error. Start and End index difference don't match the length of selected text. This shouldn't be possible.`)
+    }
+
     return {
         entityId: entity.entityId,
         startCharIndex: ge.startIndex,
