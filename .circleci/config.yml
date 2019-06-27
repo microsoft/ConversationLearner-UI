@@ -86,7 +86,10 @@ jobs:
       # Need to add in --parallel once we have a license for it from Cypress
       # - run: npm run cypress -- run --record false --spec  "cypress/integration/smoke/**/*.spec.*"
       - run: npm run cypress -- run --record false --spec  "cypress/integration/Regression/**/*.spec.js"
-      - run: npm run cypress -- run --record false --spec  "cypress/integration/regressionTs/**/*.spec.*"
+
+      - run:
+          command: npm run cypress -- run --record false --spec  "cypress/integration/regressionTs/**/*.spec.*"
+          when: always
 
       - store_artifacts:
           path: results
