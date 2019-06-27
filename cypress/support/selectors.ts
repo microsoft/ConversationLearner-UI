@@ -21,7 +21,7 @@ const selectors = {
         buttonLocalFile: '[data-testid="model-creator-locate-file-button"]',
         name: '[data-testid=model-creator-input-name]',
         submit: '[data-testid=model-creator-submit-button]',
-        inputFile: '[data-testid="model-creator-import-file-picker"] > div > input[type="file"]',
+        inputFile: '[data-testid="model-creator-import-file-picker"] input[type="file"]',
     },
     model: {
         name: '[data-testid="app-index-model-name"]',
