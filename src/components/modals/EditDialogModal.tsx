@@ -17,7 +17,6 @@ import UserInputModal from './UserInputModal'
 import FormattedMessageId from '../FormattedMessageId'
 import ImportCancelModal from './ImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
-import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
 import { NewActionPreset } from './ActionCreatorEditor'
 import { formatMessageId, equal, deepCopy } from '../../Utils/util'
 import { State } from '../../types'
@@ -1132,14 +1131,6 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onCancel={this.onCancelBranch}
                     onSubmit={this.onSubmitBranch}
                 />
-                <LogConversionConflictModal
-                    title={formatMessageId(intl, FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE)}
-                    open={this.props.conflictPairs.length > 0}
-                    entities={this.props.entities}
-                    conflictPairs={this.props.conflictPairs}
-                    onClose={this.props.onAbortConflictResolution}
-                    onAccept={this.props.onAcceptConflictResolution}
-                />
                 <ConfirmCancelModal
                     open={this.state.isSaveConflictModalOpen}
                     title={formatMessageId(intl, FM.EDITDIALOGMODAL_SAVECONFLICT_TITLE)}
@@ -1198,9 +1189,6 @@ export interface ReceivedProps {
     // Add a new train dialog to the Model (when EditDialogType === NEW)
     onCreateDialog: (newTrainDialog: CLM.TrainDialog) => void
     onDeleteDialog: () => void
-    conflictPairs: ConflictPair[]
-    onAcceptConflictResolution: (conflictPairs: ConflictPair[]) => Promise<void>
-    onAbortConflictResolution: () => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
