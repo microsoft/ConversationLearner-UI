@@ -18,7 +18,7 @@ import { connect } from 'react-redux'
 import { State } from '../../../types'
 import { SelectionType } from '../../../types/const'
 import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState, MergeModal, ConfirmCancelModal } from '../../../components/modals'
-import { ConflictPair } from '../../../components/modals/LogConversionConflictModal'
+import LogConversionConflictModal, { ConflictPair } from '../../../components/modals/LogConversionConflictModal'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
@@ -1069,10 +1069,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
                         allUniqueTags={this.props.allUniqueTags}
-
-                        conflictPairs={this.state.conflictPairs}
-                        onAcceptConflictResolution={this.onAcceptConflictChanges}
-                        onAbortConflictResolution={this.onAbortConflictChanges}
                     />
                 }
                 <MergeModal
@@ -1108,10 +1104,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={() => { }}
                     allUniqueTags={this.props.allUniqueTags}
-
+                />
+                <LogConversionConflictModal
+                    title={Util.formatMessageId(intl, FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE)}
+                    open={this.state.conflictPairs.length > 0}
+                    entities={this.props.entities}
                     conflictPairs={this.state.conflictPairs}
-                    onAcceptConflictResolution={this.onAcceptConflictChanges}
-                    onAbortConflictResolution={this.onAbortConflictChanges}
+                    onClose={this.onAbortConflictChanges}
+                    onAccept={this.onAcceptConflictChanges}
                 />
                 <ConfirmCancelModal
                     open={this.state.isConfirmDeleteModalOpen}

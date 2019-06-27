@@ -1716,9 +1716,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         allUniqueTags={this.props.allUniqueTags}
                         importIndex={this.state.transcriptIndex}
                         importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : undefined}
-                        conflictPairs={[]}
-                        onAbortConflictResolution={() => { }}
-                        onAcceptConflictResolution={async () => { }}
                     />
                 }
                 <MergeModal
@@ -1756,9 +1753,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     allUniqueTags={this.props.allUniqueTags}
                     importIndex={this.state.transcriptIndex}
                     importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : undefined}
-                    conflictPairs={[]}
-                    onAbortConflictResolution={() => { }}
-                    onAcceptConflictResolution={async () => { }}
                 />
                 {this.state.isTranscriptImportOpen && 
                     <ConversationImporter
