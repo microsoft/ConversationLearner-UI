@@ -1,12 +1,12 @@
-import * as util from '../support/utilities'
-import constants from '../support/constants'
-import s from '../support/selectors'
+import * as util from '../../support/utilities'
+import constants from '../../support/constants'
+import s from '../../support/selectors'
 
 describe('Set Entity Actions', () => {
     const testData = {
         modelName: `setEntity`,
         modelFile: 'setEntity.cl',
-        enumValueCount: 14,
+        enumValueCount: 11, // 14,
         entity: {
             usedName: 'drinkSize',
             unusedName: 'unusedEntity',
@@ -160,9 +160,8 @@ describe('Set Entity Actions', () => {
                 cy.get(s.action.dropDownEntity)
                 cy.get(s.action.dropDownEnum)
                 cy.get(s.action.checkBoxWaitForResponse)
-                    .find('button')
-                    .should('have.attr', 'disabled')
-                    .should('not.have.attr', 'checked')
+                    .should('have.class', 'is-disabled')
+                    .should('not.have.class', 'is-checked')
             })
 
             it('should reset the value of the fields when changing the action type', () => {
