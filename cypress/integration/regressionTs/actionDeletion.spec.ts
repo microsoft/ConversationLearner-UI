@@ -1,6 +1,6 @@
-import constants from '../support/constants'
-import s from '../support/selectors'
-import * as util from '../support/utilities'
+import constants from '../../support/constants'
+import s from '../../support/selectors'
+import * as util from '../../support/utilities'
 
 describe('Action Deletion', () => {
     const testData = {

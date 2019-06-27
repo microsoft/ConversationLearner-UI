@@ -87,6 +87,10 @@ jobs:
       # - run: npm run cypress -- run --record false --spec  "cypress/integration/smoke/**/*.spec.*"
       - run: npm run cypress -- run --record false --spec  "cypress/integration/Regression/**/*.spec.js"
 
+      - run:
+          command: npm run cypress -- run --record false --spec  "cypress/integration/regressionTs/**/*.spec.*"
+          when: always
+
       - store_artifacts:
           path: results
 
