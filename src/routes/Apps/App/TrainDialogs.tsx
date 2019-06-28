@@ -157,7 +157,7 @@ const defaultActionFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.forma
 const defaultTagFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
 
 interface ComponentState {
-    columns: OF.IColumn[]
+    columns: IRenderableColumn[]
     sortColumn: IRenderableColumn
     history: Activity[]
     lastAction: CLM.ActionBase | null
@@ -200,6 +200,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         super(props)
         const columns = getColumns(this.props.intl)
         const lastModifiedColumn = columns.find(c => c.key === 'lastModifiedDateTime')!
+        columns.forEach(col => {
+            col.isSorted = false
+            col.isSortedDescending = false
+
+            if (col === lastModifiedColumn) {
+                col.isSorted = true
+            }
+        })
+
         this.state = {
             columns: columns,
             sortColumn: lastModifiedColumn,
@@ -317,6 +326,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         const { columns } = this.state;
+        const sortColumn = columns.find(c => c.key === clickedColumn.key)!
         const isSortedDescending = !clickedColumn.isSortedDescending;
 
         // Reset the items and columns to match the state.
@@ -326,7 +336,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 column.isSortedDescending = isSortedDescending;
                 return column;
             }),
-            sortColumn: clickedColumn
+            sortColumn,
         });
     }
 
