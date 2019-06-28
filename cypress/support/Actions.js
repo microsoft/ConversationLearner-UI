@@ -124,9 +124,8 @@ function IsAlphaNumeric(string) {
 }
 
 export function DeleteAction(action, actionType="TEXT") {
-  let actionsGridrow = new actionsGrid.Row(actionType, action)
-  actionsGridrow.EditAction()
+  new actionsGrid.Row(actionType, action).EditAction()
   
   actionModal.ClickDeleteButton()
-  actionModal.ClickConfirmButtom()
+  actionModal.ClickConfirmDeleteButton()
 }

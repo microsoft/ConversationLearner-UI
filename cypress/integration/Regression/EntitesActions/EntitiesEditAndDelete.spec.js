@@ -12,12 +12,12 @@ import * as actionsGrid from '../../../support/components/ActionsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
-describe('Edit and Delete Entities - EntitiesActions', () => {
+describe('Entities Edit and Delete - EntitiesActions', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
     it('Should import a model to test against', () => {
-      models.ImportModel('z-EditDelete', 'z-entityTests.cl')
+      models.ImportModel('z-EntityEditDel', 'z-entityTests.cl')
     })
   })
 

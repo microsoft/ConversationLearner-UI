@@ -7,12 +7,10 @@ import * as helpers from '../../support/Helpers'
 
 export function VerifyPageTitle() { cy.Get('[data-testid="actions-title"]').contains('Actions').should('be.visible') }
 export function ClickNewAction() { cy.Get('[data-testid="actions-button-create"]').Click() }
+export function VerifyTextActionNotInGrid(actionName) { cy.DoesNotContainExact('[data-testid="action-scorer-text-response"]', actionName) }
 
-export function Edit(action) {
-  cy.Get('[data-testid="action-scorer-text-response"]')
-    .contains(action)
-    .Click()
-}
+export function EditTextAction(actionName) { new Row('TEXT', actionName).EditAction() }
+export function EditAPIAction(apiName) { new Row('API', apiName).EditAction() }
 
 export class Row {
   constructor(actionType, textId) {
