@@ -34,7 +34,7 @@ export default class Component extends React.Component<Props, State> {
         isOriginalVisible: false
     }
 
-    onChangedVisible = () => {
+    onChangeVisible = () => {
         this.setState(prevState => ({
             isOriginalVisible: !prevState.isOriginalVisible
         }))
@@ -88,7 +88,7 @@ export default class Component extends React.Component<Props, State> {
                 {showToggle
                     && <OF.Toggle
                         checked={this.state.isOriginalVisible}
-                        onChanged={this.onChangedVisible}
+                        onChange={this.onChangeVisible}
                     />}
                 <OF.IconButton
                     disabled={this.props.isValidationError}
