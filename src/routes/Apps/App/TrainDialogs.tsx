@@ -353,21 +353,21 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onSelectTagsFilter(item: OF.IDropdownOption) {
+    onSelectTagsFilter(event: React.FormEvent<HTMLDivElement>, item: OF.IDropdownOption) {
         this.setState({
             tagsFilter: (item.key !== -1) ? item : null
         })
     }
 
     @OF.autobind
-    onSelectEntityFilter(item: OF.IDropdownOption) {
+    onSelectEntityFilter(event: React.FormEvent<HTMLDivElement>, item: OF.IDropdownOption) {
         this.setState({
             entityFilter: (item.key !== -1) ? item : null
         })
     }
 
     @OF.autobind
-    onSelectActionFilter(item: OF.IDropdownOption) {
+    onSelectActionFilter(event: React.FormEvent<HTMLDivElement>, item: OF.IDropdownOption) {
         this.setState({
             actionFilter: (item.key !== -1) ? item : null
         })
@@ -1637,8 +1637,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
                                 label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
                                 selectedKey={(this.state.tagsFilter ? this.state.tagsFilter.key : -1)}
-                                onChanged={this.onSelectTagsFilter}
-                                placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
+                                onChange={this.onSelectTagsFilter}
+                                placeholder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
                                 options={this.props.allUniqueTags
                                     .map<OF.IDropdownOption>((tag, i) => ({
                                         key: i,
@@ -1653,8 +1653,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
                                 label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
                                 selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : -1)}
-                                onChanged={this.onSelectEntityFilter}
-                                placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
+                                onChange={this.onSelectEntityFilter}
+                                placeholder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
                                 options={this.props.entities
                                     // Only show positive versions of negatable entities
                                     .filter(e => e.positiveId == null)
@@ -1668,8 +1668,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
                                 label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
                                 selectedKey={(this.state.actionFilter ? this.state.actionFilter.key : -1)}
-                                onChanged={this.onSelectActionFilter}
-                                placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
+                                onChange={this.onSelectActionFilter}
+                                placeholder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
                                 options={this.props.actions
                                     .map(a => this.toActionFilter(a, this.props.entities))
                                     .filter(Util.notNullOrUndefined)

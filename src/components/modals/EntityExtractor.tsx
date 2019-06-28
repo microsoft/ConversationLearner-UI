@@ -310,7 +310,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
 
-    onChangeTextVariation = (value: string): void => {
+    onChangeTextVariation = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, value: string): void => {
         this.setState({
             textVariationValue: value,
             pendingVariationChange: (value.trim().length > 0)
@@ -537,7 +537,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         <OF.TextField
                             data-testid="entity-extractor-alternative-input-text"
                             value={this.state.textVariationValue}
-                            onChanged={this.onChangeTextVariation}
+                            onChange={this.onChangeTextVariation}
                             placeholder={Util.formatMessageId(this.props.intl, FM.TEXTVARIATION_PLACEHOLDER)}
                             onKeyPress={(event) => {
                                 if (event.key === 'Enter') {

@@ -341,13 +341,13 @@ class Container extends React.Component<Props, ComponentState> {
         this.props.handleClose()
     }
 
-    onChangedName = (text: string) => {
+    onChangeName = (text: string) => {
         this.setState({
             entityNameVal: text
         })
     }
 
-    onChangedType = (obj: CLDropdownOption) => {
+    onChangeType = (obj: CLDropdownOption) => {
         const isPrebuilt = obj.key !== CLM.EntityType.LUIS && obj.key !== CLM.EntityType.LOCAL && obj.key !== CLM.EntityType.ENUM
         const isNegatableVal = isPrebuilt ? false : this.state.isNegatableVal
         const isMultivalueVal = this.state.isMultivalueVal
@@ -374,7 +374,7 @@ class Container extends React.Component<Props, ComponentState> {
         }
     }
 
-    onChangedEnum = (index: number, value: string) => {
+    onChangeEnum = (index: number, value: string) => {
         const enumValuesObjs = [...this.state.enumValues]
         const newValue = value.toUpperCase().trim()
         const enumValueObj = enumValuesObjs[index]
@@ -756,12 +756,12 @@ class Container extends React.Component<Props, ComponentState> {
 
             entityTypeKey={this.state.entityTypeVal}
             isTypeDisabled={this.state.isEditing || this.props.entityTypeFilter != null}
-            onChangedType={this.onChangedType}
+            onChangeType={this.onChangeType}
 
             name={name}
             isNameDisabled={this.state.isPrebuilt}
             onGetNameErrorMessage={this.onGetNameErrorMessage}
-            onChangedName={this.onChangedName}
+            onChangeName={this.onChangeName}
             onKeyDownName={this.onKeyDownName}
 
             isMultiValue={this.state.isMultivalueVal}
@@ -800,10 +800,10 @@ class Container extends React.Component<Props, ComponentState> {
 
             selectedResolverKey={this.state.entityResolverVal}
             resolverOptions={this.resolverOptions}
-            onResolverChanged={this.onChangeResolverType}
+            onChangeResolver={this.onChangeResolverType}
 
             enumValues={enumValues}
-            onChangedEnum={this.onChangedEnum}
+            onChangeEnum={this.onChangeEnum}
             onGetEnumErrorMessage={this.onGetEnumErrorMessage}
             onDeleteEnum={this.onDeleteEnum}
             onCancelEnumDelete={this.onCancelEnumDelete}

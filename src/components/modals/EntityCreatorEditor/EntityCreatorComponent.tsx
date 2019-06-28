@@ -29,12 +29,12 @@ interface ReceivedProps {
 
     entityTypeKey: CLM.EntityType | string
     isTypeDisabled: boolean
-    onChangedType: (option: OF.IDropdownOption) => void
+    onChangeType: (option: OF.IDropdownOption | undefined) => void
 
     name: string
     isNameDisabled: boolean
     onGetNameErrorMessage: (value: string) => string
-    onChangedName: (name: string) => void
+    onChangeName: (name?: string) => void
     onKeyDownName: React.KeyboardEventHandler<HTMLInputElement>
 
     isMultiValue: boolean
@@ -72,10 +72,10 @@ interface ReceivedProps {
 
     selectedResolverKey: string
     resolverOptions: OF.IDropdownOption[]
-    onResolverChanged: (option: OF.IDropdownOption) => void
+    onChangeResolver: (option?: OF.IDropdownOption) => void
 
     enumValues: (IEnumValueForDisplay | null)[]
-    onChangedEnum: (index: number, value: string) => void
+    onChangeEnum: (index: number, value?: string) => void
     onDeleteEnum: (enumValue: CLM.EnumValue) => void
     onGetEnumErrorMessage: (enumValue: CLM.EnumValue | null) => string
     onCancelEnumDelete: () => void
@@ -99,7 +99,7 @@ const EditComponent: React.FC<Props> = (props) => {
             ariaLabel={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL)}
             label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_TYPE_LABEL)}
             options={props.entityOptions}
-            onChanged={props.onChangedType}
+            onChange={(event, typeOption) => props.onChangeType(typeOption)}
             onRenderOption={(option: CLDropdownOption) =>
                 <div className="dropdownExample-option">
                     <span className={option.style}>{option.text}</span>
@@ -112,7 +112,7 @@ const EditComponent: React.FC<Props> = (props) => {
         <OF.TextField
             data-testid="entity-creator-entity-name-text"
             onGetErrorMessage={props.onGetNameErrorMessage}
-            onChanged={props.onChangedName}
+            onChange={(event, name) => props.onChangeName(name)}
             onKeyDown={props.onKeyDownName}
             label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NAME_LABEL)}
             placeholder={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER)}
@@ -128,7 +128,7 @@ const EditComponent: React.FC<Props> = (props) => {
                 ariaLabel={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_LABEL)}
                 label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_LABEL)}
                 options={props.resolverOptions}
-                onChanged={props.onResolverChanged}
+                onChange={(event, resolverOption) => props.onChangeResolver(resolverOption)}
                 onRenderOption={(option: CLDropdownOption) =>
                     <div className="dropdownExample-option">
                         <span className={option.style}>{option.text}</span>
@@ -150,7 +150,7 @@ const EditComponent: React.FC<Props> = (props) => {
                         <OF.TextField
                             key={index}
                             className={OF.FontClassNames.mediumPlus}
-                            onChanged={(text) => props.onChangedEnum(index, text)}
+                            onChange={(event, text) => props.onChangeEnum(index, text)}
                             label={index === 0 ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_ENUM_LABEL) : ""}
                             errorMessage={props.onGetEnumErrorMessage(value)}
                             value={value ? value.enumValue : ""}
