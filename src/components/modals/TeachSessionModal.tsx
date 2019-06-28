@@ -19,7 +19,6 @@ import TeachSessionInitState from './TeachSessionInitState'
 import FormattedMessageId from '../FormattedMessageId'
 import ImportCancelModal from './ImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
-import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -813,14 +812,6 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     editingPackageId={this.props.editingPackageId}
                     handleClose={this.onCloseInitState}
                 />
-                <LogConversionConflictModal
-                    title={Util.formatMessageId(intl, FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE)}
-                    open={this.props.conflictPairs.length > 0}
-                    entities={this.props.entities}
-                    conflictPairs={this.props.conflictPairs}
-                    onClose={this.props.onAbortConflictResolution}
-                    onAccept={this.props.onAcceptConflictResolution}
-                />
             </div>
         );
     }
@@ -873,9 +864,6 @@ export interface ReceivedProps {
     allUniqueTags: string[]
     importIndex?: number
     importCount?: number
-    conflictPairs: ConflictPair[]
-    onAcceptConflictResolution: (conflictPairs: ConflictPair[]) => Promise<void>
-    onAbortConflictResolution: () => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

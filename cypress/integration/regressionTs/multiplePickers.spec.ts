@@ -1,6 +1,6 @@
-import * as util from '../support/utilities'
-import constants from '../support/constants'
-import s from '../support/selectors'
+import * as util from '../../support/utilities'
+import constants from '../../support/constants'
+import s from '../../support/selectors'
 
 describe('Multiple Pickers and Labels', () => {
     const testData = {
