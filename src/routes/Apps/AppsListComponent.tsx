@@ -133,6 +133,7 @@ interface Props extends InjectedIntlProps {
 }
 
 interface ComponentState {
+    sortedApps: AppBase[]
     columns: ISortableRenderableColumn[]
     sortColumn: ISortableRenderableColumn
 }
@@ -152,8 +153,17 @@ export class Component extends React.Component<Props, ComponentState> {
             throw new Error(`Could not find column by name: ${defaultSortColumnName}`)
         }
 
-        columns.map(col => { col.isSorted = false; col.isSortedDescending = false })
+        columns.forEach(col => {
+            col.isSorted = false
+            col.isSortedDescending = false
+
+            if (col === defaultSortColumn) {
+                col.isSorted = true
+            }
+        })
+
         this.state = {
+            sortedApps: props.apps,
             columns,
             sortColumn: defaultSortColumn
         }
@@ -178,24 +188,38 @@ export class Component extends React.Component<Props, ComponentState> {
         return sortedApps;
     }
 
-    onClickColumnHeader = (event: any, column: ISortableRenderableColumn) => {
-        const { columns } = this.state;
+    onClickColumnHeader = (event: React.MouseEvent<HTMLElement>, clickedColumn: ISortableRenderableColumn) => {
+        const { columns, sortedApps } = this.state;
+        const sortColumn = columns.find(c => clickedColumn.key === c.key)!
+        const newColumns = columns.map(col => {
+            col.isSorted = false
+            if (col.key === clickedColumn.key) {
+                col.isSorted = true
+                col.isSortedDescending = !col.isSortedDescending
+            }
+            return col
+        })
+
+        const newSortedApps = this.getSortedApplications(sortColumn, sortedApps)
+
         this.setState({
-            columns: columns.map(col => {
-                col.isSorted = false;
-                if (col.key === column.key) {
-                    col.isSorted = true;
-                    col.isSortedDescending = !col.isSortedDescending;
-                }
-                return col;
-            }),
-            sortColumn: column
-        });
+            columns: newColumns,
+            sortColumn,
+            sortedApps: newSortedApps,
+        })
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (prevProps.apps.length !== this.props.apps.length) {
+            const sortedApps = this.getSortedApplications(this.state.sortColumn, this.props.apps)
+            this.setState({
+                sortedApps
+            })
+        }
     }
 
     render() {
         const props = this.props
-        const apps = this.getSortedApplications(this.state.sortColumn, props.apps);
 
         return <div className="cl-page">
             <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-title">
@@ -226,7 +250,7 @@ export class Component extends React.Component<Props, ComponentState> {
                     />
                 }
             </div>
-            {apps.length === 0
+            {this.state.sortedApps.length === 0
                 ? <div className="cl-page-placeholder">
                     <div className="cl-page-placeholder__content">
                         <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>{Util.formatMessageId(props.intl, FM.APPSLIST_EMPTY_TEXT)}</div>
@@ -248,7 +272,7 @@ export class Component extends React.Component<Props, ComponentState> {
                 </div>
                 : <OF.DetailsList
                     className={OF.FontClassNames.mediumPlus}
-                    items={apps}
+                    items={this.state.sortedApps}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
                     onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
