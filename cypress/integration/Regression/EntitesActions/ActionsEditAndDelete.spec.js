@@ -19,6 +19,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
   context('Setup', () => {
     it('Should import a model to test against', () => {
       models.ImportModel('z-ActionEditDel', 'z-actionTests.cl')
+      cy.pause()
     })
   })
 
@@ -38,6 +39,8 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
       actionModal.ClickConfirmDeleteButton()
       actionsGrid.VerifyTextActionNotInGrid('Can be deleted - not used in a Train Dialog')
     })
+
+
   })
 
   //   it('Should verify that filter Train Dialog on entity button works', () => {

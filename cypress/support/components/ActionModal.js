@@ -11,8 +11,8 @@ export function UncheckWaitForResponse() { cy.Get('.cl-modal_body').within(() =>
 export function ClickCreateButton() { cy.Get('[data-testid="action-creator-create-button"]').Click() }
 export function ClickDeleteButton() { cy.Get('[data-testid="action-creator-delete-button"]').Click() }
 export function ClickCancelButton() { cy.Get('[data-testid="action-creator-cancel-button"]').Click() }
-export function ClickConfirmDeleteButton() { popupModal.VerifyExactTitleClickButton('Are you sure you want to delete this Action?', '[data-testid="confirm-cancel-modal-accept"]') }
-export function ClickCancelDeleteButton() { popupModal.VerifyExactTitleClickButton('Are you sure you want to delete this Action?', '[data-testid="confirm-cancel-modal-cancel"]') }
+export function ClickConfirmDeleteButton() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Action?', '[data-testid="confirm-cancel-modal-accept"]') }
+export function ClickCancelDeleteButton() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Action?', '[data-testid="confirm-cancel-modal-cancel"]') }
 export function ClickTrainDialogFilterButton() { cy.Get('[data-testid="entity-creator-component-train-dialog-filter-button"]').Click() }
 
 export function TypeExpectedEntity(entityName) { TypeMultipleEntities('.cl-action-creator--expected-entity', [entityName]) }

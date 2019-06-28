@@ -44,7 +44,7 @@ export function VerifyCloseButtonLabel() { cy.Get('[data-testid="edit-teach-dial
 export function VerifySaveBranchButtonLabel() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Save Branch') }
 
 export function ClickAbandonDeleteButton() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').Click() }
-export function ClickConfirmAbandonButton() { popupModal.VerifyExactTitleClickButton('Are you sure you want to abandon your edits?', '[data-testid="confirm-cancel-modal-accept"]')}
+export function ClickConfirmAbandonButton() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to abandon your edits?', '[data-testid="confirm-cancel-modal-accept"]')}
 export function VerifyDeleteButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Delete') }
 export function VerifyAbandonBranchButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Abandon Branch') }
 
@@ -89,7 +89,7 @@ export function VerifyBranchButtonGroupContainsMessage(message) {
 
 export function AbandonBranchChanges() {
   ClickAbandonDeleteButton()
-  popupModal.VerifyExactTitleClickButton('Are you sure you want to abandon this Training Dialog?', '[data-testid="confirm-cancel-modal-accept"]')
+  popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to abandon this Training Dialog?', '[data-testid="confirm-cancel-modal-accept"]')
 }
 
 export function VerifyChatMessageCount(expectedCount) {

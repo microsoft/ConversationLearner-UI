@@ -16,14 +16,14 @@ export function ClickTrainDialogFilterButton() { cy.Get('[data-testid="entity-cr
 export function ClickMultiValueCheckbox() { cy.Get('[data-testid="entity-creator-multi-valued-checkbox"] i[data-icon-name="CheckMark"]').Click() }
 export function ClickNegatableCheckbox() { cy.Get('[data-testid="entity-creator-negatable-checkbox"] i[data-icon-name="CheckMark"]').Click() }
 
-export function ClickOkButtonOnNoteAboutPreTrained() { popupModal.VerifyContentClickButton('pre-trained Entity', '[data-testid="confirm-cancel-modal-ok"]') }
+export function ClickOkButtonOnNoteAboutPreTrained() { popupModal.VerifyContentAnyTitleClickButton('pre-trained Entity', '[data-testid="confirm-cancel-modal-ok"]') }
 
 export function SelectRequiredForActionsTab() { cy.Get('button[data-content="Required For Actions"]').Click() }
 export function SelectBlockedActionsTab() { cy.Get('button[data-content="Blocked Actions"]').Click() }
 
-export function ClickConfirmButtonOnDeleteConfirmPopUp() { popupModal.VerifyExactTitleClickButton('Are you sure you want to delete this Entity?', '[data-testid="confirm-cancel-modal-accept"]') }
-export function ClickCancelButtonOnDeleteConfirmPopUp() { popupModal.VerifyExactTitleClickButton('Are you sure you want to delete this Entity?', '[data-testid="confirm-cancel-modal-cancel"]') }
-export function ClickCancelButtonOnUnableToDeletePopUp() { popupModal.VerifyExactTitleClickButton('Unable to Delete this Entity', '[data-testid="confirm-cancel-modal-cancel"]') }
+export function ClickConfirmButtonOnDeleteConfirmPopUp() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Entity?', '[data-testid="confirm-cancel-modal-accept"]') }
+export function ClickCancelButtonOnDeleteConfirmPopUp() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Entity?', '[data-testid="confirm-cancel-modal-cancel"]') }
+export function ClickCancelButtonOnUnableToDeletePopUp() { popupModal.VerifyExactTitleNoContentClickButton('Unable to Delete this Entity', '[data-testid="confirm-cancel-modal-cancel"]') }
 
 export function SelectResolverType(resolverType) {
   cy.Get('[data-testid="entity-creator-resolver-type-dropdown"]').Click()

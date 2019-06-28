@@ -82,8 +82,8 @@ const selectors = {
     actionDeleteModal: {
         deleteTypeA: '[data-testid="action-delete-type"] [data-testid="action-modal-delete-type-a"]',
         deleteTypeB: '[data-testid="action-delete-type"] [data-testid="action-modal-delete-type-b"]',
-        buttonConfirm: '[data-testid="action-delete-confirm"]',
-        buttonCancel: '[data-testid="action-delete-cancel"]',
+        buttonConfirm: '[data-testid="confirm-cancel-modal-accept"]',
+        buttonCancel: '[data-testid="confirm-cancel-modal-cancel"]',
     },
     confirmCancelModal: {
         buttonCancel: '[data-testid="confirm-cancel-modal-cancel"]',
