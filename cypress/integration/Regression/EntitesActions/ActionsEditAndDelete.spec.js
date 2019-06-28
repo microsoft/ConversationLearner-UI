@@ -59,7 +59,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     it('Should verify that filter Train Dialog on Action button works', () => {
       actionModal.ClickTrainDialogFilterButton()
       train.VerifyListOfTrainDialogs([
-        {firstInput: 'My entity: AABBCC', lastInput: 'My entity: AABBCC', lastResponse: 'Something extra'},
+        {firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: 'Something extra'},
       ])
     })
 
@@ -95,7 +95,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     it('Should verify that filter Train Dialog on Action button works', () => {
       actionModal.ClickTrainDialogFilterButton()
       train.VerifyListOfTrainDialogs([
-        {firstInput: 'My entity: AABBCC', lastInput: 'My entity: AABBCC', lastResponse: ''},
+        {firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: ''},
         {firstInput: 'An entity: EEEFFFGGG', lastInput: 'An entity: EEEFFFGGG', lastResponse: 'Your entity contains: $entity'},
       ])
     })
