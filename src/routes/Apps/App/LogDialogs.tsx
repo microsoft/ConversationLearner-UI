@@ -182,6 +182,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         if (!sortColumn) {
             throw new Error(`Cannot find initial sort column by key 'created'`)
         }
+        columns.forEach(col => {
+            col.isSorted = false
+            col.isSortedDescending = false
+
+            if (col === sortColumn) {
+                col.isSorted = true
+            }
+        })
 
         this.state = {
             logDialogs: props.logDialogs,
@@ -249,16 +257,24 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
+        const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
         // Toggle isSortedDescending of clickedColumn and reset all other columns
         const columns = this.state.columns.map(column => {
-            column.isSorted = (column.key === clickedColumn.key)
-            column.isSortedDescending = !clickedColumn.isSortedDescending
+            column.isSorted = false
+            column.isSortedDescending = false
+            if (column === sortColumn) {
+                column.isSorted = true
+                column.isSortedDescending = !clickedColumn.isSortedDescending
+            }
             return column
         })
 
+        const logDialogs = this.sortLogDialogs(this.state.logDialogs, columns, sortColumn)
+
         this.setState({
             columns,
-            sortColumn: clickedColumn,
+            sortColumn,
+            logDialogs,
         })
     }
 
@@ -310,21 +326,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
         // If any of the filters changed, recompute filtered dialogs based on updated filers
         if (prevState.searchValue !== this.state.searchValue) {
-            const logDialogs = this.getFilteredDialogs(
+            let logDialogs = this.getFilteredDialogs(
                 this.state.logDialogs,
                 this.props.entities,
                 this.props.actions,
                 this.state.searchValue)
-
-            this.setState({
-                logDialogs
-            })
-        }
-
-        // If the sort column changed, recompute dialog sort order
-        if (prevState.sortColumn.key !== this.state.sortColumn.key
-            || prevState.sortColumn.isSortedDescending !== this.state.sortColumn.isSortedDescending) {
-            const logDialogs = this.sortLogDialogs(this.state.logDialogs, this.state.columns, this.state.sortColumn)
 
             this.setState({
                 logDialogs
