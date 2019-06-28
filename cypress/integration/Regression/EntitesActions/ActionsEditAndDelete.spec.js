@@ -39,8 +39,24 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
       actionModal.ClickConfirmDeleteButton()
       actionsGrid.VerifyTextActionNotInGrid('Can be deleted - not used in a Train Dialog')
     })
+  })
 
+  context('Action - "Can be deleted - not used in a Train Dialog"', () => {
+    it('Should edit an existing action', () => {
+      modelPage.NavigateToActions()
+      actionsGrid.EditTextAction('Can be deleted - not used in a Train Dialog')
+    })
 
+    it('Should verify that delete Action can be canceled', () => {
+      actionModal.ClickDeleteButton()
+      actionModal.ClickCancelDeleteButton()
+    })
+
+    it('Should verify that Action can be deleted', () => {
+      actionModal.ClickDeleteButton()
+      actionModal.ClickConfirmDeleteButton()
+      actionsGrid.VerifyTextActionNotInGrid('Can be deleted - not used in a Train Dialog')
+    })
   })
 
   //   it('Should verify that filter Train Dialog on entity button works', () => {
