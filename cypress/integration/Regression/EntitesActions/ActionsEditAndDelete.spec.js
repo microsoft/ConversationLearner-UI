@@ -34,9 +34,8 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     })
 
     it('Should verify that Action can be deleted', () => {
-      // actionModal.ClickDeleteButton()
-      // actionModal.ClickConfirmDeleteButton()
-      actionModal.ClickCancelButton()
+      actionModal.ClickDeleteButton()
+      actionModal.ClickConfirmDeleteButton()
       actionsGrid.VerifyTextActionNotInGrid('Can be deleted - not used in a Train Dialog')
     })
   })
