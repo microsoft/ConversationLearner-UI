@@ -49,7 +49,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
       entityModal.ClickCancelButtonOnUnableToDeletePopUp()
     })
 
-    it('Should verify that filter Train Dialog on entity button works', () => {
+    it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyListOfTrainDialogs([
         {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"}
@@ -82,7 +82,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
       entityModal.ClickCancelButtonOnUnableToDeletePopUp()
     })
 
-    it('Should verify that filter Train Dialog on entity button works', () => {
+    it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyListOfTrainDialogs([
         {firstInput: 'I love candy!', lastInput: 'I love candy!', lastResponse: "What's your name?"}
@@ -115,7 +115,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
       entityModal.ClickCancelButtonOnUnableToDeletePopUp()
     })
 
-    it('Should verify that filter Train Dialog on entity button works', () => {
+    it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyListOfTrainDialogs([
         {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"},
@@ -170,7 +170,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
       entityModal.ClickCancelButtonOnDeleteConfirmPopUp()
     })
 
-    it('Should verify that filter Train Dialog on entity button works', () => {
+    it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyListOfTrainDialogs([
         {firstInput: 'We will delete this entity.', lastInput: 'Will also delete this entity.', lastResponse: "What's your name?"}
