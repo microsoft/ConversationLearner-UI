@@ -150,13 +150,28 @@ class Entities extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        const columns = getColumns(this.props.intl);
+        const columns = getColumns(this.props.intl)
+        const defaultSortColumnName = "entityName"
+        const defaultSortColumn = columns.find(c => c.key === defaultSortColumnName)
+        if (!defaultSortColumn) {
+            throw new Error(`Could not find column by name: ${defaultSortColumnName}`)
+        }
+
+        columns.forEach(col => {
+            col.isSorted = false
+            col.isSortedDescending = false
+
+            if (col === defaultSortColumn) {
+                col.isSorted = true
+            }
+        })
+
         this.state = {
             searchValue: '',
             createEditModalOpen: false,
             entitySelected: null,
             columns: columns,
-            sortColumn: columns[0]
+            sortColumn: defaultSortColumn,
         }
     }
 
@@ -211,16 +226,17 @@ class Entities extends React.Component<Props, ComponentState> {
     @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         const { columns } = this.state;
+        const sortColumn = columns.find(c => c.key === clickedColumn.key)!
         const isSortedDescending = !clickedColumn.isSortedDescending;
 
         // Reset the items and columns to match the state.
         this.setState({
             columns: columns.map(col => {
-                col.isSorted = (col.key === clickedColumn.key);
+                col.isSorted = (col.key === sortColumn.key);
                 col.isSortedDescending = isSortedDescending;
                 return col;
             }),
-            sortColumn: clickedColumn
+            sortColumn
         });
     }
 
@@ -246,8 +262,8 @@ class Entities extends React.Component<Props, ComponentState> {
                 const secondValue = this.state.sortColumn.getSortValue(b, this)
                 const compareValue = firstValue.localeCompare(secondValue)
                 return this.state.sortColumn.isSortedDescending
-                    ? compareValue
-                    : compareValue * -1
+                    ? compareValue * -1
+                    : compareValue
             })
 
         return filteredEntities;
