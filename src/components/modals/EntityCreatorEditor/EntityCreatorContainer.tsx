@@ -503,7 +503,9 @@ class Container extends React.Component<Props, ComponentState> {
         const { actions: allActions, entity } = this.props
         return !entity
             ? []
-            : allActions.filter(a => a.requiredEntities.find(id => id === entity.entityId))
+            : allActions.filter(a =>
+                a.requiredEntities.find(id => id === entity.entityId)
+                || a.entityId === entity.entityId)
     }
 
     onRenderOption = (option: CLDropdownOption): JSX.Element => {

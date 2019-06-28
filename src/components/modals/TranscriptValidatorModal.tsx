@@ -5,6 +5,7 @@
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
+import * as CLM from '@conversationlearner/models'
 import { connect } from 'react-redux'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps, } from 'react-intl'
@@ -17,6 +18,11 @@ interface ComponentState {
 class TranscriptValidatorModal extends React.Component<Props, ComponentState> {
 
     render() {
+        const valid = this.props.transcriptValidationResults.filter(tr => tr.validity === CLM.Validity.VALID).length
+        const invalid = this.props.transcriptValidationResults.filter(tr => tr.validity === CLM.Validity.INVALID).length
+        const unknown = this.props.transcriptValidationResults.filter(tr => tr.validity === CLM.Validity.UNKNOWN).length
+        const warning = this.props.transcriptValidationResults.filter(tr => tr.validity === CLM.Validity.WARNING).length
+
         return (
             <OF.Modal
                 isOpen={true}
@@ -35,15 +41,31 @@ class TranscriptValidatorModal extends React.Component<Props, ComponentState> {
                     <div className="cl-transcript-validator-result">
                         Passed: 
                         <span className="cl-entity cl-entity--match">
-                            {`${this.props.passed}`}
+                            {valid}
                         </span>
                     </div>
                     <div className="cl-transcript-validator-result">
                         Failed: 
                         <span className="cl-entity cl-entity--mismatch">
-                            {`${this.props.failed}`}
+                            {invalid}
                         </span>
                     </div>
+                    {warning > 0 &&
+                        <div className="cl-transcript-validator-result">
+                            Invalid Transcript: 
+                            <span className="cl-entity cl-entity--mismatch">
+                                {warning}
+                            </span>
+                        </div>
+                    }
+                    {unknown > 0 &&
+                        <div className="cl-transcript-validator-result">
+                            Unknown: 
+                            <span className="cl-entity cl-entity--mismatch">
+                                {unknown}
+                            </span>
+                        </div>
+                    }
                     <div className="cl-modal_footer cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary"/>
                         <div className="cl-modal-buttons_primary">
@@ -70,8 +92,7 @@ class TranscriptValidatorModal extends React.Component<Props, ComponentState> {
 export interface ReceivedProps {
     importIndex?: number
     importCount?: number
-    passed?: number 
-    failed?: number 
+    transcriptValidationResults: CLM.TranscriptValidationResult[]
     onClose: () => void
 }
 
