@@ -513,7 +513,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 }
                 {canDeleteRound &&
                     <OF.IconButton
-                        data-testid="edit-dialog-modal-delete-turn-button"
+                        data-testid="chat-edit-delete-turn-button"
                         className={`cl-wc-deleteturn ${clData.senderType === CLM.SenderType.User ? `cl-wc-deleteturn--user` : `cl-wc-deleteturn--bot`}`}
                         iconProps={{ iconName: 'Delete' }}
                         onClick={() => {

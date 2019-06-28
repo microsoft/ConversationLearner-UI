@@ -188,7 +188,7 @@ describe('Description and Tags', () => {
                     .last()
                     .click()
 
-                cy.get('[data-testid="edit-dialog-modal-delete-turn-button"]')
+                cy.get('[data-testid="chat-edit-delete-turn-button"]')
                     .click()
 
                 cy.wait(['@postDialogReplay', '@postDialogHistory'])
@@ -201,7 +201,7 @@ describe('Description and Tags', () => {
                     .last()
                     .click()
 
-                cy.get('[data-testid="edit-dialog-modal-delete-turn-button"]')
+                cy.get('[data-testid="chat-edit-delete-turn-button"]')
                     .click()
 
                 cy.wait(['@postDialogReplay', '@postDialogHistory'])
