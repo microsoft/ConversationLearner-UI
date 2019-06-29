@@ -23,7 +23,9 @@ export function SelectBlockedActionsTab() { cy.Get('button[data-content="Blocked
 
 export function ClickConfirmButtonOnDeleteConfirmPopUp() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Entity?', '[data-testid="confirm-cancel-modal-accept"]') }
 export function ClickCancelButtonOnDeleteConfirmPopUp() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Entity?', '[data-testid="confirm-cancel-modal-cancel"]') }
-export function ClickCancelButtonOnUnableToDeletePopUp() { popupModal.VerifyExactTitleNoContentClickButton('Unable to Delete this Entity', '[data-testid="confirm-cancel-modal-cancel"]') }
+export function ClickConfirmButtonOnDeleteConfirmWithWarningPopUp() { popupModal.VerifyExactTitleAndContentContainsClickButton('Are you sure you want to delete this Entity?', 'This Entity is used by one or more Training Dialogs.', '[data-testid="confirm-cancel-modal-accept"]') }
+export function ClickCancelButtonOnDeleteConfirmWithWarningPopUp() { popupModal.VerifyExactTitleAndContentContainsClickButton('Are you sure you want to delete this Entity?', 'This Entity is used by one or more Training Dialogs.', '[data-testid="confirm-cancel-modal-cancel"]') }
+export function ClickCancelButtonOnUnableToDeletePopUp() { popupModal.VerifyExactTitleAndContentContainsClickButton('Unable to Delete this Entity', 'referenced within the bot response', '[data-testid="confirm-cancel-modal-cancel"]') }
 
 export function SelectResolverType(resolverType) {
   cy.Get('[data-testid="entity-creator-resolver-type-dropdown"]').Click()

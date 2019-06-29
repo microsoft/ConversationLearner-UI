@@ -22,6 +22,28 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     })
   })
 
+  context('Disabled Action Type Drop Down', () => {
+    it('Should edit an existing entities to verify that the Action Type Dropdown is disabled', () => {
+      modelPage.NavigateToActions()
+      
+      actionsGrid.EditApiAction('LogicWithNoArgs')
+      actionModal.VerifyActionTypeDisabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditSetEntityAction('prompt')
+      actionModal.VerifyActionTypeDisabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditCardAction('Something extra')
+      actionModal.VerifyActionTypeDisabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditTextAction('Something extra')
+      actionModal.VerifyActionTypeDisabled()
+      actionModal.ClickCancelButton()
+    })
+  })
+
   context('Action - "Can be deleted - not used in a Train Dialog"', () => {
     it('Should edit an existing action', () => {
       modelPage.NavigateToActions()
