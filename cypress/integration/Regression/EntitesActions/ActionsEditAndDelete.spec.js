@@ -22,7 +22,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     })
   })
 
-  context('Disabled Action Type Drop Down', () => {
+  context('Verify Disabled & Enabled Action Type Dropdown', () => {
     it('Should edit some existing Actions to verify that the Action Type Dropdown is disabled', () => {
       modelPage.NavigateToActions()
       
@@ -82,7 +82,6 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
 
   context('Action - "Can be deleted - not used in a Train Dialog"', () => {
     it('Should edit an existing action', () => {
-      modelPage.NavigateToActions()
       actionsGrid.EditTextAction('Can be deleted - not used in a Train Dialog')
     })
 
@@ -100,7 +99,6 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
 
   context('Action - "Something extra"', () => {
     it('Should edit an existing action', () => {
-      modelPage.NavigateToActions()
       actionsGrid.EditTextAction('Something extra')
     })
 
@@ -141,7 +139,6 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
 
   context('Action - "Your entity contains: $entity"', () => {
     it('Should edit an existing action', () => {
-      modelPage.NavigateToActions()
       actionsGrid.EditTextAction('Your entity contains: $entity')
     })
 
