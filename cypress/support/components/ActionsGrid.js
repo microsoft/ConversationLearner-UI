@@ -10,7 +10,7 @@ export function ClickNewAction() { cy.Get('[data-testid="actions-button-create"]
 export function VerifyTextActionNotInGrid(actionName) { cy.DoesNotContainExact('[data-testid="action-scorer-text-response"]', actionName) }
 
 export function EditTextAction(actionName) { new Row('TEXT', actionName).EditAction() }
-export function EditAPIAction(apiName) { new Row('API', apiName).EditAction() }
+export function EditApiAction(apiName) { new Row('API', apiName).EditAction() }
 export function EditCardAction(cardContains) { new Row('CARD', cardContains).EditAction() }
 export function EditEndSessionAction(endSessionData) { new Row('END_SESSION', endSessionData).EditAction() }
 export function EditSetEntityAction(setEntityName) { new Row('SET_ENTITY', setEntityName).EditAction() }

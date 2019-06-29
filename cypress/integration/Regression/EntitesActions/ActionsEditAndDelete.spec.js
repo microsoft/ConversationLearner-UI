@@ -23,21 +23,57 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
   })
 
   context('Disabled Action Type Drop Down', () => {
-    it('Should edit an existing entities to verify that the Action Type Dropdown is disabled', () => {
+    it('Should edit some existing Actions to verify that the Action Type Dropdown is disabled', () => {
       modelPage.NavigateToActions()
       
       actionsGrid.EditApiAction('LogicWithNoArgs')
       actionModal.VerifyActionTypeDisabled()
       actionModal.ClickCancelButton()
 
-      actionsGrid.EditSetEntityAction('prompt')
+      actionsGrid.EditSetEntityAction('fruits: STRAWBERRY')
       actionModal.VerifyActionTypeDisabled()
       actionModal.ClickCancelButton()
 
-      actionsGrid.EditCardAction('Something extra')
+      actionsGrid.EditCardAction('Do you like being questioned?')
       actionModal.VerifyActionTypeDisabled()
       actionModal.ClickCancelButton()
 
+      actionsGrid.EditTextAction('Something extra')
+      actionModal.VerifyActionTypeDisabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditEndSessionAction('Goodbye')
+      actionModal.VerifyActionTypeDisabled()
+      actionModal.ClickTrainDialogFilterButton()
+    })
+
+    it('Should edit Train Dialog that caused those Actions to have a disabled Type field and delete it', () => {
+      train.EditTraining('API', 'We are done here.', 'Goodbye')
+      train.ClickAbandonDeleteButton()
+      train.ClickConfirmAbandonDialogButton()
+    })
+
+    it('Should edit some existing Actions to verify that the Action Type Dropdown is enabled', () => {
+      modelPage.NavigateToActions()
+
+      actionsGrid.EditApiAction('LogicWithNoArgs')
+      actionModal.VerifyActionTypeEnabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditSetEntityAction('fruits: STRAWBERRY')
+      actionModal.VerifyActionTypeEnabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditCardAction('Do you like being questioned?')
+      actionModal.VerifyActionTypeEnabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditEndSessionAction('Goodbye')
+      actionModal.VerifyActionTypeEnabled()
+      actionModal.ClickCancelButton()
+    })
+
+    it('Should edit 1 existing Action to verify that the Action Type Dropdown is still disabled', () => {
       actionsGrid.EditTextAction('Something extra')
       actionModal.VerifyActionTypeDisabled()
       actionModal.ClickCancelButton()
