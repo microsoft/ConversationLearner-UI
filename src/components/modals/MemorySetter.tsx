@@ -110,7 +110,11 @@ class MemorySetter extends React.Component<Props> {
         }
     }
 
-    onEnumChanged(item: OF.IDropdownOption, entity: CLM.EntityBase) {
+    onEnumChange(item: OF.IDropdownOption | undefined, entity: CLM.EntityBase) {
+        if (!item) {
+            return
+        }
+
         const map = Util.deepCopy(this.props.map)
         map[entity.entityName].values[0].displayText = item.text
         map[entity.entityName].values[0].userText = item.text
@@ -118,7 +122,11 @@ class MemorySetter extends React.Component<Props> {
         this.props.onUpdate(map)
     }
 
-    onChanged(index: number, text: string, entity: CLM.EntityBase) {  
+    onChange(index: number, text: string | undefined, entity: CLM.EntityBase) {
+        if (!text) {
+            return
+        }
+
         const map = Util.deepCopy(this.props.map)
         map[entity.entityName].values[index].userText = text
         this.props.onUpdate(map)
@@ -150,65 +158,66 @@ class MemorySetter extends React.Component<Props> {
                                 this.props.map[entity.entityName].values.map((memoryValue, index) => {
                                     const key = `${entity.entityId}+${index}`
                                     return (
-                                    <div 
-                                        className="cl-modal-buttons_primary" 
-                                        key={key}
-                                    >
-                                        {entity.entityType === CLM.EntityType.ENUM ?
-                                            <OF.Dropdown
-                                                className="cl-input--inline"
-                                                selectedKey={memoryValue.enumValueId || undefined}
-                                                onChanged={item => this.onEnumChanged(item, entity)}
-                                                options={entity.enumValues!.map<OF.IDropdownOption>(ev => {
-                                                    return {
-                                                        key: ev.enumValueId!,
-                                                        text: ev.enumValue!
-                                                    }
-                                                })}
-                                            />
-                                        :
-                                            <OF.TextField
-                                                data-testid="teach-session-initial-value"
-                                                className="cl-input--inline"
-                                                key={key}
-                                                onChanged={text => this.onChanged(index, text, entity)}
-                                                placeholder={intl.formatMessage({
-                                                    id: FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER,
-                                                    defaultMessage: "Value..."
-                                                })}
-                                                value={memoryValue.userText || ''}
-                                            />
-                                        }
-                                        {(editableEntities.length > 1) &&
+                                        <div
+                                            className="cl-modal-buttons_primary"
+                                            key={key}
+                                        >
+                                            {entity.entityType === CLM.EntityType.ENUM ?
+                                                <OF.Dropdown
+                                                    className="cl-input--inline"
+                                                    selectedKey={memoryValue.enumValueId || undefined}
+                                                    onChange={(event, item) => this.onEnumChange(item, entity)}
+                                                    options={entity.enumValues!.map<OF.IDropdownOption>(ev => {
+                                                        return {
+                                                            key: ev.enumValueId!,
+                                                            text: ev.enumValue!
+                                                        }
+                                                    })}
+                                                />
+                                                :
+                                                <OF.TextField
+                                                    data-testid="teach-session-initial-value"
+                                                    className="cl-input--inline"
+                                                    key={key}
+                                                    onChange={(event, text) => this.onChange(index, text, entity)}
+                                                    placeholder={intl.formatMessage({
+                                                        id: FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER,
+                                                        defaultMessage: "Value..."
+                                                    })}
+                                                    value={memoryValue.userText || ''}
+                                                />
+                                            }
+                                            {(editableEntities.length > 1) &&
+                                                <OF.IconButton
+                                                    className="cl-icon-plain"
+                                                    onClick={() => this.onClickNext(index, entity)}
+                                                    ariaDescription="Move to next Entity"
+                                                    text=""
+                                                    iconProps={{ iconName: 'Down' }}
+                                                />
+                                            }
+                                            {(editableEntities.length > 1) &&
+                                                <OF.IconButton
+                                                    className="cl-icon-plain"
+                                                    onClick={() => this.onClickPrev(index, entity)}
+                                                    ariaDescription="Move to previous Entity"
+                                                    text=""
+                                                    iconProps={{ iconName: 'Up' }}
+                                                />
+                                            }
                                             <OF.IconButton
-                                                className="cl-icon-plain"
-                                                onClick={() => this.onClickNext(index, entity)}
-                                                ariaDescription="Move to next Entity"
-                                                text=""
-                                                iconProps={{ iconName: 'Down' }}
-                                            /> 
-                                        }
-                                        {(editableEntities.length > 1) &&  
-                                            <OF.IconButton
-                                                className="cl-icon-plain"
-                                                onClick={() => this.onClickPrev(index, entity)}
-                                                ariaDescription="Move to previous Entity"
-                                                text=""
-                                                iconProps={{ iconName: 'Up' }}
+                                                className="cl-icon-warning"
+                                                onClick={() => this.onClickRemove(index, entity)}
+                                                ariaDescription="Remove Value"
+                                                iconProps={{ iconName: 'Delete' }}
                                             />
-                                        }
-                                        <OF.IconButton
-                                            className="cl-icon-warning"
-                                            onClick={() => this.onClickRemove(index, entity)}
-                                            ariaDescription="Remove Value"
-                                            iconProps={{ iconName: 'Delete' }}
-                                        />
-                                    </div>
+                                        </div>
                                     )
                                 })
                             }
                         </div>
-                    )}
+                    )
+                }
                 )}
             </div>
         )

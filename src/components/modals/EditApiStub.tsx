@@ -86,7 +86,7 @@ class EditApiStub extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onChangedName(text: string) {
+    onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             apiNameVal: text
         })
@@ -155,7 +155,7 @@ class EditApiStub extends React.Component<Props, ComponentState> {
                         <OF.TextField
                             className={OF.FontClassNames.mediumPlus}
                             readOnly={this.state.editingExisting}
-                            onChanged={(text) => this.onChangedName(text)}
+                            onChange={this.onChangeName}
                             label={Util.formatMessageId(intl, FM.SETTINGS_FIELDS_NAMELABEL)}
                             onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                             value={this.state.apiNameVal}

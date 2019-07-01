@@ -101,7 +101,7 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onChangedName(text: string) {
+    onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             appNameVal: text,
             edited: true
@@ -109,15 +109,7 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onChangedBotId(text: string) {
-        this.setState({
-            newBotVal: text,
-            edited: true
-        })
-    }
-
-    @OF.autobind
-    onChangedMarkdown(text: string) {
+    onChangeMarkdown(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             markdownVal: text,
             edited: true
@@ -125,7 +117,7 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onChangedVideo(text: string) {
+    onChangeVideo(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             videoVal: text,
             edited: true
@@ -252,14 +244,16 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChangedEditingVersion = (editingOption: OF.IDropdownOption) => {
+    @OF.autobind
+    onChangeEditingVersion(event: React.FormEvent<HTMLDivElement>, editingOption: OF.IDropdownOption) {
         this.props.editAppEditingTagThunkAsync(this.props.app.appId, editingOption.key as string)
         this.setState({
             selectedEditingVersionOptionKey: editingOption.key,
         })
     }
 
-    onChangedLiveVersion = (liveOption: OF.IDropdownOption) => {
+    @OF.autobind
+    onChangeLiveVersion(event: React.FormEvent<HTMLDivElement>, liveOption: OF.IDropdownOption) {
         this.props.editAppLiveTagThunkAsync(this.props.app, liveOption.key as string)
         this.setState({
             selectedLiveVersionOptionKey: liveOption.key,
@@ -373,7 +367,7 @@ class Settings extends React.Component<Props, ComponentState> {
                     <OF.TextField
                         data-testid="settings-input-model-name"
                         className={OF.FontClassNames.mediumPlus}
-                        onChanged={(text) => this.onChangedName(text)}
+                        onChange={this.onChangeName}
                         label={Util.formatMessageId(intl, FM.SETTINGS_FIELDS_NAMELABEL)}
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         value={this.state.appNameVal}
@@ -435,14 +429,14 @@ class Settings extends React.Component<Props, ComponentState> {
                             <TC.Dropdown
                                 label={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSION_EDITING)}
                                 options={packageOptions}
-                                onChanged={this.onChangedEditingVersion}
+                                onChange={this.onChangeEditingVersion}
                                 selectedKey={this.state.selectedEditingVersionOptionKey}
                                 tipType={ToolTip.TipType.MODEL_VERSION_EDITING}
                             />
                             <TC.Dropdown
                                 label={Util.formatMessageId(this.props.intl, FM.SETTINGS_MODEL_VERSION_LIVE)}
                                 options={packageOptions}
-                                onChanged={this.onChangedLiveVersion}
+                                onChange={this.onChangeLiveVersion}
                                 selectedKey={this.state.selectedLiveVersionOptionKey}
                                 tipType={ToolTip.TipType.MODEL_VERSION_LIVE}
                             />
@@ -497,7 +491,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             <div>
                                 <OF.TextField
                                     className={OF.FontClassNames.mediumPlus}
-                                    onChanged={(text) => this.onChangedMarkdown(text)}
+                                    onChange={this.onChangeMarkdown}
                                     label={Util.formatMessageId(intl, FM.SETTINGS_FIELDS_MARKDOWNLABEL)}
                                     value={this.state.markdownVal}
                                     multiline={true}
@@ -505,7 +499,7 @@ class Settings extends React.Component<Props, ComponentState> {
                                 />
                                 <OF.TextField
                                     className={OF.FontClassNames.mediumPlus}
-                                    onChanged={(text) => this.onChangedVideo(text)}
+                                    onChange={this.onChangeVideo}
                                     label={Util.formatMessageId(intl, FM.SETTINGS_FIELDS_VIDEOLABEL)}
                                     value={this.state.videoVal}
                                 />

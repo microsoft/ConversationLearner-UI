@@ -35,15 +35,6 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     private fileInput: any
 
-    constructor(p: Props) {
-        super(p)
-
-        this.onKeyDown = this.onKeyDown.bind(this)
-        this.localeChanged = this.localeChanged.bind(this)
-        this.onClickCreate = this.onClickCreate.bind(this)
-        this.onClickCancel = this.onClickCancel.bind(this)
-    }
-
     async componentDidMount() {
         const cultures = await getLuisApplicationCultures()
         const cultureOptions = cultures.map<OF.IDropdownOption>(c =>
@@ -70,17 +61,21 @@ class AppCreator extends React.Component<Props, ComponentState> {
         }
     }
 
-    nameChanged(text: string) {
+    @OF.autobind
+    onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             appNameVal: text.trim().length ? text : ""
         })
     }
-    localeChanged(obj: OF.IDropdownOption) {
+
+    @OF.autobind
+    onChangeLocale(event: React.FormEvent<HTMLDivElement>, localeOption: OF.IDropdownOption) {
         this.setState({
-            localeVal: obj.text
+            localeVal: localeOption.text
         })
     }
 
+    @OF.autobind
     onClickCancel() {
         this.props.onCancel()
     }
@@ -107,6 +102,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
     // Also has benefit of native browser validation for required fields
+    @OF.autobind
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file
@@ -224,7 +220,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     <OF.TextField
                         data-testid="model-creator-input-name"
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
-                        onChanged={text => this.nameChanged(text)}
+                        onChange={this.onChangeName}
                         label={this.getLabel(intl)}
                         placeholder={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER)}
                         onKeyDown={key => this.onKeyDown(key)}
@@ -236,7 +232,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             label={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
                             defaultSelectedKey={this.state.localeVal}
                             options={this.state.localeOptions}
-                            onChanged={this.localeChanged}
+                            onChange={this.onChangeLocale}
                             disabled={true}
                         // Disabled until trainer can support more than english
                         />

@@ -22,7 +22,8 @@ class UserInputModal extends React.Component<Props, ComponentState> {
         userInputVal: '',
     }
 
-    userInputChanged(text: string) {
+    @OF.autobind
+    onChangeUserInputChange(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             userInputVal: text
         })
@@ -87,7 +88,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                     <OF.TextField
                         data-testid="user-input-modal-new-message-input"
                         onGetErrorMessage={value => this.onGetInputErrorMessage(value)}
-                        onChanged={text => this.userInputChanged(text)}
+                        onChange={this.onChangeUserInputChange}
                         placeholder={Util.formatMessageId(intl, FM.USERINPUT_PLACEHOLDER)}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.userInputVal}

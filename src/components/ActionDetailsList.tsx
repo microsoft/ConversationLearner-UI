@@ -29,12 +29,26 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
     constructor(p: any) {
         super(p);
         const columns = getColumns(this.props.intl)
+        const defaultSortColumnName = "actionResponse"
+        const defaultSortColumn = columns.find(c => c.key === defaultSortColumnName)
+        if (!defaultSortColumn) {
+            throw new Error(`Could not find column by name: ${defaultSortColumnName}`)
+        }
+
+        columns.forEach(col => {
+            col.isSorted = false
+            col.isSortedDescending = false
+
+            if (col === defaultSortColumn) {
+                col.isSorted = true
+            }
+        })
+
         this.state = {
-            columns: columns,
-            sortColumn: columns[0],
+            columns,
+            sortColumn: defaultSortColumn,
             cardViewerAction: null
         }
-        this.onClickColumnHeader = this.onClickColumnHeader.bind(this);
     }
 
     validationError(action: CLM.ActionBase): boolean {
@@ -98,8 +112,10 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         return actions;
     }
 
+    @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         const { columns } = this.state;
+        const sortColumn = columns.find(c => clickedColumn.key === c.key)!
         const isSortedDescending = !clickedColumn.isSortedDescending;
 
         // Reset the items and columns to match the state.
@@ -109,7 +125,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                 column.isSortedDescending = isSortedDescending;
                 return column;
             }),
-            sortColumn: clickedColumn
+            sortColumn
         });
     }
 
