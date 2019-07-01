@@ -327,7 +327,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         // If any of the filters changed, recompute filtered dialogs based on updated filers
         if (prevState.searchValue !== this.state.searchValue) {
             let logDialogs = this.getFilteredDialogs(
-                this.state.logDialogs,
+                this.props.logDialogs,
                 this.props.entities,
                 this.props.actions,
                 this.state.searchValue)
@@ -956,6 +956,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             ? this.props.teachSession
             : this.state.lastTeachSession
 
+        const isPlaceholderVisible = this.props.logDialogs.length === 0
+
         return (
             <div className="cl-page">
                 <div data-testid="log-dialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
@@ -1003,7 +1005,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 {
-                    this.state.logDialogs.length === 0
+                    isPlaceholderVisible
                         ? <div className="cl-page-placeholder">
                             <div className="cl-page-placeholder__content">
                                 <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
@@ -1035,7 +1037,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 <OF.DetailsList
                     data-testid="logdialogs-details-list"
                     key={this.state.dialogKey}
-                    className={`${OF.FontClassNames.mediumPlus} ${this.state.logDialogs.length === 0 ? 'cl-hidden' : ''}`}
+                    className={`${OF.FontClassNames.mediumPlus} ${isPlaceholderVisible ? 'cl-hidden' : ''}`}
                     items={this.state.logDialogs}
                     selection={this.selection}
                     columns={this.state.columns}
