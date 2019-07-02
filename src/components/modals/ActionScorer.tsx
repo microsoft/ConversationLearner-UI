@@ -927,6 +927,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         <div className="cl-modal-buttons_primary">
                             <OF.DefaultButton
                                 data-testid="action-scorer-add-action-button"
+                                disabled={!this.props.canEdit}
                                 onClick={this.handleOpenActionModal}
                                 ariaDescription='Create Action'
                                 text='Action'
@@ -934,6 +935,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                             />
                             <OF.DefaultButton
                                 data-testid="action-scorer-add-apistub-button"
+                                disabled={!this.props.canEdit}
                                 onClick={() => this.onOpenAPIStubCreator()}
                                 ariaDescription='Create API Stub'
                                 text='API Stub'

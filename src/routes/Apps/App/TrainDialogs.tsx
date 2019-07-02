@@ -1424,6 +1424,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                     <OF.DefaultButton
                         onClick={this.onClickValidate}
+                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                         ariaDescription={Util.formatMessageId(intl, FM.BUTTON_TEST)}
                         text={Util.formatMessageId(intl, FM.BUTTON_TEST)}
                         iconProps={{ iconName: 'TestCase' }}
