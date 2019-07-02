@@ -936,7 +936,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     </div>
                 )
             }
-            else if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
+            else if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.ERROR || worstReplayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
                 return (
                     <div 
                         className={`cl-editdialog-error ${OF.FontClassNames.mediumPlus}`}
