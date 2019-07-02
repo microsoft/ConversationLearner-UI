@@ -345,7 +345,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // First look for match in extract responses
         const foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text)
         if (foundResponse) {
-            await this.props.updateExtractResponse(extractResponse)
+            this.props.updateExtractResponse(extractResponse)
             await Util.setStateAsync(this, { isPendingSubmit: true })
         } else {
             // Replace existing text variation (if any) with new one and maintain ordering

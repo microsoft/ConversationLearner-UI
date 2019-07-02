@@ -42,13 +42,13 @@ const initialState: ComponentState = {
 class CompareDialogsModal extends React.Component<Props, ComponentState> {
     state = initialState
 
-    componentDidMount() {
-        this.onChangedDialog()
+    async componentDidMount() {
+        await this.onChangedDialog()
     }
 
-    componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+    async componentDidUpdate(prevProps: Props, prevState: ComponentState) {
         if (this.state.resultIndex !== prevState.resultIndex) {
-            this.onChangedDialog()
+            await this.onChangedDialog()
         }
     }
 

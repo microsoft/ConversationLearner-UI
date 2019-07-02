@@ -229,7 +229,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         onAddTag={this.props.onAddTag}
                         onRemoveTag={this.props.onRemoveTag}
                     />
-                    <b></b>
+                    <b/>
                 </div>
                 {this.props.selectedActivity && (this.state.senderType === CLM.SenderType.User
                     ? (

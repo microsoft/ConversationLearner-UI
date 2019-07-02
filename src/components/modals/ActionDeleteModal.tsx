@@ -86,7 +86,7 @@ const ConfirmCancelModal: React.FC<Props> = (props) => {
 
             <OF.DialogFooter>
                 <OF.PrimaryButton
-                    onClick={() => props.onConfirm(deleteTypeKey != defaultDeleteTypeKey)}
+                    onClick={() => props.onConfirm(deleteTypeKey !== defaultDeleteTypeKey)}
                     text={formatMessageId(intl, FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT)}
                     iconProps={{ iconName: 'Accept' }}
                     data-testid="action-delete-confirm"

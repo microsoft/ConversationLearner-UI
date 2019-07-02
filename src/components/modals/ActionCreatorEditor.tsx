@@ -194,21 +194,6 @@ const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude:
         .filter(tag => tag.name.toLowerCase().startsWith(fText.toLowerCase()))
 }
 
-const tryCreateSlateValue = (actionType: string, slotName: string, content: object | string, options: ActionPayloadEditor.IOption[]): ActionPayloadEditor.SlateValue => {
-    try {
-        return createSlateValue(content, options)
-    }
-    catch (e) {
-        const error = e as Error
-        console.error(`Error occurred while attempting to construct slate value for action.
-    Type: ${actionType}
-    SlotName: ${slotName}
-    content:\n`, content, options)
-        console.error(error)
-        return Plain.deserialize("Action references an Entity that doesn't exist. Please re-enter the value and re-save the action.")
-    }
-}
-
 const createSlateValue = (content: object | string, options: ActionPayloadEditor.IOption[]): ActionPayloadEditor.SlateValue => {
     let objectContent: object | null = null
     if (typeof content === 'string') {
@@ -224,6 +209,21 @@ const createSlateValue = (content: object | string, options: ActionPayloadEditor
 
     const updatedJson = ActionPayloadEditor.Utilities.updateOptionNames(objectContent || content, options)
     return Value.fromJSON(updatedJson)
+}
+
+const tryCreateSlateValue = (actionType: string, slotName: string, content: object | string, options: ActionPayloadEditor.IOption[]): ActionPayloadEditor.SlateValue => {
+    try {
+        return createSlateValue(content, options)
+    }
+    catch (e) {
+        const error = e as Error
+        console.error(`Error occurred while attempting to construct slate value for action.
+    Type: ${actionType}
+    SlotName: ${slotName}
+    content:\n`, content, options)
+        console.error(error)
+        return Plain.deserialize("Action references an Entity that doesn't exist. Please re-enter the value and re-save the action.")
+    }
 }
 
 const actionTypeOptions = Object.values(CLM.ActionTypes)
@@ -372,11 +372,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .replace(/[\n\r]+/g, '')  // Adaptive cards can't handle newlines
     }
 
-    componentDidMount() {
-        this.initializeActionPresets(this.props)
+    async componentDidMount() {
+        await this.initializeActionPresets(this.props)
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    async componentWillReceiveProps(nextProps: Props) {
         let nextState: Partial<ComponentState> = {}
 
         if (nextProps.open === true) {
@@ -542,11 +542,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         // Set initial text value (used for dummy import actions)
         if (nextProps.open === true && this.props.open === false) {
-            this.initializeActionPresets(nextProps)
+            await this.initializeActionPresets(nextProps)
         }
     }
 
-    initializeActionPresets(props: Props) {
+    async initializeActionPresets(props: Props) {
         if (props.newActionPreset) {
             let values = Plain.deserialize(this.presetText(props.newActionPreset.text))
             this.onChangePayloadEditor(values, TEXT_SLOT)
@@ -556,7 +556,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             const bestCard = this.bestCardMatch(props.newActionPreset.text, CARD_MATCH_THRESHOLD)
             if (bestCard) {
                 let index = actionTypeOptions.findIndex(ao => ao.key === CLM.ActionTypes.CARD)
-                this.onChangeActionType(actionTypeOptions[index])
+                await this.onChangeActionType(actionTypeOptions[index])
             }
         }
     }
@@ -778,9 +778,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.props.fetchBotInfoThunkAsync(this.props.browserId, this.props.app.appId)
     }
 
-    onClickViewCard() {
+    async onClickViewCard() {
         if (!this.state.selectedCardOptionKey) {
-            this.onNextCard()
+            await this.onNextCard()
         }
         this.setState({
             isCardViewerModalOpen: true
@@ -793,22 +793,24 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onNextCard = () => {
+    @OF.autobind
+    async onNextCard() {
         let index = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
         index = index + 1
         if (index === this.state.cardOptions.length) {
             index = 0
         }
-        this.onChangeCardOption(this.state.cardOptions[index])
+        await this.onChangeCardOption(this.state.cardOptions[index])
     }
 
-    onPreviousCard = () => {
+    @OF.autobind
+    async onPreviousCard() {
         let index = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
         index = index - 1
         if (index < 0) {
             index = this.state.cardOptions.length - 1
         }
-        this.onChangeCardOption(this.state.cardOptions[index])
+        await this.onChangeCardOption(this.state.cardOptions[index])
     }
 
     getActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }): CLM.IActionArgument[] {
@@ -1139,7 +1141,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD && this.props.newActionPreset) {
             const bestCard = this.bestCardMatch(this.props.newActionPreset.text)
             if (bestCard) {
-                this.onChangeCardOption(bestCard)
+                await this.onChangeCardOption(bestCard)
             }
         }
     }
@@ -1247,9 +1249,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     // Payload editor is trying to submit action
-    onSubmitPayloadEditor(): void {
+    async onSubmitPayloadEditor(): Promise<void> {
         if (!this.saveDisabled()) {
-            this.onClickSaveCreate();
+            await this.onClickSaveCreate();
         }
     }
 

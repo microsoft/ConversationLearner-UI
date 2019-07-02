@@ -301,9 +301,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         };
     }
 
-    componentDidUpdate(prevProps: Props) {
+    async componentDidUpdate(prevProps: Props) {
         if (this.props.scoreResponse !== prevProps.scoreResponse) {
-            this.autoSelect()
+            await this.autoSelect()
             this.setState({
                 haveEdited: false,
                 actionForRender: this.getActionsForRender()
@@ -311,8 +311,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentDidMount() {
-        this.autoSelect();
+    async componentDidMount() {
+        await this.autoSelect();
         this.setState({
             actionForRender: this.getActionsForRender()
         })
@@ -499,7 +499,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             // TODO: Schema refactor
             const setEntityAction = new CLM.SetEntityAction(scoredBase as CLM.ActionBase)
             const action = Util.getSetEntityActionForEnumValue(setEntityAction.entityId, setEntityAction.enumValueId)
-            const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as CLM.ActionBase)
+            const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
 
             scoredAction = {
                 actionId: newAction.actionId,

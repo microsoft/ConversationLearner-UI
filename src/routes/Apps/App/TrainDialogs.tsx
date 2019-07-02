@@ -1077,9 +1077,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         // Need to check that dialog as still open as user may canceled the test
         if (this.state.isTranscriptTestWaitOpen) {
-            Util.setStateAsync(this, {transcriptValidationResults: [...this.state.transcriptValidationResults, transcriptValidationResult]})
+            await Util.setStateAsync(this, {transcriptValidationResults: [...this.state.transcriptValidationResults, transcriptValidationResult]})
         }
-        this.onStartTranscriptValidate()
+        await this.onStartTranscriptValidate()
     }
 
     //-----------------------------
@@ -1695,7 +1695,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 return
             }
 
-            DialogEditing.onEditTeach(
+            await DialogEditing.onEditTeach(
                 historyIndex,
                 args,
                 tags,
