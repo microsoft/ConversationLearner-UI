@@ -100,12 +100,6 @@ class Actions extends React.Component<Props, ComponentState> {
         setTimeout(() => this.focusNewActionButton(), 500)
     }
 
-    private focusNewActionButton() {
-        if (this.newActionButtonRef.current) {
-            this.newActionButtonRef.current.focus()
-        }
-    }
-
     getFilteredActions(): CLM.ActionBase[] {
         //runs when user changes the text 
         const searchStringLower = this.state.searchValue.toLowerCase()
@@ -211,6 +205,13 @@ class Actions extends React.Component<Props, ComponentState> {
             </div>
         );
     }
+
+    private focusNewActionButton() {
+        if (this.newActionButtonRef.current) {
+            this.newActionButtonRef.current.focus()
+        }
+    }
+
 }
 
 const mapDispatchToProps = (dispatch: any) => {

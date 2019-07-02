@@ -22,7 +22,7 @@ interface ComponentState {
     autoMerge: boolean
 }
 
-class ConversationImporter extends React.Component<Props, ComponentState> {
+class TranscriptImporter extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         files: null,
         autoImport: false,
@@ -71,11 +71,11 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
             >
                 <div className='cl-modal_header'>
                     <span className={OF.FontClassNames.xxLarge}>
-                        <FormattedMessageId id={FM.CONVERSATION_IMPORTER_TITLE}/>
+                        <FormattedMessageId id={FM.TRANSCRIPT_IMPORTER_TITLE}/>
                     </span>
                     <div className={OF.FontClassNames.medium}>
-                        <FormattedMessageId id={FM.CONVERSATION_IMPORTER_DESCRIPTION}/>
-                        <HelpIcon tipType={TipType.CONVERSATION_IMPORTER}/>
+                        <FormattedMessageId id={FM.TRANSCRIPT_IMPORTER_DESCRIPTION}/>
+                        <HelpIcon tipType={TipType.TRANSCRIPT_IMPORTER}/>
                     </div>
                 </div>
                 <div 
@@ -109,12 +109,12 @@ class ConversationImporter extends React.Component<Props, ComponentState> {
                         />
                     </div>
                     <OF.Checkbox
-                        label={Util.formatMessageId(this.props.intl, FM.CONVERSATION_IMPORTER_AUTOIMPORT)}
+                        label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_AUTOIMPORT)}
                         checked={this.state.autoImport}
                         onChange={this.onChangeAutoImport}
                     />
                     <OF.Checkbox
-                        label={Util.formatMessageId(this.props.intl, FM.CONVERSATION_IMPORTER_AUTOMERGE)}
+                        label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_AUTOMERGE)}
                         checked={this.state.autoMerge}
                         onChange={this.onChangeAutoMerge}
                     />
@@ -169,4 +169,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(ConversationImporter))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TranscriptImporter))

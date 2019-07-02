@@ -102,6 +102,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC:
         case AT.FETCH_ENTITIES_ASYNC:
         case AT.FETCH_HISTORY_ASYNC:
+        case AT.FETCH_LOG_DIALOG_ASYNC:
         // case AT.FETCH_LOG_DIALOGS_ASYNC: Don't block
         case AT.FETCH_SCOREFROMHISTORY_ASYNC:
         case AT.FETCH_EXTRACTFROMHISTORY_ASYNC:
@@ -163,15 +164,16 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.FETCH_ENTITY_EDIT_VALIDATION_FULFILLED:
         case AT.FETCH_ENTITIES_FULFILLED:
         case AT.FETCH_HISTORY_FULFILLED:
+        case AT.FETCH_LOG_DIALOG_FULFILLED:
+        // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doesn't block
         case AT.FETCH_SCOREFROMHISTORY_FULFILLED:
         case AT.FETCH_SCOREFROMHISTORY_REJECTED:
         case AT.FETCH_EXTRACTFROMHISTORY_FULFILLED:
         case AT.FETCH_EXTRACTFROMHISTORY_REJECTED:
         case AT.FETCH_TRAIN_DIALOG_FULFILLED:
+        // case AT.FETCH_TRAIN_DIALOGS_FULFILLED: Doesn't block
         case AT.FETCH_TRAINDIALOGREPLAY_FULFILLED:
         case AT.FETCH_TEXTVARIATION_CONFLICT_FULFILLED:
-        // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doesn't block
-        // case AT.FETCH_TRAIN_DIALOGS_FULFILLED: Doesn't block
         case AT.FETCH_TUTORIALS_FULFILLED:
 
         case AT.COPY_APPLICATION_FULFILLED:

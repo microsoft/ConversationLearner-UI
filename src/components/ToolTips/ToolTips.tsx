@@ -33,8 +33,6 @@ export enum TipType {
     ACTION_WAIT = 'isTerminal',
     ACTION_DELETE_INUSE = 'actionDeleteInUse',
 
-    CONVERSATION_IMPORTER = 'conversationImporter',
-
     EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY = "EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY",
     EDITDIALOGMODAL_WARNING_NEED_REPLAY = "EDITDIALOGMODAL_WARNING_NEED_REPLAY",
 
@@ -82,7 +80,9 @@ export enum TipType {
     REPLAYERROR_DESC_ACTION_UNDEFINED = "REPLAYERROR_DESC_ACTION_UNDEFINED",
     REPLAYERROR_DESC_ACTION_STUB = "REPLAYERROR_DESC_ACTION_STUB",
 
-    STUB_API = 'STUB_API'
+    STUB_API = 'STUB_API',
+
+    TRANSCRIPT_IMPORTER = 'transcriptImporter'
 }
 
 export function onRenderDetailsHeader(detailsHeaderProps: OF.IDetailsHeaderProps, defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) {
@@ -352,7 +352,7 @@ export function getTip(tipType: string) {
         case TipType.ACTION_WAIT:
             return render(FM.TOOLTIP_ACTION_WAIT_TITLE, [FM.TOOLTIP_ACTION_WAIT]);
 
-        case TipType.CONVERSATION_IMPORTER:
+        case TipType.TRANSCRIPT_IMPORTER:
             return (
                 <div>
                     <h2>Import .transcript file</h2>

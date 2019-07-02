@@ -15,7 +15,7 @@ import DisabledInputButtom from './DisabledInputButton'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import UserInputModal from './UserInputModal'
 import FormattedMessageId from '../FormattedMessageId'
-import ImportCancelModal from './ImportCancelModal';
+import TranscriptImportCancelModal from './TranscriptImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
 import { NewActionPreset } from './ActionCreatorEditor'
 import { formatMessageId, equal, deepCopy } from '../../Utils/util'
@@ -1106,7 +1106,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onConfirm={this.onClickAbandonApprove}
                     title={this.renderConfirmText(intl)}
                 />
-                <ImportCancelModal
+                <TranscriptImportCancelModal
                     open={this.state.isImportAbandonOpen}
                     onCancel={this.onClickAbandonCancel}
                     onConfirm={this.onClickAbandonApprove}

@@ -466,14 +466,14 @@ export async function onEditTeach(
     await editHandler(trainDialog, selectedActivity, args)
 } 
 
-// Returns stubAPIAction if it exists, otherwise creates it
+// Returns stubAPIAction if it exists, otherwise creates it if given creation action
 export async function getStubAPIAction(
     appId: string,
     apiStubName: string | "",
     isTerminal: boolean,
     actions: CLM.ActionBase[],
-    createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
-): Promise<CLM.ActionBase> {
+    createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null> | null
+): Promise<CLM.ActionBase | null> {
     // Check if it has been attached to real api call
     const apiHash = Util.hashText(apiStubName)
     let stubAction = actions.find(a => {return a.clientData && a.clientData.importHashes 
@@ -491,18 +491,22 @@ export async function getStubAPIAction(
         return stubAction
     }
 
-    // Otherwise create new stub
-    const newStub = CLM.ActionBase.createStubAction(apiStubName, isTerminal)
+    // If create action is available create a new action
+    if (createActionThunkAsync) {
+        // Otherwise create new stub
+        const newStub = CLM.ActionBase.createStubAction(apiStubName, isTerminal)
 
-    // If stub was created by import, add hash for future matching
-    newStub.clientData = { importHashes: [apiHash]}
+        // If stub was created by import, add hash for future matching
+        newStub.clientData = { importHashes: [apiHash]}
 
-    const newAction = await createActionThunkAsync(appId, newStub)
-    if (!newAction) {
-        throw new Error("Failed to create APIStub action")
+        const newAction = await createActionThunkAsync(appId, newStub)
+        if (!newAction) {
+            throw new Error("Failed to create APIStub action")
+        }
+
+        return newAction
     }
-
-    return newAction
+    return null
 }
 
 export function scorerStepFromActivity(trainDialog: CLM.TrainDialog, selectedActivity: Activity): CLM.TrainScorerStep | undefined {
@@ -538,6 +542,11 @@ export async function getStubScorerStep(
 ): Promise<CLM.TrainScorerStep> {
     
     const stubAPIAction = await getStubAPIAction(appId, apiStubName, isTerminal, actions, createActionThunkAsync)
+
+    if (!stubAPIAction) {
+        throw new Error("Unable to create API stub Action")
+    }
+    
     const filledEntities = filledEntityMap.FilledEntities()
 
     // Generate stub

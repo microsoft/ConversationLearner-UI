@@ -148,6 +148,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     newChatSessionButtonRef = React.createRef<OF.IButton>()
     state: ComponentState
 
+    private selection: OF.ISelection = new OF.Selection({
+        getKey: (logDialog) => (logDialog as CLM.LogDialog).logDialogId,
+        onSelectionChanged: this.onSelectionChanged
+    })
+    
     static GetConflicts(rounds: CLM.TrainRound[], previouslySubmittedTextVariations: CLM.TextVariation[]) {
         const conflictPairs: ConflictPair[] = []
 
@@ -169,11 +174,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         return conflictPairs
     }
-
-    private selection: OF.ISelection = new OF.Selection({
-        getKey: (logDialog) => (logDialog as CLM.LogDialog).logDialogId,
-        onSelectionChanged: this.onSelectionChanged
-    })
 
     constructor(props: Props) {
         super(props)
@@ -282,12 +282,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.focusNewChatButton()
     }
 
-    private focusNewChatButton() {
-        if (this.newChatSessionButtonRef.current) {
-            this.newChatSessionButtonRef.current.focus()
-        }
-    }
-
     componentWillReceiveProps(newProps: Props) {
         // A hack to prevent the screen from flashing
         // Will go away once Edit/Teach dialogs are merged
@@ -376,7 +370,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.props.clearWebchatScrollPosition()
 
         // Convert to trainDialog until schema update change, and pass in app definition too
-        const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities);
+        const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
 
         try {
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
@@ -1130,6 +1124,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             </div>
         );
     }
+   
+    private focusNewChatButton() {
+        if (this.newChatSessionButtonRef.current) {
+            this.newChatSessionButtonRef.current.focus()
+        }
+    }
 
     // User has edited an Activity in a TeachSession
     private async onEditTeach(
@@ -1214,8 +1214,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
+const stateProps = returntypeof(mapStateToProps)
+const dispatchProps = returntypeof(mapDispatchToProps)
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
 
 export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(LogDialogs))

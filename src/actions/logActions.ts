@@ -2,11 +2,11 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
+import * as CLM from '@conversationlearner/models'
+import * as ClientFactory from '../services/clientFactory'
 import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
-import { AppBase, LogDialog } from '@conversationlearner/models'
 import { setErrorDisplay } from './displayActions'
-import * as ClientFactory from '../services/clientFactory'
 import { AxiosError } from 'axios'
 
 //-------------------------------------
@@ -33,7 +33,7 @@ const deleteLogDialogRejected = (): ActionObject => {
     }
 }
 
-export const deleteLogDialogThunkAsync = (app: AppBase, logDialogId: string, packageId: string) => {
+export const deleteLogDialogThunkAsync = (app: CLM.AppBase, logDialogId: string, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteLogDialogAsync(app.appId, logDialogId))
         const clClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOG_ASYNC)
@@ -71,7 +71,7 @@ const deleteLogDialogsRejected = (): ActionObject => {
     }
 }
 
-export const deleteLogDialogsThunkAsync = (app: AppBase, logDialogIds: string[], packageId: string) => {
+export const deleteLogDialogsThunkAsync = (app: CLM.AppBase, logDialogIds: string[], packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         dispatch(deleteLogDialogsAsync(app.appId, logDialogIds))
         const clClient = ClientFactory.getInstance(AT.DELETE_LOG_DIALOGS_ASYNC)
@@ -91,6 +91,42 @@ export const deleteLogDialogsThunkAsync = (app: AppBase, logDialogIds: string[],
     }
 }
 
+// ----------------------------------------
+// FetchLogDialog
+// ----------------------------------------
+const fetchLogDialogAsync = (appId: string, logDialogId: string): ActionObject => {
+    return {
+        type: AT.FETCH_LOG_DIALOG_ASYNC,
+        appId,
+        logDialogId
+    }
+}
+
+const fetchLogDialogFulfilled = (logDialog: CLM.LogDialog, replaceLocal: boolean): ActionObject => {
+    return {
+        type: AT.FETCH_LOG_DIALOG_FULFILLED,
+        logDialog,
+        replaceLocal
+    }
+}
+
+export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, replaceLocal: boolean) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOG_ASYNC)
+        dispatch(fetchLogDialogAsync(appId, logDialogId))
+
+        try {
+            const logDialog = await clClient.logDialog(appId, logDialogId)
+            dispatch(fetchLogDialogFulfilled(logDialog, replaceLocal))
+            return logDialog
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_LOG_DIALOG_ASYNC))
+            throw e;
+        }
+    }
+}
+
 //-------------------------------------
 // fetchAllLogDialogs
 //-------------------------------------
@@ -102,14 +138,14 @@ const fetchAllLogDialogsAsync = (appId: string, packageIds: string[]): ActionObj
     }
 }
 
-const fetchAllLogDialogsFulfilled = (logDialogs: LogDialog[]): ActionObject => {
+const fetchAllLogDialogsFulfilled = (logDialogs: CLM.LogDialog[]): ActionObject => {
     return {
         type: AT.FETCH_LOG_DIALOGS_FULFILLED,
         allLogDialogs: logDialogs
     }
 }
 
-export const fetchAllLogDialogsThunkAsync = (app: AppBase, packageId: string) => {
+export const fetchAllLogDialogsThunkAsync = (app: CLM.AppBase, packageId: string) => {
     return async (dispatch: Dispatch<any>) => {
         // Note: In future change fetch log dialogs to default to all package if packageId is dev
         const packageIds = (packageId === app.devPackageId)
