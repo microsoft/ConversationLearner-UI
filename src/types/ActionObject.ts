@@ -199,6 +199,14 @@ export type FetchAction = {
     type: AT.FETCH_HISTORY_FULFILLED,
     teachWithHistory: CLM.TeachWithHistory,
 } | {
+    type: AT.FETCH_LOG_DIALOG_ASYNC,
+    appId: string,
+    logDialogId: string
+} | {
+    type: AT.FETCH_LOG_DIALOG_FULFILLED,
+    logDialog: CLM.LogDialog,
+    replaceLocal: boolean
+} | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
     appId: string,
     packageIds: string[]

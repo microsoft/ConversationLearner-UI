@@ -1,0 +1,25 @@
+.cl-compare-dialogs-modal {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 475px 475px;
+    grid-column-gap: 0.5em;
+    overflow-y: hidden;
+}
+
+.cl-compare-dialogs-webchat {
+    height: 100%;
+    position: relative;
+    border: 1px solid var(--cl-color-botchat-grey);
+}
+
+.cl-compare-dialogs-title {
+    font-size: 20px;
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+}
+
+.cl-modal.cl-modal--compare-dialogs {
+    width: 965px;
+    height: 96%;
+}

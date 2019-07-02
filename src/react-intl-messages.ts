@@ -141,6 +141,7 @@ export enum FM {
     BUTTON_CANCEL = 'Button.CANCEL',
     BUTTON_CLOSE = 'Button.CLOSE',
     BUTTON_CONFIRM = 'Button.CONFIRM',
+    BUTTON_COMPARE = 'Button.COMPARE',
     BUTTON_DELETE = 'Button.DELETE',
     BUTTON_EXPORT = 'Button.EXPORT',
     BUTTON_INFO = 'Button.INFO',
@@ -170,12 +171,6 @@ export enum FM {
     // ConfirmCancelModal
     CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT = 'ConfirmCancelModal.primaryButton.text',
     CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT = 'ConfirmCancelModal.defaultButton.text',
-
-    // Conversation Importer
-    CONVERSATION_IMPORTER_TITLE = 'ConversationImporter.title',
-    CONVERSATION_IMPORTER_DESCRIPTION = 'ConversationImporter.description',
-    CONVERSATION_IMPORTER_AUTOIMPORT = 'ConversationImporte.autoimport',
-    CONVERSATION_IMPORTER_AUTOMERGE = 'ConversationImporte.automerge',
 
     // Custom Errors
     CUSTOMERROR_NETWORK_ERROR = 'CustomError.networkError',
@@ -312,10 +307,6 @@ export enum FM {
     FIELDERROR_MAX_30 = 'fieldError.max30',
     FIELDERROR_REQUIREDVALUE = 'fieldError.requiredValue',
     
-    // Import Cancel
-    IMPORT_CANCEL_TITLE = 'ImportCancel.title',
-    IMPORT_CANCEL_CHECKBOX_LABEL = 'ImportCancel.Checkbox.label',
-
     // LogConversionConflictModal
     LOGCONVERSIONCONFLICTMODAL_TITLE = 'LogConversionConflictModal.title',
     LOGCONVERSIONCONFLICTMODAL_SUBTITLE = 'LogConversionConflictModal.subTitle',
@@ -560,7 +551,21 @@ export enum FM {
     TRAINDIALOGS_FILTERING_RESET = 'TrainDialogs.Filters.reset',
     TRAINDIALOGS_LISTVIEW_BUTTON = 'TrainDialogs.ListView.Button',
     TRAINDIALOGS_TREEVIEW_BUTTON = 'TrainDialogs.TreeView.Button',
+    
+    // Trainscript Import Cancel
+    TRANSCRIPT_IMPORT_CANCEL_TITLE = 'TranscriptImportCancel.title',
+    TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL = 'TranscriptImportCancel.Checkbox.label',
+    
+    // Transcript Importer
+    TRANSCRIPT_IMPORTER_TITLE = 'TranscriptImporter.title',
+    TRANSCRIPT_IMPORTER_DESCRIPTION = 'TranscriptImporter.description',
+    TRANSCRIPT_IMPORTER_AUTOIMPORT = 'TranscriptImporter.autoimport',
+    TRANSCRIPT_IMPORTER_AUTOMERGE = 'TranscriptImporter.automerge',
 
+    // Transcript Validator
+    TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
+    TRANSCRIPT_VALIDATOR_RESULTS_BUTTON = 'TranscriptValidator.Results.Button',
+    
     // TreeView
     TREEVIEW_TOGGLE_FULLSCREEN = 'TreeView.ToggleFullScreen',
 
@@ -717,6 +722,7 @@ export default {
         [FM.BUTTON_CANCEL]: 'Cancel',
         [FM.BUTTON_CLOSE]: 'Close',
         [FM.BUTTON_CONFIRM]: 'Confirm',
+        [FM.BUTTON_COMPARE]: 'Compare',
         [FM.BUTTON_DELETE]: 'Delete',
         [FM.BUTTON_EXPORT]: 'Export',
         [FM.BUTTON_IMPORT]: 'Import',
@@ -987,12 +993,6 @@ export default {
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
         
-        // Conversation Importer
-        [FM.CONVERSATION_IMPORTER_TITLE]: 'Import Conversations...',
-        [FM.CONVERSATION_IMPORTER_DESCRIPTION]: 'Create Train Dialogs from .transcript files',
-        [FM.CONVERSATION_IMPORTER_AUTOIMPORT]: 'Auto Import',
-        [FM.CONVERSATION_IMPORTER_AUTOMERGE]: 'Auto Merge',
-
         // DialogMetadata
         [FM.DIALOGMETADATA_TAGS_LABEL]: 'Tags',
         [FM.DIALOGMETADATA_DESCRIPTION_LABEL]: 'Description',
@@ -1000,6 +1000,36 @@ export default {
         [FM.DIALOGMETADATA_USERINPUT_LABEL]: 'User Input',
         [FM.DIALOGMETADATA_ALTINPUT_LABEL]: 'Alt Input',
 
+        // EditDialogAdmin
+        [FM.EDITDIALOGADMIN_DIALOGMODE_USER]: 'User Input',
+        [FM.EDITDIALOGADMIN_DIALOGMODE_TEXT]: 'Bot Response',
+        [FM.EDITDIALOGADMIN_MEMORY_TITLE]: 'Memory',
+        [FM.EDITDIALOGADMIN_HELPTEXT_TITLE_LOG]: 'Log Dialog',
+        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_LOG]: 'Click on User or Bot turns in the left panel to view steps in the Log Dialog.',
+        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_LOG]: 'You can then make changes to the Log Dialog.',
+        [FM.EDITDIALOGADMIN_HELPTEXT_TITLE_TRAIN]: 'Train Dialog',
+        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_TRAIN]: 'Click on User or Bot turns in the left panel to view steps in the Train Dialog.',
+        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_TRAIN]: 'You can then make changes to the Train Dialog.',
+        [FM.EDITDIALOGADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
+        [FM.EDITDIALOGADMIN_ENTITYDETECTION_HELPTEXT]: 'Click on text from the dialog to the left.',
+        [FM.EDITDIALOGADMIN_ACTION_TITLE]: 'Action',
+
+        // EditDialogModal
+        [FM.EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION]: 'Branch',
+        [FM.EDITDIALOGMODAL_BRANCH_TEXT]: 'Branch',
+        [FM.EDITDIALOGMODAL_BRANCH_TIP]: 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
+        [FM.EDITDIALOGMODAL_CANTBRANCH_TITLE]: 'This Train Dialog has errors that must be resolved before it can be branched',
+        [FM.EDITDIALOGMODAL_CANTREPLAY_TITLE]: 'This Train Dialog has errors that must be resolved before a new round can be inserted',
+        [FM.EDITDIALOGMODAL_CONFIRMDELETELOG_TITLE]: 'Are you sure you want to delete this Log Dialog?',
+        [FM.EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE]: 'Are you sure you want to delete this Training Dialog?',
+        [FM.EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE]: 'Are you sure you want to abandon this Training Dialog?',
+        [FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE]: 'Are you sure you want to abandon your edits?',
+        [FM.EDITDIALOGMODAL_SAVECONFLICT_TITLE]: 'Previous edits require that you save this dialog before taking this action',
+        [FM.EDITDIALOGMODAL_WARNING_INVALID_BOT]: 'Running Bot not compatible with this Model',
+        [FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE]: 'Editing only permitted on the Master tag',
+        [FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY]: 'Entity or Action changes require replay of the TrainDialog',
+        [FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY]: 'Entity or Action changes require replay of the TrainDialog',
+        
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED]: 'Name is reserved.',
@@ -1068,11 +1098,7 @@ export default {
         [FM.FIELDERROR_MAX_30]: 'May not exceed 30 characters',
         [FM.FIELDERROR_REQUIREDVALUE]: 'Required Value',
 
-        // Import Cancel
-        [FM.IMPORT_CANCEL_TITLE]: 'Are you sure you want to abandon this import?',
-        [FM.IMPORT_CANCEL_CHECKBOX_LABEL]: 'Skip remaining imports',
-    
-        // LogConversionConflictModal
+         // LogConversionConflictModal
         [FM.LOGCONVERSIONCONFLICTMODAL_TITLE]: 'Incompatible Log Dialog',
         [FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE]: 'You attempted to save this log dialog as a train dialog but this dialog is incompatible with the current model due to conflicts in entity labels.  This may occur if the model has changed from the version of model used to create the log dialog. You need to update the dialog to match current model to convert it.',
         [FM.LOGCONVERSIONCONFLICTMODAL_REVIEW]: 'The log dialog contains {conflictCount} conflicts. Please review the changes to labels for each conflict below:',
@@ -1128,35 +1154,19 @@ export default {
         [FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION]: 'Set Initial State',
         [FM.TEACHSESSIONMODAL_INITSTATE_TEXT]: 'Set Initial State',
 
-        // EditDialogAdmin
-        [FM.EDITDIALOGADMIN_DIALOGMODE_USER]: 'User Input',
-        [FM.EDITDIALOGADMIN_DIALOGMODE_TEXT]: 'Bot Response',
-        [FM.EDITDIALOGADMIN_MEMORY_TITLE]: 'Memory',
-        [FM.EDITDIALOGADMIN_HELPTEXT_TITLE_LOG]: 'Log Dialog',
-        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_LOG]: 'Click on User or Bot turns in the left panel to view steps in the Log Dialog.',
-        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_LOG]: 'You can then make changes to the Log Dialog.',
-        [FM.EDITDIALOGADMIN_HELPTEXT_TITLE_TRAIN]: 'Train Dialog',
-        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION_TRAIN]: 'Click on User or Bot turns in the left panel to view steps in the Train Dialog.',
-        [FM.EDITDIALOGADMIN_HELPTEXT_DESCRIPTION2_TRAIN]: 'You can then make changes to the Train Dialog.',
-        [FM.EDITDIALOGADMIN_ENTITYDETECTION_TITLE]: 'Entity Detection',
-        [FM.EDITDIALOGADMIN_ENTITYDETECTION_HELPTEXT]: 'Click on text from the dialog to the left.',
-        [FM.EDITDIALOGADMIN_ACTION_TITLE]: 'Action',
+        // Transcript Import Cancel
+        [FM.TRANSCRIPT_IMPORT_CANCEL_TITLE]: 'Are you sure you want to abandon this import?',
+        [FM.TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL]: 'Skip remaining imports',
 
-        // EditDialogModal
-        [FM.EDITDIALOGMODAL_BRANCH_ARIADESCRIPTION]: 'Branch',
-        [FM.EDITDIALOGMODAL_BRANCH_TEXT]: 'Branch',
-        [FM.EDITDIALOGMODAL_BRANCH_TIP]: 'First select a round in the conversation by clicking on it.  Then click "Branch" to create a new Training Dialog starting at that round.',
-        [FM.EDITDIALOGMODAL_CANTBRANCH_TITLE]: 'This Train Dialog has errors that must be resolved before it can be branched',
-        [FM.EDITDIALOGMODAL_CANTREPLAY_TITLE]: 'This Train Dialog has errors that must be resolved before a new round can be inserted',
-        [FM.EDITDIALOGMODAL_CONFIRMDELETELOG_TITLE]: 'Are you sure you want to delete this Log Dialog?',
-        [FM.EDITDIALOGMODAL_CONFIRMDELETETRAIN_TITLE]: 'Are you sure you want to delete this Training Dialog?',
-        [FM.EDITDIALOGMODAL_CONFIRMABANDON_NEW_TITLE]: 'Are you sure you want to abandon this Training Dialog?',
-        [FM.EDITDIALOGMODAL_CONFIRMABANDON_EDIT_TITLE]: 'Are you sure you want to abandon your edits?',
-        [FM.EDITDIALOGMODAL_SAVECONFLICT_TITLE]: 'Previous edits require that you save this dialog before taking this action',
-        [FM.EDITDIALOGMODAL_WARNING_INVALID_BOT]: 'Running Bot not compatible with this Model',
-        [FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE]: 'Editing only permitted on the Master tag',
-        [FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY]: 'Entity or Action changes require replay of the TrainDialog',
-        [FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY]: 'Entity or Action changes require replay of the TrainDialog',
+        // Transcript Importer
+        [FM.TRANSCRIPT_IMPORTER_TITLE]: 'Import Transripts...',
+        [FM.TRANSCRIPT_IMPORTER_DESCRIPTION]: 'Create Train Dialogs from .transcript files',
+        [FM.TRANSCRIPT_IMPORTER_AUTOIMPORT]: 'Auto Import',
+        [FM.TRANSCRIPT_IMPORTER_AUTOMERGE]: 'Auto Merge',
+        
+        // Transcript Validator
+        [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Select .transcript files to test',
+        [FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON]: 'Load Results',
 
         // UserInput Modal
         [FM.USERINPUT_ADD_TITLE]: 'Add User Input',
@@ -1185,6 +1195,7 @@ export default {
         [AT.FETCH_ENTITY_EDIT_VALIDATION_ASYNC]: 'Fetching entity edit information',
         [AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC]: 'Fetching action delete information',
         [AT.FETCH_ACTION_EDIT_VALIDATION_ASYNC]: 'Fetching action edit information',
+        [AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC]: 'Fetching transcript validation results',
         [AT.RUN_EXTRACTOR_ASYNC]: 'Running extractor',
         [AT.GET_SCORES_ASYNC]: 'Fetching scores',
         [AT.RUN_SCORER_ASYNC]: 'Running scorer',

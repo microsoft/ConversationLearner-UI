@@ -17,7 +17,7 @@ import UserInputModal from './UserInputModal'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
 import FormattedMessageId from '../FormattedMessageId'
-import ImportCancelModal from './ImportCancelModal';
+import TranscriptImportCancelModal from './TranscriptImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
 import LogConversionConflictModal, { ConflictPair } from './LogConversionConflictModal'
 import { returntypeof } from 'react-redux-typescript'
@@ -779,7 +779,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     </div>
-                    <ImportCancelModal
+                    <TranscriptImportCancelModal
                         open={this.state.isImportAbandonOpen}
                         onCancel={this.onClickCancelDelete}
                         onConfirm={this.onClickConfirmDelete}

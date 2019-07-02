@@ -4,6 +4,7 @@
  */
 import { ActionObject, LogDialogState } from '../types'
 import { AT } from '../types/ActionTypes'
+import { replace } from '../Utils/util'
 import produce from 'immer'
 
 const initialState: LogDialogState = [];
@@ -14,6 +15,19 @@ const logDialogsReducer = produce((state: LogDialogState, action: ActionObject) 
             return [...initialState]
         case AT.FETCH_LOG_DIALOGS_FULFILLED:
             return action.allLogDialogs
+        case AT.FETCH_LOG_DIALOG_FULFILLED:
+            if (action.replaceLocal) {
+                const existingLogDialog = state.find(d => d.logDialogId === action.logDialog.logDialogId)
+                if (existingLogDialog) {
+                    return replace(state, action.logDialog, a => a.logDialogId)
+                }
+                else {
+                    return [...initialState, action.logDialog]
+                }
+            }
+            else {
+                return
+            }
         case AT.CREATE_APPLICATION_FULFILLED:
             return [...initialState]
         case AT.CREATE_LOG_DIALOG:

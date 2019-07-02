@@ -91,7 +91,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
                     </span>
                     <div className={OF.FontClassNames.medium}>
                         <FormattedMessageId id={FM.EXPORT_CHOICE_DESCRIPTION}/>
-                        <HelpIcon tipType={TipType.CONVERSATION_IMPORTER}/>
+                        <HelpIcon tipType={TipType.TRANSCRIPT_IMPORTER}/>
                     </div>
                 </div>
                 <div className="cl-action-creator-fieldset">

@@ -5,13 +5,13 @@
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import { connect } from 'react-redux'
-import './ImportWaitModal.css'
+import './TranscriptImportWaitModal.css'
 
 interface ComponentState {
     userInputVal: string
 }
 
-class ImportWaitModal extends React.Component<Props, ComponentState> {
+class TranscriptImportWaitModal extends React.Component<Props, ComponentState> {
 
     render() {
         return (
@@ -20,7 +20,7 @@ class ImportWaitModal extends React.Component<Props, ComponentState> {
                 isBlocking={true}
                 containerClassName='cl-modal cl-modal--importwait'
             >
-                    <div className={`cl-dialog-title cl-dialog-title--import cl-import-wait-body ${OF.FontClassNames.xxLarge}`}>
+                    <div className={`cl-dialog-title cl-dialog-title--import cl-transcript-import-wait-body ${OF.FontClassNames.xxLarge}`}>
                         <OF.Icon
                             iconName='DownloadDocument'
                         />
@@ -38,4 +38,4 @@ export interface ReceivedProps {
 
 type Props = ReceivedProps 
 
-export default connect<null, null, ReceivedProps>(null, null)(ImportWaitModal)
+export default connect<null, null, ReceivedProps>(null, null)(TranscriptImportWaitModal)
