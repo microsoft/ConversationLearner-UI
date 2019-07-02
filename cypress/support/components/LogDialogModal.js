@@ -29,22 +29,26 @@ export function TypeYourMessageValidateResponse(message, expectedResponse) {
 
   // data-testid is NOT possible for this field
   cy.Get('input[placeholder="Type your message..."]').type(`${message}{enter}`).then(() => {
-    startTime = Cypress.moment()
+    if (!expectedResponse) {
+      cy.wait(1000)
+    } else {
+      startTime = Cypress.moment()
 
-    let expectedUtterance = message.replace(/'/g, "’")
-    
-    // We allow for a long retry timeout because there have been times the Bot is either slow to respond
-    // or it does not respond at all and we want to know which of those errors are frequent or rare.
-    cy.get('.wc-message-content', { timeout: 30000 }).should('have.length', expectedUtteranceCount).then(elements =>{
-      let elapsedTime = Cypress.moment().diff(startTime)
-      helpers.ConLog(`TypeYourMessageValidateResponse(${message}, ${expectedResponse})`, `Elapsed Time for Bot's Response: ${elapsedTime}`)
+      let expectedUtterance = message//.replace(/'/g, "’")
       
-      cy.wrap(elements[indexUserMesage]).contains(expectedUtterance).then(() => {
-        if (expectedResponse) {
-          expectedUtterance = expectedResponse.replace(/'/g, "’")
-          cy.wrap(elements[indexBotResponse]).contains(expectedUtterance)
-        }
+      // We allow for a long retry timeout because there have been times the Bot is either slow to respond
+      // or it does not respond at all and we want to know which of those errors are frequent or rare.
+      cy.get('.wc-message-content', { timeout: 30000 }).should('have.length', expectedUtteranceCount).then(elements =>{
+        let elapsedTime = Cypress.moment().diff(startTime)
+        helpers.ConLog(`TypeYourMessageValidateResponse(${message}, ${expectedResponse})`, `Elapsed Time for Bot's Response: ${elapsedTime}`)
+        
+        cy.wrap(elements[indexUserMesage]).contains(expectedUtterance).then(() => {
+          if (expectedResponse) {
+            expectedUtterance = expectedResponse.replace(/'/g, "’")
+            cy.wrap(elements[indexBotResponse]).contains(expectedUtterance)
+          }
+        })
       })
-    })
+    }
   })
 }

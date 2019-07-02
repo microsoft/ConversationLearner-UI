@@ -93,7 +93,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 50,
             maxWidth: 50,
             isResizable: false,
-            render: logDialog => <span className={OF.FontClassNames.mediumPlus}>{logDialog.rounds.length}</span>,
+            render: logDialog => <span className={OF.FontClassNames.mediumPlus} data-testid="log-dialogs-turns">{logDialog.rounds.length}</span>,
             getSortValue: logDialog => logDialog.rounds.length.toString().padStart(4, '0')
         },
         {

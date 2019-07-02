@@ -795,20 +795,20 @@ export function VerifyCloseIsTheOnlyEnabledButton() {
   cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').should('be.enabled')
 }
 
-export function VerifyListOfTrainDialogs(expectedTurns) {
+export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
   const funcName = 'VerifyListOfTrainDialogs'
-  cy.log('Verify List of Train Dialogs', expectedTurns)
+  cy.log('Verify List of Train Dialogs', expectedTrainDialogs)
   cy.Enqueue(() => {
     const firstInputs = trainDialogsGrid.GetFirstInputs()
     const lastInputs = trainDialogsGrid.GetLastInputs()
     const lastResponses = trainDialogsGrid.GetLastResponses()
 
     let errors = false
-    expectedTurns.forEach(turn => {
-      helpers.ConLog(funcName, `Find - "${turn.firstInput}", "${turn.lastInput}", "${turn.lastResponse}"`)
+    expectedTrainDialogs.forEach(trainDialog => {
+      helpers.ConLog(funcName, `Find - "${trainDialog.firstInput}", "${trainDialog.lastInput}", "${trainDialog.lastResponse}"`)
       let found = false
       for (let i = 0; i < firstInputs.length; i++) {
-        if (firstInputs[i] == turn.firstInput && lastInputs[i] == turn.lastInput && lastResponses[i] == turn.lastResponse) {
+        if (firstInputs[i] == trainDialog.firstInput && lastInputs[i] == trainDialog.lastInput && lastResponses[i] == trainDialog.lastResponse) {
           found = true
           helpers.ConLog(funcName, `Found on row ${i}`)
           break;
@@ -825,8 +825,8 @@ export function VerifyListOfTrainDialogs(expectedTurns) {
       throw new Error('Did not find 1 or more of the expected Train Dialogs in the grid. Refer to the log file for details.')
     }
     
-    if (firstInputs.length > expectedTurns.length) {
-      throw new Error(`Found all of the expected Train Dialogs, however there are an additional ${firstInputs.length - expectedTurns.length} Train Dialogs in the grid that we were not expecting. Refer to the log file for details.`)
+    if (firstInputs.length > expectedTrainDialogs.length) {
+      throw new Error(`Found all of the expected Train Dialogs, however there are an additional ${firstInputs.length - expectedTrainDialogs.length} Train Dialogs in the grid that we were not expecting. Refer to the log file for details.`)
     }
   })
 }
