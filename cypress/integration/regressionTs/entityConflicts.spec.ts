@@ -1,10 +1,10 @@
-import * as models from '../support/Models'
-import * as model from '../support/components/ModelPage'
-import * as trainDialog from '../support/Train'
-import * as logDialogs from '../support/components/LogDialogsGrid'
-import * as logDialog from '../support/components/LogDialogModal'
-import constants from '../support/constants'
-import s from '../support/selectors'
+import * as models from '../../support/Models'
+import * as model from '../../support/components/ModelPage'
+import * as trainDialog from '../../support/Train'
+import * as logDialogs from '../../support/components/LogDialogsGrid'
+import * as logDialog from '../../support/components/LogDialogModal'
+import constants from '../../support/constants'
+import s from '../../support/selectors'
 
 describe('Entity Conflicts', () => {
     const labeledWord1 = 'test'

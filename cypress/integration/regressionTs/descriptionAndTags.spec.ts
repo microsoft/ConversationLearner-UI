@@ -1,11 +1,11 @@
-import * as models from '../support/Models'
-import * as model from '../support/components/ModelPage'
-import * as actions from '../support/Actions'
-import * as actionsList from '../support/components/ActionsGrid'
-import * as trainDialog from '../support/Train'
-import * as logDialogModal from '../support/components/LogDialogModal'
-import s from '../support/selectors'
-import constants from '../support/constants'
+import * as models from '../../support/Models'
+import * as model from '../../support/components/ModelPage'
+import * as actions from '../../support/Actions'
+import * as actionsList from '../../support/components/ActionsGrid'
+import * as trainDialog from '../../support/Train'
+import * as logDialogModal from '../../support/components/LogDialogModal'
+import s from '../../support/selectors'
+import constants from '../../support/constants'
 
 describe('Description and Tags', () => {
     const modelName = 'z-descriptionTags'
@@ -188,7 +188,7 @@ describe('Description and Tags', () => {
                     .last()
                     .click()
 
-                cy.get('[data-testid="edit-dialog-modal-delete-turn-button"]')
+                cy.get('[data-testid="chat-edit-delete-turn-button"]')
                     .click()
 
                 cy.wait(['@postDialogReplay', '@postDialogHistory'])
@@ -201,7 +201,7 @@ describe('Description and Tags', () => {
                     .last()
                     .click()
 
-                cy.get('[data-testid="edit-dialog-modal-delete-turn-button"]')
+                cy.get('[data-testid="chat-edit-delete-turn-button"]')
                     .click()
 
                 cy.wait(['@postDialogReplay', '@postDialogHistory'])

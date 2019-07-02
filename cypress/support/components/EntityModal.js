@@ -22,7 +22,7 @@ export function SelectBlockedActionsTab() { cy.Get('button[data-content="Blocked
 
 export function ClickConfirmButtonOnDeleteConfirmPopUp() { ClickButtonOnPopUp('Are you sure you want to delete this Entity?', '[data-testid="confirm-cancel-modal-accept"]') }
 export function ClickCancelButtonOnDeleteConfirmPopUp() { ClickButtonOnPopUp('Are you sure you want to delete this Entity?', '[data-testid="confirm-cancel-modal-cancel"]') }
-export function ClickCancelButtonOnUnableToDeletePopUp() { ClickButtonOnPopUp('Unable to delete this Entity', '[data-testid="confirm-cancel-modal-cancel"]') }
+export function ClickCancelButtonOnUnableToDeletePopUp() { ClickButtonOnPopUp('Unable to Delete this Entity', '[data-testid="confirm-cancel-modal-cancel"]') }
 
 function ClickButtonOnPopUp(title, buttonSelector) { 
   cy.Get(buttonSelector)

@@ -34,7 +34,8 @@ class PackageCreator extends React.Component<Props, ComponentState> {
         })
     }
 
-    nameChanged(text: string) {
+    @OF.autobind
+    onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             versionName: text
         })
@@ -107,7 +108,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                     <OF.TextField
                         data-testid="package-creator-input-version-name"
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
-                        onChanged={text => this.nameChanged(text)}
+                        onChange={this.onChangeName}
                         label={intl.formatMessage({
                             id: FM.PACKAGECREATOR_TAG_LABEL,
                             defaultMessage: 'Name'
