@@ -12,12 +12,12 @@ import * as actionsGrid from '../../../support/components/ActionsGrid'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
-describe('Edit and Delete Entities - EntitiesActions', () => {
+describe('Entities Edit and Delete - EntitiesActions', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
     it('Should import a model to test against', () => {
-      models.ImportModel('z-EditDelete', 'z-entityTests.cl')
+      models.ImportModel('z-EntityEditDel', 'z-entityTests.cl')
     })
   })
 
@@ -33,7 +33,7 @@ describe('Edit and Delete Entities - EntitiesActions', () => {
       actionsGrid.VerifyActionRow('Hey $name', 'TEXT', ['name'], ['sweets', 'want'], undefined, true)
       actionsGrid.VerifyActionRow('Hey $name, what do you really want?', 'TEXT', ['name'], ['want', 'sweets'], 'want', true)
       actionsGrid.VerifyActionRow('name:$name sweets:$sweets want:$want', 'END_SESSION', ['name', 'sweets', 'want'], undefined, undefined, true)
-      actionsGrid.VerifyActionRow('prompt', 'CARD', ['name'], undefined, undefined, true, 'question:Hi $name')
+      actionsGrid.VerifyActionRow('Hi $name', 'CARD', ['name'], undefined, undefined, true, 'question:Hi $name')
       actionsGrid.VerifyActionRow('RenderTheArgs', 'API', ['name', 'sweets', 'want'], undefined, undefined, false, 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"')
       actionsGrid.VerifyActionRow("Sorry $name, I can't help you get $want", 'TEXT', ['name', 'want'], undefined, undefined, true)
     })
@@ -49,7 +49,7 @@ describe('Edit and Delete Entities - EntitiesActions', () => {
       entityModal.ClickCancelButtonOnUnableToDeletePopUp()
     })
 
-    it('Should verify that filter Train Dialog on entity button works', () => {
+    it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyListOfTrainDialogs([
         {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"}
@@ -82,7 +82,7 @@ describe('Edit and Delete Entities - EntitiesActions', () => {
       entityModal.ClickCancelButtonOnUnableToDeletePopUp()
     })
 
-    it('Should verify that filter Train Dialog on entity button works', () => {
+    it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyListOfTrainDialogs([
         {firstInput: 'I love candy!', lastInput: 'I love candy!', lastResponse: "What's your name?"}
@@ -115,7 +115,7 @@ describe('Edit and Delete Entities - EntitiesActions', () => {
       entityModal.ClickCancelButtonOnUnableToDeletePopUp()
     })
 
-    it('Should verify that filter Train Dialog on entity button works', () => {
+    it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyListOfTrainDialogs([
         {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"},
@@ -143,7 +143,7 @@ describe('Edit and Delete Entities - EntitiesActions', () => {
 
     it('Should delete this entity and verify that it is no longer in the grid', () => {
       entityModal.ClickDeleteButton()
-      entityModal.ClickConfirmButtonOnDeleteConfirmPopUp()
+      entityModal.ClickConfirmButtonOnDeleteConfirmWithWarningPopUp()
       entitiesGrid.VerifyEntityNotInGrid('canBeDeleted')
     })
   })
@@ -167,10 +167,10 @@ describe('Edit and Delete Entities - EntitiesActions', () => {
 
     it('Should be able to delete this entity and cancel when prompted to confirm', () => {
       entityModal.ClickDeleteButton()
-      entityModal.ClickCancelButtonOnDeleteConfirmPopUp()
+      entityModal.ClickCancelButtonOnDeleteConfirmWithWarningPopUp()
     })
 
-    it('Should verify that filter Train Dialog on entity button works', () => {
+    it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
       train.VerifyListOfTrainDialogs([
         {firstInput: 'We will delete this entity.', lastInput: 'Will also delete this entity.', lastResponse: "What's your name?"}
@@ -183,9 +183,14 @@ describe('Edit and Delete Entities - EntitiesActions', () => {
       train.ClickConfirmAbandonDialogButton()
     })
 
-    it('Should edit the entity and verify that we can delete it with only a confirmation and no warning ', () => {
+    it('Should edit the entity and verify that we can delete and cancel when prompted to confirm without a warning message', () => {
       modelPage.NavigateToEntities()
       entitiesGrid.EditEntity('canBeDeletedToo')
+      entityModal.ClickDeleteButton()
+      entityModal.ClickCancelButtonOnDeleteConfirmPopUp()
+    })
+
+    it('Should verify that we can delete it with only a confirmation and no warning message', () => {
       entityModal.ClickDeleteButton()
       entityModal.ClickConfirmButtonOnDeleteConfirmPopUp()
       entitiesGrid.VerifyEntityNotInGrid('canBeDeletedToo')

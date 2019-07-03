@@ -2,7 +2,8 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as helpers from '../Helpers'
+import * as popupModal from './PopupModal'
+ import * as helpers from '../Helpers'
 
 export function ClickEntityType(type) { cy.Get(`button.ms-Dropdown-item`).contains(type).Click() }
 export function TypeEntityName(entityName) { cy.Get('[data-testid="entity-creator-entity-name-text"]').type(entityName) }
@@ -15,24 +16,16 @@ export function ClickTrainDialogFilterButton() { cy.Get('[data-testid="entity-cr
 export function ClickMultiValueCheckbox() { cy.Get('[data-testid="entity-creator-multi-valued-checkbox"] i[data-icon-name="CheckMark"]').Click() }
 export function ClickNegatableCheckbox() { cy.Get('[data-testid="entity-creator-negatable-checkbox"] i[data-icon-name="CheckMark"]').Click() }
 
-export function ClickOkButtonOnNoteAboutPreTrained() { return cy.Get('.ms-Dialog-main').contains('pre-trained Entity').parents('.ms-Dialog-main').contains('OK').Click() }
+export function ClickOkButtonOnNoteAboutPreTrained() { popupModal.VerifyContentAnyTitleClickButton('pre-trained Entity', '[data-testid="confirm-cancel-modal-ok"]') }
 
 export function SelectRequiredForActionsTab() { cy.Get('button[data-content="Required For Actions"]').Click() }
 export function SelectBlockedActionsTab() { cy.Get('button[data-content="Blocked Actions"]').Click() }
 
-export function ClickConfirmButtonOnDeleteConfirmPopUp() { ClickButtonOnPopUp('Are you sure you want to delete this Entity?', '[data-testid="confirm-cancel-modal-accept"]') }
-export function ClickCancelButtonOnDeleteConfirmPopUp() { ClickButtonOnPopUp('Are you sure you want to delete this Entity?', '[data-testid="confirm-cancel-modal-cancel"]') }
-export function ClickCancelButtonOnUnableToDeletePopUp() { ClickButtonOnPopUp('Unable to Delete this Entity', '[data-testid="confirm-cancel-modal-cancel"]') }
-
-function ClickButtonOnPopUp(title, buttonSelector) { 
-  cy.Get(buttonSelector)
-    .parents('div.ms-Dialog-main')
-    .find('p.ms-Dialog-title')
-    .ExactMatch(title)
-    .parents('div.ms-Dialog-main')
-    .find(buttonSelector)
-    .Click() 
-}
+export function ClickConfirmButtonOnDeleteConfirmPopUp() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Entity?', '[data-testid="confirm-cancel-modal-accept"]') }
+export function ClickCancelButtonOnDeleteConfirmPopUp() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Entity?', '[data-testid="confirm-cancel-modal-cancel"]') }
+export function ClickConfirmButtonOnDeleteConfirmWithWarningPopUp() { popupModal.VerifyExactTitleAndContentContainsClickButton('Are you sure you want to delete this Entity?', 'This Entity is used by one or more Training Dialogs.', '[data-testid="confirm-cancel-modal-accept"]') }
+export function ClickCancelButtonOnDeleteConfirmWithWarningPopUp() { popupModal.VerifyExactTitleAndContentContainsClickButton('Are you sure you want to delete this Entity?', 'This Entity is used by one or more Training Dialogs.', '[data-testid="confirm-cancel-modal-cancel"]') }
+export function ClickCancelButtonOnUnableToDeletePopUp() { popupModal.VerifyExactTitleAndContentContainsClickButton('Unable to Delete this Entity', 'referenced within the bot response', '[data-testid="confirm-cancel-modal-cancel"]') }
 
 export function SelectResolverType(resolverType) {
   cy.Get('[data-testid="entity-creator-resolver-type-dropdown"]').Click()

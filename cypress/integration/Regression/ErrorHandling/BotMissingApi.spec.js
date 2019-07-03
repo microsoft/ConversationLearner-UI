@@ -30,15 +30,13 @@ describe('Bot Missing API - ErrorHandling', () => {
     
     it('Should verify the Action grid shows an IncidentTriangle', () => {
       modelPage.NavigateToActions()
-      let actionsGridRow = new actionsGrid.Row('API', 'RandomGreeting')
-      actionsGridRow.VerifyIncidentTriangle()
+      new actionsGrid.Row('API', 'RandomGreeting').VerifyIncidentTriangle()
     })
     
     it('Should edit the Action and verify it contains the expected error message', () => {
-      let actionsGridRow = new actionsGrid.Row('API', 'RandomGreeting')
-      actionsGridRow.EditAction()
+      actionsGrid.EditApiAction('RandomGreeting')
       actionModal.VerifyErrorMessage('ERROR: Bot Missing Callback: RandomGreeting')
-      actionModal.ClickCancelButtom()
+      actionModal.ClickCancelButton()
     })
 
     it('Should verify that the New Train Dialog Button is disabled', () => {

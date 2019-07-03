@@ -12,22 +12,9 @@ import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 
 describe('zTemp', () => {
   it('Temporary Experimental Test', () => {
-    function createModelName(prefix, buildKey, subTime) {
-      let time = Cypress.moment().subtract(subTime, 'm').format("MMDD-HHmmss")
-      return `${prefix}-${time}${buildKey}`
-    }
-
-    const modelNames = [
-      createModelName('abc', 'x', 1),
-      createModelName('z-abc', 'x', 2),
-      createModelName('z-def', 'a', 4),
-      createModelName('z-hij', 'b', 6),
-    ]
-
-    modelNames.forEach(modelName => { 
-      helpers.ConLog('zTemp', `Model '${modelName}' should be deleted: ${ModelShouldBeDeleted(modelName)}`)
-    })
-
+    homePage.Visit()
+    cy.pause()
+    cy.get('[data-testid="action-scorer-card-name"] + div').contains('button2:')
     // helpers.ConLog('zTemp', Cypress.env('CIRCLE_BUILD_NUM'))
     // helpers.ConLog('zTemp', `Not--'${Cypress.env('NotAnEnvVar')}'`)
     // homePage.Visit()
