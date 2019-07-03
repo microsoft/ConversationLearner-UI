@@ -15,7 +15,7 @@ export function ClickCancelButton() { cy.Get('[data-testid="action-creator-cance
 export function ClickConfirmDeleteButton() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Action?', '[data-testid="confirm-cancel-modal-accept"]') }
 export function ClickCancelDeleteButton() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Action?', '[data-testid="confirm-cancel-modal-cancel"]') }
 
-export function ClickConfirmDeleteWithWarningButton() { popupModal.VerifyContentAnyTitleClickButton('This Action is used by one or more Training Dialogs.', '[data-testid="confirm-cancel-modal-accept"]') }
+export function ClickConfirmDeleteWithWarningButton() { popupModal.VerifyContentAnyTitleClickButton('This Action is used by one or more Training Dialogs.', '[data-testid="action-delete-confirm"]') }
 export function ClickCancelDeleteWithWarningButton() { popupModal.VerifyContentAnyTitleClickButton('This Action is used by one or more Training Dialogs.', '[data-testid="confirm-cancel-modal-cancel"]') }
 
 export function ClickTrainDialogFilterButton() { cy.Get('[data-testid="action-creator-editor-train-dialog-filter-button"]').Click() }

@@ -340,7 +340,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         onAddTag={this.props.onAddTag}
                         onRemoveTag={this.props.onRemoveTag}
                     />
-                    <b></b>
+                    <b/>
                 </div>
                 {(renderData.dialogMode === CLM.DialogMode.Extractor || renderData.dialogMode === CLM.DialogMode.Wait) &&
                     (

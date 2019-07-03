@@ -22,6 +22,8 @@ const botReducer: Reducer<BotState> = produce((state: BotState, action: ActionOb
             state.botInfo = action.botInfo
             state.browserId = action.browserId
             return
+        default:
+            return
     }
 }, initialState)
 export default botReducer

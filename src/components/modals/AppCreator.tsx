@@ -5,6 +5,7 @@
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Utils from '../../Utils/util'
+import actions from '../../actions'
 import FormattedMessageId from '../FormattedMessageId'
 import { returntypeof } from 'react-redux-typescript'
 import { getLuisApplicationCultures } from '../../epics/apiHelpers'
@@ -13,7 +14,6 @@ import { connect } from 'react-redux'
 import { State, ErrorType, AppCreatorType } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
-import { setErrorDisplay } from '../../actions/displayActions'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { AppInput } from '../../types/models'
 import { AppDefinition } from '@conversationlearner/models'
@@ -317,7 +317,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setErrorDisplay
+        setErrorDisplay: actions.display.setErrorDisplay,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

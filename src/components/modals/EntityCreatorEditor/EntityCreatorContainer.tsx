@@ -485,10 +485,11 @@ class Container extends React.Component<Props, ComponentState> {
         return (this.state.enumValues.filter(v => v && v.enumValue === value).length > 1)
     }
 
-    onKeyDownName = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    @OF.autobind
+    async onKeyDownName(event: React.KeyboardEvent<HTMLInputElement>) {
         // On enter attempt to create the entity as long as name is set
         if (event.key === 'Enter' && this.isSaveDisabled() === false) {
-            this.onClickSaveCreate()
+            await this.onClickSaveCreate()
         }
     }
 

@@ -232,6 +232,9 @@ class Webchat extends React.Component<Props> {
         chatProps.renderActivity = this.props.renderActivity
         chatProps.renderInput = this.props.renderInput
         chatProps.selectedActivityIndex = this.props.selectedActivityIndex
+        chatProps.forceScrollPosition = this.props.forceScrollPosition
+        chatProps.instantScroll = this.props.instantScroll
+        chatProps.disableCardActions = this.props.disableCardActions
         chatProps.replaceActivityText = this.props.replaceActivityText
         chatProps.replaceActivityIndex = this.props.replaceActivityIndex
 
@@ -278,6 +281,9 @@ export interface ReceivedProps {
     renderInput?: () => JSX.Element | null
     // Used to select activity from outside webchat
     selectedActivityIndex?: number | null
+    forceScrollPosition?: number | null
+    instantScroll?: boolean
+    disableCardActions?: boolean
     replaceActivityText?: string | null
     replaceActivityIndex?: number | null
 

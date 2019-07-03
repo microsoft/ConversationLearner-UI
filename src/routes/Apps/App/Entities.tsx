@@ -179,12 +179,6 @@ class Entities extends React.Component<Props, ComponentState> {
         this.focusNewEntityButton()
     }
 
-    private focusNewEntityButton() {
-        if (this.newEntityButtonRef.current) {
-            this.newEntityButtonRef.current.focus()
-        }
-    }
-
     @OF.autobind
     handleDelete(entity: EntityBase) {
         this.setState({
@@ -368,6 +362,12 @@ class Entities extends React.Component<Props, ComponentState> {
                 />
             </div>
         );
+    }
+
+    private focusNewEntityButton() {
+        if (this.newEntityButtonRef.current) {
+            this.newEntityButtonRef.current.focus()
+        }
     }
 }
 const mapDispatchToProps = (dispatch: any) => {

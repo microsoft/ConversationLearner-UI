@@ -2,17 +2,16 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
+import * as ClientFactory from '../services/clientFactory'
+import * as CLM from '@conversationlearner/models'
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
-import * as CLM from '@conversationlearner/models'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
-import * as ClientFactory from '../services/clientFactory'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { AxiosError } from 'axios'
 import { fetchAllActionsThunkAsync } from './actionActions'
 import { fetchAllTrainDialogsThunkAsync } from './trainActions'
-import { EntityType } from '@conversationlearner/models';
 
 //-------------------------------------
 // createEntity
@@ -113,7 +112,7 @@ export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prev
                 dispatch(fetchAllEntitiesThunkAsync(appId));
             }
             // If an enum entity, new EnumValuesIds have been set and actions may have been invalidated
-            else if (entity.entityType === EntityType.ENUM) {
+            else if (entity.entityType === CLM.EntityType.ENUM) {
                 const updatedEntity = await clClient.entitiesGetById(appId, entity.entityId)
                 dispatch(editEntityFulfilled(updatedEntity))
                 dispatch(fetchAllActionsThunkAsync(appId))
