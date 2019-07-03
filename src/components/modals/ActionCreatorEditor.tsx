@@ -1722,8 +1722,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         <OF.DefaultButton
                             data-testid="action-button-create-entity"
                             onClick={this.onClickCreateEntity}
-                            ariaDescription="Create Entity"
-                            text="Entity"
+                            ariaDescription={Util.formatMessageId(intl, FM.BUTTON_ENTITY)}
+                            text={Util.formatMessageId(intl, FM.BUTTON_ENTITY)}
                             iconProps={{ iconName: 'CirclePlus' }}
                         />
                     </div>
