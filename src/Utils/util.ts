@@ -139,7 +139,7 @@ export function deepCopy<T>(obj: T): T {
     if (obj instanceof Object) {
         copy = {};
         Object.keys(obj).forEach(attr => {
-            if (obj.hasOwnProperty(attr)) {
+            if ((obj as Object).hasOwnProperty(attr)) {
                 copy[attr] = deepCopy(obj[attr])
             }
         })
