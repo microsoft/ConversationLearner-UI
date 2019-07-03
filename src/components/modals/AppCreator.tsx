@@ -5,6 +5,7 @@
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Utils from '../../Utils/util'
+import actions from '../../actions'
 import FormattedMessageId from '../FormattedMessageId'
 import { returntypeof } from 'react-redux-typescript'
 import { getLuisApplicationCultures } from '../../epics/apiHelpers'
@@ -13,7 +14,6 @@ import { connect } from 'react-redux'
 import { State, ErrorType, AppCreatorType } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
-import { setErrorDisplay } from '../../actions/displayActions'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { AppInput } from '../../types/models'
 import { AppDefinition } from '@conversationlearner/models'
@@ -34,15 +34,6 @@ class AppCreator extends React.Component<Props, ComponentState> {
     }
 
     private fileInput: any
-
-    constructor(p: Props) {
-        super(p)
-
-        this.onKeyDown = this.onKeyDown.bind(this)
-        this.localeChanged = this.localeChanged.bind(this)
-        this.onClickCreate = this.onClickCreate.bind(this)
-        this.onClickCancel = this.onClickCancel.bind(this)
-    }
 
     async componentDidMount() {
         const cultures = await getLuisApplicationCultures()
@@ -70,17 +61,21 @@ class AppCreator extends React.Component<Props, ComponentState> {
         }
     }
 
-    nameChanged(text: string) {
+    @OF.autobind
+    onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             appNameVal: text.trim().length ? text : ""
         })
     }
-    localeChanged(obj: OF.IDropdownOption) {
+
+    @OF.autobind
+    onChangeLocale(event: React.FormEvent<HTMLDivElement>, localeOption: OF.IDropdownOption) {
         this.setState({
-            localeVal: obj.text
+            localeVal: localeOption.text
         })
     }
 
+    @OF.autobind
     onClickCancel() {
         this.props.onCancel()
     }
@@ -107,6 +102,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
     // Also has benefit of native browser validation for required fields
+    @OF.autobind
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file
@@ -224,7 +220,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                     <OF.TextField
                         data-testid="model-creator-input-name"
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
-                        onChanged={text => this.nameChanged(text)}
+                        onChange={this.onChangeName}
                         label={this.getLabel(intl)}
                         placeholder={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER)}
                         onKeyDown={key => this.onKeyDown(key)}
@@ -236,7 +232,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             label={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
                             defaultSelectedKey={this.state.localeVal}
                             options={this.state.localeOptions}
-                            onChanged={this.localeChanged}
+                            onChange={this.onChangeLocale}
                             disabled={true}
                         // Disabled until trainer can support more than english
                         />
@@ -321,7 +317,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        setErrorDisplay
+        setErrorDisplay: actions.display.setErrorDisplay,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

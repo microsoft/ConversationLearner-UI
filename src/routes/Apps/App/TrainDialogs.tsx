@@ -8,15 +8,16 @@ import * as Util from '../../../Utils/util'
 import * as ValidityUtils from '../../../Utils/validityUtils'
 import * as DialogEditing from '../../../Utils/dialogEditing'
 import * as DialogUtils from '../../../Utils/dialogUtils'
+import * as TranscriptUtils from '../../../Utils/transcriptUtils'
 import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
 import * as BB from 'botbuilder'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
-import ConversationImporter from '../../../components/modals/ConversationImporter'
+import TranscriptImporter from '../../../components/modals/TranscriptImporter'
 import TranscriptValidatorPicker from '../../../components/modals/TranscriptValidatorPicker'
-import ImportWaitModal from '../../../components/modals/ImportWaitModal'
+import TranscriptImportWaitModal from '../../../components/modals/TranscriptImportWaitModal'
 import TranscriptValidatorModal from '../../../components/modals/TranscriptValidatorModal'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -36,22 +37,6 @@ export interface EditHandlerArgs {
     textVariations?: CLM.TextVariation[],
     trainScorerStep?: CLM.TrainScorerStep
     selectionType?: SelectionType
-}
-
-interface TranscriptActionCall {
-    type: string
-    actionName: string
-    actionInput: TranscriptActionInput[]
-    actionOutput: TranscriptActionOutput[]
-}
-
-interface TranscriptActionInput {
-    entityName: string
-}
-
-interface TranscriptActionOutput {
-    entityName: string,
-    value: string
 }
 
 interface IRenderableColumn extends OF.IColumn {
@@ -157,7 +142,7 @@ const defaultActionFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.forma
 const defaultTagFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
 
 interface ComponentState {
-    columns: OF.IColumn[]
+    columns: IRenderableColumn[]
     sortColumn: IRenderableColumn
     history: Activity[]
     lastAction: CLM.ActionBase | null
@@ -200,6 +185,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         super(props)
         const columns = getColumns(this.props.intl)
         const lastModifiedColumn = columns.find(c => c.key === 'lastModifiedDateTime')!
+        columns.forEach(col => {
+            col.isSorted = false
+            col.isSortedDescending = false
+
+            if (col === lastModifiedColumn) {
+                col.isSorted = true
+            }
+        })
+
         this.state = {
             columns: columns,
             sortColumn: lastModifiedColumn,
@@ -243,12 +237,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.setState({
                 entityFilter: this.toEntityFilter(this.props.filteredEntity)
             })
-        }
-    }
-
-    private focusNewTeachSessionButton() {
-        if (this.newTeachSessionButtonRef.current) {
-            this.newTeachSessionButtonRef.current.focus();
         }
     }
 
@@ -317,6 +305,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         const { columns } = this.state;
+        const sortColumn = columns.find(c => c.key === clickedColumn.key)!
         const isSortedDescending = !clickedColumn.isSortedDescending;
 
         // Reset the items and columns to match the state.
@@ -326,7 +315,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 column.isSortedDescending = isSortedDescending;
                 return column;
             }),
-            sortColumn: clickedColumn
+            sortColumn,
         });
     }
 
@@ -353,21 +342,21 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onSelectTagsFilter(item: OF.IDropdownOption) {
+    onSelectTagsFilter(event: React.FormEvent<HTMLDivElement>, item: OF.IDropdownOption) {
         this.setState({
             tagsFilter: (item.key !== -1) ? item : null
         })
     }
 
     @OF.autobind
-    onSelectEntityFilter(item: OF.IDropdownOption) {
+    onSelectEntityFilter(event: React.FormEvent<HTMLDivElement>, item: OF.IDropdownOption) {
         this.setState({
             entityFilter: (item.key !== -1) ? item : null
         })
     }
 
     @OF.autobind
-    onSelectActionFilter(item: OF.IDropdownOption) {
+    onSelectActionFilter(event: React.FormEvent<HTMLDivElement>, item: OF.IDropdownOption) {
         this.setState({
             actionFilter: (item.key !== -1) ? item : null
         })
@@ -986,13 +975,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onCloseTranscriptValidationPicker(transcriptsToValidate: File[] | null): Promise<void> {
+    async onCloseTranscriptValidationPicker(transcriptsToValidate: File[] | null, validationResults: CLM.TranscriptValidationResult[] | null): Promise<void> {
         await Util.setStateAsync(this, {
             isTranscriptValidatePickerOpen: false,
             transcriptFiles: transcriptsToValidate,
-            transcriptValidationResults: []
+            transcriptValidationResults: validationResults || []
         })
-        await this.onStartTranscriptValidate()
+        if (transcriptsToValidate && transcriptsToValidate.length > 0) {
+            await this.onStartTranscriptValidate()
+        }
+        else if (validationResults && validationResults.length > 0) {
+            this.setState({isTranscriptTestWaitOpen: true})
+        }
     }
 
     @OF.autobind
@@ -1064,6 +1058,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
             }
         }
+        // Add last turn
+        if (transcriptValidationTurn) {
+            transcriptValidationTurns.push(transcriptValidationTurn)
+        }
 
         let transcriptValidationResult: CLM.TranscriptValidationResult
         if (invalidTranscript) {
@@ -1072,11 +1070,16 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         else {
             transcriptValidationResult = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<CLM.TranscriptValidationResult>)
         }
+        // If invalid, store the transcript for later comparison
+        if (transcriptValidationResult.validity === CLM.Validity.INVALID) {
+            transcriptValidationResult.sourceHistory = transcript
+            transcriptValidationResult.fileName = fileName
+        }
         // Need to check that dialog as still open as user may canceled the test
         if (this.state.isTranscriptTestWaitOpen) {
-            Util.setStateAsync(this, {transcriptValidationResults: [...this.state.transcriptValidationResults, transcriptValidationResult]})
+            await Util.setStateAsync(this, {transcriptValidationResults: [...this.state.transcriptValidationResults, transcriptValidationResult]})
         }
-        this.onStartTranscriptValidate()
+        await this.onStartTranscriptValidate()
     }
 
     //-----------------------------
@@ -1150,57 +1153,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         return this.props.trainDialogs.find(td => td.clientData ? (td.clientData.importHashes.find(ih => ih === importHash) !== undefined) : false) !== undefined
     }
 
-    async importActionOutput(actionResults: TranscriptActionOutput[]): Promise<CLM.FilledEntity[]> {
-        const filledEntities: CLM.FilledEntity[] = []
-        
-        for (const actionResult of actionResults) {
-            // Check if entity already exists
-            const foundEntity = this.props.entities.find(e => e.entityName === actionResult.entityName)
-            let entityId: string = ""
-            if (foundEntity) {
-                entityId = foundEntity.entityId
-            }
-            else {
-                // If it doesn't exist create a new one
-                const newEntity: CLM.EntityBase = {
-                    entityId: undefined!,
-                    entityName: actionResult.entityName,
-                    resolverType: "none",
-                    createdDateTime: new Date().toJSON(),
-                    lastModifiedDateTime: new Date().toJSON(),
-                    isMultivalue: false,
-                    isNegatible: false,
-                    negativeId: null,
-                    positiveId: null,
-                    entityType: CLM.EntityType.LOCAL,
-                    version: null,
-                    packageCreationId: null,
-                    packageDeletionId: null,
-                    doNotMemorize: false
-                }
-
-                entityId = await ((this.props.createEntityThunkAsync(this.props.app.appId, newEntity) as any) as Promise<string>)
-
-                if (!entityId) {
-                    throw new Error("Invalid Entity Definition")
-                }
-            
-            }
-            const memoryValue: CLM.MemoryValue = {
-                userText: actionResult.value,
-                displayText: null,
-                builtinType: null,
-                resolution: {}
-            }
-            const filledEntity: CLM.FilledEntity = {
-                entityId,
-                values: [memoryValue]
-            }
-            filledEntities.push(filledEntity)
-        }
-        return filledEntities
-    }
-
+    // Import a .transcript tile
     async onImport(transcript: BB.Activity[]): Promise<void> {
 
         this.setState({isImportWaitModalOpen: true})
@@ -1213,97 +1166,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             await this.onStartTranscriptImport()
             return
         }
-        let trainDialog: CLM.TrainDialog = {
-            trainDialogId: undefined!,
-            version: undefined!,
-            packageCreationId: undefined!,
-            packageDeletionId: undefined!,
-            sourceLogDialogId: undefined!,
-            initialFilledEntities: [],
-            rounds: [],
-            tags: [], 
-            description: '',
-            createdDateTime: new Date().toJSON(),
-            lastModifiedDateTime: new Date().toJSON(),
-            // It's initially invalid
-            validity: CLM.Validity.INVALID,
-            clientData: {importHashes: [transcriptHash]}
-        }
 
-        let curRound: CLM.TrainRound | null = null
-        for (let index = 0; index < transcript.length; index = index + 1) {
-            const activity = transcript[index]
-            const nextActivity = transcript[index + 1]
-            // TODO: Handle conversation updates
-            if (!activity.type || activity.type === "message") {
-                if (activity.from.role === "user") {
-                    const textVariations: CLM.TextVariation[] = [{
-                        text: activity.text,
-                        labelEntities: []
-                    }]
-                    if (activity.channelData && activity.channelData.textVariations) {
-                        activity.channelData.textVariations.forEach((tv: any) => {
-                            // Currently system is limited to 20 text variations
-                            if (textVariations.length < CLM.MAX_TEXT_VARIATIONS && activity.text !== tv.text) {
-
-                                let altTextVariation: CLM.TextVariation = {
-                                    text: tv.text, 
-                                    labelEntities: []
-                                }
-                                textVariations.push(altTextVariation)
-                            }
-                        })
-                    }
-                    let extractorStep: CLM.TrainExtractorStep = {
-                        textVariations: textVariations
-                    }
-                    curRound = {
-                        extractorStep,
-                        scorerSteps: []
-                    }
-                    trainDialog.rounds.push(curRound)
-                }
-                else if (activity.from.role === "bot") {
-                    let action: CLM.ActionBase | undefined = DialogUtils.importedActionMatch(activity.text, this.props.actions)
-                    let filledEntities: CLM.FilledEntity[] = []
-                    let logicResult: CLM.LogicResult | undefined
-
-                    // If I didn't find an action and is API, create API stub
-                    if (!action && activity.channelData && activity.channelData.type === "ActionCall") {
-                        const actionCall = activity.channelData as TranscriptActionCall
-                        const isTerminal = !nextActivity || nextActivity.from.role === "user"
-                        action = await DialogEditing.getStubAPIAction(this.props.app.appId, actionCall.actionName, isTerminal, this.props.actions, this.props.createActionThunkAsync as any)
-
-                        // Store stub API output in LogicResult
-                        logicResult = {
-                            logicValue: undefined,
-                            changedFilledEntities: await this.importActionOutput(actionCall.actionOutput),
-                        }
-                    }
-
-                    let scoreInput: CLM.ScoreInput = {
-                        filledEntities: filledEntities,
-                        context: {},
-                        maskedActions: []
-                    }
-                    // As a first pass, try to match by exact text
-                    let scorerStep: CLM.TrainScorerStep = {
-                        importText: action ? undefined : activity.text,
-                        input: scoreInput,
-                        labelAction: action ? action.actionId : CLM.CL_STUB_IMPORT_ACTION_ID,
-                        logicResult: logicResult,
-                        scoredAction: undefined
-                    }
-
-                    if (curRound) {
-                        curRound.scorerSteps.push(scorerStep)
-                    }
-                    else {
-                        throw new Error("Dialogs must start with User turn (role='user')")
-                    }
-                }
-            }
-        }
+        let trainDialog = await TranscriptUtils.trainDialogFromTranscriptImport(
+            transcript,
+            this.props.entities,
+            this.props.actions,
+            this.props.app,
+            this.props.createActionThunkAsync as any,
+            this.props.createEntityThunkAsync as any
+        )
 
         // Extract entities
         if (this.props.entities.length > 0) {
@@ -1548,8 +1419,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         }}
                         disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                         onClick={this.onClickImportConversation}
-                        ariaDescription="Import"
-                        text="Import"
+                        ariaDescription={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
+                        text={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
                     />
                     <OF.DefaultButton
                         onClick={this.onClickValidate}
@@ -1637,8 +1508,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
                                 label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
                                 selectedKey={(this.state.tagsFilter ? this.state.tagsFilter.key : -1)}
-                                onChanged={this.onSelectTagsFilter}
-                                placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
+                                onChange={this.onSelectTagsFilter}
+                                placeholder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
                                 options={this.props.allUniqueTags
                                     .map<OF.IDropdownOption>((tag, i) => ({
                                         key: i,
@@ -1653,8 +1524,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
                                 label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
                                 selectedKey={(this.state.entityFilter ? this.state.entityFilter.key : -1)}
-                                onChanged={this.onSelectEntityFilter}
-                                placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
+                                onChange={this.onSelectEntityFilter}
+                                placeholder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ENTITIES_LABEL)}
                                 options={this.props.entities
                                     // Only show positive versions of negatable entities
                                     .filter(e => e.positiveId == null)
@@ -1668,8 +1539,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 ariaLabel={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
                                 label={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
                                 selectedKey={(this.state.actionFilter ? this.state.actionFilter.key : -1)}
-                                onChanged={this.onSelectActionFilter}
-                                placeHolder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
+                                onChange={this.onSelectActionFilter}
+                                placeholder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_ACTIONS_LABEL)}
                                 options={this.props.actions
                                     .map(a => this.toActionFilter(a, this.props.entities))
                                     .filter(Util.notNullOrUndefined)
@@ -1755,27 +1626,30 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : undefined}
                 />
                 {this.state.isTranscriptImportOpen && 
-                    <ConversationImporter
+                    <TranscriptImporter
                         app={this.props.app}
                         open={true}
                         onClose={this.onCloseImportConversation}
+                    />
+                }
+                {this.state.isImportWaitModalOpen &&
+                    <TranscriptImportWaitModal
+                        importIndex={this.state.transcriptIndex}
+                        importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
                     />
                 }
                 {this.state.isTranscriptValidatePickerOpen && 
                     <TranscriptValidatorPicker
                         app={this.props.app}
                         open={true}
-                        onClose={this.onCloseTranscriptValidationPicker}
-                    />
-                }
-                {this.state.isImportWaitModalOpen &&
-                    <ImportWaitModal
-                        importIndex={this.state.transcriptIndex}
-                        importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
+                        onAbandon={() => this.onCloseTranscriptValidationPicker(null, null)}
+                        onTestFiles={(files: File[]) => this.onCloseTranscriptValidationPicker(files, null)}
+                        onViewResults={(transcriptValidationResults) => this.onCloseTranscriptValidationPicker(null, transcriptValidationResults)}
                     />
                 }
                 {this.state.isTranscriptTestWaitOpen &&
                     <TranscriptValidatorModal
+                        app={this.props.app}
                         importIndex={this.state.transcriptIndex}
                         importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
                         transcriptValidationResults={this.state.transcriptValidationResults}
@@ -1784,6 +1658,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 }
             </div>
         )
+    }
+
+    private focusNewTeachSessionButton() {
+        if (this.newTeachSessionButtonRef.current) {
+            this.newTeachSessionButtonRef.current.focus();
+        }
     }
 
     private isFilter(): boolean {
@@ -1815,7 +1695,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 return
             }
 
-            DialogEditing.onEditTeach(
+            await DialogEditing.onEditTeach(
                 historyIndex,
                 args,
                 tags,

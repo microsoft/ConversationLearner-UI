@@ -40,7 +40,6 @@ interface ComponentState {
 }
 
 class TreeView extends React.Component<Props, ComponentState> {
-    private treeContainerRef = React.createRef<any>()
 
     state: ComponentState = {
         tree: null,
@@ -51,6 +50,8 @@ class TreeView extends React.Component<Props, ComponentState> {
         fullScreen: false,
         showBanner: true
     }
+
+    private treeContainerRef = React.createRef<any>()
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
         if (this.props.open && !prevProps.open) {

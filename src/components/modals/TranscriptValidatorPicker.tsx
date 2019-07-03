@@ -6,6 +6,8 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as CLM from '@conversationlearner/models'
+import actions from '../../actions'
+import { ErrorType } from '../../types/const'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -14,25 +16,26 @@ import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 
 interface ComponentState {
-    files: File[] | null
+    transcriptFiles: File[] | null
     autoImport: boolean
     autoMerge: boolean
 }
 
 class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
     state: ComponentState = {
-        files: null,
+        transcriptFiles: null,
         autoImport: false,
         autoMerge: false
     }
         
-    private fileInput: any
+    private transcriptfileInput: any
+    private resultfileInput: any
 
     componentWillReceiveProps(nextProps: Props) {
         // Reset when opening modal
         if (this.props.open === false && nextProps.open === true) {
             this.setState({
-                files: null
+                transcriptFiles: null
             })
         }
     }
@@ -51,24 +54,45 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChangeFile = (files: any) => {
+    @OF.autobind
+    onChangeTranscriptFiles(files: any) {
         this.setState({
-            files
+            transcriptFiles: files
         })
+    }
+    @OF.autobind
+    onChangeResultFiles(files: any) {
+        const reader = new FileReader()
+        reader.onload = (e: Event) => {
+            try {
+                if (typeof reader.result !== 'string') {
+                    throw new Error("String Expected")
+                }
+                const transcriptValidationResults = JSON.parse(reader.result) as CLM.TranscriptValidationResult[]
+                if (!transcriptValidationResults || transcriptValidationResults.length === 0 || !transcriptValidationResults[0].validity) {
+                    throw new Error("No test results found in file")
+                }
+                this.props.onViewResults(transcriptValidationResults)
+            }
+            catch (e) {
+                const error = e as Error
+                this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", null)
+            }
+        }
+        reader.readAsText(files[0])
     }
 
     render() {
-        const invalidImport = this.state.files === null
         return (
             <OF.Modal
                 isOpen={this.props.open}
-                onDismiss={() => this.props.onClose(null, false, false)}
+                onDismiss={this.props.onAbandon}
                 isBlocking={false}
                 containerClassName='cl-modal cl-modal--small'
             >
                 <div className='cl-modal_header'>
                     <span className={OF.FontClassNames.xxLarge}>
-                        Select .transcript files to test
+                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_TITLE)} 
                     </span>
                 </div>
                 <div 
@@ -76,10 +100,18 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                     className="cl-form"
                 >
                     <input
+                        hidden={true}
                         type="file"
                         style={{ display: 'none' }}
-                        onChange={(event) => this.onChangeFile(event.target.files)}
-                        ref={ele => (this.fileInput = ele)}
+                        onChange={(event) => this.onChangeResultFiles(event.target.files)}
+                        ref={ele => (this.resultfileInput = ele)}
+                        multiple={false}
+                    />
+                    <input
+                        type="file"
+                        style={{ display: 'none' }}
+                        onChange={(event) => this.onChangeTranscriptFiles(event.target.files)}
+                        ref={ele => (this.transcriptfileInput = ele)}
                         multiple={true}
                     />
                     <div className="cl-file-picker">
@@ -89,15 +121,15 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                             ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_LOCATE_FILES)} 
                             text={Util.formatMessageId(this.props.intl, FM.BUTTON_LOCATE_FILES)} 
                             iconProps={{ iconName: 'DocumentSearch' }}
-                            onClick={() => this.fileInput.click()}
+                            onClick={() => this.transcriptfileInput.click()}
                         />
                         <OF.TextField
                             disabled={true}
-                            value={!this.state.files 
+                            value={!this.state.transcriptFiles 
                                 ? undefined
-                                : this.state.files.length === 1
-                                ? this.state.files[0].name 
-                                : `${this.state.files.length} files selected`
+                                : this.state.transcriptFiles.length === 1
+                                ? this.state.transcriptFiles[0].name 
+                                : `${this.state.transcriptFiles.length} files selected`
                             }
                         />
                     </div>
@@ -107,16 +139,25 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                         <div className="cl-modal-buttons_secondary" />
                         <div className="cl-modal-buttons_primary">
                             <OF.PrimaryButton
-                                disabled={invalidImport}
+                                disabled={this.state.transcriptFiles !== null}
+                                data-testid="transcript-locate-results-file-button"
+                                className="cl-file-picker-button"
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON)} 
+                                text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON)} 
+                                iconProps={{ iconName: 'DownloadDocument' }}
+                                onClick={() => this.resultfileInput.click()}
+                            />
+                            <OF.PrimaryButton
+                                disabled={this.state.transcriptFiles === null}
                                 data-testid="transcript-submit-button"
-                                onClick={() => this.props.onClose(this.state.files, this.state.autoImport, this.state.autoMerge)}
+                                onClick={() => this.props.onTestFiles(this.state.transcriptFiles, this.state.autoImport, this.state.autoMerge)}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
                                 text={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
                                 iconProps={{ iconName: 'TestCase' }}
                             />
                             <OF.DefaultButton
                                 data-testid="transcript-cancel-button"
-                                onClick={() => this.props.onClose(null, false, false)}
+                                onClick={this.props.onAbandon}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
                                 text={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
                                 iconProps={{ iconName: 'Cancel' }}
@@ -131,6 +172,7 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        setErrorDisplay: actions.display.setErrorDisplay,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
@@ -144,7 +186,9 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     app: CLM.AppBase
     open: boolean
-    onClose: (files: File[] | null, autoImport: boolean, autoMerge: boolean) => void
+    onAbandon: () => void
+    onTestFiles: (files: File[] | null, autoImport: boolean, autoMerge: boolean) => void
+    onViewResults: (transcriptValidationResults: CLM.TranscriptValidationResult[]) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

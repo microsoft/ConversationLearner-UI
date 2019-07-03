@@ -7,12 +7,28 @@
 }
 
 .cl-transcript-validator-result {
-  font-size: 24px;
+  font-size: 22px;
+  padding-left: 70px;
+  border-top: 1px solid var(--cl-color-botchat-grey);
+  border-bottom: 1px solid var(--cl-color-botchat-grey);
 }
 
 .cl-modal.cl-modal--transcriptvalidator {
-    height: 220px;
+    min-height: 220px;
     width: 400px;
     padding: 20px;
     text-align: center !important;
+}
+
+.cl-transcript-validator-result-title {
+  width: 115px;
+  float: left;
+  text-align: right;
+  line-height: 40px;
+  padding-right: 10px;
+}
+
+.cl-transcript-validator-result-value {
+  width: 100px;
+  float: left;
 }

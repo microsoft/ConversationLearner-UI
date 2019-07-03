@@ -310,7 +310,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
 
-    onChangeTextVariation = (value: string): void => {
+    onChangeTextVariation = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, value: string): void => {
         this.setState({
             textVariationValue: value,
             pendingVariationChange: (value.trim().length > 0)
@@ -345,7 +345,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // First look for match in extract responses
         const foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text)
         if (foundResponse) {
-            await this.props.updateExtractResponse(extractResponse)
+            this.props.updateExtractResponse(extractResponse)
             await Util.setStateAsync(this, { isPendingSubmit: true })
         } else {
             // Replace existing text variation (if any) with new one and maintain ordering
@@ -537,7 +537,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                         <OF.TextField
                             data-testid="entity-extractor-alternative-input-text"
                             value={this.state.textVariationValue}
-                            onChanged={this.onChangeTextVariation}
+                            onChange={this.onChangeTextVariation}
                             placeholder={Util.formatMessageId(this.props.intl, FM.TEXTVARIATION_PLACEHOLDER)}
                             onKeyPress={(event) => {
                                 if (event.key === 'Enter') {

@@ -152,7 +152,15 @@ export class Component extends React.Component<Props, ComponentState> {
             throw new Error(`Could not find column by name: ${defaultSortColumnName}`)
         }
 
-        columns.map(col => { col.isSorted = false; col.isSortedDescending = false })
+        columns.forEach(col => {
+            col.isSorted = false
+            col.isSortedDescending = false
+
+            if (col === defaultSortColumn) {
+                col.isSorted = true
+            }
+        })
+
         this.state = {
             columns,
             sortColumn: defaultSortColumn
@@ -178,8 +186,10 @@ export class Component extends React.Component<Props, ComponentState> {
         return sortedApps;
     }
 
-    onClickColumnHeader = (event: any, column: ISortableRenderableColumn) => {
+    onClickColumnHeader = (event: React.MouseEvent<HTMLElement>, column: ISortableRenderableColumn) => {
         const { columns } = this.state;
+        const sortColumn = columns.find(c => column.key === c.key)!
+
         this.setState({
             columns: columns.map(col => {
                 col.isSorted = false;
@@ -189,7 +199,7 @@ export class Component extends React.Component<Props, ComponentState> {
                 }
                 return col;
             }),
-            sortColumn: column
+            sortColumn,
         });
     }
 

@@ -194,21 +194,6 @@ const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude:
         .filter(tag => tag.name.toLowerCase().startsWith(fText.toLowerCase()))
 }
 
-const tryCreateSlateValue = (actionType: string, slotName: string, content: object | string, options: ActionPayloadEditor.IOption[]): ActionPayloadEditor.SlateValue => {
-    try {
-        return createSlateValue(content, options)
-    }
-    catch (e) {
-        const error = e as Error
-        console.error(`Error occurred while attempting to construct slate value for action.
-    Type: ${actionType}
-    SlotName: ${slotName}
-    content:\n`, content, options)
-        console.error(error)
-        return Plain.deserialize("Action references an Entity that doesn't exist. Please re-enter the value and re-save the action.")
-    }
-}
-
 const createSlateValue = (content: object | string, options: ActionPayloadEditor.IOption[]): ActionPayloadEditor.SlateValue => {
     let objectContent: object | null = null
     if (typeof content === 'string') {
@@ -224,6 +209,21 @@ const createSlateValue = (content: object | string, options: ActionPayloadEditor
 
     const updatedJson = ActionPayloadEditor.Utilities.updateOptionNames(objectContent || content, options)
     return Value.fromJSON(updatedJson)
+}
+
+const tryCreateSlateValue = (actionType: string, slotName: string, content: object | string, options: ActionPayloadEditor.IOption[]): ActionPayloadEditor.SlateValue => {
+    try {
+        return createSlateValue(content, options)
+    }
+    catch (e) {
+        const error = e as Error
+        console.error(`Error occurred while attempting to construct slate value for action.
+    Type: ${actionType}
+    SlotName: ${slotName}
+    content:\n`, content, options)
+        console.error(error)
+        return Plain.deserialize("Action references an Entity that doesn't exist. Please re-enter the value and re-save the action.")
+    }
 }
 
 const actionTypeOptions = Object.values(CLM.ActionTypes)
@@ -243,7 +243,7 @@ interface IConditionalTag extends OF.ITag {
 }
 
 export interface NewActionPreset {
-    text: string, 
+    text: string,
     isTerminal: boolean
 }
 
@@ -372,11 +372,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             .replace(/[\n\r]+/g, '')  // Adaptive cards can't handle newlines
     }
 
-    componentDidMount() {
-        this.initializeActionPresets(this.props)
+    async componentDidMount() {
+        await this.initializeActionPresets(this.props)
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    async componentWillReceiveProps(nextProps: Props) {
         let nextState: Partial<ComponentState> = {}
 
         if (nextProps.open === true) {
@@ -541,22 +541,22 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.setState(prevState => nextState as ComponentState)
 
         // Set initial text value (used for dummy import actions)
-        if (nextProps.open === true && this.props.open === false) { 
-            this.initializeActionPresets(nextProps)
+        if (nextProps.open === true && this.props.open === false) {
+            await this.initializeActionPresets(nextProps)
         }
     }
 
-    initializeActionPresets(props: Props) {
+    async initializeActionPresets(props: Props) {
         if (props.newActionPreset) {
             let values = Plain.deserialize(this.presetText(props.newActionPreset.text))
             this.onChangePayloadEditor(values, TEXT_SLOT)
-            this.setState({isTerminal: props.newActionPreset.isTerminal})
+            this.setState({ isTerminal: props.newActionPreset.isTerminal })
 
             // If a good card match exists switch to card view
             const bestCard = this.bestCardMatch(props.newActionPreset.text, CARD_MATCH_THRESHOLD)
             if (bestCard) {
                 let index = actionTypeOptions.findIndex(ao => ao.key === CLM.ActionTypes.CARD)
-                this.onChangedActionType(actionTypeOptions[index])
+                await this.onChangeActionType(actionTypeOptions[index])
             }
         }
     }
@@ -664,7 +664,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }))
     }
 
-    onChangedEntityOption = (entityOption: OF.IDropdownOption) => {
+    onChangeEntityOption = (event: React.FormEvent<HTMLDivElement>, entityOption: OF.IDropdownOption) => {
         const entity = this.props.entities.find(e => e.entityId === entityOption.key)
 
         if (entity && entity.enumValues) {
@@ -679,7 +679,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    onChangedEnumValueOption = (enumValueOption: OF.IDropdownOption) => {
+    onChangeEnumValueOption = (event: React.FormEvent<HTMLDivElement>, enumValueOption: OF.IDropdownOption) => {
         this.setState({
             selectedEnumValueOptionKey: typeof enumValueOption.key === 'string'
                 ? enumValueOption.key
@@ -687,7 +687,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChangedApiOption = (apiOption: OF.IDropdownOption) => {
+    onChangeApiOption = (event: React.FormEvent<HTMLDivElement>, apiOption: OF.IDropdownOption) => {
         const callback = this.props.botInfo.callbacks.find(t => t.name === apiOption.key)
         if (!callback) {
             throw new Error(`Could not find api callback with name: ${apiOption.key}`)
@@ -717,7 +717,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    async onChangedCardOption(cardOption: OF.IDropdownOption) {
+    @OF.autobind
+    async onChangeCardOption(cardOption: OF.IDropdownOption | undefined) {
+        if (!cardOption) {
+            return
+        }
+
         const template = this.props.botInfo.templates.find(t => t.name === cardOption.key)
         if (!template) {
             throw new Error(`Could not find template with name: ${cardOption.key}`)
@@ -745,7 +750,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 // If no question mark, assume is first period
                 if (firstSplit.length === 1) {
                     firstSplit = semiSplit[0].split('.')
-                } 
+                }
                 const rawTitle = firstSplit.slice(0, firstSplit.length - 1).join()
 
                 const title = Plain.deserialize(`${rawTitle}?`)
@@ -773,9 +778,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         this.props.fetchBotInfoThunkAsync(this.props.browserId, this.props.app.appId)
     }
 
-    onClickViewCard() {
+    async onClickViewCard() {
         if (!this.state.selectedCardOptionKey) {
-            this.onNextCard()
+            await this.onNextCard()
         }
         this.setState({
             isCardViewerModalOpen: true
@@ -788,22 +793,24 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    onNextCard = () => {
+    @OF.autobind
+    async onNextCard() {
         let index = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
         index = index + 1
         if (index === this.state.cardOptions.length) {
             index = 0
         }
-        this.onChangedCardOption(this.state.cardOptions[index])
+        await this.onChangeCardOption(this.state.cardOptions[index])
     }
 
-    onPreviousCard = () => {
+    @OF.autobind
+    async onPreviousCard() {
         let index = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
         index = index - 1
         if (index < 0) {
             index = this.state.cardOptions.length - 1
         }
-        this.onChangedCardOption(this.state.cardOptions[index])
+        await this.onChangeCardOption(this.state.cardOptions[index])
     }
 
     getActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }): CLM.IActionArgument[] {
@@ -1099,7 +1106,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onChangedActionType(actionTypeOption: OF.IDropdownOption) {
+    async onChangeActionType(actionTypeOption: OF.IDropdownOption | undefined) {
+        if (!actionTypeOption) {
+            return
+        }
+
         const textPayload = this.state.slateValuesMap[TEXT_SLOT]
         const isPayloadMissing = (actionTypeOption.key === CLM.ActionTypes.TEXT && textPayload && textPayload.document.text.length === 0)
         const isTerminal = actionTypeOption.key === CLM.ActionTypes.END_SESSION
@@ -1130,7 +1141,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD && this.props.newActionPreset) {
             const bestCard = this.bestCardMatch(this.props.newActionPreset.text)
             if (bestCard) {
-                this.onChangedCardOption(bestCard)
+                await this.onChangeCardOption(bestCard)
             }
         }
     }
@@ -1238,9 +1249,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     // Payload editor is trying to submit action
-    onSubmitPayloadEditor(): void {
+    async onSubmitPayloadEditor(): Promise<void> {
         if (!this.saveDisabled()) {
-            this.onClickSaveCreate();
+            await this.onClickSaveCreate();
         }
     }
 
@@ -1391,7 +1402,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             data-testid="dropdown-action-type"
                             label="Action Type"
                             options={actionTypeOptions}
-                            onChanged={actionTypeOption => this.onChangedActionType(actionTypeOption)}
+                            onChange={(event, actionTypeOption) => this.onChangeActionType(actionTypeOption)}
                             selectedKey={this.state.selectedActionTypeOptionKey}
                             disabled={disabled}
                             tipType={ToolTip.TipType.ACTION_TYPE}
@@ -1411,10 +1422,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         data-testid="dropdown-api-option"
                                         label="API"
                                         options={this.state.apiOptions}
-                                        onChanged={this.onChangedApiOption}
+                                        onChange={this.onChangeApiOption}
                                         selectedKey={this.state.selectedApiOptionKey}
                                         disabled={this.state.apiOptions.length === 0}
-                                        placeHolder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
+                                        placeholder={this.state.apiOptions.length === 0 ? 'NONE DEFINED' : 'API name...'}
                                         tipType={ToolTip.TipType.ACTION_API1}
                                     />
                                     <OF.IconButton
@@ -1472,9 +1483,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         </div>
                                         : <div className="cl-errorpanel" data-testid="action-creator-editor-error-callback">
                                             <div>
-                                                {this.props.action && CLM.ActionBase.isStubbedAPI(this.props.action) 
-                                                ? `Stub API: ${this.state.selectedApiOptionKey}`
-                                                : `ERROR: Bot Missing Callback: ${this.state.selectedApiOptionKey}`}
+                                                {this.props.action && CLM.ActionBase.isStubbedAPI(this.props.action)
+                                                    ? `Stub API: ${this.state.selectedApiOptionKey}`
+                                                    : `ERROR: Bot Missing Callback: ${this.state.selectedApiOptionKey}`}
                                             </div>
                                         </div>)
                                 }
@@ -1488,10 +1499,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         data-testid="action-card-template"
                                         label="Template"
                                         options={this.state.cardOptions}
-                                        onChanged={(cardOption) => this.onChangedCardOption(cardOption)}
+                                        onChange={(event, cardOption) => this.onChangeCardOption(cardOption)}
                                         selectedKey={this.state.selectedCardOptionKey}
                                         disabled={this.state.cardOptions.length === 0}
-                                        placeHolder={this.state.cardOptions.length === 0 ? 'NONE DEFINED' : 'Template name...'}
+                                        placeholder={this.state.cardOptions.length === 0 ? 'NONE DEFINED' : 'Template name...'}
                                         tipType={ToolTip.TipType.ACTION_CARD}
                                     />
                                     <OF.IconButton
@@ -1590,9 +1601,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             data-testid="action-set-entity"
                                             label="Entity"
                                             options={this.state.entityOptions}
-                                            onChanged={this.onChangedEntityOption}
+                                            onChange={this.onChangeEntityOption}
                                             selectedKey={this.state.selectedEntityOptionKey}
-                                            placeHolder={this.state.entityOptions.length === 0 ? 'NONE DEFINED' : 'Entity name...'}
+                                            placeholder={this.state.entityOptions.length === 0 ? 'NONE DEFINED' : 'Entity name...'}
                                             disabled={this.state.entityOptions.length === 0}
                                             tipType={ToolTip.TipType.ACTION_SET_ENTITY}
                                         />
@@ -1603,9 +1614,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             data-testid="action-set-enum"
                                             label="Enum Value"
                                             options={this.state.enumValueOptions}
-                                            onChanged={this.onChangedEnumValueOption}
+                                            onChange={this.onChangeEnumValueOption}
                                             selectedKey={this.state.selectedEnumValueOptionKey}
-                                            placeHolder={this.state.enumValueOptions.length === 0 ? 'NONE DEFINED' : 'Enum value...'}
+                                            placeholder={this.state.enumValueOptions.length === 0 ? 'NONE DEFINED' : 'Enum value...'}
                                             disabled={!this.state.selectedEntityOptionKey}
                                             tipType={ToolTip.TipType.ACTION_SET_ENTITY_VALUE}
                                         />

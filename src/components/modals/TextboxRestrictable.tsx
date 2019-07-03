@@ -19,7 +19,8 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
         value: '',
     }
 
-    userInputChanged(text: string) {
+    @OF.autobind
+    onChangeText(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             value: text
         })
@@ -68,7 +69,7 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
                 <div className="cl-fieldset">
                     <OF.TextField
                         data-testid="user-input-modal-new-message-input"
-                        onChanged={text => this.userInputChanged(text)}
+                        onChange={this.onChangeText}
                         placeholder={this.props.placeholder}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.value}

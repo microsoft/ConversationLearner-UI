@@ -12,7 +12,7 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 interface ComponentState {
     stopImport: boolean
 }
-class ImportCancelModal extends React.Component<Props, ComponentState> {
+class TranscriptImportCancelModal extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         stopImport: false,
     }
@@ -31,7 +31,7 @@ class ImportCancelModal extends React.Component<Props, ComponentState> {
                 onDismiss={() => this.props.onCancel()}
                 dialogContentProps={{
                     type: OF.DialogType.normal,
-                    title: Util.formatMessageId(this.props.intl, FM.IMPORT_CANCEL_TITLE)
+                    title: Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORT_CANCEL_TITLE)
                 }}
                 modalProps={{
                     isBlocking: false
@@ -39,7 +39,7 @@ class ImportCancelModal extends React.Component<Props, ComponentState> {
             >
             {!this.props.isLastImport &&
                 <OF.Checkbox
-                    label={Util.formatMessageId(this.props.intl, FM.IMPORT_CANCEL_CHECKBOX_LABEL)}
+                    label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL)}
                     checked={this.state.stopImport}
                     onChange={this.onChangeCheckbox}
                 />
@@ -73,4 +73,4 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 type Props = ReceivedProps & InjectedIntlProps
 
-export default connect<null, null, ReceivedProps>(null, null)(injectIntl(ImportCancelModal))
+export default connect<null, null, ReceivedProps>(null, null)(injectIntl(TranscriptImportCancelModal))

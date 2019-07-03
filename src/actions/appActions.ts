@@ -491,7 +491,6 @@ export const fetchTranscriptValidationThunkAsync = (appId: string, packageId: st
         }
         catch (e) {
             const error = e as AxiosError
-            // LARS todo -create error message
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC))
             throw error
         }

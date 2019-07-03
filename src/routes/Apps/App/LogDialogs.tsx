@@ -148,6 +148,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     newChatSessionButtonRef = React.createRef<OF.IButton>()
     state: ComponentState
 
+    private selection: OF.ISelection = new OF.Selection({
+        getKey: (logDialog) => (logDialog as CLM.LogDialog).logDialogId,
+        onSelectionChanged: this.onSelectionChanged
+    })
+    
     static GetConflicts(rounds: CLM.TrainRound[], previouslySubmittedTextVariations: CLM.TextVariation[]) {
         const conflictPairs: ConflictPair[] = []
 
@@ -170,11 +175,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         return conflictPairs
     }
 
-    private selection: OF.ISelection = new OF.Selection({
-        getKey: (logDialog) => (logDialog as CLM.LogDialog).logDialogId,
-        onSelectionChanged: this.onSelectionChanged
-    })
-
     constructor(props: Props) {
         super(props)
         const columns = getColumns(this.props.intl)
@@ -182,6 +182,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         if (!sortColumn) {
             throw new Error(`Cannot find initial sort column by key 'created'`)
         }
+        columns.forEach(col => {
+            col.isSorted = false
+            col.isSortedDescending = false
+
+            if (col === sortColumn) {
+                col.isSorted = true
+            }
+        })
 
         this.state = {
             logDialogs: props.logDialogs,
@@ -249,27 +257,29 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
+        const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
         // Toggle isSortedDescending of clickedColumn and reset all other columns
         const columns = this.state.columns.map(column => {
-            column.isSorted = (column.key === clickedColumn.key)
-            column.isSortedDescending = !clickedColumn.isSortedDescending
+            column.isSorted = false
+            column.isSortedDescending = false
+            if (column === sortColumn) {
+                column.isSorted = true
+                column.isSortedDescending = !clickedColumn.isSortedDescending
+            }
             return column
         })
 
+        const logDialogs = this.sortLogDialogs(this.state.logDialogs, columns, sortColumn)
+
         this.setState({
             columns,
-            sortColumn: clickedColumn,
+            sortColumn,
+            logDialogs,
         })
     }
 
     componentDidMount() {
         this.focusNewChatButton()
-    }
-
-    private focusNewChatButton() {
-        if (this.newChatSessionButtonRef.current) {
-            this.newChatSessionButtonRef.current.focus()
-        }
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -310,21 +320,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
         // If any of the filters changed, recompute filtered dialogs based on updated filers
         if (prevState.searchValue !== this.state.searchValue) {
-            const logDialogs = this.getFilteredDialogs(
-                this.state.logDialogs,
+            let logDialogs = this.getFilteredDialogs(
+                this.props.logDialogs,
                 this.props.entities,
                 this.props.actions,
                 this.state.searchValue)
-
-            this.setState({
-                logDialogs
-            })
-        }
-
-        // If the sort column changed, recompute dialog sort order
-        if (prevState.sortColumn.key !== this.state.sortColumn.key
-            || prevState.sortColumn.isSortedDescending !== this.state.sortColumn.isSortedDescending) {
-            const logDialogs = this.sortLogDialogs(this.state.logDialogs, this.state.columns, this.state.sortColumn)
 
             this.setState({
                 logDialogs
@@ -370,7 +370,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.props.clearWebchatScrollPosition()
 
         // Convert to trainDialog until schema update change, and pass in app definition too
-        const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities);
+        const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
 
         try {
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
@@ -950,6 +950,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             ? this.props.teachSession
             : this.state.lastTeachSession
 
+        const isPlaceholderVisible = this.props.logDialogs.length === 0
+
         return (
             <div className="cl-page">
                 <div data-testid="log-dialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
@@ -997,7 +999,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     />
                 </div>
                 {
-                    this.state.logDialogs.length === 0
+                    isPlaceholderVisible
                         ? <div className="cl-page-placeholder">
                             <div className="cl-page-placeholder__content">
                                 <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
@@ -1029,7 +1031,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 <OF.DetailsList
                     data-testid="logdialogs-details-list"
                     key={this.state.dialogKey}
-                    className={`${OF.FontClassNames.mediumPlus} ${this.state.logDialogs.length === 0 ? 'cl-hidden' : ''}`}
+                    className={`${OF.FontClassNames.mediumPlus} ${isPlaceholderVisible ? 'cl-hidden' : ''}`}
                     items={this.state.logDialogs}
                     selection={this.selection}
                     columns={this.state.columns}
@@ -1122,6 +1124,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             </div>
         );
     }
+   
+    private focusNewChatButton() {
+        if (this.newChatSessionButtonRef.current) {
+            this.newChatSessionButtonRef.current.focus()
+        }
+    }
 
     // User has edited an Activity in a TeachSession
     private async onEditTeach(
@@ -1206,8 +1214,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
+const stateProps = returntypeof(mapStateToProps)
+const dispatchProps = returntypeof(mapDispatchToProps)
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
 
 export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(LogDialogs))

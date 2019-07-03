@@ -17,7 +17,7 @@ import UserInputModal from './UserInputModal'
 import TeachSessionAdmin from './TeachSessionAdmin'
 import TeachSessionInitState from './TeachSessionInitState'
 import FormattedMessageId from '../FormattedMessageId'
-import ImportCancelModal from './ImportCancelModal';
+import TranscriptImportCancelModal from './TranscriptImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
@@ -343,7 +343,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
             })
 
             // If there's an error when I try to continue, reset webchat to ignore new input
-            await this.props.setErrorDismissCallback(this.onClickUndoInput)
+            this.props.setErrorDismissCallback(this.onClickUndoInput)
             await (this.props.runExtractorThunkAsync(
                 this.props.app.appId,
                 CLM.DialogType.TEACH,
@@ -779,7 +779,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     </div>
-                    <ImportCancelModal
+                    <TranscriptImportCancelModal
                         open={this.state.isImportAbandonOpen}
                         onCancel={this.onClickCancelDelete}
                         onConfirm={this.onClickConfirmDelete}
