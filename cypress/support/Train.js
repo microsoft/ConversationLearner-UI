@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-import * as homePage from './components/HomePage'
+import * as popupModal from './components/PopupModal'
 import * as modelPage from './components/ModelPage'
 import * as scorerModal from './components/ScorerModal'
 import * as trainDialogsGrid from './components/TrainDialogsGrid'
@@ -42,9 +42,12 @@ export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreAct
 export function ClickSaveCloseButton() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
 export function VerifyCloseButtonLabel() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Close') }
 export function VerifySaveBranchButtonLabel() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').contains('Save Branch') }
+
 export function ClickAbandonDeleteButton() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').Click() }
+export function ClickConfirmAbandonButton() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to abandon your edits?', '[data-testid="confirm-cancel-modal-accept"]')}
 export function VerifyDeleteButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Delete') }
 export function VerifyAbandonBranchButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Abandon Branch') }
+
 export function ClickUndoButton() { cy.Get('[data-testid="edit-teach-dialog-undo-button"]').Click() }
 export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }
 export function ClickReplayButton() { cy.Get('[data-testid="edit-dialog-modal-replay-button"]').Click() }
@@ -86,7 +89,7 @@ export function VerifyBranchButtonGroupContainsMessage(message) {
 
 export function AbandonBranchChanges() {
   ClickAbandonDeleteButton()
-  homePage.ClickConfirmButton()
+  popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to abandon this Training Dialog?', '[data-testid="confirm-cancel-modal-accept"]')
 }
 
 export function VerifyChatMessageCount(expectedCount) {

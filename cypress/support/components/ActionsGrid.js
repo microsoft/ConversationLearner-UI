@@ -7,12 +7,13 @@ import * as helpers from '../../support/Helpers'
 
 export function VerifyPageTitle() { cy.Get('[data-testid="actions-title"]').contains('Actions').should('be.visible') }
 export function ClickNewAction() { cy.Get('[data-testid="actions-button-create"]').Click() }
+export function VerifyTextActionNotInGrid(actionName) { cy.DoesNotContainExact('[data-testid="action-scorer-text-response"]', actionName) }
 
-export function Edit(action) {
-  cy.Get('[data-testid="action-scorer-text-response"]')
-    .contains(action)
-    .Click()
-}
+export function EditTextAction(actionName) { new Row('TEXT', actionName).EditAction() }
+export function EditApiAction(apiName) { new Row('API', apiName).EditAction() }
+export function EditCardAction(cardContains) { new Row('CARD', cardContains).EditAction() }
+export function EditEndSessionAction(endSessionData) { new Row('END_SESSION', endSessionData).EditAction() }
+export function EditSetEntityAction(setEntityName) { new Row('SET_ENTITY', setEntityName).EditAction() }
 
 export class Row {
   constructor(actionType, textId) {
@@ -99,7 +100,8 @@ Row.typeSelectorPairs = [
   {type: 'TEXT', selector: '[data-testid="action-scorer-text-response"]'},
   {type: 'API', selector: '[data-testid="action-scorer-api-name"]'},
   {type: 'END_SESSION', selector: '[data-testid="action-scorer-session-response-user"]'},
-  {type: 'CARD', selector: '[data-testid="action-scorer-card-name"]'}
+  {type: 'CARD', selector: '[data-testid="action-scorer-card-name"] + div'},
+  {type: 'SET_ENTITY', selector: '[data-testid="actions-list-set-entity"]'}
 ]
 
 export function VerifyActionRow(response, type, requiredEntities, disqualifyingEntities, expectedEntity, wait, responseDetails) {

@@ -19,13 +19,69 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
   context('Setup', () => {
     it('Should import a model to test against', () => {
       models.ImportModel('z-ActionEditDel', 'z-actionTests.cl')
-      cy.pause()
+    })
+  })
+
+  context('Verify Disabled & Enabled Action Type Dropdown', () => {
+    it('Should edit some existing Actions to verify that the Action Type Dropdown is disabled', () => {
+      modelPage.NavigateToActions()
+      
+      actionsGrid.EditApiAction('LogicWithNoArgs')
+      actionModal.VerifyActionTypeDisabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditSetEntityAction('fruits: STRAWBERRY')
+      actionModal.VerifyActionTypeDisabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditCardAction('Do you like being questioned?')
+      actionModal.VerifyActionTypeDisabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditTextAction('Something extra')
+      actionModal.VerifyActionTypeDisabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditEndSessionAction('Goodbye')
+      actionModal.VerifyActionTypeDisabled()
+      actionModal.ClickTrainDialogFilterButton()
+    })
+
+    it('Should edit Train Dialog that caused those Actions to have a disabled Type field and delete it', () => {
+      train.EditTraining('API', 'We are done here.', 'Goodbye')
+      train.ClickAbandonDeleteButton()
+      train.ClickConfirmAbandonDialogButton()
+    })
+
+    it('Should edit some existing Actions to verify that the Action Type Dropdown is enabled', () => {
+      modelPage.NavigateToActions()
+
+      actionsGrid.EditApiAction('LogicWithNoArgs')
+      actionModal.VerifyActionTypeEnabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditSetEntityAction('fruits: STRAWBERRY')
+      actionModal.VerifyActionTypeEnabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditCardAction('Do you like being questioned?')
+      actionModal.VerifyActionTypeEnabled()
+      actionModal.ClickCancelButton()
+
+      actionsGrid.EditEndSessionAction('Goodbye')
+      actionModal.VerifyActionTypeEnabled()
+      actionModal.ClickCancelButton()
+    })
+
+    it('Should edit 1 existing Action to verify that the Action Type Dropdown is still disabled', () => {
+      actionsGrid.EditTextAction('Something extra')
+      actionModal.VerifyActionTypeDisabled()
+      actionModal.ClickCancelButton()
     })
   })
 
   context('Action - "Can be deleted - not used in a Train Dialog"', () => {
     it('Should edit an existing action', () => {
-      modelPage.NavigateToActions()
       actionsGrid.EditTextAction('Can be deleted - not used in a Train Dialog')
     })
 
@@ -41,31 +97,73 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     })
   })
 
-  context('Action - "Can be deleted - not used in a Train Dialog"', () => {
+  context('Action - "Something extra"', () => {
     it('Should edit an existing action', () => {
-      modelPage.NavigateToActions()
-      actionsGrid.EditTextAction('Can be deleted - not used in a Train Dialog')
+      actionsGrid.EditTextAction('Something extra')
     })
 
     it('Should verify that delete Action can be canceled', () => {
       actionModal.ClickDeleteButton()
+      
+      // Bug 2188: Delete Action does not give warning if Action is used in Train Dialog that has errors.
+      // When this bug is fixed, the next line of code will fail and should be removed...
+      // ...also remove the comment from the other line.
       actionModal.ClickCancelDeleteButton()
+      //actionModal.ClickCancelDeleteWithWarningButton()
+    })
+
+    it('Should verify that filter Train Dialog on Action button works', () => {
+      actionModal.ClickTrainDialogFilterButton()
+      train.VerifyListOfTrainDialogs([
+        {firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: 'Something extra'},
+      ])
+    })
+
+    it('Should edit the existing action once again', () => {
+      modelPage.NavigateToActions()
+      actionsGrid.EditTextAction('Something extra')
     })
 
     it('Should verify that Action can be deleted', () => {
       actionModal.ClickDeleteButton()
+
+      // Bug 2188: Delete Action does not give warning if Action is used in Train Dialog that has errors.
+      // When this bug is fixed, the next line of code will fail and should be removed...
+      // ...also remove the comment from the other line.
       actionModal.ClickConfirmDeleteButton()
-      actionsGrid.VerifyTextActionNotInGrid('Can be deleted - not used in a Train Dialog')
+      //actionModal.ClickConfirmDeleteWithWarningButton()
+
+      actionsGrid.VerifyTextActionNotInGrid('Something extra')
     })
   })
 
-  //   it('Should verify that filter Train Dialog on entity button works', () => {
-  //     actionModal.ClickTrainDialogFilterButton()
-  //     train.VerifyListOfTrainDialogs([
-  //       {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"},
-  //       {firstInput: 'I want a car!', lastInput: 'I want a car!', lastResponse: "What's your name?"}
-  //     ])
-  //   })
-    
-  // })
+  context('Action - "Your entity contains: $entity"', () => {
+    it('Should edit an existing action', () => {
+      actionsGrid.EditTextAction('Your entity contains: $entity')
+    })
+
+    it('Should verify that delete Action can be canceled', () => {
+      actionModal.ClickDeleteButton()
+      actionModal.ClickCancelDeleteWithWarningButton()
+    })
+
+    it('Should verify that filter Train Dialog on Action button works', () => {
+      actionModal.ClickTrainDialogFilterButton()
+      train.VerifyListOfTrainDialogs([
+        {firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: ''},
+        {firstInput: 'An entity: EEEFFFGGG', lastInput: 'An entity: EEEFFFGGG', lastResponse: 'Your entity contains: $entity'},
+      ])
+    })
+
+    it('Should edit the existing action once again', () => {
+      modelPage.NavigateToActions()
+      actionsGrid.EditTextAction('Your entity contains: $entity')
+    })
+
+    it('Should verify that Action can be deleted', () => {
+      actionModal.ClickDeleteButton()
+      actionModal.ClickConfirmDeleteWithWarningButton()
+      actionsGrid.VerifyTextActionNotInGrid('Your entity contains: $entity')
+    })
+  })
 })
