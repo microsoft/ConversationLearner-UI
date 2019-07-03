@@ -143,6 +143,7 @@ export enum FM {
     BUTTON_CONFIRM = 'Button.CONFIRM',
     BUTTON_COMPARE = 'Button.COMPARE',
     BUTTON_DELETE = 'Button.DELETE',
+    BUTTON_ENTITY ='Button.ENTITY',
     BUTTON_EXPORT = 'Button.EXPORT',
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
@@ -724,6 +725,7 @@ export default {
         [FM.BUTTON_CONFIRM]: 'Confirm',
         [FM.BUTTON_COMPARE]: 'Compare',
         [FM.BUTTON_DELETE]: 'Delete',
+        [FM.BUTTON_ENTITY]: 'Entity',
         [FM.BUTTON_EXPORT]: 'Export',
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
@@ -975,7 +977,6 @@ export default {
 
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
-        [FM.BUTTON_INFO]: 'Info',
 
         // DemoImporter
         [FM.DEMOIMPORT_TITLE]: 'Import Demo Models',
