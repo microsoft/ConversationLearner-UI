@@ -20,27 +20,49 @@ describe("Log Tests - Log", () => {
       cy.WaitForTrainingStatusCompleted()
     })
   })
+  
+  let logDialogGridContent = []
 
   context('Create Log Dialogs', () => {
-    it('1st Log Dialog', () => {
+    it('Create 1st Log Dialog', () => {
       logDialogsGrid.CreateNewLogDialogButton()
       logDialogModal.TypeYourMessageValidateResponse('1st Log Dialog', 'Okay')
       logDialogModal.TypeYourMessageValidateResponse("G'day", 'Hello')
       logDialogModal.TypeYourMessageValidateResponse("Goodbye")
       logDialogModal.ClickDoneTestingButton()
+      logDialogsGrid.WaitForLogDialoGridUpdateToComplete(1)
+      
+      logDialogGridContent.push({userInputs: "1st Log Dialog ◾️ G'day ◾️ Goodbye", turnCount: 3})
     })
     
-    it('Should ', () => {
+    it('Create 2nd Log Dialog', () => {
+      logDialogsGrid.CreateNewLogDialogButton()
+      logDialogModal.TypeYourMessageValidateResponse('2nd Log Dialog', 'Okay')
+      logDialogModal.TypeYourMessageValidateResponse("Hola", 'Hello')
+      logDialogModal.TypeYourMessageValidateResponse("Bye")
+      logDialogModal.ClickDoneTestingButton()
+      logDialogsGrid.WaitForLogDialoGridUpdateToComplete(2)
+
+      logDialogGridContent.push({userInputs: '2nd Log Dialog ◾️ Hola ◾️ Bye', turnCount: 3})
+    })
+
+    it('Create 3rd Log Dialog', () => {
+      logDialogsGrid.CreateNewLogDialogButton()
+      logDialogModal.TypeYourMessageValidateResponse('3rd Log Dialog', 'Okay')
+      logDialogModal.TypeYourMessageValidateResponse("Namaste", 'Hello')
+      logDialogModal.TypeYourMessageValidateResponse('Yo', 'Okay')
+      logDialogModal.TypeYourMessageValidateResponse("Goodbye")
+      logDialogModal.ClickDoneTestingButton()
+      logDialogsGrid.WaitForLogDialoGridUpdateToComplete(3)
+
+      logDialogGridContent.push({userInputs: '3rd Log Dialog ◾️ Namaste ◾️ Yo ◾️ Goodbye', turnCount: 4})
     })
   })
 
-  context('Verify Existing Log Dialogs', () => {
+
+  context('Verify Newly Created Log Dialogs', () => {
     it('Should verify the list of Log Dialogs', () => {
-      logDialogsGrid.VerifyListOfLogDialogs([
-        {userInputs: "1st Log Dialog ◾️ G'day ◾️ Goodbye", turnCount: 3},
-        // {userInputs: 'Yo ◾️ 2nd Log Dialog ◾️ Bye', turnCount: 3},
-        // {userInputs: 'Hi Yo ◾️ 3rd Log Dialog ◾️ Yo Hi ◾️ Goodbye', turnCount: 4},
-      ])
+      logDialogsGrid.VerifyListOfLogDialogs(logDialogGridContent)
     })
     
     it('Should ', () => {

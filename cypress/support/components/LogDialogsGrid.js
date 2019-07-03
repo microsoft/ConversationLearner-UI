@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 
+import * as modelPage from './ModelPage'
 import * as helpers from '../Helpers'
 
 export function VerifyPageTitle() { cy.Get('[data-testid="log-dialogs-title"]').contains('Log Dialogs').should('be.visible') }
@@ -25,7 +26,7 @@ export function VerifyListOfLogDialogs(expectedLogDialogs) {
       helpers.ConLog(funcName, `Find - "${logDialog.userInputs}", "${logDialog.turnCount}"`)
       let found = false
       for (let i = 0; i < userInputs.length; i++) {
-        if (userInputs[i] == logDialog.userInput && turnCounts[i] == logDialog.turnCount) {
+        if (userInputs[i] == logDialog.userInputs && turnCounts[i] == logDialog.turnCount) {
           found = true
           helpers.ConLog(funcName, `Found on row ${i}`)
           break;
@@ -46,4 +47,30 @@ export function VerifyListOfLogDialogs(expectedLogDialogs) {
       throw new Error(`Found all of the expected Train Dialogs, however there are an additional ${userInputs.length - expectedLogDialogs.length} Log Dialogs in the grid that we were not expecting. Refer to the log file for details.`)
     }
   })
+}
+
+export function WaitForLogDialoGridUpdateToComplete(expectedLogDialogCount) {
+  const funcName = 'WaitForLogDialoGridUpdateToComplete'
+  cy.WaitForStableDOM()
+  
+  let renderingShouldBeCompleteTime = new Date().getTime()
+  cy.Get('[data-testid="log-dialogs-turns"]', {timeout: 10000})
+    .should(elements => { 
+      if (modelPage.IsOverlaid()) {
+        helpers.ConLog(funcName, 'modalPage.IsOverlaid')
+        renderingShouldBeCompleteTime = new Date().getTime() + 1000
+        throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
+      } else if (new Date().getTime() < renderingShouldBeCompleteTime) {
+        helpers.ConLog(funcName, 'Wait for no overlays for at least 1 second')
+        throw new Error(`Waiting till no overlays show up for at least 1 second...retry '${funcName}'`)
+      }
+
+      if (elements.length != expectedLogDialogCount) { 
+        const errorMessage = `${elements.length} rows found in the training grid, however we were expecting ${expectedLogDialogCount}`
+        helpers.ConLog(funcName, errorMessage)
+        throw new Error(errorMessage)
+      }
+
+      helpers.ConLog(funcName, `Found the expected row count: ${elements.length}`)
+    })
 }

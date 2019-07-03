@@ -24,14 +24,33 @@ export function TypeYourMessageValidateResponse(message, expectedResponse) {
     let elements = Cypress.$('.wc-message-content')
     indexUserMesage = elements.length 
     indexBotResponse = indexUserMesage + 1
-    expectedUtteranceCount =  indexBotResponse + 1
   })
 
   // data-testid is NOT possible for this field
   cy.Get('input[placeholder="Type your message..."]').type(`${message}{enter}`).then(() => {
     if (!expectedResponse) {
-      cy.wait(1000)
+      // END_SESSION actions do not result in a Bot response. This is difficult to test for since
+      // it can take 5-30 seconds for a Bot response to show up. Even though 1-2 seconds is typical
+      // we cannot be certain there will be no Bot response unless we wait much longer to confirm 
+      // and that will cause tests to take a very long time. So to confidently validate no Bot response
+      // for this case we must do that at a later point in the test code. However, we do a quick 
+      // validation here because we should also give the UI and backend a chance to process the 
+      // user turn to produce the END_SESSION response.
+      let callItGoodTime = new Date().getTime() + 2000
+      expectedUtteranceCount = indexBotResponse
+      cy.get('.wc-message-content').should(elements => {
+        if (elements.length < expectedUtteranceCount) {
+          throw new Error('User utterance has not shown up yet...retrying')
+        } else if (elements.length > expectedUtteranceCount) {
+          // Cypress will retry this even though the result should not change but there is not much we can do about it.
+          throw new Error('Too many utterances in the Log Dialog, we were expecting an END_SESSION action without an utterance.')
+        } else if (new Date().getTime() < callItGoodTime) {
+          throw new Error('The utterance count is good, however, retrying to ensure some random Bot utterance does not come up unexpectedly')
+        }
+      })
     } else {
+      expectedUtteranceCount = indexBotResponse + 1
+
       startTime = Cypress.moment()
 
       let expectedUtterance = message//.replace(/'/g, "’")
