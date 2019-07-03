@@ -136,11 +136,16 @@ describe('Description and Tags', () => {
                 cy.get(s.dialogModal.inputDescription)
                     .type(testData.descriptionEdit)
 
+                cy.server()
+                cy.route('PUT', '/sdk/app/*/traindialog/*').as('putTrainDialog')
+
                 // Save dialog
                 cy.get(s.dialogModal.buttonCloseSave)
                     .click()
 
-                // Implicitly closes dialog, but stays on train dialogs page
+                cy.wait('@putTrainDialog')
+
+                // stays on train dialogs page
                 // Ensures content is persisted to server instead of only local memory
                 cy.reload()
 
@@ -209,7 +214,7 @@ describe('Description and Tags', () => {
                 cy.route('PUT', '/sdk/app/*/traindialog/*').as('putTrainDialog')
 
                 cy.get(s.dialogModal.buttonCloseSave)
-                    // .click()
+                // .click()
                 // TODO: Find out what is blocking the click?
                 trainDialog.ClickSaveCloseButton()
 
@@ -428,12 +433,12 @@ describe('Description and Tags', () => {
             // Wait for new log dialog to be created
             cy.server()
             cy.route('POST', '/sdk/app/*/session').as('postSession')
-            
+
             cy.get(s.logDialogs.buttonCreate)
                 .click()
 
             cy.wait('@postSession')
-            
+
             cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
                 .should('not.exist')
 
