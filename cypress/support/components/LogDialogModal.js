@@ -2,12 +2,18 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
+import * as popupModal from './PopupModal'
 import * as helpers from '../Helpers'
 
 export function CreateNewLogDialogButton() { cy.Get('[data-testid="log-dialogs-new-button"]').Click() }
 export function ClickDoneTestingButton() { return cy.Get('[data-testid="chat-session-modal-done-testing-button"]').Click() }
-export function ClickSessionTimeoutButton() { cy.Get('[data-testid="chat-session-modal-session-timeout-button"]').Click() }
+export function ClickAbandonDeleteButton() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').Click() }
 export function TypeYourMessage(message) { cy.Get('input[placeholder="Type your message..."]').type(`${message}{enter}`) }  // data-testid NOT possible
+
+export function ClickSessionTimeoutButtonAndOkayThePopup() { 
+  cy.Get('[data-testid="chat-session-modal-session-timeout-button"]').Click()
+  popupModal.VerifyExactTitleNoContentClickButton('The EndSession callback will be invoked on the next user input, and a new Session started', '[data-testid="confirm-cancel-modal-ok"]') 
+}
 
 // This function verifies both the input message is reflected back and the response is what we are expecting.
 // This also has the useful side effect of blocking this function from returning until after
@@ -36,7 +42,7 @@ export function TypeYourMessageValidateResponse(message, expectedResponse) {
       // for this case we must do that at a later point in the test code. However, we do a quick 
       // validation here because we should also give the UI and backend a chance to process the 
       // user turn to produce the END_SESSION response.
-      let callItGoodTime = new Date().getTime() + 2000
+      let callItGoodTime = new Date().getTime() + 3000
       expectedUtteranceCount = indexBotResponse
       cy.get('.wc-message-content').should(elements => {
         if (elements.length < expectedUtteranceCount) {

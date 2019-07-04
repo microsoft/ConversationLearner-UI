@@ -10,13 +10,43 @@ export function VerifyPageTitle() { cy.Get('[data-testid="log-dialogs-title"]').
 export function CreateNewLogDialogButton() { cy.Get('[data-testid="log-dialogs-new-button"]').Click() }
 export function VerifyNewLogDialogButtonIsDisabled() { cy.Get('[data-testid="log-dialogs-new-button"]').should('be.disabled') }
 export function VerifyNewLogDialogButtonIsEnabled() { cy.Get('[data-testid="log-dialogs-new-button"]').should('be.enabled') }
+export function ClickRefreshButton() { cy.Get('[data-testid="logdialogs-button-refresh"]').Click() }
 
 export function GetUserInputs() { return helpers.StringArrayFromElementText('[data-testid="log-dialogs-description"]') }
 export function GetTurnCounts() { return helpers.StringArrayFromElementText('[data-testid="log-dialogs-turns"]') }
 
+export function WaitForLogDialoGridUpdateToComplete(expectedLogDialogCount) {
+  const funcName = 'WaitForLogDialoGridUpdateToComplete'
+  cy.log(funcName, expectedLogDialogCount)
+  
+  cy.WaitForStableDOM()
+  
+  let renderingShouldBeCompleteTime = new Date().getTime()
+  cy.Get('[data-testid="log-dialogs-turns"]', {timeout: 10000})
+    .should(elements => { 
+      if (modelPage.IsOverlaid()) {
+        helpers.ConLog(funcName, 'modalPage.IsOverlaid')
+        renderingShouldBeCompleteTime = new Date().getTime() + 1000
+        throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
+      } else if (new Date().getTime() < renderingShouldBeCompleteTime) {
+        helpers.ConLog(funcName, 'Wait for no overlays for at least 1 second')
+        throw new Error(`Waiting till no overlays show up for at least 1 second...retry '${funcName}'`)
+      }
+
+      if (elements.length != expectedLogDialogCount) { 
+        const errorMessage = `${elements.length} rows found in the training grid, however we were expecting ${expectedLogDialogCount}`
+        helpers.ConLog(funcName, errorMessage)
+        throw new Error(errorMessage)
+      }
+
+      helpers.ConLog(funcName, `Found the expected row count: ${elements.length}`)
+    })
+}
 export function VerifyListOfLogDialogs(expectedLogDialogs) {
+  WaitForLogDialoGridUpdateToComplete(expectedLogDialogs.length)
+
   const funcName = 'VerifyListOfLogDialogs'
-  cy.log('Verify List of Log Dialogs', expectedLogDialogs)
+  cy.log(funcName, expectedLogDialogs)
   cy.Enqueue(() => {
     const userInputs = GetUserInputs()
     const turnCounts = GetTurnCounts()
@@ -49,28 +79,3 @@ export function VerifyListOfLogDialogs(expectedLogDialogs) {
   })
 }
 
-export function WaitForLogDialoGridUpdateToComplete(expectedLogDialogCount) {
-  const funcName = 'WaitForLogDialoGridUpdateToComplete'
-  cy.WaitForStableDOM()
-  
-  let renderingShouldBeCompleteTime = new Date().getTime()
-  cy.Get('[data-testid="log-dialogs-turns"]', {timeout: 10000})
-    .should(elements => { 
-      if (modelPage.IsOverlaid()) {
-        helpers.ConLog(funcName, 'modalPage.IsOverlaid')
-        renderingShouldBeCompleteTime = new Date().getTime() + 1000
-        throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
-      } else if (new Date().getTime() < renderingShouldBeCompleteTime) {
-        helpers.ConLog(funcName, 'Wait for no overlays for at least 1 second')
-        throw new Error(`Waiting till no overlays show up for at least 1 second...retry '${funcName}'`)
-      }
-
-      if (elements.length != expectedLogDialogCount) { 
-        const errorMessage = `${elements.length} rows found in the training grid, however we were expecting ${expectedLogDialogCount}`
-        helpers.ConLog(funcName, errorMessage)
-        throw new Error(errorMessage)
-      }
-
-      helpers.ConLog(funcName, `Found the expected row count: ${elements.length}`)
-    })
-}
