@@ -11,6 +11,7 @@ export function CreateNewLogDialogButton() { cy.Get('[data-testid="log-dialogs-n
 export function VerifyNewLogDialogButtonIsDisabled() { cy.Get('[data-testid="log-dialogs-new-button"]').should('be.disabled') }
 export function VerifyNewLogDialogButtonIsEnabled() { cy.Get('[data-testid="log-dialogs-new-button"]').should('be.enabled') }
 export function ClickRefreshButton() { cy.Get('[data-testid="logdialogs-button-refresh"]').Click() }
+export function Edit(userInputs) { cy.Get('[data-testid="log-dialogs-description"]').ExactMatch(userInputs).Click() }
 
 export function GetUserInputs() { return helpers.StringArrayFromElementText('[data-testid="log-dialogs-description"]') }
 export function GetTurnCounts() { return helpers.StringArrayFromElementText('[data-testid="log-dialogs-turns"]') }
@@ -42,6 +43,7 @@ export function WaitForLogDialoGridUpdateToComplete(expectedLogDialogCount) {
       helpers.ConLog(funcName, `Found the expected row count: ${elements.length}`)
     })
 }
+
 export function VerifyListOfLogDialogs(expectedLogDialogs) {
   WaitForLogDialoGridUpdateToComplete(expectedLogDialogs.length)
 
@@ -78,4 +80,5 @@ export function VerifyListOfLogDialogs(expectedLogDialogs) {
     }
   })
 }
+
 
