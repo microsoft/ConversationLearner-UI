@@ -10,7 +10,7 @@ import * as logDialogsGrid from '../../../support/components/LogDialogsGrid'
 import * as logDialogModal from '../../../support/components/LogDialogModal'
 import * as helpers from '../../../support/Helpers'
 
-describe("Log Tests - Log", () => {
+describe("Save Edit Delete - Log", () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   let logDialogGridContent = []

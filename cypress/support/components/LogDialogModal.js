@@ -18,7 +18,7 @@ export function ClickSessionTimeoutButtonAndOkayThePopup() {
 // This function verifies both the input message is reflected back and the response is what we are expecting.
 // This also has the useful side effect of blocking this function from returning until after
 // the response has been returned.
-// If you do not pass in the 'expectedResponse' then it will merely verify that it got a response.
+// For END_SESSION Actions leave 'expectedResponse' undefined.
 export function TypeYourMessageValidateResponse(message, expectedResponse) {
   let startTime
   let indexUserMesage
@@ -35,6 +35,7 @@ export function TypeYourMessageValidateResponse(message, expectedResponse) {
   // data-testid is NOT possible for this field
   cy.Get('input[placeholder="Type your message..."]').type(`${message}{enter}`).then(() => {
     if (!expectedResponse) {
+      // No expected response = an END_SESSION Action.
       // END_SESSION actions do not result in a Bot response. This is difficult to test for since
       // it can take 5-30 seconds for a Bot response to show up. Even though 1-2 seconds is typical
       // we cannot be certain there will be no Bot response unless we wait much longer to confirm 
@@ -42,7 +43,12 @@ export function TypeYourMessageValidateResponse(message, expectedResponse) {
       // for this case we must do that at a later point in the test code. However, we do a quick 
       // validation here because we should also give the UI and backend a chance to process the 
       // user turn to produce the END_SESSION response.
+      
+      // Bug 2196: EndSession Action in Log Dialog is causing 'Session not found' error
+      // I wanted to set this to 1000, but when I do this bug is triggered. 
+      // If the bug gets fixed we can reduce this wait time.
       let callItGoodTime = new Date().getTime() + 3000
+      
       expectedUtteranceCount = indexBotResponse
       cy.get('.wc-message-content').should(elements => {
         if (elements.length < expectedUtteranceCount) {

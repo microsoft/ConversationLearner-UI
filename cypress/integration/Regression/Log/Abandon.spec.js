@@ -10,7 +10,7 @@ import * as logDialogModal from '../../../support/components/LogDialogModal'
 import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
-describe("Log Tests - Log", () => {
+describe("Abandon - Log", () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   let logDialogGridContent = []
@@ -28,7 +28,7 @@ describe("Log Tests - Log", () => {
     })
   })
   
-  context('Abandon Log Dialogs - use END_SESSION Actions', () => {
+  context('Abandon a Log Dialog', () => {
     it('Create Log Dialog without END_SESSION then abandon it', () => {
       logDialogsGrid.CreateNewLogDialogButton()
       logDialogModal.TypeYourMessageValidateResponse(`Log Dialog #${++logDialogIndex} - ABANDONED`, 'Okay')
@@ -39,7 +39,9 @@ describe("Log Tests - Log", () => {
     it("Should verify the list of Log Dialogs hasn't changed", () => {
       logDialogsGrid.VerifyListOfLogDialogs(logDialogGridContent)
     })
-    
+  })
+
+  context('Abandon Log Dialogs - use END_SESSION Actions', () => {
     it('Create Log Dialog with END_SESSION then abandon it', () => {
       logDialogsGrid.CreateNewLogDialogButton()
       logDialogModal.TypeYourMessageValidateResponse(`Log Dialog #${++logDialogIndex} - ABANDONED`, 'Okay')
@@ -130,4 +132,19 @@ describe("Log Tests - Log", () => {
       logDialogsGrid.VerifyListOfLogDialogs(logDialogGridContent)
     })
   })
+
+  context('Save a Log Dialog to confirm prior Abandons have no affect on it', () => {
+    it('Create a Log Dialog and save it', () => {
+      logDialogsGrid.CreateNewLogDialogButton()
+      logDialogModal.TypeYourMessageValidateResponse(`Log Dialog #${++logDialogIndex}`, 'Okay')
+      logDialogModal.TypeYourMessageValidateResponse('Hi', 'Hello')
+      logDialogGridContent.push({userInputs: `Log Dialog #${logDialogIndex} ◾️ Hi`, turnCount: 2})
+
+      logDialogModal.ClickDoneTestingButton()
+    })
+
+    it("Should verify the list of Log Dialogs has the one we saved", () => {
+      logDialogsGrid.VerifyListOfLogDialogs(logDialogGridContent)
+    })
+  })    
 })
