@@ -115,3 +115,67 @@ export function VerifyActionRow(response, type, requiredEntities, disqualifyingE
   actionsGridRow.VerifyWaitForResponse(wait)
 }
 
+export function VerifyAllActionRows(rows) {
+  cy.WaitForStableDOM()
+  cy.Enqueue(() => {
+    rows.forEach(row => {
+      VerifyActionRow(row.response, row.type, row.requiredEntities, row.disqualifyingEntities, row.expectedEntity, row.wait, row.responseDetails)
+    })
+    
+    if (Cypress.$('div[role="presentation"].ms-List-cell').length > rows.length) {
+      throw new Error(`Found all of the expected Action Rows, however there are an additional ${firstInputs.length - expectedTrainDialogs.length} Action Rows in the grid that we were not expecting.`)
+    }
+  })
+}
+
+export function GetAllRows() { 
+  cy.WaitForStableDOM()
+  cy.Enqueue(() => {
+    helpers.ConLog('GetAllRows', 'start')
+
+    let allRowData = []
+
+    const allRowElements = Cypress.$('div[role="presentation"].ms-List-cell')
+helpers.ConLog('GetAllRows', `allRowElements.length: ${allRowElements.length}`)
+
+    for (let i = 0; i < allRowElements.length; i++) {
+      let type = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-action-type"]')[0])
+helpers.ConLog('GetAllRows', '1')
+      let typeSelectorPair = Row.typeSelectorPairs.find(typeSelectorPair => typeSelectorPair.type === type)
+      if (!typeSelectorPair) {
+        throw new Error(`Test Code Error - Unrecognized type: '${type}'`)
+      }
+      let response = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find(typeSelectorPair.selector)[0])
+
+helpers.ConLog('GetAllRows', '10')
+      let requiredEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-required-entity"]'))
+      let disqualifyingEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-disqualifying-entities"]'))
+      let expectedEntity = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-expected-entity"]')[0])
+      let wait = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="action-details-wait"]').length == 1
+
+helpers.ConLog('GetAllRows', '20')
+      let responseDetails
+      if (type === 'API') { 
+        let elements = Cypress.$(allRowElements[i]).find('[data-testid="action-scorer-api-name"]').parent('div')
+        responseDetails = helpers.TextContentWithoutNewlines(elements[0])       
+      } else if (type === 'CARD') { 
+        let elements = Cypress.$(allRowElements[i]).find('[data-testid="action-scorer-card-name"]').next('div')
+        responseDetails = helpers.TextContentWithoutNewlines(elements[0])
+      }
+
+helpers.ConLog('GetAllRows', '30')
+      allRowData.push({ 
+        response: response, 
+        type: type, 
+        requiredEntities: requiredEntities, 
+        disqualifyingEntities: disqualifyingEntities, 
+        expectedEntity: expectedEntity, 
+        wait: wait, 
+        responseDetails: responseDetails
+      })
+      helpers.ConLog('GetAllRows', `${response}, ${type}, ${requiredEntities}, ${disqualifyingEntities}, ${expectedEntity}, ${wait}, ${responseDetails}`)
+    }
+    
+    return allRowData 
+  })
+}
