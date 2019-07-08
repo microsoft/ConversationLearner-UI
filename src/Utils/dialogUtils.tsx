@@ -578,23 +578,22 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
     let match = false
     trainDialog.rounds.forEach(round => {
         round.scorerSteps.forEach(scorerStep => {
-            let importHash: string | null = null
+            let importText: string | null = null
 
             // If replacing imported action
             if (scorerStep.importText) {
                 // Substitue entityIds back into import text to build import hash lookup
                 const filledEntityMap = filledEntityIdMap(scorerStep.input.filledEntities, entities)
-                const importText = importTextWithEntityIds(scorerStep.importText, filledEntityMap)
-                importHash = Util.hashText(importText)
+                importText = importTextWithEntityIds(scorerStep.importText, filledEntityMap)
             }
             // If replacing stub action
             else if (scorerStep.labelAction && CLM.ActionBase.isStubbedAPI(scorerStep.scoredAction)) {
                 const apiAction = new CLM.ApiAction(scorerStep.scoredAction as any)
-                importHash = Util.hashText(apiAction.name)
+                importText = apiAction.name
             }
             
-            if (importHash) {
-                const newAction = findActionByImportHash(importHash, actionsWithHash)
+            if (importText) {
+                const newAction = findActionByImportHash(importText, actionsWithHash)
 
                 // If action exists replace labelled action with match
                 if (newAction) {
