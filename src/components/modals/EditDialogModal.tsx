@@ -1008,6 +1008,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
                                 renderInput={() => this.renderWebchatInput(disableUserInput || hasBlockingError)}
                                 selectedActivityIndex={this.props.initialSelectedActivityIndex}
+                                disableCardActions={this.state.hasEndSession}
                             />
                             {chatDisable}
                         </div>

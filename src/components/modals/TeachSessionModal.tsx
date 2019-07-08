@@ -688,6 +688,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                                     selectedActivityIndex={this.state.selectedActivityIndex}
                                     replaceActivityText={this.state.replaceActivityText}
                                     replaceActivityIndex={this.state.replaceActivityIndex}
+                                    disableCardActions={this.props.teachSession.dialogMode === CLM.DialogMode.EndSession}
                                 />
                                 {chatDisable}
                             </div>
