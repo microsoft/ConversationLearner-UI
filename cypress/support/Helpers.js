@@ -72,23 +72,7 @@ export function Moment(dateTime) {
 // This will return the Inner Text of an element without markup nor newline characters.
 // Needed because each browser handles this functionality differently.
 export function TextContentWithoutNewlines(element) {
-  if (element === undefined) { 
-    ConLog('TextContentWithoutNewlines', 'undefined element has been passed in.')
-    return undefined 
-  }
-  const returnValue = element.textContent.replace(/(\r\n|\n|\r)/gm, '')
-  ConLog('TextContentWithoutNewlines', returnValue)
-  return returnValue
-}
-
-// This will return the Inner Text of an element split into an array on new line boundaries
-export function ArrayOfTextContentWithoutNewlines(elements) {
-  if (elements === undefined || elements.length == 0) { return undefined }
-  let arrayOfTextContent = []
-  for (let i = 0; i < elements.length; i++) {
-    arrayOfTextContent.push(TextContentWithoutNewlines(elements[i]))
-  }
-  return arrayOfTextContent
+  return element.textContent.replace(/(\r\n|\n|\r)/gm, '')
 }
 
 // Model names have a suffix which will end with a single character representing the 
@@ -98,10 +82,10 @@ let buildKey = undefined
 export function GetBuildKey() {
   if (!buildKey) {
     buildKey = Cypress.env('BUILD_NUM')
-    ConLog('GetBuildKey', `BUILD_NUM: ${Cypress.env('BUILD_NUM')} -- ${buildKey}`)
+ConLog('GetBuildKey', `BUILD_NUM: ${Cypress.env('BUILD_NUM')} -- ${buildKey}`)
     if (buildKey) {
       buildKey = String.fromCharCode('a'.charCodeAt() + buildKey % 26)
-      ConLog('GetBuildKey', `buildKey: ${buildKey}`)
+ConLog('GetBuildKey', `buildKey: ${buildKey}`)
     } else {
       // There is no BUILD_NUM environment variable so this is a local test run.
       // For local test runs always using the same build key works.

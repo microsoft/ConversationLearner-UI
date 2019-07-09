@@ -135,7 +135,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    onClickRow(item: any, index: number | undefined, event: React.FocusEvent<HTMLElement> | undefined) {
+    onClickRow(item: any, index: number | undefined, event: Event | undefined) {
         // Don't response to row click if it's button that was clicked
         if (event && (event.target as any).type !== 'button') {
             const action = item as CLM.ActionBase
@@ -170,8 +170,9 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     items={sortedActions}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
+                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
                     onRenderItemColumn={(action: CLM.ActionBase, i, column: IRenderableColumn) => column.render(action, this)}
-                    onActiveItemChanged={(item, index, ev) => this.onClickRow(item, index, ev)}
+                    onItemInvoked={(item, index, ev) => this.onClickRow(item, index, ev)}
                     onColumnHeaderClick={this.onClickColumnHeader}
                     onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps,
                         defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
@@ -266,7 +267,7 @@ function renderCondition(text: string, isRequired: boolean): JSX.Element {
         <div 
             className='ms-ListItem is-selectable ms-ListItem-primaryText' 
             key={text} 
-            data-testid={isRequired ? "action-details-required-entities" : "action-details-disqualifying-entities"}
+            data-testid={isRequired ? "action-details-required-entity" : "action-details-disqualifying-entity"}
         >
                 {text}
         </div>
