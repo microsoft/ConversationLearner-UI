@@ -18,7 +18,6 @@ describe('Entity Labeling - Create Model', () => {
   context('Create', () => {
     it('Create a model to test against', () => {
       models.CreateNewModel('z-entityLabeling')
-      cy.WaitForTrainingStatusCompleted()
     })
 
     it('Create a Multivalue Entity', () => {
