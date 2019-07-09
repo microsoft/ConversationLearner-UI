@@ -87,6 +87,18 @@ jobs:
       # - run: npm run cypress -- run --record false --spec  "cypress/integration/smoke/**/*.spec.*"
       - run: npm run cypress -- run --record false --spec  "cypress/integration/Regression/**/*.spec.js"
 
+      - store_artifacts:
+          path: results
+
+      - store_artifacts:
+          path: cypress/videos
+
+      - store_artifacts:
+          path: cypress/screenshots
+          
+      - store_test_results:
+          path: results
+
       - run:
           command: npm run cypress -- run --record false --spec  "cypress/integration/regressionTs/**/*.spec.*"
           when: always
@@ -102,7 +114,6 @@ jobs:
           
       - store_test_results:
           path: results
-
 
       - run: 
           command: npm run cypress -- run --record false --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js"
