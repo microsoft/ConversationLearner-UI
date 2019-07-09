@@ -342,13 +342,14 @@ class Entities extends React.Component<Props, ComponentState> {
                             items={computedEntities}
                             columns={this.state.columns}
                             checkboxVisibility={OF.CheckboxVisibility.hidden}
+                            onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
                             onRenderItemColumn={(entity: EntityBase, i, column: IRenderableColumn) =>
                                 column.render(entity, this)}
                             onRenderDetailsHeader={(detailsHeaderProps: OF.IDetailsHeaderProps,
                                 defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
                                 onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
                             onColumnHeaderClick={this.onClickColumnHeader}
-                            onActiveItemChanged={entity => this.onSelectEntity(entity)}
+                            onItemInvoked={entity => this.onSelectEntity(entity)}
                         />
                     </React.Fragment>}
                 <EntityCreatorEditor

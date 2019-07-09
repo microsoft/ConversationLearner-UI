@@ -1560,8 +1560,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 columns={this.state.columns}
                                 checkboxVisibility={OF.CheckboxVisibility.hidden}
                                 onColumnHeaderClick={this.onClickColumnHeader}
+                                onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
                                 onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
-                                onActiveItemChanged={trainDialog => this.onClickTrainDialogItem(trainDialog)}
+                                onItemInvoked={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                             />}
                     </React.Fragment>}
                 {teachSession && teachSession.teach &&
