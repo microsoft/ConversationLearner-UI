@@ -511,7 +511,7 @@ export const getPreBuiltEntityDisplayName = (entity: CLM.EntityBase, pe: CLM.Pre
     return names[names.length - 1]
 }
 
-export const convertPredictedEntityToGenericEntity = (pe: CLM.PredictedEntity, showSelect: boolean, entityName: string, displayName: string): models.IGenericEntity<models.IGenericEntityData<CLM.PredictedEntity>> =>
+export const convertPredictedEntityToGenericEntity = (pe: CLM.PredictedEntity, entityName: string, displayName: string): models.IGenericEntity<models.IGenericEntityData<CLM.PredictedEntity>> =>
     ({
         startIndex: pe.startCharIndex,
         // The predicted entities returned by the service treat indices as characters instead of before or after the character so add 1 to endIndex for slicing using JavaScript
@@ -528,7 +528,6 @@ export const convertPredictedEntityToGenericEntity = (pe: CLM.PredictedEntity, s
             text: pe.entityText,
             displayName,
             original: pe,
-            showSelect
         }
     })
 
@@ -596,11 +595,11 @@ export const convertExtractorResponseToEditorModels = (extractResponse: CLM.Extr
 
     const customEntities = internalPredictedEntities
         .filter(({ entity }) => entity && entity.entityType === CLM.EntityType.LUIS)
-        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity!.doNotMemorize ? true : false, entity!.entityName, util.entityDisplayName(entity!)))
+        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity!.entityName, util.entityDisplayName(entity!)))
 
     const preBuiltEntities = internalPredictedEntities
         .filter(({ entity }) => entity && CLM.isPrebuilt(entity))
-        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity!.doNotMemorize ? true : false, entity!.entityName, getPreBuiltEntityDisplayName(entity!, predictedEntity)))
+        .map(({ entity, predictedEntity }) => convertPredictedEntityToGenericEntity(predictedEntity, entity!.entityName, getPreBuiltEntityDisplayName(entity!, predictedEntity)))
 
     return {
         options,
