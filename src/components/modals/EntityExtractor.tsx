@@ -583,9 +583,10 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 
                     <OF.DefaultButton
                         data-testid="entity-extractor-create-button"
+                        disabled={!canEdit}
                         onClick={this.onClickCreateEntity}
-                        ariaDescription="Create Entity"
-                        text="Create Entity"
+                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_ENTITY)}
+                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_ENTITY)}
                         iconProps={{ iconName: 'Add' }}
                     />
                 </div>

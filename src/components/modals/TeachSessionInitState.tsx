@@ -91,8 +91,8 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons_secondary">
                         <OF.DefaultButton
                             onClick={this.onClickCreateEntity}
-                            ariaDescription="Create Entity"
-                            text="Entity"
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_ENTITY)}
+                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_ENTITY)}
                             iconProps={{ iconName: 'CirclePlus' }}
                         />
                     </div>

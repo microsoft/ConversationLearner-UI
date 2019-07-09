@@ -502,7 +502,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined, skipAPIStubEdit?: boolean) {
+    async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined) {
         if (!trainScorerStep) {
             throw new Error(`You attempted to change an Action but the step you are editing was undefined. Please open an issue.`)
         }
@@ -1424,6 +1424,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                     <OF.DefaultButton
                         onClick={this.onClickValidate}
+                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
                         ariaDescription={Util.formatMessageId(intl, FM.BUTTON_TEST)}
                         text={Util.formatMessageId(intl, FM.BUTTON_TEST)}
                         iconProps={{ iconName: 'TestCase' }}
