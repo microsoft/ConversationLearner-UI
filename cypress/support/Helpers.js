@@ -72,8 +72,13 @@ export function Moment(dateTime) {
 // This will return the Inner Text of an element without markup nor newline characters.
 // Needed because each browser handles this functionality differently.
 export function TextContentWithoutNewlines(element) {
-  if (element === undefined) { return undefined }
-  return element.textContent.replace(/(\r\n|\n|\r)/gm, '')
+  if (element === undefined) { 
+    ConLog('TextContentWithoutNewlines', 'undefined element has been passed in.')
+    return undefined 
+  }
+  const returnValue = element.textContent.replace(/(\r\n|\n|\r)/gm, '')
+  ConLog('TextContentWithoutNewlines', returnValue)
+  return returnValue
 }
 
 // This will return the Inner Text of an element split into an array on new line boundaries

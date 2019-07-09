@@ -19,11 +19,11 @@ export class Row {
   constructor(actionType, textId) {
     let typeSelectorPair = Row.typeSelectorPairs.find(typeSelectorPair => typeSelectorPair.type === actionType)
     if (!typeSelectorPair) {
-      throw new Error(`Test Code Error - Unrecognized type: '${actionType}'`)
+      throw new Error(`Test Code Error - Unrecognized Action Type: '${actionType}'`)
     }
     
     cy.Get(typeSelectorPair.selector)
-      .contains(textId)
+      .ExactMatch(textId)
       .parents('div.ms-DetailsRow-fields')
       .as('responseDetailsRow')
   }
@@ -36,11 +36,11 @@ export class Row {
 
   // The UI automatically populates the Required Entities field with entities found in the response text,
   // so the additionalRequiredEntities parameter allows the caller to specify entities not found in the response text.
-  VerifyRequiredEntities(requiredEntitiesFromResponse, additionalRequiredEntities) { this._VerifyEntities('[data-testid="action-details-required-entity"]', '[data-testid="action-details-empty-required-entities"]', requiredEntitiesFromResponse, additionalRequiredEntities) }
+  VerifyRequiredEntities(requiredEntitiesFromResponse, additionalRequiredEntities) { this._VerifyEntities('[data-testid="action-details-required-entities"]', '[data-testid="action-details-empty-required-entities"]', requiredEntitiesFromResponse, additionalRequiredEntities) }
   
   // The UI automatically populates the Disqualtifying Entities field with the expected entity,
   // so the disqualifyingEntities parameter allows the caller to specify entities not found in expectedEntity.
-  VerifyDisqualifyingEntities(expectedEntity, disqualifyingEntities) { this._VerifyEntities('[data-testid="action-details-disqualifying-entity"]', '[data-testid="action-details-empty-disqualifying-entities"]', expectedEntity, disqualifyingEntities) }
+  VerifyDisqualifyingEntities(expectedEntity, disqualifyingEntities) { this._VerifyEntities('[data-testid="action-details-disqualifying-entities"]', '[data-testid="action-details-empty-disqualifying-entities"]', expectedEntity, disqualifyingEntities) }
   
   // In order to get the 'expectedApiResponse' parameter right, first run a test with this undefined,
   // then look in the log to see the actual value, then add it to the code.
@@ -105,20 +105,24 @@ Row.typeSelectorPairs = [
 ]
 
 export function VerifyActionRow(response, type, requiredEntities, disqualifyingEntities, expectedEntity, wait, responseDetails) {
-  let actionsGridRow = new Row(type, response)
-  if (type === 'API') { actionsGridRow.VerifyApi(responseDetails) }
-  else if (type === 'CARD') { actionsGridRow.VerifyCard(responseDetails) }
-  actionsGridRow.VerifyActionType(type)
-  actionsGridRow.VerifyRequiredEntities(requiredEntities)
-  actionsGridRow.VerifyDisqualifyingEntities(disqualifyingEntities)
-  actionsGridRow.VerifyExpectedEntity(expectedEntity)
-  actionsGridRow.VerifyWaitForResponse(wait)
+  cy.Enqueue(() => {
+    helpers.ConLog('VerifyActionRow', `${response}, ${type}, ${requiredEntities}, ${disqualifyingEntities}, ${expectedEntity}, ${wait}, ${responseDetails}`)
+    let actionsGridRow = new Row(type, response)
+    if (type === 'API') { actionsGridRow.VerifyApi(responseDetails) }
+    else if (type === 'CARD') { actionsGridRow.VerifyCard(responseDetails) }
+    actionsGridRow.VerifyActionType(type)
+    actionsGridRow.VerifyRequiredEntities(requiredEntities)
+    actionsGridRow.VerifyDisqualifyingEntities(disqualifyingEntities)
+    actionsGridRow.VerifyExpectedEntity(expectedEntity)
+    actionsGridRow.VerifyWaitForResponse(wait)
+  })
 }
 
 export function VerifyAllActionRows(rows) {
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
     rows.forEach(row => {
+      helpers.ConLog('VerifyAllActionRows', `${row.response}, ${row.type}, ${row.requiredEntities}, ${row.disqualifyingEntities}, ${row.expectedEntity}, ${row.wait}, ${row.responseDetails}`)
       VerifyActionRow(row.response, row.type, row.requiredEntities, row.disqualifyingEntities, row.expectedEntity, row.wait, row.responseDetails)
     })
     
@@ -129,7 +133,8 @@ export function VerifyAllActionRows(rows) {
 }
 
 export function GetAllRows() { 
-  cy.WaitForStableDOM()
+  //cy.WaitForStableDOM()
+  //return new Promise((resolve) => {
   cy.Enqueue(() => {
     helpers.ConLog('GetAllRows', 'start')
 
@@ -148,7 +153,7 @@ helpers.ConLog('GetAllRows', '1')
       let response = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find(typeSelectorPair.selector)[0])
 
 helpers.ConLog('GetAllRows', '10')
-      let requiredEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-required-entity"]'))
+      let requiredEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-required-entities"]'))
       let disqualifyingEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-disqualifying-entities"]'))
       let expectedEntity = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-expected-entity"]')[0])
       let wait = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="action-details-wait"]').length == 1
@@ -176,6 +181,7 @@ helpers.ConLog('GetAllRows', '30')
       helpers.ConLog('GetAllRows', `${response}, ${type}, ${requiredEntities}, ${disqualifyingEntities}, ${expectedEntity}, ${wait}, ${responseDetails}`)
     }
     
-    return allRowData 
+    return allRowData
+    //resolve(allRowData)
   })
 }

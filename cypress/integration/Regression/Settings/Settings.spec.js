@@ -21,8 +21,10 @@ describe("Settings - Settings", () => {
     it('Should import a model to test against, navigate to Log Dialogs view and wait for training status to complete', () => {
       models.ImportModel('z-Settings', 'z-entityTests.cl')
       modelPage.NavigateToActions()
-      let allActionGridRows = actionsGrid.GetAllRows()
-      actionsGrid.VerifyActionRow(allActionGridRows)
+      cy.WaitForStableDOM()
+      cy.Enqueue(() => { return actionsGrid.GetAllRows() }).then(allActionGridRows => {
+        actionsGrid.VerifyAllActionRows(allActionGridRows)
+      })
     })
   })
 })
