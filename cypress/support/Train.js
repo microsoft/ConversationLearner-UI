@@ -328,9 +328,6 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
     if (newMessage) {
       cy.WaitForStableDOM()
       
-      // TODO: Temporarily commented this out to see if tests start failing on this bug again.
-      //cy.wait(1000) // TODO: Remove this after fixing Bug 1855: More Odd Rendering in Train Dialog Chat Pane
-      
       cy.Enqueue(() => { 
         // Sometimes the UI has already automaticly selected the Bot response we want
         // so we need to confirm that we actually need to click on the action, 
