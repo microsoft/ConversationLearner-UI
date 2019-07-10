@@ -396,12 +396,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     // If editing an existing train dialog, return its Id, otherwise null
     sourceTrainDialogId(): string | null {
-        if (this.state.currentTrainDialog
-            && this.state.editType !== EditDialogType.BRANCH
-            && this.state.editType !== EditDialogType.NEW
-            && this.state.editType !== EditDialogType.IMPORT) {
-                return this.state.currentTrainDialog.trainDialogId
-            }
+        if (this.state.editType === EditDialogType.BRANCH
+            || this.state.editType === EditDialogType.NEW
+            || this.state.editType === EditDialogType.IMPORT) {
+            return null
+        }
+        if (this.state.originalTrainDialog) {
+            return this.state.originalTrainDialog.trainDialogId
+        }
+
+        if (this.state.currentTrainDialog) {
+            return this.state.currentTrainDialog.trainDialogId
+        }
         return null
     }
 
@@ -424,6 +430,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     // Check to see if new TrainDialog can be merged with an existing TrainDialog
                     const matchedTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
                     if (matchedTrainDialog) {
+                        
+                        // If editing an existing Train Dialog, replace existing with the new one
+                        if (sourceTrainDialogId) {
+                            await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog) as any) as Promise<void>)
+                        }
+
                         await this.handlePotentialMerge(newTrainDialog, matchedTrainDialog)
                         return
                     }
