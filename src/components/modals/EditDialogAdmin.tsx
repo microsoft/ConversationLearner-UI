@@ -228,6 +228,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                         onChangeDescription={this.props.onChangeDescription}
                         onAddTag={this.props.onAddTag}
                         onRemoveTag={this.props.onRemoveTag}
+                        readOnly={this.props.editState !== EditState.CAN_EDIT}
                     />
                     <b/>
                 </div>
