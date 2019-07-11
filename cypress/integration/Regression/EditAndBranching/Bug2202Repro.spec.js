@@ -29,13 +29,13 @@ describe("Bug 2202 Repro - EditAndBranching", () => {
     // When this bug is fixed, this block of code will fail.
     // It can then be commented out AND the block of code below should then be uncommented and possibly altered so it works.
     it('Verify that Bug 2202 reproduces', () => {
-      cy.Get('div.cl-errorpanel').contains('Request failed with status code 500')
-      cy.Get('div.cl-errorpanel').contains('Inline node representing entity')
+      helpers.VerifyErrorMessageContains('Request failed with status code 500')
+      helpers.VerifyErrorMessageContains('Inline node representing entity')
     })
     
-    // it('Verify that Bug 2202 does not reproduce', () => {
-    //   cy.DoesNotContain('div.cl-errorpanel > div')
-    //   train.SaveAsIsVerifyInGrid()
-    // })
+    it('Verify that Bug 2202 does not reproduce', () => {
+      helpers.VerifyNoErrorMessages()
+      train.SaveAsIsVerifyInGrid()
+    })
   })
 })

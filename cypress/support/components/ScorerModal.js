@@ -61,12 +61,21 @@ function VerifyEndSessionActionState(expectedData, selectButtonDataTestId, state
 
 export function VerifyNoEnabledSelectActionButtons() {
   cy.Enqueue(() => {
-    let length = Cypress.$('[data-testid="action-scorer-button-clickable"]').length 
-               + Cypress.$('[data-testid="action-scorer-button-selected"]').length
-               + Cypress.$('[data-testid="action-scorer-add-action-button"]').length
-               
+
+    const clickable = Cypress.$('[data-testid="action-scorer-button-clickable"]')
+    const selected = Cypress.$('[data-testid="action-scorer-button-selected"]')
+    const addActionButton = Cypress.$('[data-testid="action-scorer-add-action-button"][aria-disabled="false"]')
+    const addApiButton = Cypress.$('[data-testid="action-scorer-add-apistub-button"][aria-disabled="false"]')
+
+    if (clickable.length > 0) { helpers.ConLog('VerifyNoEnabledSelectActionButtons', clickable[0].outerHTML) }
+    if (selected.length > 0) { helpers.ConLog('VerifyNoEnabledSelectActionButtons', selected[0].outerHTML) }
+    if (addActionButton.length > 0) { helpers.ConLog('VerifyNoEnabledSelectActionButtons', addActionButton[0].outerHTML) }
+    if (addApiButton.length > 0) { helpers.ConLog('VerifyNoEnabledSelectActionButtons', addApiButton[0].outerHTML) }
+
+    const length = clickable.length + selected.length + addActionButton.length + addApiButton.length
+
     if (length > 0 ) {
-      throw new Error(`We are expecting to find NO enabled Action Scorer buttons, instead we found ${length} of them.`)
+      throw new Error(`We are expecting to find NO enabled Action Scorer buttons, instead we found ${length} of them. See log file for details.`)
     }
   })
 }

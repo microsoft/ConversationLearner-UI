@@ -27,7 +27,6 @@ export function VerifyHomeLinkDoesNotShowIncidentTriangle() { cy.Get('[data-test
 // These really should be in a file named '.\cypress\support\components\HomePanel.js' but it would be the only code in it
 // so rather than create a 2 line .js file, we are putting them here.
 export function HomePanel_VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-errorpanel > div').ExactMatch(expectedMessage) }
-export function HomePanel_VerifyNoErrorMessages() { cy.DoesNotContain('div.cl-errorpanel > div') }
 
 // To validate that this code works, search src\actions\appActions.ts for these and alter them:
 //   fetchApplicationTrainingStatusThunkAsync

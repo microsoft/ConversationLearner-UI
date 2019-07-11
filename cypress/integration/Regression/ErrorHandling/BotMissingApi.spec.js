@@ -25,7 +25,7 @@ describe('Bot Missing API - ErrorHandling', () => {
   context('Validation', () => {
     it('Should verify that Home link/panel shows an IncidentTriangle and an error message', () => {
       modelPage.VerifyHomeLinkShowsIncidentTriangle()
-      modelPage.HomePanel_VerifyErrorMessage('Please check that the correct version of your Bot is running.')
+      helpers.VerifyErrorMessageContains('Please check that the correct version of your Bot is running.')
     })
     
     it('Should verify the Action grid shows an IncidentTriangle', () => {
@@ -81,7 +81,7 @@ describe('Bot Missing API - ErrorHandling', () => {
     it('Should verify that Home link/panel no longer shows an IncidentTriangle and nor the error message', () => {
       modelPage.NavigateToHome()
       modelPage.VerifyHomeLinkDoesNotShowIncidentTriangle()
-      modelPage.HomePanel_VerifyNoErrorMessages()
+      helpers.VerifyNoErrorMessages()
     })
     
     it('Should verify that the New Train Dialog button is enabled', () => {

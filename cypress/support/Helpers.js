@@ -94,3 +94,7 @@ ConLog('GetBuildKey', `buildKey: ${buildKey}`)
   }
   return buildKey
 }
+
+export function VerifyErrorMessageContains(expectedMessage) { cy.Get('div.cl-errorpanel').contains(expectedMessage) }
+export function VerifyErrorMessageExactMatch(expectedMessage) { cy.Get('div.cl-errorpanel').ExactMatch(expectedMessage) }
+export function VerifyNoErrorMessages() { cy.DoesNotContain('div.cl-errorpanel') }
