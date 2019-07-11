@@ -313,7 +313,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     @OF.autobind
     async onWebChatPostActivity(activity: Activity) {
 
-        if (activity.type === 'message') {
+        if (activity.type === 'message' && activity.text && activity.text !== "") {
 
             const newTrainDialog: CLM.TrainDialog = {
                 ...deepCopy(this.props.trainDialog),
