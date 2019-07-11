@@ -289,7 +289,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
     }
 
     async onWebChatPostActivity(activity: Activity) {
-        if (activity.type === 'message') {
+
+        if (activity.type === 'message' && activity.text && activity.text !== "") {
             if (!this.props.teachSession.teach) {
                 throw new Error(`Current teach session is not defined. This may be due to race condition where you attempted to chat with the bot before the teach session has been created.`)
             }
