@@ -5,7 +5,9 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
+import * as entitiesGrid from '../../../support/components/EntitiesGrid'
 import * as actionsGrid from '../../../support/components/ActionsGrid'
+
 import * as logDialogsGrid from '../../../support/components/LogDialogsGrid'
 import * as logDialogModal from '../../../support/components/LogDialogModal'
 import * as common from '../../../support/Common'
@@ -17,14 +19,33 @@ describe("Settings - Settings", () => {
   let logDialogGridContent = []
   let logDialogIndex = 0
 
+  let entityGridRows
+  let actionGridRows
+  
   context('Setup', () => {
     it('Should import a model to test against, navigate to Log Dialogs view and wait for training status to complete', () => {
-      models.ImportModel('z-Settings', 'z-entityTests.cl')
+      models.ImportModel('z-settingsTests', 'z-settingsTests.cl')
+    })
+
+    it('Should grab a copy of the Entity Grid data', () => {
+      modelPage.NavigateToEntities()
+      cy.WaitForStableDOM()
+      cy.Enqueue(() => { return entitiesGrid.GetAllRows() }).then(allEntityGridRows => {
+        entityGridRows = allEntityGridRows
+        entitiesGrid.VerifyAllEntityRows(entityGridRows)
+      })
+    })
+
+    it('Should grab a copy of the Action Grid data', () => {
       modelPage.NavigateToActions()
       cy.WaitForStableDOM()
-      cy.Enqueue(() => { return actionsGrid.GetAllRows() }).then(allActionGridRows => {
-        actionsGrid.VerifyAllActionRows(allActionGridRows)
-      })
+      cy.Enqueue(() => { return actionsGrid.GetAllRows() }).then(allActionGridRows => actionGridRows = allActionGridRows)
+    })
+  })
+
+  context('Setup', () => {
+    it('verifications to be placed later', () => {
+      actionsGrid.VerifyAllActionRows(actionGridRows)
     })
   })
 })

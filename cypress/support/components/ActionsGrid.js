@@ -107,14 +107,14 @@ Row.typeSelectorPairs = [
 export function VerifyActionRow(response, type, requiredEntities, disqualifyingEntities, expectedEntity, wait, responseDetails) {
   cy.Enqueue(() => {
     helpers.ConLog('VerifyActionRow', `${response}, ${type}, ${requiredEntities}, ${disqualifyingEntities}, ${expectedEntity}, ${wait}, ${responseDetails}`)
-    let actionsGridRow = new Row(type, response)
-    if (type === 'API') { actionsGridRow.VerifyApi(responseDetails) }
-    else if (type === 'CARD') { actionsGridRow.VerifyCard(responseDetails) }
-    actionsGridRow.VerifyActionType(type)
-    actionsGridRow.VerifyRequiredEntities(requiredEntities)
-    actionsGridRow.VerifyDisqualifyingEntities(disqualifyingEntities)
-    actionsGridRow.VerifyExpectedEntity(expectedEntity)
-    actionsGridRow.VerifyWaitForResponse(wait)
+    let actionGridRow = new Row(type, response)
+    if (type === 'API') { actionGridRow.VerifyApi(responseDetails) }
+    else if (type === 'CARD') { actionGridRow.VerifyCard(responseDetails) }
+    actionGridRow.VerifyActionType(type)
+    actionGridRow.VerifyRequiredEntities(requiredEntities)
+    actionGridRow.VerifyDisqualifyingEntities(disqualifyingEntities)
+    actionGridRow.VerifyExpectedEntity(expectedEntity)
+    actionGridRow.VerifyWaitForResponse(wait)
   })
 }
 
@@ -126,39 +126,34 @@ export function VerifyAllActionRows(rows) {
       VerifyActionRow(row.response, row.type, row.requiredEntities, row.disqualifyingEntities, row.expectedEntity, row.wait, row.responseDetails)
     })
     
-    if (Cypress.$('div[role="presentation"].ms-List-cell').length > rows.length) {
-      throw new Error(`Found all of the expected Action Rows, however there are an additional ${firstInputs.length - expectedTrainDialogs.length} Action Rows in the grid that we were not expecting.`)
+    const gridRowCount = Cypress.$('div[role="presentation"].ms-List-cell').length
+    if (gridRowCount > rows.length) {
+      throw new Error(`Found all of the expected Action Rows, however there are an additional ${gridRowCount - rows.length} Action Rows in the grid that we were not expecting.`)
     }
   })
 }
 
 export function GetAllRows() { 
-  //cy.WaitForStableDOM()
-  //return new Promise((resolve) => {
   cy.Enqueue(() => {
     helpers.ConLog('GetAllRows', 'start')
 
     let allRowData = []
 
     const allRowElements = Cypress.$('div[role="presentation"].ms-List-cell')
-helpers.ConLog('GetAllRows', `allRowElements.length: ${allRowElements.length}`)
 
     for (let i = 0; i < allRowElements.length; i++) {
       let type = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-action-type"]')[0])
-helpers.ConLog('GetAllRows', '1')
       let typeSelectorPair = Row.typeSelectorPairs.find(typeSelectorPair => typeSelectorPair.type === type)
       if (!typeSelectorPair) {
         throw new Error(`Test Code Error - Unrecognized type: '${type}'`)
       }
       let response = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find(typeSelectorPair.selector)[0])
 
-helpers.ConLog('GetAllRows', '10')
       let requiredEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-required-entities"]'))
       let disqualifyingEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-disqualifying-entities"]'))
       let expectedEntity = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-expected-entity"]')[0])
       let wait = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="action-details-wait"]').length == 1
 
-helpers.ConLog('GetAllRows', '20')
       let responseDetails
       if (type === 'API') { 
         let elements = Cypress.$(allRowElements[i]).find('[data-testid="action-scorer-api-name"]').parent('div')
@@ -168,7 +163,6 @@ helpers.ConLog('GetAllRows', '20')
         responseDetails = helpers.TextContentWithoutNewlines(elements[0])
       }
 
-helpers.ConLog('GetAllRows', '30')
       allRowData.push({ 
         response: response, 
         type: type, 
@@ -182,6 +176,5 @@ helpers.ConLog('GetAllRows', '30')
     }
     
     return allRowData
-    //resolve(allRowData)
   })
 }
