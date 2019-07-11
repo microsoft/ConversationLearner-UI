@@ -37,27 +37,6 @@ describe('Entity Labeling - Create Model', () => {
       train.CreateNewTrainDialog()
     })
 
-    // ------------------------------------------------------------------------
-    // This block of code should be removed once we determine and fix the cause
-    // of: Bug 1901-Automatic Entity Labeling Is NOT Consistent
-    // ------------------------------------------------------------------------
-    it('Create a SPECIAL Training Dialog to deal with bug 1901', () => {
-      train.TypeDescription('Tag Only')
-      train.AddTags(['Tag'])
-    
-      train.TypeYourMessage('This is Tag.')
-      train.LabelTextAsEntity('Tag', 'multi')
-      train.ClickScoreActionsButton()
-      train.SelectTextAction('Hello')
-
-      train.SaveAsIsVerifyInGrid()
-
-      modelPage.NavigateToTrainDialogs()
-      cy.WaitForTrainingStatusCompleted()
-      train.CreateNewTrainDialog()
-    })
-    // ------------------------------------------------------------------------
-
     it('Label single word as an entity.', () => {
       train.TypeDescription('Both Tag & Frog')
       train.AddTags(['Tag', 'Frog'])
@@ -65,18 +44,16 @@ describe('Entity Labeling - Create Model', () => {
       train.TypeYourMessage('This is Tag.')
       train.LabelTextAsEntity('Tag', 'multi', false)
       train.ClickScoreActionsButton()
-      // TODO: Verify that the entity was labeled and now in memory.
       train.SelectTextAction('Hello')
-      cy.WaitForTrainingStatusCompleted()
     })
     
-    it('Label multiple words as the same entity.', () => {
-      // TODO: Watch this test and see if this wait fixed the occassional NON labeling of "Tag"
-      //       The theory is that the training status complete is not accurate and by waiting longer
-      //       we can ensure training from the previous step does complete and "Tag" should then
-      //       get automatically labeled as an entity.
-      cy.wait(30000)
+    it('Save the training and re-edit it to later verify Entity recognition', () => {
+      train.SaveAsIsVerifyInGrid()
+      cy.WaitForTrainingStatusCompleted()
+      train.EditTraining('This is Tag.', 'This is Tag.', 'Hello')
+    })
 
+    it('Label multiple words as the same entity.', () => {
       train.TypeYourMessage('This is Frog and Tag.')
       memoryTableComponent.VerifyEntityValues('multi', ['Tag'])
       train.VerifyEntityLabel('Tag', 'multi')
@@ -84,24 +61,15 @@ describe('Entity Labeling - Create Model', () => {
       train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
       train.SelectTextAction('Hi')
-      //cy.WaitForTrainingStatusCompleted()
     })
 
-    // This block of code was added on 06/25/2019 when this code was consistently failing
-    // without doing this. It was even failing if I waited 5 minutes without saving and re-editing it.
-    it('Save the training and re-edit it to later verify both Tag and Frog are recognized and labeled as the Tag Entity', () => {
+    it('Save the training and re-edit it to later verify Entity recognition', () => {
       train.SaveAsIsVerifyInGrid()
       cy.WaitForTrainingStatusCompleted()
       train.EditTraining('This is Tag.', 'This is Frog and Tag.', 'Hi')
     })
 
     it('Reverse the labeled words and once again label them as the same entity.', () => {
-      // TODO: Watch this test and see if this wait fixed the occassional NON labeling of "Frog"
-      //       The theory is that the training status complete is not accurate and by waiting longer
-      //       we can ensure training from the previous step does complete and "Frog" should then
-      //       get automatically labeled as an entity.
-      cy.wait(30000)
-
       train.TypeYourMessage('This is Tag and Frog.')
       memoryTableComponent.VerifyEntityValues('multi', ['Tag', 'Frog'])
       train.VerifyEntityLabel('Tag', 'multi')

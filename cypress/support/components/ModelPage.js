@@ -33,28 +33,70 @@ export function HomePanel_VerifyNoErrorMessages() { cy.DoesNotContain('div.cl-er
 //   fetchApplicationTrainingStatusThunkAsync
 //   interval:
 //   maxDuration:
-let canRefreshTrainingStatusTime = 0
-export function WaitForTrainingStatusCompleted() {
-  const currentHtml = Cypress.$('html')[0].outerHTML
-  const currentTime = new Date().getTime()
-  if ((currentHtml.includes('data-testid="training-status-polling-stopped-warning"') ||
-      currentHtml.includes('data-testid="training-status-failed"')) &&
-      (currentTime > canRefreshTrainingStatusTime)) {
-        
-    if (currentHtml.includes('data-testid="training-status-failed"')) {
-      helpers.ConLog('WaitForTrainingStatusCompleted', 'detected data-testid="training-status-failed"')
+export class TrainingStatus {
+  constructor() {
+    this.canRefreshTrainingStatusTime = 0
+    this.lastTrainingStatusElements = undefined
+    
+    const trainingStatusElements = Cypress.$('[data-testid^="training-status-"]')
+    if (Cypress.$(trainingStatusElements).find('[data-testid="training-status-completed"]').length > 0) {
+      this.waitForTrainingStatusNotCompleteTime = new Date().getTime() + 4000
     }
-
-    canRefreshTrainingStatusTime = currentTime + (2 * 1000)
-
-    helpers.ConLog('WaitForTrainingStatusCompleted', 'Polling stopped - Click refresh button')
-
-    // When we get here it is possible there are two refresh buttons on the page, one that
-    // is covered up by a popup dialog, so we need to click on the last one found.
-    const elements = Cypress.$('[data-testid="training-status-refresh-button"]')
-    Cypress.$(elements[elements.length - 1]).click()
+    this.DumpIfChanged(trainingStatusElements)
   }
-  expect(currentHtml.includes('data-testid="training-status-completed"')).to.be.true
+  
+  DumpIfChanged(trainingStatusElements) {
+    let changed = false
+    if (!this.lastTrainingStatusElements || trainingStatusElements.length != this.lastTrainingStatusElements.length) {
+      changed = true
+    } else {
+      for (let i = 0; i < trainingStatusElements.length; i++) {
+        if (trainingStatusElements[i].outerHTML != this.lastTrainingStatusElements[i].outerHTML) {
+          changed = true
+          break
+        }
+      }
+    }
+    
+    if (changed) {
+      for (let i = 0; i < trainingStatusElements.length; i++) {
+        helpers.ConLog('TrainingStatus.DumpIfChanged', trainingStatusElements[i].outerHTML)
+      }
+      this.lastTrainingStatusElements = trainingStatusElements
+    }
+  }
+
+  WaitForCompleted() {
+    const trainingStatusElements = Cypress.$('[data-testid^="training-status-"]')
+    const currentTime = new Date().getTime()
+    
+    this.DumpIfChanged(trainingStatusElements)
+
+    const completed = Cypress.$(trainingStatusElements).find('[data-testid="training-status-completed"]').length > 0
+    if (completed) {
+      if (currentTime > this.waitForTrainingStatusNotCompleteTime) {
+        helpers.ConLog('TrainingStatus.WaitForCompleted', 'Training Status IS COMPLETED!')
+        return
+      }
+      throw new Error('Retry - Waiting for Training Status to become queued or running before we accept complete for the status')
+    }
+    this.waitForTrainingStatusNotCompleteTime = 0
+
+    const pollingStoppedWarning = Cypress.$(trainingStatusElements).find('[data-testid="training-status-polling-stopped-warning"]').length > 0
+    const failed = Cypress.$(trainingStatusElements).find('[data-testid="training-status-failed"]').length > 0
+
+    if ((pollingStoppedWarning || failed) && (currentTime > canRefreshTrainingStatusTime)) {
+      canRefreshTrainingStatusTime = currentTime + 2000
+
+      helpers.ConLog('TrainingStatus.WaitForCompleted', 'Click the Refresh Button...')
+
+      // When we get here it is possible there are two refresh buttons on the page, one that
+      // is covered up by a popup dialog, so we need to click on the last one found.
+      const elements = Cypress.$(trainingStatusElements).find('[data-testid="training-status-refresh-button"]')
+      Cypress.$(elements[elements.length - 1]).click()
+    }
+    throw new Error('Retry - Training Status is NOT yet complete')
+  }
 }
 
 export function VerifyNoIncidentTriangleOnPage() { VerifyErrorIcon(false) }

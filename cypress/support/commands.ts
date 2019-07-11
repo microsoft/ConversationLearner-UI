@@ -8,6 +8,7 @@ declare global {
       ConLog: () => Chainable
       WaitForStableDOM: () => Chainable
       WaitForTrainingStatusCompleted: () => Chainable
+      Enqueue: typeof enqueue
     }
   }
 }
@@ -93,15 +94,16 @@ Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expe
 })
 
 Cypress.Commands.add("WaitForTrainingStatusCompleted", () => {
-  // The cy.get call made within modelPage.WaitForTrainingStatusCompleted() needs
-  // the document object which is why we need to wrap it.
   cy.log('WaitForTrainingStatusCompleted')
-  cy.wrap(cy.document, { timeout: 120000 }).should(() => { return modelPage.WaitForTrainingStatusCompleted() })
+  cy.Enqueue(() => {
+    let trainingStatus = new modelPage.TrainingStatus()
+    cy.wrap(1, { timeout: 120000 }).should(() => { return trainingStatus.WaitForCompleted() })
+  })
 })
 
 Cypress.Commands.add("Alert", message => { alert(message) })
 
 // Use this to enqueue regular JavaScript code into the Cypress process queue.
 // This causes your JavaScript code to execute in the same time frame as all of cy.*commands*
-Cypress.Commands.add("Enqueue", functionToRun => { return functionToRun() })
-
+const enqueue = (functionToRun: Function) => { return functionToRun() }
+Cypress.Commands.add("Enqueue", enqueue)
