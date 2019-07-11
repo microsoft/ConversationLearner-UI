@@ -261,9 +261,10 @@ export class Component extends React.Component<Props, ComponentState> {
                     items={apps}
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.hidden}
+                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
                     onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
                     onColumnHeaderClick={this.onClickColumnHeader}
-                    onActiveItemChanged={app => this.props.onClickApp(app)}
+                    onItemInvoked={app => this.props.onClickApp(app)}
                 />}
             <AppCreatorModal
                 open={props.isAppCreateModalOpen}
