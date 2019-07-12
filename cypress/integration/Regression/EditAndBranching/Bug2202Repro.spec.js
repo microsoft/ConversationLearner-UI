@@ -19,23 +19,23 @@ describe("Bug 2202 Repro - EditAndBranching", () => {
     })
   })
 
-  context('Reproduce Bug 2202', () => {
-    it('Should grab a copy of the Entity Grid data', () => {
+  context('Attempt to reproduce Bug 2202', () => {
+    it('Should edit a Train Dialog and insert a user turn', () => {
       train.EditTraining('Use all Actions and Entities', "I'm feeling lucky!", 'name:$name sweets:$sweets want:$want')
       train.InsertUserInputAfter('I like to win!', 'Insert this User Turn')
     })
 
     // Bug 2202: FETCH_TRAINDIALOGREPLAY_ASYNC Failed: nasty error came up
-    // When this bug is fixed, this block of code will fail.
-    // It can then be commented out AND the block of code below should then be uncommented and possibly altered so it works.
-    it('Verify that Bug 2202 reproduces', () => {
-      cy.Get('div.cl-errorpanel').contains('Request failed with status code 500')
-      cy.Get('div.cl-errorpanel').contains('Inline node representing entity')
-    })
-    
-    // it('Verify that Bug 2202 does not reproduce', () => {
-    //   cy.DoesNotContain('div.cl-errorpanel > div')
-    //   train.SaveAsIsVerifyInGrid()
+    // This commented out block of code used to verify the bug was happening.
+    // Now that the bug is fixed, we've left it here in case it regresses.
+    // it('Verify that Bug 2202 reproduces', () => {
+    //   helpers.VerifyErrorMessageContains('Request failed with status code 500')
+    //   helpers.VerifyErrorMessageContains('Inline node representing entity')
     // })
+    
+    it('Verify that Bug 2202 does not reproduce', () => {
+      helpers.VerifyNoErrorMessages()
+      train.ClickSaveCloseButton()
+    })
   })
 })

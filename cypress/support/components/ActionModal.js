@@ -12,7 +12,7 @@ export function ClickCreateButton() { cy.Get('[data-testid="action-creator-creat
 export function ClickDeleteButton() { cy.Get('[data-testid="action-creator-delete-button"]').Click() }
 export function ClickCancelButton() { cy.Get('[data-testid="action-creator-cancel-button"]').Click() }
 
-export function ClickConfirmDeleteButton() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Action?', '[data-testid="confirm-cancel-modal-accept"]') }
+export function ClickConfirmDeleteButton() { popupModal.VerifyExactTitleAndContentContainsClickButton('Are you sure you want to delete this Action?', 'This Action is used by one or more Training Dialogs.', '[data-testid="action-delete-confirm"]') }
 export function ClickCancelDeleteButton() { popupModal.VerifyExactTitleNoContentClickButton('Are you sure you want to delete this Action?', '[data-testid="confirm-cancel-modal-cancel"]') }
 
 export function ClickConfirmDeleteWithWarningButton() { popupModal.VerifyContentAnyTitleClickButton('This Action is used by one or more Training Dialogs.', '[data-testid="action-delete-confirm"]') }
