@@ -134,7 +134,7 @@ export function VerifyAllActionRows(rows) {
 }
 
 export function GetAllRows() { 
-  cy.Enqueue(() => {
+  //cy.Enqueue(() => {
     helpers.ConLog('GetAllRows', 'start')
 
     let allRowData = []
@@ -176,5 +176,5 @@ export function GetAllRows() {
     }
     
     return allRowData
-  })
+  //})
 }

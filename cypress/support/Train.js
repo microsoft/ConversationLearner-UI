@@ -691,7 +691,7 @@ export function VerifyEditedChatMessages() {
   VerifyAllChatMessages(() => { return editedChatMessages })
 }
 
-function VerifyAllChatMessages(functionGetChatMessagesToBeVerified) {
+export function VerifyAllChatMessages(functionGetChatMessagesToBeVerified) {
   cy.WaitForStableDOM().then(() => {
     let errorMessage = ''
     const chatMessagesToBeVerified = functionGetChatMessagesToBeVerified()
@@ -828,4 +828,28 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
       throw new Error(`Found all of the expected Train Dialogs, however there are an additional ${firstInputs.length - expectedTrainDialogs.length} Train Dialogs in the grid that we were not expecting. Refer to the log file for details.`)
     }
   })
+}
+
+export function GetAllTrainDialogGridRows() { 
+  //cy.Enqueue(() => {
+    helpers.ConLog('GetAllRows', 'start')
+
+    const firstInputs = trainDialogsGrid.GetFirstInputs()
+    const lastInputs = trainDialogsGrid.GetLastInputs()
+    const lastResponses = trainDialogsGrid.GetLastResponses()
+
+    let allRowData = []
+
+    for (let i = 0; i < firstInputs.length; i++) {
+      allRowData.push({
+        firstInput: firstInputs[i],
+        lastInput: lastInputs[i],
+        lastResponse: lastResponses[i],
+      })
+
+      helpers.ConLog('GetAllRows', `${allRowData.firstInput}, ${allRowData.lastInput}, ${allRowData.lastResponse}`)
+    }
+    
+    return allRowData
+  //})
 }
