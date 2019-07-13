@@ -54,17 +54,20 @@ export function ClickUndoButton() { cy.Get('[data-testid="edit-teach-dialog-undo
 export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }
 export function ClickReplayButton() { cy.Get('[data-testid="edit-dialog-modal-replay-button"]').Click() }
 
-export function VerifyDescription(expectedDescription) { cy.Get(`input.cl-borderless-text-input#description[value="${expectedDescription}"]`) }
-export function TypeDescription(description) { cy.Get('input.cl-borderless-text-input#description').clear().type(`${description}{enter}`) }
-export function ClickAddTagButton() { cy.Get('[data-testid="tags-input-add-tag-button"]').Click() }
-export function VerifyNoTags() { cy.Get('div.cl-tags > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
-
 export function ClickClearFilterButton() { cy.Get('[data-testid="train-dialogs-clear-filter-button"]').Click() }
+
+export function GetDescription() { return Cypress.$('[data-testid="train-dialog-description"]').attr('value') }
+export function VerifyDescription(expectedDescription) { cy.Get(`[data-testid="train-dialog-description"][value="${expectedDescription}"]`) }
+export function TypeDescription(description) { cy.Get('[data-testid="train-dialog-description"]').clear().type(`${description}{enter}`) }
+
+export function GetAllTags() { return helpers.ArrayOfTextContentWithoutNewlines('[data-testid="train-dialog-tags"] > div.cl-tags__tag > span') }
+export function ClickAddTagButton() { cy.Get('[data-testid="tags-input-add-tag-button"]').Click() }
+export function VerifyNoTags() { cy.Get('[data-testid="train-dialog-tags"] > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
 
 export function VerifyTags(tags) { 
   cy.Enqueue(() => {
     helpers.ConLog('VerifyTags', 'Start')
-    const tagsOnPage = helpers.StringArrayFromElementText('div.cl-tags > div.cl-tags__tag > span')
+    const tagsOnPage = helpers.StringArrayFromElementText('[data-testid="train-dialog-tags"] > div.cl-tags__tag > span')
     let missingTags = []
     tags.forEach(tag => {
       if (!tagsOnPage.find(tagOnPage => tag === tagOnPage)) missingTags.push(tag)
@@ -831,25 +834,25 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
 }
 
 export function GetAllTrainDialogGridRows() { 
-  //cy.Enqueue(() => {
-    helpers.ConLog('GetAllRows', 'start')
+  helpers.ConLog('GetAllRows', 'start')
 
-    const firstInputs = trainDialogsGrid.GetFirstInputs()
-    const lastInputs = trainDialogsGrid.GetLastInputs()
-    const lastResponses = trainDialogsGrid.GetLastResponses()
+  const firstInputs = trainDialogsGrid.GetFirstInputs()
+  const lastInputs = trainDialogsGrid.GetLastInputs()
+  const lastResponses = trainDialogsGrid.GetLastResponses()
 
-    let allRowData = []
+  let allRowData = []
 
-    for (let i = 0; i < firstInputs.length; i++) {
-      allRowData.push({
-        firstInput: firstInputs[i],
-        lastInput: lastInputs[i],
-        lastResponse: lastResponses[i],
-      })
+  for (let i = 0; i < firstInputs.length; i++) {
+    allRowData.push({
+      firstInput: firstInputs[i],
+      lastInput: lastInputs[i],
+      lastResponse: lastResponses[i],
+    })
 
-      helpers.ConLog('GetAllRows', `${allRowData.firstInput}, ${allRowData.lastInput}, ${allRowData.lastResponse}`)
-    }
-    
-    return allRowData
-  //})
+    helpers.ConLog('GetAllRows', `${allRowData.firstInput}, ${allRowData.lastInput}, ${allRowData.lastResponse}`)
+  }
+  
+  return allRowData
 }
+
+

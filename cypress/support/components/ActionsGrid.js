@@ -134,47 +134,45 @@ export function VerifyAllActionRows(rows) {
 }
 
 export function GetAllRows() { 
-  //cy.Enqueue(() => {
-    helpers.ConLog('GetAllRows', 'start')
+  helpers.ConLog('GetAllRows', 'start')
 
-    let allRowData = []
+  let allRowData = []
 
-    const allRowElements = Cypress.$('div[role="presentation"].ms-List-cell')
+  const allRowElements = Cypress.$('div[role="presentation"].ms-List-cell')
 
-    for (let i = 0; i < allRowElements.length; i++) {
-      let type = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-action-type"]')[0])
-      let typeSelectorPair = Row.typeSelectorPairs.find(typeSelectorPair => typeSelectorPair.type === type)
-      if (!typeSelectorPair) {
-        throw new Error(`Test Code Error - Unrecognized type: '${type}'`)
-      }
-      let response = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find(typeSelectorPair.selector)[0])
-
-      let requiredEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-required-entities"]'))
-      let disqualifyingEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-disqualifying-entities"]'))
-      let expectedEntity = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-expected-entity"]')[0])
-      let wait = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="action-details-wait"]').length == 1
-
-      let responseDetails
-      if (type === 'API') { 
-        let elements = Cypress.$(allRowElements[i]).find('[data-testid="action-scorer-api-name"]').parent('div')
-        responseDetails = helpers.TextContentWithoutNewlines(elements[0])       
-      } else if (type === 'CARD') { 
-        let elements = Cypress.$(allRowElements[i]).find('[data-testid="action-scorer-card-name"]').next('div')
-        responseDetails = helpers.TextContentWithoutNewlines(elements[0])
-      }
-
-      allRowData.push({ 
-        response: response, 
-        type: type, 
-        requiredEntities: requiredEntities, 
-        disqualifyingEntities: disqualifyingEntities, 
-        expectedEntity: expectedEntity, 
-        wait: wait, 
-        responseDetails: responseDetails
-      })
-      helpers.ConLog('GetAllRows', `${response}, ${type}, ${requiredEntities}, ${disqualifyingEntities}, ${expectedEntity}, ${wait}, ${responseDetails}`)
+  for (let i = 0; i < allRowElements.length; i++) {
+    let type = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-action-type"]')[0])
+    let typeSelectorPair = Row.typeSelectorPairs.find(typeSelectorPair => typeSelectorPair.type === type)
+    if (!typeSelectorPair) {
+      throw new Error(`Test Code Error - Unrecognized type: '${type}'`)
     }
+    let response = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find(typeSelectorPair.selector)[0])
+
+    let requiredEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-required-entities"]'))
+    let disqualifyingEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-disqualifying-entities"]'))
+    let expectedEntity = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-expected-entity"]')[0])
+    let wait = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="action-details-wait"]').length == 1
+
+    let responseDetails
+    if (type === 'API') { 
+      let elements = Cypress.$(allRowElements[i]).find('[data-testid="action-scorer-api-name"]').parent('div')
+      responseDetails = helpers.TextContentWithoutNewlines(elements[0])       
+    } else if (type === 'CARD') { 
+      let elements = Cypress.$(allRowElements[i]).find('[data-testid="action-scorer-card-name"]').next('div')
+      responseDetails = helpers.TextContentWithoutNewlines(elements[0])
+    }
+
+    allRowData.push({ 
+      response: response, 
+      type: type, 
+      requiredEntities: requiredEntities, 
+      disqualifyingEntities: disqualifyingEntities, 
+      expectedEntity: expectedEntity, 
+      wait: wait, 
+      responseDetails: responseDetails
+    })
+    helpers.ConLog('GetAllRows', `${response}, ${type}, ${requiredEntities}, ${disqualifyingEntities}, ${expectedEntity}, ${wait}, ${responseDetails}`)
+  }
     
-    return allRowData
-  //})
+  return allRowData
 }

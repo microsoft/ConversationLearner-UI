@@ -24,54 +24,72 @@ describe("Settings - Settings", () => {
   let actionGridRows
   let trainDialogGridRows
   let trainDialogChatMessages
+  let trainDialogDescriptions
+  let trainDialogTags
   
   context('Setup', () => {
     it('Should import a model to test against, navigate to Log Dialogs view and wait for training status to complete', () => {
       models.ImportModel('z-settingsTests', 'z-settingsTests.cl')
     })
 
-    it('Should grab a copy of the Train Dialog Grid data', () => {
+    it('Should grab a copy of the Description and All Tags', () => {
       modelPage.NavigateToTrainDialogs()
+      train.EditTraining('Use all Actions and Entities', "I'm feeling lucky!", 'name:$name sweets:$sweets want:$want')
       cy.WaitForStableDOM().then(() => {
-        trainDialogGridRows = train.GetAllTrainDialogGridRows()
-        train.VerifyListOfTrainDialogs(trainDialogGridRows)
+        trainDialogDescriptions = train.GetDescription()
+        trainDialogTags = train.GetAllTags() 
+
+        train.VerifyDescription(trainDialogDescriptions)
+        train.VerifyTags(trainDialogTags)
+        train.ClickSaveCloseButton()
       })
     })
 
-    
+    it('Should grab a copy of the Entity Grid data', () => {
+      modelPage.NavigateToEntities()
+      cy.WaitForStableDOM().then(() => { entityGridRows = entitiesGrid.GetAllRows() })
+    })
+
+    it('Should grab a copy of the Action Grid data', () => {
+      modelPage.NavigateToActions()
+      cy.WaitForStableDOM().then(() => { actionGridRows = actionsGrid.GetAllRows() })
+    })
+
+    it('Should grab a copy of the Train Dialog Grid data', () => {
+      modelPage.NavigateToTrainDialogs()
+      cy.WaitForStableDOM().then(() => { trainDialogGridRows = train.GetAllTrainDialogGridRows() })
+    })
+
     it('Should grab a copy of the Train Dialog Chat data', () => {
       modelPage.NavigateToTrainDialogs()
       train.EditTraining('Use all Actions and Entities', "I'm feeling lucky!", 'name:$name sweets:$sweets want:$want')
       cy.WaitForStableDOM().then(() => {
         trainDialogChatMessages = train.GetAllChatMessages()
-        train.VerifyAllChatMessages(() => { return trainDialogChatMessages })
         train.ClickSaveCloseButton()
       })
     })
-
-    
-    it('Should grab a copy of the Entity Grid data', () => {
-      modelPage.NavigateToEntities()
-      cy.WaitForStableDOM()
-      cy.Enqueue(() => { return entitiesGrid.GetAllRows() }).then(allEntityGridRows => {
-        entityGridRows = allEntityGridRows
-        entitiesGrid.VerifyAllEntityRows(entityGridRows)
-      })
-    })
-
-    it('Should grab a copy of the Action Grid data', () => {
-      modelPage.NavigateToActions()
-      cy.WaitForStableDOM().then(() => {
-        actionGridRows = actionsGrid.GetAllRows()
-      })
-      //cy.Enqueue(() => { return actionsGrid.GetAllRows() }).then(allActionGridRows => actionGridRows = allActionGridRows)
-      
-    })
   })
 
-  context('Setup', () => {
-    it('verifications to be placed later', () => {
+  context('Settings - Copy Model', () => {
+    it('Verifiy Entities', () => {
+      modelPage.NavigateToEntities()
+      entitiesGrid.VerifyAllEntityRows(entityGridRows)
+    })
+
+    it('Verifiy Actions', () => {
+      modelPage.NavigateToActions()
       actionsGrid.VerifyAllActionRows(actionGridRows)
+    })
+
+    it('Should verify the Train Dialog Grid data', () => {
+      modelPage.NavigateToTrainDialogs()
+      train.VerifyListOfTrainDialogs(trainDialogGridRows)
+    })
+
+    it('Should verifiy Train Dialog Chat Messages', () => {
+      train.EditTraining('Use all Actions and Entities', "I'm feeling lucky!", 'name:$name sweets:$sweets want:$want')
+      train.VerifyAllChatMessages(() => { return trainDialogChatMessages })
+      train.ClickSaveCloseButton()
     })
   })
 })

@@ -76,14 +76,26 @@ export function TextContentWithoutNewlines(element) {
     ConLog('TextContentWithoutNewlines', 'undefined element has been passed in.')
     return undefined 
   }
-  const returnValue = element.textContent.replace(/(\r\n|\n|\r)/gm, '')
+  
+  const textContent = element.textContent
+  if (!textContent) {
+    ConLog('TextContentWithoutNewlines', `textContent is undefined. Here is the element that was passed in: ${element.outerHTML}`)
+    return undefined 
+  }
+
+  const returnValue = textContent.replace(/(\r\n|\n|\r)/gm, '')
   ConLog('TextContentWithoutNewlines', returnValue)
   return returnValue
 }
 
 // This will return the Inner Text of an element split into an array on new line boundaries
-export function ArrayOfTextContentWithoutNewlines(elements) {
-  if (elements === undefined || elements.length == 0) { return undefined }
+export function ArrayOfTextContentWithoutNewlines(elementsOrSelector) {
+  if (elementsOrSelector === undefined || elementsOrSelector.length == 0) { return undefined }
+
+  let elements
+  if (typeof elementsOrSelector == 'string') { elements = Cypress.$(elementsOrSelector) }
+  else { elements = elementsOrSelector }
+
   let arrayOfTextContent = []
   for (let i = 0; i < elements.length; i++) {
     arrayOfTextContent.push(TextContentWithoutNewlines(elements[i]))

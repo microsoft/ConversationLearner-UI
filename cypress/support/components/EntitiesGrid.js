@@ -58,32 +58,30 @@ export function VerifyAllEntityRows(rows) {
 
 
 export function GetAllRows() { 
-  cy.Enqueue(() => {
-    helpers.ConLog('GetAllRows', 'start')
+  helpers.ConLog('GetAllRows', 'start')
 
-    let allRowData = []
+  let allRowData = []
 
-    const allRowElements = Cypress.$('div[role="presentation"].ms-List-cell')
+  const allRowElements = Cypress.$('div[role="presentation"].ms-List-cell')
 
-    for (let i = 0; i < allRowElements.length; i++) {
-      let name = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="entities-name"]')[0])
-      let type = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="entities-type"]')[0])
-      let resolverType = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="entities-resolver"]')[0])
-      let multiValue = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="entities-multi-value"]').length == 1
-      let negatable = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="entities-negatable"]').length == 1
+  for (let i = 0; i < allRowElements.length; i++) {
+    let name = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="entities-name"]')[0])
+    let type = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="entities-type"]')[0])
+    let resolverType = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="entities-resolver"]')[0])
+    let multiValue = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="entities-multi-value"]').length == 1
+    let negatable = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="entities-negatable"]').length == 1
 
-      allRowData.push({
-        name: name,
-        type: type,
-        resolverType: resolverType,
-        multiValue: multiValue,
-        negatable: negatable,
-      })
+    allRowData.push({
+      name: name,
+      type: type,
+      resolverType: resolverType,
+      multiValue: multiValue,
+      negatable: negatable,
+    })
 
-      helpers.ConLog('GetAllRows', `${name}, ${type}, ${resolverType}, ${multiValue}, ${negatable}`)
-    }
-    
-    return allRowData
-  })
+    helpers.ConLog('GetAllRows', `${name}, ${type}, ${resolverType}, ${multiValue}, ${negatable}`)
+  }
+  
+  return allRowData
 }
 
