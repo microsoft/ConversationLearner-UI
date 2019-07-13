@@ -8,40 +8,56 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as entitiesGrid from '../../../support/components/EntitiesGrid'
 import * as actionsGrid from '../../../support/components/ActionsGrid'
 import * as train from '../../../support/Train'
-
-import * as logDialogsGrid from '../../../support/components/LogDialogsGrid'
-import * as logDialogModal from '../../../support/components/LogDialogModal'
-import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
 describe("Settings - Settings", () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
-  let logDialogGridContent = []
-  let logDialogIndex = 0
-
   let entityGridRows
   let actionGridRows
-  let trainDialogGridRows
-  let trainDialogChatMessages
-  let trainDialogDescriptions
-  let trainDialogTags
+  let trainDialogs
   
   context('Setup', () => {
     it('Should import a model to test against, navigate to Log Dialogs view and wait for training status to complete', () => {
       models.ImportModel('z-settingsTests', 'z-settingsTests.cl')
     })
 
-    it('Should grab a copy of the Description and All Tags', () => {
+    it('Capture Train Dialog Grid data', () => {
       modelPage.NavigateToTrainDialogs()
-      train.EditTraining('Use all Actions and Entities', "I'm feeling lucky!", 'name:$name sweets:$sweets want:$want')
-      cy.WaitForStableDOM().then(() => {
-        trainDialogDescriptions = train.GetDescription()
-        trainDialogTags = train.GetAllTags() 
+      cy.WaitForStableDOM().then(() => { trainDialogs = train.GetAllTrainDialogGridRows() })
+    })
 
-        train.VerifyDescription(trainDialogDescriptions)
-        train.VerifyTags(trainDialogTags)
-        train.ClickSaveCloseButton()
+    it('Capture Train Dialog Description, Tags and Chat data for each Train Dialog', () => {
+      trainDialogs.descriptions = []
+      trainDialogs.tags = []
+      trainDialogs.chatMessages = []
+
+      trainDialogs.forEach(trainDialog => {
+        train.EditTraining(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
+        cy.WaitForStableDOM().then(() => {
+          trainDialog.description = train.GetDescription()
+          trainDialog.tags = train.GetAllTags()
+          trainDialog.chatMessages = train.GetAllChatMessages()
+  
+          train.ClickSaveCloseButton()
+        })
+      })
+    })
+
+    // TODO: Although this appears to have worked, still need to scrutinize the log files and verify 
+    //       this did everything we expected it to do.
+    it('Verify all Train Dialogs data', () => {
+      modelPage.NavigateToTrainDialogs()
+      train.VerifyListOfTrainDialogs(trainDialogs)
+
+      trainDialogs.forEach(trainDialog => {
+        train.EditTraining(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
+        cy.WaitForStableDOM().then(() => {
+          train.VerifyDescription(trainDialog.description)
+          train.VerifyTags(trainDialog.tags)
+          train.VerifyAllChatMessages(() => { return trainDialog.chatMessages }) // TODO: Fix this method to work like the others
+          train.ClickSaveCloseButton()
+        })
       })
     })
 
@@ -53,20 +69,6 @@ describe("Settings - Settings", () => {
     it('Should grab a copy of the Action Grid data', () => {
       modelPage.NavigateToActions()
       cy.WaitForStableDOM().then(() => { actionGridRows = actionsGrid.GetAllRows() })
-    })
-
-    it('Should grab a copy of the Train Dialog Grid data', () => {
-      modelPage.NavigateToTrainDialogs()
-      cy.WaitForStableDOM().then(() => { trainDialogGridRows = train.GetAllTrainDialogGridRows() })
-    })
-
-    it('Should grab a copy of the Train Dialog Chat data', () => {
-      modelPage.NavigateToTrainDialogs()
-      train.EditTraining('Use all Actions and Entities', "I'm feeling lucky!", 'name:$name sweets:$sweets want:$want')
-      cy.WaitForStableDOM().then(() => {
-        trainDialogChatMessages = train.GetAllChatMessages()
-        train.ClickSaveCloseButton()
-      })
     })
   })
 
@@ -83,7 +85,7 @@ describe("Settings - Settings", () => {
 
     it('Should verify the Train Dialog Grid data', () => {
       modelPage.NavigateToTrainDialogs()
-      train.VerifyListOfTrainDialogs(trainDialogGridRows)
+      train.VerifyListOfTrainDialogs(trainDialogs)
     })
 
     it('Should verifiy Train Dialog Chat Messages', () => {

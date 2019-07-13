@@ -79,7 +79,7 @@ export function TextContentWithoutNewlines(element) {
   
   const textContent = element.textContent
   if (!textContent) {
-    ConLog('TextContentWithoutNewlines', `textContent is undefined. Here is the element that was passed in: ${element.outerHTML}`)
+    Dump('TextContentWithoutNewlines - textContent is undefined. Here is the element that was passed in:', element)
     return undefined 
   }
 
@@ -88,7 +88,8 @@ export function TextContentWithoutNewlines(element) {
   return returnValue
 }
 
-// This will return the Inner Text of an element split into an array on new line boundaries
+// This will return an array of the Inner Text (with New Lines removed) of an array of elements.
+// Pass in either an array of elements or the selector to get the array of elements with.
 export function ArrayOfTextContentWithoutNewlines(elementsOrSelector) {
   if (elementsOrSelector === undefined || elementsOrSelector.length == 0) { return undefined }
 
