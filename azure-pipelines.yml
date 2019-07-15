@@ -1,0 +1,68 @@
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema
+
+trigger:
+- master
+
+pr:
+  autoCancel: true
+  branches:
+    include:
+    - master
+
+jobs:
+- job: linux_build
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'Install Node.js 10.x'
+
+  - bash: npm --version
+    displayName: 'npm --version'
+
+  - bash: npm ci
+    displayName: 'npm ci'
+
+  # - task: CacheBeta@0
+  #   inputs:
+  #   key: $(Build.SourcesDirectory)/package-lock.json
+  #   path: $(npm_config_cache)
+  #   displayName: Cache npm
+
+  - bash: npm run build
+    displayName: 'npm run build'
+
+  - bash: npm test
+    displayName: 'npm test'
+
+- job: windows_build
+  pool:
+    vmImage: 'windows-2019'
+
+  steps:
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
+    displayName: 'Run CredScan'
+    inputs:
+      debugMode: false
+
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
+    displayName: 'Post Analysis'
+    inputs:
+      CredScan: true
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'Install Node.js 10.x'
+
+  - script: npm ci
+    displayName: 'npm ci'
+
+  - script: npm run build
+    displayName: 'npm run build'
+
+  - script: npm test
+    displayName: 'npm test'
