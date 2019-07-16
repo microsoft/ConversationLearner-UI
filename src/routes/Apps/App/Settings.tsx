@@ -374,12 +374,14 @@ class Settings extends React.Component<Props, ComponentState> {
                     />
                     <div className="cl-buttons-row">
                         <OF.DefaultButton
+                            data-testid="settings-export-model-button"
                             onClick={this.onClickExport}
                             ariaDescription={Util.formatMessageId(intl, FM.BUTTON_EXPORT)}
                             text={Util.formatMessageId(intl, FM.BUTTON_EXPORT)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
                         <OF.DefaultButton
+                            data-testid="settings-copy-model-button"
                             onClick={this.onClickCopy}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONARIALDESCRIPTION)}
                             text={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONTEXT)}

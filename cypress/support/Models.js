@@ -7,7 +7,7 @@ import * as homePage from './components/HomePage'
 import * as modelPage from './components/ModelPage'
 import * as helpers from './Helpers'
 
-class UniqueModelName {
+export class UniqueModelName {
   // Construct a unique model name by appending the suffix to the supplied prefix.
   static Get(modelNamePrefix) {
     // We need a unique time to use as part of the suffix.

@@ -3,11 +3,13 @@
  * Licensed under the MIT License.
 */
 
+import * as homePage from '../../../support/components/HomePage'
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as entitiesGrid from '../../../support/components/EntitiesGrid'
 import * as actionsGrid from '../../../support/components/ActionsGrid'
 import * as train from '../../../support/Train'
+import * as settings from '../../../support/components/Settings'
 import * as helpers from '../../../support/Helpers'
 
 describe("Settings - Settings", () => {
@@ -16,7 +18,8 @@ describe("Settings - Settings", () => {
   let entityGridRows
   let actionGridRows
   let trainDialogs
-  
+  let copyModelName
+
   context('Setup', () => {
     it('Should import a model to test against, navigate to Log Dialogs view and wait for training status to complete', () => {
       models.ImportModel('z-settingsTests', 'z-settingsTests.cl')
@@ -44,8 +47,44 @@ describe("Settings - Settings", () => {
       })
     })
 
-    // TODO: Although this appears to have worked, still need to scrutinize the log files and verify 
-    //       this did everything we expected it to do.
+    it('Should grab a copy of the Entity Grid data', () => {
+      modelPage.NavigateToEntities()
+      cy.WaitForStableDOM().then(() => { entityGridRows = entitiesGrid.GetAllRows() })
+    })
+
+    it('Should grab a copy of the Action Grid data', () => {
+      modelPage.NavigateToActions()
+      cy.WaitForStableDOM().then(() => { actionGridRows = actionsGrid.GetAllRows() })
+    })
+  })
+
+  context('Settings - Copy Model', () => {
+    it('Copy the model', () => {
+      modelPage.NavigateToSettings()
+      cy.WaitForStableDOM().then(() => { copyModelName = settings.CopyModel('z-stCopy') })
+    })
+
+    it('Verify the copied model name is now on the page', () => {
+      modelPage.VerifyModelName(copyModelName)
+    })
+
+    it('Return to the model name list on the home page and verify that the copied model is in the list', () => {
+      modelPage.NavigateToMyModels()
+      homePage.VerifyModelNameInList(copyModelName)
+      cy.reload(true) // Force reload of the page without using the cache
+      homePage.LoadModel(copyModelName)
+    })
+
+    it('Verifiy Entities', () => {
+      modelPage.NavigateToEntities()
+      entitiesGrid.VerifyAllEntityRows(entityGridRows)
+    })
+
+    it('Verifiy Actions', () => {
+      modelPage.NavigateToActions()
+      actionsGrid.VerifyAllActionRows(actionGridRows)
+    })
+
     it('Verify all Train Dialogs data', () => {
       modelPage.NavigateToTrainDialogs()
       train.VerifyListOfTrainDialogs(trainDialogs)
@@ -59,39 +98,6 @@ describe("Settings - Settings", () => {
           train.ClickSaveCloseButton()
         })
       })
-    })
-
-    it('Should grab a copy of the Entity Grid data', () => {
-      modelPage.NavigateToEntities()
-      cy.WaitForStableDOM().then(() => { entityGridRows = entitiesGrid.GetAllRows() })
-    })
-
-    it('Should grab a copy of the Action Grid data', () => {
-      modelPage.NavigateToActions()
-      cy.WaitForStableDOM().then(() => { actionGridRows = actionsGrid.GetAllRows() })
-    })
-  })
-
-  context('Settings - Copy Model', () => {
-    it('Verifiy Entities', () => {
-      modelPage.NavigateToEntities()
-      entitiesGrid.VerifyAllEntityRows(entityGridRows)
-    })
-
-    it('Verifiy Actions', () => {
-      modelPage.NavigateToActions()
-      actionsGrid.VerifyAllActionRows(actionGridRows)
-    })
-
-    it('Should verify the Train Dialog Grid data', () => {
-      modelPage.NavigateToTrainDialogs()
-      train.VerifyListOfTrainDialogs(trainDialogs)
-    })
-
-    it('Should verifiy Train Dialog Chat Messages', () => {
-      train.EditTraining('Use all Actions and Entities', "I'm feeling lucky!", 'name:$name sweets:$sweets want:$want')
-      train.VerifyAllChatMessages(() => { return trainDialogChatMessages })
-      train.ClickSaveCloseButton()
     })
   })
 })
