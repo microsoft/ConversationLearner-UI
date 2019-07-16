@@ -79,8 +79,8 @@ export function TextContentWithoutNewlines(element) {
   
   const textContent = element.textContent
   if (!textContent) {
-    Dump('TextContentWithoutNewlines - textContent is undefined. Here is the element that was passed in:', element)
-    return undefined 
+    ConLog('TextContentWithoutNewlines', `textContent is undefined, which typically means there is no text. Here is the element that was passed in: ${element.outerHTML}`)
+    return '' 
   }
 
   const returnValue = textContent.replace(/(\r\n|\n|\r)/gm, '')
