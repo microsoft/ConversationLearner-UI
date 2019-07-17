@@ -27,6 +27,7 @@ export function GetModelListRowCount() {
 }
 
 export function VerifyModelNameInList(modelName) { cy.Get('[data-testid="model-list-model-name"]').contains(modelName) }
+export function VerifyModelNameIsNotInList(modelName) { cy.DoesNotContain('[data-testid="model-list-model-name"]', modelName) }
 
 export function LoadModel(modelName) { 
   cy.Get('[data-testid="model-list-model-name"]').contains(modelName).Click()
