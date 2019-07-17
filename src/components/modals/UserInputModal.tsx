@@ -22,6 +22,12 @@ class UserInputModal extends React.Component<Props, ComponentState> {
         userInputVal: '',
     }
 
+    componentDidMount() {
+        if (this.props.initialInput) {
+            this.setState({userInputVal: this.props.initialInput})
+        }
+    }
+
     @OF.autobind
     onChangeUserInputChange(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
@@ -89,7 +95,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                         data-testid="user-input-modal-new-message-input"
                         onGetErrorMessage={value => this.onGetInputErrorMessage(value)}
                         onChange={this.onChangeUserInputChange}
-                        placeholder={Util.formatMessageId(intl, FM.USERINPUT_PLACEHOLDER)}
+                        placeholder={Util.formatMessageId(intl, this.props.placeholderFM)}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.userInputVal}
                     />
@@ -103,8 +109,8 @@ class UserInputModal extends React.Component<Props, ComponentState> {
                                 disabled={invalidName}
                                 data-testid="app-create-button-submit"
                                 onClick={this.onClickSubmit}
-                                ariaDescription={Util.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION)}
-                                text={Util.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_TEXT)}
+                                ariaDescription={Util.formatMessageId(intl, this.props.submitButtonFM || FM.BUTTON_CREATE)}
+                                text={Util.formatMessageId(intl, this.props.submitButtonFM || FM.BUTTON_CREATE)}
                                 iconProps={{ iconName: 'Accept' }}
                             />
                             <OF.DefaultButton
@@ -134,6 +140,9 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     open: boolean
     titleFM: FM
+    placeholderFM: FM
+    submitButtonFM?: FM
+    initialInput?: string
     onSubmit: (userInput: string) => void
     onCancel: () => void
 }

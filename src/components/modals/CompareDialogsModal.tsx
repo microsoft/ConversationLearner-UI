@@ -191,6 +191,12 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                             <div>
                                 <div className="cl-compare-dialogs-title">
                                     Transcript
+                                    {this.props.transcriptValidationResults[this.state.resultIndex].rating === CLM.TranscriptRating.WORSE &&
+                                        <OF.Icon iconName='Trophy2' className="cl-compare-dialogs-title-icon-win"/>
+                                    }
+                                    {this.props.transcriptValidationResults[this.state.resultIndex].rating === CLM.TranscriptRating.SAME &&
+                                            <OF.Icon iconName='CalculatorEqualTo' className="cl-compare-dialogs-title-icon-equal"/>
+                                    }
                                 </div>
                                 <div className="cl-compare-dialogs-webchat">
                                     <Webchat
@@ -221,6 +227,12 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                     :
                                     <div className="cl-compare-dialogs-title">
                                         Model Output
+                                        {this.props.transcriptValidationResults[this.state.resultIndex].rating === CLM.TranscriptRating.BETTER &&
+                                            <OF.Icon iconName='Trophy2' className="cl-compare-dialogs-title-icon-win "/>
+                                        }
+                                        {this.props.transcriptValidationResults[this.state.resultIndex].rating === CLM.TranscriptRating.SAME &&
+                                            <OF.Icon iconName='CalculatorEqualTo' className="cl-compare-dialogs-title-icon-equal"/>
+                                        }
                                     </div>
                                 }
 

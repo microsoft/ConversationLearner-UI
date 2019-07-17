@@ -19,10 +19,9 @@
 }
 
 .cl-modal.cl-modal--transcriptvalidator {
-    min-height: 220px;
+    min-height: 335px;
     width: 500px;
     padding: 20px;
-    text-align: center !important;
 }
 
 .cl-transcript-validator-result-title {

@@ -57,8 +57,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     state = initialState
 
     async componentDidMount() {
-        const changedItems = this.props.transcriptValidationSet.transcriptValidationResults.filter(tr => tr.validity === CLM.Validity.INVALID)
-        this.setState({changedItems})
+        const changedItems = this.props.transcriptValidationSet.transcriptValidationResults.filter(tr => tr.validity === CLM.TranscriptValidationResultType.CHANGED)
+        await Util.setStateAsync(this, {changedItems})
         await this.onChangedDialog()
     }
 
@@ -92,6 +92,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         this.onNext()
     }
 
+    @OF.autobind
     async onSame() {
         const logDialogId = this.currentLogDialodId()
         await Util.setStateAsync(this, {sameIds: [...this.state.sameIds, logDialogId]})
@@ -120,7 +121,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             if (!result) {
                 throw new Error("Can't find log dialog id")
             }
-            result.rating = CLM.Rating.BETTER
+            result.rating = CLM.TranscriptRating.BETTER
         })
 
         this.state.worseIds.forEach(id => {
@@ -128,7 +129,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             if (!result) {
                 throw new Error("Can't find log dialog id")
             }
-            result.rating = CLM.Rating.WORSE
+            result.rating = CLM.TranscriptRating.WORSE
         })
 
         this.state.sameIds.forEach(id => {
@@ -136,7 +137,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             if (!result) {
                 throw new Error("Can't find log dialog id")
             }
-            result.rating = CLM.Rating.SAME
+            result.rating = CLM.TranscriptRating.SAME
         })
     
         this.props.onClose(set)
@@ -325,7 +326,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-rate-dialogs-button-bar">
                             <div className="cl-rate-dialogs-count">
-                                {`${this.state.resultIndex + 1} of ${this.props.transcriptValidationSet.transcriptValidationResults.length}`}
+                                {`${this.state.resultIndex + 1} of ${this.state.changedItems.length}`}
                             </div>
                             <OF.DefaultButton
                                 onClick={this.saveResults}

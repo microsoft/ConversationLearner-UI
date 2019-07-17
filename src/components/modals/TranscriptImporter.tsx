@@ -93,8 +93,8 @@ class TranscriptImporter extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             data-testid="transcript-locate-file-button"
                             className="cl-file-picker-button"
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_LOCATE_FILES)} 
-                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_LOCATE_FILES)} 
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_SELECT_FILES)} 
+                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_SELECT_FILES)} 
                             iconProps={{ iconName: 'DocumentSearch' }}
                             onClick={() => this.fileInput.click()}
                         />

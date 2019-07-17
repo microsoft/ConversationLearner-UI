@@ -1734,10 +1734,10 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             onClick={this.onClickSaveCreate}
                             ariaDescription={this.state.isEditing ?
                                 Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION) :
-                                Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION)}
+                                Util.formatMessageId(intl, FM.BUTTON_CREATE)}
                             text={this.state.isEditing ?
                                 Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT) :
-                                Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT)}
+                                Util.formatMessageId(intl, FM.BUTTON_CREATE)}
                             iconProps={{ iconName: 'Accept' }}
                         />
 

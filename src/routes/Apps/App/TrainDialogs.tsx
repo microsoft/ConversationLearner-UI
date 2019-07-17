@@ -1000,10 +1000,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         else if (transcriptValidationSet && transcriptValidationSet.transcriptValidationResults.length > 0) {
             await Util.setStateAsync(this, {
                 isTranscriptValidatePickerOpen: false,
+                isTranscriptTestWaitOpen: true,
                 transcriptFiles: null,
                 transcriptValidationSet
             })
-            this.setState({isTranscriptTestWaitOpen: true})
         }
     }
 
@@ -1035,7 +1035,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         let source = await this.readFileAsync(transcriptFile)
         try {
             const sourceJson = JSON.parse(source)
-            await this.onValidate(transcriptFile.name, sourceJson)
+            await this.onValidateTranscript(transcriptFile.name, sourceJson)
         }
         catch (e) {
             const error = e as Error
@@ -1047,7 +1047,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    async onValidate(fileName: string, transcript: BB.Activity[]): Promise<void> {
+    async onValidateTranscript(fileName: string, transcript: BB.Activity[]): Promise<void> {
 
         this.setState({isTranscriptTestWaitOpen: true})
 
@@ -1083,13 +1083,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         let transcriptValidationResult: CLM.TranscriptValidationResult
         if (invalidTranscript) {
-            transcriptValidationResult = { validity: CLM.Validity.WARNING, logDialogId: null, rating: CLM.Rating.UNKNOWN }
+            transcriptValidationResult = { validity: CLM.TranscriptValidationResultType.INVALID_TRANSCRIPT, logDialogId: null, rating: CLM.TranscriptRating.UNKNOWN }
         }
         else {
             transcriptValidationResult = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<CLM.TranscriptValidationResult>)
         }
         // If invalid, store the transcript for later comparison
-        if (transcriptValidationResult.validity === CLM.Validity.INVALID) {
+        if (transcriptValidationResult.validity === CLM.TranscriptValidationResultType.CHANGED) {
             transcriptValidationResult.sourceHistory = transcript
             transcriptValidationResult.fileName = fileName
         }

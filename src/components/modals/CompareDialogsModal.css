@@ -14,9 +14,24 @@
 
 .cl-compare-dialogs-title {
     font-size: 20px;
-    text-align: center;
     height: 50px;
     line-height: 50px;
+    margin-left: 15px;
+    width: 100%;
+}
+
+.cl-compare-dialogs-title-icon-win {
+    color: green;
+    font-size: 30px;
+    padding-right: 10px;
+    float: left;
+}
+
+.cl-compare-dialogs-title-icon-equal {
+    color: var(--color-yellow-darkest);
+    font-size: 30px;
+    padding-right: 10px;
+    float: left;
 }
 
 .cl-compare-dialogs-filename {

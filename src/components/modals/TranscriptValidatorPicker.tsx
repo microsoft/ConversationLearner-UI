@@ -14,18 +14,26 @@ import { connect } from 'react-redux'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import "./TranscriptValidatorPicker.css"
+
+enum ChoiceOption {
+    FILES = "FILES",
+    LOAD = "LOAD"
+}
 
 interface ComponentState {
     transcriptFiles: File[] | null
     autoImport: boolean
     autoMerge: boolean
+    choiceOption: ChoiceOption
 }
 
 class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         transcriptFiles: null,
         autoImport: false,
-        autoMerge: false
+        autoMerge: false,
+        choiceOption: ChoiceOption.FILES
     }
         
     private transcriptfileInput: any
@@ -61,7 +69,7 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
         })
     }
     @OF.autobind
-    onChangeResultFiles(files: any) {
+    onChangeResultFiles(files: any) { 
         const reader = new FileReader()
         reader.onload = (e: Event) => {
             try {
@@ -75,7 +83,7 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                 if (set.appId !== this.props.app.appId) {
                     throw new Error("Loaded results are from a different Model")
                 }
-                set.fileName = files[0]
+                set.fileName = files[0].name
                 this.props.onViewResults(set)
             }
             catch (e) {
@@ -88,6 +96,16 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
         }
     }
 
+    @OF.autobind
+    onChoiceChange(choiceOption: OF.IChoiceGroupOption | undefined) {
+        if (choiceOption && choiceOption.key === ChoiceOption.LOAD) {
+            this.setState({choiceOption: ChoiceOption.LOAD})
+        }
+        else {
+            this.setState({choiceOption: ChoiceOption.FILES})
+        }
+    }
+
     render() {
         return (
             <OF.Modal
@@ -97,6 +115,9 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                 containerClassName='cl-modal cl-modal--small'
             >
                 <div className='cl-modal_header'>
+                    <OF.Icon
+                        iconName='TestPlan'
+                    />
                     <span className={OF.FontClassNames.xxLarge}>
                         {Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_TITLE)} 
                     </span>
@@ -120,53 +141,81 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                         ref={ele => (this.transcriptfileInput = ele)}
                         multiple={true}
                     />
-                    <span className={OF.FontClassNames.large}>
-                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_TITLE_LOCATE)} 
-                    </span>
-                    <div className="cl-file-picker">
-                        <OF.PrimaryButton
-                            data-testid="transcript-locate-file-button"
-                            className="cl-file-picker-button"
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_LOCATE_FILES)} 
-                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_LOCATE_FILES)} 
-                            iconProps={{ iconName: 'DocumentSearch' }}
-                            onClick={() => this.transcriptfileInput.click()}
-                        />
-                        <OF.TextField
-                            disabled={true}
-                            value={!this.state.transcriptFiles 
-                                ? undefined
-                                : this.state.transcriptFiles.length === 1
-                                ? this.state.transcriptFiles[0].name 
-                                : `${this.state.transcriptFiles.length} files selected`
+                    <OF.ChoiceGroup
+                        defaultSelectedKey={ChoiceOption.FILES}
+                        options={[
+                            {
+                                key: ChoiceOption.FILES,
+                                text: Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_TITLE_LOCATE),
+                                onRenderField: (props, render) => {
+                                    return (
+                                        <div>
+                                            {render!(props)}
+                                            <div className="cl-transcript-validation-picker-option">
+                                                <div className="cl-file-picker">
+                                                    <OF.PrimaryButton
+                                                        disabled={this.state.choiceOption !== ChoiceOption.FILES}
+                                                        data-testid="transcript-locate-file-button"
+                                                        className="cl-file-picker-button"
+                                                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_SELECT_FILES)} 
+                                                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_SELECT_FILES)} 
+                                                        iconProps={{ iconName: 'DocumentSearch' }}
+                                                        onClick={() => this.transcriptfileInput.click()}
+                                                    />
+                                                    <OF.TextField
+                                                        disabled={true}
+                                                        value={!this.state.transcriptFiles 
+                                                            ? undefined
+                                                            : this.state.transcriptFiles.length === 1
+                                                            ? this.state.transcriptFiles[0].name 
+                                                            : `${this.state.transcriptFiles.length} files selected`
+                                                        }
+                                                    />
+                                                    <OF.PrimaryButton
+                                                        disabled={this.state.transcriptFiles === null || this.state.choiceOption !== ChoiceOption.FILES}
+                                                        data-testid="transcript-submit-button"
+                                                        onClick={() => this.props.onTestFiles(this.state.transcriptFiles, this.state.autoImport, this.state.autoMerge)}
+                                                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
+                                                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
+                                                        iconProps={{ iconName: 'TestCase' }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                }
+                            },
+                            {
+                                key: ChoiceOption.LOAD,
+                                text: Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_TITLE_LOAD),
+                                onRenderField: (props, render) => {
+                                    return (
+                                        <div>
+                                            {render!(props)}
+                                            <div className="cl-transcript-validation-picker-option">
+                                                <OF.PrimaryButton
+                                                    disabled={this.state.choiceOption !== ChoiceOption.LOAD}
+                                                    data-testid="transcript-locate-results-file-button"
+                                                    className="cl-file-picker-button"
+                                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON)} 
+                                                    text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON)} 
+                                                    iconProps={{ iconName: 'DownloadDocument' }}
+                                                    onClick={() => this.resultfileInput.click()}
+                                                />
+                                            </div>
+                                        </div>
+                                    )
+                                }
                             }
-                        />
-                    </div>
-                    <span className={OF.FontClassNames.large}>
-                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_TITLE_LOAD)} 
-                    </span>
-                    <OF.PrimaryButton
-                        disabled={this.state.transcriptFiles !== null}
-                        data-testid="transcript-locate-results-file-button"
-                        className="cl-file-picker-button"
-                        ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON)} 
-                        text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON)} 
-                        iconProps={{ iconName: 'DownloadDocument' }}
-                        onClick={() => this.resultfileInput.click()}
+                        ]}
+                        onChange={(ev, option) => this.onChoiceChange(option)}
+                        required={true}
                     />
                 </div>
                 <div className='cl-modal_footer'>
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary" />
                         <div className="cl-modal-buttons_primary">
-                            <OF.PrimaryButton
-                                disabled={this.state.transcriptFiles === null}
-                                data-testid="transcript-submit-button"
-                                onClick={() => this.props.onTestFiles(this.state.transcriptFiles, this.state.autoImport, this.state.autoMerge)}
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
-                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
-                                iconProps={{ iconName: 'TestCase' }}
-                            />
                             <OF.DefaultButton
                                 data-testid="transcript-cancel-button"
                                 onClick={this.props.onAbandon}
