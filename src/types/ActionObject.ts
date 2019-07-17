@@ -207,6 +207,8 @@ export type FetchAction = {
     logDialog: CLM.LogDialog,
     replaceLocal: boolean
 } | {
+    type: AT.FETCH_LOG_DIALOG_NOTFOUND
+} | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
     appId: string,
     packageIds: string[]

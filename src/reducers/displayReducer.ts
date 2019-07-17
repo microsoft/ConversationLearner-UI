@@ -165,6 +165,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.FETCH_ENTITIES_FULFILLED:
         case AT.FETCH_HISTORY_FULFILLED:
         case AT.FETCH_LOG_DIALOG_FULFILLED:
+        case AT.FETCH_LOG_DIALOG_NOTFOUND:
         // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doesn't block
         case AT.FETCH_SCOREFROMHISTORY_FULFILLED:
         case AT.FETCH_SCOREFROMHISTORY_REJECTED:

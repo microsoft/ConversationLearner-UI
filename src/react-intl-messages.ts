@@ -156,6 +156,7 @@ export enum FM {
     BUTTON_SAVE_BRANCH = 'Button.SAVE_BRANCH',
     BUTTON_SUBMIT = 'Button.SUMBIT',
     BUTTON_UNDO = 'Button.UNDO',
+    BUTTON_RATE = 'Button.RATE',
     BUTTON_SELECT = 'Button.SELECT',
     BUTTON_SELECTED = 'Button.SELECTED',
     BUTTON_TEST = 'Button.TEST',
@@ -565,6 +566,8 @@ export enum FM {
 
     // Transcript Validator
     TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
+    TRANSCRIPT_VALIDATOR_TITLE_LOCATE = 'TranscriptValidator.locate.title',
+    TRANSCRIPT_VALIDATOR_TITLE_LOAD = 'TranscriptValidator.load.title',
     TRANSCRIPT_VALIDATOR_RESULTS_BUTTON = 'TranscriptValidator.Results.Button',
     
     // TreeView
@@ -737,6 +740,7 @@ export default {
         [FM.BUTTON_SAVE_BRANCH]: 'Save Branch',
         [FM.BUTTON_SAVE_EDIT]: 'Save Edit',
         [FM.BUTTON_SUBMIT]: 'Submit',
+        [FM.BUTTON_RATE]: 'Rate',
         [FM.BUTTON_UNDO]: 'Undo',
         [FM.BUTTON_SELECT]: 'Select',
         [FM.BUTTON_SELECTED]: 'Selected',
@@ -1166,7 +1170,9 @@ export default {
         [FM.TRANSCRIPT_IMPORTER_AUTOMERGE]: 'Auto Merge',
         
         // Transcript Validator
-        [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Select .transcript files to test',
+        [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Test .transcript files',
+        [FM.TRANSCRIPT_VALIDATOR_TITLE_LOCATE]: 'Select .transcript files to test',
+        [FM.TRANSCRIPT_VALIDATOR_TITLE_LOAD]: 'Load existing test results from .cltr file',
         [FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON]: 'Load Results',
 
         // UserInput Modal

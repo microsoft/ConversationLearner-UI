@@ -68,18 +68,24 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                 if (typeof reader.result !== 'string') {
                     throw new Error("String Expected")
                 }
-                const transcriptValidationResults = JSON.parse(reader.result) as CLM.TranscriptValidationResult[]
-                if (!transcriptValidationResults || transcriptValidationResults.length === 0 || !transcriptValidationResults[0].validity) {
+                const set = JSON.parse(reader.result) as CLM.TranscriptValidationSet
+                if (!set || set.transcriptValidationResults.length === 0 || !set.transcriptValidationResults[0].validity) {
                     throw new Error("No test results found in file")
                 }
-                this.props.onViewResults(transcriptValidationResults)
+                if (set.appId !== this.props.app.appId) {
+                    throw new Error("Loaded results are from a different Model")
+                }
+                set.fileName = files[0]
+                this.props.onViewResults(set)
             }
             catch (e) {
                 const error = e as Error
                 this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", null)
             }
         }
-        reader.readAsText(files[0])
+        if (files[0]) {
+            reader.readAsText(files[0])
+        }
     }
 
     render() {
@@ -114,6 +120,9 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                         ref={ele => (this.transcriptfileInput = ele)}
                         multiple={true}
                     />
+                    <span className={OF.FontClassNames.large}>
+                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_TITLE_LOCATE)} 
+                    </span>
                     <div className="cl-file-picker">
                         <OF.PrimaryButton
                             data-testid="transcript-locate-file-button"
@@ -133,20 +142,23 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                             }
                         />
                     </div>
+                    <span className={OF.FontClassNames.large}>
+                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_TITLE_LOAD)} 
+                    </span>
+                    <OF.PrimaryButton
+                        disabled={this.state.transcriptFiles !== null}
+                        data-testid="transcript-locate-results-file-button"
+                        className="cl-file-picker-button"
+                        ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON)} 
+                        text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON)} 
+                        iconProps={{ iconName: 'DownloadDocument' }}
+                        onClick={() => this.resultfileInput.click()}
+                    />
                 </div>
                 <div className='cl-modal_footer'>
                     <div className="cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary" />
                         <div className="cl-modal-buttons_primary">
-                            <OF.PrimaryButton
-                                disabled={this.state.transcriptFiles !== null}
-                                data-testid="transcript-locate-results-file-button"
-                                className="cl-file-picker-button"
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON)} 
-                                text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON)} 
-                                iconProps={{ iconName: 'DownloadDocument' }}
-                                onClick={() => this.resultfileInput.click()}
-                            />
                             <OF.PrimaryButton
                                 disabled={this.state.transcriptFiles === null}
                                 data-testid="transcript-submit-button"
@@ -188,7 +200,7 @@ export interface ReceivedProps {
     open: boolean
     onAbandon: () => void
     onTestFiles: (files: File[] | null, autoImport: boolean, autoMerge: boolean) => void
-    onViewResults: (transcriptValidationResults: CLM.TranscriptValidationResult[]) => void
+    onViewResults: (set: CLM.TranscriptValidationSet) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
