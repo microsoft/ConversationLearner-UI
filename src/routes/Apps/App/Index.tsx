@@ -196,16 +196,21 @@ class Index extends React.Component<Props, ComponentState> {
         const TRIPLE_DIGIT_LOGDIALOG_COUNT = 99;
 
         return (
+            <>
+            <div className="cl-o-app-columns cl-model-banner">
+                <div className="cl-model-banner_content">
+                    <div
+                        data-testid="app-index-model-name"
+                        className={OF.FontClassNames.xLarge}
+                    >
+                        {app.appName}
+                    </div>
+                </div>
+            </div>
+            <div className="cl-o-app-columns">
+                <div className="cl-app_content">
             <div className="cl-app-page">
                 <div>
-                    <div className="cl-app-title">
-                        <div
-                            data-testid="app-index-model-name"
-                            className={OF.FontClassNames.xxLarge}
-                        >
-                            {app.appName}
-                        </div>
-                    </div>
                     <div className={`cl-app-tag-status ${OF.FontClassNames.mediumPlus}`}>
                         <FormattedMessageId id={FM.APP_VERSION} /> {tag}
                         {editPackageId === app.livePackageId &&
@@ -311,6 +316,9 @@ class Index extends React.Component<Props, ComponentState> {
                     />
                 </Switch>
             </div>
+                </div>
+            </div>
+            </>
         )
     }
 }
