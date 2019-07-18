@@ -6,6 +6,7 @@
 import * as entitiesGrid from '../../support/components/EntitiesGrid'
 import * as deleteModelModal from '../../support/components/DeleteModelModal'
 import * as models from '../Models'
+import { func } from 'prop-types';
 
 export function VerifyPageTitle() { cy.Get('[data-testid="settings-title"]').contains('Settings').should('be.visible') }
 export function ClickExportModelButton() { cy.Get('[data-testid="settings-export-model-button"]').Click() }
@@ -16,10 +17,14 @@ export function TypeNewModelNameForCopy(modelName) { cy.Get('[data-testid="model
 export function ClickCopyConfirmButton() { cy.Get('[data-testid="model-creator-submit-button"]').Click() }
 
 export function TypeNewModelNameForRename(modelName) { cy.Get('[data-testid="settings-input-model-name"]').clear().type(`${modelName}{enter}`) }
+export function VerifyModelName(expectedModelName) { cy.Get(`[data-testid="settings-input-model-name"][value="${expectedModelName}"]`) }
+
 export function CheckLogConversationsCheckbox() { cy.Get('[data-testid="settings-log-conversations-checkbox"]').find('input').check({force: true}) }
 export function UncheckLogConversationsCheckbox() { cy.Get('[data-testid="settings-log-conversations-checkbox"]').find('input').uncheck({force: true}) }
 export function VerifyLogConversationsCheckbox(checked) { cy.Get('[data-testid="settings-log-conversations-checkbox"]').should(`${checked ? '' : 'not.'}be.checked`) }
+
 export function ClickSaveButton() { cy.Get('[data-testid="settings-button-save"]').Click() }
+export function ClickDiscardButton() { cy.Get('[data-testid="settings-button-discard"]').Click() }
 
 export function CopyModel(modelNamePrefix) {
   const name = models.UniqueModelName.Get(modelNamePrefix)

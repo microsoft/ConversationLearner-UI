@@ -113,6 +113,19 @@ describe("Settings - Settings", () => {
     })
   })
 
+  context('Discard Changes', () => {
+    it('Change name and "Log Conversations" setting', () => {
+      settings.TypeNewModelNameForRename('z-toBeDiscarded')
+      settings.CheckLogConversationsCheckbox()
+    })
+
+    it('Discard changes and verify', () => {
+      settings.ClickDiscardButton()
+      settings.VerifyModelName(renamedModelName)
+      settings.VerifyLogConversationsCheckbox(false)
+    })
+  })
+
   context('Export Model', () => {
     it('Export the model', () => {
       settings.ClickExportModelButton()
