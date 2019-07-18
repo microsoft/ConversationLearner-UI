@@ -23,7 +23,7 @@ describe("Settings - Settings", () => {
   let renamedModelName
 
   context('Setup', () => {
-    it('Should import a model to test against, navigate to Log Dialogs view and wait for training status to complete', () => {
+    it('Should import a model to test against', () => {
       models.ImportModel('z-settingsTests', 'z-settingsTests.cl')
     })
 
@@ -33,10 +33,6 @@ describe("Settings - Settings", () => {
     })
 
     it('Capture Train Dialog Description, Tags and Chat data for each Train Dialog', () => {
-      trainDialogs.descriptions = []
-      trainDialogs.tags = []
-      trainDialogs.chatMessages = []
-
       trainDialogs.forEach(trainDialog => {
         train.EditTraining(trainDialog.firstInput, trainDialog.lastInput, trainDialog.lastResponse)
         cy.WaitForStableDOM().then(() => {
@@ -60,7 +56,7 @@ describe("Settings - Settings", () => {
     })
   })
 
-  context('Settings - Copy Model', () => {
+  context('Copy Model', () => {
     it('Copy the model', () => {
       modelPage.NavigateToSettings()
       cy.WaitForStableDOM().then(() => { copyModelName = settings.CopyModel('z-copy') })
@@ -83,56 +79,66 @@ describe("Settings - Settings", () => {
     VerifyModelIsTrueCopy()
   })
 
-  context('Settings - Rename', () => {
+  context('Rename', () => {
     it('Rename the model', () => {
+      modelPage.NavigateToSettings()
       cy.WaitForStableDOM().then(() => { renamedModelName = settings.RenameModel('z-rename') })
+    })
 
-      it('Verify the renamed model name is now on the page', () => {
-        modelPage.VerifyModelName(renamedModelName)
-      })
-  
-      it('Return to the model name list on the home page and verify that the renamed model is in the list', () => {
-        modelPage.NavigateToMyModels()
-        homePage.VerifyModelNameInList(renamedModelName)
-      })
-  
-      it('Reload the page, then use the model name link to navigate back to the model we just renamed', () => {
-        cy.reload(true) // Force reload of the page without using the cache
-        homePage.LoadModel(renamedModelName)
-      })
-      
-      VerifyModelIsTrueCopy()
+    it('Verify the renamed model name is now on the page', () => {
+      modelPage.VerifyModelName(renamedModelName)
+    })
+
+    it('Return to the model name list on the home page and verify that the renamed model is in the list', () => {
+      modelPage.NavigateToMyModels()
+      homePage.VerifyModelNameInList(renamedModelName)
+    })
+
+    it('Reload the page, then use the model name link to navigate back to the model we just renamed', () => {
+      cy.reload(true) // Force reload of the page without using the cache
+      homePage.LoadModel(renamedModelName)
     })
   })
 
-  context('Settings - Export Model - Delete the Copy', () => {
-    it('Export the model', () => {
+  context('Log Conversations', () => {
+    it('Change "Log Conversations" setting', () => {
       modelPage.NavigateToSettings()
+      settings.UncheckLogConversationsCheckbox()
+      settings.ClickSaveButton()
+    })
+
+    it('Reload the page and verify the changed setting was saved', () => {
+      cy.reload(true) // Force reload of the page without using the cache
+      settings.VerifyLogConversationsCheckbox(false)
+    })
+  })
+
+  context('Export Model', () => {
+    it('Export the model', () => {
       settings.ClickExportModelButton()
       exportModelModal.VerifyPageTitle()
       exportModelModal.ClickExportButton()
+
+      // We are not verifying that the exported model can be imported and is a true copy
+      // because we have not found a way to definitively know what folder path the file
+      // was exported to. If we ever come up with a way to determine this path then we
+      // should add that logic here.
+    })
+  })
+
+  context('Delete the Renamed Copy', () => {
+    it('Delete this renamed copy of the model we started testing with', () => {
+      settings.DeleteModel(renamedModelName)
     })
 
-    it('Delete this copy of the model we started testing with', () => {
-      settings.DeleteModel(copyModelName)
-    })
-
-    it('Return to the model name list on the home page and verify that the deleted model is no longer in the list', () => {
-      modelPage.NavigateToMyModels()
-      homePage.VerifyModelNameIsNotInList(copyModelName)
+    it('Verify that sent us back to the home page and that the deleted model is no longer in the list', () => {
+      homePage.VerifyPageTitle()
+      homePage.VerifyModelNameIsNotInList(renamedModelName)
     })
 
     it('Reload the page, then verify that the deleted model is still not in the list', () => {
       cy.reload(true) // Force reload of the page without using the cache
-      homePage.VerifyModelNameIsNotInList(copyModelName)
-    })
-  })
-
-  context('Import the model we just exported and verify it is a true copy', () => {
-    it('Import the model', () => {
-      models.ImportModel('z-settingsTests', 'z-settingsTests.cl')
-
-      VerifyModelIsTrueCopy()
+      homePage.VerifyModelNameIsNotInList(renamedModelName)
     })
   })
 
@@ -157,7 +163,7 @@ describe("Settings - Settings", () => {
           cy.WaitForStableDOM().then(() => {
             train.VerifyDescription(trainDialog.description)
             train.VerifyTags(trainDialog.tags)
-            train.VerifyAllChatMessages(() => { return trainDialog.chatMessages }) // TODO: Fix this method to work like the others
+            train.VerifyAllChatMessages(trainDialog.chatMessages)
             train.ClickSaveCloseButton()
           })
         })

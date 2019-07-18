@@ -678,26 +678,9 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
     })
 }
 
-export function CaptureOriginalChatMessages() {
-  cy.WaitForStableDOM().then(() => { originalChatMessages = GetAllChatMessages() })
-}
-
-export function VerifyOriginalChatMessages() {
-  VerifyAllChatMessages(() => { return originalChatMessages })
-}
-
-export function CaptureEditedChatMessages() {
-  cy.WaitForStableDOM().then(() => { editedChatMessages = GetAllChatMessages() })
-}
-
-export function VerifyEditedChatMessages() {
-  VerifyAllChatMessages(() => { return editedChatMessages })
-}
-
-export function VerifyAllChatMessages(functionGetChatMessagesToBeVerified) {
+export function VerifyAllChatMessages(chatMessagesToBeVerified) {
   cy.WaitForStableDOM().then(() => {
     let errorMessage = ''
-    const chatMessagesToBeVerified = functionGetChatMessagesToBeVerified()
     const allChatMessages = GetAllChatMessages()
 
     if (allChatMessages.length != chatMessagesToBeVerified.length)
@@ -740,11 +723,13 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
     cy.Get('@branchButton').Click()
     cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
   
-    isBranched = true
-    originalTrainingSummary.TrainGridRowCount++
-    currentTrainingSummary.TrainGridRowCount++
+    cy.WaitForStableDOM().then(() => {
+      isBranched = true
+      originalTrainingSummary.TrainGridRowCount++
+      currentTrainingSummary.TrainGridRowCount++
 
-    VerifyAllChatMessages(() => { return branchedChatMessages })
+      VerifyAllChatMessages(branchedChatMessages)
+    })
   })
 }
 

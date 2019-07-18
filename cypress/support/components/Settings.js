@@ -15,7 +15,10 @@ export function ClickDeleteModelButton() { cy.Get('[data-testid="settings-delete
 export function TypeNewModelNameForCopy(modelName) { cy.Get('[data-testid="model-creator-input-name"]').type(`${modelName}{enter}`) }
 export function ClickCopyConfirmButton() { cy.Get('[data-testid="model-creator-submit-button"]').Click() }
 
-export function TypeNewModelNameForRename(modelName) { cy.Get('[data-testid="settings-input-model-name"]').type(`${modelName}{enter}`) }
+export function TypeNewModelNameForRename(modelName) { cy.Get('[data-testid="settings-input-model-name"]').clear().type(`${modelName}{enter}`) }
+export function CheckLogConversationsCheckbox() { cy.Get('[data-testid="settings-log-conversations-checkbox"]').find('input').check({force: true}) }
+export function UncheckLogConversationsCheckbox() { cy.Get('[data-testid="settings-log-conversations-checkbox"]').find('input').uncheck({force: true}) }
+export function VerifyLogConversationsCheckbox(checked) { cy.Get('[data-testid="settings-log-conversations-checkbox"]').should(`${checked ? '' : 'not.'}be.checked`) }
 export function ClickSaveButton() { cy.Get('[data-testid="settings-button-save"]').Click() }
 
 export function CopyModel(modelNamePrefix) {

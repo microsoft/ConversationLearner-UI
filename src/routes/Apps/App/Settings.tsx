@@ -479,7 +479,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             disabled={true}
                         />
                     </div>
-                    <div className="cl-entity-creator-checkbox">
+                    <div className="cl-entity-creator-checkbox" data-testid="settings-log-conversations-checkbox">
                         <TC.Checkbox
                             label={Util.formatMessageId(intl, FM.SETTINGS_LOGGINGON_LABEL)}
                             checked={this.state.isLoggingOnVal}
