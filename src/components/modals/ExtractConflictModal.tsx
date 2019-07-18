@@ -40,6 +40,7 @@ interface ReceivedProps {
     entities: CLM.EntityBase[]
     attemptedExtractResponse: CLM.ExtractResponse
     extractResponse: CLM.ExtractResponse
+    trainDialogs: CLM.TrainDialog[]
 }
 
 type Props = ReceivedProps & InjectedIntlProps
@@ -134,7 +135,7 @@ const ExtractConflictModal: React.FC<Props> = (props) => {
                 <p>{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_SUBTITLE)}</p>
                 <div className="cl-inconsistent-entity-modal-header">{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_REVIEW)}</div>
 
-                <div className={`cl-inconsistent-entity-modal-option ${selectedAttempted ? 'cl-inconsistent-entity-modal-option--selected' : ''} ${props.disableChoices ? 'cl-inconsistent-entity-modal-option--disabled' : ''}`}
+                <div className={`cl-inconsistent-entity-modal-option ${selectedAttempted ? 'cl-inconsistent-entity-modal-option--selected' : ''}`}
                     onClick={() => onClickOption(ExtractionType.Attempted)}>
                     <OF.ChoiceGroup
                         options={[
@@ -145,7 +146,6 @@ const ExtractConflictModal: React.FC<Props> = (props) => {
                             } as OF.IChoiceGroupOption,
                         ]}
                         selectedKey={selectedExtractionType}
-                        disabled={props.disableChoices}
                     />
                     <div>
                         <div className={`cl-inconsistent-entity-modal-header ${selectedAttempted ? 'cl-text--success' : 'cl-text--error'}`} data-testid="extract-conflict-modal-conflicting-labels">
@@ -159,7 +159,7 @@ const ExtractConflictModal: React.FC<Props> = (props) => {
                     </div>
                 </div>
 
-                <div className={`cl-inconsistent-entity-modal-option ${selectedAttempted ? '' : 'cl-inconsistent-entity-modal-option--selected'} ${props.disableChoices ? 'cl-inconsistent-entity-modal-option--disabled' : ''}`}
+                <div className={`cl-inconsistent-entity-modal-option ${selectedAttempted ? '' : 'cl-inconsistent-entity-modal-option--selected'}`}
                     onClick={() => onClickOption(ExtractionType.Existing)}>
                     <OF.ChoiceGroup
                         options={[
@@ -170,7 +170,6 @@ const ExtractConflictModal: React.FC<Props> = (props) => {
                             } as OF.IChoiceGroupOption,
                         ]}
                         selectedKey={selectedExtractionType}
-                        disabled={props.disableChoices}
                     />
                     <div>
                         <div className={`cl-inconsistent-entity-modal-header ${selectedAttempted ? 'cl-text--error' : 'cl-text--success'}`} data-testid="extract-conflict-modal-previously-submitted-labels">
