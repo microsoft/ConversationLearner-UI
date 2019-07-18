@@ -46,12 +46,13 @@ interface ReceivedProps {
 type Props = ReceivedProps & InjectedIntlProps
 
 
-type InnerProps = {
+type ReadOnlyEditorProps = {
     entities: CLM.EntityBase[],
     extractResponse: CLM.ExtractResponse,
 }
 
-const ReadOnlyOkExtractionEditor: React.FC<InnerProps> = ({ entities, extractResponse }) => {
+const ReadOnlyOkExtractionEditor: React.FC<ReadOnlyEditorProps> = ({ entities, extractResponse }) => {
+    const noOp = () => { }
     return <ExtractorResponseEditor.EditorWrapper
         render={(editorProps, onChangeCustomEntities) =>
             <ExtractorResponseEditor.Editor
@@ -61,15 +62,15 @@ const ReadOnlyOkExtractionEditor: React.FC<InnerProps> = ({ entities, extractRes
                 {...editorProps}
 
                 onChangeCustomEntities={onChangeCustomEntities}
-                onClickNewEntity={() => { }}
+                onClickNewEntity={noOp}
                 isPickerVisible={false}
-                onOpenPicker={() => { }}
-                onClosePicker={() => { }}
+                onOpenPicker={noOp}
+                onClosePicker={noOp}
             />
         }
         entities={entities}
         extractorResponse={extractResponse}
-        onChange={() => { }}
+        onChange={noOp}
     />
 }
 
@@ -77,28 +78,14 @@ const ReadOnlyOkExtractionEditor: React.FC<InnerProps> = ({ entities, extractRes
 const ExtractConflictModal: React.FC<Props> = (props) => {
     const { intl, trainDialogs, attemptedExtractResponse } = props
     const [selectedExtractionType, setSelectedExtractionType] = React.useState(ExtractionType.Existing)
-
     const attemptedTextVariation = CLM.ModelUtils.ToTextVariation(attemptedExtractResponse)
     // This will hold the conflicting dialogs with corrections incase the user chooses to save the attempted labels.
-    // Originally, had separate calculation but since there was so much overlap it is now the same, the conflicting and corrected are 1 to 1 map so they have same length.
+    // Originally, had separate calculations. We only need to show the length in beginner and only need correction after they choose
+    // but there was so much overlap in the calculation that adding correction is negligible they are now computed together.
     const [conflictingDialogs, setConflictingDialogs] = React.useState<CLM.TrainDialog[]>([])
 
     React.useEffect(() => {
-        const correctedDialogs = Util.deepCopy(trainDialogs)
-            .filter(td => td.rounds
-                .some(r => r.extractorStep.textVariations
-                    .some((tv, i, tvs) => {
-                        const isConflict = DialogUtils.isConflictingTextVariation(tv, attemptedTextVariation)
-
-                        // If text variation is conflict, over write to use the attempted variation and mark td as invalid
-                        if (isConflict) {
-                            tvs[i] = Util.deepCopy(attemptedTextVariation)
-                            td.validity = CLM.Validity.WARNING
-                        }
-
-                        return isConflict
-                    })))
-
+        const correctedDialogs = DialogUtils.getCorrectedDialogs(attemptedTextVariation, trainDialogs)
         setConflictingDialogs(correctedDialogs)
     }, [props.trainDialogs, props.attemptedExtractResponse])
 
