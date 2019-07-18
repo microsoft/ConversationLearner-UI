@@ -144,6 +144,7 @@ export enum FM {
     BUTTON_EXPORT = 'Button.EXPORT',
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
+    BUTTON_LOAD = 'Button.LOAD',
     BUTTON_SELECT_FILES = 'Button.SELECT_FILES',
     BUTTON_OK = 'Button.OK',
     BUTTON_REPLAY = 'Button.REPLAY',
@@ -157,6 +158,7 @@ export enum FM {
     BUTTON_SELECT = 'Button.SELECT',
     BUTTON_SELECTED = 'Button.SELECTED',
     BUTTON_TEST = 'Button.TEST',
+    BUTTON_TESTING = 'Button.TESTING',
     BUTTON_NEXT = 'Button.next',
     BUTTON_PREVIOUS = 'Button.previous',
 
@@ -559,12 +561,12 @@ export enum FM {
 
     // Transcript Validator
     TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
-    TRANSCRIPT_VALIDATOR_TITLE_LOCATE = 'TranscriptValidator.locate.title',
-    TRANSCRIPT_VALIDATOR_TITLE_LOAD = 'TranscriptValidator.load.title',
-    TRANSCRIPT_VALIDATOR_RESULTS_BUTTON = 'TranscriptValidator.Results.Button',
     TRANSCRIPT_VALIDATOR_FILESAVE = 'TranscriptValidator.FileSave',
     TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER = 'TranscriptValidator.FileSavePlaceholder',
-    
+    TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST = 'TranscriptValidator.button.NewTest',
+    TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS = 'TranscriptValidator.button.LoadResults',
+    TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS = 'TranscriptValidator.button.SaveResults',
+
     // TreeView
     TREEVIEW_TOGGLE_FULLSCREEN = 'TreeView.ToggleFullScreen',
 
@@ -724,19 +726,21 @@ export default {
         [FM.BUTTON_EXPORT]: 'Export',
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
-        [FM.BUTTON_SELECT_FILES]: 'Select File(s)',
+        [FM.BUTTON_LOAD]: 'Load',
         [FM.BUTTON_OK]: 'OK',
         [FM.BUTTON_REPLAY]: 'Replay',
         [FM.BUTTON_SAVE]: 'Save',
         [FM.BUTTON_SAVE_AS_TRAIN_DIALOG]: 'Save As Train Dialog',
         [FM.BUTTON_SAVE_BRANCH]: 'Save Branch',
         [FM.BUTTON_SAVE_EDIT]: 'Save Edit',
+        [FM.BUTTON_SELECT_FILES]: 'Select File(s)',
         [FM.BUTTON_SUBMIT]: 'Submit',
         [FM.BUTTON_RATE]: 'Rate',
         [FM.BUTTON_UNDO]: 'Undo',
         [FM.BUTTON_SELECT]: 'Select',
         [FM.BUTTON_SELECTED]: 'Selected',
         [FM.BUTTON_TEST]: 'Test',
+        [FM.BUTTON_TESTING]: 'Testing',
         [FM.BUTTON_NEXT]: 'Next',
         [FM.BUTTON_PREVIOUS]: 'Previous',
 
@@ -1158,12 +1162,12 @@ export default {
         [FM.TRANSCRIPT_IMPORTER_AUTOMERGE]: 'Auto Merge',
         
         // Transcript Validator
-        [FM.TRANSCRIPT_VALIDATOR_TITLE]: '.transcript File Testing',
-        [FM.TRANSCRIPT_VALIDATOR_TITLE_LOCATE]: 'Select .transcript files to test',
-        [FM.TRANSCRIPT_VALIDATOR_TITLE_LOAD]: 'Load existing test results from .cltr file',
-        [FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON]: 'Load Results',
+        [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Select .transcript files to test',
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE]: 'Name for Test Results',
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER]: 'Name',
+        [FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST]: 'New Test',
+        [FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS]: 'Load Results',
+        [FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS]: 'Save Results',
 
         // UserInput Modal
         [FM.USERINPUT_ADD_TITLE]: 'Add User Input',

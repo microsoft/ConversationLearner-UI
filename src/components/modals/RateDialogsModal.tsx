@@ -54,7 +54,10 @@ const initialState: ComponentState = {
 }
 
 class RateDialogsModal extends React.Component<Props, ComponentState> {
+    
     state = initialState
+
+    private sameButtonRef = React.createRef<OF.IButton>()
 
     async componentDidMount() {
         const changedItems = this.props.transcriptValidationSet.transcriptValidationResults.filter(tr => tr.validity === CLM.TranscriptValidationResultType.CHANGED)
@@ -81,7 +84,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onLeft() {
+    async onRight() {
         const logDialogId = this.currentLogDialodId()
         if (this.state.isFlipped) {
             await Util.setStateAsync(this, {worseIds: [...this.state.worseIds, logDialogId]})
@@ -100,7 +103,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onRight() {
+    async onLeft() {
         const logDialogId = this.currentLogDialodId()
         if (this.state.isFlipped) {
             await Util.setStateAsync(this, {betterIds: [...this.state.betterIds, logDialogId]})
@@ -210,7 +213,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         history1 = history1.slice(0, stopTurn)
         history2 = history2.slice(0, stopTurn)
 
-        // Mark last turn
+        // Focuse same button (otherwise last choise will be active)
+        this.focusSameButton()
 
         this.setState({
             history1, 
@@ -315,6 +319,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                                 iconProps={{ iconName: 'Compare'}}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
                                 text={'Same'}
+                                componentRef={this.sameButtonRef}
                             />
                             <OF.DefaultButton
                                 onClick={this.onRight}
@@ -340,6 +345,12 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                 </OF.Modal>
             </div>
         )
+    }
+
+    private focusSameButton() {
+        if (this.sameButtonRef.current) {
+            this.sameButtonRef.current.focus()
+        }
     }
 }
 

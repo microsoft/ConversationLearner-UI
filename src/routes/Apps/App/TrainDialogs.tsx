@@ -16,7 +16,6 @@ import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
 import TranscriptImporter from '../../../components/modals/TranscriptImporter'
-import TranscriptValidatorPicker from '../../../components/modals/TranscriptValidatorPicker'
 import TranscriptImportWaitModal from '../../../components/modals/TranscriptImportWaitModal'
 import TranscriptValidatorModal from '../../../components/modals/TranscriptValidatorModal'
 import { bindActionCreators } from 'redux'
@@ -149,12 +148,10 @@ interface ComponentState {
     isTeachDialogModalOpen: boolean
     isEditDialogModalOpen: boolean
     isTranscriptImportOpen: boolean
-    isTranscriptValidatePickerOpen: boolean
     isImportWaitModalOpen: boolean
-    isTranscriptTestWaitOpen: boolean
+    isTranscriptValidateModalOpen: boolean
     transcriptIndex: number
     transcriptFiles: File[] | undefined
-    transcriptValidationSet: CLM.TranscriptValidationSet | null
     importAutoCreate: boolean
     importAutoMerge: boolean
     isTreeViewModalOpen: boolean
@@ -202,12 +199,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTeachDialogModalOpen: false,
             isEditDialogModalOpen: false,
             isTranscriptImportOpen: false,
-            isTranscriptValidatePickerOpen: false,
             isImportWaitModalOpen: false,
-            isTranscriptTestWaitOpen: false,
+            isTranscriptValidateModalOpen: false,
             transcriptIndex: 0,
             transcriptFiles: undefined,
-            transcriptValidationSet: null,
             importAutoCreate: false,
             importAutoMerge: false,
             isTreeViewModalOpen: false,
@@ -975,131 +970,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    //----------------------
-    // Transcript validation
-    //-----------------------
     @OF.autobind
-    onClickValidate(): void {
+    onCloseTranscriptValidator(): void {
         this.setState({
-            isTranscriptValidatePickerOpen: true,
-            transcriptIndex: 0
+            isTranscriptValidateModalOpen: false
         })
     }
 
     @OF.autobind
-    async onCloseTranscriptValidationPicker(transcriptsToValidate: File[] | null, transcriptValidationSet: CLM.TranscriptValidationSet | null): Promise<void> {
-        if (transcriptsToValidate && transcriptsToValidate.length > 0) {
-            const emptySet: CLM.TranscriptValidationSet = { transcriptValidationResults: [], appId: this.props.app.appId }
-            await Util.setStateAsync(this, {
-                isTranscriptValidatePickerOpen: false,
-                transcriptFiles: transcriptsToValidate,
-                transcriptValidationSet: emptySet
-            })
-            await this.onStartTranscriptValidate()
-        }
-        else if (transcriptValidationSet && transcriptValidationSet.transcriptValidationResults.length > 0) {
-            await Util.setStateAsync(this, {
-                isTranscriptValidatePickerOpen: false,
-                isTranscriptTestWaitOpen: true,
-                transcriptFiles: null,
-                transcriptValidationSet
-            })
-        }
-    }
-
-    @OF.autobind
-    onEndTranscriptTest(): void {
+    onOpenTranscriptValidator(): void {
         this.setState({
-            isTranscriptTestWaitOpen: false,
-            transcriptFiles: undefined
+            isTranscriptValidateModalOpen: true
         })
-    }
-
-    @OF.autobind
-    async onStartTranscriptValidate() {
-
-        if (!this.state.transcriptFiles || this.state.transcriptFiles.length === 0) {
-            return
-        }
-
-        // Check if I'm done importing files
-        if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
-            this.setState({transcriptFiles: undefined})
-            return
-        }
-
-        // Pop the next file
-        const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
-        this.setState({transcriptIndex: this.state.transcriptIndex + 1})
-
-        let source = await this.readFileAsync(transcriptFile)
-        try {
-            const sourceJson = JSON.parse(source)
-            await this.onValidateTranscript(transcriptFile.name, sourceJson)
-        }
-        catch (e) {
-            const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
-            this.setState({
-                transcriptFiles: undefined,
-                isTranscriptTestWaitOpen: false
-            })
-        }
-    }
-
-    async onValidateTranscript(fileName: string, transcript: BB.Activity[]): Promise<void> {
-
-        this.setState({isTranscriptTestWaitOpen: true})
-
-        const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
-        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", actionHashes: []}
-        let invalidTranscript = false
-        for (let activity of transcript) {
-            // TODO: Handle conversation updates
-            if (!activity.type || activity.type === "message") {
-                if (activity.from.role === "user") {
-                    // If already have user input push it
-                    if (transcriptValidationTurn.inputText !== "") {
-                        transcriptValidationTurns.push(transcriptValidationTurn)
-                    }
-                    transcriptValidationTurn = { inputText: activity.text, actionHashes: []}
-                }
-                else if (activity.from.role === "bot") {
-                    if (transcriptValidationTurn) {
-                        const actionHash = Util.hashText(activity.text)
-                        transcriptValidationTurn.actionHashes.push(actionHash)
-                    }
-                    else {
-                        invalidTranscript = true
-                        break
-                    }
-                }
-            }
-        }
-        // Add last turn
-        if (transcriptValidationTurn) {
-            transcriptValidationTurns.push(transcriptValidationTurn)
-        }
-
-        let transcriptValidationResult: CLM.TranscriptValidationResult
-        if (invalidTranscript) {
-            transcriptValidationResult = { validity: CLM.TranscriptValidationResultType.INVALID_TRANSCRIPT, logDialogId: null, rating: CLM.TranscriptRating.UNKNOWN }
-        }
-        else {
-            transcriptValidationResult = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<CLM.TranscriptValidationResult>)
-        }
-        // If invalid, store the transcript for later comparison
-        if (transcriptValidationResult.validity === CLM.TranscriptValidationResultType.CHANGED) {
-            transcriptValidationResult.sourceHistory = transcript
-            transcriptValidationResult.fileName = fileName
-        }
-        // Need to check that dialog as still open as user may canceled the test
-        if (this.state.isTranscriptTestWaitOpen && this.state.transcriptValidationSet) {
-            const transcriptValidationSet = Util.deepCopy(this.state.transcriptValidationSet)
-            transcriptValidationSet.transcriptValidationResults = [...transcriptValidationSet.transcriptValidationResults, transcriptValidationResult]
-            await Util.setStateAsync(this, {transcriptValidationSet})
-        }
-        await this.onStartTranscriptValidate()
     }
 
     //-----------------------------
@@ -1124,6 +1006,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         await this.onStartTranscriptImport()
     }
 
+    // LARS remove
     readFileAsync(file: File): Promise<string> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -1442,13 +1325,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         ariaDescription={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
                         text={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
                     />
-                    <OF.DefaultButton
-                        onClick={this.onClickValidate}
-                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
-                        ariaDescription={Util.formatMessageId(intl, FM.BUTTON_TEST)}
-                        text={Util.formatMessageId(intl, FM.BUTTON_TEST)}
-                        iconProps={{ iconName: 'TestCase' }}
-                    />
                     {this.state.isTreeViewModalOpen ?
                         <OF.DefaultButton
                             className="cl-rotate"
@@ -1466,6 +1342,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
                         />
                     }
+                    <OF.DefaultButton
+                        onClick={this.onOpenTranscriptValidator}
+                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                        ariaDescription={Util.formatMessageId(intl, FM.BUTTON_TESTING)}
+                        text={Util.formatMessageId(intl, FM.BUTTON_TESTING)}
+                        iconProps={{ iconName: 'TestCase' }}
+                    />
                 </div>
                 <TreeView
                     open={this.state.isTreeViewModalOpen}
@@ -1660,23 +1543,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
                     />
                 }
-                {this.state.isTranscriptValidatePickerOpen && 
-                    <TranscriptValidatorPicker
-                        app={this.props.app}
-                        open={true}
-                        onAbandon={() => this.onCloseTranscriptValidationPicker(null, null)}
-                        onTestFiles={(files: File[]) => this.onCloseTranscriptValidationPicker(files, null)}
-                        onViewResults={(set: CLM.TranscriptValidationSet) => this.onCloseTranscriptValidationPicker(null, set)}
-                    />
-                }
-                {this.state.isTranscriptTestWaitOpen && this.state.transcriptValidationSet &&
+                {this.state.isTranscriptValidateModalOpen &&
                     <TranscriptValidatorModal
                         app={this.props.app}
-                        importIndex={this.state.transcriptIndex}
-                        importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
-                        transcriptValidationSet={this.state.transcriptValidationSet}
-                        onUpdate={(transcriptValidationSet: CLM.TranscriptValidationSet) => this.setState({transcriptValidationSet})}
-                        onClose={this.onEndTranscriptTest}
+                        editingPackageId={this.props.editingPackageId}
+                        onClose={this.onCloseTranscriptValidator}
                     />
                 }
             </div>
@@ -1757,7 +1628,7 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         fetchExtractionsThunkAsync: actions.app.fetchExtractionsThunkAsync,
-        fetchTranscriptValidationThunkAsync: actions.app.fetchTranscriptValidationThunkAsync,
+        fetchTranscriptValidationThunkAsync: actions.app.fetchTranscriptValidationThunkAsync,//LARS remove
         trainDialogMergeThunkAsync: actions.train.trainDialogMergeThunkAsync,
         trainDialogReplaceThunkAsync: actions.train.trainDialogReplaceThunkAsync,
         trainDialogReplayAsync: actions.train.trainDialogReplayThunkAsync,
