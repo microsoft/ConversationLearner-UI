@@ -6,15 +6,36 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
+import * as Util from '../../Utils/util'
+import * as DialogUtils from '../../Utils/dialogUtils'
 import { FM } from '../../react-intl-messages'
-import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './ExtractConflictModal.css'
 
 // Renaming from Props because of https://github.com/Microsoft/tslint-microsoft-contrib/issues/339
+
+// Keys must match values for indexing by value
+export enum ExtractionType {
+    Attempted = 'Attempted',
+    Existing = 'Existing'
+}
+
+export type ExtractionChange = ExtractionChangeExisting | ExtractionChangeAttempted
+
+export interface ExtractionChangeExisting {
+    chosenExtractType: ExtractionType.Existing
+    extractResponse: CLM.ExtractResponse
+}
+
+export interface ExtractionChangeAttempted {
+    chosenExtractType: ExtractionType.Attempted
+    extractResponse: CLM.ExtractResponse
+    trainDialogs: CLM.TrainDialog[]
+}
+
 interface ReceivedProps {
     onClose: Function
-    onAccept: Function
+    onAccept: (extractionChange: ExtractionChange) => void
     open: boolean
     entities: CLM.EntityBase[]
     attemptedExtractResponse: CLM.ExtractResponse
@@ -23,8 +44,81 @@ interface ReceivedProps {
 
 type Props = ReceivedProps & InjectedIntlProps
 
-const ExtractConflictModal: React.SFC<Props> = (props) => {
-    const { intl } = props
+
+type InnerProps = {
+    entities: CLM.EntityBase[],
+    extractResponse: CLM.ExtractResponse,
+}
+
+const ReadOnlyOkExtractionEditor: React.FC<InnerProps> = ({ entities, extractResponse }) => {
+    return <ExtractorResponseEditor.EditorWrapper
+        render={(editorProps, onChangeCustomEntities) =>
+            <ExtractorResponseEditor.Editor
+                readOnly={true}
+                status={ExtractorResponseEditor.Models.ExtractorStatus.OK}
+                entities={entities}
+                {...editorProps}
+
+                onChangeCustomEntities={onChangeCustomEntities}
+                onClickNewEntity={() => { }}
+                isPickerVisible={false}
+                onOpenPicker={() => { }}
+                onClosePicker={() => { }}
+            />
+        }
+        entities={entities}
+        extractorResponse={extractResponse}
+        onChange={() => { }}
+    />
+}
+
+
+const ExtractConflictModal: React.FC<Props> = (props) => {
+    const { intl, trainDialogs, attemptedExtractResponse } = props
+    const [selectedExtractionType, setSelectedExtractionType] = React.useState(ExtractionType.Existing)
+
+    const attemptedTextVariation = CLM.ModelUtils.ToTextVariation(attemptedExtractResponse)
+    // This will hold the conflicting dialogs with corrections incase the user chooses to save the attempted labels.
+    // Originally, had separate calculation but since there was so much overlap it is now the same, the conflicting and corrected are 1 to 1 map so they have same length.
+    const [conflictingDialogs, setConflictingDialogs] = React.useState<CLM.TrainDialog[]>([])
+
+    React.useEffect(() => {
+        const correctedDialogs = Util.deepCopy(trainDialogs)
+            .filter(td => td.rounds
+                .some(r => r.extractorStep.textVariations
+                    .some((tv, i, tvs) => {
+                        const isConflict = DialogUtils.isConflictingTextVariation(tv, attemptedTextVariation)
+
+                        // If text variation is conflict, over write to use the attempted variation and mark td as invalid
+                        if (isConflict) {
+                            tvs[i] = Util.deepCopy(attemptedTextVariation)
+                            td.validity = CLM.Validity.WARNING
+                        }
+
+                        return isConflict
+                    })))
+
+        setConflictingDialogs(correctedDialogs)
+    }, [props.trainDialogs, props.attemptedExtractResponse])
+
+    const onClickOption = (extractionType: ExtractionType) => {
+        setSelectedExtractionType(extractionType)
+    }
+
+    const onAccept = () => {
+        const extractionChange: ExtractionChange = {
+            chosenExtractType: selectedExtractionType,
+            extractResponse: selectedExtractionType === ExtractionType.Attempted
+                ? props.attemptedExtractResponse
+                : props.extractResponse,
+            trainDialogs: conflictingDialogs
+        }
+
+        props.onAccept(extractionChange)
+    }
+
+    const selectedAttempted = selectedExtractionType === ExtractionType.Attempted
+
     return (
         <OF.Modal
             isOpen={props.open}
@@ -34,68 +128,74 @@ const ExtractConflictModal: React.SFC<Props> = (props) => {
             data-testid="extract-conflict-modal"
         >
             <div className={`cl-modal_header cl-text--error ${OF.FontClassNames.xLarge} `}>
-                <OF.Icon iconName="Warning" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_TITLE)}
+                <OF.Icon iconName="Warning" />&nbsp;{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_TITLE)}
             </div>
             <div>
-                <p>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_SUBTITLE)}</p>
-                <div>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_REVIEW)}</div>
+                <p>{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_SUBTITLE)}</p>
+                <div className="cl-inconsistent-entity-modal-header">{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_REVIEW)}</div>
 
-                <div className="cl-inconsistent-entity-modal-header cl-text--error" data-testid="extract-conflict-modal-conflicting-labels"><OF.Icon iconName="ChromeClose" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS)}</div>
-                <ExtractorResponseEditor.EditorWrapper
-                    render={(editorProps, onChangeCustomEntities) =>
-                        <ExtractorResponseEditor.Editor
-                            readOnly={true}
-                            status={ExtractorResponseEditor.Models.ExtractorStatus.OK}
+                <div className={`cl-inconsistent-entity-modal-option ${selectedAttempted ? 'cl-inconsistent-entity-modal-option--selected' : ''} ${props.disableChoices ? 'cl-inconsistent-entity-modal-option--disabled' : ''}`}
+                    onClick={() => onClickOption(ExtractionType.Attempted)}>
+                    <OF.ChoiceGroup
+                        options={[
+                            {
+                                key: ExtractionType.Attempted,
+                                text: '',
+                                'data-testid': 'inconsistent-entity-modal-option-attempted',
+                            } as OF.IChoiceGroupOption,
+                        ]}
+                        selectedKey={selectedExtractionType}
+                        disabled={props.disableChoices}
+                    />
+                    <div>
+                        <div className={`cl-inconsistent-entity-modal-header ${selectedAttempted ? 'cl-text--success' : 'cl-text--error'}`} data-testid="extract-conflict-modal-conflicting-labels">
+                            <OF.Icon iconName={selectedAttempted ? 'Accept' : 'ChromeClose'} />&nbsp;{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_ATTEMPTED_LABELS_TITLE)}
+                        </div>
+                        <div className="cl-inconsistent-entity-modal-header">{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_ATTEMPTED_LABELS_SUBTITLE, { conflictingDialogs: conflictingDialogs.length })}</div>
+                        <ReadOnlyOkExtractionEditor
                             entities={props.entities}
-                            {...editorProps}
-
-                            onChangeCustomEntities={onChangeCustomEntities}
-                            onClickNewEntity={() => { }}
-                            isPickerVisible={false}
-                            onOpenPicker={() => { }}
-                            onClosePicker={() => { }}
+                            extractResponse={props.attemptedExtractResponse}
                         />
-                    }
-                    entities={props.entities}
-                    extractorResponse={props.attemptedExtractResponse}
-                    onChange={() => { }}
-                />
+                    </div>
+                </div>
 
-                <div className="cl-inconsistent-entity-modal-header cl-text--success" data-testid="extract-conflict-modal-previously-submitted-labels"><OF.Icon iconName="Accept" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS)}</div>
-                <ExtractorResponseEditor.EditorWrapper
-                    render={(editorProps, onChangeCustomEntities) =>
-                        <ExtractorResponseEditor.Editor
-                            readOnly={true}
-                            status={ExtractorResponseEditor.Models.ExtractorStatus.OK}
+                <div className={`cl-inconsistent-entity-modal-option ${selectedAttempted ? '' : 'cl-inconsistent-entity-modal-option--selected'} ${props.disableChoices ? 'cl-inconsistent-entity-modal-option--disabled' : ''}`}
+                    onClick={() => onClickOption(ExtractionType.Existing)}>
+                    <OF.ChoiceGroup
+                        options={[
+                            {
+                                key: ExtractionType.Existing,
+                                text: '',
+                                'data-testid': 'inconsistent-entity-modal-option-existing',
+                            } as OF.IChoiceGroupOption,
+                        ]}
+                        selectedKey={selectedExtractionType}
+                        disabled={props.disableChoices}
+                    />
+                    <div>
+                        <div className={`cl-inconsistent-entity-modal-header ${selectedAttempted ? 'cl-text--error' : 'cl-text--success'}`} data-testid="extract-conflict-modal-previously-submitted-labels">
+                            <OF.Icon iconName={selectedAttempted ? 'ChromeClose' : 'Accept'} />&nbsp;{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_EXISTING_LABELS_TITLE)}
+                        </div>
+                        <div className="cl-inconsistent-entity-modal-header">{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_EXISTING_LABELS_SUBTITLE)}</div>
+                        <ReadOnlyOkExtractionEditor
                             entities={props.entities}
-                            {...editorProps}
-
-                            onChangeCustomEntities={onChangeCustomEntities}
-                            onClickNewEntity={() => { }}
-                            isPickerVisible={false}
-                            onOpenPicker={() => { }}
-                            onClosePicker={() => { }}
+                            extractResponse={props.extractResponse}
                         />
-                    }
-                    entities={props.entities}
-                    extractorResponse={props.extractResponse}
-                    onChange={() => { }}
-                />
-
-                <p>{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CALLTOACTION)}</p>
+                    </div>
+                </div>
             </div>
             <div className="cl-modal_footer cl-modal-buttons">
-                <div className="cl-modal-buttons_secondary"/>
+                <div className="cl-modal-buttons_secondary" />
                 <div className="cl-modal-buttons_primary">
                     <OF.PrimaryButton
-                        onClick={() => props.onAccept()}
-                        text={formatMessageId(intl, FM.BUTTON_ACCEPT)}
+                        onClick={onAccept}
+                        text={Util.formatMessageId(intl, FM.BUTTON_CHANGE)}
                         iconProps={{ iconName: 'Accept' }}
                         data-testid="entity-conflict-accept"
                     />
                     <OF.DefaultButton
                         onClick={() => props.onClose()}
-                        text={formatMessageId(intl, FM.BUTTON_CLOSE)}
+                        text={Util.formatMessageId(intl, FM.BUTTON_CLOSE)}
                         iconProps={{ iconName: 'Cancel' }}
                         data-testid="entity-conflict-cancel"
                     />

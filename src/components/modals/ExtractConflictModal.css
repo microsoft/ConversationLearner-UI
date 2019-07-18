@@ -1,9 +1,22 @@
 .cl-inconsistent-entity-modal-header {
-    padding: 1em 0 0.5em 0;
+    padding: 0 0 0.5em 0;
 }
 .cl-inconsistent-entity-modal-header [data-icon-name] {
     transform: translateY(2px);
 }
 .cl-inconsistent-entity-modal-editor {
     padding-bottom: 0.5em;
+}
+
+.cl-inconsistent-entity-modal-option {
+    display: grid;
+    grid-template: auto / min-content auto;
+    align-items: center;
+    grid-gap: 1rem;
+    border: 2px solid transparent;
+    padding: 1em;
+}
+
+.cl-inconsistent-entity-modal-option--selected {
+    border-color: var(--color-themePrimary);
 }

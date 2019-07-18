@@ -50,6 +50,31 @@ export function internalConflict(textVariation: CLM.TextVariation, trainDialog: 
     return null
 }
 
+export function isConflictingTextVariation(tvA: CLM.TextVariation, tvB: CLM.TextVariation) {
+    if (tvA.text !== tvB.text) {
+        return false
+    }
+
+    if (tvA.labelEntities.length !== tvB.labelEntities.length) {
+        return true
+    }
+
+    const sameEntities = tvA.labelEntities.every(le =>
+        tvB.labelEntities.find(ale =>
+            ale.entityId === le.entityId
+            && ale.entityText === le.entityText
+            && ale.startCharIndex === le.startCharIndex
+            && ale.endCharIndex === le.endCharIndex
+        )
+    )
+
+    if (sameEntities) {
+        return false
+    }
+
+    return true
+}
+
 export function activityIndexFromRound(trainDialog: CLM.TrainDialog, roundIndex: number | null, scoreIndex: number | null): number | undefined {
     if (!roundIndex) { 
         return undefined

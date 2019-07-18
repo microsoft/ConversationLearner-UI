@@ -40,6 +40,7 @@
     "moment": "^2.22.2",
     "node-zip": "^1.1.1",
     "office-ui-fabric-react": "6.185.0",
+    "querystring": "0.2.0",
     "react": "16.8.6",
     "react-d3-tree": "^1.12.2",
     "react-dom": "16.8.6",
