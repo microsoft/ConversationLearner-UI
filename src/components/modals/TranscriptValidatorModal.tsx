@@ -28,7 +28,7 @@ interface ComponentState {
     transcriptFiles: File[]
     transcriptValidationSet: CLM.TranscriptValidationSet
     isTranscriptValidatePickerOpen: boolean
-    isCompareDialogsOpen: boolean
+    compareDialogs: CLM.TranscriptValidationResult[] | null
     isRateDialogsOpen: boolean
     isGetSaveNameOpen: boolean
     setToSave: CLM.TranscriptValidationSet | null
@@ -39,7 +39,7 @@ const initialState: ComponentState = {
     transcriptFiles: [],
     transcriptValidationSet: {transcriptValidationResults: []},
     isTranscriptValidatePickerOpen: false,
-    isCompareDialogsOpen: false,
+    compareDialogs: null,
     isRateDialogsOpen: false,
     isGetSaveNameOpen: false,
     setToSave: null
@@ -157,11 +157,10 @@ class TranscriptValidatorModal extends React.Component<Props, ComponentState> {
         else {
             transcriptValidationResult = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<CLM.TranscriptValidationResult>)
         }
-        // If invalid, store the transcript for later comparison
-        if (transcriptValidationResult.validity === CLM.TranscriptValidationResultType.CHANGED) {
-            transcriptValidationResult.sourceHistory = transcript
-            transcriptValidationResult.fileName = fileName
-        }
+        // Store the transcript for later comparison
+        transcriptValidationResult.sourceHistory = transcript
+        transcriptValidationResult.fileName = fileName
+
         // Need to check that dialog as still open as user may canceled the test
         if (this.state.transcriptValidationSet) {
             const transcriptValidationSet = Util.deepCopy(this.state.transcriptValidationSet)
@@ -180,13 +179,13 @@ class TranscriptValidatorModal extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onCompare() {
-        this.setState({isCompareDialogsOpen: true})
+    onCompare(results: CLM.TranscriptValidationResult[]) {
+        this.setState({compareDialogs: results})
     }
 
     @OF.autobind
     onCloseCompare() {
-        this.setState({isCompareDialogsOpen: false})
+        this.setState({compareDialogs: null})
     }
 
     @OF.autobind
@@ -286,7 +285,7 @@ class TranscriptValidatorModal extends React.Component<Props, ComponentState> {
 
         return (
             <div>
-                {!this.state.isCompareDialogsOpen && !this.state.isRateDialogsOpen && !this.state.isGetSaveNameOpen && !this.state.isTranscriptValidatePickerOpen &&
+                {!this.state.compareDialogs && !this.state.isRateDialogsOpen && !this.state.isGetSaveNameOpen && !this.state.isTranscriptValidatePickerOpen &&
                     <OF.Modal
                         isOpen={true}
                         isBlocking={true}
@@ -320,6 +319,15 @@ class TranscriptValidatorModal extends React.Component<Props, ComponentState> {
                                             <span className="cl-entity cl-transcript-validator-result-percent">
                                                 {this.percentOf(reproduced.length)}
                                             </span>
+                                            <div className="cl-buttons-row cl-transcript-validator-result-buttons">
+                                                <OF.DefaultButton
+                                                    disabled={reproduced.length === 0}
+                                                    onClick={() => this.onCompare(reproduced)}
+                                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
+                                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
+                                                    iconProps={{ iconName: 'DiffSideBySide' }}
+                                                />
+                                            </div>
                                         </div>
                                         <div className="cl-transcript-validator-result">
                                             <span className="cl-transcript-validator-result-title">Changed: </span>
@@ -329,6 +337,22 @@ class TranscriptValidatorModal extends React.Component<Props, ComponentState> {
                                             <span className="cl-entity cl-transcript-validator-result-percent">
                                                 {this.percentOf(changed.length)}
                                             </span>
+                                            <div className="cl-buttons-row cl-transcript-validator-result-buttons">
+                                                <OF.DefaultButton
+                                                    disabled={changed.length === 0}
+                                                    onClick={() => this.onCompare(changed)}
+                                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
+                                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
+                                                    iconProps={{ iconName: 'DiffSideBySide' }}
+                                                />
+                                                <OF.DefaultButton
+                                                    disabled={changed.length === 0}
+                                                    onClick={this.onRate}
+                                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
+                                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
+                                                    iconProps={{ iconName: 'Compare' }}
+                                                />
+                                            </div>
                                         </div>
                                         {numChangedResults > 0 && 
                                             <div className="cl-transcript-validator-subresult">
@@ -394,24 +418,17 @@ class TranscriptValidatorModal extends React.Component<Props, ComponentState> {
                                                 <span className="cl-entity cl-entity--mismatch cl-transcript-validator-result-percent">
                                                     {this.percentOf(test_failed.length)}
                                                 </span>
+                                                <div className="cl-buttons-row cl-transcript-validator-result-buttons">
+                                                    <OF.DefaultButton
+                                                        disabled={test_failed.length === 0}
+                                                        onClick={() => this.onCompare(test_failed)}
+                                                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
+                                                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
+                                                        iconProps={{ iconName: 'DiffSideBySide' }}
+                                                    />
+                                                </div>
                                             </div>
                                         }
-                                    </div>
-                                    <div className="cl-buttons-row">
-                                        <OF.DefaultButton
-                                            disabled={changed.length === 0}
-                                            onClick={this.onCompare}
-                                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                            iconProps={{ iconName: 'DiffSideBySide' }}
-                                        />
-                                        <OF.DefaultButton
-                                            disabled={changed.length === 0}
-                                            onClick={this.onRate}
-                                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
-                                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
-                                            iconProps={{ iconName: 'Compare' }}
-                                        />
                                     </div>
                                 </div>
                             }
@@ -462,10 +479,10 @@ class TranscriptValidatorModal extends React.Component<Props, ComponentState> {
                         </div>
                     </OF.Modal>
                 }
-                {this.state.isCompareDialogsOpen &&
+                {this.state.compareDialogs &&
                     <CompareDialogsModal
                         app={this.props.app}
-                        transcriptValidationResults={changed}
+                        transcriptValidationResults={this.state.compareDialogs}
                         onClose={this.onCloseCompare}
                     />
                 }
