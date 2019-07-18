@@ -196,121 +196,129 @@ class Index extends React.Component<Props, ComponentState> {
         const TRIPLE_DIGIT_LOGDIALOG_COUNT = 99;
 
         return (
-            <div className="cl-app-page">
-                <div>
-                    <div className="cl-app-title">
+            <>
+                <div className="cl-o-app-columns cl-model-banner">
+                    <div className="cl-model-banner_content">
                         <div
                             data-testid="app-index-model-name"
-                            className={OF.FontClassNames.xxLarge}
+                            className={OF.FontClassNames.xLarge}
                         >
                             {app.appName}
                         </div>
                     </div>
-                    <div className={`cl-app-tag-status ${OF.FontClassNames.mediumPlus}`}>
-                        <FormattedMessageId id={FM.APP_VERSION} /> {tag}
-                        {editPackageId === app.livePackageId &&
-                            <span className="cl-font--warning">LIVE</span>
-                        }
-                    </div>
-                    <TrainingStatus
-                        app={app}
-                    />
-                    <div className={`cl-nav ${OF.FontClassNames.mediumPlus}`}>
-                        <div className="cl-nav_section">
-                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-home" exact={true} to={{ pathname: `${match.url}`, state: { app } }}>
-                                <OF.Icon iconName="Home" />
-                                <span className={(this.state.modelLoaded && invalidBot) ? 'cl-font--highlight' : ''}>Home
-                                        {this.state.modelLoaded && invalidBot &&
-                                        <TooltipHost
-                                            content={intl.formatMessage({
-                                                id: FM.TOOLTIP_BOTINFO_INVALID,
-                                                defaultMessage: 'Bot not compatible'
-                                            })}
-                                            calloutProps={{ gapSpace: 0 }}
-                                        >
-                                            <OF.IconButton
-                                                className="ms-Button--transparent cl-icon--short"
-                                                iconProps={{ iconName: 'IncidentTriangle' }}
-                                                title="Error Alert"
-                                            />
-                                        </TooltipHost>
-                                    }</span>
-                            </NavLink>
-                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-entities" to={{ pathname: `${match.url}/entities`, state: { app } }}>
-                                <OF.Icon iconName="List" /><span>Entities</span><span className="count">{this.state.modelLoaded ? this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).filter(e => !e.doNotMemorize).length : ''}</span>
-                            </NavLink>
-                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-actions" to={{ pathname: `${match.url}/actions`, state: { app } }}>
-                                <OF.Icon iconName="List" /><span>Actions</span>
-                                <span className="count">
-                                    {this.state.modelLoaded ? this.props.actions.length : ''}
-                                </span>
-                            </NavLink>
-                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-train-dialogs" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
-                                <OF.Icon iconName="List" />
-                                <span
-                                    className={(this.state.modelLoaded && trainDialogValidity !== CLM.Validity.VALID) ? 'cl-font--highlight' : ''}
-                                >
-                                    Train Dialogs
-                                    {this.state.modelLoaded && trainDialogValidity !== CLM.Validity.VALID &&
-                                        <TooltipHost
-                                            content={intl.formatMessage({
-                                                id: ValidityUtils.validityToolTip(trainDialogValidity),
-                                                defaultMessage: 'Contains Invalid Train Dialogs'
-                                            })}
-                                            calloutProps={{ gapSpace: 0 }}
-                                        >
-                                            <OF.Icon
-                                                className={`cl-icon ${ValidityUtils.validityColorClassName(trainDialogValidity)}`}
-                                                iconName="IncidentTriangle"
-                                            />
-                                        </TooltipHost>
+                </div>
+                <div className="cl-o-app-columns">
+                    <div className="cl-app_content">
+                        <div className="cl-app-page">
+                            <div>
+                                <div className={`cl-app-tag-status ${OF.FontClassNames.mediumPlus}`}>
+                                    <FormattedMessageId id={FM.APP_VERSION} /> {tag}
+                                    {editPackageId === app.livePackageId &&
+                                        <span className="cl-font--warning">LIVE</span>
                                     }
-                                </span>
-                                <span className="count">{this.state.modelLoaded ? this.props.trainDialogs.length : ''}</span>
-                            </NavLink>
-                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-log-dialogs" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
-                                <OF.Icon iconName="List" /><span>Log Dialogs</span>
-                                <span className="count">{this.state.modelLoaded && ((filteredLogDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : filteredLogDialogs.length)}</span>
-                            </NavLink>
-                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-settings" to={{ pathname: `${match.url}/settings`, state: { app } }}>
-                                <OF.Icon iconName="Settings" /><span>Settings</span>
-                            </NavLink>
-                        </div>
-                        <div className="cl-nav_section">
-                            <NavLink className="cl-nav-link" exact={true} to="/home">
-                                <OF.Icon iconName="Back" /><span>My Models</span>
-                            </NavLink>
+                                </div>
+                                <TrainingStatus
+                                    app={app}
+                                />
+                                <div className={`cl-nav ${OF.FontClassNames.mediumPlus}`}>
+                                    <div className="cl-nav_section">
+                                        <NavLink className="cl-nav-link" data-testid="app-index-nav-link-home" exact={true} to={{ pathname: `${match.url}`, state: { app } }}>
+                                            <OF.Icon iconName="Home" />
+                                            <span className={(this.state.modelLoaded && invalidBot) ? 'cl-font--highlight' : ''}>Home
+                                        {this.state.modelLoaded && invalidBot &&
+                                                    <TooltipHost
+                                                        content={intl.formatMessage({
+                                                            id: FM.TOOLTIP_BOTINFO_INVALID,
+                                                            defaultMessage: 'Bot not compatible'
+                                                        })}
+                                                        calloutProps={{ gapSpace: 0 }}
+                                                    >
+                                                        <OF.IconButton
+                                                            className="ms-Button--transparent cl-icon--short"
+                                                            iconProps={{ iconName: 'IncidentTriangle' }}
+                                                            title="Error Alert"
+                                                        />
+                                                    </TooltipHost>
+                                                }</span>
+                                        </NavLink>
+                                        <NavLink className="cl-nav-link" data-testid="app-index-nav-link-entities" to={{ pathname: `${match.url}/entities`, state: { app } }}>
+                                            <OF.Icon iconName="List" /><span>Entities</span><span className="count">{this.state.modelLoaded ? this.props.entities.filter(e => typeof e.positiveId === 'undefined' || e.positiveId === null).filter(e => !e.doNotMemorize).length : ''}</span>
+                                        </NavLink>
+                                        <NavLink className="cl-nav-link" data-testid="app-index-nav-link-actions" to={{ pathname: `${match.url}/actions`, state: { app } }}>
+                                            <OF.Icon iconName="List" /><span>Actions</span>
+                                            <span className="count">
+                                                {this.state.modelLoaded ? this.props.actions.length : ''}
+                                            </span>
+                                        </NavLink>
+                                        <NavLink className="cl-nav-link" data-testid="app-index-nav-link-train-dialogs" to={{ pathname: `${match.url}/trainDialogs`, state: { app } }}>
+                                            <OF.Icon iconName="List" />
+                                            <span
+                                                className={(this.state.modelLoaded && trainDialogValidity !== CLM.Validity.VALID) ? 'cl-font--highlight' : ''}
+                                            >
+                                                Train Dialogs
+                                                {this.state.modelLoaded && trainDialogValidity !== CLM.Validity.VALID &&
+                                                    <TooltipHost
+                                                        content={intl.formatMessage({
+                                                            id: ValidityUtils.validityToolTip(trainDialogValidity),
+                                                            defaultMessage: 'Contains Invalid Train Dialogs'
+                                                        })}
+                                                        calloutProps={{ gapSpace: 0 }}
+                                                    >
+                                                        <OF.Icon
+                                                            className={`cl-icon ${ValidityUtils.validityColorClassName(trainDialogValidity)}`}
+                                                            iconName="IncidentTriangle"
+                                                        />
+                                                    </TooltipHost>
+                                                }
+                                            </span>
+                                            <span className="count">{this.state.modelLoaded ? this.props.trainDialogs.length : ''}</span>
+                                        </NavLink>
+                                        <NavLink className="cl-nav-link" data-testid="app-index-nav-link-log-dialogs" to={{ pathname: `${match.url}/logDialogs`, state: { app } }}>
+                                            <OF.Icon iconName="List" /><span>Log Dialogs</span>
+                                            <span className="count">{this.state.modelLoaded && ((filteredLogDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : filteredLogDialogs.length)}</span>
+                                        </NavLink>
+                                        <NavLink className="cl-nav-link" data-testid="app-index-nav-link-settings" to={{ pathname: `${match.url}/settings`, state: { app } }}>
+                                            <OF.Icon iconName="Settings" /><span>Settings</span>
+                                        </NavLink>
+                                    </div>
+                                    <div className="cl-nav_section">
+                                        <NavLink className="cl-nav-link" exact={true} to="/home">
+                                            <OF.Icon iconName="Back" /><span>My Models</span>
+                                        </NavLink>
+                                    </div>
+                                </div>
+                            </div>
+                            <Switch>
+                                <Route
+                                    path={`${match.url}/settings`}
+                                    render={props => <Settings {...props} app={app} editingPackageId={editPackageId} onCreateApp={this.onCreateApp} onDeleteApp={this.onDeleteApp} />}
+                                />
+                                <Route
+                                    path={`${match.url}/entities`}
+                                    render={props => <Entities {...props} app={app} editingPackageId={editPackageId} />}
+                                />
+                                <Route
+                                    path={`${match.url}/actions`}
+                                    render={props => <Actions {...props} app={app} editingPackageId={editPackageId} />}
+                                />
+                                <Route
+                                    path={`${match.url}/trainDialogs`}
+                                    render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} />}
+                                />
+                                <Route
+                                    path={`${match.url}/logDialogs`}
+                                    render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} />}
+                                />
+                                <Route
+                                    exact={true}
+                                    path={match.url}
+                                    render={props => <Dashboard {...props} app={app} modelLoaded={this.state.modelLoaded} validationErrors={this.state.botValidationErrors} />}
+                                />
+                            </Switch>
                         </div>
                     </div>
                 </div>
-                <Switch>
-                    <Route
-                        path={`${match.url}/settings`}
-                        render={props => <Settings {...props} app={app} editingPackageId={editPackageId} onCreateApp={this.onCreateApp} onDeleteApp={this.onDeleteApp} />}
-                    />
-                    <Route
-                        path={`${match.url}/entities`}
-                        render={props => <Entities {...props} app={app} editingPackageId={editPackageId} />}
-                    />
-                    <Route
-                        path={`${match.url}/actions`}
-                        render={props => <Actions {...props} app={app} editingPackageId={editPackageId} />}
-                    />
-                    <Route
-                        path={`${match.url}/trainDialogs`}
-                        render={props => <TrainDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} filteredAction={location.state.actionFilter} filteredEntity={location.state.entityFilter} />}
-                    />
-                    <Route
-                        path={`${match.url}/logDialogs`}
-                        render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} />}
-                    />
-                    <Route
-                        exact={true}
-                        path={match.url}
-                        render={props => <Dashboard {...props} app={app} modelLoaded={this.state.modelLoaded} validationErrors={this.state.botValidationErrors} />}
-                    />
-                </Switch>
-            </div>
+            </>
         )
     }
 }
