@@ -12,7 +12,7 @@ import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 
 describe('zTemp', () => {
   it('Temporary Experimental Test', () => {
-    models.ImportModel('z-importTest', 'z-whatsYourName.cl') //'../../Users/v-miskow/Downloads/settingsTests.cl')
+    models.ImportModel('z-importTest', 'z-whatsYourName.cl')
     
     // homePage.Visit()
     // cy.pause()
