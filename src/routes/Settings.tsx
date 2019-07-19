@@ -7,7 +7,6 @@ import * as Util from '../Utils/util'
 import * as OF from 'office-ui-fabric-react'
 import actions from '../actions'
 import FormattedMessageId from '../components/FormattedMessageId'
-import Cookies from 'universal-cookie'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
@@ -17,20 +16,7 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import './Settings.css'
 
-interface ComponentState {
-    mode: string
-}
-
-class Settings extends React.Component<Props, ComponentState> {
-    state = {
-        mode: ""
-    }
-
-    async componentDidMount() {
-        const cookies = new Cookies()
-        const mode = cookies.get("mode")
-        this.setState({mode})
-    }
+class Settings extends React.Component<Props> {
 
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
         const botPort = parseInt(event.target.value, 10)
@@ -41,17 +27,12 @@ class Settings extends React.Component<Props, ComponentState> {
         this.props.settingsToggleUseCustomPort()
     }
 
-    onChangeMode = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({mode: event.target.value})
+    onChangeFeatures = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.props.settingsUpdateFeatures(event.target.value)
     }
 
     reset = () => {
         this.props.settingsReset()
-    }
-
-    setMode = () => {
-        const cookies = new Cookies()
-        cookies.set('mode', this.state.mode, { path: '/' })
     }
 
     render() {
@@ -102,15 +83,8 @@ class Settings extends React.Component<Props, ComponentState> {
                                 className="cl-input"
                                 min={0}
                                 max={99999}
-                                value={this.state.mode}
-                                onChange={this.onChangeMode}
-                            />
-
-                            <OF.PrimaryButton
-                                text="Mode"
-                                ariaDescription="Mode"
-                                iconProps={{ iconName: 'ReadingMode' }}
-                                onClick={this.setMode}
+                                value={this.props.settings.features}
+                                onChange={this.onChangeFeatures}
                             />
                         </div>
                     </div>
@@ -124,6 +98,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         settingsReset: actions.settings.settingsReset,
         settingsUpdatePort: actions.settings.settingsUpdatePort,
+        settingsUpdateFeatures: actions.settings.settingsUpdateFeatures,
         settingsToggleUseCustomPort: actions.settings.settingsToggleUseCustomPort,
     }, dispatch)
 }

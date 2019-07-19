@@ -17,7 +17,6 @@ import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
 import TranscriptImporter from '../../../components/modals/TranscriptImporter'
 import TranscriptImportWaitModal from '../../../components/modals/TranscriptImportWaitModal'
-import Cookies from 'universal-cookie'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { returntypeof } from 'react-redux-typescript'
@@ -171,7 +170,6 @@ interface ComponentState {
     actionFilter: OF.IDropdownOption | null
     // Used to prevent screen from flashing when transition to Edit Page
     lastTeachSession: TeachSessionState | null
-    allowImport: boolean
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
@@ -217,7 +215,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             entityFilter: null,
             actionFilter: null,
             lastTeachSession: null,
-            allowImport: false
         }
     }
 
@@ -233,10 +230,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 entityFilter: this.toEntityFilter(this.props.filteredEntity)
             })
         }
-
-        const cookies = new Cookies()
-        const allowImport = cookies.get("mode") === "CCI"
-        this.setState({allowImport})
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -1306,7 +1299,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         componentRef={this.newTeachSessionButtonRef}
                         iconProps={{ iconName: 'Add' }}
                     />
-                    {this.state.allowImport &&
+                    {this.props.settings.features && this.props.settings.features.indexOf("CCI") >= 0 &&
                         <OF.DefaultButton
                             iconProps={{
                                 iconName: "DownloadDocument"
@@ -1627,6 +1620,7 @@ const mapStateToProps = (state: State) => {
         entities: state.entities,
         trainDialogs: state.trainDialogs,
         teachSession: state.teachSession,
+        settings: state.settings,
         // Get all tags from all train dialogs then put in Set to get unique tags
         allUniqueTags: [...new Set(state.trainDialogs.reduce((tags, trainDialog) => [...tags, ...trainDialog.tags], []))]
     }

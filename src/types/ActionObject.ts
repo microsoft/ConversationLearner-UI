@@ -74,6 +74,9 @@ export type UpdateAction = {
     type: AT.SETTINGS_UPDATE_PORT,
     port: number
 } | {
+    type: AT.SETTINGS_UPDATE_FEATURES,
+    features: string
+} | {
     type: AT.SETTINGS_RESET
 } | {
     type: AT.SETTINGS_TOGGLE_USE_CUSTOM_PORT

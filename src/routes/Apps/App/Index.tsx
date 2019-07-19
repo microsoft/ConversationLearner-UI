@@ -16,7 +16,6 @@ import LogDialogs from './LogDialogs'
 import TrainingStatus from '../../../components/TrainingStatusContainer'
 import actions from '../../../actions'
 import FormattedMessageId from '../../../components/FormattedMessageId'
-import Cookies from 'universal-cookie'
 import { NavLink, Route, Switch } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
@@ -35,16 +34,14 @@ export const CCI = "CCI"
 interface ComponentState {
     botValidationErrors: string[]
     packageId: string | null,
-    modelLoaded: boolean,
-    mode: string
+    modelLoaded: boolean
 }
 
 class Index extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         botValidationErrors: [],
         packageId: null,
-        modelLoaded: false,
-        mode: ""
+        modelLoaded: false
     }
 
     async loadApp(app: CLM.AppBase, packageId: string): Promise<void> {
@@ -58,12 +55,6 @@ class Index extends React.Component<Props, ComponentState> {
 
         await Promise.all([thunk1, thunk2, thunk3, thunk4])
         this.setState({ modelLoaded: true })
-    }
-
-    async componentDidMount() {
-        const cookies = new Cookies()
-        const mode = cookies.get("mode")
-        this.setState({mode})
     }
 
     componentWillMount() {
@@ -283,7 +274,7 @@ class Index extends React.Component<Props, ComponentState> {
                                 <OF.Icon iconName="List" /><span>Log Dialogs</span>
                                 <span className="count">{this.state.modelLoaded && ((filteredLogDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : filteredLogDialogs.length)}</span>
                             </NavLink>
-                            {this.state.mode === CCI &&
+                            {this.props.settings.features && this.props.settings.features.indexOf("CCI") >= 0 &&
                                 <NavLink className="cl-nav-link" data-testid="app-index-nav-link-testing" to={{ pathname: `${match.url}/testing`, state: { app } }}>
                                     <OF.Icon iconName="TestPlan" /><span>Testing</span>
                                 </NavLink>
@@ -358,7 +349,8 @@ const mapStateToProps = (state: State) => {
         user: state.user.user,
         browserId: state.bot.browserId,
         activeApps: state.apps.activeApps,
-        logDialogs: state.logDialogs
+        logDialogs: state.logDialogs,
+        settings: state.settings
     }
 }
 
