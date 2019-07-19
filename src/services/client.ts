@@ -336,7 +336,7 @@ export default class ClClient {
 
     //AT.EDIT_TRAINDIALOG_ASYNC
     async trainDialogEdit(appId: string, trainDialog: PartialTrainDialog, options?: Partial<TrainDialogUpdateQueryParams>): Promise<CLM.TrainResponse> {
-        const queryString = querystring.stringify(options)
+        const queryString = querystring.stringify(options || {})
         const response = await this.send<CLM.TrainResponse>({
             method: 'put',
             url: `/app/${appId}/traindialog/${trainDialog.trainDialogId}?${queryString}`,
