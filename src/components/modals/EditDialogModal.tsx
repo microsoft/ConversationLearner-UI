@@ -1123,11 +1123,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
                     titleFM={FM.USERINPUT_ADD_TITLE}
+                    placeholderFM={FM.USERINPUT_PLACEHOLDER}
                     onCancel={this.onCancelAddUserInput}
                     onSubmit={this.onSubmitAddUserInput}
                 />
                 <UserInputModal
                     titleFM={FM.USERINPUT_BRANCH_TITLE}
+                    placeholderFM={FM.USERINPUT_PLACEHOLDER}
                     open={this.state.isUserBranchModalOpen}
                     onCancel={this.onCancelBranch}
                     onSubmit={this.onSubmitBranch}

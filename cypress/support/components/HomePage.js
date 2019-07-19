@@ -4,7 +4,6 @@
  */
 
 import * as modelPage from '../components/ModelPage'
-import * as settings from '../components/Settings'
 import * as helpers from '../Helpers'
 
 export function Visit() { return cy.visit('http://localhost:3000'); VerifyPageTitle() }
@@ -15,7 +14,7 @@ export function ClickImportModelButton() { return cy.Get('[data-testid="model-li
 export function TypeModelName(name) { return cy.Get('[data-testid="model-creator-input-name"]', {timeout: 10000}).type(name) }
 export function ClickSubmitButton() { return cy.Get('[data-testid="model-creator-submit-button"]').Click() }
 
-export function UploadImportModelFile(name) { return cy.UploadFile(name, 'input[type="file"]') } //[data-testid="model-creator-import-file-picker"]
+export function UploadImportModelFile(name) { return cy.UploadFile(name, 'input[type="file"]') }
 
 export function ClickDeleteModelButton(row) { return cy.Get(`[data-list-index="${row}"] > .ms-FocusZone > .ms-DetailsRow-fields`).find('i[data-icon-name="Delete"]').Click() }
 
@@ -25,6 +24,14 @@ export function GetModelListRowCount() {
       const rowCount = +gridElement.attr('aria-rowcount') - 1
       return rowCount 
     })
+}
+
+export function VerifyModelNameInList(modelName) { cy.Get('[data-testid="model-list-model-name"]').contains(modelName) }
+export function VerifyModelNameIsNotInList(modelName) { cy.DoesNotContain('[data-testid="model-list-model-name"]', modelName) }
+
+export function LoadModel(modelName) { 
+  cy.Get('[data-testid="model-list-model-name"]').contains(modelName).Click()
+  modelPage.VerifyModelName(modelName)
 }
 
 export function GetModelNameIdList() {

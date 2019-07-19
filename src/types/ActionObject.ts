@@ -74,6 +74,9 @@ export type UpdateAction = {
     type: AT.SETTINGS_UPDATE_PORT,
     port: number
 } | {
+    type: AT.SETTINGS_UPDATE_FEATURES,
+    features: string
+} | {
     type: AT.SETTINGS_RESET
 } | {
     type: AT.SETTINGS_TOGGLE_USE_CUSTOM_PORT
@@ -206,6 +209,8 @@ export type FetchAction = {
     type: AT.FETCH_LOG_DIALOG_FULFILLED,
     logDialog: CLM.LogDialog,
     replaceLocal: boolean
+} | {
+    type: AT.FETCH_LOG_DIALOG_NOTFOUND
 } | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
     appId: string,

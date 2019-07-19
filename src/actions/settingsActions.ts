@@ -20,3 +20,9 @@ export const settingsToggleUseCustomPort = (): ActionObject =>
     ({
         type: AT.SETTINGS_TOGGLE_USE_CUSTOM_PORT
     })
+
+export const settingsUpdateFeatures = (features: string): ActionObject =>
+    ({
+        type: AT.SETTINGS_UPDATE_FEATURES,
+        features,
+    })

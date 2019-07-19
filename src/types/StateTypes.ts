@@ -71,6 +71,7 @@ export interface SettingsState {
     botPort: number
     customPort: number
     useCustomPort: boolean
+    features: string
 }
 
 export type SourceState = { [appId: string]: CLM.AppDefinitionChange }

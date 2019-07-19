@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 
+import * as homePage from '../../support/components/HomePage'
 import * as entitiesGrid from '../../support/components/EntitiesGrid'
 import * as actionsGrid from '../../support/components/ActionsGrid'
 import * as trainDialogsGrid from './TrainDialogsGrid'
@@ -10,7 +11,7 @@ import * as logDialogsGrid from '../../support/components/LogDialogsGrid'
 import * as settings from '../../support/components/Settings'
 import * as helpers from '../Helpers'
 
-export function VerifyModelName(name) { cy.Get('[data-testid="app-index-model-name"]').should(el => { expect(el).to.contain(name) }) }
+export function VerifyModelName(name) { cy.Get('[data-testid="app-index-model-name"]').contains(name) }
 export function VerifyPageTitle() { cy.Get('[data-testid="dashboard-title"]').contains('Overview').should('be.visible') }
 export function IsOverlaid() { return Cypress.$('div.ms-Modal > div.ms-Overlay').length > 0 }
 
@@ -20,6 +21,7 @@ export function NavigateToActions() { cy.Get('[data-testid="app-index-nav-link-a
 export function NavigateToTrainDialogs() { cy.Get('[data-testid="app-index-nav-link-train-dialogs"]').Click(); trainDialogsGrid.VerifyPageTitle() }
 export function NavigateToLogDialogs() { cy.Get('[data-testid="app-index-nav-link-log-dialogs"]').Click(); logDialogsGrid.VerifyPageTitle() }
 export function NavigateToSettings() { cy.Get('[data-testid="app-index-nav-link-settings"]').Click(); settings.VerifyPageTitle() }
+export function NavigateToMyModels() { cy.Get('[data-testid="app-index-nav-link-my-models"]').Click(); homePage.VerifyPageTitle() }
 
 export function VerifyHomeLinkShowsIncidentTriangle() { cy.Get('[data-testid="app-index-nav-link-home"]').find('i[data-icon-name="IncidentTriangle"]') }
 export function VerifyHomeLinkDoesNotShowIncidentTriangle() { cy.Get('[data-testid="app-index-nav-link-home"]').DoesNotContain('i[data-icon-name="IncidentTriangle"]') }

@@ -285,8 +285,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                     disabled={invalidName}
                                     data-testid="model-creator-submit-button"
                                     onClick={this.onClickCreate}
-                                    ariaDescription={Utils.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION)}
-                                    text={Utils.formatMessageId(intl, FM.APPCREATOR_CREATEBUTTON_TEXT)}
+                                    ariaDescription={Utils.formatMessageId(intl, FM.BUTTON_CREATE)}
+                                    text={Utils.formatMessageId(intl, FM.BUTTON_CREATE)}
                                     iconProps={{ iconName: 'Accept' }}
                                 />
                             }

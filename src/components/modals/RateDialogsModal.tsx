@@ -20,31 +20,48 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.';
 import { FM } from '../../react-intl-messages'
 import './CompareDialogsModal.css'
+import './RateDialogsModal.css'
 
 interface ComponentState {
+    changedItems: CLM.TranscriptValidationResult[]
     resultIndex: number
     webchatKey: number,
     history1: BotChat.Activity[] | undefined
     history2: BotChat.Activity[] | undefined
     missingLog: boolean,
+    // Are webchat columns flipped (for test randomization)
+    isFlipped: boolean,
     selectedActivityIndex: number | null
     scrollPosition: number | null
+    betterIds: string[],
+    worseIds: string[],
+    sameIds: string[]
 }
 
 const initialState: ComponentState = {
+    changedItems: [],
     webchatKey: 0,
     resultIndex: 0,
     history1: [],
     history2: [],
     missingLog: false,
+    isFlipped: false,
     selectedActivityIndex: null,
-    scrollPosition: 0
+    scrollPosition: 0,
+    betterIds: [],
+    worseIds: [],
+    sameIds: []
 }
 
-class CompareDialogsModal extends React.Component<Props, ComponentState> {
+class RateDialogsModal extends React.Component<Props, ComponentState> {
+    
     state = initialState
 
+    private sameButtonRef = React.createRef<OF.IButton>()
+
     async componentDidMount() {
+        const changedItems = this.props.transcriptValidationSet.transcriptValidationResults.filter(tr => tr.validity === CLM.TranscriptValidationResultType.CHANGED)
+        await Util.setStateAsync(this, {changedItems})
         await this.onChangedDialog()
     }
 
@@ -58,54 +75,94 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         return renderActivity(activityProps, children, setRef, null, EditDialogType.IMPORT, this.state.selectedActivityIndex != null)
     }
 
+    currentLogDialodId(): string {
+        const logDialogId = this.state.changedItems[this.state.resultIndex].logDialogId
+        if (!logDialogId) {
+            throw new Error("Missing log dialog Id")
+        }
+        return logDialogId
+    }
+
+    @OF.autobind
+    async onRight() {
+        const logDialogId = this.currentLogDialodId()
+        if (this.state.isFlipped) {
+            await Util.setStateAsync(this, {worseIds: [...this.state.worseIds, logDialogId]})
+        }
+        else {
+            await Util.setStateAsync(this, {betterIds: [...this.state.betterIds, logDialogId]})
+        }
+        this.onNext()
+    }
+
+    @OF.autobind
+    async onSame() {
+        const logDialogId = this.currentLogDialodId()
+        await Util.setStateAsync(this, {sameIds: [...this.state.sameIds, logDialogId]})
+        this.onNext()
+    }
+
+    @OF.autobind
+    async onLeft() {
+        const logDialogId = this.currentLogDialodId()
+        if (this.state.isFlipped) {
+            await Util.setStateAsync(this, {betterIds: [...this.state.betterIds, logDialogId]})
+        }
+        else {
+            await Util.setStateAsync(this, {worseIds: [...this.state.worseIds, logDialogId]})
+        }
+        this.onNext()
+    }
+
+    //--- SAVE ------
+    @OF.autobind
+    saveResults() {
+        const set = Util.deepCopy(this.props.transcriptValidationSet)
+
+        this.state.betterIds.forEach(id => {
+            const result = set.transcriptValidationResults.find(tr => tr.logDialogId === id)
+            if (!result) {
+                throw new Error("Can't find log dialog id")
+            }
+            result.rating = CLM.TranscriptRating.BETTER
+        })
+
+        this.state.worseIds.forEach(id => {
+            const result = set.transcriptValidationResults.find(tr => tr.logDialogId === id)
+            if (!result) {
+                throw new Error("Can't find log dialog id")
+            }
+            result.rating = CLM.TranscriptRating.WORSE
+        })
+
+        this.state.sameIds.forEach(id => {
+            const result = set.transcriptValidationResults.find(tr => tr.logDialogId === id)
+            if (!result) {
+                throw new Error("Can't find log dialog id")
+            }
+            result.rating = CLM.TranscriptRating.SAME
+        })
+    
+        this.props.onClose(set)
+    }
+
     @OF.autobind
     onNext() {
         let resultIndex = this.state.resultIndex + 1
-        if (resultIndex === this.props.transcriptValidationResults.length) {
-            resultIndex = 0
+        if (resultIndex === this.state.changedItems.length) {
+            this.saveResults()
         }
         this.setState({resultIndex})       
     }
 
-    @OF.autobind
-    onPrevious() {
-        let resultIndex = this.state.resultIndex - 1
-        if (resultIndex < 0) {
-            resultIndex = this.props.transcriptValidationResults.length - 1
-        }
-        this.setState({resultIndex})
-    }
-
-    // Set from and recipient data from proper rendering
-    cleanTranscript(history: BB.Activity[]): void {
-        const userAccount: BB.ChannelAccount = { id: this.props.user.id, name: this.props.user.name, role: "user", aadObjectId: '' }
-        const botAccount: BB.ChannelAccount = { id: `BOT-${this.props.user.id}`, name: CLM.CL_USER_NAME_ID, role: "bot", aadObjectId: '' }
-
-        for (let activity of history) {
-            if (!activity.recipient) {
-                if (activity.from.role === "bot") {
-                    activity.recipient = userAccount
-                    activity.from = botAccount
-                }
-                else if (activity.from.role === 'user') {
-                    activity.recipient = botAccount
-                    activity.from = userAccount
-                }
-            }
-            if (!activity.id) {
-                activity.id = CLM.ModelUtils.generateGUID()
-            }
-        }
-    }
-
     async onChangedDialog() {
 
-        if (this.state.resultIndex >= this.props.transcriptValidationResults.length) {
+        if (this.state.resultIndex >= this.state.changedItems.length) {
             console.log("INVALID INDEX: CompareDialogModal")
             return
         }
 
-        const validationResult = this.props.transcriptValidationResults[this.state.resultIndex]
+        const validationResult = this.state.changedItems[this.state.resultIndex]
 
         let history1: BotChat.Activity[] = []
         let history2: BotChat.Activity[] = []
@@ -133,9 +190,10 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             }
         }
         
-        // Mark turns that are not aligned
-        const replayError = new CLM.ReplayErrorTranscriptValidation()
+        // Find turn with first inconsistency
         const maxLength = Math.max(history1.length, history2.length)
+        let stopTurn = -1
+        const replayError = new CLM.ReplayErrorTranscriptValidation()
         for (let i = 0; i < maxLength; i = i + 1) {
             const activity1 = history1[i] as BB.Activity
             const activity2 = history2[i] as BB.Activity
@@ -146,14 +204,25 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                 if (activity2) {
                     activity2.channelData.clData = {...activity2.channelData.clData, replayError  }
                 }
+                stopTurn = i + 1
+                break
             }
         }
+
+        // Cut off history at first inconsistency
+        history1 = history1.slice(0, stopTurn)
+        history2 = history2.slice(0, stopTurn)
+
+        // Focuse same button (otherwise last choise will be active)
+        this.focusSameButton()
+
         this.setState({
             history1, 
             history2,
             missingLog,
             webchatKey: this.state.webchatKey + 1,
-            scrollPosition: 0
+            scrollPosition: 0,
+            isFlipped: Math.random() >= 0.5
         })
     }
 
@@ -179,6 +248,9 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     render() {
+        const leftHistory = this.state.isFlipped ? this.state.history2 : this.state.history1
+        const rightHistory = this.state.isFlipped ? this.state.history1 : this.state.history2
+
         return (
             <div>
                 <OF.Modal
@@ -189,23 +261,14 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                     <div className="cl-modal_body">
                         <div className="cl-compare-dialogs-modal">
                             <div>
-                                <div className="cl-compare-dialogs-title">
-                                    Transcript
-                                    {this.props.transcriptValidationResults[this.state.resultIndex].rating === CLM.TranscriptRating.WORSE &&
-                                        <OF.Icon iconName='Trophy2' className="cl-compare-dialogs-title-icon-win"/>
-                                    }
-                                    {this.props.transcriptValidationResults[this.state.resultIndex].rating === CLM.TranscriptRating.SAME &&
-                                            <OF.Icon iconName='CalculatorEqualTo' className="cl-compare-dialogs-title-icon-equal"/>
-                                    }
-                                </div>
                                 <div className="cl-compare-dialogs-webchat">
                                     <Webchat
-                                        isOpen={this.state.history1 !== undefined}
+                                        isOpen={leftHistory !== undefined}
                                         key={`A-${this.state.webchatKey}`}
                                         app={this.props.app}
-                                        history={this.state.history1 || []}
+                                        history={leftHistory || []}
                                         onPostActivity={() => {}}
-                                        onSelectActivity={(activity) => this.onSelectActivity(this.state.history1, activity)}
+                                        onSelectActivity={(activity) => this.onSelectActivity(leftHistory, activity)}
                                         onScrollChange={this.onScrollChange}
                                         hideInput={true}
                                         focusInput={false}
@@ -219,31 +282,14 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                 </div>
                             </div>
                             <div>
-                                {this.state.missingLog 
-                                    ?
-                                    <div className="cl-compare-dialogs-title cl-errorpanel">
-                                        Log Dialog doesn't exist
-                                    </div>
-                                    :
-                                    <div className="cl-compare-dialogs-title">
-                                        Model Output
-                                        {this.props.transcriptValidationResults[this.state.resultIndex].rating === CLM.TranscriptRating.BETTER &&
-                                            <OF.Icon iconName='Trophy2' className="cl-compare-dialogs-title-icon-win "/>
-                                        }
-                                        {this.props.transcriptValidationResults[this.state.resultIndex].rating === CLM.TranscriptRating.SAME &&
-                                            <OF.Icon iconName='CalculatorEqualTo' className="cl-compare-dialogs-title-icon-equal"/>
-                                        }
-                                    </div>
-                                }
-
                                 <div className="cl-compare-dialogs-webchat">
                                     <Webchat
-                                        isOpen={this.state.history2 !== undefined}
+                                        isOpen={rightHistory !== undefined}
                                         key={`B-${this.state.webchatKey}`}
                                         app={this.props.app}
-                                        history={this.state.history2 || []}
+                                        history={rightHistory || []}
                                         onPostActivity={() => {}}
-                                        onSelectActivity={(activity) => this.onSelectActivity(this.state.history2, activity)}
+                                        onSelectActivity={(activity) => this.onSelectActivity(rightHistory, activity)}
                                         onScrollChange={this.onScrollChange}
                                         hideInput={true}
                                         focusInput={false}
@@ -258,50 +304,53 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     </div>
-                    <div className="cl-modal_footer cl-modal_footer--border">
-                        <div className="cl-modal-buttons">
-                            <div className="cl-modal-buttons_primary">
-                                <div className="cl-compare-dialogs-filename">
-                                    {this.props.transcriptValidationResults[this.state.resultIndex].fileName}
-                                </div>
+                    <div>
+                        <div className="cl-rate-dialogs-vote-bar">
+                            <OF.DefaultButton
+                                onClick={this.onLeft}
+                                className='cl-rate-dialogs-left-button'
+                                iconProps={{ iconName: 'Trophy2'}}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
+                                text={'Left Better'} 
+                            />
+                            <OF.DefaultButton
+                                className='cl-rate-dialogs-same-button'
+                                onClick={this.onSame}
+                                iconProps={{ iconName: 'Compare'}}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
+                                text={'Same'}
+                                componentRef={this.sameButtonRef}
+                            />
+                            <OF.DefaultButton
+                                onClick={this.onRight}
+                                className='cl-rate-dialogs-right-button'
+                                iconProps={{ iconName: 'Trophy2'}}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
+                                text={'Right Better'} 
+                            />
+                        </div>
+                        <div className="cl-rate-dialogs-button-bar">
+                            <div className="cl-rate-dialogs-count">
+                                {`${this.state.resultIndex + 1} of ${this.state.changedItems.length}`}
                             </div>
-                            <div className="cl-modal-buttons_secondary">
-                                <OF.DefaultButton
-                                    onClick={this.onPrevious}
-                                    iconProps={{ iconName: 
-                                        this.state.resultIndex === 0
-                                            ? 'ChevronLeftEnd6' 
-                                            : 'ChevronLeftSmall'
-                                    }}
-                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
-                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
-                                />
-                                <div className="cl-compare-dialogs-count">
-                                    {`${this.state.resultIndex + 1} of ${this.props.transcriptValidationResults.length}`}
-                                </div>
-                                <OF.DefaultButton
-                                    onClick={this.onNext}
-                                    iconProps={{ iconName: 
-                                        this.state.resultIndex === this.props.transcriptValidationResults.length - 1
-                                        ? 'ChevronRightEnd6'
-                                        : 'ChevronRightSmall' 
-                                    }}
-                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
-                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
-                                />
-                                <OF.DefaultButton
-                                    onClick={this.props.onClose}
-                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
-                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
-                                    iconProps={{ iconName: 'Cancel' }}
-                                />
-                                
-                            </div>
+                            <OF.DefaultButton
+                                onClick={this.saveResults}
+                                className='cl-rate-dialogs-close-button'
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
+                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
+                                iconProps={{ iconName: 'Cancel' }}
+                            />
                         </div>
                     </div>
                 </OF.Modal>
             </div>
         )
+    }
+
+    private focusSameButton() {
+        if (this.sameButtonRef.current) {
+            this.sameButtonRef.current.focus()
+        }
     }
 }
 
@@ -324,8 +373,8 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: CLM.AppBase
-    transcriptValidationResults: CLM.TranscriptValidationResult[]
-    onClose: () => void
+    transcriptValidationSet: CLM.TranscriptValidationSet
+    onClose: (set: CLM.TranscriptValidationSet) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
@@ -333,4 +382,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(CompareDialogsModal))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(RateDialogsModal))

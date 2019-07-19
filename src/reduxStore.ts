@@ -64,6 +64,7 @@ export const createReduxStore = (): Store<State> => {
             settings: {
                 useCustomPort: state.settings.useCustomPort,
                 customPort: state.settings.customPort,
+                features: state.settings.features
             }
         }
 

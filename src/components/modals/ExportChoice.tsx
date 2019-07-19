@@ -85,7 +85,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
                 isBlocking={false}
                 containerClassName='cl-modal cl-modal--small'
             >
-                <div className='cl-modal_header'>
+                <div className='cl-modal_header' data-testid="export-choice-title">
                     <span className={OF.FontClassNames.xxLarge}>
                         <FormattedMessageId id={FM.EXPORT_CHOICE_TITLE}/>
                     </span>

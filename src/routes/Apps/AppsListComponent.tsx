@@ -207,78 +207,82 @@ export class Component extends React.Component<Props, ComponentState> {
         const props = this.props
         const apps = this.getSortedApplications(this.state.sortColumn, props.apps);
 
-        return <div className="cl-page">
-            <span className={OF.FontClassNames.mediumPlus} data-testid="model-list-title">
-                <FormattedMessageId id={FM.APPSLIST_SUBTITLE} />
-            </span>
-            <div className="cl-buttons-row">
-                <OF.PrimaryButton
-                    data-testid="model-list-create-new-button"
-                    onClick={props.onClickCreateNewApp}
-                    ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEBUTTONARIADESCRIPTION)}
-                    text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEBUTTONTEXT)}
-                    iconProps={{ iconName: 'Add' }}
-                />
-                <OF.DefaultButton
-                    data-testid="model-list-import-model-button"
-                    onClick={props.onClickImportApp}
-                    ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION)}
-                    text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONTEXT)}
-                    iconProps={{ iconName: 'DownloadDocument' }}
-                />
-                {!Util.isDemoAccount(props.user.id) &&
-                    <OF.DefaultButton
-                        data-testid="model-list-import-tutorials-button"
-                        onClick={props.onClickImportDemoApps}
-                        ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION)}
-                        text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT)}
-                        iconProps={{ iconName: 'CloudDownload' }}
-                    />
-                }
-            </div>
-            {apps.length === 0
-                ? <div className="cl-page-placeholder">
-                    <div className="cl-page-placeholder__content">
-                        <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>{Util.formatMessageId(props.intl, FM.APPSLIST_EMPTY_TEXT)}</div>
+        return <div className="cl-o-app-columns">
+            <div className="cl-app_content">
+                <div className="cl-page">
+                    <span className={OF.FontClassNames.xLarge} data-testid="model-list-title">
+                        <FormattedMessageId id={FM.APPSLIST_SUBTITLE} />
+                    </span>
+                    <div className="cl-buttons-row">
                         <OF.PrimaryButton
-                            iconProps={{
-                                iconName: "Add"
-                            }}
+                            data-testid="model-list-create-new-button"
                             onClick={props.onClickCreateNewApp}
-                            ariaDescription={this.props.intl.formatMessage({
-                                id: FM.APPSLIST_CREATEBUTTONARIADESCRIPTION,
-                                defaultMessage: 'Create a New Model'
-                            })}
-                            text={this.props.intl.formatMessage({
-                                id: FM.APPSLIST_CREATEBUTTONTEXT,
-                                defaultMessage: 'Create a New Model'
-                            })}
+                            ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEBUTTONARIADESCRIPTION)}
+                            text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEBUTTONTEXT)}
+                            iconProps={{ iconName: 'Add' }}
                         />
+                        <OF.DefaultButton
+                            data-testid="model-list-import-model-button"
+                            onClick={props.onClickImportApp}
+                            ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION)}
+                            text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONTEXT)}
+                            iconProps={{ iconName: 'DownloadDocument' }}
+                        />
+                        {!Util.isDemoAccount(props.user.id) &&
+                            <OF.DefaultButton
+                                data-testid="model-list-import-tutorials-button"
+                                onClick={props.onClickImportDemoApps}
+                                ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION)}
+                                text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT)}
+                                iconProps={{ iconName: 'CloudDownload' }}
+                            />
+                        }
                     </div>
+                    {apps.length === 0
+                        ? <div className="cl-page-placeholder">
+                            <div className="cl-page-placeholder__content">
+                                <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>{Util.formatMessageId(props.intl, FM.APPSLIST_EMPTY_TEXT)}</div>
+                                <OF.PrimaryButton
+                                    iconProps={{
+                                        iconName: "Add"
+                                    }}
+                                    onClick={props.onClickCreateNewApp}
+                                    ariaDescription={this.props.intl.formatMessage({
+                                        id: FM.APPSLIST_CREATEBUTTONARIADESCRIPTION,
+                                        defaultMessage: 'Create a New Model'
+                                    })}
+                                    text={this.props.intl.formatMessage({
+                                        id: FM.APPSLIST_CREATEBUTTONTEXT,
+                                        defaultMessage: 'Create a New Model'
+                                    })}
+                                />
+                            </div>
+                        </div>
+                        : <OF.DetailsList
+                            className={OF.FontClassNames.mediumPlus}
+                            items={apps}
+                            columns={this.state.columns}
+                            checkboxVisibility={OF.CheckboxVisibility.hidden}
+                            onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                            onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
+                            onColumnHeaderClick={this.onClickColumnHeader}
+                            onItemInvoked={app => this.props.onClickApp(app)}
+                        />}
+                    <AppCreatorModal
+                        open={props.isAppCreateModalOpen}
+                        onSubmit={props.onSubmitAppCreateModal}
+                        onCancel={props.onCancelAppCreateModal}
+                        creatorType={props.appCreatorType}
+                    />
+                    <TutorialImporterModal
+                        open={props.isImportTutorialsOpen}
+                        apps={props.apps}
+                        tutorials={props.tutorials}
+                        handleClose={props.onCloseImportNotification}
+                        onTutorialSelected={props.onImportTutorial}
+                    />
                 </div>
-                : <OF.DetailsList
-                    className={OF.FontClassNames.mediumPlus}
-                    items={apps}
-                    columns={this.state.columns}
-                    checkboxVisibility={OF.CheckboxVisibility.hidden}
-                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
-                    onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
-                    onColumnHeaderClick={this.onClickColumnHeader}
-                    onItemInvoked={app => this.props.onClickApp(app)}
-                />}
-            <AppCreatorModal
-                open={props.isAppCreateModalOpen}
-                onSubmit={props.onSubmitAppCreateModal}
-                onCancel={props.onCancelAppCreateModal}
-                creatorType={props.appCreatorType}
-            />
-            <TutorialImporterModal
-                open={props.isImportTutorialsOpen}
-                apps={props.apps}
-                tutorials={props.tutorials}
-                handleClose={props.onCloseImportNotification}
-                onTutorialSelected={props.onImportTutorial}
-            />
+            </div>
         </div>
     }
 }

@@ -267,7 +267,7 @@ function renderCondition(text: string, isRequired: boolean): JSX.Element {
         <div 
             className='ms-ListItem is-selectable ms-ListItem-primaryText' 
             key={text} 
-            data-testid={isRequired ? "action-details-required-entity" : "action-details-disqualifying-entity"}
+            data-testid={isRequired ? "action-details-required-entities" : "action-details-disqualifying-entities"}
         >
                 {text}
         </div>

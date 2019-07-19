@@ -1,0 +1,38 @@
+.cl-rate-dialogs-vote-bar {
+    padding: 10px 0px 10px 0px;
+    background-color: var(--cl-color-user-import);
+    height: 52px;
+}
+
+.cl-rate-dialogs-button-bar {
+    padding: 10px;
+    height: 52px;
+}
+
+.cl-rate-dialogs-left-button {
+    float: left;
+    margin-left: 150px;
+}
+
+.cl-rate-dialogs-same-button {
+    left: 50%;
+    transform: translate(-50%, 0);
+    position: absolute;
+}
+.cl-rate-dialogs-right-button {
+    float: right;
+    margin-right: 150px;
+}
+
+.cl-rate-dialogs-count {
+    line-height: 30px;
+    font-weight: bold;
+    color: var(--color-themePrimary);
+    left: 50%;
+    transform: translate(-50%, 0);
+    position: absolute;
+}
+
+.cl-rate-dialogs-close-button {
+    float: right;
+}
