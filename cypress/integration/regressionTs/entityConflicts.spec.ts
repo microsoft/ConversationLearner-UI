@@ -7,8 +7,6 @@ import constants from '../../support/constants'
 import s from '../../support/selectors'
 import * as util from '../../support/utilities'
 
-
-
 describe('Entity Conflicts', () => {
     describe('choose attempted labels', () => {
         const testData = {
@@ -97,15 +95,20 @@ describe('Entity Conflicts', () => {
                         .parent()
                         .parent()
                         .find(s.trainDialogs.validityIndicator)
-                        .should('have.attr', 'data-icon-name', "IncidentTriangle")
+                        .should($icon => {
+                            expect($icon).to.have.attr('data-icon-name', "IncidentTriangle")
+                            expect($icon).to.have.class('cl-color-warning')
+                        })
 
                     cy.get(s.trainDialogs.descriptions)
                         .contains('Multiple Text Variations')
                         .parent()
                         .parent()
                         .find(s.trainDialogs.validityIndicator)
-                        .should('have.attr', 'data-icon-name', "IncidentTriangle")
-                        .should('have.class', 'cl-color-warning')
+                        .should($icon => {
+                            expect($icon).to.have.attr('data-icon-name', "IncidentTriangle")
+                            expect($icon).to.have.class('cl-color-warning')
+                        })
                 })
             })
         })
@@ -139,8 +142,10 @@ describe('Entity Conflicts', () => {
                         .parent()
                         .parent()
                         .find(s.trainDialogs.validityIndicator)
-                        .should('have.attr', 'data-icon-name', "IncidentTriangle")
-                        .should('have.class', 'cl-color-warning')
+                        .should($icon => {
+                            expect($icon).to.have.attr('data-icon-name', "IncidentTriangle")
+                            expect($icon).to.have.class('cl-color-warning')
+                        })
                 })
 
                 it('given dialog with INcompatible text variations should set the validity to INVALID', () => {
@@ -149,8 +154,10 @@ describe('Entity Conflicts', () => {
                         .parent()
                         .parent()
                         .find(s.trainDialogs.validityIndicator)
-                        .should('have.attr', 'data-icon-name', "IncidentTriangle")
-                        .should('have.class', 'cl-color-error')
+                        .should($icon => {
+                            expect($icon).to.have.attr('data-icon-name', "IncidentTriangle")
+                            expect($icon).to.have.class('cl-color-error')
+                        })
                 })
             })
         })
