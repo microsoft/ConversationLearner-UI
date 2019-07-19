@@ -11,7 +11,9 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Verify Edit Training Controls And Labels - Edit And Branching', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  
   let originalTrainDialogCount = 0
+  let originalChatMessages
 
   context('Setup', () => {
     it('Should import a model to test against and navigate to the Train Dialogs', () => {
@@ -27,7 +29,7 @@ describe('Verify Edit Training Controls And Labels - Edit And Branching', () => 
   context('Edit Train Dialog', () => {
     it('Should edit a Train Dialog and capture the chat messages to verifiy later', () => {
       train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-      train.CaptureOriginalChatMessages()
+      cy.WaitForStableDOM().then(() => { originalChatMessages = train.GetAllChatMessages() })
     })
 
     it('Should verify the labels for the Close and Delete buttons', () => {
@@ -59,7 +61,7 @@ describe('Verify Edit Training Controls And Labels - Edit And Branching', () => 
     it('Should abandon the branched training and verify the original training remains in its original state', () => {
       train.AbandonBranchChanges()
       train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-      train.VerifyOriginalChatMessages()
+      train.VerifyAllChatMessages(originalChatMessages)
     })
 
     it('Should close the Train Dialog', () => {

@@ -54,17 +54,20 @@ export function ClickUndoButton() { cy.Get('[data-testid="edit-teach-dialog-undo
 export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }
 export function ClickReplayButton() { cy.Get('[data-testid="edit-dialog-modal-replay-button"]').Click() }
 
-export function VerifyDescription(expectedDescription) { cy.Get(`input.cl-borderless-text-input#description[value="${expectedDescription}"]`) }
-export function TypeDescription(description) { cy.Get('input.cl-borderless-text-input#description').clear().type(`${description}{enter}`) }
-export function ClickAddTagButton() { cy.Get('[data-testid="tags-input-add-tag-button"]').Click() }
-export function VerifyNoTags() { cy.Get('div.cl-tags > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
-
 export function ClickClearFilterButton() { cy.Get('[data-testid="train-dialogs-clear-filter-button"]').Click() }
+
+export function GetDescription() { return Cypress.$('[data-testid="train-dialog-description"]').attr('value') }
+export function VerifyDescription(expectedDescription) { cy.Get(`[data-testid="train-dialog-description"][value="${expectedDescription}"]`) }
+export function TypeDescription(description) { cy.Get('[data-testid="train-dialog-description"]').clear().type(`${description}{enter}`) }
+
+export function GetAllTags() { return helpers.ArrayOfTextContentWithoutNewlines('[data-testid="train-dialog-tags"] > div.cl-tags__tag > span') }
+export function ClickAddTagButton() { cy.Get('[data-testid="tags-input-add-tag-button"]').Click() }
+export function VerifyNoTags() { cy.Get('[data-testid="train-dialog-tags"] > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
 
 export function VerifyTags(tags) { 
   cy.Enqueue(() => {
     helpers.ConLog('VerifyTags', 'Start')
-    const tagsOnPage = helpers.StringArrayFromElementText('div.cl-tags > div.cl-tags__tag > span')
+    const tagsOnPage = helpers.StringArrayFromElementText('[data-testid="train-dialog-tags"] > div.cl-tags__tag > span')
     let missingTags = []
     tags.forEach(tag => {
       if (!tagsOnPage.find(tagOnPage => tag === tagOnPage)) missingTags.push(tag)
@@ -675,26 +678,9 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
     })
 }
 
-export function CaptureOriginalChatMessages() {
-  cy.WaitForStableDOM().then(() => { originalChatMessages = GetAllChatMessages() })
-}
-
-export function VerifyOriginalChatMessages() {
-  VerifyAllChatMessages(() => { return originalChatMessages })
-}
-
-export function CaptureEditedChatMessages() {
-  cy.WaitForStableDOM().then(() => { editedChatMessages = GetAllChatMessages() })
-}
-
-export function VerifyEditedChatMessages() {
-  VerifyAllChatMessages(() => { return editedChatMessages })
-}
-
-function VerifyAllChatMessages(functionGetChatMessagesToBeVerified) {
+export function VerifyAllChatMessages(chatMessagesToBeVerified) {
   cy.WaitForStableDOM().then(() => {
     let errorMessage = ''
-    const chatMessagesToBeVerified = functionGetChatMessagesToBeVerified()
     const allChatMessages = GetAllChatMessages()
 
     if (allChatMessages.length != chatMessagesToBeVerified.length)
@@ -737,11 +723,13 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
     cy.Get('@branchButton').Click()
     cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
   
-    isBranched = true
-    originalTrainingSummary.TrainGridRowCount++
-    currentTrainingSummary.TrainGridRowCount++
+    cy.WaitForStableDOM().then(() => {
+      isBranched = true
+      originalTrainingSummary.TrainGridRowCount++
+      currentTrainingSummary.TrainGridRowCount++
 
-    VerifyAllChatMessages(() => { return branchedChatMessages })
+      VerifyAllChatMessages(branchedChatMessages)
+    })
   })
 }
 
@@ -829,3 +817,27 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
     }
   })
 }
+
+export function GetAllTrainDialogGridRows() { 
+  helpers.ConLog('GetAllRows', 'start')
+
+  const firstInputs = trainDialogsGrid.GetFirstInputs()
+  const lastInputs = trainDialogsGrid.GetLastInputs()
+  const lastResponses = trainDialogsGrid.GetLastResponses()
+
+  let allRowData = []
+
+  for (let i = 0; i < firstInputs.length; i++) {
+    allRowData.push({
+      firstInput: firstInputs[i],
+      lastInput: lastInputs[i],
+      lastResponse: lastResponses[i],
+    })
+
+    helpers.ConLog('GetAllRows', `${allRowData.firstInput}, ${allRowData.lastInput}, ${allRowData.lastResponse}`)
+  }
+  
+  return allRowData
+}
+
+

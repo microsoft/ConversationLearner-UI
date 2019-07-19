@@ -72,7 +72,36 @@ export function Moment(dateTime) {
 // This will return the Inner Text of an element without markup nor newline characters.
 // Needed because each browser handles this functionality differently.
 export function TextContentWithoutNewlines(element) {
-  return element.textContent.replace(/(\r\n|\n|\r)/gm, '')
+  if (element === undefined) { 
+    ConLog('TextContentWithoutNewlines', 'undefined element has been passed in.')
+    return undefined 
+  }
+  
+  const textContent = element.textContent
+  if (!textContent) {
+    ConLog('TextContentWithoutNewlines', `textContent is undefined, which typically means there is no text. Here is the element that was passed in: ${element.outerHTML}`)
+    return '' 
+  }
+
+  const returnValue = textContent.replace(/(\r\n|\n|\r)/gm, '')
+  ConLog('TextContentWithoutNewlines', returnValue)
+  return returnValue
+}
+
+// This will return an array of the Inner Text (with New Lines removed) of an array of elements.
+// Pass in either an array of elements or the selector to get the array of elements with.
+export function ArrayOfTextContentWithoutNewlines(elementsOrSelector) {
+  if (elementsOrSelector === undefined || elementsOrSelector.length == 0) { return undefined }
+
+  let elements
+  if (typeof elementsOrSelector == 'string') { elements = Cypress.$(elementsOrSelector) }
+  else { elements = elementsOrSelector }
+
+  let arrayOfTextContent = []
+  for (let i = 0; i < elements.length; i++) {
+    arrayOfTextContent.push(TextContentWithoutNewlines(elements[i]))
+  }
+  return arrayOfTextContent
 }
 
 // Model names have a suffix which will end with a single character representing the 
@@ -82,10 +111,10 @@ let buildKey = undefined
 export function GetBuildKey() {
   if (!buildKey) {
     buildKey = Cypress.env('BUILD_NUM')
-ConLog('GetBuildKey', `BUILD_NUM: ${Cypress.env('BUILD_NUM')} -- ${buildKey}`)
+    ConLog('GetBuildKey', `BUILD_NUM: ${Cypress.env('BUILD_NUM')} -- ${buildKey}`)
     if (buildKey) {
       buildKey = String.fromCharCode('a'.charCodeAt() + buildKey % 26)
-ConLog('GetBuildKey', `buildKey: ${buildKey}`)
+      ConLog('GetBuildKey', `buildKey: ${buildKey}`)
     } else {
       // There is no BUILD_NUM environment variable so this is a local test run.
       // For local test runs always using the same build key works.

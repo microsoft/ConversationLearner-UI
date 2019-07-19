@@ -282,7 +282,7 @@ class Index extends React.Component<Props, ComponentState> {
                                         </NavLink>
                                     </div>
                                     <div className="cl-nav_section">
-                                        <NavLink className="cl-nav-link" exact={true} to="/home">
+                                        <NavLink className="cl-nav-link" data-testid="app-index-nav-link-my-models" exact={true} to="/home">
                                             <OF.Icon iconName="Back" /><span>My Models</span>
                                         </NavLink>
                                     </div>

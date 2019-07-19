@@ -69,11 +69,8 @@ export function CreateNewEntityThenVerifyInGrid({
   if (resolverType) { entitiesGridRow.VerifyResolverType(resolverType) }
   else { entitiesGridRow.VerifyResolverNone() }
 
-  if (multiValued) { entitiesGridRow.VerifyMultiValueChecked() }
-  else { entitiesGridRow.VerifyMultiValueUnChecked() }
-
-  if (negatable) { entitiesGridRow.VerifyNegatableChecked() }
-  else { entitiesGridRow.VerifyNegatableUnChecked() }
+  entitiesGridRow.VerifyMultiValue(multiValued)
+  entitiesGridRow.VerifyNegatable(negatable)
 }
 
 export function SelectEntityType(type) {
