@@ -13,6 +13,7 @@
 }
 
 .cl-entity-node {
+    border: 1px solid transparent;
     position: relative;
 }
 
@@ -25,7 +26,7 @@
 .cl-entity-node--custom .cl-entity-node__text {
     background: var(--color-custom-entity-bg-default);
 }
-.cl-entity-node--custom .cl-entity-node__text:hover {
+.cl-entity-node--custom:not(.cl-entity-node--read-only) .cl-entity-node__text:hover {
     background: var(--color-custom-entity-bg-hover);
 }
 .cl-entity-node--prebuilt .cl-entity-node__text {
@@ -98,11 +99,14 @@
     cursor: default;
 }
 
-.cl-entity-node:hover {
+.cl-entity-node:not(.cl-entity-node--read-only):hover {
     z-index: 100;
 }
 
-.cl-entity-node:hover .cl-entity-node-indicator__name button {
+.cl-entity-node .cl-entity-node-indicator__name button {
+    border: 1px solid transparent;
+}
+.cl-entity-node:not(.cl-entity-node--read-only):hover .cl-entity-node-indicator__name button {
     box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3) !important;
     border: 1px solid #aaaaaa !important;
     padding-left: 5px;  

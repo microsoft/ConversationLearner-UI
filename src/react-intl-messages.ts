@@ -135,6 +135,7 @@ export enum FM {
     BUTTON_ABANDON_IMPORT = 'Button.ABANDON_IMPORT',
     BUTTON_ACCEPT = 'Button.ACCEPT',
     BUTTON_CANCEL = 'Button.CANCEL',
+    BUTTON_CHANGE = 'Button.CHANGE',
     BUTTON_CLOSE = 'Button.CLOSE',
     BUTTON_CONFIRM = 'Button.CONFIRM',
     BUTTON_COMPARE = 'Button.COMPARE',
@@ -296,8 +297,10 @@ export enum FM {
     EXTRACTCONFLICTMODAL_TITLE = 'ExtractConflictModal.title',
     EXTRACTCONFLICTMODAL_SUBTITLE = 'ExtractConflictModal.subtitle',
     EXTRACTCONFLICTMODAL_REVIEW = 'ExtractConflictModal.preview',
-    EXTRACTCONFLICTMODAL_CORRECT_LABELS = 'ExtractConflictModal.existing',
-    EXTRACTCONFLICTMODAL_CONFLICTING_LABELS = 'ExtractConflictModal.conflictingLabels',
+    EXTRACTCONFLICTMODAL_EXISTING_LABELS_TITLE = 'ExtractConflictModal.existing.title',
+    EXTRACTCONFLICTMODAL_EXISTING_LABELS_SUBTITLE = 'ExtractConflictModal.existing.subTitle',
+    EXTRACTCONFLICTMODAL_ATTEMPTED_LABELS_TITLE = 'ExtractConflictModal.attemptedLabels.title',
+    EXTRACTCONFLICTMODAL_ATTEMPTED_LABELS_SUBTITLE = 'ExtractConflictModal.attemptedLabels.subTitle',
     EXTRACTCONFLICTMODAL_CALLTOACTION = 'ExtractConflictModal.callaction',
 
     // FieldError
@@ -720,6 +723,7 @@ export default {
         [FM.BUTTON_ABANDON_IMPORT]: 'Abandon Import',
         [FM.BUTTON_ACCEPT]: 'Accept',
         [FM.BUTTON_CANCEL]: 'Cancel',
+        [FM.BUTTON_CHANGE]: 'Change',
         [FM.BUTTON_CLOSE]: 'Close',
         [FM.BUTTON_CONFIRM]: 'Confirm',
         [FM.BUTTON_COMPARE]: 'Compare',
@@ -1089,9 +1093,11 @@ export default {
         // ExtractConflictModal
         [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Inconsistent Entity Labels',
         [FM.EXTRACTCONFLICTMODAL_SUBTITLE]: 'You attempted to submit an input with entities labelled differently than another input in the current or a previous train dialog. Input labels must be consistent to ensure the Bot processes them correctly.',
-        [FM.EXTRACTCONFLICTMODAL_REVIEW]: 'Please review the labels below:',
-        [FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS]: 'Conflicting Labels',
-        [FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS]: 'Previously Submitted Labels',
+        [FM.EXTRACTCONFLICTMODAL_REVIEW]: 'Choose which labels you would like to use below:',
+        [FM.EXTRACTCONFLICTMODAL_ATTEMPTED_LABELS_TITLE]: 'Attempted Labels',
+        [FM.EXTRACTCONFLICTMODAL_ATTEMPTED_LABELS_SUBTITLE]: 'Preserve attempted labels in this dialog and change {conflictingDialogs} dialog(s) to match these labels.',
+        [FM.EXTRACTCONFLICTMODAL_EXISTING_LABELS_TITLE]: 'Previously Submitted Labels',
+        [FM.EXTRACTCONFLICTMODAL_EXISTING_LABELS_SUBTITLE]: 'Change attempted labels to match existing labels.',
         [FM.EXTRACTCONFLICTMODAL_CALLTOACTION]: `Clicking 'Accept' will replace the conflicting labels with the previously submitted labels.`,
 
         // FieldError

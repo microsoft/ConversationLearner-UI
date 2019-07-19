@@ -535,7 +535,7 @@ export type TeachAction = {
     key: string,
     appId: string,
     sessionId: string,
-    uiScoreResponse: CLM.UIScoreResponse
+    uiScoreResponse: CLM.UIScoreResponse,
 } | {
     type: AT.POST_SCORE_FEEDBACK_ASYNC,
     key: string,
