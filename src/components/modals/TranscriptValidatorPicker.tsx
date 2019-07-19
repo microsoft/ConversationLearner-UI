@@ -13,14 +13,17 @@ import { connect } from 'react-redux'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import './TranscriptValidatorPicker.css'
 
 interface ComponentState {
     transcriptFiles: File[]
+    testName: string
 }
 
 class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
     state: ComponentState = {
-        transcriptFiles: []
+        transcriptFiles: [],
+        testName: ''
     }
         
     private transcriptfileInput: any
@@ -32,6 +35,13 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                 transcriptFiles: []
             })
         }
+    }
+
+    @OF.autobind
+    onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, testName: string) {
+        this.setState({
+            testName
+        })
     }
 
     @OF.autobind
@@ -50,15 +60,12 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                 containerClassName='cl-modal cl-modal--small'
             >
                 <div className="cl-modal_header">
-                    <div className={`cl-dialog-title cl-dialog-title--import ${OF.FontClassNames.xxLarge}`}>
-                        <OF.Icon
-                            iconName='TestPlan'
-                        />
-                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_TITLE)} 
+                    <div className={`cl-dialog-title ${OF.FontClassNames.xxLarge}`}>
+                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_PICKER_TITLE)} 
                     </div>
                 </div>
                 <div 
-                    className="cl-modal_body cl-transcript-validator-body"
+                    className="cl-transcript-validator-body"
                 >
                     <input
                         type="file"
@@ -66,6 +73,13 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                         onChange={(event) => this.onChangeTranscriptFiles(event.target.files)}
                         ref={ele => (this.transcriptfileInput = ele)}
                         multiple={true}
+                    />
+                    <OF.TextField
+                        className={OF.FontClassNames.mediumPlus}
+                        onChange={this.onChangeName}
+                        label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_NAME_LABEL)}
+                        onGetErrorMessage={value => this.props.onGetNameErrorMessage(value)}
+                        value={this.state.testName}
                     />
                     <div className="cl-file-picker">
                         <OF.PrimaryButton
@@ -90,9 +104,9 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons_secondary" />
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
-                            disabled={this.state.transcriptFiles.length === 0}
+                            disabled={this.state.transcriptFiles.length === 0 || this.props.onGetNameErrorMessage(this.state.testName) !== ''}
                             data-testid="transcript-submit-button"
-                            onClick={() => this.props.onValidateFiles(this.state.transcriptFiles)}
+                            onClick={() => this.props.onValidateFiles(this.state.testName, this.state.transcriptFiles)}
                             ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
                             text={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
                             iconProps={{ iconName: 'TestCase' }}
@@ -128,8 +142,8 @@ export interface ReceivedProps {
     app: CLM.AppBase
     open: boolean
     onAbandon: () => void
-    onValidateFiles: (files: File[]) => void
-    onViewResults: (set: CLM.TranscriptValidationSet) => void
+    onValidateFiles: (testName: string, files: File[]) => void
+    onGetNameErrorMessage: (value: string) => string 
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

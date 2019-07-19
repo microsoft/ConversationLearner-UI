@@ -1,0 +1,11 @@
+.cl-test-wait-modal
+{
+    width: 500px;
+    height: 500px;
+    position: relative;
+}
+
+.cl-spinner_scrollable
+{
+    overflow: hidden;
+}

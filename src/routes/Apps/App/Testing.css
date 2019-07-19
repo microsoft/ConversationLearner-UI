@@ -1,19 +1,26 @@
-.cl-transcript-validator-body {
-  margin-bottom: 20px;
-  margin-top: 20px;
-  margin-left: auto;
-  width: 75%;
-  overflow: auto;
-  position: relative;
-  margin-right: auto;
+.cl-testing-header {
+  font-size: 22px;
 }
 
-.cl-transcript-validator-result-group {
+.cl-testing-body {
+  margin-bottom: 20px;
+  margin-top: 20px;
+  width: 100%;
+  overflow: auto;
+  position: relative;
+  min-height: 260px;
+}
+
+.cl-testing-result-group {
   margin-bottom: 20px;
   border-bottom: 1px solid var(--cl-color-botchat-grey);
 }
 
-.cl-transcript-validator-result {
+.cl-test-disabled {
+  opacity: 0.5;
+}
+
+.cl-testing-result {
   font-size: 22px;
   padding-left: 70px;
   padding-top: 10px;
@@ -23,14 +30,14 @@
   overflow: auto;
 }
 
-.cl-transcript-validator-subresult {
+.cl-testing-subresult {
   font-size: 16px;
   padding-left: 70px;
   padding-top: 5px;
   overflow: auto;
 }
 
-.cl-transcript-validator-result-title {
+.cl-testing-result-title {
   width: 155px;
   float: left;
   text-align: right;
@@ -38,7 +45,7 @@
   padding-right: 10px;
 }
 
-.cl-transcript-validator-result-subtitle {
+.cl-testing-result-subtitle {
   text-align: right;
   width: 230px;
   line-height: 30px;
@@ -46,27 +53,27 @@
   padding-right: 10px;
 }
 
-.cl-transcript-validator-result-value {
+.cl-testing-result-value {
   width: 130px;
   float: left;
 }
 
-.cl-transcript-validator-result-subvalue {
+.cl-testing-result-subvalue {
   width: 80px;
   float: left;
 }
 
-.cl-transcript-validator-result-percent {
+.cl-testing-result-percent {
   width: 130px;
   float: left;
 }
 
-.cl-transcript-validator-result-subpercent {
+.cl-testing-result-subpercent {
   width: 80px;
   float: left;
 }
 
-.cl-transcript-validator-result-buttons {
+.cl-testing-result-buttons {
   margin-top: 4px;
   padding-left: 10px;
 }

@@ -561,8 +561,11 @@ export enum FM {
 
     // Transcript Validator
     TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
+    TRANSCRIPT_VALIDATOR_SUBTITLE = 'TranscriptValidator.subtitle',
+    TRANSCRIPT_VALIDATOR_PICKER_TITLE = 'TranscriptValidatorPicker.title',
     TRANSCRIPT_VALIDATOR_FILESAVE = 'TranscriptValidator.FileSave',
     TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER = 'TranscriptValidator.FileSavePlaceholder',
+    TRANSCRIPT_VALIDATOR_NAME_LABEL = 'TranscriptValidator.FileSavePlaceholder',
     TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST = 'TranscriptValidator.button.NewTest',
     TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS = 'TranscriptValidator.button.LoadResults',
     TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS = 'TranscriptValidator.button.SaveResults',
@@ -1162,9 +1165,12 @@ export default {
         [FM.TRANSCRIPT_IMPORTER_AUTOMERGE]: 'Auto Merge',
         
         // Transcript Validator
-        [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Select .transcript files to test',
+        [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Testing',
+        [FM.TRANSCRIPT_VALIDATOR_SUBTITLE]: `Compare Model's output to .transcript files`,
+        [FM.TRANSCRIPT_VALIDATOR_PICKER_TITLE]: 'Select .transcript files to test',
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE]: 'Name for Test Results',
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER]: 'Name',
+        [FM.TRANSCRIPT_VALIDATOR_NAME_LABEL]: 'Test Name',
         [FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST]: 'New Test',
         [FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS]: 'Load Results',
         [FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS]: 'Save Results',

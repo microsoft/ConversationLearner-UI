@@ -17,7 +17,7 @@ import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
 import TranscriptImporter from '../../../components/modals/TranscriptImporter'
 import TranscriptImportWaitModal from '../../../components/modals/TranscriptImportWaitModal'
-import TranscriptValidatorModal from '../../../components/modals/TranscriptValidatorModal'
+import Cookies from 'universal-cookie'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { returntypeof } from 'react-redux-typescript'
@@ -149,7 +149,6 @@ interface ComponentState {
     isEditDialogModalOpen: boolean
     isTranscriptImportOpen: boolean
     isImportWaitModalOpen: boolean
-    isTranscriptValidateModalOpen: boolean
     transcriptIndex: number
     transcriptFiles: File[] | undefined
     importAutoCreate: boolean
@@ -172,6 +171,7 @@ interface ComponentState {
     actionFilter: OF.IDropdownOption | null
     // Used to prevent screen from flashing when transition to Edit Page
     lastTeachSession: TeachSessionState | null
+    allowImport: boolean
 }
 
 class TrainDialogs extends React.Component<Props, ComponentState> {
@@ -200,7 +200,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isEditDialogModalOpen: false,
             isTranscriptImportOpen: false,
             isImportWaitModalOpen: false,
-            isTranscriptValidateModalOpen: false,
             transcriptIndex: 0,
             transcriptFiles: undefined,
             importAutoCreate: false,
@@ -217,7 +216,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             tagsFilter: null,
             entityFilter: null,
             actionFilter: null,
-            lastTeachSession: null
+            lastTeachSession: null,
+            allowImport: false
         }
     }
 
@@ -233,6 +233,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 entityFilter: this.toEntityFilter(this.props.filteredEntity)
             })
         }
+
+        const cookies = new Cookies()
+        const allowImport = cookies.get("mode") === "CCI"
+        this.setState({allowImport})
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -970,20 +974,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
-    onCloseTranscriptValidator(): void {
-        this.setState({
-            isTranscriptValidateModalOpen: false
-        })
-    }
-
-    @OF.autobind
-    onOpenTranscriptValidator(): void {
-        this.setState({
-            isTranscriptValidateModalOpen: true
-        })
-    }
-
     //-----------------------------
     // Transcript import
     //-----------------------------
@@ -1006,7 +996,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         await this.onStartTranscriptImport()
     }
 
-    // LARS remove
+    // LARS todo move to utils
     readFileAsync(file: File): Promise<string> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -1316,15 +1306,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         componentRef={this.newTeachSessionButtonRef}
                         iconProps={{ iconName: 'Add' }}
                     />
-                    <OF.DefaultButton
-                        iconProps={{
-                            iconName: "DownloadDocument"
-                        }}
-                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
-                        onClick={this.onClickImportConversation}
-                        ariaDescription={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
-                        text={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
-                    />
+                    {this.state.allowImport &&
+                        <OF.DefaultButton
+                            iconProps={{
+                                iconName: "DownloadDocument"
+                            }}
+                            disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                            onClick={this.onClickImportConversation}
+                            ariaDescription={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
+                            text={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
+                        />
+                    }
                     {this.state.isTreeViewModalOpen ?
                         <OF.DefaultButton
                             className="cl-rotate"
@@ -1342,13 +1334,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
                         />
                     }
-                    <OF.DefaultButton
-                        onClick={this.onOpenTranscriptValidator}
-                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
-                        ariaDescription={Util.formatMessageId(intl, FM.BUTTON_TESTING)}
-                        text={Util.formatMessageId(intl, FM.BUTTON_TESTING)}
-                        iconProps={{ iconName: 'TestCase' }}
-                    />
                 </div>
                 <TreeView
                     open={this.state.isTreeViewModalOpen}
@@ -1543,13 +1528,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
                     />
                 }
-                {this.state.isTranscriptValidateModalOpen &&
-                    <TranscriptValidatorModal
-                        app={this.props.app}
-                        editingPackageId={this.props.editingPackageId}
-                        onClose={this.onCloseTranscriptValidator}
-                    />
-                }
             </div>
         )
     }
@@ -1628,7 +1606,6 @@ const mapDispatchToProps = (dispatch: any) => {
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         fetchExtractionsThunkAsync: actions.app.fetchExtractionsThunkAsync,
-        fetchTranscriptValidationThunkAsync: actions.app.fetchTranscriptValidationThunkAsync,//LARS remove
         trainDialogMergeThunkAsync: actions.train.trainDialogMergeThunkAsync,
         trainDialogReplaceThunkAsync: actions.train.trainDialogReplaceThunkAsync,
         trainDialogReplayAsync: actions.train.trainDialogReplayThunkAsync,
