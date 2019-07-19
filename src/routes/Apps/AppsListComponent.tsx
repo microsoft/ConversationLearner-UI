@@ -5,7 +5,7 @@
 import * as React from 'react'
 import { AppCreator as AppCreatorModal, TutorialImporterModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react'
-import { AppBase, AppDefinition } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import FormattedMessageId from '../../components/FormattedMessageId'
 import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
@@ -14,8 +14,8 @@ import { User, AppCreatorType } from '../../types'
 import * as moment from 'moment'
 
 export interface ISortableRenderableColumn extends OF.IColumn {
-    render: (app: AppBase, props: Props) => JSX.Element
-    getSortValue: (app: AppBase) => number | string
+    render: (app: CLM.AppBase, props: Props) => JSX.Element
+    getSortValue: (app: CLM.AppBase) => number | string
 }
 
 function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
@@ -113,26 +113,29 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
 
 interface Props extends InjectedIntlProps {
     user: User
-    apps: AppBase[]
+    apps: CLM.AppBase[]
     activeApps: { [appId: string]: string }
-    onClickApp: (app: AppBase) => void
+    onClickApp: (app: CLM.AppBase) => void
+    selection: OF.ISelection
 
     isAppCreateModalOpen: boolean
-    onSubmitAppCreateModal: (app: AppBase, source: AppDefinition | undefined) => void
+    onSubmitAppCreateModal: (app: CLM.AppBase, source: CLM.AppDefinition | undefined) => void
     onCancelAppCreateModal: () => void
     appCreatorType: AppCreatorType
 
     onClickCreateNewApp: () => void
     onClickImportApp: () => void
     onClickImportDemoApps: () => void
+    onClickCreateNewDispatcherModel: () => void
 
     isImportTutorialsOpen: boolean
-    tutorials: AppBase[]
+    tutorials: CLM.AppBase[]
     onCloseImportNotification: () => void
-    onImportTutorial: (tutorial: AppBase) => void
+    onImportTutorial: (tutorial: CLM.AppBase) => void
 }
 
 interface ComponentState {
+    apps: CLM.AppBase[]
     columns: ISortableRenderableColumn[]
     sortColumn: ISortableRenderableColumn
 }
@@ -161,13 +164,24 @@ export class Component extends React.Component<Props, ComponentState> {
             }
         })
 
+        const apps = this.getSortedApplications(defaultSortColumn, this.props.apps)
         this.state = {
+            apps,
             columns,
             sortColumn: defaultSortColumn
         }
     }
 
-    getSortedApplications(sortColumn: ISortableRenderableColumn, apps: AppBase[]): AppBase[] {
+    componentDidUpdate(prevProps: Props) {
+        if (prevProps.apps.length !== this.props.apps.length) {
+            const apps = this.getSortedApplications(this.state.sortColumn, this.props.apps)
+            this.setState({
+                apps
+            })
+        }
+    }
+
+    private getSortedApplications(sortColumn: ISortableRenderableColumn, apps: CLM.AppBase[]): CLM.AppBase[] {
         let sortedApps = apps
         if (sortColumn) {
             // Sort the items.
@@ -190,22 +204,25 @@ export class Component extends React.Component<Props, ComponentState> {
         const { columns } = this.state;
         const sortColumn = columns.find(c => column.key === c.key)!
 
+        const newColumns = columns.map(col => {
+            col.isSorted = false;
+            if (col.key === column.key) {
+                col.isSorted = true;
+                col.isSortedDescending = !col.isSortedDescending;
+            }
+            return col;
+        })
+        const apps = this.getSortedApplications(this.state.sortColumn, this.state.apps)
+
         this.setState({
-            columns: columns.map(col => {
-                col.isSorted = false;
-                if (col.key === column.key) {
-                    col.isSorted = true;
-                    col.isSortedDescending = !col.isSortedDescending;
-                }
-                return col;
-            }),
+            columns: newColumns,
             sortColumn,
+            apps,
         });
     }
 
     render() {
         const props = this.props
-        const apps = this.getSortedApplications(this.state.sortColumn, props.apps);
 
         return <div className="cl-o-app-columns">
             <div className="cl-app_content">
@@ -228,6 +245,14 @@ export class Component extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONTEXT)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
+                        <OF.DefaultButton
+                            data-testid="model-list-button-create-dispatcher"
+                            onClick={props.onClickCreateNewDispatcherModel}
+                            ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION)}
+                            text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONTEXT)}
+                            iconProps={{ iconName: 'Add' }}
+                        />
+
                         {!Util.isDemoAccount(props.user.id) &&
                             <OF.DefaultButton
                                 data-testid="model-list-import-tutorials-button"
@@ -238,7 +263,7 @@ export class Component extends React.Component<Props, ComponentState> {
                             />
                         }
                     </div>
-                    {apps.length === 0
+                    {this.state.apps.length === 0
                         ? <div className="cl-page-placeholder">
                             <div className="cl-page-placeholder__content">
                                 <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>{Util.formatMessageId(props.intl, FM.APPSLIST_EMPTY_TEXT)}</div>
@@ -260,9 +285,10 @@ export class Component extends React.Component<Props, ComponentState> {
                         </div>
                         : <OF.DetailsList
                             className={OF.FontClassNames.mediumPlus}
-                            items={apps}
+                            items={this.state.apps}
                             columns={this.state.columns}
-                            checkboxVisibility={OF.CheckboxVisibility.hidden}
+                            selection={this.props.selection}
+                            checkboxVisibility={OF.CheckboxVisibility.onHover}
                             onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
                             onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
                             onColumnHeaderClick={this.onClickColumnHeader}

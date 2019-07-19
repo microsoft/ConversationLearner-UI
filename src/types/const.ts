@@ -10,7 +10,8 @@ export enum ErrorType {
 export enum AppCreatorType {
     NEW = "NEW",
     IMPORT = "IMPORT",
-    COPY = "COPY"
+    COPY = "COPY",
+    DISPATCHER = "DISPATCHER",
 }
 
 // After an edit takes place which activity should I select in webchat

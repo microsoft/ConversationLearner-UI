@@ -59,6 +59,14 @@ class AppsIndex extends React.Component<Props> {
         history.push(`${match.url}/${app.appId}`, { app })
     }
 
+    onCreateDispatchModel = async (appToCreate: AppBase, childrenModels: AppBase[]) => {
+        console.log({ appToCreate, childrenModels })
+        const source = generateDispatcherSource(childrenModels)
+        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
+        const { match, history } = this.props
+        history.push(`${match.url}/${app.appId}`, { app })
+    }
+
     onImportTutorial = (tutorial: AppBase) => {
         const srcUserId = CL_IMPORT_TUTORIALS_USER_ID;
         const destUserId = this.props.user.id;
@@ -79,6 +87,7 @@ class AppsIndex extends React.Component<Props> {
                         <AppsList
                             apps={this.props.apps}
                             onCreateApp={this.onCreateApp}
+                            onCreateDispatchModel={this.onCreateDispatchModel}
                             onClickDeleteApp={this.onClickDeleteApp}
                             onImportTutorial={(tutorial) => this.onImportTutorial(tutorial)}
                         />
@@ -87,6 +96,17 @@ class AppsIndex extends React.Component<Props> {
             </Switch>
         )
     }
+}
+
+function generateDispatcherSource (models: AppBase[]): undefined {
+    console.log('generateDispatcherSource', { models })
+
+    // strip out all actions and entities
+    // generate new SET_ENTITY actions 1 per model (Limit of 5 for now)
+        // could return Text with model is as value for have unlimited scale
+    // generate inter-mixed dialogs
+
+    return undefined
 }
 
 const mapDispatchToProps = (dispatch: any) => {

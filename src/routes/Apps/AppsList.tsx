@@ -12,7 +12,7 @@ import { fetchTutorialsThunkAsync } from '../../actions/appActions'
 import { AppBase, AppDefinition } from '@conversationlearner/models'
 import { CL_IMPORT_TUTORIALS_USER_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'office-ui-fabric-react'
+import * as OF from 'office-ui-fabric-react'
 import AppsListComponent from './AppsListComponent'
 
 interface ComponentState {
@@ -24,6 +24,11 @@ interface ComponentState {
 }
 
 class AppsList extends React.Component<Props, ComponentState> {
+    private selection: OF.ISelection = new OF.Selection({
+        getKey: (app) => (app as AppBase).appId,
+        onSelectionChanged: this.onSelectionChanged
+    })
+
     state: Readonly<ComponentState> = {
         isAppCreateModalOpen: false,
         appCreatorType: AppCreatorType.NEW,
@@ -32,7 +37,8 @@ class AppsList extends React.Component<Props, ComponentState> {
         tutorials: null
     }
 
-    @autobind
+
+    @OF.autobind
     onClickCreateNewApp() {
         this.setState({
             isAppCreateModalOpen: true,
@@ -40,7 +46,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onClickImportApp() {
         this.setState({
             isAppCreateModalOpen: true,
@@ -48,7 +54,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     async onClickImportDemoApps() {
         const tutorials = this.state.tutorials !== null
             ? this.state.tutorials
@@ -60,31 +66,53 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
+    @OF.autobind
     onClickApp(app: AppBase) {
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
     }
 
-    @autobind
+    @OF.autobind
     onCloseImportNotification() {
         this.setState({
             isImportTutorialsOpen: false
         })
     }
 
-    @autobind
+    @OF.autobind
     onSubmitAppCreateModal(app: AppBase, source: AppDefinition | null = null) {
         this.setState({
             isAppCreateModalOpen: false
-        }, () => this.props.onCreateApp(app, source))
+        }, () => {
+            if (this.state.appCreatorType == AppCreatorType.DISPATCHER) {
+                const selectedModels = this.selection.getSelection() as AppBase[]
+                this.props.onCreateDispatchModel(app, selectedModels)
+            }
+            else {
+                this.props.onCreateApp(app, source)
+            }
+        })
     }
 
-    @autobind
+    @OF.autobind
     onCancelAppCreateModal() {
         this.setState({
             isAppCreateModalOpen: false
         })
+    }
+
+    @OF.autobind
+    onClickCreateNewDispatcherModel() {
+        this.setState({
+            isAppCreateModalOpen: true,
+            appCreatorType: AppCreatorType.DISPATCHER
+        })
+    }
+
+    @OF.autobind
+    onSelectionChanged() {
+        const selection = this.selection.getSelection()
+        console.log({ selection })
     }
 
     render() {
@@ -95,6 +123,7 @@ class AppsList extends React.Component<Props, ComponentState> {
             apps={this.props.apps}
             activeApps={this.props.activeApps}
             onClickApp={this.onClickApp}
+            selection={this.selection}
 
             isAppCreateModalOpen={this.state.isAppCreateModalOpen}
             onSubmitAppCreateModal={this.onSubmitAppCreateModal}
@@ -104,6 +133,7 @@ class AppsList extends React.Component<Props, ComponentState> {
             onClickCreateNewApp={this.onClickCreateNewApp}
             onClickImportApp={this.onClickImportApp}
             onClickImportDemoApps={this.onClickImportDemoApps}
+            onClickCreateNewDispatcherModel={this.onClickCreateNewDispatcherModel}
 
             isImportTutorialsOpen={this.state.isImportTutorialsOpen}
             tutorials={this.state.tutorials!}
@@ -112,6 +142,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         />
     }
 }
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchTutorialsThunkAsync
@@ -133,6 +164,7 @@ export interface ReceivedProps {
     onCreateApp: (app: AppBase, source: AppDefinition | null) => void
     onClickDeleteApp: (app: AppBase) => void
     onImportTutorial: (tutorial: AppBase) => void
+    onCreateDispatchModel: (model: AppBase, models: AppBase[]) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
