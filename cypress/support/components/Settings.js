@@ -6,7 +6,6 @@
 import * as entitiesGrid from '../../support/components/EntitiesGrid'
 import * as deleteModelModal from '../../support/components/DeleteModelModal'
 import * as models from '../Models'
-import { func } from 'prop-types';
 
 export function VerifyPageTitle() { cy.Get('[data-testid="settings-title"]').contains('Settings').should('be.visible') }
 export function ClickExportModelButton() { cy.Get('[data-testid="settings-export-model-button"]').Click() }
