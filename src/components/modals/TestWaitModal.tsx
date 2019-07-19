@@ -8,7 +8,6 @@ import * as Util from '../../Utils/util'
 import { connect } from 'react-redux'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import './TestWaitModal.css'
 
 class TestWaitModal extends React.Component<Props> {
     render() {

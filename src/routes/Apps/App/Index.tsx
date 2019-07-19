@@ -29,8 +29,6 @@ import './Index.css'
 // TODO: i18n support would be much easier after proper routing is implemented
 // this would eliminate the use of page title strings as navigation keys and instead use the url
 
-export const CCI = "CCI"
-
 interface ComponentState {
     botValidationErrors: string[]
     packageId: string | null,
@@ -172,10 +170,6 @@ class Index extends React.Component<Props, ComponentState> {
         if (!location.state) {
             return null
         }
-
-        const params = new URLSearchParams(location.search)
-        const cci = params.get('cci')
-        console.log(`CCI: ${cci}`)
         
         const app: CLM.AppBase = location.state.app
         // TODO: There is an assumption that by the time render is called, componentWillMount has called loadApp and set the packageId
@@ -315,6 +309,10 @@ class Index extends React.Component<Props, ComponentState> {
                                 <Route
                                     path={`${match.url}/logDialogs`}
                                     render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} />}
+                                />
+                                <Route
+                                    path={`${match.url}/testing`}
+                                    render={props => <Testing {...props} app={app} editingPackageId={editPackageId}/>}
                                 />
                                 <Route
                                     exact={true}
