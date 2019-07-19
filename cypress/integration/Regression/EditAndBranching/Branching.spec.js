@@ -12,6 +12,9 @@ import * as helpers from '../../../support/Helpers'
 describe('Branching - Edit and Branching', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
+  let originalChatMessages
+  let editedChatMessages
+
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {
       models.ImportModel('z-branching', 'z-learnedEntLabel.cl')
@@ -23,7 +26,7 @@ describe('Branching - Edit and Branching', () => {
   context('Branch and Extend Training', () => {
     it('Should edit a specific Train Dialog and capture the original chat messages for verification later', () => {
       train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-      train.CaptureOriginalChatMessages()
+      cy.WaitForStableDOM().then(() => { originalChatMessages = train.GetAllChatMessages() })
     })
 
     it('Should branch a turn', () => {
@@ -39,7 +42,7 @@ describe('Branching - Edit and Branching', () => {
     })
 
     it('Should capture the changes for verification later', () => {
-      train.CaptureEditedChatMessages()
+      cy.WaitForStableDOM().then(() => { editedChatMessages = train.GetAllChatMessages() })
     })
 
     it('Should save the changes and confirm they show up in the grid', () => {
@@ -50,13 +53,13 @@ describe('Branching - Edit and Branching', () => {
   context('Validations', () => {
     it('Should edit the original Train Dialog and verify it was not changed.', () => {
       train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-      train.VerifyOriginalChatMessages()
+      train.VerifyAllChatMessages(originalChatMessages)
       train.ClickSaveCloseButton()
     })
 
     it('Should edit the branched Train Dialog and verify it was persisted correctly.', () => {
       train.EditTraining('My name is David.', 'My name is Guadalupe.', 'Hello $name')
-      train.VerifyEditedChatMessages()
+      train.VerifyAllChatMessages(editedChatMessages)
       train.ClickSaveCloseButton()
     })
   })

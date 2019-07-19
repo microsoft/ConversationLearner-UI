@@ -17,7 +17,6 @@ describe('Verify the DoesNotContain test function - Tools', () => {
     modelPage.NavigateToTrainDialogs()
 
     train.EditTraining('My name is David.', 'My name is Susan.', 'Hello $name')
-    train.CaptureOriginalChatMessages()
 
     train.SelectChatTurnExactMatch('My name is Susan.')
     train.VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector()

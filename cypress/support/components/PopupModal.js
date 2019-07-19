@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Licensed under the MIT License.
+ */
+
 export function VerifyExactTitleNoContentClickButton(expectedTitle, buttonSelector) { 
   cy.Get(buttonSelector)
     .parents('div.ms-Dialog-main')

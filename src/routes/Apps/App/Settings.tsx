@@ -308,7 +308,7 @@ class Settings extends React.Component<Props, ComponentState> {
     getDeleteDialogBoxText = (modelName: string) => {
         return (
             <div>
-                <h1 className={`${OF.FontClassNames.xxLarge} cl-text--error`} style={{ fontWeight: 100 }}>{Util.formatMessageId(this.props.intl, FM.SETTINGS_DELETEISPERMANENT)}</h1>
+                <h1 className={`${OF.FontClassNames.xxLarge} cl-text--error`} style={{ fontWeight: 100 }} data-testid="settings-delete-model-title">{Util.formatMessageId(this.props.intl, FM.SETTINGS_DELETEISPERMANENT)}</h1>
                 <p>Confirm permanent deletion of the <strong>{modelName}</strong> Model by entering its name.</p>
             </div>
         )
@@ -374,12 +374,14 @@ class Settings extends React.Component<Props, ComponentState> {
                     />
                     <div className="cl-buttons-row">
                         <OF.DefaultButton
+                            data-testid="settings-export-model-button"
                             onClick={this.onClickExport}
                             ariaDescription={Util.formatMessageId(intl, FM.BUTTON_EXPORT)}
                             text={Util.formatMessageId(intl, FM.BUTTON_EXPORT)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
                         <OF.DefaultButton
+                            data-testid="settings-copy-model-button"
                             onClick={this.onClickCopy}
                             ariaDescription={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONARIALDESCRIPTION)}
                             text={Util.formatMessageId(intl, FM.SETTINGS_COPYBUTTONTEXT)}
@@ -477,7 +479,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             disabled={true}
                         />
                     </div>
-                    <div className="cl-entity-creator-checkbox">
+                    <div className="cl-entity-creator-checkbox" data-testid="settings-log-conversations-checkbox">
                         <TC.Checkbox
                             label={Util.formatMessageId(intl, FM.SETTINGS_LOGGINGON_LABEL)}
                             checked={this.state.isLoggingOnVal}
