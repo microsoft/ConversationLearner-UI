@@ -5,7 +5,7 @@
 import * as CLM from '@conversationlearner/models'
 import { PartialTrainDialog, AppInput } from '../types/models'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
-import * as querystring from 'querystring'
+import * as querystring from 'query-string'
 
 export interface ClientHeaders {
     botChecksum: string
