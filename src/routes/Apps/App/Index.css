@@ -1,3 +1,14 @@
+.cl-model-banner {
+    background: var(--color-neutralPrimary);
+    padding: 0.75em 0;
+    color: white;
+    font-size: 18px;
+}
+
+.cl-model-banner_content {
+    grid-column: 2;
+}
+
 .cl-app-page {
     display: grid;
     grid-template-columns: minmax(220px, min-content) 1fr;

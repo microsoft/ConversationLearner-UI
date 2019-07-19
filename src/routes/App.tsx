@@ -101,85 +101,84 @@ class App extends React.Component<Props, ComponentState> {
     const banner = this.props.botInfo ? this.props.botInfo.banner : null
     return (
       <Router basename={process.env.PUBLIC_URL}>
-        <div className="cl-app">
-          <div className="cl-app_header-placeholder" />
-          <header className={`cl-app_header cl-header`}>
-            <nav className="cl-header_links">
-              <img className="cl-header-logo" src="Microsoft-logo_rgb_c-wht.png" alt="Microsoft Logo" />
-              <span className="cl-header-text">
-                <img className="cl-header-icon" src="icon.svg" alt="ConversationLearner Logo" />
-                Project Conversation Learner
+        <>
+          <div className="cl-o-app-columns">
+            <div className="cl-app_header-placeholder" />
+            <header className={`cl-app_header cl-header`}>
+              <nav className="cl-header_links">
+                <img className="cl-header-logo" src="Microsoft-logo_rgb_c-wht.png" alt="Microsoft Logo" />
+                <span className="cl-header-text">
+                  <img className="cl-header-icon" src="icon.svg" alt="ConversationLearner Logo" />
+                  Project Conversation Learner
               </span>
-              <NavLink to="/home">
-                <FormattedMessageId id={FM.APP_HEADER_MODELS} />
-              </NavLink>
-              <a href="https://labs.cognitive.microsoft.com/en-us/project-conversation-learner" target="_blank" rel="noopener noreferrer">Documentation</a>
-              <a href="https://cognitive.uservoice.com/forums/912199-project-conversation-learner" target="_blank" rel="noopener noreferrer">Feedback</a>
-            </nav>
-            <NavLink className="cl-header_user" to="/settings"><OF.Icon className="cl-header-office-icon" iconName="Settings" /> Settings</NavLink>
-          </header>
+                <NavLink to="/home">
+                  <FormattedMessageId id={FM.APP_HEADER_MODELS} />
+                </NavLink>
+                <a href="https://labs.cognitive.microsoft.com/en-us/project-conversation-learner" target="_blank" rel="noopener noreferrer">Documentation</a>
+                <a href="https://cognitive.uservoice.com/forums/912199-project-conversation-learner" target="_blank" rel="noopener noreferrer">Feedback</a>
+              </nav>
+              <NavLink className="cl-header_user" to="/settings"><OF.Icon className="cl-header-office-icon" iconName="Settings" /> Settings</NavLink>
+            </header>
 
-          <div className="cl-app_header-placeholder" />
-          <div className="cl-app_content">
-            {banner && this.shouldShowBanner(banner) &&
-              <OF.MessageBar
-                className="cl-messagebar"
-                isMultiline={true}
-                onDismiss={() => this.dismissBanner(banner)}
-                dismissButtonAriaLabel='Close'
-                messageBarType={this.getMessageBarType(banner.type)}
-              >
-                {banner.message}
-                {banner.link && banner.linktext &&
-                  <OF.Link href={banner.link}>{banner.linktext}</OF.Link>
-                }
-                {banner.datestring &&
-                  <div>
-                    <span className="cl-font--demphasis">{banner.datestring}</span>
-                  </div>
-                }
-              </OF.MessageBar>
-            }
-            <Switch>
-              <Route exact path="/" render={() => <Redirect to="/home" />} />
-              <Route
-                path="/home"
-                render={props =>
-                  <React.Fragment>
-                    {this.state.loadingState === LoadingState.LOADING &&
-                      <p>Loading...</p>
-                    }
-                    {this.state.loadingState === LoadingState.FAILED &&
+            <div className="cl-app_header-placeholder" />
+          </div>
+
+          {banner && this.shouldShowBanner(banner) &&
+            <OF.MessageBar
+              className="cl-messagebar"
+              isMultiline={true}
+              onDismiss={() => this.dismissBanner(banner)}
+              dismissButtonAriaLabel='Close'
+              messageBarType={this.getMessageBarType(banner.type)}
+            >
+              {banner.message}
+              {banner.link && banner.linktext &&
+                <OF.Link href={banner.link}>{banner.linktext}</OF.Link>
+              }
+              {banner.datestring &&
+                <div>
+                  <span className="cl-font--demphasis">{banner.datestring}</span>
+                </div>
+              }
+            </OF.MessageBar>
+          }
+          <Switch>
+            <Route exact path="/" render={() => <Redirect to="/home" />} />
+            <Route
+              path="/home"
+              render={props =>
+                <React.Fragment>
+                  {this.state.loadingState === LoadingState.LOADING &&
+                    <p>Loading...</p>
+                  }
+                  {this.state.loadingState === LoadingState.FAILED &&
+                    <div>
+                      <p>Loading Failed.</p>
                       <div>
-                        <p>Loading Failed.</p>
-                        <div>
-                          <OF.PrimaryButton
-                            onClick={this.loadBotInfo}
-                            iconProps={{ iconName: 'Refresh' }}
-                          >
-                            Retry
+                        <OF.PrimaryButton
+                          onClick={this.loadBotInfo}
+                          iconProps={{ iconName: 'Refresh' }}
+                        >
+                          Retry
                           </OF.PrimaryButton>
-                        </div>
                       </div>
-                    }
-                    {this.state.loadingState === LoadingState.SUCCEEDED && this.props.botInfo !== null &&
-                      <AppsIndex
-                        {...props}
-                      />
-                    }
-                  </React.Fragment>
-                }
-              />
-              <Route path="/settings" component={Settings} />
-              <Route component={NoMatch} />
-            </Switch>
-          </div>
-          <div className="cl-app_modals">
-            <ErrorPanel />
-            <HelpPanel />
-            <SpinnerWindow />
-          </div>
-        </div>
+                    </div>
+                  }
+                  {this.state.loadingState === LoadingState.SUCCEEDED && this.props.botInfo !== null &&
+                    <AppsIndex
+                      {...props}
+                    />
+                  }
+                </React.Fragment>
+              }
+            />
+            <Route path="/settings" component={Settings} />
+            <Route component={NoMatch} />
+          </Switch>
+          <ErrorPanel />
+          <HelpPanel />
+          <SpinnerWindow />
+        </>
       </Router>
     );
   }
