@@ -105,16 +105,7 @@ describe('Entity Conflicts', () => {
                         .parent()
                         .find(s.trainDialogs.validityIndicator)
                         .should('have.attr', 'data-icon-name', "IncidentTriangle")
-                })
-
-
-                it('given dialog with INcompatible text variations should set the validity to INVALID', () => {
-                    cy.get(s.trainDialogs.descriptions)
-                        .contains('Single Text Variation')
-                        .parent()
-                        .parent()
-                        .find(s.trainDialogs.validityIndicator)
-                        .should('have.attr', 'data-icon-name', "IncidentTriangle")
+                        .should('have.class', 'cl-color-warning')
                 })
             })
         })
@@ -149,6 +140,7 @@ describe('Entity Conflicts', () => {
                         .parent()
                         .find(s.trainDialogs.validityIndicator)
                         .should('have.attr', 'data-icon-name', "IncidentTriangle")
+                        .should('have.class', 'cl-color-warning')
                 })
 
                 it('given dialog with INcompatible text variations should set the validity to INVALID', () => {
@@ -158,6 +150,7 @@ describe('Entity Conflicts', () => {
                         .parent()
                         .find(s.trainDialogs.validityIndicator)
                         .should('have.attr', 'data-icon-name', "IncidentTriangle")
+                        .should('have.class', 'cl-color-error')
                 })
             })
         })
