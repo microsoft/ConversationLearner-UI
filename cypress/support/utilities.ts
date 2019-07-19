@@ -2,8 +2,15 @@ import * as helpers from './Helpers'
 import s from '../support/selectors'
 import constants from '../support/constants'
 
+const MAX_MODEL_NAME_LENGTH = 30
+
 export function generateUniqueModelName(name: string): string {
-    return `z-${name}-${Cypress.moment().format('MMDD-HHmmss')}${helpers.GetBuildKey()}`
+    const fullName = `z-${name}-${Cypress.moment().format('MMDD-HHmmss')}${helpers.GetBuildKey()}`
+    if (fullName.length > MAX_MODEL_NAME_LENGTH) {
+        throw new Error(`Model name must not be more than 30 characters. You used ${fullName}. Please use a shorter name.`)
+    }
+
+    return fullName
 }
 
 export function selectDropDownOption(dropDownSelector: string, optionName: string) {

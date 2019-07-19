@@ -33,6 +33,7 @@ const selectors = {
     },
     trainingStatus: {
         completed: '[data-testid="training-status-completed"]',
+        running: '[data-testid="training-status-running"]',
     },
     entities: {
         buttonCreate: '[data-testid="entities-button-create"]',
@@ -91,6 +92,7 @@ const selectors = {
         buttonOk: '[data-testid="confirm-cancel-modal-ok"]',
     },
     trainDialogs: {
+        validityIndicator: '[data-testid="train-dialogs-validity-indicator"]',
         descriptions: '[data-testid="train-dialogs-description"]',
         tags: '[data-testid="train-dialogs-tags"] .cl-tags-readonly__tag',
         buttonNew: '[data-testid="button-new-train-dialog"]',
@@ -129,6 +131,7 @@ const selectors = {
         webChatUtterances: 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p',
         entityConflictModal: {
             modal: '[data-testid="extract-conflict-modal-conflicting-labels"]',
+            attempted: '[data-testid="extract-conflict-modal-attempted"]',
             buttonAccept: '[data-testid="entity-conflict-accept"]',
             buttonCancel: '[data-testid="entity-conflict-cancel"]',
         },
