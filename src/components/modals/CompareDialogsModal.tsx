@@ -184,7 +184,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                 <OF.Modal
                     isOpen={true}
                     isBlocking={true}
-                    containerClassName="cl-modal cl-modal--compare-dialogs cl-modal--teach"
+                    containerClassName="cl-modal cl-modal--compare-dialogs"
                 >
                     <div className="cl-modal_body">
                         <div className="cl-compare-dialogs-modal">

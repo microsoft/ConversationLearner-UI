@@ -111,6 +111,7 @@ class Testing extends React.Component<Props, ComponentState> {
         // Check if I'm done importing files
         if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
             this.setState({transcriptFiles: []})
+            this.onSave()
             return
         }
 
@@ -316,164 +317,164 @@ class Testing extends React.Component<Props, ComponentState> {
                     onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                     value={this.state.transcriptValidationSet.fileName}
                 />
-                    <div className="cl-testing-body">
-                        <input
-                            hidden={true}
-                            type="file"
-                            style={{ display: 'none' }}
-                            onChange={(event) => this.onChangeResultFiles(event.target.files)}
-                            ref={ele => (this.resultfileInput = ele)}
-                            multiple={false}
-                        />
-                        <div>
-                            <div className={`cl-testing-result-group ${this.state.transcriptValidationSet.transcriptValidationResults.length === 0 ? ' cl-test-disabled' : ''}`}>
-                                <div className="cl-testing-result">
-                                    <span className="cl-testing-result-title">Reproduced: </span>
-                                    <span className="cl-entity cl-testing-result-value">
-                                        {reproduced.length}
-                                    </span>
-                                    <span className="cl-entity cl-testing-result-percent">
-                                        {this.percentOf(reproduced.length)}
-                                    </span>
-                                    <div className="cl-buttons-row cl-testing-result-buttons">
-                                        <OF.DefaultButton
-                                            disabled={reproduced.length === 0 || this.state.transcriptFiles.length > 0}
-                                            onClick={() => this.onCompare(reproduced)}
-                                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                            iconProps={{ iconName: 'DiffSideBySide' }}
-                                        />
-                                    </div>
+                <div className="cl-testing-body">
+                    <input
+                        hidden={true}
+                        type="file"
+                        style={{ display: 'none' }}
+                        onChange={(event) => this.onChangeResultFiles(event.target.files)}
+                        ref={ele => (this.resultfileInput = ele)}
+                        multiple={false}
+                    />
+                    <div>
+                        <div className={`cl-testing-result-group ${this.state.transcriptValidationSet.transcriptValidationResults.length === 0 ? ' cl-test-disabled' : ''}`}>
+                            <div className="cl-testing-result">
+                                <span className="cl-testing-result-title">Reproduced: </span>
+                                <span className="cl-entity cl-testing-result-value">
+                                    {reproduced.length}
+                                </span>
+                                <span className="cl-entity cl-testing-result-percent">
+                                    {this.percentOf(reproduced.length)}
+                                </span>
+                                <div className="cl-buttons-row cl-testing-result-buttons">
+                                    <OF.DefaultButton
+                                        disabled={reproduced.length === 0 || this.state.transcriptFiles.length > 0}
+                                        onClick={() => this.onCompare(reproduced)}
+                                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
+                                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
+                                        iconProps={{ iconName: 'DiffSideBySide' }}
+                                    />
                                 </div>
-                                <div className="cl-testing-result">
-                                    <span className="cl-testing-result-title">Changed: </span>
-                                    <span className="cl-entity cl-testing-result-value">
-                                        {changed.length}
-                                    </span>
-                                    <span className="cl-entity cl-testing-result-percent">
-                                        {this.percentOf(changed.length)}
-                                    </span>
-                                    <div className="cl-buttons-row cl-testing-result-buttons">
-                                        <OF.DefaultButton
-                                            disabled={changed.length === 0 || this.state.transcriptFiles.length > 0}
-                                            onClick={() => this.onCompare(changed)}
-                                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                            iconProps={{ iconName: 'DiffSideBySide' }}
-                                        />
-                                        <OF.DefaultButton
-                                            disabled={changed.length === 0 || this.state.transcriptFiles.length > 0}
-                                            onClick={this.onRate}
-                                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
-                                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
-                                            iconProps={{ iconName: 'Compare' }}
-                                        />
-                                    </div>
-                                </div>
-                                {numChangedResults > 0 && 
-                                    <div className="cl-testing-subresult">
-                                        <span className="cl-testing-result-subtitle">Better: </span>
-                                        <span className="cl-entity cl-entity--match cl-testing-result-subvalue">
-                                            {changed_better.length}
-                                        </span>
-                                        <span className="cl-entity cl-entity--match cl-testing-result-subpercent">
-                                            {this.percentOf(changed_better.length)}
-                                        </span>
-                                    </div>
-                                }
-                                {numChangedResults > 0 && 
-                                    <div className="cl-testing-subresult">
-                                        <span className="cl-testing-result-subtitle">Same: </span>
-                                        <span className="cl-entity cl-testing-result-subvalue">
-                                            {changed_same.length}
-                                        </span>
-                                        <span className="cl-entity cl-testing-result-subpercent">
-                                            {this.percentOf(changed_same.length)}
-                                        </span>
-                                    </div>
-                                }
-                                {numChangedResults > 0 && 
-                                    <div className="cl-testing-subresult">
-                                        <span className="cl-testing-result-subtitle">Worse: </span>
-                                        <span className="cl-entity cl-entity--mismatch cl-testing-result-subvalue">
-                                            {changed_worse.length}
-                                        </span>
-                                        <span className="cl-entity cl-entity--mismatch cl-testing-result-subpercent">
-                                            {this.percentOf(changed_worse.length)}
-                                        </span>
-                                    </div>
-                                }
-                                {numChangedResults > 0 && changed_notRated > 0 &&
-                                    <div className="cl-testing-subresult">
-                                        <span className="cl-testing-result-subtitle">Not Rated: </span>
-                                        <span className="cl-entity cl-testing-result-subvalue">
-                                            {changed_notRated}
-                                        </span>
-                                        <span className="cl-entity cl-testing-result-subpercent">
-                                            {this.percentOf(changed_notRated)}
-                                        </span>
-                                    </div>
-                                }
-                                {invalid.length > 0 &&
-                                    <div className="cl-testing-result">
-                                        <span className="cl-testing-result-title">Invalid File: </span> 
-                                        <span className="cl-entity cl-entity--mismatch cl-testing-result-value">
-                                            {invalid.length}
-                                        </span>
-                                        <span className="cl-entity cl-entity--mismatch cl-testing-result-percent">
-                                            {this.percentOf(invalid.length)}
-                                        </span>
-                                    </div>
-                                }
-                                {test_failed.length > 0 &&
-                                    <div className="cl-testing-result">
-                                        <span className="cl-testing-result-title">Test Fail: </span>
-                                        <span className="cl-entity cl-entity--mismatch cl-testing-result-value">
-                                            {test_failed.length}
-                                        </span>
-                                        <span className="cl-entity cl-entity--mismatch cl-testing-result-percent">
-                                            {this.percentOf(test_failed.length)}
-                                        </span>
-                                        <div className="cl-buttons-row cl-testing-result-buttons">
-                                            <OF.DefaultButton
-                                                disabled={test_failed.length === 0 || this.state.transcriptFiles.length > 0}
-                                                onClick={() => this.onCompare(test_failed)}
-                                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                                iconProps={{ iconName: 'DiffSideBySide' }}
-                                            />
-                                        </div>
-                                    </div>
-                                }
                             </div>
+                            <div className="cl-testing-result">
+                                <span className="cl-testing-result-title">Changed: </span>
+                                <span className="cl-entity cl-testing-result-value">
+                                    {changed.length}
+                                </span>
+                                <span className="cl-entity cl-testing-result-percent">
+                                    {this.percentOf(changed.length)}
+                                </span>
+                                <div className="cl-buttons-row cl-testing-result-buttons">
+                                    <OF.DefaultButton
+                                        disabled={changed.length === 0 || this.state.transcriptFiles.length > 0}
+                                        onClick={() => this.onCompare(changed)}
+                                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
+                                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
+                                        iconProps={{ iconName: 'DiffSideBySide' }}
+                                    />
+                                    <OF.DefaultButton
+                                        disabled={changed.length === 0 || this.state.transcriptFiles.length > 0}
+                                        onClick={this.onRate}
+                                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
+                                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
+                                        iconProps={{ iconName: 'Compare' }}
+                                    />
+                                </div>
+                            </div>
+                            {numChangedResults > 0 && 
+                                <div className="cl-testing-subresult">
+                                    <span className="cl-testing-result-subtitle">Better: </span>
+                                    <span className="cl-entity cl-entity--match cl-testing-result-subvalue">
+                                        {changed_better.length}
+                                    </span>
+                                    <span className="cl-entity cl-entity--match cl-testing-result-subpercent">
+                                        {this.percentOf(changed_better.length)}
+                                    </span>
+                                </div>
+                            }
+                            {numChangedResults > 0 && 
+                                <div className="cl-testing-subresult">
+                                    <span className="cl-testing-result-subtitle">Same: </span>
+                                    <span className="cl-entity cl-testing-result-subvalue">
+                                        {changed_same.length}
+                                    </span>
+                                    <span className="cl-entity cl-testing-result-subpercent">
+                                        {this.percentOf(changed_same.length)}
+                                    </span>
+                                </div>
+                            }
+                            {numChangedResults > 0 && 
+                                <div className="cl-testing-subresult">
+                                    <span className="cl-testing-result-subtitle">Worse: </span>
+                                    <span className="cl-entity cl-entity--mismatch cl-testing-result-subvalue">
+                                        {changed_worse.length}
+                                    </span>
+                                    <span className="cl-entity cl-entity--mismatch cl-testing-result-subpercent">
+                                        {this.percentOf(changed_worse.length)}
+                                    </span>
+                                </div>
+                            }
+                            {numChangedResults > 0 && changed_notRated > 0 &&
+                                <div className="cl-testing-subresult">
+                                    <span className="cl-testing-result-subtitle">Not Rated: </span>
+                                    <span className="cl-entity cl-testing-result-subvalue">
+                                        {changed_notRated}
+                                    </span>
+                                    <span className="cl-entity cl-testing-result-subpercent">
+                                        {this.percentOf(changed_notRated)}
+                                    </span>
+                                </div>
+                            }
+                            {invalid.length > 0 &&
+                                <div className="cl-testing-result">
+                                    <span className="cl-testing-result-title">Invalid File: </span> 
+                                    <span className="cl-entity cl-entity--mismatch cl-testing-result-value">
+                                        {invalid.length}
+                                    </span>
+                                    <span className="cl-entity cl-entity--mismatch cl-testing-result-percent">
+                                        {this.percentOf(invalid.length)}
+                                    </span>
+                                </div>
+                            }
+                            {test_failed.length > 0 &&
+                                <div className="cl-testing-result">
+                                    <span className="cl-testing-result-title">Test Fail: </span>
+                                    <span className="cl-entity cl-entity--mismatch cl-testing-result-value">
+                                        {test_failed.length}
+                                    </span>
+                                    <span className="cl-entity cl-entity--mismatch cl-testing-result-percent">
+                                        {this.percentOf(test_failed.length)}
+                                    </span>
+                                    <div className="cl-buttons-row cl-testing-result-buttons">
+                                        <OF.DefaultButton
+                                            disabled={test_failed.length === 0 || this.state.transcriptFiles.length > 0}
+                                            onClick={() => this.onCompare(test_failed)}
+                                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
+                                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
+                                            iconProps={{ iconName: 'DiffSideBySide' }}
+                                        />
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
-                    <div className="cl-modal_footer">
-                        <div className="cl-modal-buttons_secondary"/>
-                        <div className="cl-modal-buttons_primary">
-                            <OF.PrimaryButton
-                                className="cl-file-picker-button"
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST)} 
-                                text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST)} 
-                                iconProps={{ iconName: 'TestCase' }}
-                                onClick={this.onTest}
-                            />
-                            <OF.DefaultButton
-                                className="cl-file-picker-button"
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)} 
-                                text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)} 
-                                iconProps={{ iconName: 'DownloadDocument' }}
-                                onClick={() => this.resultfileInput.click()}
-                            />
-                            <OF.DefaultButton
-                                disabled={saveDisabled}
-                                onClick={() => this.onSave()}
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS)}
-                                text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS)}
-                                iconProps={{ iconName: 'DownloadDocument' }}
-                            />
-                        </div>
+                </div>
+                <div className="cl-modal_footer">
+                    <div className="cl-modal-buttons_secondary"/>
+                    <div className="cl-modal-buttons_primary">
+                        <OF.PrimaryButton
+                            className="cl-file-picker-button"
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST)} 
+                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST)} 
+                            iconProps={{ iconName: 'TestCase' }}
+                            onClick={this.onTest}
+                        />
+                        <OF.DefaultButton
+                            className="cl-file-picker-button"
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)} 
+                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)} 
+                            iconProps={{ iconName: 'DownloadDocument' }}
+                            onClick={() => this.resultfileInput.click()}
+                        />
+                        <OF.DefaultButton
+                            disabled={saveDisabled}
+                            onClick={() => this.onSave()}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS)}
+                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS)}
+                            iconProps={{ iconName: 'DownloadDocument' }}
+                        />
                     </div>
+                </div>
                 {this.state.transcriptFiles.length > 0 &&
                     <TestWaitModal
                         index={this.state.transcriptIndex}
