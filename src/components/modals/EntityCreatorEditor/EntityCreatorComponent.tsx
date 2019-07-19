@@ -265,10 +265,10 @@ const Component: React.SFC<Props> = (props) => {
                     onClick={props.onClickSaveCreate}
                     ariaDescription={props.isEditing
                         ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION)
-                        : Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION)}
+                        : Util.formatMessageId(props.intl, FM.BUTTON_CREATE)}
                     text={props.isEditing
                         ? Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_SAVEBUTTON_TEXT)
-                        : Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_CREATEBUTTON_TEXT)}
+                        : Util.formatMessageId(props.intl, FM.BUTTON_CREATE)}
                     iconProps={{ iconName: 'Accept' }}
                 />
 

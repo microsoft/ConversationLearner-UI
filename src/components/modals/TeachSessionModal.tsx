@@ -803,6 +803,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
                     }
                     <UserInputModal
                         titleFM={FM.USERINPUT_ADD_TITLE}
+                        placeholderFM={FM.USERINPUT_PLACEHOLDER}
                         open={this.state.isUserInputModalOpen}
                         onCancel={() => { this.onCancelAddUserInput() }}
                         onSubmit={this.onSubmitAddUserInput}

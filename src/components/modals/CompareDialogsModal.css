@@ -14,9 +14,37 @@
 
 .cl-compare-dialogs-title {
     font-size: 20px;
-    text-align: center;
     height: 50px;
     line-height: 50px;
+    margin-left: 15px;
+    width: 100%;
+}
+
+.cl-compare-dialogs-title-icon-win {
+    color: green;
+    font-size: 30px;
+    padding-right: 10px;
+    float: left;
+}
+
+.cl-compare-dialogs-title-icon-equal {
+    color: var(--color-yellow-darkest);
+    font-size: 30px;
+    padding-right: 10px;
+    float: left;
+}
+
+.cl-compare-dialogs-filename {
+    overflow: hidden;
+    line-height: 30px;
+    max-width: 490px;
+    text-overflow: ellipsis;
+}
+
+.cl-compare-dialogs-count {
+    line-height: 30px;
+    font-weight: bold;
+    color: var(--color-themePrimary);
 }
 
 .cl-modal.cl-modal--compare-dialogs {

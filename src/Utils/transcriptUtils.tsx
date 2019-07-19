@@ -24,6 +24,20 @@ interface TranscriptActionOutput {
     value: string
 }
 
+export function isSameActivity(activity1: BB.Activity, activity2: BB.Activity): boolean {
+    if ((activity1 && !activity2)
+        || (activity2 && !activity1)
+        || (activity1.text !== activity2.text)) {
+        return false
+    }
+    const attachments1 = activity1.attachments ? JSON.stringify(activity1.attachments) : null
+    const attachments2 = activity2.attachments ? JSON.stringify(activity2.attachments) : null
+    if (attachments1 !== attachments2) {
+        return false
+    }
+    return true
+}
+
 export async function trainDialogFromTranscriptImport(
     transcript: BB.Activity[],
     entities: CLM.EntityBase[],

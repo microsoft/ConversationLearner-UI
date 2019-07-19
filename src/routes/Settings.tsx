@@ -3,20 +3,21 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as Util from '../Utils/util'
+import * as OF from 'office-ui-fabric-react'
+import actions from '../actions'
+import FormattedMessageId from '../components/FormattedMessageId'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { connect } from 'react-redux'
-import actions from '../actions'
 import { State, ports } from '../types'
 import { bindActionCreators } from 'redux'
-import FormattedMessageId from '../components/FormattedMessageId'
-import * as Util from '../Utils/util'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
-import * as OF from 'office-ui-fabric-react'
 import './Settings.css'
 
 class Settings extends React.Component<Props> {
+
     onChangeSdkPort = (event: React.ChangeEvent<HTMLInputElement>) => {
         const botPort = parseInt(event.target.value, 10)
         this.props.settingsUpdatePort(botPort)
@@ -24,6 +25,10 @@ class Settings extends React.Component<Props> {
 
     onChangeCustomPort = () => {
         this.props.settingsToggleUseCustomPort()
+    }
+
+    onChangeFeatures = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.props.settingsUpdateFeatures(event.target.value)
     }
 
     reset = () => {
@@ -78,6 +83,15 @@ class Settings extends React.Component<Props> {
                                 </div>
                             </div>
                         </div>
+                        <div>
+                            <input
+                                className="cl-input"
+                                min={0}
+                                max={99999}
+                                value={this.props.settings.features}
+                                onChange={this.onChangeFeatures}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -89,6 +103,7 @@ const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         settingsReset: actions.settings.settingsReset,
         settingsUpdatePort: actions.settings.settingsUpdatePort,
+        settingsUpdateFeatures: actions.settings.settingsUpdateFeatures,
         settingsToggleUseCustomPort: actions.settings.settingsToggleUseCustomPort,
     }, dispatch)
 }

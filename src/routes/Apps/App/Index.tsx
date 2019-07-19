@@ -3,31 +3,27 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import {
-    NavLink,
-    Route,
-    Switch
-} from 'react-router-dom'
-import { RouteComponentProps } from 'react-router'
-import { returntypeof } from 'react-redux-typescript'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import * as OF from 'office-ui-fabric-react'
 import * as ValidityUtils from '../../../Utils/validityUtils'
 import * as CLM from '@conversationlearner/models'
-import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { FM } from '../../../react-intl-messages'
-import { State } from '../../../types'
-import * as OF from 'office-ui-fabric-react'
 import Entities from './Entities'
 import TrainDialogs from './TrainDialogs'
 import Actions from './Actions'
 import Dashboard from './Dashboard'
 import Settings from './Settings'
+import Testing from './Testing'
 import LogDialogs from './LogDialogs'
-import { TooltipHost } from 'office-ui-fabric-react/lib/Tooltip'
 import TrainingStatus from '../../../components/TrainingStatusContainer'
 import actions from '../../../actions'
 import FormattedMessageId from '../../../components/FormattedMessageId'
+import { NavLink, Route, Switch } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router'
+import { returntypeof } from 'react-redux-typescript'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { FM } from '../../../react-intl-messages'
+import { State } from '../../../types'
 import './Index.css'
 
 // TODO: i18n support would be much easier after proper routing is implemented
@@ -174,7 +170,7 @@ class Index extends React.Component<Props, ComponentState> {
         if (!location.state) {
             return null
         }
-
+        
         const app: CLM.AppBase = location.state.app
         // TODO: There is an assumption that by the time render is called, componentWillMount has called loadApp and set the packageId
         const editPackageId = this.state.packageId!
@@ -226,7 +222,7 @@ class Index extends React.Component<Props, ComponentState> {
                                             <OF.Icon iconName="Home" />
                                             <span className={(this.state.modelLoaded && invalidBot) ? 'cl-font--highlight' : ''}>Home
                                         {this.state.modelLoaded && invalidBot &&
-                                                    <TooltipHost
+                                                    <OF.TooltipHost
                                                         content={intl.formatMessage({
                                                             id: FM.TOOLTIP_BOTINFO_INVALID,
                                                             defaultMessage: 'Bot not compatible'
@@ -238,7 +234,7 @@ class Index extends React.Component<Props, ComponentState> {
                                                             iconProps={{ iconName: 'IncidentTriangle' }}
                                                             title="Error Alert"
                                                         />
-                                                    </TooltipHost>
+                                                    </OF.TooltipHost>
                                                 }</span>
                                         </NavLink>
                                         <NavLink className="cl-nav-link" data-testid="app-index-nav-link-entities" to={{ pathname: `${match.url}/entities`, state: { app } }}>
@@ -257,7 +253,7 @@ class Index extends React.Component<Props, ComponentState> {
                                             >
                                                 Train Dialogs
                                                 {this.state.modelLoaded && trainDialogValidity !== CLM.Validity.VALID &&
-                                                    <TooltipHost
+                                                    <OF.TooltipHost
                                                         content={intl.formatMessage({
                                                             id: ValidityUtils.validityToolTip(trainDialogValidity),
                                                             defaultMessage: 'Contains Invalid Train Dialogs'
@@ -268,7 +264,7 @@ class Index extends React.Component<Props, ComponentState> {
                                                             className={`cl-icon ${ValidityUtils.validityColorClassName(trainDialogValidity)}`}
                                                             iconName="IncidentTriangle"
                                                         />
-                                                    </TooltipHost>
+                                                    </OF.TooltipHost>
                                                 }
                                             </span>
                                             <span className="count">{this.state.modelLoaded ? this.props.trainDialogs.length : ''}</span>
@@ -277,6 +273,11 @@ class Index extends React.Component<Props, ComponentState> {
                                             <OF.Icon iconName="List" /><span>Log Dialogs</span>
                                             <span className="count">{this.state.modelLoaded && ((filteredLogDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : filteredLogDialogs.length)}</span>
                                         </NavLink>
+                                        {this.props.settings.features && this.props.settings.features.indexOf("CCI") >= 0 &&
+                                            <NavLink className="cl-nav-link" data-testid="app-index-nav-link-testing" to={{ pathname: `${match.url}/testing`, state: { app } }}>
+                                                <OF.Icon iconName="TestPlan" /><span>Testing</span>
+                                            </NavLink>
+                                        }
                                         <NavLink className="cl-nav-link" data-testid="app-index-nav-link-settings" to={{ pathname: `${match.url}/settings`, state: { app } }}>
                                             <OF.Icon iconName="Settings" /><span>Settings</span>
                                         </NavLink>
@@ -308,6 +309,10 @@ class Index extends React.Component<Props, ComponentState> {
                                 <Route
                                     path={`${match.url}/logDialogs`}
                                     render={props => <LogDialogs {...props} app={app} editingPackageId={editPackageId} invalidBot={invalidBot} />}
+                                />
+                                <Route
+                                    path={`${match.url}/testing`}
+                                    render={props => <Testing {...props} app={app} editingPackageId={editPackageId}/>}
                                 />
                                 <Route
                                     exact={true}
@@ -346,7 +351,8 @@ const mapStateToProps = (state: State) => {
         user: state.user.user,
         browserId: state.bot.browserId,
         activeApps: state.apps.activeApps,
-        logDialogs: state.logDialogs
+        logDialogs: state.logDialogs,
+        settings: state.settings
     }
 }
 
