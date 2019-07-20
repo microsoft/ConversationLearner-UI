@@ -10,6 +10,6 @@ describe('Create Model - Tools', () => {
   it('Test', () => {
     models.CreateNewModel('z-model')
     homePage.Visit()
-    homePage.GetModelListRowCount()
+    homePage.WaitForModelListToLoad()
   })
 })
