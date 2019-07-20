@@ -17,18 +17,34 @@ export function UploadImportModelFile(name) { return cy.UploadFile(name, 'input[
 
 export function ClickDeleteModelButton(row) { return cy.Get(`[data-list-index="${row}"] > .ms-FocusZone > .ms-DetailsRow-fields`).find('i[data-icon-name="Delete"]').Click() }
 
-export function WaitForModelListToLoad() { 
+export function WaitForModelListToLoad() {
+  let lastRowCount = 0
+  cy.scrollTo('bottom') 
   cy.wrap(1, {timeout: 10000}).should(() => {
+    // Subtract 1 because it includes the header row.
     const rowCount = +Cypress.$('[data-automationid="DetailsList"] > [role="grid"]').attr('aria-rowcount') - 1
     if (rowCount == 0) {
-      throw new Error('RETRY - Model List Row Count is still ZERO')
+      throw new Error('RETRY - Model List Row Count is still ZERO.')
+    }
+
+    // We don't subtract 1 here since this count does not include the header row.
+    const loadedRowCount = Cypress.$('[data-testid="model-list-model-name"]').length
+
+    helpers.ConLog('WaitForModelListToLoad', `rowCount: ${rowCount} - loadedRowCount: ${loadedRowCount}`)
+
+    if (rowCount != loadedRowCount) {
+      // TODO: For some reason this is not working when there are a lot of rows (100+)
+      //       Right now the solution is to delete the test models that have accumulated.
+      //       This should not happen on CircleCI since we have a clean up process.
+      window.scrollBy(0, -200)
+      throw new Error('RETRY - Loaded Model List Row Count does not yet match the aria-rowcount.')
     }
   })
 }
 
 export function VerifyModelNameInList(modelName) { 
   WaitForModelListToLoad()
-  cy.Get('[data-testid="model-list-model-name"]').contains(modelName) 
+  cy.Get('[data-testid="model-list-model-name"]').ExactMatch(modelName) 
 }
 
 export function VerifyModelNameIsNotInList(modelName) { 
@@ -37,7 +53,7 @@ export function VerifyModelNameIsNotInList(modelName) {
 }
 
 export function LoadModel(modelName) { 
-  cy.Get('[data-testid="model-list-model-name"]').ExactMatch(modelName).Click()
+  cy.Get({timeout: 10000}, '[data-testid="model-list-model-name"]').ExactMatch(modelName).Click()
   modelPage.VerifyModelName(modelName)
 }
 
