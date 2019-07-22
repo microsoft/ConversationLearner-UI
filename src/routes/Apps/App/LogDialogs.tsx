@@ -399,31 +399,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         history.push(url, { app: this.props.app })
     }
 
-    async openLogDialog(logDialog: CLM.LogDialog) {
-        // Reset WebChat scroll position
-        this.props.clearWebchatScrollPosition()
-
-        // Convert to trainDialog until schema update change, and pass in app definition too
-        const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
-
-        try {
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-
-            this.setState({
-                activityHistory: teachWithHistory.history,
-                lastAction: teachWithHistory.lastAction,
-                currentLogDialogId: logDialog.logDialogId,
-                currentTrainDialog: CLM.ModelUtils.ToTrainDialog(logDialog),
-                isEditDialogModalOpen: true,
-                editType: EditDialogType.LOG_ORIGINAL,
-                validationErrors: teachWithHistory.replayErrors
-            })
-        }
-        catch (error) {
-            console.warn(`Error when attempting to create activityHistory: `, error)
-        }
-    }
-
     async onClickSync() {
         await ((this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId) as any) as Promise<void>)
     }
@@ -1169,6 +1144,31 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     private focusNewChatButton() {
         if (this.newChatSessionButtonRef.current) {
             this.newChatSessionButtonRef.current.focus()
+        }
+    }
+
+    private async openLogDialog(logDialog: CLM.LogDialog) {
+        // Reset WebChat scroll position
+        this.props.clearWebchatScrollPosition()
+
+        // Convert to trainDialog until schema update change, and pass in app definition too
+        const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
+
+        try {
+            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+
+            this.setState({
+                activityHistory: teachWithHistory.history,
+                lastAction: teachWithHistory.lastAction,
+                currentLogDialogId: logDialog.logDialogId,
+                currentTrainDialog: CLM.ModelUtils.ToTrainDialog(logDialog),
+                isEditDialogModalOpen: true,
+                editType: EditDialogType.LOG_ORIGINAL,
+                validationErrors: teachWithHistory.replayErrors
+            })
+        }
+        catch (error) {
+            console.warn(`Error when attempting to create activityHistory: `, error)
         }
     }
 

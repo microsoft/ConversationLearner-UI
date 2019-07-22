@@ -963,45 +963,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         history.push(url, { app: this.props.app })
     }
 
-    async openTrainDialog(trainDialog: CLM.TrainDialog, editType: EditDialogType = EditDialogType.TRAIN_ORIGINAL, selectedActivityIndex: number | null = null) {
-        this.props.clearWebchatScrollPosition()
-        const trainDialogWithDefinitions: CLM.TrainDialog = {
-            ...trainDialog,
-            createdDateTime: new Date().toJSON(),
-            lastModifiedDateTime: new Date().toJSON(),
-            trainDialogId: undefined!,
-            sourceLogDialogId: trainDialog.sourceLogDialogId,
-            version: undefined!,
-            packageCreationId: undefined!,
-            packageDeletionId: undefined!,
-            rounds: trainDialog.rounds,
-            initialFilledEntities: trainDialog.initialFilledEntities,
-            definitions: {
-                actions: this.props.actions,
-                entities: this.props.entities,
-                trainDialogs: []
-            },
-        };
-
-        try {
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-
-            this.setState({
-                activityHistory: teachWithHistory.history,
-                lastAction: teachWithHistory.lastAction,
-                currentTrainDialog: trainDialog,
-                originalTrainDialog: this.state.currentTrainDialog,
-                editType,
-                isEditDialogModalOpen: true,
-                selectedActivityIndex
-            })
-        }
-        catch (e) {
-            const error = e as Error
-            console.warn(`Error when attempting to create history: `, error)
-        }
-    }
-
     //-----------------------------
     // Transcript import
     //-----------------------------
@@ -1587,6 +1548,45 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             actionFilter: null,
             tagsFilter: null,
         })
+    }
+
+    private async openTrainDialog(trainDialog: CLM.TrainDialog, editType: EditDialogType = EditDialogType.TRAIN_ORIGINAL, selectedActivityIndex: number | null = null) {
+        this.props.clearWebchatScrollPosition()
+        const trainDialogWithDefinitions: CLM.TrainDialog = {
+            ...trainDialog,
+            createdDateTime: new Date().toJSON(),
+            lastModifiedDateTime: new Date().toJSON(),
+            trainDialogId: undefined!,
+            sourceLogDialogId: trainDialog.sourceLogDialogId,
+            version: undefined!,
+            packageCreationId: undefined!,
+            packageDeletionId: undefined!,
+            rounds: trainDialog.rounds,
+            initialFilledEntities: trainDialog.initialFilledEntities,
+            definitions: {
+                actions: this.props.actions,
+                entities: this.props.entities,
+                trainDialogs: []
+            },
+        };
+
+        try {
+            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+
+            this.setState({
+                activityHistory: teachWithHistory.history,
+                lastAction: teachWithHistory.lastAction,
+                currentTrainDialog: trainDialog,
+                originalTrainDialog: this.state.currentTrainDialog,
+                editType,
+                isEditDialogModalOpen: true,
+                selectedActivityIndex
+            })
+        }
+        catch (e) {
+            const error = e as Error
+            console.warn(`Error when attempting to create history: `, error)
+        }
     }
 
     // User has edited an Activity in a TeachSession
