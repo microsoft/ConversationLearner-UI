@@ -145,8 +145,11 @@ function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
         ]
     }
 
-    // Generate new SET_ENTITY actions 1 per model (Limit of 5 for now)
-    // Could use text actions, but since entity presence is a more discrete / mutually exclusive change in NN state I thought this would be better.
+    /**
+     * Generate new SET_ENTITY actions 1 per model (Limit of 5 for now)
+     * Want to avoid API actions because these models can't rely on code, but we could use text actions
+     * but since entity presence is a more discrete / mutually exclusive change in NN state I thought this would be better.
+     */
     const actions = (enumEntity.enumValues as any[]).map<any>(enumValue => ({
         "actionId": uuid(),
         "createdDateTime": new Date().toJSON(),
@@ -207,10 +210,54 @@ function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
         })
     })
 
-    // Intermix rounds from different dialogs to implicitly demonstrate dispatching/context switching to other model
+    /**
+     * Intermix rounds from different dialogs to implicitly demonstrate dispatching/context switching to other model
+     * 
+     * Example
+     * Dialogs:
+     *  ModelA: 
+     *   [A,B,C]
+     *  ModelB:
+     *   [D,E,F]
+     *  ModelC:
+     *   [G,H,I]
+     * ..,
+     * 
+     * Output:
+     * [A,D,E,F]
+     * [A,B,D,E,F]
+     * [A,B,C,D,E,F]
+     * [A,G,H,I]
+     * [A,B,G,H,I]
+     * [A,B,C,G,H,I]
+     * [D,A,B,C]
+     * [D,E,A,B,C]
+     * [D,E,F,A,B,C]
+     * [D,G,H,I]
+     * [D,E,G,H,I]
+     * [D,E,F,G,H,I]
+     * ...
+     */
 
-    const trainDialogs = modelTrainDialogs
-        .reduce((a, b) => [...a, ...b])
+    let trainDialogs = modelTrainDialogs
+            .reduce((a, b) => [...a, ...b])
+
+    // trainDialogs = modelTrainDialogs
+    //     .map((x, i, ys) => {
+    //         const others = ys.filter((_, j) => j !== i)
+    //         return others
+    //             .map((other) => {
+    //                 // for each item in array
+    //                 return x.map((_, k) => {
+    //                     // slice array until item
+    //                     const first = x.slice(0, k + 1)
+    //                     const second = other
+    //                     return [...first, ...second]
+    //                 })
+    //             })
+    //             .reduce((a, b) => [...a, ...b])
+    //     })
+    //     .reduce((a, b) => [...a, ...b])
 
     const source = {
         trainDialogs,
