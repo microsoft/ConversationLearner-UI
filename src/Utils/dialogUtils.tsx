@@ -13,6 +13,10 @@ import TagsReadOnly from '../components/TagsReadOnly'
 
 const MAX_SAMPLE_INPUT_LENGTH = 150
 
+export const DialogQueryParams = {
+    id: "id"
+}
+
 export interface DialogRenderData {
     dialogMode: CLM.DialogMode
     memories: CLM.Memory[]

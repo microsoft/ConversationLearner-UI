@@ -265,24 +265,25 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     async handleQueryParameter(prevProps: Props, prevState: ComponentState): Promise<void> {
         const searchParamsPrev = new URLSearchParams(prevProps.location.search)
-        const selectedDialogIdPrev = searchParamsPrev.get("id")
+        const selectedDialogIdPrev = searchParamsPrev.get(DialogUtils.DialogQueryParams.id)
 
         const searchParams = new URLSearchParams(this.props.location.search)
-        const selectedDialogId = searchParams.get("id")
+        const selectedDialogId = searchParams.get(DialogUtils.DialogQueryParams.id)
 
         if (selectedDialogId === selectedDialogIdPrev) {
             return
         }
 
+        // If dialog id is in query param and edit modal not open, open it
         if (selectedDialogId && 
             (!this.state.isEditDialogModalOpen && !this.state.isTeachDialogModalOpen)) {
             const trainDialog = this.props.trainDialogs.find(td => td.trainDialogId === selectedDialogId)
             if (!trainDialog) {
                 // Invalid train dialog, go back to TD list
-                this.props.history.replace(`/home/${this.props.app.appId}/trainDialogs`, {app: this.props.app})
+                this.props.history.replace(this.props.match.url, {app: this.props.app})
                 return
             }
-            this.selectTrainDialog(trainDialog)
+            this.openTrainDialog(trainDialog)
         }
     }
 
@@ -950,19 +951,19 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async openTrainDialog(trainDialog: CLM.TrainDialog, roundIndex: number, scoreIndex: number | null) {
+    async selectTrainDialog(trainDialog: CLM.TrainDialog, roundIndex: number, scoreIndex: number | null) {
         const selectedActivityIndex = DialogUtils.activityIndexFromRound(trainDialog, roundIndex, scoreIndex) || null
-        await this.selectTrainDialog(trainDialog, EditDialogType.TRAIN_ORIGINAL, selectedActivityIndex)
+        await this.openTrainDialog(trainDialog, EditDialogType.TRAIN_ORIGINAL, selectedActivityIndex)
     }
 
     @OF.autobind
     async onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
         const { history } = this.props
-        let url = `/home/${this.props.app.appId}/trainDialogs?id=${trainDialog.trainDialogId}`
+        let url = `${this.props.match.url}?id=${trainDialog.trainDialogId}`
         history.push(url, { app: this.props.app })
     }
 
-    async selectTrainDialog(trainDialog: CLM.TrainDialog, editType: EditDialogType = EditDialogType.TRAIN_ORIGINAL, selectedActivityIndex: number | null = null) {
+    async openTrainDialog(trainDialog: CLM.TrainDialog, editType: EditDialogType = EditDialogType.TRAIN_ORIGINAL, selectedActivityIndex: number | null = null) {
         this.props.clearWebchatScrollPosition()
         const trainDialogWithDefinitions: CLM.TrainDialog = {
             ...trainDialog,
@@ -1129,7 +1130,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             await this.onCreateTrainDialog(newTrainDialog)
         }
         else {
-            await this.selectTrainDialog(newTrainDialog, EditDialogType.IMPORT)
+            await this.openTrainDialog(newTrainDialog, EditDialogType.IMPORT)
         }
 
         this.setState({isImportWaitModalOpen: false})
@@ -1184,9 +1185,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         // Remove selection from query parameter
         const searchParams = new URLSearchParams(this.props.location.search)
-        const selectedDialogId = searchParams.get("id")
+        const selectedDialogId = searchParams.get(DialogUtils.DialogQueryParams.id)
         if (selectedDialogId) {
-            this.props.history.replace(`/home/${this.props.app.appId}/trainDialogs`, {app: this.props.app})
+            this.props.history.replace(this.props.match.url, {app: this.props.app})
         }
 
         if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
@@ -1378,7 +1379,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     editState={editState}
                     editingPackageId={this.props.editingPackageId}
                     onCancel={this.onCloseTreeView}
-                    openTrainDialog={this.openTrainDialog}
+                    openTrainDialog={this.selectTrainDialog}
                 />
 
                 {trainDialogs.length === 0 &&
@@ -1530,7 +1531,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     trainDialog={this.state.currentTrainDialog!}
                     originalTrainDialog={this.state.originalTrainDialog}
                     editingLogDialogId={null}
-                    history={this.state.activityHistory}
+                    activityHistory={this.state.activityHistory}
                     initialSelectedActivityIndex={this.state.selectedActivityIndex}
                     editType={this.state.editType}
                     onCloseModal={(reload, stopImport) => this.onCloseEditDialogModal(reload, stopImport)}
