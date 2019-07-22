@@ -279,7 +279,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             const trainDialog = this.props.trainDialogs.find(td => td.trainDialogId === selectedDialogId)
             if (!trainDialog) {
                 // Invalid train dialog, go back to TD list
-                this.props.history.goBack()
+                this.props.history.replace(`/home/${this.props.app.appId}/trainDialogs`, {app: this.props.app})
                 return
             }
             this.selectTrainDialog(trainDialog)
