@@ -197,6 +197,9 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                     {this.props.transcriptValidationResults[this.state.resultIndex].rating === CLM.TranscriptRating.SAME &&
                                             <OF.Icon iconName='CalculatorEqualTo' className="cl-compare-dialogs-title-icon-equal"/>
                                     }
+                                    <div className="cl-compare-dialogs-filename">
+                                            {this.props.transcriptValidationResults[this.state.resultIndex].fileName}
+                                    </div>
                                 </div>
                                 <div className="cl-compare-dialogs-webchat">
                                     <Webchat
@@ -261,11 +264,6 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                     <div className="cl-modal_footer cl-modal_footer--border">
                         <div className="cl-modal-buttons">
                             <div className="cl-modal-buttons_primary">
-                                <div className="cl-compare-dialogs-filename">
-                                    {this.props.transcriptValidationResults[this.state.resultIndex].fileName}
-                                </div>
-                            </div>
-                            <div className="cl-modal-buttons_secondary">
                                 <OF.DefaultButton
                                     onClick={this.onPrevious}
                                     iconProps={{ iconName: 
@@ -288,6 +286,14 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                     }}
                                     ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
                                     text={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
+                                />
+                            </div>
+                            <div className="cl-modal-buttons_secondary">
+                                <OF.DefaultButton
+                                    onClick={this.props.onClose}
+                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.COMPAREDIALOGS_EDIT)}
+                                    text={Util.formatMessageId(this.props.intl, FM.COMPAREDIALOGS_EDIT)}
+                                    iconProps={{ iconName: 'ColumnRightTwoThirdsEdit' }}
                                 />
                                 <OF.DefaultButton
                                     onClick={this.props.onClose}
