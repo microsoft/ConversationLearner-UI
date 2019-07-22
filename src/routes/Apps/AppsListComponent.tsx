@@ -245,13 +245,6 @@ export class Component extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONTEXT)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
-                        <OF.DefaultButton
-                            data-testid="model-list-button-create-dispatcher"
-                            onClick={props.onClickCreateNewDispatcherModel}
-                            ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION)}
-                            text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONTEXT)}
-                            iconProps={{ iconName: 'Add' }}
-                        />
 
                         {!Util.isDemoAccount(props.user.id) &&
                             <OF.DefaultButton
@@ -262,6 +255,15 @@ export class Component extends React.Component<Props, ComponentState> {
                                 iconProps={{ iconName: 'CloudDownload' }}
                             />
                         }
+
+                        <OF.DefaultButton
+                            data-testid="model-list-button-create-dispatcher"
+                            onClick={props.onClickCreateNewDispatcherModel}
+                            ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION)}
+                            text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONTEXT)}
+                            iconProps={{ iconName: 'Add' }}
+                        />
+
                     </div>
                     {this.state.apps.length === 0
                         ? <div className="cl-page-placeholder">

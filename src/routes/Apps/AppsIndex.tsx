@@ -12,11 +12,12 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { AppBase, AppDefinition } from '@conversationlearner/models'
+import { AppBase, AppDefinition, FilledEntity } from '@conversationlearner/models'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
 import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
+import * as uuid from 'uuid/v4'
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
@@ -61,7 +62,15 @@ class AppsIndex extends React.Component<Props> {
 
     onCreateDispatchModel = async (appToCreate: AppBase, childrenModels: AppBase[]) => {
         console.log({ appToCreate, childrenModels })
-        const source = generateDispatcherSource(childrenModels)
+
+        if (childrenModels.length > 5) {
+            throw new Error(`Must only select 5 or less models when creating a Dispatcher Model`)
+        }
+
+        const childrenSources = (await Promise.all(childrenModels.map(m => {
+            return this.props.fetchAppSourceThunkAsync(m.appId, m.devPackageId)
+        })) as any) as AppDefinition[]
+        const source = generateDispatcherSource(childrenSources)
         const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
@@ -98,24 +107,131 @@ class AppsIndex extends React.Component<Props> {
     }
 }
 
-function generateDispatcherSource (models: AppBase[]): undefined {
+function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
     console.log('generateDispatcherSource', { models })
 
-    // strip out all actions and entities
-    // generate new SET_ENTITY actions 1 per model (Limit of 5 for now)
-        // could return Text with model is as value for have unlimited scale
-    // generate inter-mixed dialogs
+    /**
+     * create ENUM entity to be used in the SET_ENTITY actions.
+     * Each value represents different model
+     */
+    const enumEntity: any = {
+        "entityId": uuid(),
+        "createdDateTime": new Date().toJSON(),
+        "entityName": "model",
+        "entityType": "ENUM",
+        "isMultivalue": false,
+        "isNegatible": false,
+        "enumValues": [
+            {
+                "enumValueId": uuid(),
+                "enumValue": "M1"
+            },
+            {
+                "enumValueId": uuid(),
+                "enumValue": "M2"
+            },
+            {
+                "enumValueId": uuid(),
+                "enumValue": "M3"
+            },
+            {
+                "enumValueId": uuid(),
+                "enumValue": "M4"
+            },
+            {
+                "enumValueId": uuid(),
+                "enumValue": "M5"
+            }
+        ]
+    }
 
-    return undefined
+    // Generate new SET_ENTITY actions 1 per model (Limit of 5 for now)
+    // Could use text actions, but since entity presence is a more discrete / mutually exclusive change in NN state I thought this would be better.
+    const actions = (enumEntity.enumValues as any[]).map<any>(enumValue => ({
+        "actionId": uuid(),
+        "createdDateTime": new Date().toJSON(),
+        "actionType": "SET_ENTITY",
+        "payload": `{\"entityId\":\"${enumEntity.entityId}\",\"enumValueId\":\"${enumValue.enumValueId}\"}`,
+        // It is not possible to create nonTerminal SET_ENTITY actions through the UI, but doing so here would make things harder as we need more actions and associations.
+        // Perhaps we should keep it false and add another terminal action after each SET_ENTITY action
+        "isTerminal": true,
+        "requiredEntitiesFromPayload": [],
+        "requiredEntities": [],
+        "negativeEntities": [],
+        "requiredConditions": [],
+        "negativeConditions": [],
+        "entityId": enumEntity.entityId,
+        "enumValueId": enumValue.enumValueId,
+        "clientData": {
+            "importHashes": []
+        }
+    }))
+
+    /**
+     * Current train dialogs are still associated with their model
+     * Overwrite label action and filled entities to that model's enum action
+     */
+    const modelTrainDialogs = models.map((m, mIndex) => {
+        return m.trainDialogs.map(t => {
+            t.rounds.forEach((r, rIndex) => {
+
+                const filledEntities: FilledEntity[] = rIndex === 0
+                    ? []
+                    : [
+                        {
+                            "entityId": enumEntity.entityId,
+                            "values": [
+                                {
+                                    "userText": `M${mIndex}`,
+                                    "displayText": `M${mIndex}`,
+                                    "builtinType": null,
+                                    "enumValueId": enumEntity.enumValues[mIndex].enumValueId,
+                                    "resolution": null
+                                }
+                            ]
+                        }
+                    ]
+
+
+                r.scorerSteps.forEach(s => {
+                    s.input = {
+                        filledEntities,
+                        context: {},
+                        maskedActions: [],
+                    }
+                    s.labelAction = actions[mIndex].actionId
+                })
+            })
+
+            return t
+        })
+    })
+
+    // Intermix rounds from different dialogs to implicitly demonstrate dispatching/context switching to other model
+
+    const trainDialogs = modelTrainDialogs
+        .reduce((a, b) => [...a, ...b])
+
+    const source = {
+        trainDialogs,
+        actions,
+        entities: [
+            enumEntity
+        ],
+        packageId: uuid()
+    }
+
+    return source as AppDefinition
 }
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchApplicationsThunkAsync: actions.app.fetchApplicationsThunkAsync,
+        fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
         fetchBotInfoThunkAsync: actions.bot.fetchBotInfoThunkAsync,
         createApplicationThunkAsync: actions.app.createApplicationThunkAsync,
         deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync,
-        copyApplicationThunkAsync: actions.app.copyApplicationThunkAsync
+        copyApplicationThunkAsync: actions.app.copyApplicationThunkAsync,
     }, dispatch)
 }
 
