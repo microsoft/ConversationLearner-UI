@@ -33,7 +33,7 @@ import './TrainDialogs.css'
 
 export interface EditHandlerArgs {
     userInput?: string,
-    extractResponse?: CLM.ExtractResponse, 
+    extractResponse?: CLM.ExtractResponse,
     textVariations?: CLM.TextVariation[],
     trainScorerStep?: CLM.TrainScorerStep
     selectionType?: SelectionType
@@ -283,12 +283,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
 
         // If dialog id is in query param and edit modal not open, open it
-        if (selectedDialogId && 
+        if (selectedDialogId &&
             (!this.state.isEditDialogModalOpen && !this.state.isTeachDialogModalOpen)) {
             const trainDialog = this.props.trainDialogs.find(td => td.trainDialogId === selectedDialogId)
             if (!trainDialog) {
                 // Invalid train dialog, go back to TD list
-                this.props.history.replace(this.props.match.url, {app: this.props.app})
+                this.props.history.replace(this.props.match.url, { app: this.props.app })
                 return
             }
             this.openTrainDialog(trainDialog)
@@ -460,7 +460,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     // Check to see if new TrainDialog can be merged with an existing TrainDialog
                     const matchedTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
                     if (matchedTrainDialog) {
-                        
+
                         // If editing an existing Train Dialog, replace existing with the new one
                         if (sourceTrainDialogId) {
                             await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog) as any) as Promise<void>)
@@ -497,7 +497,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
             if (stopImport) {
-                this.setState({transcriptFiles: undefined})
+                this.setState({ transcriptFiles: undefined })
             }
             else {
                 await this.onStartTranscriptImport()
@@ -763,7 +763,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 // originalTrainDialogId - do not clear. Need for later 
                 dialogKey: this.state.dialogKey + 1
             })
-    
+
             if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
                 await this.onStartTranscriptImport()
             }
@@ -828,12 +828,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.fetchHistoryThunkAsync as any
             )
 
-            const editType = 
-                (editDialogType !== EditDialogType.NEW && 
-                editDialogType !== EditDialogType.BRANCH &&
-                editDialogType !== EditDialogType.IMPORT) 
-                ? EditDialogType.TRAIN_EDITED 
-                : editDialogType
+            const editType =
+                (editDialogType !== EditDialogType.NEW &&
+                    editDialogType !== EditDialogType.BRANCH &&
+                    editDialogType !== EditDialogType.IMPORT)
+                    ? EditDialogType.TRAIN_EDITED
+                    : editDialogType
 
             await Util.setStateAsync(this, {
                 activityHistory: teachWithHistory.history,
@@ -862,11 +862,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             const conflictIgnoreId = this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null
             const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput, conflictIgnoreId) as any) as Promise<CLM.TeachWithHistory>)
 
-            const editType = 
-                (this.state.editType !== EditDialogType.NEW && 
-                this.state.editType !== EditDialogType.BRANCH &&
-                this.state.editType !== EditDialogType.IMPORT) 
-                ? EditDialogType.TRAIN_EDITED : this.state.editType
+            const editType =
+                (this.state.editType !== EditDialogType.NEW &&
+                    this.state.editType !== EditDialogType.BRANCH &&
+                    this.state.editType !== EditDialogType.IMPORT)
+                    ? EditDialogType.TRAIN_EDITED : this.state.editType
 
             // Update currentTrainDialog with tags and description
             const currentTrainDialog = this.state.currentTrainDialog ? {
@@ -874,7 +874,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 tags: newTrainDialog.tags,
                 description: newTrainDialog.description
             } : null
-            
+
             // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
             this.setState({
                 activityHistory: teachWithHistory.history,
@@ -934,7 +934,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isEditDialogModalOpen: false,
         })
 
-        newTrainDialog.validity =  DialogUtils.getTrainDialogValidity(newTrainDialog, this.state.activityHistory)
+        newTrainDialog.validity = DialogUtils.getTrainDialogValidity(newTrainDialog, this.state.activityHistory)
 
         // Remove dummy scorer rounds used for rendering
         newTrainDialog.rounds.forEach(r => r.scorerSteps = r.scorerSteps.filter(ss => {
@@ -971,6 +971,21 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         history.push(url, { app: this.props.app })
     }
 
+    @OF.autobind
+    async onClickReplayAll() {
+        for (const trainDialog of this.props.trainDialogs) {
+            const newTrainDialog = await DialogEditing.onReplayTrainDialog(
+                trainDialog,
+                this.props.app.appId,
+                this.props.entities,
+                this.props.actions,
+                this.props.trainDialogReplayThunkAsync as any,
+            )
+
+            await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, trainDialog.trainDialogId, newTrainDialog)
+        }
+    }
+
     //-----------------------------
     // Transcript import
     //-----------------------------
@@ -997,13 +1012,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     readFileAsync(file: File): Promise<string> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-        
+
             reader.onload = (e: Event) => {
                 resolve(reader.result as any);
             };
-        
+
             reader.onerror = reject;
-        
+
             reader.readAsText(file);
         })
     }
@@ -1016,13 +1031,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         // Check if I'm done importing files
         if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
-            this.setState({transcriptFiles: undefined})
+            this.setState({ transcriptFiles: undefined })
             return
         }
 
         // Pop the next file
         const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
-        this.setState({transcriptIndex: this.state.transcriptIndex + 1})
+        this.setState({ transcriptIndex: this.state.transcriptIndex + 1 })
 
         let source = await this.readFileAsync(transcriptFile)
         try {
@@ -1034,7 +1049,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
             this.setState({
                 transcriptFiles: undefined,
-                isImportWaitModalOpen: false}
+                isImportWaitModalOpen: false
+            }
             )
         }
     }
@@ -1046,13 +1062,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     // Import a .transcript tile
     async onImport(transcript: BB.Activity[]): Promise<void> {
 
-        this.setState({isImportWaitModalOpen: true})
+        this.setState({ isImportWaitModalOpen: true })
 
         const transcriptHash = Util.hashText(JSON.stringify(transcript))
 
         // If transcript has already been imported, go to next one
         if (this.hasTranscriptBeenImported(transcriptHash)) {
-            this.setState({isImportWaitModalOpen: false})
+            this.setState({ isImportWaitModalOpen: false })
             await this.onStartTranscriptImport()
             return
         }
@@ -1093,16 +1109,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         if (this.state.importAutoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
             // Fetch activityHistory as needed for validation checks
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            await Util.setStateAsync(this, { 
+            await Util.setStateAsync(this, {
                 activityHistory: teachWithHistory.history,
-                editType: EditDialogType.IMPORT})
+                editType: EditDialogType.IMPORT
+            })
             await this.onCreateTrainDialog(newTrainDialog)
         }
         else {
             await this.openTrainDialog(newTrainDialog, EditDialogType.IMPORT)
         }
 
-        this.setState({isImportWaitModalOpen: false})
+        this.setState({ isImportWaitModalOpen: false })
     }
 
     async addEntityExtractions(trainDialog: CLM.TrainDialog) {
@@ -1156,12 +1173,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const searchParams = new URLSearchParams(this.props.location.search)
         const selectedDialogId = searchParams.get(DialogUtils.DialogQueryParams.id)
         if (selectedDialogId) {
-            this.props.history.replace(this.props.match.url, {app: this.props.app})
+            this.props.history.replace(this.props.match.url, { app: this.props.app })
         }
 
         if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
             if (stopImport) {
-                this.setState({transcriptFiles: undefined})
+                this.setState({ transcriptFiles: undefined })
             }
             else {
                 await this.onStartTranscriptImport()
@@ -1287,6 +1304,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             ? this.props.teachSession
             : this.state.lastTeachSession
 
+        const isEditingEnabled = (this.props.editingPackageId !== this.props.app.devPackageId) || this.props.invalidBot
+
         return (
             <div className="cl-page">
                 <div data-testid="train-dialogs-title" className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
@@ -1303,7 +1322,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 <div className="cl-buttons-row">
                     <OF.PrimaryButton
                         data-testid="button-new-train-dialog"
-                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                        disabled={isEditingEnabled}
                         onClick={() => this.onClickNewTeachSession()}
                         ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
@@ -1315,7 +1334,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             iconProps={{
                                 iconName: "DownloadDocument"
                             }}
-                            disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                            disabled={isEditingEnabled}
                             onClick={this.onClickImportConversation}
                             ariaDescription={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
                             text={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
@@ -1338,6 +1357,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
                         />
                     }
+                    <OF.DefaultButton
+                        iconProps={{
+                            iconName: "Refresh"
+                        }}
+                        disabled={isEditingEnabled}
+                        onClick={this.onClickReplayAll}
+                        ariaDescription={Util.formatMessageId(intl, FM.BUTTON_REPLAY_ALL)}
+                        text={Util.formatMessageId(intl, FM.BUTTON_REPLAY_ALL)}
+                    />
                 </div>
                 <TreeView
                     open={this.state.isTreeViewModalOpen}
@@ -1359,7 +1387,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 iconProps={{
                                     iconName: "Add"
                                 }}
-                                disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                                disabled={isEditingEnabled}
                                 onClick={() => this.onClickNewTeachSession()}
                                 ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                                 text={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
@@ -1519,7 +1547,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     importIndex={this.state.transcriptIndex}
                     importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : undefined}
                 />
-                {this.state.isTranscriptImportOpen && 
+                {this.state.isTranscriptImportOpen &&
                     <TranscriptImporter
                         app={this.props.app}
                         open={true}
