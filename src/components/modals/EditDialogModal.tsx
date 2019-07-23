@@ -89,7 +89,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
             let selectedActivity = null
             if (nextProps.initialSelectedActivityIndex !== null) {
-                selectedActivity = nextProps.history[nextProps.initialSelectedActivityIndex]
+                selectedActivity = nextProps.activityHistory[nextProps.initialSelectedActivityIndex]
             }
 
             this.setState({
@@ -159,7 +159,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         if (this.canReplay(activity)) {
             if (activity && this.state.currentTrainDialog) {
-                const isLastActivity = activity === this.props.history[this.props.history.length - 1]
+                const isLastActivity = activity === this.props.activityHistory[this.props.activityHistory.length - 1]
                 const trainDialog: CLM.TrainDialog = {
                     ...this.state.currentTrainDialog,
                     tags: this.state.tags,
@@ -346,7 +346,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             */
             // If next action should be score, need to insert, not continue
             if (this.waitingForScore()) {
-                const lastActivity = this.props.history[this.props.history.length - 1]
+                const lastActivity = this.props.activityHistory[this.props.activityHistory.length - 1]
                 await this.props.onInsertInput(this.state.currentTrainDialog!, lastActivity, userInput.text, this.state.addUserInputSelectionType)
             }
             // Otherwise continue
@@ -396,28 +396,28 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     // Returns false if dialog has fatal replay error occuring before
     // the selected activity that would prevent a teach 
     canReplay(activity: BotChat.Activity): boolean {
-        if (this.props.history.length === 0) {
+        if (this.props.activityHistory.length === 0) {
             return true
         }
         // Loop until I hit the current activity
         let activityIndex = 0
         do {
-            const clData: CLM.CLChannelData = this.props.history[activityIndex].channelData.clData
+            const clData: CLM.CLChannelData = this.props.activityHistory[activityIndex].channelData.clData
             if (clData && clData.replayError && clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
                 return false
             }
             activityIndex = activityIndex + 1
         }
-        while (activity !== this.props.history[activityIndex - 1])
+        while (activity !== this.props.activityHistory[activityIndex - 1])
         return true
     }
 
     // Returns true if blocking error exists
     hasBlockingError(): boolean {
-        if (this.props.history.length === 0) {
+        if (this.props.activityHistory.length === 0) {
             return false
         }
-        for (const activity of this.props.history) {
+        for (const activity of this.props.activityHistory) {
             const clData: CLM.CLChannelData = activity.channelData.clData
             if (clData &&
                 clData.replayError &&
@@ -494,7 +494,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             this.state.pendingExtractionChanges ||
             this.props.editState !== EditState.CAN_EDIT
         
-        const isLastActivity = activity === this.props.history[this.props.history.length - 1]
+        const isLastActivity = activity === this.props.activityHistory[this.props.activityHistory.length - 1]
         const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
         const isEndSession = isLastActivity && this.state.hasEndSession
         return (
@@ -855,7 +855,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         data-testid="score-actions-button"
                         className="cl-rightjustify"
                         disabled={this.props.editState !== EditState.CAN_EDIT}
-                        onClick={() => this.onClickAddScore(this.props.history[this.props.history.length - 1], SelectionType.NONE)}
+                        onClick={() => this.onClickAddScore(this.props.activityHistory[this.props.activityHistory.length - 1], SelectionType.NONE)}
                         ariaDescription={'Score Actions'}
                         text={'Score Actions'} // TODO internationalize
                     />
@@ -922,7 +922,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         // No Activity selected, but Replay error exists on an Activity
-        const worstReplayError = this.props.history ? DialogUtils.getMostSevereReplayError(this.props.history) : null
+        const worstReplayError = this.props.activityHistory ? DialogUtils.getMostSevereReplayError(this.props.activityHistory) : null
         if (worstReplayError) {
             // Only show activity based warning if train dialog isn't invalid
             if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.WARNING &&
@@ -982,7 +982,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay" /> : null;
         const hasBlockingError = this.hasBlockingError()
         const disableUserInput = this.shouldDisableUserInput()
-        const isLastActivitySelected = this.state.selectedActivity ? this.state.selectedActivity === this.props.history[this.props.history.length - 1] : false
+        const isLastActivitySelected = this.state.selectedActivity ? this.state.selectedActivity === this.props.activityHistory[this.props.activityHistory.length - 1] : false
         const containerClassName = `cl-modal cl-modal--large cl-modal--${this.props.editType === EditDialogType.LOG_EDITED ? "teach" : "log"}`
         return (
             <OF.Modal
@@ -998,7 +998,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 isOpen={this.props.open}
                                 key={this.state.webchatKey}
                                 app={this.props.app}
-                                history={this.props.history}
+                                history={this.props.activityHistory}
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 onScrollChange={position => this.onScrollChange(position)}
@@ -1170,7 +1170,7 @@ export interface ReceivedProps {
     originalTrainDialog: CLM.TrainDialog | null
     // If editing a log dialog, this was the source
     editingLogDialogId: string | null
-    history: Activity[]
+    activityHistory: Activity[]
     // Is it a new dialog, a TrainDialog or LogDialog 
     editType: EditDialogType
     // If starting with activity selected

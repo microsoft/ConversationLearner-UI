@@ -170,7 +170,7 @@ class Index extends React.Component<Props, ComponentState> {
         if (!location.state) {
             return null
         }
-        
+
         const app: CLM.AppBase = location.state.app
         // TODO: There is an assumption that by the time render is called, componentWillMount has called loadApp and set the packageId
         const editPackageId = this.state.packageId!
