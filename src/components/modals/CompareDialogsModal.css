@@ -16,7 +16,7 @@
     font-size: 20px;
     height: 50px;
     line-height: 50px;
-    margin-left: 15px;
+    padding-left: 15px;
 }
 
 .cl-compare-dialogs-title-icon-win {
@@ -36,8 +36,13 @@
 .cl-compare-dialogs-filename {
     overflow: hidden;
     line-height: 30px;
-    max-width: 490px;
+    max-width: 460px;
+    -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
+    font-size: 12px;
+    margin-top: -23px;
+    white-space: nowrap;
+    opacity: 0.4;
 }
 
 .cl-compare-dialogs-count {
