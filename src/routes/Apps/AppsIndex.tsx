@@ -172,7 +172,7 @@ function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
      * Overwrite label action and filled entities to that model's enum action
      */
     const modelTrainDialogs = models.map((m, mIndex) => {
-        return m.trainDialogs.map(t => {
+        return m.trainDialogs.map((t, tIndex) => {
             t.rounds.forEach(r => {
                 // Used to have logic for setting filled Entities to empty array on round 0
                 const filledEntities: FilledEntity[] = [
@@ -199,6 +199,8 @@ function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
                     s.labelAction = actions[mIndex].actionId
                 })
             })
+
+            t.tags = [`model-${mIndex + 1}`, `dialog-${tIndex + 1}`]
 
             return t
         })
@@ -285,14 +287,14 @@ function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
     return source as AppDefinition
 }
 
-function removeFilledEntitiesOfScorerStep (trainDialogs: TrainDialog[]): TrainDialog[] {
+function removeFilledEntitiesOfScorerStep(trainDialogs: TrainDialog[]): TrainDialog[] {
     return Util.deepCopy(trainDialogs).map(t => {
         t.rounds.forEach((r, rIndex) => {
             if (rIndex === 0) {
                 r.scorerSteps[0].input.filledEntities = []
             }
         })
-        
+
         return t
     })
 }
