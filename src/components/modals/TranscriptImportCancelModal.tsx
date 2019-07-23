@@ -73,4 +73,4 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 type Props = ReceivedProps & InjectedIntlProps
 
-export default connect<null, null, ReceivedProps>(null, null)(injectIntl(TranscriptImportCancelModal))
+export default connect<{}, {}, ReceivedProps>(null)(injectIntl(TranscriptImportCancelModal))

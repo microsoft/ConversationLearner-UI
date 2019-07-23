@@ -75,9 +75,14 @@ export function getDefaultEntityMap(entities: CLM.EntityBase[]): Map<string, str
 }
 
 export function setStateAsync(that: any, newState: any) {
+    Object.keys(newState).forEach(key => {
+        if (!that.state.hasOwnProperty(key)) {
+            throw new Error(`Object state does not contain property ${key}`)
+        }
+    })
     return new Promise((resolve) => {
         that.setState(newState, () => {
-            resolve();
+            resolve()
         });
     });
 }

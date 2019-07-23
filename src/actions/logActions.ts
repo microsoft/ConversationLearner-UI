@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as ClientFactory from '../services/clientFactory'
+import * as HttpStatus from 'http-status-codes'
 import { AT, ActionObject, ErrorType } from '../types'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
@@ -110,7 +111,13 @@ const fetchLogDialogFulfilled = (logDialog: CLM.LogDialog, replaceLocal: boolean
     }
 }
 
-export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, replaceLocal: boolean) => {
+const fetchLogDialogNotFound = (): ActionObject => {
+    return {
+        type: AT.FETCH_LOG_DIALOG_NOTFOUND
+    }
+}
+
+export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean = false) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.FETCH_LOG_DIALOG_ASYNC)
         dispatch(fetchLogDialogAsync(appId, logDialogId))
@@ -121,6 +128,10 @@ export const fetchLogDialogThunkAsync = (appId: string, logDialogId: string, rep
             return logDialog
         } catch (e) {
             const error = e as AxiosError
+            if (error.response && error.response.status === HttpStatus.NOT_FOUND && nullOnNotFound) {
+                dispatch(fetchLogDialogNotFound())
+                return null
+            }
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_LOG_DIALOG_ASYNC))
             throw e;
         }

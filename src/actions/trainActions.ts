@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as ClientFactory from '../services/clientFactory'
+import * as Client from '../services/client'
 import * as DialogUtils from '../Utils/dialogUtils'
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
@@ -48,7 +49,7 @@ export const createTrainDialogThunkAsync = (appId: string, trainDialog: CLM.Trai
         }
         catch (e) {
             dispatch(createTrainDialogRejected())
-            
+
             const error = e as AxiosError
             if (error.response && error.response.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
@@ -81,14 +82,14 @@ const editTrainDialogFulfilled = (appId: string, trainDialog: PartialTrainDialog
     }
 }
 
-export const editTrainDialogThunkAsync = (appId: string, trainDialog: PartialTrainDialog) => {
+export const editTrainDialogThunkAsync = (appId: string, trainDialog: PartialTrainDialog, options?: Partial<Client.TrainDialogUpdateQueryParams>) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_ASYNC)
         trainDialog.lastModifiedDateTime = `${new Date().toISOString().slice(0, 19)}+00:00`
         dispatch(editTrainDialogAsync(appId, trainDialog))
 
         try {
-            await clClient.trainDialogEdit(appId, trainDialog)
+            await clClient.trainDialogEdit(appId, trainDialog, options)
             dispatch(editTrainDialogFulfilled(appId, trainDialog))
             if (trainDialog.rounds) {
                 dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
@@ -207,7 +208,7 @@ const extractFromHistoryFulfilled = (extractResponse: CLM.ExtractResponse): Acti
     }
 }
 
-const  extractFromHistoryRejected = (): ActionObject =>
+const extractFromHistoryRejected = (): ActionObject =>
     ({
         type: AT.FETCH_EXTRACTFROMHISTORY_REJECTED
     })
@@ -224,14 +225,14 @@ export const extractFromHistoryThunkAsync = (appId: string, trainDialog: CLM.Tra
         }
         catch (e) {
             dispatch(extractFromHistoryRejected())
-            
+
             const error = e as AxiosError
             if (error.response && error.response.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
                 const conflictError = new EntityLabelConflictError(error.message, textVariations)
                 throw conflictError
             }
-            
+
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_EXTRACTFROMHISTORY_ASYNC))
             throw error
         }
@@ -299,13 +300,13 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
             const mergedTrainDialog = DialogUtils.mergeTrainDialogs(newTrainDialog, existingTrainDialog)
             mergedTrainDialog.description = newDescription || mergedTrainDialog.description
             mergedTrainDialog.tags = newTags || mergedTrainDialog.tags
-            
+
             // If merged into exisiting TrainDialog (as it was longer)
             if (mergedTrainDialog.trainDialogId === existingTrainDialog.trainDialogId) {
                 // Update existing train dialog with merged train dialog, and delete other dialogs
                 mergedTrainDialog.lastModifiedDateTime = `${new Date().toISOString().slice(0, 19)}+00:00`
                 promises.push(clClient.trainDialogEdit(appId, mergedTrainDialog))
-                
+
                 if (newTrainDialog.trainDialogId) {
                     promises.push(clClient.trainDialogsDelete(appId, newTrainDialog.trainDialogId))
                 }
@@ -343,7 +344,7 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
                     await Promise.all(promises)
                 }
             }
-            
+
             // TODO: Make more efficient by deleting and loading only changed ones
             dispatch(fetchAllTrainDialogsThunkAsync(appId));
             dispatch(fetchApplicationTrainingStatusThunkAsync(appId))
@@ -374,7 +375,7 @@ const trainDialogReplaceFulfilled = (updatedTrainDialog: CLM.TrainDialog, delete
     }
 }
 
-export const trainDialogReplaceThunkAsync = (appId: string,  destinationTrainDialogId: string, newTrainDialog: CLM.TrainDialog) => {
+export const trainDialogReplaceThunkAsync = (appId: string, destinationTrainDialogId: string, newTrainDialog: CLM.TrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_REPLACE_ASYNC)
         dispatch(trainDialogReplaceAsync())
@@ -390,7 +391,7 @@ export const trainDialogReplaceThunkAsync = (appId: string,  destinationTrainDia
 
             // If not replacing same train dialog, delete the one being replaced
             const deleteDialogId = destinationTrainDialogId !== newTrainDialog.trainDialogId ? newTrainDialog.trainDialogId : null
-            
+
             if (deleteDialogId) {
                 promises.push(clClient.trainDialogsDelete(appId, newTrainDialog.trainDialogId))
             }

@@ -140,11 +140,11 @@ class PackageCreator extends React.Component<Props, ComponentState> {
                             disabled={!this.state.versionName || this.onGetNameErrorMessage(this.state.versionName).length > 0}
                             onClick={this.onClickCreate}
                             ariaDescription={intl.formatMessage({
-                                id: FM.PACKAGECREATOR_CREATEBUTTON_ARIADESCRIPTION,
+                                id: FM.BUTTON_CREATE,
                                 defaultMessage: 'Create'
                             })}
                             text={intl.formatMessage({
-                                id: FM.PACKAGECREATOR_CREATEBUTTON_TEXT,
+                                id: FM.BUTTON_CREATE,
                                 defaultMessage: 'Create'
                             })}
                             iconProps={{ iconName: 'Add' }}

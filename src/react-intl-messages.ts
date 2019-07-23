@@ -29,8 +29,6 @@ export enum FM {
     // ActionCreatorEditor
     ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.saveButton.ariaDescription',
     ACTIONCREATOREDITOR_SAVEBUTTON_TEXT = 'ActionCreatorEditor.saveButton.text',
-    ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.createButton.ariaDescription',
-    ACTIONCREATOREDITOR_CREATEBUTTON_TEXT = 'ActionCreatorEditor.createButton.text',
     ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.cancelButton.ariaDescription',
     ACTIONCREATOREDITOR_CANCELBUTTON_TEXT = 'ActionCreatorEditor.cancelButton.text',
     ACTIONCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.doneButton.ariaDescription',
@@ -105,8 +103,6 @@ export enum FM {
     APPCREATOR_FIELDS_LOCALE_LABEL = 'AppCreator.fields.locale.label',
     APPCREATOR_COPYBUTTON_ARIADESCRIPTION = 'AppCreator.copyButton.ariaDescription',
     APPCREATOR_COPYBUTTON_TEXT = 'AppCreator.copyButton.text',
-    APPCREATOR_CREATEBUTTON_ARIADESCRIPTION = 'AppCreator.createButton.ariaDescription',
-    APPCREATOR_CREATEBUTTON_TEXT = 'AppCreator.createButton.text',
     APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION = 'AppCreator.importButton.ariaDescription',
     APPCREATOR_IMPORT_BUTTON_TEXT = 'AppCreator.importButton.text',
     APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION = 'AppCreator.chooseFileButton.ariaDescription',
@@ -139,15 +135,18 @@ export enum FM {
     BUTTON_ABANDON_IMPORT = 'Button.ABANDON_IMPORT',
     BUTTON_ACCEPT = 'Button.ACCEPT',
     BUTTON_CANCEL = 'Button.CANCEL',
+    BUTTON_CHANGE = 'Button.CHANGE',
     BUTTON_CLOSE = 'Button.CLOSE',
     BUTTON_CONFIRM = 'Button.CONFIRM',
     BUTTON_COMPARE = 'Button.COMPARE',
+    BUTTON_CREATE = 'Button.CREATE',
     BUTTON_DELETE = 'Button.DELETE',
     BUTTON_ENTITY ='Button.ENTITY',
     BUTTON_EXPORT = 'Button.EXPORT',
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
-    BUTTON_LOCATE_FILES = 'Button.LOCATE_FILES',
+    BUTTON_LOAD = 'Button.LOAD',
+    BUTTON_SELECT_FILES = 'Button.SELECT_FILES',
     BUTTON_OK = 'Button.OK',
     BUTTON_REPLAY = 'Button.REPLAY',
     BUTTON_SAVE = 'Button.SAVE',
@@ -156,9 +155,11 @@ export enum FM {
     BUTTON_SAVE_BRANCH = 'Button.SAVE_BRANCH',
     BUTTON_SUBMIT = 'Button.SUMBIT',
     BUTTON_UNDO = 'Button.UNDO',
+    BUTTON_RATE = 'Button.RATE',
     BUTTON_SELECT = 'Button.SELECT',
     BUTTON_SELECTED = 'Button.SELECTED',
     BUTTON_TEST = 'Button.TEST',
+    BUTTON_TESTING = 'Button.TESTING',
     BUTTON_NEXT = 'Button.next',
     BUTTON_PREVIOUS = 'Button.previous',
 
@@ -169,6 +170,9 @@ export enum FM {
     CHATSESSIONMODAL_EXPIREBUTTON_TEXT = 'ChatSessionModal.expireButton.text',
     CHATSESSIONMODAL_TIMEOUT_TITLE = 'ChatSessionModal.timeout.title',
 
+    // CompareDialogs
+    COMPAREDIALOGS_EDIT = 'CompareDialogs.button.edit',
+    
     // ConfirmCancelModal
     CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT = 'ConfirmCancelModal.primaryButton.text',
     CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT = 'ConfirmCancelModal.defaultButton.text',
@@ -260,8 +264,6 @@ export enum FM {
     ENTITYCREATOREDITOR_PIVOT_EDIT = 'EntityCreatorEditor.pivot.editEntity',
     ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR = 'EntityCreatorEditor.pivot.requiredForActions',
     ENTITYCREATOREDITOR_PIVOT_DISQUALIFIEDACTIONS = 'EntityCreatorEditor.pivot.disqualifiedActions',
-    ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.createButton.ariaDescription',
-    ENTITYCREATOREDITOR_CREATEBUTTON_TEXT = 'EntityCreatorEditor.createButton.text',
     ENTITYCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.saveButton.ariaDescription',
     ENTITYCREATOREDITOR_SAVEBUTTON_TEXT = 'EntityCreatorEditor.saveButton.text',
     ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION = 'EntityCreatorEditor.cancelButton.ariaDescription',
@@ -298,8 +300,10 @@ export enum FM {
     EXTRACTCONFLICTMODAL_TITLE = 'ExtractConflictModal.title',
     EXTRACTCONFLICTMODAL_SUBTITLE = 'ExtractConflictModal.subtitle',
     EXTRACTCONFLICTMODAL_REVIEW = 'ExtractConflictModal.preview',
-    EXTRACTCONFLICTMODAL_CORRECT_LABELS = 'ExtractConflictModal.existing',
-    EXTRACTCONFLICTMODAL_CONFLICTING_LABELS = 'ExtractConflictModal.conflictingLabels',
+    EXTRACTCONFLICTMODAL_EXISTING_LABELS_TITLE = 'ExtractConflictModal.existing.title',
+    EXTRACTCONFLICTMODAL_EXISTING_LABELS_SUBTITLE = 'ExtractConflictModal.existing.subTitle',
+    EXTRACTCONFLICTMODAL_ATTEMPTED_LABELS_TITLE = 'ExtractConflictModal.attemptedLabels.title',
+    EXTRACTCONFLICTMODAL_ATTEMPTED_LABELS_SUBTITLE = 'ExtractConflictModal.attemptedLabels.subTitle',
     EXTRACTCONFLICTMODAL_CALLTOACTION = 'ExtractConflictModal.callaction',
 
     // FieldError
@@ -353,8 +357,6 @@ export enum FM {
     PACKAGECREATOR_TAG_LABEL = 'PackageCreator.tagLabel',
     PACKAGECREATOR_TAG_PLACEHOLDER = 'PackageCreator.tagPlaceholder',
     PACKAGECREATOR_LIVE_LABEL = 'PackageCreator.liveLabel',
-    PACKAGECREATOR_CREATEBUTTON_ARIADESCRIPTION = 'PackageCreator.createButton.ariaDescription',
-    PACKAGECREATOR_CREATEBUTTON_TEXT = 'PackageCreator.createButton.text',
     PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION = 'PackageCreator.cancelButton.ariaDescription',
     PACKAGECREATOR_CANCELBUTTON_TEXT = 'PackageCreator.cancelButton.text',
 
@@ -565,8 +567,15 @@ export enum FM {
 
     // Transcript Validator
     TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
-    TRANSCRIPT_VALIDATOR_RESULTS_BUTTON = 'TranscriptValidator.Results.Button',
-    
+    TRANSCRIPT_VALIDATOR_SUBTITLE = 'TranscriptValidator.subtitle',
+    TRANSCRIPT_VALIDATOR_PICKER_TITLE = 'TranscriptValidatorPicker.title',
+    TRANSCRIPT_VALIDATOR_FILESAVE = 'TranscriptValidator.FileSave',
+    TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER = 'TranscriptValidator.FileSavePlaceholder',
+    TRANSCRIPT_VALIDATOR_NAME_LABEL = 'TranscriptValidator.FileSavePlaceholder',
+    TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST = 'TranscriptValidator.button.NewTest',
+    TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS = 'TranscriptValidator.button.LoadResults',
+    TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS = 'TranscriptValidator.button.SaveResults',
+
     // TreeView
     TREEVIEW_TOGGLE_FULLSCREEN = 'TreeView.ToggleFullScreen',
 
@@ -606,8 +615,6 @@ export default {
         // ActionCreatorEditor
         [FM.ACTIONCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION]: 'Save',
         [FM.ACTIONCREATOREDITOR_SAVEBUTTON_TEXT]: 'Save',
-        [FM.ACTIONCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
-        [FM.ACTIONCREATOREDITOR_CREATEBUTTON_TEXT]: 'Create',
         [FM.ACTIONCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.ACTIONCREATOREDITOR_CANCELBUTTON_TEXT]: 'Cancel',
         [FM.ACTIONCREATOREDITOR_DONEBUTTON_ARIADESCRIPTION]: 'Done',
@@ -667,12 +674,10 @@ export default {
         [FM.APPCREATOR_FIELDS_LOCALE_LABEL]: 'Locale',
         [FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION]: 'Copy',
         [FM.APPCREATOR_COPYBUTTON_TEXT]: 'Copy',
-        [FM.APPCREATOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
-        [FM.APPCREATOR_CREATEBUTTON_TEXT]: 'Create',
         [FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION]: 'Import application',
         [FM.APPCREATOR_IMPORT_BUTTON_TEXT]: 'Import',
-        [FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION]: 'Locate File',
-        [FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT]: 'Locate File',
+        [FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION]: 'Select File',
+        [FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT]: 'Select File',
         [FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.APPCREATOR_CANCELBUTTON_TEXT]: 'Cancel',
 
@@ -721,26 +726,31 @@ export default {
         [FM.BUTTON_ABANDON_IMPORT]: 'Abandon Import',
         [FM.BUTTON_ACCEPT]: 'Accept',
         [FM.BUTTON_CANCEL]: 'Cancel',
+        [FM.BUTTON_CHANGE]: 'Change',
         [FM.BUTTON_CLOSE]: 'Close',
         [FM.BUTTON_CONFIRM]: 'Confirm',
         [FM.BUTTON_COMPARE]: 'Compare',
+        [FM.BUTTON_CREATE]: 'Create',
         [FM.BUTTON_DELETE]: 'Delete',
         [FM.BUTTON_ENTITY]: 'Entity',
         [FM.BUTTON_EXPORT]: 'Export',
         [FM.BUTTON_IMPORT]: 'Import',
         [FM.BUTTON_INFO]: 'Info',
-        [FM.BUTTON_LOCATE_FILES]: 'Locate File(s)',
+        [FM.BUTTON_LOAD]: 'Load',
         [FM.BUTTON_OK]: 'OK',
         [FM.BUTTON_REPLAY]: 'Replay',
         [FM.BUTTON_SAVE]: 'Save',
         [FM.BUTTON_SAVE_AS_TRAIN_DIALOG]: 'Save As Train Dialog',
         [FM.BUTTON_SAVE_BRANCH]: 'Save Branch',
         [FM.BUTTON_SAVE_EDIT]: 'Save Edit',
+        [FM.BUTTON_SELECT_FILES]: 'Select File(s)',
         [FM.BUTTON_SUBMIT]: 'Submit',
+        [FM.BUTTON_RATE]: 'Rate',
         [FM.BUTTON_UNDO]: 'Undo',
         [FM.BUTTON_SELECT]: 'Select',
         [FM.BUTTON_SELECTED]: 'Selected',
         [FM.BUTTON_TEST]: 'Test',
+        [FM.BUTTON_TESTING]: 'Testing',
         [FM.BUTTON_NEXT]: 'Next',
         [FM.BUTTON_PREVIOUS]: 'Previous',
 
@@ -990,6 +1000,10 @@ export default {
         [FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT]: 'Session Timeout',
         [FM.CHATSESSIONMODAL_TIMEOUT_TITLE]: 'The EndSession callback will be invoked on the next user input, and a new Session started',
 
+        // CompareDialogs
+        [FM.COMPAREDIALOGS_EDIT]: 'Edit Dialog',
+
+
         // ConfirmCancelModal
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
@@ -1051,8 +1065,6 @@ export default {
         [FM.ENTITYCREATOREDITOR_PIVOT_EDIT]: 'Edit Entity',
         [FM.ENTITYCREATOREDITOR_PIVOT_REQUIREDFOR]: 'Required For Actions',
         [FM.ENTITYCREATOREDITOR_PIVOT_DISQUALIFIEDACTIONS]: 'Blocked Actions',
-        [FM.ENTITYCREATOREDITOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
-        [FM.ENTITYCREATOREDITOR_CREATEBUTTON_TEXT]: 'Create',
         [FM.ENTITYCREATOREDITOR_SAVEBUTTON_ARIADESCRIPTION]: 'Save',
         [FM.ENTITYCREATOREDITOR_SAVEBUTTON_TEXT]: 'Save',
         [FM.ENTITYCREATOREDITOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
@@ -1088,9 +1100,11 @@ export default {
         // ExtractConflictModal
         [FM.EXTRACTCONFLICTMODAL_TITLE]: 'Inconsistent Entity Labels',
         [FM.EXTRACTCONFLICTMODAL_SUBTITLE]: 'You attempted to submit an input with entities labelled differently than another input in the current or a previous train dialog. Input labels must be consistent to ensure the Bot processes them correctly.',
-        [FM.EXTRACTCONFLICTMODAL_REVIEW]: 'Please review the labels below:',
-        [FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS]: 'Conflicting Labels',
-        [FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS]: 'Previously Submitted Labels',
+        [FM.EXTRACTCONFLICTMODAL_REVIEW]: 'Choose which labels you would like to use below:',
+        [FM.EXTRACTCONFLICTMODAL_ATTEMPTED_LABELS_TITLE]: 'Attempted Labels',
+        [FM.EXTRACTCONFLICTMODAL_ATTEMPTED_LABELS_SUBTITLE]: 'Preserve attempted labels in this dialog and change {conflictingDialogs} dialog(s) to match these labels.',
+        [FM.EXTRACTCONFLICTMODAL_EXISTING_LABELS_TITLE]: 'Previously Submitted Labels',
+        [FM.EXTRACTCONFLICTMODAL_EXISTING_LABELS_SUBTITLE]: 'Change attempted labels to match existing labels.',
         [FM.EXTRACTCONFLICTMODAL_CALLTOACTION]: `Clicking 'Accept' will replace the conflicting labels with the previously submitted labels.`,
 
         // FieldError
@@ -1126,8 +1140,6 @@ export default {
         [FM.PACKAGECREATOR_TAG_LABEL]: 'Name',
         [FM.PACKAGECREATOR_TAG_PLACEHOLDER]: 'Tag Name',
         [FM.PACKAGECREATOR_LIVE_LABEL]: 'Make Live Version',
-        [FM.PACKAGECREATOR_CREATEBUTTON_ARIADESCRIPTION]: 'Create',
-        [FM.PACKAGECREATOR_CREATEBUTTON_TEXT]: 'Create',
         [FM.PACKAGECREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.PACKAGECREATOR_CANCELBUTTON_TEXT]: 'Cancel',
 
@@ -1166,8 +1178,15 @@ export default {
         [FM.TRANSCRIPT_IMPORTER_AUTOMERGE]: 'Auto Merge',
         
         // Transcript Validator
-        [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Select .transcript files to test',
-        [FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON]: 'Load Results',
+        [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Testing',
+        [FM.TRANSCRIPT_VALIDATOR_SUBTITLE]: `Compare Model's output to .transcript files`,
+        [FM.TRANSCRIPT_VALIDATOR_PICKER_TITLE]: 'Select .transcript files to test',
+        [FM.TRANSCRIPT_VALIDATOR_FILESAVE]: 'Name for Test Results',
+        [FM.TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER]: 'Name',
+        [FM.TRANSCRIPT_VALIDATOR_NAME_LABEL]: 'Test Name',
+        [FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST]: 'New Test',
+        [FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS]: 'Load Results',
+        [FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS]: 'Save Results',
 
         // UserInput Modal
         [FM.USERINPUT_ADD_TITLE]: 'Add User Input',

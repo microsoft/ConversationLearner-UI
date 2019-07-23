@@ -86,6 +86,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.EDIT_ENTITY_ASYNC:
         case AT.EDIT_APP_LIVE_TAG_ASYNC:
         case AT.EDIT_APP_EDITING_TAG_ASYNC:
+        case AT.EDIT_TRAINDIALOG_ASYNC:
         case AT.EDIT_TRAINDIALOG_MERGE_ASYNC:
         case AT.EDIT_TRAINDIALOG_REPLACE_ASYNC:
 
@@ -150,6 +151,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.EDIT_ENTITY_FULFILLED:
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:
         case AT.EDIT_APP_EDITING_TAG_FULFILLED:
+        case AT.EDIT_TRAINDIALOG_FULFILLED:
         case AT.EDIT_TRAINDIALOG_MERGE_FULFILLED:
         case AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED:
 
@@ -165,6 +167,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.FETCH_ENTITIES_FULFILLED:
         case AT.FETCH_HISTORY_FULFILLED:
         case AT.FETCH_LOG_DIALOG_FULFILLED:
+        case AT.FETCH_LOG_DIALOG_NOTFOUND:
         // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doesn't block
         case AT.FETCH_SCOREFROMHISTORY_FULFILLED:
         case AT.FETCH_SCOREFROMHISTORY_REJECTED:
