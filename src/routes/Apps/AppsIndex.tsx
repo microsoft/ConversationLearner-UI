@@ -66,9 +66,23 @@ class AppsIndex extends React.Component<Props> {
             throw new Error(`Must only select 5 or less models when creating a Dispatcher Model`)
         }
 
+        /**
+         * Need to add data indicating model is dispatcher for behavior change in SDK
+         * Currently overload markdown, but could be separate dedicated fields in future but we need to finalize what data we need
+         * Based on splitting by newline and comma should be able to reconstruct data, could go to CSV parser
+         * 
+         * Example:
+         * dispatcher
+         * 6ed9b965-611f-4949-af64-d84b4c43c610,Model Name 1
+         * 57f34a81-a88b-4804-8a29-f2c0429f9250,Model Other Name 2
+         * ...
+         * d88b3850-ac9d-4805-a3c9-80216bf9cbfb,Model Last Name N
+         */
+        appToCreate.metadata.markdown = `dispatcher\n${childrenModels.map(m => `${m.appId},${m.appName}`).join('\n')}`
+
         const childrenSources = (await Promise.all(childrenModels.map(m => this.props.fetchAppSourceThunkAsync(m.appId, m.devPackageId))) as any) as AppDefinition[]
         const source = generateDispatcherSource(childrenSources)
-        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
+        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
     }
@@ -105,8 +119,6 @@ class AppsIndex extends React.Component<Props> {
 }
 
 function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
-    console.log('generateDispatcherSource', { models })
-
     /**
      * create ENUM entity to be used in the SET_ENTITY actions.
      * Each value represents different model
