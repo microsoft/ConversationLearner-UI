@@ -375,7 +375,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     async onClickSubmitActionEditor(action: CLM.ActionBase) {
-        await Util.setStateAsync(this, { actionModalOpen: false })
+        await Util.setStateAsync(this, { isActionCreatorModalOpen: false })
         this.props.onActionCreatorClosed()
 
         const newAction = await ((this.props.createActionThunkAsync(this.props.app.appId, action) as any) as Promise<CLM.ActionBase>)
