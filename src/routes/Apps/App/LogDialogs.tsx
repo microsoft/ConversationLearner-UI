@@ -282,6 +282,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     componentDidMount() {
         this.focusNewChatButton()
+        this.handleQueryParameters(this.props.location.search)
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -332,28 +333,40 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 logDialogs
             })
         }
-        this.handleQueryParameter(prevProps, prevState)
+        this.handleQueryParameters(this.props.location.search, prevProps.location.search)
     }
 
-    async handleQueryParameter(prevProps: Props, prevState: ComponentState): Promise<void> {
-        const searchParamsPrev = new URLSearchParams(prevProps.location.search)
-        const selectedDialogIdPrev = searchParamsPrev.get(DialogUtils.DialogQueryParams.id)
+    async handleQueryParameters(newSearch: string, oldSearch?: string): Promise<void> {
 
-        const searchParams = new URLSearchParams(this.props.location.search)
+        const searchParams = new URLSearchParams(newSearch)
         const selectedDialogId = searchParams.get(DialogUtils.DialogQueryParams.id)
 
-        if (selectedDialogId === selectedDialogIdPrev) {
+        // Check that I need to update
+        if (oldSearch) {
+            const searchParamsPrev = new URLSearchParams(oldSearch)
+            const selectedDialogIdPrev = searchParamsPrev.get(DialogUtils.DialogQueryParams.id)
+            if (selectedDialogId === selectedDialogIdPrev) {
+                return
+            }
+        }
+
+        // TODO: Handle reload when actions not yet loaded
+        if (this.props.actions.length === 0) {
             return
         }
 
         // If dialog id is in query param and edit modal not open, open it
         if (selectedDialogId && 
             (!this.state.isEditDialogModalOpen && !this.state.isTeachDialogModalOpen)) {
-            const logDialog = this.props.logDialogs.find(ld => ld.logDialogId === selectedDialogId)
+            let logDialog = this.props.logDialogs.find(ld => ld.logDialogId === selectedDialogId)
             if (!logDialog) {
-                // Invalid log dialog, go back to LD list
-                this.props.history.replace(this.props.match.url, {app: this.props.app})
-                return
+                // If log isn't loaded yet attempt to load it
+                logDialog = await ((this.props.fetchLogDialogAsync(this.props.app.appId, selectedDialogId, true, true) as any) as Promise<CLM.LogDialog>)
+                if (!logDialog) {
+                    // Invalid log dialog, go back to LD list
+                    this.props.history.replace(this.props.match.url, {app: this.props.app})
+                    return
+                }
             }
             this.openLogDialog(logDialog)
         }
@@ -1222,6 +1235,7 @@ const mapDispatchToProps = (dispatch: any) => {
         editActionThunkAsync: actions.action.editActionThunkAsync,
         editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
         extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
+        fetchLogDialogAsync: actions.log.fetchLogDialogThunkAsync,
         fetchAllLogDialogsThunkAsync: actions.log.fetchAllLogDialogsThunkAsync,
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,

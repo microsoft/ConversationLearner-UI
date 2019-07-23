@@ -22,7 +22,7 @@ const logDialogsReducer = produce((state: LogDialogState, action: ActionObject) 
                     return replace(state, action.logDialog, a => a.logDialogId)
                 }
                 else {
-                    return [...initialState, action.logDialog]
+                    return [...state, action.logDialog]
                 }
             }
             else {

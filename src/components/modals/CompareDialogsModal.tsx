@@ -7,10 +7,13 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as BotChat from '@conversationlearner/webchat'
 import * as Util from '../../Utils/util'
+import * as DialogUtils from '../../Utils/dialogUtils'
 import * as BB from 'botbuilder'
 import * as TranscriptUtils from '../../Utils/transcriptUtils'
 import actions from '../../actions'
 import Webchat, { renderActivity } from '../Webchat'
+import { withRouter } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router'
 import { Activity } from 'botframework-directlinejs'
 import { State } from '../../types'
 import { returntypeof } from 'react-redux-typescript'
@@ -157,6 +160,14 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         })
     }
 
+    @OF.autobind
+    onEdit() {
+        const validationResult = this.props.transcriptValidationResults[this.state.resultIndex]
+        const { history } = this.props
+        let url = `/home/${this.props.app.appId}/logDialogs?${DialogUtils.DialogQueryParams.id}=${validationResult.logDialogId}`
+        history.push(url, { app: this.props.app })
+    }
+
     // Keep scroll position of two webchats in lockstep
     @OF.autobind
     onScrollChange(scrollPosition: number) {
@@ -290,7 +301,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                             </div>
                             <div className="cl-modal-buttons_secondary">
                                 <OF.DefaultButton
-                                    onClick={this.props.onClose}
+                                    onClick={this.onEdit}
                                     ariaDescription={Util.formatMessageId(this.props.intl, FM.COMPAREDIALOGS_EDIT)}
                                     text={Util.formatMessageId(this.props.intl, FM.COMPAREDIALOGS_EDIT)}
                                     iconProps={{ iconName: 'ColumnRightTwoThirdsEdit' }}
@@ -335,8 +346,8 @@ export interface ReceivedProps {
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
-const stateProps = returntypeof(mapStateToProps);
-const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+const stateProps = returntypeof(mapStateToProps)
+const dispatchProps = returntypeof(mapDispatchToProps)
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(CompareDialogsModal))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(CompareDialogsModal)))
