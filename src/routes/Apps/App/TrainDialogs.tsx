@@ -155,6 +155,7 @@ interface ComponentState {
     importAutoCreate: boolean
     importAutoMerge: boolean
     isTreeViewModalOpen: boolean
+    isReplayAllInProgress: boolean
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
@@ -205,6 +206,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             importAutoCreate: false,
             importAutoMerge: false,
             isTreeViewModalOpen: false,
+            isReplayAllInProgress: false,
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
             selectedActivityIndex: null,
@@ -973,6 +975,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onClickReplayAll() {
+        this.setState({
+            isReplayAllInProgress: true
+        })
+
         for (const trainDialog of this.props.trainDialogs) {
             const newTrainDialog = await DialogEditing.onReplayTrainDialog(
                 trainDialog,
@@ -984,6 +990,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
             await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, trainDialog.trainDialogId, newTrainDialog)
         }
+
+        this.setState({
+            isReplayAllInProgress: false
+        })
     }
 
     //-----------------------------
@@ -1361,7 +1371,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         iconProps={{
                             iconName: "Refresh"
                         }}
-                        disabled={isEditingEnabled}
+                        disabled={isEditingEnabled || this.state.isReplayAllInProgress}
                         onClick={this.onClickReplayAll}
                         ariaDescription={Util.formatMessageId(intl, FM.BUTTON_REPLAY_ALL)}
                         text={Util.formatMessageId(intl, FM.BUTTON_REPLAY_ALL)}
