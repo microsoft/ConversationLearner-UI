@@ -12,12 +12,13 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { AppBase, AppDefinition, FilledEntity } from '@conversationlearner/models'
+import { AppBase, AppDefinition, FilledEntity, TrainDialog } from '@conversationlearner/models'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
 import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
 import * as uuid from 'uuid/v4'
+import * as Util from '../../Utils/util'
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
@@ -61,15 +62,11 @@ class AppsIndex extends React.Component<Props> {
     }
 
     onCreateDispatchModel = async (appToCreate: AppBase, childrenModels: AppBase[]) => {
-        console.log({ appToCreate, childrenModels })
-
         if (childrenModels.length > 5) {
             throw new Error(`Must only select 5 or less models when creating a Dispatcher Model`)
         }
 
-        const childrenSources = (await Promise.all(childrenModels.map(m => {
-            return this.props.fetchAppSourceThunkAsync(m.appId, m.devPackageId)
-        })) as any) as AppDefinition[]
+        const childrenSources = (await Promise.all(childrenModels.map(m => this.props.fetchAppSourceThunkAsync(m.appId, m.devPackageId))) as any) as AppDefinition[]
         const source = generateDispatcherSource(childrenSources)
         const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
         const { match, history } = this.props
@@ -176,25 +173,22 @@ function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
      */
     const modelTrainDialogs = models.map((m, mIndex) => {
         return m.trainDialogs.map(t => {
-            t.rounds.forEach((r, rIndex) => {
-
-                const filledEntities: FilledEntity[] = rIndex === 0
-                    ? []
-                    : [
-                        {
-                            "entityId": enumEntity.entityId,
-                            "values": [
-                                {
-                                    "userText": `M${mIndex}`,
-                                    "displayText": `M${mIndex}`,
-                                    "builtinType": null,
-                                    "enumValueId": enumEntity.enumValues[mIndex].enumValueId,
-                                    "resolution": null
-                                }
-                            ]
-                        }
-                    ]
-
+            t.rounds.forEach(r => {
+                // Used to have logic for setting filled Entities to empty array on round 0
+                const filledEntities: FilledEntity[] = [
+                    {
+                        "entityId": enumEntity.entityId,
+                        "values": [
+                            {
+                                "userText": `M${mIndex}`,
+                                "displayText": `M${mIndex}`,
+                                "builtinType": null,
+                                "enumValueId": enumEntity.enumValues[mIndex].enumValueId,
+                                "resolution": null
+                            }
+                        ]
+                    }
+                ]
 
                 r.scorerSteps.forEach(s => {
                     s.input = {
@@ -239,28 +233,48 @@ function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
      * ...
      */
 
-    let trainDialogs = modelTrainDialogs
-            .reduce((a, b) => [...a, ...b])
+    // Flatten dialogs from models
+    const allTrainDialogs = modelTrainDialogs
+        .reduce((a, b) => [...a, ...b])
 
-    // trainDialogs = modelTrainDialogs
-    //     .map((x, i, ys) => {
-    //         const others = ys.filter((_, j) => j !== i)
-    //         return others
-    //             .map((other) => {
-    //                 // for each item in array
-    //                 return x.map((_, k) => {
-    //                     // slice array until item
-    //                     const first = x.slice(0, k + 1)
-    //                     const second = other
-    //                     return [...first, ...second]
-    //                 })
-    //             })
-    //             .reduce((a, b) => [...a, ...b])
-    //     })
-    //     .reduce((a, b) => [...a, ...b])
+    // Ensure the filled entities of first scorer step are empty
+    const unmodifiedTrainDialogs = removeFilledEntitiesOfScorerStep(allTrainDialogs)
+
+    const mixRounds = allTrainDialogs.map(t => t.rounds)
+        .map((x, i, ys) => {
+            const others = ys.filter((_, j) => j !== i)
+            return others
+                .map((other) => {
+                    // for each item in array
+                    return x.map((_, k) => {
+                        // slice array until item
+                        const first = x.slice(0, k + 1)
+                        const second = other
+                        return [...first, ...second]
+                    })
+                })
+                .reduce((a, b) => [...a, ...b])
+        })
+        .reduce((a, b) => [...a, ...b])
+
+    const mixedDialogs = mixRounds.map(rs => ({
+        tags: [],
+        description: "",
+        trainDialogId: uuid(),
+        rounds: rs,
+        clientData: {
+            importHashes: []
+        },
+        initialFilledEntities: [],
+    }))
+
+    const mixedDialogsCorrected = removeFilledEntitiesOfScorerStep(mixedDialogs as unknown as TrainDialog[])
 
     const source = {
-        trainDialogs,
+        trainDialogs: [
+            ...unmodifiedTrainDialogs,
+            ...mixedDialogsCorrected
+        ],
         actions,
         entities: [
             enumEntity
@@ -269,6 +283,18 @@ function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
     }
 
     return source as AppDefinition
+}
+
+function removeFilledEntitiesOfScorerStep (trainDialogs: TrainDialog[]): TrainDialog[] {
+    return Util.deepCopy(trainDialogs).map(t => {
+        t.rounds.forEach((r, rIndex) => {
+            if (rIndex === 0) {
+                r.scorerSteps[0].input.filledEntities = []
+            }
+        })
+        
+        return t
+    })
 }
 
 const mapDispatchToProps = (dispatch: any) => {
