@@ -18,13 +18,13 @@ export function ClickTextAction(expectedResponse) {
 }
 
 export function ClickApiAction(apiName, expectedResponse, expectedIndexForActionPlacement) {
-  cy.Get('[data-testid="action-scorer-api-name"]').ExactMatch(apiName)
+  cy.Get('[data-testid="action-scorer-api-name"]', {timeout: 8000}).ExactMatch(apiName)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .Click()
 }
 
 export function ClickEndSessionAction(expectedData) {
-  cy.Get('[data-testid="action-scorer-session-response"]')
+  cy.Get('[data-testid="action-scorer-session-response"]', {timeout: 8000})
     .ExactMatch('EndSession')
     .siblings('[data-testid="action-scorer-session-response-user"]')
     .ExactMatch(expectedData)
@@ -34,13 +34,13 @@ export function ClickEndSessionAction(expectedData) {
 }
 
 export function VerifyContainsEnabledAction(expectedResponse) {
-  cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
+  cy.Get('[data-testid="action-scorer-text-response"]', {timeout: 8000}).contains(expectedResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .should('be.enabled')
 }
 
 export function VerifyContainsDisabledAction(expectedResponse) {
-  cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
+  cy.Get('[data-testid="action-scorer-text-response"]', {timeout: 8000}).contains(expectedResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-no-click"]')
     .should('be.disabled')
 }
@@ -50,7 +50,7 @@ export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyEnd
 export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-selected', 'be.enabled') }
 
 function VerifyEndSessionActionState(expectedData, selectButtonDataTestId, stateToVerify) {
-  cy.Get('[data-testid="action-scorer-session-response"]')
+  cy.Get('[data-testid="action-scorer-session-response"]', {timeout: 8000})
     .ExactMatch('EndSession')
     .siblings('[data-testid="action-scorer-session-response-user"]')
     .ExactMatch(expectedData)

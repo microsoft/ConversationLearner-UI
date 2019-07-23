@@ -53,7 +53,7 @@ export function VerifyModelNameIsNotInList(modelName) {
 }
 
 export function LoadModel(modelName) { 
-  cy.Get({timeout: 10000}, '[data-testid="model-list-model-name"]').ExactMatch(modelName).Click()
+  cy.Get('[data-testid="model-list-model-name"]', {timeout: 10000}).ExactMatch(modelName).Click()
   modelPage.VerifyModelName(modelName)
 }
 
