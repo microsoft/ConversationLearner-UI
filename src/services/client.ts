@@ -5,6 +5,7 @@
 import * as CLM from '@conversationlearner/models'
 import { PartialTrainDialog, AppInput } from '../types/models'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import * as querystring from 'query-string'
 
 export interface ClientHeaders {
     botChecksum: string
@@ -36,6 +37,10 @@ interface IActionCreationResponse {
     actionId: string
     packageId: string
     trainingStatus: string
+}
+
+export type TrainDialogUpdateQueryParams = {
+    ignoreLabelConflicts: boolean
 }
 
 export default class ClClient {
@@ -330,10 +335,11 @@ export default class ClClient {
     }
 
     //AT.EDIT_TRAINDIALOG_ASYNC
-    async trainDialogEdit(appId: string, trainDialog: PartialTrainDialog): Promise<CLM.TrainResponse> {
+    async trainDialogEdit(appId: string, trainDialog: PartialTrainDialog, options?: Partial<TrainDialogUpdateQueryParams>): Promise<CLM.TrainResponse> {
+        const queryString = querystring.stringify(options || {})
         const response = await this.send<CLM.TrainResponse>({
             method: 'put',
-            url: `/app/${appId}/traindialog/${trainDialog.trainDialogId}`,
+            url: `/app/${appId}/traindialog/${trainDialog.trainDialogId}?${queryString}`,
             data: trainDialog
         })
         return response.data
@@ -545,7 +551,7 @@ export default class ClClient {
             method: 'delete',
             url: `/app/${appId}/teach/${teachSession.teachId}?save=${save}`
         })
-        
+
         return response.data.trainDialogId
     }
 

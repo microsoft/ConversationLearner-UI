@@ -124,7 +124,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                                             className="cl-inconsistent-entity-modal-header cl-text--error"
                                             data-testid="log-conversion-conflicts-inconsistent-labels"
                                         >
-                                            <OF.Icon iconName="ChromeClose" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CONFLICTING_LABELS)}
+                                            <OF.Icon iconName="ChromeClose" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_ATTEMPTED_LABELS_TITLE)}
                                         </div>
                                         <ExtractorResponseEditor.EditorWrapper
                                             render={(editorProps, onChangeCustomEntities) =>
@@ -150,7 +150,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
                                             className="cl-inconsistent-entity-modal-header cl-text--success"
                                             data-testid="log-conversion-conflicts-consistent-labels"
                                         >
-                                            <OF.Icon iconName="Accept" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_CORRECT_LABELS)}
+                                            <OF.Icon iconName="Accept" />&nbsp;{formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_EXISTING_LABELS_TITLE)}
                                         </div>
                                         <ExtractorResponseEditor.EditorWrapper
                                             render={(editorProps, onChangeCustomEntities) =>

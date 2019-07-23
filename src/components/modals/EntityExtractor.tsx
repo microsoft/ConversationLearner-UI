@@ -8,7 +8,7 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as ToolTips from '../ToolTips/ToolTips'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
-import ExtractConflictModal from './ExtractConflictModal'
+import ExtractConflictModal, { ExtractionChange, ExtractionType } from './ExtractConflictModal'
 import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
 import EntityCreatorEditor from './EntityCreatorEditor'
@@ -115,12 +115,17 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onEntityConflictModalAccept() {
+    async onEntityConflictModalAccept(extractionChange: ExtractionChange) {
+        const { extractResponse } = extractionChange
 
-        if (!this.props.extractConflict) {
-            throw new Error("ExtractConflict is null")
+        if (extractionChange.chosenExtractType === ExtractionType.Existing) {
+            await this.onUpdateExtractResponse(extractResponse)
         }
-        await this.onUpdateExtractResponse(this.props.extractConflict)
+        else if (extractionChange.chosenExtractType === ExtractionType.Attempted) {
+            for (const trainDialog of extractionChange.trainDialogs) {
+                await this.props.editTrainDialogThunkAsync(this.props.app.appId, trainDialog, { ignoreLabelConflicts: true })
+            }
+        }
 
         // If extractions are valid, go ahead and submit them
         const allResponses = this.allResponses()
@@ -146,7 +151,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             entityTypeFilter
         })
     }
-    
+
     @OF.autobind
     onClickCreateEntity(): void {
         this.setState({
@@ -641,6 +646,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             extractResponse={this.props.extractConflict}
                             onClose={this.onEntityConflictModalAbandon}
                             onAccept={this.onEntityConflictModalAccept}
+                            trainDialogs={this.props.trainDialogs}
                         />
                     }
                 </div>
@@ -650,11 +656,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        fetchTrainDialog: actions.train.fetchTrainDialogThunkAsync,
         updateExtractResponse: actions.teach.updateExtractResponse,
         removeExtractResponse: actions.teach.removeExtractResponse,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
         clearExtractResponses: actions.teach.clearExtractResponses,
-        clearExtractConflict: actions.teach.clearExtractConflict
+        clearExtractConflict: actions.teach.clearExtractConflict,
+        editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
@@ -664,7 +672,9 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
     return {
         user: state.user.user,
-        entities: state.entities
+        entities: state.entities,
+        trainDialogs: state.trainDialogs,
+        teachSession: state.teachSession.teach,
     }
 }
 
