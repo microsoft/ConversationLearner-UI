@@ -45,12 +45,6 @@
     opacity: 0.4;
 }
 
-.cl-compare-dialogs-count {
-    line-height: 30px;
-    font-weight: bold;
-    color: var(--color-themePrimary);
-}
-
 .cl-modal.cl-modal--compare-dialogs {
     width: 965px;
     height: 96%;
