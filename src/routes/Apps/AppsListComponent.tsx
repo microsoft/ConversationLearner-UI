@@ -10,7 +10,7 @@ import FormattedMessageId from '../../components/FormattedMessageId'
 import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import * as Util from '../../Utils/util'
-import { User, AppCreatorType } from '../../types'
+import { User, AppCreatorType, FeatureStrings } from '../../types'
 import * as moment from 'moment'
 
 export interface ISortableRenderableColumn extends OF.IColumn {
@@ -117,6 +117,7 @@ interface Props extends InjectedIntlProps {
     activeApps: { [appId: string]: string }
     onClickApp: (app: CLM.AppBase) => void
     selection: OF.ISelection
+    featuresString: string
 
     isAppCreateModalOpen: boolean
     onSubmitAppCreateModal: (app: CLM.AppBase, source: CLM.AppDefinition | undefined) => void
@@ -223,6 +224,7 @@ export class Component extends React.Component<Props, ComponentState> {
 
     render() {
         const props = this.props
+        const isDispatcherFeaturesEnabled = this.props.featuresString.includes(FeatureStrings.DISPATCHER)
 
         return <div className="cl-o-app-columns">
             <div className="cl-app_content">
@@ -255,14 +257,16 @@ export class Component extends React.Component<Props, ComponentState> {
                                 iconProps={{ iconName: 'CloudDownload' }}
                             />
                         }
-
-                        <OF.DefaultButton
-                            data-testid="model-list-button-create-dispatcher"
-                            onClick={props.onClickCreateNewDispatcherModel}
-                            ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION)}
-                            text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONTEXT)}
-                            iconProps={{ iconName: 'Add' }}
-                        />
+                        {isDispatcherFeaturesEnabled
+                            && (
+                                <OF.DefaultButton
+                                    data-testid="model-list-button-create-dispatcher"
+                                    onClick={props.onClickCreateNewDispatcherModel}
+                                    ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION)}
+                                    text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONTEXT)}
+                                    iconProps={{ iconName: 'Add' }}
+                                />
+                            )}
 
                     </div>
                     {this.state.apps.length === 0
@@ -290,7 +294,9 @@ export class Component extends React.Component<Props, ComponentState> {
                             items={this.state.apps}
                             columns={this.state.columns}
                             selection={this.props.selection}
-                            checkboxVisibility={OF.CheckboxVisibility.onHover}
+                            checkboxVisibility={isDispatcherFeaturesEnabled
+                                ? OF.CheckboxVisibility.onHover
+                                : OF.CheckboxVisibility.hidden}
                             onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
                             onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
                             onColumnHeaderClick={this.onClickColumnHeader}

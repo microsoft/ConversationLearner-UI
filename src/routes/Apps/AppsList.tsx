@@ -124,6 +124,7 @@ class AppsList extends React.Component<Props, ComponentState> {
             activeApps={this.props.activeApps}
             onClickApp={this.onClickApp}
             selection={this.selection}
+            featuresString={this.props.settings.features}
 
             isAppCreateModalOpen={this.state.isAppCreateModalOpen}
             onSubmitAppCreateModal={this.onSubmitAppCreateModal}
@@ -155,7 +156,8 @@ const mapStateToProps = (state: State) => {
 
     return {
         user: state.user.user,
-        activeApps: state.apps.activeApps
+        activeApps: state.apps.activeApps,
+        settings: state.settings,
     }
 }
 

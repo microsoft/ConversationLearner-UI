@@ -33,3 +33,8 @@ export const ports: Readonly<any> = {
     defaultUiPort: 3000,
     defaultBotPort: 3978,
 }
+
+export enum FeatureStrings {
+    CCI = "CCI",
+    DISPATCHER = "dispatcher"
+}
