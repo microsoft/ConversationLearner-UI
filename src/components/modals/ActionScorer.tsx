@@ -11,7 +11,7 @@ import * as DialogEditing from '../../Utils/dialogEditing'
 import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import actionTypeRenderer from '../ActionTypeRenderer'
-import EditApiStub from '../modals/EditApiStub'
+import EditApiPlaceholder from '../modals/EditApiPlaceholder'
 import ActionCreatorEditor, { NewActionPreset } from './ActionCreatorEditor'
 import AdaptiveCardViewer , { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
 import { compareTwoStrings } from 'string-similarity'
@@ -269,8 +269,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 
 interface ComponentState {
     isActionCreatorModalOpen: boolean
-    apiStubName: string | null
-    apiStubCreatorFilledEntityMap: CLM.FilledEntityMap | null
+    apiPlaceholderName: string | null
+    apiPlaceholderCreatorFilledEntityMap: CLM.FilledEntityMap | null
     columns: OF.IColumn[]
     actionForRender: CLM.ScoredBase[]
     sortColumn: IRenderableColumn
@@ -289,8 +289,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         const columns = getColumns(this.props.intl)
         this.state = {
             isActionCreatorModalOpen: false,
-            apiStubName: null,
-            apiStubCreatorFilledEntityMap: null,
+            apiPlaceholderName: null,
+            apiPlaceholderCreatorFilledEntityMap: null,
             columns,
             actionForRender: [],
             sortColumn: columns[2], // "score"
@@ -402,27 +402,27 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     //-------------------
-    // API Stub Creator
+    // API Placeholder Creator
     //-------------------
     @OF.autobind
-    onOpenAPIStubCreator(apiStubName: string | null = null) {
+    onOpenAPIPlaceholderCreator(placeholder: string | null = null) {
         this.setState({
-            apiStubName,
-            apiStubCreatorFilledEntityMap: CLM.FilledEntityMap.FromFilledEntities(this.props.scoreInput.filledEntities, this.props.entities)
+            apiPlaceholderName: placeholder,
+            apiPlaceholderCreatorFilledEntityMap: CLM.FilledEntityMap.FromFilledEntities(this.props.scoreInput.filledEntities, this.props.entities)
         })
     }
 
     @OF.autobind
-    async onCloseCreateAPIStub(filledEntityMap: CLM.FilledEntityMap | null, apiName: string, isTerminal: boolean) {
+    async onCloseCreateAPIPlaceholder(filledEntityMap: CLM.FilledEntityMap | null, apiName: string, isTerminal: boolean) {
         this.setState({
-            apiStubName: null,
-            apiStubCreatorFilledEntityMap: null
+            apiPlaceholderName: null,
+            apiPlaceholderCreatorFilledEntityMap: null
         })
         // If user cancelled
         if (!filledEntityMap) {
             return
         }
-        const trainScorerStep = await DialogEditing.getStubScorerStep(apiName, isTerminal, this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
+        const trainScorerStep = await DialogEditing.getAPIPlaceholderScorerStep(apiName, isTerminal, this.props.app.appId, this.props.actions, filledEntityMap, this.props.createActionThunkAsync as any)
         this.setState({ haveEdited: true })
         this.props.onActionSelected(trainScorerStep)
     }
@@ -474,8 +474,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async handleReselectAction(scoredBase: CLM.ScoredBase) {
-        // If ApiStub let user reselect memory values
-        if (CLM.ActionBase.isStubbedAPI(scoredBase)) {
+        // If placeholder let user reselect memory values
+        if (CLM.ActionBase.isPlaceholderAPI(scoredBase)) {
             await this.handleActionSelection(scoredBase)
         }
         // Otherwise tell them it has already been selected
@@ -486,11 +486,11 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     @OF.autobind
     async handleActionSelection(scoredBase: CLM.ScoredBase) {
 
-        // If apiStub get stub data before selecting
-        if (CLM.ActionBase.isStubbedAPI(scoredBase)) {
+        // If placeholder get data before selecting
+        if (CLM.ActionBase.isPlaceholderAPI(scoredBase)) {
             const action = this.props.actions.find(a => a.actionId === scoredBase.actionId)
             if (action) {
-                this.onOpenAPIStubCreator(new CLM.ApiAction(action).name)
+                this.onOpenAPIPlaceholderCreator(new CLM.ApiAction(action).name)
             }
             return
         }
@@ -936,9 +936,9 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                             <OF.DefaultButton
                                 data-testid="action-scorer-add-apistub-button"
                                 disabled={!this.props.canEdit}
-                                onClick={() => this.onOpenAPIStubCreator()}
-                                ariaDescription='Create API Stub'
-                                text='API Stub'
+                                onClick={() => this.onOpenAPIPlaceholderCreator()}
+                                ariaDescription='Create API Placeholder'
+                                text='API Placeholder'
                                 iconProps={{ iconName: 'Handwriting' }}
                             />
                         </div>
@@ -982,14 +982,14 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     onOk={this.onCloseAlreadySelectedPopUp}
                     title={Util.formatMessageId(intl, FM.LOGDIALOGS_ALREADYSELECTED)}
                 />
-                <EditApiStub
-                    isOpen={this.state.apiStubCreatorFilledEntityMap != null}
+                <EditApiPlaceholder
+                    isOpen={this.state.apiPlaceholderCreatorFilledEntityMap != null}
                     app={this.props.app}
                     actions={this.props.actions}
                     editingPackageId={this.props.editingPackageId}
-                    apiStubName={this.state.apiStubName}
-                    initMemories={this.state.apiStubCreatorFilledEntityMap}
-                    handleClose={this.onCloseCreateAPIStub}
+                    placeholderName={this.state.apiPlaceholderName}
+                    initMemories={this.state.apiPlaceholderCreatorFilledEntityMap}
+                    handleClose={this.onCloseCreateAPIPlaceholder}
                 />
             </div>
         )
