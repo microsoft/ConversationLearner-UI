@@ -376,7 +376,7 @@ export enum FM {
     REPLAYERROR_DESC_API_BADCARD = 'ReplayError.Desc.apiBadCard',
     REPLAYERROR_DESC_API_EXCEPTION = 'ReplayError.Desc.apiException',
     REPLAYERROR_DESC_API_MALFORMED = 'ReplayError.Desc.apiMalformed',
-    REPLAYERROR_DESC_API_STUB = 'ReplayError.Desc.apiStub',
+    REPLAYERROR_DESC_API_PLACEHOLDER = 'ReplayError.Desc.apiPlaceholder',
     REPLAYERROR_DESC_API_UNDEFINED = 'ReplayError.Desc.apiUndefined',
     REPLAYERROR_DESC_INPUT_AFTER_NONWAIT = 'ReplayError.Desc.inputAfterNonWait',
     REPLAYERROR_DESC_ENTITY_UNDEFINED = 'ReplayError.Desc.entityUndefined',
@@ -435,8 +435,8 @@ export enum FM {
     // TeachSessionInit
     TEACHSESSIONINIT_INPUT_PLACEHOLDER = 'TeachSessionInit.input.placeholder',
     TEACHSESSIONINIT_TITLE = 'TeachSessionInit.title',
-    TEACHSESSIONSTUB_TITLE = 'TeachSessionStub.title',
-    TEACHSESSIONSTUB_DESCRIPTION = 'TeachSessionStub.description',
+    TEACHSESSIONPLACEHOLDER_TITLE = 'TeachSessionPlaceholder.title',
+    TEACHSESSIONPLACEHOLDER_DESCRIPTION = 'TeachSessionPlaceholder.description',
 
     // TeachSessionModal
     TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE = 'TeachSessionModal.teach.confirmDelete.title',
@@ -809,7 +809,7 @@ export default {
         [FM.REPLAYERROR_DESC_API_BADCARD]: 'API Render function returned a malformed Activity',
         [FM.REPLAYERROR_DESC_API_EXCEPTION]: 'API in Bot encountered an exception',
         [FM.REPLAYERROR_DESC_API_MALFORMED]: 'Logic portion of callback returns a value, but no Render portion defined',
-        [FM.REPLAYERROR_DESC_API_STUB]: 'Stub API should be replaced with a real API callback',
+        [FM.REPLAYERROR_DESC_API_PLACEHOLDER]: 'Placeholder should be replaced with a real API callback',
         [FM.REPLAYERROR_DESC_API_UNDEFINED]: 'API does not exist on running Bot',
         [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'User Input following a non-Wait Action',
         [FM.REPLAYERROR_DESC_ENTITY_UNDEFINED]: 'Entity does not exist',
@@ -1158,8 +1158,8 @@ export default {
 
         [FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER]: 'Entity value...',
         [FM.TEACHSESSIONINIT_TITLE]: 'Set Initial Entity Values',
-        [FM.TEACHSESSIONSTUB_TITLE]: 'Stub API',
-        [FM.TEACHSESSIONSTUB_DESCRIPTION]: 'Memory values as they should be after API call',
+        [FM.TEACHSESSIONPLACEHOLDER_TITLE]: 'Placeholder API',
+        [FM.TEACHSESSIONPLACEHOLDER_DESCRIPTION]: 'Memory values as they should be after API call',
 
         // TeachSessionModal
         [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this dialog?',
