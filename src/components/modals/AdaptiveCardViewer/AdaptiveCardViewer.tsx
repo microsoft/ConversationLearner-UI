@@ -8,6 +8,7 @@ import * as MarkdownIt from 'markdown-it'
 import * as AdaptiveCards from 'adaptivecards'
 import * as Util from '../../../Utils/util'
 import adaptiveCardHostConfig from './AdaptiveCardHostConfig'
+import IndexButtons from '../../IndexButtons'
 import { FM } from '../../../react-intl-messages'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
@@ -111,20 +112,14 @@ class AdaptiveCardViewer extends React.Component<Props> {
                         }  
                     </div>
                 </div>
-                {this.props.onNext && this.props.onPrevious && 
+                {this.props.onNext && this.props.onPrevious && this.props.totalCards !== undefined && this.props.curIndex !== undefined &&
                     <div className="cl-modal_footer cl-modal-buttons">
                         <div className="cl-modal-buttons_secondary">
-                            <OF.DefaultButton
-                                onClick={this.props.onPrevious}
-                                iconProps={{ iconName: 'ChevronLeftSmall' }}
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
-                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
-                            />
-                            <OF.DefaultButton
-                                onClick={this.props.onNext}
-                                iconProps={{ iconName: 'ChevronRightSmall' }}
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
-                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
+                            <IndexButtons
+                                onPrevious={this.props.onPrevious}
+                                onNext={this.props.onNext}
+                                curIndex={this.props.curIndex}
+                                total={this.props.totalCards}
                             />
                         </div>
                         <div className="cl-modal-buttons_primary">
@@ -146,6 +141,8 @@ interface ReceivedProps {
     template: Template | undefined
     actionArguments: RenderedActionArgument[]
     onDismiss: () => void
+    curIndex?: number
+    totalCards?: number
     onNext?: () => void 
     onPrevious?: () => void 
     hideUndefined: boolean
