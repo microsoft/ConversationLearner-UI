@@ -282,6 +282,7 @@ interface ComponentState {
     slateValuesMap: SlateValueMap
     secondarySlateValuesMap: SlateValueMap
     isTerminal: boolean
+    selectedCardIndex: number
 }
 
 const initialState: Readonly<ComponentState> = {
@@ -320,7 +321,8 @@ const initialState: Readonly<ComponentState> = {
         [TEXT_SLOT]: Plain.deserialize('')
     },
     secondarySlateValuesMap: {},
-    isTerminal: true
+    isTerminal: true,
+    selectedCardIndex: 0
 }
 
 class ActionCreatorEditor extends React.Component<Props, ComponentState> {
@@ -795,22 +797,24 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onNextCard() {
-        let index = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
-        index = index + 1
-        if (index === this.state.cardOptions.length) {
-            index = 0
+        let selectedCardIndex = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
+        selectedCardIndex = selectedCardIndex + 1
+        if (selectedCardIndex === this.state.cardOptions.length) {
+            selectedCardIndex = 0
         }
-        await this.onChangeCardOption(this.state.cardOptions[index])
+        this.setState({selectedCardIndex})
+        await this.onChangeCardOption(this.state.cardOptions[selectedCardIndex])
     }
 
     @OF.autobind
     async onPreviousCard() {
-        let index = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
-        index = index - 1
-        if (index < 0) {
-            index = this.state.cardOptions.length - 1
+        let selectedCardIndex = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
+        selectedCardIndex = selectedCardIndex - 1
+        if (selectedCardIndex < 0) {
+            selectedCardIndex = this.state.cardOptions.length - 1
         }
-        await this.onChangeCardOption(this.state.cardOptions[index])
+        this.setState({selectedCardIndex})
+        await this.onChangeCardOption(this.state.cardOptions[selectedCardIndex])
     }
 
     getActionArguments(slateValuesMap: { [slot: string]: ActionPayloadEditor.SlateValue }): CLM.IActionArgument[] {
@@ -1798,6 +1802,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 />
                 <AdaptiveCardViewer
                     open={this.state.isCardViewerModalOpen && this.state.selectedCardOptionKey !== null}
+                    curIndex={this.state.selectedCardIndex}
+                    totalCards={this.state.cardOptions.length}
                     onDismiss={() => this.onCloseCardViewer()}
                     onNext={() => this.onNextCard()}
                     onPrevious={() => this.onPreviousCard()}

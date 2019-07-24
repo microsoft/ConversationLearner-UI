@@ -10,6 +10,7 @@ import * as Util from '../../Utils/util'
 import * as BB from 'botbuilder'
 import * as TranscriptUtils from '../../Utils/transcriptUtils'
 import actions from '../../actions'
+import IndexButtons from '../IndexButtons'
 import Webchat, { renderActivity } from '../Webchat'
 import { Activity } from 'botframework-directlinejs'
 import { State } from '../../types'
@@ -266,28 +267,11 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                 </div>
                             </div>
                             <div className="cl-modal-buttons_secondary">
-                                <OF.DefaultButton
-                                    onClick={this.onPrevious}
-                                    iconProps={{ iconName: 
-                                        this.state.resultIndex === 0
-                                            ? 'ChevronLeftEnd6' 
-                                            : 'ChevronLeftSmall'
-                                    }}
-                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
-                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
-                                />
-                                <div className="cl-compare-dialogs-count">
-                                    {`${this.state.resultIndex + 1} of ${this.props.transcriptValidationResults.length}`}
-                                </div>
-                                <OF.DefaultButton
-                                    onClick={this.onNext}
-                                    iconProps={{ iconName: 
-                                        this.state.resultIndex === this.props.transcriptValidationResults.length - 1
-                                        ? 'ChevronRightEnd6'
-                                        : 'ChevronRightSmall' 
-                                    }}
-                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
-                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
+                                <IndexButtons
+                                    onPrevious={this.onPrevious}
+                                    onNext={this.onNext}
+                                    curIndex={this.state.resultIndex}
+                                    total={this.props.transcriptValidationResults.length}
                                 />
                                 <OF.DefaultButton
                                     onClick={this.props.onClose}
