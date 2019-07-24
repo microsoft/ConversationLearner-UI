@@ -232,6 +232,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 entityFilter: this.toEntityFilter(this.props.filteredEntity)
             })
         }
+        this.handleQueryParameters(this.props.location.search)
     }
 
     componentWillReceiveProps(newProps: Props) {
@@ -259,18 +260,25 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    async componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        this.handleQueryParameter(prevProps, prevState)
+    async componentDidUpdate(prevProps: Props) {
+        this.handleQueryParameters(this.props.location.search, prevProps.location.search)
     }
 
-    async handleQueryParameter(prevProps: Props, prevState: ComponentState): Promise<void> {
-        const searchParamsPrev = new URLSearchParams(prevProps.location.search)
-        const selectedDialogIdPrev = searchParamsPrev.get(DialogUtils.DialogQueryParams.id)
-
-        const searchParams = new URLSearchParams(this.props.location.search)
+    async handleQueryParameters(newSearch: string, oldSearch?: string): Promise<void> {
+        const searchParams = new URLSearchParams(newSearch)
         const selectedDialogId = searchParams.get(DialogUtils.DialogQueryParams.id)
 
-        if (selectedDialogId === selectedDialogIdPrev) {
+        // Check that I need to update
+        if (oldSearch) {
+            const searchParamsPrev = new URLSearchParams(oldSearch)
+            const selectedDialogIdPrev = searchParamsPrev.get(DialogUtils.DialogQueryParams.id)
+            if (selectedDialogId === selectedDialogIdPrev) {
+                return
+            }
+        }
+
+        // TODO: Handle reload when actions not yet loaded
+        if (this.props.actions.length === 0) {
             return
         }
 
