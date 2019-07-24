@@ -752,7 +752,7 @@ export default {
         [FM.BUTTON_TEST]: 'Test',
         [FM.BUTTON_TESTING]: 'Testing',
         [FM.BUTTON_NEXT]: 'Next',
-        [FM.BUTTON_PREVIOUS]: 'Previous',
+        [FM.BUTTON_PREVIOUS]: 'Prev',
 
         // Error Messages
         [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
