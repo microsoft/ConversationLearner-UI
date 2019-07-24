@@ -103,13 +103,13 @@ export async function trainDialogFromTranscriptImport(
                 let filledEntities: CLM.FilledEntity[] = []
                 let logicResult: CLM.LogicResult | undefined
 
-                // If I didn't find an action and is API, create API stub
+                // If I didn't find an action and is API, create API placeholder
                 if (!action && activity.channelData && activity.channelData.type === "ActionCall") {
                     const actionCall = activity.channelData as TranscriptActionCall
                     const isTerminal = !nextActivity || nextActivity.from.role === "user"
-                    action = await DialogEditing.getStubAPIAction(app.appId, actionCall.actionName, isTerminal, actions, createActionThunkAsync as any)
+                    action = await DialogEditing.getPlaceholderAPIAction(app.appId, actionCall.actionName, isTerminal, actions, createActionThunkAsync as any)
 
-                    // Store stub API output in LogicResult
+                    // Store placeholder output in LogicResult
                     logicResult = {
                         logicValue: undefined,
                         changedFilledEntities: await importActionOutput(actionCall.actionOutput, entities, app, createEntityThunkAsync),

@@ -233,8 +233,8 @@ export async function onChangeAction(
             const importText = DialogUtils.importTextWithEntityIds(oldTrainScorerStep.importText, filledEntityIdMap)
             importHash = Util.hashText(importText)
         }
-        // If replacing stub action
-        else if (CLM.ActionBase.isStubbedAPI(replacedAction)) {
+        // If replacing placeholder action
+        else if (CLM.ActionBase.isPlaceholderAPI(replacedAction)) {
             const apiAction = new CLM.ApiAction(replacedAction as any)
             importHash = Util.hashText(apiAction.name)
         }
@@ -466,42 +466,42 @@ export async function onEditTeach(
     await editHandler(trainDialog, selectedActivity, args)
 } 
 
-// Returns stubAPIAction if it exists, otherwise creates it if given creation action
-export async function getStubAPIAction(
+// Returns placeholder if it exists, otherwise creates it if given creation action
+export async function getPlaceholderAPIAction(
     appId: string,
-    apiStubName: string | "",
+    placeholderName: string | "",
     isTerminal: boolean,
     actions: CLM.ActionBase[],
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null> | null
 ): Promise<CLM.ActionBase | null> {
     // Check if it has been attached to real api call
-    const apiHash = Util.hashText(apiStubName)
-    let stubAction = actions.find(a => {return a.clientData && a.clientData.importHashes 
+    const apiHash = Util.hashText(placeholderName)
+    let placeholder = actions.find(a => {return a.clientData && a.clientData.importHashes 
         ? (a.clientData.importHashes.find(h => h === apiHash) !== undefined)
         : false
     })
 
-    // Otherwise look for matching stub action with same name
-    if (!stubAction) {
-        stubAction = actions.filter(a => CLM.ActionBase.isStubbedAPI(a))
+    // Otherwise look for matching placeholder action with same name
+    if (!placeholder) {
+        placeholder = actions.filter(a => CLM.ActionBase.isPlaceholderAPI(a))
             .map(aa => new CLM.ApiAction(aa))
-            .find(aaa => aaa.name === apiStubName)
+            .find(aaa => aaa.name === placeholderName)
     }
-    if (stubAction) {
-        return stubAction
+    if (placeholder) {
+        return placeholder
     }
 
     // If create action is available create a new action
     if (createActionThunkAsync) {
-        // Otherwise create new stub
-        const newStub = CLM.ActionBase.createStubAction(apiStubName, isTerminal)
+        // Otherwise create new placeholder
+        const newPlaceholder = CLM.ActionBase.createPlaceholderAPIAction(placeholderName, isTerminal)
 
-        // If stub was created by import, add hash for future matching
-        newStub.clientData = { importHashes: [apiHash]}
+        // If placeholder was created by import, add hash for future matching
+        newPlaceholder.clientData = { importHashes: [apiHash]}
 
-        const newAction = await createActionThunkAsync(appId, newStub)
+        const newAction = await createActionThunkAsync(appId, newPlaceholder)
         if (!newAction) {
-            throw new Error("Failed to create APIStub action")
+            throw new Error("Failed to create placeholder API")
         }
 
         return newAction
@@ -531,9 +531,9 @@ export function scorerStepFromActivity(trainDialog: CLM.TrainDialog, selectedAct
     return undefined
 }
 
-// Returns stubAPIAction if it exists, otherwise creates it
-export async function getStubScorerStep(
-    apiStubName: string,
+// Returns placeholder if it exists, otherwise creates it
+export async function getAPIPlaceholderScorerStep(
+    placeholderName: string,
     isTerminal: boolean,
     appId: string,
     actions: CLM.ActionBase[],
@@ -541,19 +541,19 @@ export async function getStubScorerStep(
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
 ): Promise<CLM.TrainScorerStep> {
     
-    const stubAPIAction = await getStubAPIAction(appId, apiStubName, isTerminal, actions, createActionThunkAsync)
+    const placeholderAction = await getPlaceholderAPIAction(appId, placeholderName, isTerminal, actions, createActionThunkAsync)
 
-    if (!stubAPIAction) {
-        throw new Error("Unable to create API stub Action")
+    if (!placeholderAction) {
+        throw new Error("Unable to create API placeholder Action")
     }
     
     const filledEntities = filledEntityMap.FilledEntities()
 
-    // Generate stub
+    // Generate placeholder
     let scoredAction: CLM.ScoredAction = {
-        actionId: stubAPIAction.actionId,
-        payload: stubAPIAction.payload,
-        isTerminal: stubAPIAction.isTerminal,
+        actionId: placeholderAction.actionId,
+        payload: placeholderAction.payload,
+        isTerminal: placeholderAction.isTerminal,
         actionType: CLM.ActionTypes.API_LOCAL,
         score: 1
     }
@@ -562,14 +562,14 @@ export async function getStubScorerStep(
         context: {},
         maskedActions: []
     }
-    // Store stub API output in LogicResult
+    // Store placeholder API output in LogicResult
     let logicResult: CLM.LogicResult = {
         logicValue: undefined,
         changedFilledEntities: filledEntities,
     }
     return {
         input: scoreInput,
-        labelAction: stubAPIAction.actionId,
+        labelAction: placeholderAction.actionId,
         logicResult,
         scoredAction: scoredAction
     }

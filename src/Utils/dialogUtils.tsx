@@ -642,9 +642,9 @@ function findActionByImportHash(importText: string, actionsWithHash: CLM.ActionB
         return a.clientData!.importHashes!.indexOf(importHash) > -1
     })
 
-    // If more than one, prefer the one that isn't a stub
+    // If more than one, prefer the one that isn't a placeholder
     if (matchedActions.length > 1) {
-        matchedActions = matchedActions.filter(ma => !CLM.ActionBase.isStubbedAPI(ma))
+        matchedActions = matchedActions.filter(ma => !CLM.ActionBase.isPlaceholderAPI(ma))
     }
 
     return matchedActions[0]
@@ -700,8 +700,8 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
                 const filledEntityMap = filledEntityIdMap(scorerStep.input.filledEntities, entities)
                 importText = importTextWithEntityIds(scorerStep.importText, filledEntityMap)
             }
-            // If replacing stub action
-            else if (scorerStep.labelAction && CLM.ActionBase.isStubbedAPI(scorerStep.scoredAction)) {
+            // If replacing placeholder action
+            else if (scorerStep.labelAction && CLM.ActionBase.isPlaceholderAPI(scorerStep.scoredAction)) {
                 const apiAction = new CLM.ApiAction(scorerStep.scoredAction as any)
                 importText = apiAction.name
             }

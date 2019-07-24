@@ -1487,8 +1487,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         </div>
                                         : <div className="cl-errorpanel" data-testid="action-creator-editor-error-callback">
                                             <div>
-                                                {this.props.action && CLM.ActionBase.isStubbedAPI(this.props.action)
-                                                    ? `Stub API: ${this.state.selectedApiOptionKey}`
+                                                {this.props.action && CLM.ActionBase.isPlaceholderAPI(this.props.action)
+                                                    ? `Placeholder API: ${this.state.selectedApiOptionKey}`
                                                     : `ERROR: Bot Missing Callback: ${this.state.selectedApiOptionKey}`}
                                             </div>
                                         </div>)
