@@ -11,8 +11,8 @@ export default function actionTypeRenderer(action: CLM.ActionBase | undefined): 
     let actionType = action ? action.actionType.toString() : "MISSING ACTION"
     let addedStyle = "cl-actiontype-font"
     if (actionType === CLM.ActionTypes.API_LOCAL) {
-        if (CLM.ActionBase.isStubbedAPI(action)) {
-            actionType = "API STUB"
+        if (CLM.ActionBase.isPlaceholderAPI(action)) {
+            actionType = "API Placeholder"
             addedStyle = "cl-actiontype-font--warning"
         } else {
             actionType = "API"
