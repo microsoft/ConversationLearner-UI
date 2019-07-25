@@ -111,8 +111,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     ]
 }
 
+const getDialogKey = (logDialog: OF.IObjectWithKey) => (logDialog as CLM.LogDialog).logDialogId
+
 interface ComponentState {
-    logDialogs: CLM.LogDialog[]
     columns: IRenderableColumn[]
     sortColumn: IRenderableColumn
     chatSession: CLM.Session | null
@@ -194,7 +195,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
 
         this.state = {
-            logDialogs: props.logDialogs,
             columns,
             sortColumn,
             chatSession: null,
@@ -271,12 +271,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             return column
         })
 
-        const logDialogs = this.sortLogDialogs(this.state.logDialogs, columns, sortColumn)
-
         this.setState({
             columns,
             sortColumn,
-            logDialogs,
         })
     }
 
@@ -304,35 +301,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 })
             }
         }
-
-        if (this.props.logDialogs.length !== newProps.logDialogs.length) {
-            let logDialogs = this.getFilteredDialogs(
-                newProps.logDialogs,
-                newProps.entities,
-                newProps.actions,
-                this.state.searchValue)
-
-            logDialogs = this.sortLogDialogs(logDialogs, this.state.columns, this.state.sortColumn)
-
-            this.setState({
-                logDialogs
-            })
-        }
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        // If any of the filters changed, recompute filtered dialogs based on updated filers
-        if (prevState.searchValue !== this.state.searchValue) {
-            let logDialogs = this.getFilteredDialogs(
-                this.props.logDialogs,
-                this.props.entities,
-                this.props.actions,
-                this.state.searchValue)
-
-            this.setState({
-                logDialogs
-            })
-        }
         this.handleQueryParameters(this.props.location.search, prevProps.location.search)
     }
 
@@ -969,6 +940,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     render() {
         const { intl } = this.props
+
+        let computedLogDialogs = this.getFilteredDialogs(
+            this.props.logDialogs,
+            this.props.entities,
+            this.props.actions,
+            this.state.searchValue)
+
+        computedLogDialogs = this.sortLogDialogs(computedLogDialogs, this.state.columns, this.state.sortColumn)
+
         const editState = (this.props.editingPackageId !== this.props.app.devPackageId)
             ? EditState.INVALID_PACKAGE
             : this.props.invalidBot
@@ -1062,8 +1042,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     data-testid="logdialogs-details-list"
                     key={this.state.dialogKey}
                     className={`${OF.FontClassNames.mediumPlus} ${isPlaceholderVisible ? 'cl-hidden' : ''}`}
-                    items={this.state.logDialogs}
+                    items={computedLogDialogs}
                     selection={this.selection}
+                    getKey={getDialogKey}
+                    setKey="selectionKey"
                     columns={this.state.columns}
                     checkboxVisibility={OF.CheckboxVisibility.onHover}
                     onColumnHeaderClick={this.onClickColumnHeader}
