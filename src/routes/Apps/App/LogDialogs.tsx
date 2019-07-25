@@ -152,10 +152,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     state: ComponentState
 
     private selection: OF.ISelection = new OF.Selection({
-        getKey: (logDialog) => (logDialog as CLM.LogDialog).logDialogId,
+        getKey: getDialogKey,
         onSelectionChanged: this.onSelectionChanged
     })
-    
+
     static GetConflicts(rounds: CLM.TrainRound[], previouslySubmittedTextVariations: CLM.TextVariation[]) {
         const conflictPairs: ConflictPair[] = []
 
@@ -327,7 +327,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
 
         // If dialog id is in query param and edit modal not open, open it
-        if (selectedDialogId && 
+        if (selectedDialogId &&
             (!this.state.isEditDialogModalOpen && !this.state.isTeachDialogModalOpen)) {
             let logDialog = this.props.logDialogs.find(ld => ld.logDialogId === selectedDialogId)
             if (!logDialog) {
@@ -335,7 +335,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 logDialog = await ((this.props.fetchLogDialogAsync(this.props.app.appId, selectedDialogId, true, true) as any) as Promise<CLM.LogDialog>)
                 if (!logDialog) {
                     // Invalid log dialog, go back to LD list
-                    this.props.history.replace(this.props.match.url, {app: this.props.app})
+                    this.props.history.replace(this.props.match.url, { app: this.props.app })
                     return
                 }
             }
@@ -733,7 +733,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const searchParams = new URLSearchParams(this.props.location.search)
         const selectedDialogId = searchParams.get(DialogUtils.DialogQueryParams.id)
         if (selectedDialogId) {
-            this.props.history.replace(this.props.match.url, {app: this.props.app})
+            this.props.history.replace(this.props.match.url, { app: this.props.app })
         }
     }
 
@@ -938,9 +938,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    render() {
-        const { intl } = this.props
-
+    getFilteredAndSortedDialogs() {
         let computedLogDialogs = this.getFilteredDialogs(
             this.props.logDialogs,
             this.props.entities,
@@ -948,6 +946,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             this.state.searchValue)
 
         computedLogDialogs = this.sortLogDialogs(computedLogDialogs, this.state.columns, this.state.sortColumn)
+        return computedLogDialogs
+    }
+
+    render() {
+        const { intl } = this.props
+        const computedLogDialogs = this.getFilteredAndSortedDialogs()
 
         const editState = (this.props.editingPackageId !== this.props.app.devPackageId)
             ? EditState.INVALID_PACKAGE
@@ -1024,35 +1028,38 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                                 />
                             </div>
                         </div>
-                        : <div>
-                            <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
-                                Search:
-                            </OF.Label>
-                            <OF.SearchBox
-                                id="logdialogs-input-search"
-                                data-testid="logdialogs-search-box"
+                        : <>
+                            <div>
+                                <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
+                                    Search:
+                                </OF.Label>
+                                <OF.SearchBox
+                                    id="logdialogs-input-search"
+                                    data-testid="logdialogs-search-box"
+                                    className={OF.FontClassNames.mediumPlus}
+                                    onChange={(newValue) => this.onChange(newValue)}
+                                    onSearch={(newValue) => this.onChange(newValue)}
+                                />
+                            </div>
+                            <OF.DetailsList
+                                data-testid="logdialogs-details-list"
+                                key={this.state.dialogKey}
                                 className={OF.FontClassNames.mediumPlus}
-                                onChange={(newValue) => this.onChange(newValue)}
-                                onSearch={(newValue) => this.onChange(newValue)}
+                                items={computedLogDialogs}
+                                selection={this.selection}
+                                getKey={getDialogKey}
+                                setKey="selectionKey"
+                                columns={this.state.columns}
+                                checkboxVisibility={OF.CheckboxVisibility.onHover}
+                                onColumnHeaderClick={this.onClickColumnHeader}
+                                onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                                onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
+                                onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
                             />
-                        </div>
+                        </>
                 }
 
-                <OF.DetailsList
-                    data-testid="logdialogs-details-list"
-                    key={this.state.dialogKey}
-                    className={`${OF.FontClassNames.mediumPlus} ${isPlaceholderVisible ? 'cl-hidden' : ''}`}
-                    items={computedLogDialogs}
-                    selection={this.selection}
-                    getKey={getDialogKey}
-                    setKey="selectionKey"
-                    columns={this.state.columns}
-                    checkboxVisibility={OF.CheckboxVisibility.onHover}
-                    onColumnHeaderClick={this.onClickColumnHeader}
-                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
-                    onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
-                    onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
-                />
+
 
                 <ChatSessionModal
                     app={this.props.app}
@@ -1136,7 +1143,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             </div>
         );
     }
-   
+
     private focusNewChatButton() {
         if (this.newChatSessionButtonRef.current) {
             this.newChatSessionButtonRef.current.focus()

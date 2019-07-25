@@ -367,7 +367,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 column.isSorted = true
                 column.isSortedDescending = !clickedColumn.isSortedDescending
             }
-            return column;
+            return column
         })
 
         this.setState({
@@ -1343,11 +1343,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    render() {
-        const { intl } = this.props
+    getFilteredAndSortedDialogs() {
         let trainDialogs = this.getFilteredDialogs(this.props.trainDialogs)
         trainDialogs = this.sortTrainDialogs(trainDialogs, this.state.columns, this.state.sortColumn)
+        return trainDialogs
+    }
 
+    render() {
+        const { intl } = this.props
+        const computedTrainDialogs = this.getFilteredAndSortedDialogs()
         const isNoDialogs = this.props.trainDialogs.length === 0
         const editState = (this.props.editingPackageId !== this.props.app.devPackageId)
             ? EditState.INVALID_PACKAGE
@@ -1525,26 +1529,27 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 }
                             />
                         </div>
-                        {trainDialogs.length === 0
-                            && <div><OF.Icon iconName="Warning" className="cl-icon" /> No dialogs match the search criteria</div>}
+                        {computedTrainDialogs.length === 0
+                            ? <div><OF.Icon iconName="Warning" className="cl-icon" /> No dialogs match the search criteria</div>
+                            : <OF.DetailsList
+                                data-testid="detail-list"
+                                key={this.state.dialogKey}
+                                className={OF.FontClassNames.mediumPlus}
+                                items={computedTrainDialogs}
+                                selection={this.selection}
+                                layoutMode={OF.DetailsListLayoutMode.justified}
+                                getKey={getDialogKey}
+                                setKey="selectionKey"
+                                columns={this.state.columns}
+                                checkboxVisibility={OF.CheckboxVisibility.onHover}
+                                onColumnHeaderClick={this.onClickColumnHeader}
+                                onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                                onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
+                                onItemInvoked={trainDialog => this.onClickTrainDialogItem(trainDialog)}
+                            />}
                     </React.Fragment>}
 
-                <OF.DetailsList
-                    data-testid="detail-list"
-                    key={this.state.dialogKey}
-                    className={`${OF.FontClassNames.mediumPlus} ${(this.state.isTreeViewModalOpen || isNoDialogs) ? 'cl-hidden' : ''}`}
-                    items={trainDialogs}
-                    selection={this.selection}
-                    layoutMode={OF.DetailsListLayoutMode.justified}
-                    getKey={getDialogKey}
-                    setKey="selectionKey"
-                    columns={this.state.columns}
-                    checkboxVisibility={OF.CheckboxVisibility.onHover}
-                    onColumnHeaderClick={this.onClickColumnHeader}
-                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
-                    onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
-                    onItemInvoked={trainDialog => this.onClickTrainDialogItem(trainDialog)}
-                />
+
 
                 {teachSession && teachSession.teach &&
                     <TeachSessionModal

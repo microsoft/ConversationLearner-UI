@@ -114,17 +114,20 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
-        const { columns } = this.state;
-        const sortColumn = columns.find(c => clickedColumn.key === c.key)!
-        const isSortedDescending = !clickedColumn.isSortedDescending;
+        const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
+        const columns = this.state.columns.map(column => {
+            column.isSorted = false
+            column.isSortedDescending = false
+            if (column === sortColumn) {
+                column.isSorted = true
+                column.isSortedDescending = !clickedColumn.isSortedDescending
+            }
+            return column
+        })
 
         // Reset the items and columns to match the state.
         this.setState({
-            columns: columns.map(column => {
-                column.isSorted = (column.key === clickedColumn.key);
-                column.isSortedDescending = isSortedDescending;
-                return column;
-            }),
+            columns,
             sortColumn
         });
     }
