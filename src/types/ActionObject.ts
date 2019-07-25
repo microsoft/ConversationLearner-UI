@@ -48,6 +48,7 @@ export type UpdateAction = {
     type: AT.EDIT_TRAINDIALOG_MERGE_FULFILLED
 } | {
     type: AT.EDIT_TRAINDIALOG_REPLACE_ASYNC
+    enableSpinner: boolean
 } | {
     type: AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED,
     updatedTrainDialog: CLM.TrainDialog,

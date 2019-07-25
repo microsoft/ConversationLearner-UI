@@ -77,7 +77,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.DELETE_MEMORY_ASYNC:
         // case AT.DELETE_LOG_DIALOG_ASYNC: Don't block
         // case AT.DELETE_LOG_DIALOGS_ASYNC: Don't block
-        case AT.DELETE_TEACH_SESSION_ASYNC: 
+        case AT.DELETE_TEACH_SESSION_ASYNC:
         // case AT.DELETE_TRAIN_DIALOG_ASYNC: Don't block
 
         case AT.EDIT_ACTION_ASYNC:
@@ -88,7 +88,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.EDIT_APP_EDITING_TAG_ASYNC:
         case AT.EDIT_TRAINDIALOG_ASYNC:
         case AT.EDIT_TRAINDIALOG_MERGE_ASYNC:
-        case AT.EDIT_TRAINDIALOG_REPLACE_ASYNC:
+
 
         // case AT.EXPIRE_CHAT_SESSION_AYSNC: Don't block
 
@@ -120,6 +120,11 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.POST_SCORE_FEEDBACK_ASYNC:
         case AT.SPINNER_ADD:
             state.displaySpinner.push(spinnerName(action.type))
+            return
+        case AT.EDIT_TRAINDIALOG_REPLACE_ASYNC:
+            if (action.enableSpinner) {
+                state.displaySpinner.push(spinnerName(action.type))
+            }
             return
         case AT.CREATE_ACTION_FULFILLED:
         case AT.CREATE_APP_TAG_FULFILLED:

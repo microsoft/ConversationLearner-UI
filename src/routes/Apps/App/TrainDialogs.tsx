@@ -17,6 +17,7 @@ import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
 import TranscriptImporter from '../../../components/modals/TranscriptImporter'
 import TranscriptImportWaitModal from '../../../components/modals/TranscriptImportWaitModal'
+import ProgressModal from '../../../components/modals/ProgressModal'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { bindActionCreators } from 'redux'
@@ -156,7 +157,9 @@ interface ComponentState {
     importAutoCreate: boolean
     importAutoMerge: boolean
     isTreeViewModalOpen: boolean
-    isReplaySelectedDisabled: boolean
+    replayDialogs: CLM.TrainDialog[]
+    replayDialogIndex: number
+    isReplaySelectedActive: boolean
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
@@ -209,7 +212,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             importAutoCreate: false,
             importAutoMerge: false,
             isTreeViewModalOpen: false,
-            isReplaySelectedDisabled: false,
+            isReplaySelectedActive: false,
+            replayDialogs: [],
+            replayDialogIndex: 0,
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
             selectedActivityIndex: null,
@@ -1027,11 +1032,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     async onClickReplaySelected() {
-        this.setState({
-            isReplaySelectedDisabled: true
+        const selectedTrainDialogs = this.selection.getSelection() as CLM.TrainDialog[]
+        await Util.setStateAsync(this, {
+            isReplaySelectedActive: true,
+            replayDialogs: selectedTrainDialogs,
+            replayDialogIndex: 0
         })
 
-        for (const trainDialog of this.props.trainDialogs) {
+        for (const [trainDialogIndex, trainDialog] of this.state.replayDialogs.entries()) {
+            await Util.setStateAsync(this, {
+                replayDialogIndex: trainDialogIndex,
+            })
+
             const newTrainDialog = await DialogEditing.onReplayTrainDialog(
                 trainDialog,
                 this.props.app.appId,
@@ -1040,11 +1052,19 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.trainDialogReplayThunkAsync as any,
             )
 
-            await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, trainDialog.trainDialogId, newTrainDialog)
+            await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, trainDialog.trainDialogId, newTrainDialog, false)
+
+            // If user clicks 'Cancel' replay dialogs will be reset
+            if (this.state.replayDialogs.length === 0) {
+                console.warn(`Replay Selected Dialogs Canceled!`)
+                break;
+            }
         }
 
         this.setState({
-            isReplaySelectedDisabled: false
+            isReplaySelectedActive: false,
+            replayDialogs: [],
+            replayDialogIndex: 0,
         })
     }
 
@@ -1112,8 +1132,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.setState({
                 transcriptFiles: undefined,
                 isImportWaitModalOpen: false
-            }
-            )
+            })
         }
     }
 
@@ -1252,6 +1271,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
+        })
+    }
+
+    @OF.autobind
+    onClickCancelReplaySelected() {
+        this.setState({
+            replayDialogs: []
         })
     }
 
@@ -1420,7 +1446,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         iconProps={{
                             iconName: "Refresh"
                         }}
-                        disabled={this.state.isReplaySelectedDisabled || isEditingDisabled || this.state.selectionCount === 0}
+                        disabled={this.state.isReplaySelectedActive || isEditingDisabled || this.state.selectionCount === 0}
                         onClick={this.onClickReplaySelected}
                         ariaDescription={Util.formatMessageId(intl, FM.BUTTON_REPLAY_SELECTED, { selectionCount: this.state.selectionCount })}
                         text={Util.formatMessageId(intl, FM.BUTTON_REPLAY_SELECTED, { selectionCount: this.state.selectionCount })}
@@ -1608,6 +1634,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     allUniqueTags={this.props.allUniqueTags}
                     importIndex={this.state.transcriptIndex}
                     importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : undefined}
+                />
+                <ProgressModal
+                    open={this.state.replayDialogs.length > 0}
+                    title={'Replaying'}
+                    index={this.state.replayDialogIndex + 1}
+                    total={this.state.replayDialogs.length}
+                    onClose={this.onClickCancelReplaySelected}
                 />
                 {this.state.isTranscriptImportOpen &&
                     <TranscriptImporter

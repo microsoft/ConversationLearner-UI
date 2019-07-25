@@ -361,9 +361,10 @@ export const trainDialogMergeThunkAsync = (appId: string, newTrainDialog: CLM.Tr
 // --------------------------
 // TrainDialogReplace
 // --------------------------
-const trainDialogReplaceAsync = (): ActionObject => {
+const trainDialogReplaceAsync = (enableSpinner: boolean): ActionObject => {
     return {
-        type: AT.EDIT_TRAINDIALOG_REPLACE_ASYNC
+        type: AT.EDIT_TRAINDIALOG_REPLACE_ASYNC,
+        enableSpinner
     }
 }
 
@@ -375,10 +376,10 @@ const trainDialogReplaceFulfilled = (updatedTrainDialog: CLM.TrainDialog, delete
     }
 }
 
-export const trainDialogReplaceThunkAsync = (appId: string, destinationTrainDialogId: string, newTrainDialog: CLM.TrainDialog) => {
+export const trainDialogReplaceThunkAsync = (appId: string, destinationTrainDialogId: string, newTrainDialog: CLM.TrainDialog, enableSpinner = true) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.EDIT_TRAINDIALOG_REPLACE_ASYNC)
-        dispatch(trainDialogReplaceAsync())
+        dispatch(trainDialogReplaceAsync(enableSpinner))
 
         try {
             const promises: Promise<any>[] = []
