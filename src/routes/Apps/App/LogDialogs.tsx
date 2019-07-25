@@ -230,7 +230,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         columns: IRenderableColumn[],
         sortColumn: IRenderableColumn | undefined,
     ): CLM.LogDialog[] {
-        // If column header selected sort the items
+        // If column header not selected, no sorting needed, return items
         if (!sortColumn) {
             return logDialogs
         }
@@ -981,6 +981,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         const isPlaceholderVisible = this.props.logDialogs.length === 0
 
+        const isEditingDisabled = this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot;
         return (
             <div className="cl-page">
                 <div data-testid="log-dialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
@@ -1002,7 +1003,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 <div className="cl-buttons-row">
                     <OF.PrimaryButton
                         data-testid="log-dialogs-new-button"
-                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                        disabled={isEditingDisabled}
                         onClick={this.onClickNewChatSession}
                         ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
@@ -1036,7 +1037,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                                     iconProps={{
                                         iconName: "Add"
                                     }}
-                                    disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                                    disabled={isEditingDisabled}
                                     onClick={this.onClickNewChatSession}
                                     ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                                     text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
