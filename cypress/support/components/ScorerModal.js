@@ -18,13 +18,13 @@ export function ClickTextAction(expectedResponse) {
 }
 
 export function ClickApiAction(apiName, expectedResponse, expectedIndexForActionPlacement) {
-  cy.Get('[data-testid="action-scorer-api-name"]', {timeout: 8000}).ExactMatch(apiName)
+  cy.Get('[data-testid="action-scorer-api-name"]').ExactMatch(apiName)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .Click()
 }
 
 export function ClickEndSessionAction(expectedData) {
-  cy.Get('[data-testid="action-scorer-session-response"]', {timeout: 8000})
+  cy.Get('[data-testid="action-scorer-session-response"]')
     .ExactMatch('EndSession')
     .siblings('[data-testid="action-scorer-session-response-user"]')
     .ExactMatch(expectedData)
@@ -34,13 +34,13 @@ export function ClickEndSessionAction(expectedData) {
 }
 
 export function VerifyContainsEnabledAction(expectedResponse) {
-  cy.Get('[data-testid="action-scorer-text-response"]', {timeout: 8000}).contains(expectedResponse)
+  cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
     .should('be.enabled')
 }
 
 export function VerifyContainsDisabledAction(expectedResponse) {
-  cy.Get('[data-testid="action-scorer-text-response"]', {timeout: 8000}).contains(expectedResponse)
+  cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
     .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-no-click"]')
     .should('be.disabled')
 }
@@ -57,7 +57,7 @@ function VerifyEndSessionActionState(expectedData, selectButtonDataTestId, disab
   // but a change in the UI rendering caused the chained series to fail every once in a while. So by breaking them up
   // and putting them inside of a Cypress .should function, we get the retry on the entire chain instead of just the last
   // elements.
-  cy.wrap(1, {timeout: 8000}).should(() =>{
+  cy.wrap(1).should(() =>{
     let elements = Cypress.$('[data-testid="action-scorer-session-response"]')
     if (elements.length == 0) { throw new Error('Found ZERO elements containing [data-testid="action-scorer-session-response"]')}
     
