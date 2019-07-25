@@ -127,3 +127,26 @@ export function GetBuildKey() {
 export function VerifyErrorMessageContains(expectedMessage) { cy.Get('div.cl-errorpanel').contains(expectedMessage) }
 export function VerifyErrorMessageExactMatch(expectedMessage) { cy.Get('div.cl-errorpanel').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessages() { cy.DoesNotContain('div.cl-errorpanel') }
+
+export function ExactMatch(elements, expectedText) {
+  const funcName = `ExactMatch('${expectedText}')`
+  ConLog(funcName, `Start`)
+  for (let i = 0; i < elements.length; i++) {
+    const elementText = TextContentWithoutNewlines(elements[i])
+    ConLog(funcName, `elementText: '${elementText}'`)
+    if (elementText === expectedText) return elements[i]
+  }
+  throw new Error(`Exact Match '${expectedText}' NOT Found`)
+}
+
+export function ExactMatches(elements, expectedText) {
+  const funcName = `ExactMatches('${expectedText}')`
+  ConLog(funcName, `Start`)
+  let returnElements = []
+  for (let i = 0; i < elements.length; i++) {
+    const elementText = helpers.TextContentWithoutNewlines(elements[i])
+    ConLog(funcName, `elementText: '${elementText}'`)
+    if (elementText === expectedText) returnElements.push(elements[i])
+  }
+  return returnElements
+}

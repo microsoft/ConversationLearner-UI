@@ -8,6 +8,6 @@ import * as homePage from '../../support/components/HomePage'
 describe('Visit Home Page - Tools', () => {
   it('test', () => {
     homePage.Visit()
-    homePage.GetModelListRowCount()
+    homePage.WaitForModelListToLoad()
   })
 })

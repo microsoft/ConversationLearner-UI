@@ -45,18 +45,40 @@ export function VerifyContainsDisabledAction(expectedResponse) {
     .should('be.disabled')
 }
 
-export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-clickable', 'be.enabled') }
-export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-no-click', 'be.disabled') }
-export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-selected', 'be.enabled') }
+export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-clickable', false) }
+export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-no-click', true) }
+export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-selected', false) }
 
-function VerifyEndSessionActionState(expectedData, selectButtonDataTestId, stateToVerify) {
-  cy.Get('[data-testid="action-scorer-session-response"]')
-    .ExactMatch('EndSession')
-    .siblings('[data-testid="action-scorer-session-response-user"]')
-    .ExactMatch(expectedData)
-    .parents('div.ms-DetailsRow-fields')
-    .find(`[data-testid="${selectButtonDataTestId}"]`)
-    .should(stateToVerify)
+function VerifyEndSessionActionState(expectedData, selectButtonDataTestId, disabled) {
+  const funcName = `VerifyEndSessionActionState(${expectedData}, ${selectButtonDataTestId}, ${disabled})`
+  cy.WaitForStableDOM()
+  
+  // Originally we used straight Cypress code and chained all of these element search functions, and it all worked well,
+  // but a change in the UI rendering caused the chained series to fail every once in a while. So by breaking them up
+  // and putting them inside of a Cypress .should function, we get the retry on the entire chain instead of just the last
+  // elements.
+  cy.wrap(1).should(() =>{
+    let elements = Cypress.$('[data-testid="action-scorer-session-response"]')
+    if (elements.length == 0) { throw new Error('Found ZERO elements containing [data-testid="action-scorer-session-response"]')}
+    
+    elements = helpers.ExactMatch(elements, 'EndSession')
+
+    elements = Cypress.$(elements).siblings('[data-testid="action-scorer-session-response-user"]')
+    if (elements.length == 0) { throw new Error('Found ZERO sibling elements containing [data-testid="action-scorer-session-response-user"]')}
+
+    helpers.ExactMatch(elements, expectedData)
+
+    elements = Cypress.$(elements).parents('div.ms-DetailsRow-fields')
+    if (elements.length == 0) { throw new Error('Found ZERO parent elements containing div.ms-DetailsRow-fields')}
+
+    elements = Cypress.$(elements).find(`[data-testid="${selectButtonDataTestId}"]`)
+    if (elements.length != 1) { throw new Error(`We were expecting only 1 but instead we found ${elements.length} child elements containing [data-testid="${selectButtonDataTestId}"]`)}
+    
+    if (elements[0].disabled != disabled) {
+      helpers.ConLog(funcName, `Element that should be ${disabled ? 'Disabled' : 'Enabled'} --- ${elements[0].outerHTML}`)
+      throw new Error(`Expected the Action Scorer Button to be ${disabled ? 'Disabled' : 'Enabled'}, but it was not.`)
+    }
+  })
 }
 
 export function VerifyNoEnabledSelectActionButtons() {

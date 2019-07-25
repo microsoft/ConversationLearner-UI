@@ -123,8 +123,8 @@ function IsAlphaNumeric(string) {
   return true
 }
 
-export function DeleteAction(action, actionType="TEXT") {
+export function DeleteActionThatIsUsedByATrainDialog(action, actionType="TEXT") {
   new actionsGrid.Row(actionType, action).EditAction()
   actionModal.ClickDeleteButton()
-  actionModal.ClickConfirmDeleteButton()
+  actionModal.ClickConfirmDeleteWithWarningButton()
 }

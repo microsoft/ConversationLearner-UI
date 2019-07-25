@@ -11,7 +11,7 @@ export function VerifyTextActionNotInGrid(actionName) { cy.DoesNotContainExact('
 
 export function EditTextAction(actionName) { new Row('TEXT', actionName).EditAction() }
 export function EditApiAction(apiName) { new Row('API', apiName).EditAction() }
-export function EditCardAction(cardContains) { new Row('CARD', cardContains).EditAction() }
+export function EditCardAction(cardText) { new Row('CARD', cardText).EditAction() }
 export function EditEndSessionAction(endSessionData) { new Row('END_SESSION', endSessionData).EditAction() }
 export function EditSetEntityAction(setEntityName) { new Row('SET_ENTITY', setEntityName).EditAction() }
 

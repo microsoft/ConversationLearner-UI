@@ -34,7 +34,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
       actionModal.VerifyActionTypeDisabled()
       actionModal.ClickCancelButton()
 
-      actionsGrid.EditCardAction('Do you like being questioned?')
+      actionsGrid.EditCardAction('question:Do you like being questioned?button1:Yesbutton2:No')
       actionModal.VerifyActionTypeDisabled()
       actionModal.ClickCancelButton()
 
@@ -64,7 +64,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
       actionModal.VerifyActionTypeEnabled()
       actionModal.ClickCancelButton()
 
-      actionsGrid.EditCardAction('Do you like being questioned?')
+      actionsGrid.EditCardAction('question:Do you like being questioned?button1:Yesbutton2:No')
       actionModal.VerifyActionTypeEnabled()
       actionModal.ClickCancelButton()
 

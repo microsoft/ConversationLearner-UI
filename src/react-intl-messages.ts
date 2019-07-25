@@ -152,6 +152,7 @@ export enum FM {
     BUTTON_SELECT_FILES = 'Button.SELECT_FILES',
     BUTTON_OK = 'Button.OK',
     BUTTON_REPLAY = 'Button.REPLAY',
+    BUTTON_REPLAY_SELECTED = 'Button.REPLAY_SELECTED',
     BUTTON_SAVE = 'Button.SAVE',
     BUTTON_SAVE_AS_TRAIN_DIALOG = 'Button.SAVE_AS_TD',
     BUTTON_SAVE_EDIT = 'Button.SAVE_EDIT',
@@ -173,6 +174,9 @@ export enum FM {
     CHATSESSIONMODAL_EXPIREBUTTON_TEXT = 'ChatSessionModal.expireButton.text',
     CHATSESSIONMODAL_TIMEOUT_TITLE = 'ChatSessionModal.timeout.title',
 
+    // CompareDialogs
+    COMPAREDIALOGS_EDIT = 'CompareDialogs.button.edit',
+    
     // ConfirmCancelModal
     CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT = 'ConfirmCancelModal.primaryButton.text',
     CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT = 'ConfirmCancelModal.defaultButton.text',
@@ -376,7 +380,7 @@ export enum FM {
     REPLAYERROR_DESC_API_BADCARD = 'ReplayError.Desc.apiBadCard',
     REPLAYERROR_DESC_API_EXCEPTION = 'ReplayError.Desc.apiException',
     REPLAYERROR_DESC_API_MALFORMED = 'ReplayError.Desc.apiMalformed',
-    REPLAYERROR_DESC_API_STUB = 'ReplayError.Desc.apiStub',
+    REPLAYERROR_DESC_API_PLACEHOLDER = 'ReplayError.Desc.apiPlaceholder',
     REPLAYERROR_DESC_API_UNDEFINED = 'ReplayError.Desc.apiUndefined',
     REPLAYERROR_DESC_INPUT_AFTER_NONWAIT = 'ReplayError.Desc.inputAfterNonWait',
     REPLAYERROR_DESC_ENTITY_UNDEFINED = 'ReplayError.Desc.entityUndefined',
@@ -435,8 +439,8 @@ export enum FM {
     // TeachSessionInit
     TEACHSESSIONINIT_INPUT_PLACEHOLDER = 'TeachSessionInit.input.placeholder',
     TEACHSESSIONINIT_TITLE = 'TeachSessionInit.title',
-    TEACHSESSIONSTUB_TITLE = 'TeachSessionStub.title',
-    TEACHSESSIONSTUB_DESCRIPTION = 'TeachSessionStub.description',
+    TEACHSESSIONPLACEHOLDER_TITLE = 'TeachSessionPlaceholder.title',
+    TEACHSESSIONPLACEHOLDER_DESCRIPTION = 'TeachSessionPlaceholder.description',
 
     // TeachSessionModal
     TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE = 'TeachSessionModal.teach.confirmDelete.title',
@@ -742,6 +746,7 @@ export default {
         [FM.BUTTON_LOAD]: 'Load',
         [FM.BUTTON_OK]: 'OK',
         [FM.BUTTON_REPLAY]: 'Replay',
+        [FM.BUTTON_REPLAY_SELECTED]: 'Replay Selected ({selectionCount})',
         [FM.BUTTON_SAVE]: 'Save',
         [FM.BUTTON_SAVE_AS_TRAIN_DIALOG]: 'Save As Train Dialog',
         [FM.BUTTON_SAVE_BRANCH]: 'Save Branch',
@@ -755,7 +760,7 @@ export default {
         [FM.BUTTON_TEST]: 'Test',
         [FM.BUTTON_TESTING]: 'Testing',
         [FM.BUTTON_NEXT]: 'Next',
-        [FM.BUTTON_PREVIOUS]: 'Previous',
+        [FM.BUTTON_PREVIOUS]: 'Prev',
 
         // Error Messages
         [FM.CUSTOMERROR_NETWORK_ERROR]: 'Is your Bot running? Did you set NODE_ENV=development?',
@@ -812,7 +817,7 @@ export default {
         [FM.REPLAYERROR_DESC_API_BADCARD]: 'API Render function returned a malformed Activity',
         [FM.REPLAYERROR_DESC_API_EXCEPTION]: 'API in Bot encountered an exception',
         [FM.REPLAYERROR_DESC_API_MALFORMED]: 'Logic portion of callback returns a value, but no Render portion defined',
-        [FM.REPLAYERROR_DESC_API_STUB]: 'Stub API should be replaced with a real API callback',
+        [FM.REPLAYERROR_DESC_API_PLACEHOLDER]: 'Placeholder should be replaced with a real API callback',
         [FM.REPLAYERROR_DESC_API_UNDEFINED]: 'API does not exist on running Bot',
         [FM.REPLAYERROR_DESC_INPUT_AFTER_NONWAIT]: 'User Input following a non-Wait Action',
         [FM.REPLAYERROR_DESC_ENTITY_UNDEFINED]: 'Entity does not exist',
@@ -1003,6 +1008,10 @@ export default {
         [FM.CHATSESSIONMODAL_EXPIREBUTTON_TEXT]: 'Session Timeout',
         [FM.CHATSESSIONMODAL_TIMEOUT_TITLE]: 'The EndSession callback will be invoked on the next user input, and a new Session started',
 
+        // CompareDialogs
+        [FM.COMPAREDIALOGS_EDIT]: 'Edit Dialog',
+
+
         // ConfirmCancelModal
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
@@ -1157,8 +1166,8 @@ export default {
 
         [FM.TEACHSESSIONINIT_INPUT_PLACEHOLDER]: 'Entity value...',
         [FM.TEACHSESSIONINIT_TITLE]: 'Set Initial Entity Values',
-        [FM.TEACHSESSIONSTUB_TITLE]: 'Stub API',
-        [FM.TEACHSESSIONSTUB_DESCRIPTION]: 'Memory values as they should be after API call',
+        [FM.TEACHSESSIONPLACEHOLDER_TITLE]: 'Placeholder API',
+        [FM.TEACHSESSIONPLACEHOLDER_DESCRIPTION]: 'Memory values as they should be after API call',
 
         // TeachSessionModal
         [FM.TEACHSESSIONMODAL_TEACH_CONFIRMDELETE_TITLE]: 'Are you sure you want to abandon this dialog?',

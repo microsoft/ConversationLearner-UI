@@ -18,18 +18,18 @@ import { connect } from 'react-redux'
 import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import './EditApiStub.css'
+import './EditApiPlaceholder.css'
 
 interface ComponentState {
     filledEntityMap: CLM.FilledEntityMap
     isEntityEditorModalOpen: boolean
     apiNameVal: string
-    // If editing an is exiting api stub
+    // If editing an is exiting placeholder
     editingExisting: boolean
     isTerminal: boolean
 }
 
-class EditApiStub extends React.Component<Props, ComponentState> {
+class EditApiPlaceholder extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
@@ -46,8 +46,8 @@ class EditApiStub extends React.Component<Props, ComponentState> {
         if (this.props.isOpen !== newProps.isOpen) {
             this.setState({
                 filledEntityMap: newProps.initMemories || new CLM.FilledEntityMap(),
-                apiNameVal: newProps.apiStubName || '',
-                editingExisting: newProps.apiStubName !== null
+                apiNameVal: newProps.placeholderName || '',
+                editingExisting: newProps.placeholderName !== null
             })
         }
     }
@@ -100,7 +100,7 @@ class EditApiStub extends React.Component<Props, ComponentState> {
     }
 
     onGetNameErrorMessage(value: string): string {
-        // Don't need to check if editing existing API stub
+        // Don't need to check if editing existing placeholder
         if (this.state.editingExisting) {
             return ''
         }
@@ -119,7 +119,7 @@ class EditApiStub extends React.Component<Props, ComponentState> {
             return Util.formatMessageId(this.props.intl, FM.FIELDERROR_ALPHANUMERIC)
         }
 
-        if (this.props.actions.filter(a => CLM.ActionBase.isStubbedAPI(a))
+        if (this.props.actions.filter(a => CLM.ActionBase.isPlaceholderAPI(a))
             .map(aa => new CLM.ApiAction(aa))
             .find(aaa => aaa.name === value)) {
                 return Util.formatMessageId(this.props.intl, FM.FIELDERROR_DISTINCT)
@@ -147,7 +147,7 @@ class EditApiStub extends React.Component<Props, ComponentState> {
             >
                 <div className="cl-modal_header">
                     <span className={OF.FontClassNames.xxLarge}>
-                        <FormattedMessageId id={FM.TEACHSESSIONSTUB_TITLE}/>
+                        <FormattedMessageId id={FM.TEACHSESSIONPLACEHOLDER_TITLE}/>
                     </span>
                 </div>
                 <div>
@@ -173,8 +173,8 @@ class EditApiStub extends React.Component<Props, ComponentState> {
                             </div>
                         }
                         <div className={OF.FontClassNames.mediumPlus}>
-                            <FormattedMessageId id={FM.TEACHSESSIONSTUB_DESCRIPTION}/>
-                            <HelpIcon tipType={ToolTip.TipType.STUB_API}/>
+                            <FormattedMessageId id={FM.TEACHSESSIONPLACEHOLDER_DESCRIPTION}/>
+                            <HelpIcon tipType={ToolTip.TipType.PLACEHOLDER_API}/>
                         </div>
                     </div>
                     <MemorySetter
@@ -237,7 +237,7 @@ export interface ReceivedProps {
     isOpen: boolean,
     app: CLM.AppBase,
     actions: CLM.ActionBase[],
-    apiStubName: string | null
+    placeholderName: string | null
     editingPackageId: string
     initMemories: CLM.FilledEntityMap | null
     handleClose: (filledEntityMap: CLM.FilledEntityMap | null, apiName: string | null, isTerminal: boolean) => void
@@ -248,4 +248,4 @@ const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
 type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EditApiStub))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(EditApiPlaceholder))

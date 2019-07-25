@@ -111,7 +111,7 @@ class Index extends React.Component<Props, ComponentState> {
     botValidationErrors(botInfo: CLM.BotInfo, actionList: CLM.ActionBase[]): string[] {
         // Check for missing APIs
         const actionsMissingCallbacks = actionList
-            .filter(a => a.actionType === CLM.ActionTypes.API_LOCAL && !CLM.ActionBase.isStubbedAPI(a))
+            .filter(a => a.actionType === CLM.ActionTypes.API_LOCAL && !CLM.ActionBase.isPlaceholderAPI(a))
             .map(a => new CLM.ApiAction(a))
             .filter(a => !botInfo.callbacks || !botInfo.callbacks.some(cb => cb.name === a.name))
 
