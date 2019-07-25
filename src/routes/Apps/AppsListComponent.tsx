@@ -136,7 +136,6 @@ interface Props extends InjectedIntlProps {
 }
 
 interface ComponentState {
-    apps: CLM.AppBase[]
     columns: ISortableRenderableColumn[]
     sortColumn: ISortableRenderableColumn
 }
@@ -144,6 +143,8 @@ interface ComponentState {
 const ifStringReturnLowerCase = (s: string | number) => {
     return (typeof s === "string") ? s.toLowerCase() : s
 }
+
+const getModelKey = (model: OF.IObjectWithKey) => (model as CLM.AppBase).appId
 
 export class Component extends React.Component<Props, ComponentState> {
     constructor(props: Props) {
@@ -165,20 +166,9 @@ export class Component extends React.Component<Props, ComponentState> {
             }
         })
 
-        const apps = this.getSortedApplications(defaultSortColumn, this.props.apps)
         this.state = {
-            apps,
             columns,
             sortColumn: defaultSortColumn
-        }
-    }
-
-    componentDidUpdate(prevProps: Props) {
-        if (prevProps.apps.length !== this.props.apps.length) {
-            const apps = this.getSortedApplications(this.state.sortColumn, this.props.apps)
-            this.setState({
-                apps
-            })
         }
     }
 
@@ -201,29 +191,28 @@ export class Component extends React.Component<Props, ComponentState> {
         return sortedApps;
     }
 
-    onClickColumnHeader = (event: React.MouseEvent<HTMLElement>, column: ISortableRenderableColumn) => {
-        const { columns } = this.state;
-        const sortColumn = columns.find(c => column.key === c.key)!
-
-        const newColumns = columns.map(col => {
-            col.isSorted = false;
-            if (col.key === column.key) {
-                col.isSorted = true;
-                col.isSortedDescending = !col.isSortedDescending;
+    @OF.autobind
+    onClickColumnHeader(event: React.MouseEvent<HTMLElement>, clickedColumn: ISortableRenderableColumn) {
+        const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
+        const columns = this.state.columns.map(column => {
+            column.isSorted = false
+            column.isSortedDescending = false
+            if (column === sortColumn) {
+                column.isSorted = true
+                column.isSortedDescending = !clickedColumn.isSortedDescending
             }
-            return col;
+            return column;
         })
-        const apps = this.getSortedApplications(this.state.sortColumn, this.state.apps)
 
         this.setState({
-            columns: newColumns,
+            columns,
             sortColumn,
-            apps,
         });
     }
 
     render() {
         const props = this.props
+        const computedApps = this.getSortedApplications(this.state.sortColumn, this.props.apps)
         const isDispatcherFeaturesEnabled = this.props.featuresString.includes(FeatureStrings.DISPATCHER)
 
         return <div className="cl-o-app-columns">
@@ -269,7 +258,7 @@ export class Component extends React.Component<Props, ComponentState> {
                             )}
 
                     </div>
-                    {this.state.apps.length === 0
+                    {computedApps.length === 0
                         ? <div className="cl-page-placeholder">
                             <div className="cl-page-placeholder__content">
                                 <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>{Util.formatMessageId(props.intl, FM.APPSLIST_EMPTY_TEXT)}</div>
@@ -291,7 +280,9 @@ export class Component extends React.Component<Props, ComponentState> {
                         </div>
                         : <OF.DetailsList
                             className={OF.FontClassNames.mediumPlus}
-                            items={this.state.apps}
+                            items={computedApps}
+                            getKey={getModelKey}
+                            setKey="selectionKey"
                             columns={this.state.columns}
                             selection={this.props.selection}
                             checkboxVisibility={isDispatcherFeaturesEnabled
