@@ -67,8 +67,8 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             }
             case CLM.ActionTypes.API_LOCAL: {
                 const apiAction = new CLM.ApiAction(action)
-                // If stub not expecting action to exist
-                if (apiAction.isStub) {
+                // If placeholder not expecting action to exist
+                if (apiAction.isPlaceholder) {
                     return false
                 }
                 // Otherwise make sure callback exists

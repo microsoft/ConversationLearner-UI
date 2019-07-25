@@ -1,0 +1,7 @@
+.cl-index-buttons__count {
+    line-height: 30px;
+    font-weight: bold;
+    min-width: 65px;
+    text-align: center;
+    color: var(--color-themePrimary);
+}

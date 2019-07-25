@@ -19,7 +19,7 @@ interface ICombinedActionArguments {
 
 interface Props {
     name: string
-    isStub: boolean
+    isPlaceholder: boolean
     showLogicFunction: boolean
     originalLogicArguments: RenderedActionArgument[]
     substitutedLogicArguments: RenderedActionArgument[] | null
@@ -51,7 +51,7 @@ export default class Component extends React.Component<Props, State> {
         return <div className="cl-api-payload">
             <div>
                 <div className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-api-name">{this.props.name}</div>
-                {this.props.showLogicFunction && !this.props.isStub &&
+                {this.props.showLogicFunction && !this.props.isPlaceholder &&
                     <div className="cl-api-payload__fn">
                         <div className="cl-api-payload__signature">logic(memoryManager{pairedLogicArguments.argumentPairs.length !== 0 && `, ${pairedLogicArguments.argumentPairs.map(a => a.original.parameter).join(', ')}`})</div>
                         <div className="cl-api-payload__arguments ms-ListItem-primaryText">
@@ -67,7 +67,7 @@ export default class Component extends React.Component<Props, State> {
                         </div>
                     </div>
                 }
-                {this.props.showRenderFunction && !this.props.isStub &&
+                {this.props.showRenderFunction && !this.props.isPlaceholder &&
                     <div className="cl-api-payload__fn">
                         <div className="cl-api-payload__signature">render(result, memoryManager{pairedRenderArguments.argumentPairs.length !== 0 && `, ${pairedRenderArguments.argumentPairs.map(a => a.original.parameter).join(', ')}`})</div>
                         <div className="cl-api-payload__arguments ms-ListItem-primaryText">
