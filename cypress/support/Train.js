@@ -405,6 +405,8 @@ export function CreateNewTrainDialog() {
 }
 
 export function EditTraining(firstInput, lastInput, lastResponse) {
+  const funcName = `EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`
+  let trainDialogIndex
   cy.Enqueue(() => {
     const turns = trainDialogsGrid.GetTurns()
     const firstInputs = trainDialogsGrid.GetFirstInputs()
@@ -413,7 +415,7 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
     const lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
     const createdDates = trainDialogsGrid.GetCreatedDates()
 
-    helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `${turns.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
+    helpers.ConLog(funcName, `${turns.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
 
     for (let i = 0; i < firstInputs.length; i++) {
       if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse) {
@@ -433,12 +435,44 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
         originalTrainingSummary = Object.create(currentTrainingSummary)
         isBranched = false
 
-        helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `ClickTraining for ${i} - ${turns[i]}, ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
+        helpers.ConLog(funcName, `ClickTraining for Train Dialog Row #${i} - ${turns[i]}, ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
         trainDialogsGrid.ClickTraining(i)
+        trainDialogIndex = i
         return
       }
     }
     throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`)
+  })
+  .then(() => {
+    // Sometimes the first click on the grid row does not work, so we implemented this logic to watch and see
+    // if it loaded, and if not to re-click on the row. So far we've never seen it require a 3rd click.
+    cy.WaitForStableDOM()
+
+    const funcName2 = funcName + ' - VALIDATION PHASE'
+    let retryCount = 0
+
+    helpers.ConLog(funcName2, `Row #${trainDialogIndex}`)
+
+    cy.wrap(1, {timeout: 8000}).should(() => {
+      const allChatMessages = GetAllChatMessages()
+      if (allChatMessages.length > 0) {
+        helpers.ConLog(funcName2, `The expected Train Dialog from row #${trainDialogIndex} has loaded`)
+        return
+      }
+      
+      helpers.ConLog(funcName2, `We are still waiting for the Train Dialog to load`)
+      retryCount++
+      if (retryCount % 5 == 0) {
+        helpers.ConLog(funcName2, `Going to click on Train Dialog Row #${trainDialogIndex} again.`)
+        
+        // The problem with calling ClickTraining is that it causes the cy.wrap timeout to be canceled.
+        // CANNOT USE THIS - trainDialogsGrid.ClickTraining(trainDialogIndex)
+        Cypress.$('[data-testid="train-dialogs-description"]')[trainDialogIndex].click({force: true})
+
+        throw new Error(`Retry - We just finished clicking on Train Dialog Row #${trainDialogIndex} again.`)
+      }
+      throw new Error('Retry - We have not yet achieved our goal')
+    })
   })
 }
 

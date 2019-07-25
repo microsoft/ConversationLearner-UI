@@ -86,8 +86,8 @@ export class TrainingStatus {
     const pollingStoppedWarning = Cypress.$(trainingStatusElements).find('[data-testid="training-status-polling-stopped-warning"]').length > 0
     const failed = Cypress.$(trainingStatusElements).find('[data-testid="training-status-failed"]').length > 0
 
-    if ((pollingStoppedWarning || failed) && (currentTime > canRefreshTrainingStatusTime)) {
-      canRefreshTrainingStatusTime = currentTime + 2000
+    if ((pollingStoppedWarning || failed) && (currentTime > this.canRefreshTrainingStatusTime)) {
+      this.canRefreshTrainingStatusTime = currentTime + 2000
 
       helpers.ConLog('TrainingStatus.WaitForCompleted', 'Click the Refresh Button...')
 

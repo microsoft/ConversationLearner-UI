@@ -70,28 +70,10 @@ const uploadFile = (fileName: string, selector: string) => {
 
 Cypress.Commands.add('UploadFile', uploadFile)
 
-// This function operates similar to the "cy.contains" command except that it expects
+// These functions operates similar to the "cy.contains" command except that it expects
 // the text content of the elements to contain an EXACT MATCH to the expected text.
-Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expectedText) => {
-  helpers.ConLog(`ExactMatch('${expectedText}')`, `Start`)
-  for (let i = 0; i < elements.length; i++) {
-    const elementText = helpers.TextContentWithoutNewlines(elements[i])
-    helpers.ConLog(`ExactMatch('${expectedText}')`, `elementText: '${elementText}'`)
-    if (elementText === expectedText) return elements[i]
-  }
-  throw new Error(`Exact Match '${expectedText}' NOT Found`)
-})
-
-Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expectedText) => {
-  helpers.ConLog(`ExactMatches('${expectedText}')`, `Start`)
-  let returnElements = []
-  for (let i = 0; i < elements.length; i++) {
-    const elementText = helpers.TextContentWithoutNewlines(elements[i])
-    helpers.ConLog(`ExactMatches('${expectedText}')`, `elementText: '${elementText}'`)
-    if (elementText === expectedText) returnElements.push(elements[i])
-  }
-  return returnElements
-})
+Cypress.Commands.add('ExactMatch', { prevSubject: 'element' }, (elements, expectedText) => { return helpers.ExactMatch(elements, expectedText) })
+Cypress.Commands.add('ExactMatches', { prevSubject: 'element' }, (elements, expectedText) => { return helpers.ExactMatches(elements, expectedText) })
 
 Cypress.Commands.add("WaitForTrainingStatusCompleted", () => {
   cy.log('WaitForTrainingStatusCompleted')
