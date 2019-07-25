@@ -52,10 +52,10 @@ export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyEnd
 function VerifyEndSessionActionState(expectedData, selectButtonDataTestId, stateToVerify) {
   cy.Get('[data-testid="action-scorer-session-response"]', {timeout: 8000})
     .ExactMatch('EndSession')
-    .siblings('[data-testid="action-scorer-session-response-user"]')
+    .siblings('[data-testid="action-scorer-session-response-user"]', {timeout: 8000})
     .ExactMatch(expectedData)
     .parents('div.ms-DetailsRow-fields')
-    .find(`[data-testid="${selectButtonDataTestId}"]`)
+    .find(`[data-testid="${selectButtonDataTestId}"]`, {timeout: 8000})
     .should(stateToVerify)
 }
 
