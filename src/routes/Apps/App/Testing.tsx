@@ -12,7 +12,7 @@ import FormattedMessageId from '../../../components/FormattedMessageId'
 import CompareDialogsModal from '../../../components/modals/CompareDialogsModal'
 import RateDialogsModal from '../../../components/modals/RateDialogsModal'
 import TranscriptValidatorPicker from '../../../components/modals/TranscriptValidatorPicker'
-import TestWaitModal from '../../../components/modals/TestWaitModal'
+import TestWaitModal from '../../../components/modals/ProgressModal'
 import { connect } from 'react-redux'
 import { saveAs } from 'file-saver'
 import { State, ErrorType } from '../../../types'
@@ -37,7 +37,7 @@ interface ComponentState {
 const initialState: ComponentState = {
     transcriptIndex: 0,
     transcriptFiles: [],
-    transcriptValidationSet: {transcriptValidationResults: []},
+    transcriptValidationSet: { transcriptValidationResults: [] },
     isTranscriptValidatePickerOpen: false,
     compareDialogs: null,
     isRateDialogsOpen: false,
@@ -62,13 +62,13 @@ class Testing extends React.Component<Props, ComponentState> {
             await this.onStartTranscriptValidate()
         }
         else {
-            this.setState({isTranscriptValidatePickerOpen: false})
+            this.setState({ isTranscriptValidatePickerOpen: false })
         }
     }
 
     @OF.autobind
     async onAbandonTranscriptValidationPicker(): Promise<void> {
-        this.setState({isTranscriptValidatePickerOpen: false})
+        this.setState({ isTranscriptValidatePickerOpen: false })
     }
 
     @OF.autobind
@@ -91,11 +91,11 @@ class Testing extends React.Component<Props, ComponentState> {
     readFileAsync(file: File): Promise<string> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-        
+
             reader.onload = (e: Event) => {
                 resolve(reader.result as any);
             }
-        
+
             reader.onerror = reject;
             reader.readAsText(file);
         })
@@ -110,14 +110,14 @@ class Testing extends React.Component<Props, ComponentState> {
 
         // Check if I'm done importing files
         if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
-            this.setState({transcriptFiles: []})
+            this.setState({ transcriptFiles: [] })
             this.onSave()
             return
         }
 
         // Pop the next file
         const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
-        this.setState({transcriptIndex: this.state.transcriptIndex + 1})
+        this.setState({ transcriptIndex: this.state.transcriptIndex + 1 })
 
         let source = await this.readFileAsync(transcriptFile)
         try {
@@ -136,7 +136,7 @@ class Testing extends React.Component<Props, ComponentState> {
     async onValidateTranscript(fileName: string, transcript: BB.Activity[]): Promise<void> {
 
         const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
-        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", actionHashes: []}
+        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", actionHashes: [] }
         let invalidTranscript = false
         for (let activity of transcript) {
             // TODO: Handle conversation updates
@@ -146,7 +146,7 @@ class Testing extends React.Component<Props, ComponentState> {
                     if (transcriptValidationTurn.inputText !== "") {
                         transcriptValidationTurns.push(transcriptValidationTurn)
                     }
-                    transcriptValidationTurn = { inputText: activity.text, actionHashes: []}
+                    transcriptValidationTurn = { inputText: activity.text, actionHashes: [] }
                 }
                 else if (activity.from.role === "bot") {
                     if (transcriptValidationTurn) {
@@ -180,7 +180,7 @@ class Testing extends React.Component<Props, ComponentState> {
         if (this.state.transcriptValidationSet) {
             const transcriptValidationSet = Util.deepCopy(this.state.transcriptValidationSet)
             transcriptValidationSet.transcriptValidationResults = [...transcriptValidationSet.transcriptValidationResults, transcriptValidationResult]
-            await Util.setStateAsync(this, {transcriptValidationSet})
+            await Util.setStateAsync(this, { transcriptValidationSet })
         }
         await this.onStartTranscriptValidate()
     }
@@ -195,17 +195,17 @@ class Testing extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onCompare(results: CLM.TranscriptValidationResult[]) {
-        this.setState({compareDialogs: results})
+        this.setState({ compareDialogs: results })
     }
 
     @OF.autobind
     onCloseCompare() {
-        this.setState({compareDialogs: null})
+        this.setState({ compareDialogs: null })
     }
 
     @OF.autobind
     onRate() {
-        this.setState({isRateDialogsOpen: true})
+        this.setState({ isRateDialogsOpen: true })
     }
 
     @OF.autobind
@@ -228,7 +228,7 @@ class Testing extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onChangeResultFiles(files: any) { 
+    onChangeResultFiles(files: any) {
         const reader = new FileReader()
         reader.onload = (e: Event) => {
             try {
@@ -371,7 +371,7 @@ class Testing extends React.Component<Props, ComponentState> {
                                     />
                                 </div>
                             </div>
-                            {numChangedResults > 0 && 
+                            {numChangedResults > 0 &&
                                 <div className="cl-testing-subresult">
                                     <span className="cl-testing-result-subtitle">Better: </span>
                                     <span className="cl-entity cl-entity--match cl-testing-result-subvalue">
@@ -382,7 +382,7 @@ class Testing extends React.Component<Props, ComponentState> {
                                     </span>
                                 </div>
                             }
-                            {numChangedResults > 0 && 
+                            {numChangedResults > 0 &&
                                 <div className="cl-testing-subresult">
                                     <span className="cl-testing-result-subtitle">Same: </span>
                                     <span className="cl-entity cl-testing-result-subvalue">
@@ -393,7 +393,7 @@ class Testing extends React.Component<Props, ComponentState> {
                                     </span>
                                 </div>
                             }
-                            {numChangedResults > 0 && 
+                            {numChangedResults > 0 &&
                                 <div className="cl-testing-subresult">
                                     <span className="cl-testing-result-subtitle">Worse: </span>
                                     <span className="cl-entity cl-entity--mismatch cl-testing-result-subvalue">
@@ -417,7 +417,7 @@ class Testing extends React.Component<Props, ComponentState> {
                             }
                             {invalid.length > 0 &&
                                 <div className="cl-testing-result">
-                                    <span className="cl-testing-result-title">Invalid File: </span> 
+                                    <span className="cl-testing-result-title">Invalid File: </span>
                                     <span className="cl-entity cl-entity--mismatch cl-testing-result-value">
                                         {invalid.length}
                                     </span>
@@ -450,19 +450,19 @@ class Testing extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
                 <div className="cl-modal_footer">
-                    <div className="cl-modal-buttons_secondary"/>
+                    <div className="cl-modal-buttons_secondary" />
                     <div className="cl-modal-buttons_primary">
                         <OF.PrimaryButton
                             className="cl-file-picker-button"
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST)} 
-                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST)} 
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST)}
+                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST)}
                             iconProps={{ iconName: 'TestCase' }}
                             onClick={this.onTest}
                         />
                         <OF.DefaultButton
                             className="cl-file-picker-button"
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)} 
-                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)} 
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)}
+                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                             onClick={() => this.resultfileInput.click()}
                         />
@@ -475,13 +475,13 @@ class Testing extends React.Component<Props, ComponentState> {
                         />
                     </div>
                 </div>
-                {this.state.transcriptFiles.length > 0 &&
-                    <TestWaitModal
-                        index={this.state.transcriptIndex}
-                        total={this.state.transcriptFiles.length}
-                        onClose={this.onCancelTest}
-                    />
-                }
+                <TestWaitModal
+                    open={this.state.transcriptFiles.length > 0}
+                    title={"Testing"}
+                    index={this.state.transcriptIndex}
+                    total={this.state.transcriptFiles.length}
+                    onClose={this.onCancelTest}
+                />
                 {this.state.compareDialogs &&
                     <CompareDialogsModal
                         app={this.props.app}
@@ -496,7 +496,7 @@ class Testing extends React.Component<Props, ComponentState> {
                         onClose={this.onCloseRate}
                     />
                 }
-                {this.state.isTranscriptValidatePickerOpen && 
+                {this.state.isTranscriptValidatePickerOpen &&
                     <TranscriptValidatorPicker
                         app={this.props.app}
                         open={true}
@@ -510,7 +510,7 @@ class Testing extends React.Component<Props, ComponentState> {
     }
 
     private onGetNameErrorMessage(value: string): string {
-        
+
         // If not results skip check
         if (this.state && this.state.transcriptValidationSet.transcriptValidationResults.length === 0) {
             return ''

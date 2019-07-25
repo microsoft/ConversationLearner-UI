@@ -12,15 +12,14 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 class TestWaitModal extends React.Component<Props> {
     render() {
         return (
-            <React.Fragment>
                 <OF.Modal
-                    isOpen={true}
+                    isOpen={this.props.open}
                     isBlocking={true}
                     containerClassName='cl-modal cl-modal--small'
                 >
                     <div className='cl-modal_header'>
                         <span className={OF.FontClassNames.xxLarge}>
-                            {`Testing ${this.props.index} of ${this.props.total}...`}
+                            {`${this.props.title} ${this.props.index} of ${this.props.total}...`}
                         </span>
                     </div>
                     <OF.Spinner size={OF.SpinnerSize.large} />
@@ -29,20 +28,20 @@ class TestWaitModal extends React.Component<Props> {
                         <div className="cl-modal-buttons_primary">
                             <OF.DefaultButton
                                 onClick={this.props.onClose}
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
                                 text={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
                                 iconProps={{ iconName: 'Cancel' }}
                             />
                         </div>
                     </div>
                 </OF.Modal>
-
-            </React.Fragment>
         )
     }
 }
 
 export interface ReceivedProps {
+    open: boolean
+    title: string
     index: number
     total: number
     onClose: () => void
