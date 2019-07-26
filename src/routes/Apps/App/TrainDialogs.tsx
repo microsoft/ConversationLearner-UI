@@ -141,9 +141,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 const defaultEntityFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_ENTITIES), data: null })
 const defaultActionFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_ACTIONS) })
 const defaultTagFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
+const getDialogKey = (trainDialog: OF.IObjectWithKey) => (trainDialog as CLM.TrainDialog).trainDialogId
 
 interface ComponentState {
-    trainDialogs: CLM.TrainDialog[]
     columns: IRenderableColumn[]
     sortColumn: IRenderableColumn
     activityHistory: Activity[]
@@ -198,7 +198,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
 
         this.state = {
-            trainDialogs: props.trainDialogs,
             columns: columns,
             sortColumn: lastModifiedColumn,
             activityHistory: [],
@@ -269,36 +268,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         if (this.props.trainDialogs !== newProps.trainDialogs) {
             this.focusNewTeachSessionButton();
         }
-
-        /**
-         * Recompute state dialogs. This not a good practice to save state on every prop change, but 
-         * the internals of the dialog can change such as validity or rounds and we need those updates.
-         * Previously, it was computed on every render() so this isn't much worse.
-         */
-        // if (this.props.trainDialogs.length !== newProps.trainDialogs.length) {
-        if (true) {
-            let trainDialogs = this.getFilteredDialogs(newProps.trainDialogs)
-            trainDialogs = this.sortTrainDialogs(trainDialogs, this.state.columns, this.state.sortColumn)
-
-            this.setState({
-                trainDialogs
-            })
-        }
     }
 
     async componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        // If any of the filters changed, recompute filtered dialogs based on updated filers
-        if (prevState.searchValue !== this.state.searchValue
-            || prevState.tagsFilter !== this.state.tagsFilter
-            || prevState.entityFilter !== this.state.entityFilter
-            || prevState.actionFilter !== this.state.actionFilter) {
-            let trainDialogs = this.getFilteredDialogs(this.props.trainDialogs)
-
-            this.setState({
-                trainDialogs
-            })
-        }
-
         this.handleQueryParameters(this.props.location.search, prevProps.location.search)
     }
 
@@ -375,7 +347,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     private selection: OF.ISelection = new OF.Selection({
-        getKey: (trainDialog) => (trainDialog as CLM.TrainDialog).trainDialogId,
+        getKey: getDialogKey,
         onSelectionChanged: this.onSelectionChanged
     })
 
@@ -395,16 +367,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 column.isSorted = true
                 column.isSortedDescending = !clickedColumn.isSortedDescending
             }
-            return column;
+            return column
         })
 
-        const trainDialogs = this.sortTrainDialogs(this.state.trainDialogs, columns, sortColumn)
-
-        // Reset the items and columns to match the state.
         this.setState({
             columns,
             sortColumn,
-            trainDialogs,
         });
     }
 
@@ -1375,8 +1343,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
+    getFilteredAndSortedDialogs() {
+        let trainDialogs = this.getFilteredDialogs(this.props.trainDialogs)
+        trainDialogs = this.sortTrainDialogs(trainDialogs, this.state.columns, this.state.sortColumn)
+        return trainDialogs
+    }
+
     render() {
         const { intl } = this.props
+        const computedTrainDialogs = this.getFilteredAndSortedDialogs()
         const isNoDialogs = this.props.trainDialogs.length === 0
         const editState = (this.props.editingPackageId !== this.props.app.devPackageId)
             ? EditState.INVALID_PACKAGE
@@ -1554,24 +1529,27 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 }
                             />
                         </div>
-                        {this.state.trainDialogs.length === 0
-                            && <div><OF.Icon iconName="Warning" className="cl-icon" /> No dialogs match the search criteria</div>}
+                        {computedTrainDialogs.length === 0
+                            ? <div><OF.Icon iconName="Warning" className="cl-icon" /> No dialogs match the search criteria</div>
+                            : <OF.DetailsList
+                                data-testid="detail-list"
+                                key={this.state.dialogKey}
+                                className={OF.FontClassNames.mediumPlus}
+                                items={computedTrainDialogs}
+                                selection={this.selection}
+                                layoutMode={OF.DetailsListLayoutMode.justified}
+                                getKey={getDialogKey}
+                                setKey="selectionKey"
+                                columns={this.state.columns}
+                                checkboxVisibility={OF.CheckboxVisibility.onHover}
+                                onColumnHeaderClick={this.onClickColumnHeader}
+                                onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                                onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
+                                onItemInvoked={trainDialog => this.onClickTrainDialogItem(trainDialog)}
+                            />}
                     </React.Fragment>}
 
-                <OF.DetailsList
-                    data-testid="detail-list"
-                    key={this.state.dialogKey}
-                    className={`${OF.FontClassNames.mediumPlus} ${(this.state.isTreeViewModalOpen || isNoDialogs) ? 'cl-hidden' : ''}`}
-                    items={this.state.trainDialogs}
-                    selection={this.selection}
-                    layoutMode={OF.DetailsListLayoutMode.justified}
-                    columns={this.state.columns}
-                    checkboxVisibility={OF.CheckboxVisibility.onHover}
-                    onColumnHeaderClick={this.onClickColumnHeader}
-                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
-                    onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
-                    onItemInvoked={trainDialog => this.onClickTrainDialogItem(trainDialog)}
-                />
+
 
                 {teachSession && teachSession.teach &&
                     <TeachSessionModal

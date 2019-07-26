@@ -192,7 +192,7 @@ export class Component extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    onClickColumnHeader(event: React.MouseEvent<HTMLElement>, clickedColumn: ISortableRenderableColumn) {
+    onClickColumnHeader(event: React.MouseEvent<HTMLElement, MouseEvent>, clickedColumn: ISortableRenderableColumn) {
         const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
         const columns = this.state.columns.map(column => {
             column.isSorted = false
@@ -201,7 +201,7 @@ export class Component extends React.Component<Props, ComponentState> {
                 column.isSorted = true
                 column.isSortedDescending = !clickedColumn.isSortedDescending
             }
-            return column;
+            return column
         })
 
         this.setState({
