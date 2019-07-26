@@ -21,6 +21,7 @@ interface ComponentState {
     isImportTutorialsOpen: boolean
     appToDelete: AppBase | null
     tutorials: AppBase[] | null
+    selectionCount: number
 }
 
 class AppsList extends React.Component<Props, ComponentState> {
@@ -34,7 +35,8 @@ class AppsList extends React.Component<Props, ComponentState> {
         appCreatorType: AppCreatorType.NEW,
         isImportTutorialsOpen: false,
         appToDelete: null,
-        tutorials: null
+        tutorials: null,
+        selectionCount: 0,
     }
 
 
@@ -111,8 +113,10 @@ class AppsList extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onSelectionChanged() {
-        const selection = this.selection.getSelection()
-        console.log({ selection })
+        const selectionCount = this.selection.getSelectedCount()
+        this.setState({
+            selectionCount
+        })
     }
 
     render() {
@@ -125,6 +129,7 @@ class AppsList extends React.Component<Props, ComponentState> {
             onClickApp={this.onClickApp}
             selection={this.selection}
             featuresString={this.props.settings.features}
+            selectionCount={this.state.selectionCount}
 
             isAppCreateModalOpen={this.state.isAppCreateModalOpen}
             onSubmitAppCreateModal={this.onSubmitAppCreateModal}

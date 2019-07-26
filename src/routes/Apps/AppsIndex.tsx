@@ -12,13 +12,14 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { AppBase, AppDefinition, FilledEntity, TrainDialog } from '@conversationlearner/models'
+import { AppBase, AppDefinition, TrainDialog } from '@conversationlearner/models'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
 import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
 import * as uuid from 'uuid/v4'
 import * as Util from '../../Utils/util'
+import { SourceModel } from '../../types/models';
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
@@ -80,7 +81,17 @@ class AppsIndex extends React.Component<Props> {
          */
         appToCreate.metadata.markdown = `dispatcher\n${childrenModels.map(m => `${m.appId},${m.appName}`).join('\n')}`
 
-        const childrenSources = (await Promise.all(childrenModels.map(m => this.props.fetchAppSourceThunkAsync(m.appId, m.devPackageId))) as any) as AppDefinition[]
+        /**
+         * Fetch source and associate with each model
+         */
+        const childrenSources = await Promise.all(childrenModels.map(async model => {
+            const source = await (this.props.fetchAppSourceThunkAsync(model.appId, model.devPackageId) as any) as AppDefinition
+            return {
+                source,
+                model,
+            }
+        }))
+
         const source = generateDispatcherSource(childrenSources)
         const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
         const { match, history } = this.props
@@ -118,62 +129,21 @@ class AppsIndex extends React.Component<Props> {
     }
 }
 
-function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
+function generateDispatcherSource(sourceModels: SourceModel[]): AppDefinition {
     /**
-     * create ENUM entity to be used in the SET_ENTITY actions.
-     * Each value represents different model
+     * Generate new Text Actions 1 per model, with text as format modelId:modelName
      */
-    const enumEntity: any = {
-        "entityId": uuid(),
-        "createdDateTime": new Date().toJSON(),
-        "entityName": "model",
-        "entityType": "ENUM",
-        "isMultivalue": false,
-        "isNegatible": false,
-        "enumValues": [
-            {
-                "enumValueId": uuid(),
-                "enumValue": "M1"
-            },
-            {
-                "enumValueId": uuid(),
-                "enumValue": "M2"
-            },
-            {
-                "enumValueId": uuid(),
-                "enumValue": "M3"
-            },
-            {
-                "enumValueId": uuid(),
-                "enumValue": "M4"
-            },
-            {
-                "enumValueId": uuid(),
-                "enumValue": "M5"
-            }
-        ]
-    }
-
-    /**
-     * Generate new SET_ENTITY actions 1 per model (Limit of 5 for now)
-     * Want to avoid API actions because these models can't rely on code, but we could use text actions
-     * but since entity presence is a more discrete / mutually exclusive change in NN state I thought this would be better.
-     */
-    const actions = (enumEntity.enumValues as any[]).map<any>(enumValue => ({
+    const actions = sourceModels.map<any>(sourceModel => ({
         "actionId": uuid(),
         "createdDateTime": new Date().toJSON(),
-        "actionType": "SET_ENTITY",
-        "payload": `{\"entityId\":\"${enumEntity.entityId}\",\"enumValueId\":\"${enumValue.enumValueId}\"}`,
-        // It is not possible to create nonTerminal SET_ENTITY actions through the UI, but doing so here would make things harder as we need more actions and associations.
-        // Perhaps we should keep it false and add another terminal action after each SET_ENTITY action
+        "actionType": "TEXT",
+        "payload": `{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"${sourceModel.model.appId}:${sourceModel.model.appName}\",\"marks\":[]}]}]}]}}}`,
         "isTerminal": true,
         "requiredEntitiesFromPayload": [],
         "requiredEntities": [],
         "negativeEntities": [],
         "requiredConditions": [],
         "negativeConditions": [],
-        "entityId": enumEntity.entityId,
-        "enumValueId": enumValue.enumValueId,
         "clientData": {
             "importHashes": []
         }
@@ -183,31 +153,16 @@ function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
      * Current train dialogs are still associated with their model
      * Overwrite label action and filled entities to that model's enum action
      */
-    const modelTrainDialogs = models.map((m, mIndex) => {
-        return m.trainDialogs.map((t, tIndex) => {
+    const modelTrainDialogs = sourceModels.map((sm, mIndex) => {
+        return sm.source.trainDialogs.map((t, tIndex) => {
             t.rounds.forEach(r => {
-                // Used to have logic for setting filled Entities to empty array on round 0
-                const filledEntities: FilledEntity[] = [
-                    {
-                        "entityId": enumEntity.entityId,
-                        "values": [
-                            {
-                                "userText": `M${mIndex}`,
-                                "displayText": `M${mIndex}`,
-                                "builtinType": null,
-                                "enumValueId": enumEntity.enumValues[mIndex].enumValueId,
-                                "resolution": null
-                            }
-                        ]
-                    }
-                ]
-
                 r.scorerSteps.forEach(s => {
                     s.input = {
-                        filledEntities,
+                        filledEntities: [],
                         context: {},
                         maskedActions: [],
                     }
+                    // Bad to rely on index association here, but it's consistent between action types
                     s.labelAction = actions[mIndex].actionId
                 })
             })
@@ -290,9 +245,7 @@ function generateDispatcherSource(models: AppDefinition[]): AppDefinition {
             ...mixedDialogsCorrected
         ],
         actions,
-        entities: [
-            enumEntity
-        ],
+        entities: [],
         packageId: uuid()
     }
 

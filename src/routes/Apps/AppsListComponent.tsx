@@ -118,6 +118,7 @@ interface Props extends InjectedIntlProps {
     onClickApp: (app: CLM.AppBase) => void
     selection: OF.ISelection
     featuresString: string
+    selectionCount: number
 
     isAppCreateModalOpen: boolean
     onSubmitAppCreateModal: (app: CLM.AppBase, source: CLM.AppDefinition | undefined) => void
@@ -250,9 +251,10 @@ export class Component extends React.Component<Props, ComponentState> {
                             && (
                                 <OF.DefaultButton
                                     data-testid="model-list-button-create-dispatcher"
+                                    disabled={this.props.selectionCount < 2}
                                     onClick={props.onClickCreateNewDispatcherModel}
                                     ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION)}
-                                    text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONTEXT)}
+                                    text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONTEXT, { selectionCount: this.props.selectionCount })}
                                     iconProps={{ iconName: 'Add' }}
                                 />
                             )}

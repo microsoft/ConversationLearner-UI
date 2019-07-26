@@ -716,7 +716,7 @@ export default {
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION]: 'Import Tutorials Models',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT]: 'Import Tutorials',
         [FM.APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION]: 'Create Dispatcher',
-        [FM.APPSLIST_CREATEDISPATCHER_BUTTONTEXT]: 'Create Dispatcher',
+        [FM.APPSLIST_CREATEDISPATCHER_BUTTONTEXT]: 'Create Dispatcher ({ selectionCount })',
         [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: `Confirm the deletion by entering the Model's name`,
         [FM.APPSLIST_COLUMN_NAME]: 'Name',
         [FM.APPSLIST_COLUMNS_LOCALE]: 'Locale',
