@@ -149,18 +149,26 @@ class App extends React.Component<Props, ComponentState> {
               render={props =>
                 <React.Fragment>
                   {this.state.loadingState === LoadingState.LOADING &&
-                    <p>Loading...</p>
+                    <div className="cl-o-app-columns">
+                      <div className="cl-app_content">
+                        <p>Loading...</p>
+                      </div>
+                    </div>
                   }
                   {this.state.loadingState === LoadingState.FAILED &&
-                    <div>
-                      <p>Loading Failed.</p>
-                      <div>
-                        <OF.PrimaryButton
-                          onClick={this.loadBotInfo}
-                          iconProps={{ iconName: 'Refresh' }}
-                        >
-                          Retry
+                    <div className="cl-o-app-columns">
+                      <div className="cl-app_content">
+                        <div>
+                          <p>Loading Failed.</p>
+                          <div>
+                            <OF.PrimaryButton
+                              onClick={this.loadBotInfo}
+                              iconProps={{ iconName: 'Refresh' }}
+                            >
+                              Retry
                           </OF.PrimaryButton>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   }
