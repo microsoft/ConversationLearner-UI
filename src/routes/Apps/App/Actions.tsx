@@ -12,10 +12,17 @@ import FormattedMessageId from '../../../components/FormattedMessageId'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router'
 import { ActionCreatorEditor } from '../../../components/modals'
 import { State } from '../../../types'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import * as queryString from 'query-string'
+
+const queryParams = {
+    selectedActionId: 'selectedActionId'
+}
 
 interface ComponentState {
     actionSelected: CLM.ActionBase | null
@@ -46,15 +53,71 @@ class Actions extends React.Component<Props, ComponentState> {
 
     componentDidMount() {
         this.focusNewActionButton()
+        this.handleQueryParameters(this.props.location.search)
+    }
+
+    componentWillReceiveProps(nextProps: Props) {
+        this.handleQueryParameters(nextProps.location.search, this.props.location.search)
+    }
+
+
+    @OF.autobind
+    async handleQueryParameters(newSearch: string, oldSearch?: string): Promise<void> {
+        if (this.props.actions.length === 0) {
+            return
+        }
+
+        const searchParams = new URLSearchParams(newSearch)
+        const selectedActionId = searchParams.get(queryParams.selectedActionId)
+
+        if (oldSearch) {
+            const searchParamsPrev = new URLSearchParams(oldSearch)
+            const selectedActionIdPrev = searchParamsPrev.get(queryParams.selectedActionId)
+            // If query parameter hasn't changed, no action to take
+            if (selectedActionId === selectedActionIdPrev) {
+                return
+            }
+        }
+
+        /**
+         * If there a id in URL, and action is not already open or is different than open item, open the item from url.
+         */
+        if (selectedActionId
+            && (!this.state.actionSelected
+                || (selectedActionId !== this.state.actionSelected.actionId))
+        ) {
+            const action = this.props.actions.find(a => a.actionId === selectedActionId)
+            if (!action) {
+                // Invalid action id, go back to list
+                this.props.history.replace(this.props.match.path, { app: this.props.app })
+                return
+            }
+
+            this.openAction(action)
+        }
     }
 
     onSelectAction(action: CLM.ActionBase) {
-        if (this.props.editingPackageId === this.props.app.devPackageId) {
-            this.setState({
-                actionSelected: action,
-                isActionEditorOpen: true
-            })
+        const isEditingDevPackage = this.props.editingPackageId === this.props.app.devPackageId
+        if (!isEditingDevPackage) {
+            return
         }
+
+        this.openAction(action)
+    }
+
+    private async openAction(action: CLM.ActionBase) {
+        const queryObject = {
+            [queryParams.selectedActionId]: action.actionId
+        }
+        const query = queryString.stringify(queryObject)
+        const url = `${this.props.match.path}?${query}`
+        this.props.history.push(url, { app: this.props.app })
+
+        this.setState({
+            actionSelected: action,
+            isActionEditorOpen: true
+        })
     }
 
     onClickOpenActionEditor() {
@@ -66,6 +129,13 @@ class Actions extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     onClickCancelActionEditor() {
+        // Remove selection from query parameter
+        const searchParams = new URLSearchParams(this.props.location.search)
+        const selectedActionId = searchParams.get(queryParams.selectedActionId)
+        if (selectedActionId) {
+            this.props.history.replace(this.props.match.path, { app: this.props.app })
+        }
+
         this.setState({
             isActionEditorOpen: false,
             actionSelected: null
@@ -75,14 +145,9 @@ class Actions extends React.Component<Props, ComponentState> {
     }
 
     @OF.autobind
-    async onClickDeleteActionEditor(action: CLM.ActionBase, removeFromDialogs: boolean) {
-        await Utils.setStateAsync(this, {
-            isActionEditorOpen: false,
-            actionSelected: null
-        })
-
+    onClickDeleteActionEditor(action: CLM.ActionBase, removeFromDialogs: boolean) {
+        this.onClickCancelActionEditor()
         this.props.deleteActionThunkAsync(this.props.app.appId, action.actionId, removeFromDialogs)
-        setTimeout(() => this.focusNewActionButton(), 1000)
     }
 
     @OF.autobind
@@ -236,6 +301,7 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Actions) as any)
+// TODO: Why use 'as any' hack? This component is almost same as Entities component.
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(Actions) as any) as any)

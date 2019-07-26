@@ -152,8 +152,7 @@ interface ComponentState {
 }
 
 class Entities extends React.Component<Props, ComponentState> {
-    newEntityButtonRef = React.createRef<OF.IButton>()
-    state: ComponentState
+    private newEntityButtonRef = React.createRef<OF.IButton>()
 
     constructor(props: Props) {
         super(props)
@@ -229,12 +228,8 @@ class Entities extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     handleDelete(entity: EntityBase) {
-        this.setState({
-            createEditModalOpen: false,
-            entitySelected: null
-        })
+        this.handleCloseCreateModal()
         this.props.deleteEntityThunkAsync(this.props.app.appId, entity)
-        setTimeout(() => this.focusNewEntityButton(), 1000)
     }
 
     @OF.autobind
@@ -264,7 +259,8 @@ class Entities extends React.Component<Props, ComponentState> {
     }
 
     onSelectEntity(entity: EntityBase) {
-        if (this.props.editingPackageId !== this.props.app.devPackageId) {
+        const isEditingDevPackage = this.props.editingPackageId === this.props.app.devPackageId
+        if (!isEditingDevPackage) {
             return
         }
 
