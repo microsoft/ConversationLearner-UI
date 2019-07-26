@@ -44,10 +44,12 @@ export function TypeYourMessageValidateResponse(message, expectedResponse) {
       // validation here because we should also give the UI and backend a chance to process the 
       // user turn to produce the END_SESSION response.
       
+      // TODO: This bug appears to be fixed, leaving this comment in for a short time just 
+      // in case the bug occurs again it will be easier to figure out and deal with.
       // Bug 2196: EndSession Action in Log Dialog is causing 'Session not found' error
       // I wanted to set this to 1000, but when I do this bug is triggered. 
       // If the bug gets fixed we can reduce this wait time.
-      let callItGoodTime = new Date().getTime() + 3000
+      let callItGoodTime = new Date().getTime() + 1000
       
       expectedUtteranceCount = indexBotResponse
       cy.get('.wc-message-content').should(elements => {
