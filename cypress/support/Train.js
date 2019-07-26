@@ -821,15 +821,7 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
   const funcName = `VerifyListOfTrainDialogs(expectedRowCount: ${expectedRowCount})`
   cy.log('Verify List of Train Dialogs', expectedRowCount)
 
-  cy.Get('[data-testid="train-dialogs-turns"]').should(elements => { 
-    // This part makes sure the grid has completed rendering and has the expected row count.
-    if (elements.length != expectedRowCount) {
-      const message = `Expecting ${expectedRowCount} rows in the training grid - instead found ${elements.length}.`
-      helpers.ConLog(funcName, message)
-      throw new Error(message)
-    }
-  })
-  .then(() => {
+  cy.Get('[data-testid="train-dialogs-turns"]').should('have.length', expectedRowCount).then(() => {
     const firstInputs = trainDialogsGrid.GetFirstInputs()
     const lastInputs = trainDialogsGrid.GetLastInputs()
     const lastResponses = trainDialogsGrid.GetLastResponses()
