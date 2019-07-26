@@ -6,6 +6,8 @@ import * as React from 'react'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router'
 import * as OF from 'office-ui-fabric-react'
 import { EntityCreatorEditor } from '../../../components/modals'
 import actions from '../../../actions'
@@ -17,6 +19,7 @@ import FormattedMessageId from '../../../components/FormattedMessageId'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import * as Util from '../../../Utils/util'
 import * as moment from 'moment'
+import * as queryString from 'query-string'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (entity: EntityBase, component: Entities) => JSX.Element | JSX.Element[]
@@ -136,6 +139,10 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     ]
 }
 
+const queryParams = {
+    selectedEntityId: 'selectedEntityId'
+}
+
 interface ComponentState {
     searchValue: string
     createEditModalOpen: boolean
@@ -177,6 +184,47 @@ class Entities extends React.Component<Props, ComponentState> {
 
     componentDidMount() {
         this.focusNewEntityButton()
+        this.handleQueryParameters(this.props.location.search)
+    }
+
+    componentWillReceiveProps(nextProps: Props) {
+        this.handleQueryParameters(nextProps.location.search, this.props.location.search)
+    }
+
+    @OF.autobind
+    async handleQueryParameters(newSearch: string, oldSearch?: string): Promise<void> {
+        if (this.props.entities.length === 0) {
+            return
+        }
+
+        const searchParams = new URLSearchParams(newSearch)
+        const selectedEntityId = searchParams.get(queryParams.selectedEntityId)
+
+        if (oldSearch) {
+            const searchParamsPrev = new URLSearchParams(oldSearch)
+            const selectedEntityIdPrev = searchParamsPrev.get(queryParams.selectedEntityId)
+            // If query parameter hasn't changed, no action to take
+            if (selectedEntityId === selectedEntityIdPrev) {
+                return
+            }
+        }
+
+        /**
+         * If there a id in URL, and entity is not already open or is different than open item, open the item from url.
+         */
+        if (selectedEntityId
+            && (!this.state.entitySelected
+                || (selectedEntityId !== this.state.entitySelected.entityId))
+        ) {
+            const entity = this.props.entities.find(e => e.entityId === selectedEntityId)
+            if (!entity) {
+                // Invalid entity id, go back to list
+                this.props.history.replace(this.props.match.path, { app: this.props.app })
+                return
+            }
+
+            this.openEntity(entity)
+        }
     }
 
     @OF.autobind
@@ -199,6 +247,13 @@ class Entities extends React.Component<Props, ComponentState> {
 
     @OF.autobind
     handleCloseCreateModal() {
+        // Remove selection from query parameter
+        const searchParams = new URLSearchParams(this.props.location.search)
+        const selectedEntityId = searchParams.get(queryParams.selectedEntityId)
+        if (selectedEntityId) {
+            this.props.history.replace(this.props.match.path, { app: this.props.app })
+        }
+
         this.setState({
             createEditModalOpen: false,
             entitySelected: null
@@ -209,12 +264,11 @@ class Entities extends React.Component<Props, ComponentState> {
     }
 
     onSelectEntity(entity: EntityBase) {
-        if (this.props.editingPackageId === this.props.app.devPackageId) {
-            this.setState({
-                entitySelected: entity,
-                createEditModalOpen: true
-            })
+        if (this.props.editingPackageId !== this.props.app.devPackageId) {
+            return
         }
+
+        this.openEntity(entity)
     }
 
     @OF.autobind
@@ -368,6 +422,20 @@ class Entities extends React.Component<Props, ComponentState> {
         );
     }
 
+    private async openEntity(entity: EntityBase) {
+        const queryObject = {
+            [queryParams.selectedEntityId]: entity.entityId
+        }
+        const query = queryString.stringify(queryObject)
+        const url = `${this.props.match.path}?${query}`
+        this.props.history.push(url, { app: this.props.app })
+
+        this.setState({
+            entitySelected: entity,
+            createEditModalOpen: true
+        })
+    }
+
     private focusNewEntityButton() {
         if (this.newEntityButtonRef.current) {
             this.newEntityButtonRef.current.focus()
@@ -394,6 +462,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps);
 const dispatchProps = returntypeof(mapDispatchToProps);
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(Entities))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(Entities)))
