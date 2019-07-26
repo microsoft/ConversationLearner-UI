@@ -286,10 +286,10 @@ export function VerifyEntityLabel(word, entity) {
 // textEntityPairs is an array of objects contains these two variables:
 //  text = a word within the utterance that should already be labeled
 //  entity = name of entity to label the word with
-export function VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs) { VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, 'Close') }
-export function VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs) { VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, 'Accept') }
+export function VerifyEntityLabelConflictPopupAndClose(textEntityPairs) { VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, 'Close') }
+export function VerifyEntityLabelConflictPopupAndAccept(textEntityPairs) { VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, 'Accept') }
 
-function VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, buttonLabel) {
+function VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, buttonLabel) {
   cy.Get('[data-testid="extract-conflict-modal-previously-submitted-labels"]').as('ExtractConflictModal')
     .next('div.entity-labeler')
     .within(() => { textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
