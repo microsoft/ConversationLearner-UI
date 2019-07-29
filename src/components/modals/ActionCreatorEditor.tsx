@@ -581,8 +581,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 current: v,
                 prev: prevValue,
                 // TODO: Should these be be getAllEntitiesFromValue
-                currentEntities: ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(v),
-                prevEntities: ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(prevValue)
+                currentEntities: v ? ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(v) : [],
+                prevEntities: prevValue ? ActionPayloadEditor.Utilities.getNonOptionalEntitiesFromValue(prevValue) : []
             }
         })
 
