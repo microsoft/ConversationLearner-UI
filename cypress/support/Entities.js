@@ -66,9 +66,7 @@ export function CreateNewEntityThenVerifyInGrid({
   else if (type == 'Programmatic') { typeForVerification = 'PROGRAMMATIC' }
   entitiesGridRow.VerifyType(typeForVerification)
 
-  if (resolverType) { entitiesGridRow.VerifyResolverType(resolverType) }
-  else { entitiesGridRow.VerifyResolverNone() }
-
+  entitiesGridRow.VerifyResolverType(resolverType)
   entitiesGridRow.VerifyMultiValue(multiValued)
   entitiesGridRow.VerifyNegatable(negatable)
 }

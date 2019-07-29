@@ -73,9 +73,9 @@ describe('Bot Missing API - ErrorHandling', () => {
   })
 
   context('Fix Broken Model - Delete Action with Missing API', () => {
-    it('Should delete the action uses the missing API', () => {
+    it('Should delete the action that uses the missing API', () => {
       modelPage.NavigateToActions()
-      actions.DeleteAction('RandomGreeting', 'API')
+      actions.DeleteActionThatIsUsedByATrainDialog('RandomGreeting', 'API')
     })
 
     it('Should verify that Home link/panel no longer shows an IncidentTriangle and nor the error message', () => {

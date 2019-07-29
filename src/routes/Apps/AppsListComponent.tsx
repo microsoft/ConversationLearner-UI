@@ -186,19 +186,21 @@ export class Component extends React.Component<Props, ComponentState> {
         return sortedApps;
     }
 
-    onClickColumnHeader = (event: React.MouseEvent<HTMLElement>, column: ISortableRenderableColumn) => {
-        const { columns } = this.state;
-        const sortColumn = columns.find(c => column.key === c.key)!
+    @OF.autobind
+    onClickColumnHeader(event: React.MouseEvent<HTMLElement, MouseEvent>, clickedColumn: ISortableRenderableColumn) {
+        const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
+        const columns = this.state.columns.map(column => {
+            column.isSorted = false
+            column.isSortedDescending = false
+            if (column === sortColumn) {
+                column.isSorted = true
+                column.isSortedDescending = !clickedColumn.isSortedDescending
+            }
+            return column
+        })
 
         this.setState({
-            columns: columns.map(col => {
-                col.isSorted = false;
-                if (col.key === column.key) {
-                    col.isSorted = true;
-                    col.isSortedDescending = !col.isSortedDescending;
-                }
-                return col;
-            }),
+            columns,
             sortColumn,
         });
     }

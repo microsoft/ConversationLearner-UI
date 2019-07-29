@@ -17,6 +17,7 @@ import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
 import TranscriptImporter from '../../../components/modals/TranscriptImporter'
 import TranscriptImportWaitModal from '../../../components/modals/TranscriptImportWaitModal'
+import ProgressModal from '../../../components/modals/ProgressModal'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { bindActionCreators } from 'redux'
@@ -33,7 +34,7 @@ import './TrainDialogs.css'
 
 export interface EditHandlerArgs {
     userInput?: string,
-    extractResponse?: CLM.ExtractResponse, 
+    extractResponse?: CLM.ExtractResponse,
     textVariations?: CLM.TextVariation[],
     trainScorerStep?: CLM.TrainScorerStep
     selectionType?: SelectionType
@@ -140,6 +141,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
 const defaultEntityFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_ENTITIES), data: null })
 const defaultActionFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_ACTIONS) })
 const defaultTagFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
+const getDialogKey = (trainDialog: OF.IObjectWithKey) => (trainDialog as CLM.TrainDialog).trainDialogId
 
 interface ComponentState {
     columns: IRenderableColumn[]
@@ -155,6 +157,9 @@ interface ComponentState {
     importAutoCreate: boolean
     importAutoMerge: boolean
     isTreeViewModalOpen: boolean
+    replayDialogs: CLM.TrainDialog[]
+    replayDialogIndex: number
+    isReplaySelectedActive: boolean
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
@@ -162,11 +167,12 @@ interface ComponentState {
     // Current train dialogs being edited
     currentTrainDialog: CLM.TrainDialog | null
     // If Train Dialog was edited, the original one
-    originalTrainDialog: CLM.TrainDialog | null,
+    originalTrainDialog: CLM.TrainDialog | null
     // Is Dialog being edited a new one, a TrainDialog or a LogDialog
     editType: EditDialogType
-    searchValue: string,
-    dialogKey: number,
+    searchValue: string
+    selectionCount: number
+    dialogKey: number
     tagsFilter: OF.IDropdownOption | null
     entityFilter: OF.IDropdownOption | null
     actionFilter: OF.IDropdownOption | null
@@ -205,6 +211,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             importAutoCreate: false,
             importAutoMerge: false,
             isTreeViewModalOpen: false,
+            isReplaySelectedActive: false,
+            replayDialogs: [],
+            replayDialogIndex: 0,
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
             selectedActivityIndex: null,
@@ -212,6 +221,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             originalTrainDialog: null,
             editType: EditDialogType.TRAIN_ORIGINAL,
             searchValue: '',
+            selectionCount: 0,
             dialogKey: 0,
             tagsFilter: null,
             entityFilter: null,
@@ -260,7 +270,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    async componentDidUpdate(prevProps: Props) {
+    async componentDidUpdate(prevProps: Props, prevState: ComponentState) {
         this.handleQueryParameters(this.props.location.search, prevProps.location.search)
     }
 
@@ -283,68 +293,85 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
 
         // If dialog id is in query param and edit modal not open, open it
-        if (selectedDialogId && 
+        if (selectedDialogId &&
             (!this.state.isEditDialogModalOpen && !this.state.isTeachDialogModalOpen)) {
             const trainDialog = this.props.trainDialogs.find(td => td.trainDialogId === selectedDialogId)
             if (!trainDialog) {
                 // Invalid train dialog, go back to TD list
-                this.props.history.replace(this.props.match.url, {app: this.props.app})
+                this.props.history.replace(this.props.match.url, { app: this.props.app })
                 return
             }
             this.openTrainDialog(trainDialog)
         }
     }
 
-    sortTrainDialogs(trainDialogs: CLM.TrainDialog[]): CLM.TrainDialog[] {
-        const trainDialogsCopy = [...trainDialogs]
-        // If column header selected sort the items, always putting invalid at the top
-        if (this.state.sortColumn) {
-            trainDialogsCopy
-                .sort((a, b) => {
-
-                    // Always put invalid at top (values can also be undefined)
-                    if (a.validity === CLM.Validity.INVALID && b.validity !== CLM.Validity.INVALID) {
-                        return -1;
-                    }
-                    if (b.validity === CLM.Validity.INVALID && a.validity !== CLM.Validity.INVALID) {
-                        return 1;
-                    }
-
-                    // Then sort by column value
-                    let firstValue = this.state.sortColumn.getSortValue(a, this)
-                    let secondValue = this.state.sortColumn.getSortValue(b, this)
-                    let compareValue = firstValue.localeCompare(secondValue)
-
-                    // If primary sort is the same do secondary sort on another column, to prevent sort jumping around
-                    if (compareValue === 0) {
-                        const sortColumn2 = ((this.state.sortColumn !== this.state.columns[0]) ? this.state.columns[0] : this.state.columns[1]) as IRenderableColumn
-                        firstValue = sortColumn2.getSortValue(a, this)
-                        secondValue = sortColumn2.getSortValue(b, this)
-                        compareValue = firstValue.localeCompare(secondValue)
-                    }
-
-                    return this.state.sortColumn.isSortedDescending
-                        ? compareValue
-                        : compareValue * -1
-                })
+    sortTrainDialogs(
+        trainDialogs: CLM.TrainDialog[],
+        columns: IRenderableColumn[],
+        sortColumn: IRenderableColumn | undefined,
+    ): CLM.TrainDialog[] {
+        // If column header not selected, no sorting needed, return items
+        if (!sortColumn) {
+            return trainDialogs
         }
 
-        return trainDialogsCopy
+        return [...trainDialogs]
+            .sort((a, b) => {
+                // Always put invalid at top (values can also be undefined)
+                if (a.validity === CLM.Validity.INVALID && b.validity !== CLM.Validity.INVALID) {
+                    return -1;
+                }
+                if (b.validity === CLM.Validity.INVALID && a.validity !== CLM.Validity.INVALID) {
+                    return 1;
+                }
+
+                // Then sort by column value
+                let firstValue = sortColumn.getSortValue(a, this)
+                let secondValue = sortColumn.getSortValue(b, this)
+                let compareValue = firstValue.localeCompare(secondValue)
+
+                // If primary sort is the same do secondary sort on another column, to prevent sort jumping around
+                if (compareValue === 0) {
+                    const sortColumn2 = (sortColumn !== columns[0])
+                        ? columns[0]
+                        : columns[1]
+                    firstValue = sortColumn2.getSortValue(a, this)
+                    secondValue = sortColumn2.getSortValue(b, this)
+                    compareValue = firstValue.localeCompare(secondValue)
+                }
+
+                return sortColumn.isSortedDescending
+                    ? compareValue
+                    : compareValue * -1
+            })
+    }
+
+    private selection: OF.ISelection = new OF.Selection({
+        getKey: getDialogKey,
+        onSelectionChanged: this.onSelectionChanged
+    })
+
+    @OF.autobind
+    onSelectionChanged() {
+        const selectionCount = this.selection.getSelectedCount()
+        this.setState({ selectionCount })
     }
 
     @OF.autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
-        const { columns } = this.state;
-        const sortColumn = columns.find(c => c.key === clickedColumn.key)!
-        const isSortedDescending = !clickedColumn.isSortedDescending;
+        const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
+        const columns = this.state.columns.map(column => {
+            column.isSorted = false
+            column.isSortedDescending = false
+            if (column === sortColumn) {
+                column.isSorted = true
+                column.isSortedDescending = !clickedColumn.isSortedDescending
+            }
+            return column
+        })
 
-        // Reset the items and columns to match the state.
         this.setState({
-            columns: columns.map(column => {
-                column.isSorted = (column.key === clickedColumn.key);
-                column.isSortedDescending = isSortedDescending;
-                return column;
-            }),
+            columns,
             sortColumn,
         });
     }
@@ -460,7 +487,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     // Check to see if new TrainDialog can be merged with an existing TrainDialog
                     const matchedTrainDialog = DialogUtils.findMatchingTrainDialog(newTrainDialog, this.props.trainDialogs, sourceTrainDialogId)
                     if (matchedTrainDialog) {
-                        
+
                         // If editing an existing Train Dialog, replace existing with the new one
                         if (sourceTrainDialogId) {
                             await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, newTrainDialog) as any) as Promise<void>)
@@ -497,7 +524,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
             if (stopImport) {
-                this.setState({transcriptFiles: undefined})
+                this.setState({ transcriptFiles: undefined })
             }
             else {
                 await this.onStartTranscriptImport()
@@ -763,7 +790,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 // originalTrainDialogId - do not clear. Need for later 
                 dialogKey: this.state.dialogKey + 1
             })
-    
+
             if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
                 await this.onStartTranscriptImport()
             }
@@ -828,12 +855,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.fetchHistoryThunkAsync as any
             )
 
-            const editType = 
-                (editDialogType !== EditDialogType.NEW && 
-                editDialogType !== EditDialogType.BRANCH &&
-                editDialogType !== EditDialogType.IMPORT) 
-                ? EditDialogType.TRAIN_EDITED 
-                : editDialogType
+            const editType =
+                (editDialogType !== EditDialogType.NEW &&
+                    editDialogType !== EditDialogType.BRANCH &&
+                    editDialogType !== EditDialogType.IMPORT)
+                    ? EditDialogType.TRAIN_EDITED
+                    : editDialogType
 
             await Util.setStateAsync(this, {
                 activityHistory: teachWithHistory.history,
@@ -862,11 +889,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             const conflictIgnoreId = this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null
             const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput, conflictIgnoreId) as any) as Promise<CLM.TeachWithHistory>)
 
-            const editType = 
-                (this.state.editType !== EditDialogType.NEW && 
-                this.state.editType !== EditDialogType.BRANCH &&
-                this.state.editType !== EditDialogType.IMPORT) 
-                ? EditDialogType.TRAIN_EDITED : this.state.editType
+            const editType =
+                (this.state.editType !== EditDialogType.NEW &&
+                    this.state.editType !== EditDialogType.BRANCH &&
+                    this.state.editType !== EditDialogType.IMPORT)
+                    ? EditDialogType.TRAIN_EDITED : this.state.editType
 
             // Update currentTrainDialog with tags and description
             const currentTrainDialog = this.state.currentTrainDialog ? {
@@ -874,7 +901,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 tags: newTrainDialog.tags,
                 description: newTrainDialog.description
             } : null
-            
+
             // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
             this.setState({
                 activityHistory: teachWithHistory.history,
@@ -934,7 +961,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isEditDialogModalOpen: false,
         })
 
-        newTrainDialog.validity =  DialogUtils.getTrainDialogValidity(newTrainDialog, this.state.activityHistory)
+        newTrainDialog.validity = DialogUtils.getTrainDialogValidity(newTrainDialog, this.state.activityHistory)
 
         // Remove dummy scorer rounds used for rendering
         newTrainDialog.rounds.forEach(r => r.scorerSteps = r.scorerSteps.filter(ss => {
@@ -971,6 +998,44 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         history.push(url, { app: this.props.app })
     }
 
+    @OF.autobind
+    async onClickReplaySelected() {
+        const selectedTrainDialogs = this.selection.getSelection() as CLM.TrainDialog[]
+        await Util.setStateAsync(this, {
+            isReplaySelectedActive: true,
+            replayDialogs: selectedTrainDialogs,
+            replayDialogIndex: 0
+        })
+
+        for (const [trainDialogIndex, trainDialog] of this.state.replayDialogs.entries()) {
+            await Util.setStateAsync(this, {
+                replayDialogIndex: trainDialogIndex,
+            })
+
+            const newTrainDialog = await DialogEditing.onReplayTrainDialog(
+                trainDialog,
+                this.props.app.appId,
+                this.props.entities,
+                this.props.actions,
+                this.props.trainDialogReplayThunkAsync as any,
+            )
+
+            await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, trainDialog.trainDialogId, newTrainDialog, false)
+
+            // If user clicks 'Cancel' replay dialogs will be reset
+            if (this.state.replayDialogs.length === 0) {
+                console.warn(`Replay Selected Dialogs Canceled!`)
+                break;
+            }
+        }
+
+        this.setState({
+            isReplaySelectedActive: false,
+            replayDialogs: [],
+            replayDialogIndex: 0,
+        })
+    }
+
     //-----------------------------
     // Transcript import
     //-----------------------------
@@ -997,13 +1062,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     readFileAsync(file: File): Promise<string> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-        
+
             reader.onload = (e: Event) => {
                 resolve(reader.result as any);
             };
-        
+
             reader.onerror = reject;
-        
+
             reader.readAsText(file);
         })
     }
@@ -1016,13 +1081,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         // Check if I'm done importing files
         if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
-            this.setState({transcriptFiles: undefined})
+            this.setState({ transcriptFiles: undefined })
             return
         }
 
         // Pop the next file
         const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
-        this.setState({transcriptIndex: this.state.transcriptIndex + 1})
+        this.setState({ transcriptIndex: this.state.transcriptIndex + 1 })
 
         let source = await this.readFileAsync(transcriptFile)
         try {
@@ -1034,8 +1099,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
             this.setState({
                 transcriptFiles: undefined,
-                isImportWaitModalOpen: false}
-            )
+                isImportWaitModalOpen: false
+            })
         }
     }
 
@@ -1046,13 +1111,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     // Import a .transcript tile
     async onImport(transcript: BB.Activity[]): Promise<void> {
 
-        this.setState({isImportWaitModalOpen: true})
+        this.setState({ isImportWaitModalOpen: true })
 
         const transcriptHash = Util.hashText(JSON.stringify(transcript))
 
         // If transcript has already been imported, go to next one
         if (this.hasTranscriptBeenImported(transcriptHash)) {
-            this.setState({isImportWaitModalOpen: false})
+            this.setState({ isImportWaitModalOpen: false })
             await this.onStartTranscriptImport()
             return
         }
@@ -1093,16 +1158,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         if (this.state.importAutoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
             // Fetch activityHistory as needed for validation checks
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            await Util.setStateAsync(this, { 
+            await Util.setStateAsync(this, {
                 activityHistory: teachWithHistory.history,
-                editType: EditDialogType.IMPORT})
+                editType: EditDialogType.IMPORT
+            })
             await this.onCreateTrainDialog(newTrainDialog)
         }
         else {
             await this.openTrainDialog(newTrainDialog, EditDialogType.IMPORT)
         }
 
-        this.setState({isImportWaitModalOpen: false})
+        this.setState({ isImportWaitModalOpen: false })
     }
 
     async addEntityExtractions(trainDialog: CLM.TrainDialog) {
@@ -1156,12 +1222,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const searchParams = new URLSearchParams(this.props.location.search)
         const selectedDialogId = searchParams.get(DialogUtils.DialogQueryParams.id)
         if (selectedDialogId) {
-            this.props.history.replace(this.props.match.url, {app: this.props.app})
+            this.props.history.replace(this.props.match.url, { app: this.props.app })
         }
 
         if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
             if (stopImport) {
-                this.setState({transcriptFiles: undefined})
+                this.setState({ transcriptFiles: undefined })
             }
             else {
                 await this.onStartTranscriptImport()
@@ -1176,106 +1242,117 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    getFilteredAndSortedDialogs(): CLM.TrainDialog[] {
-        let filteredTrainDialogs: CLM.TrainDialog[] = []
+    @OF.autobind
+    onClickCancelReplaySelected() {
+        this.setState({
+            replayDialogs: []
+        })
+    }
 
+    getFilteredDialogs(
+        trainDialogs: CLM.TrainDialog[],
+    ): CLM.TrainDialog[] {
         if (!this.isFilter()) {
-            filteredTrainDialogs = this.props.trainDialogs;
-        } else {
-            // TODO: Consider caching as not very efficient
-            filteredTrainDialogs = this.props.trainDialogs.filter((t: CLM.TrainDialog) => {
-                const entitiesInTD: CLM.EntityBase[] = []
-                const actionsInTD: CLM.ActionBase[] = []
-                const textVariations: string[] = []
+            return trainDialogs
+        }
 
-                for (const round of t.rounds) {
-                    for (const variation of round.extractorStep.textVariations) {
-                        textVariations.push(variation.text);
-                        for (const le of variation.labelEntities) {
-                            // Include pos and neg examples of entity if reversable
-                            const entity = this.props.entities.find(e => e.entityId === le.entityId)
-                            if (!entity) {
-                                continue
-                            }
+        // TODO: Consider caching as not very efficient
+        return trainDialogs.filter(trainDialog => {
+            const entitiesInTD: CLM.EntityBase[] = []
+            const actionsInTD: CLM.ActionBase[] = []
+            const textVariations: string[] = []
 
-                            entitiesInTD.push(entity)
-                            const negativeEntity = this.props.entities.find(e => e.entityId === entity.negativeId)
-                            if (!negativeEntity) {
-                                continue
-                            }
-                            entitiesInTD.push(negativeEntity)
-                        }
-                    }
-                    for (const ss of round.scorerSteps) {
-                        const foundAction = this.props.actions.find(a => a.actionId === ss.labelAction)
-                        // Invalid train dialogs can contain deleted actions
-                        if (!foundAction) {
+            for (const round of trainDialog.rounds) {
+                for (const variation of round.extractorStep.textVariations) {
+                    textVariations.push(variation.text);
+                    for (const le of variation.labelEntities) {
+                        // Include pos and neg examples of entity if reversable
+                        const entity = this.props.entities.find(e => e.entityId === le.entityId)
+                        if (!entity) {
                             continue
                         }
 
-                        actionsInTD.push(foundAction)
-
-                        // Need to check filledEntities for programmatic only entities
-                        const entities = ss.input.filledEntities
-                            .map((fe: any) => fe.entityId)
-                            .filter(Util.notNullOrUndefined)
-                            .map((entityId: any) => this.props.entities.find(e => e.entityId === entityId))
-                            .filter(Util.notNullOrUndefined)
-
-                        entitiesInTD.push(...entities)
+                        entitiesInTD.push(entity)
+                        const negativeEntity = this.props.entities.find(e => e.entityId === entity.negativeId)
+                        if (!negativeEntity) {
+                            continue
+                        }
+                        entitiesInTD.push(negativeEntity)
                     }
                 }
-
-                // Filter out train dialogs that don't match filters (data = negativeId for multivalue)
-                const entityFilter = this.state.entityFilter
-                if (entityFilter && entityFilter.key
-                    && !entitiesInTD.find(en => en.entityId === entityFilter.key)
-                    && !entitiesInTD.find(en => en.entityId === entityFilter.data)) {
-                    return false
-                }
-                const actionFilter = this.state.actionFilter
-                if (actionFilter && actionFilter.key
-                    && !actionsInTD.find(a => a.actionId === actionFilter.key)) {
-                    return false
-                }
-
-                const tagFilter = this.state.tagsFilter
-                if (tagFilter && tagFilter.key !== null
-                    && !t.tags.map(tag => tag.toLowerCase()).includes(tagFilter.text.toLowerCase())) {
-                    return false
-                }
-
-                const entityNames = entitiesInTD.map(e => e.entityName)
-                const actionPayloads = actionsInTD.map(a => {
-                    try {
-                        return CLM.ActionBase.GetPayload(a, Util.getDefaultEntityMap(this.props.entities))
+                for (const ss of round.scorerSteps) {
+                    const foundAction = this.props.actions.find(a => a.actionId === ss.labelAction)
+                    // Invalid train dialogs can contain deleted actions
+                    if (!foundAction) {
+                        continue
                     }
-                    catch {
-                        // Backwards compatibility to models with old payload type
-                        return ""
-                    }
-                })
 
-                // Then check search terms
-                const searchString = [
-                    ...textVariations,
-                    ...actionPayloads,
-                    ...entityNames,
-                    ...t.tags,
-                    t.description
-                ].join(' ').toLowerCase()
+                    actionsInTD.push(foundAction)
 
-                return searchString.includes(this.state.searchValue)
+                    // Need to check filledEntities for programmatic only entities
+                    const entities = ss.input.filledEntities
+                        .map((fe: any) => fe.entityId)
+                        .filter(Util.notNullOrUndefined)
+                        .map((entityId: any) => this.props.entities.find(e => e.entityId === entityId))
+                        .filter(Util.notNullOrUndefined)
+
+                    entitiesInTD.push(...entities)
+                }
+            }
+
+            // Filter out train dialogs that don't match filters (data = negativeId for multivalue)
+            const entityFilter = this.state.entityFilter
+            if (entityFilter && entityFilter.key
+                && !entitiesInTD.find(en => en.entityId === entityFilter.key)
+                && !entitiesInTD.find(en => en.entityId === entityFilter.data)) {
+                return false
+            }
+            const actionFilter = this.state.actionFilter
+            if (actionFilter && actionFilter.key
+                && !actionsInTD.find(a => a.actionId === actionFilter.key)) {
+                return false
+            }
+
+            const tagFilter = this.state.tagsFilter
+            if (tagFilter && tagFilter.key !== null
+                && !trainDialog.tags.map(tag => tag.toLowerCase()).includes(tagFilter.text.toLowerCase())) {
+                return false
+            }
+
+            const entityNames = entitiesInTD.map(e => e.entityName)
+            const actionPayloads = actionsInTD.map(a => {
+                try {
+                    return CLM.ActionBase.GetPayload(a, Util.getDefaultEntityMap(this.props.entities))
+                }
+                catch {
+                    // Backwards compatibility to models with old payload type
+                    return ""
+                }
             })
-        }
 
-        filteredTrainDialogs = this.sortTrainDialogs(filteredTrainDialogs)
-        return filteredTrainDialogs
+            // Then check search terms
+            const searchString = [
+                ...textVariations,
+                ...actionPayloads,
+                ...entityNames,
+                ...trainDialog.tags,
+                trainDialog.description
+            ].join(' ').toLowerCase()
+
+            return searchString.includes(this.state.searchValue)
+        })
+    }
+
+    getFilteredAndSortedDialogs() {
+        let trainDialogs = this.getFilteredDialogs(this.props.trainDialogs)
+        trainDialogs = this.sortTrainDialogs(trainDialogs, this.state.columns, this.state.sortColumn)
+        return trainDialogs
     }
 
     render() {
-        const { intl, trainDialogs } = this.props
+        const { intl } = this.props
         const computedTrainDialogs = this.getFilteredAndSortedDialogs()
+        const isNoDialogs = this.props.trainDialogs.length === 0
         const editState = (this.props.editingPackageId !== this.props.app.devPackageId)
             ? EditState.INVALID_PACKAGE
             : this.props.invalidBot
@@ -1286,6 +1363,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const teachSession = (this.props.teachSession && this.props.teachSession.teach)
             ? this.props.teachSession
             : this.state.lastTeachSession
+
+        const isEditingDisabled = (this.props.editingPackageId !== this.props.app.devPackageId) || this.props.invalidBot
 
         return (
             <div className="cl-page">
@@ -1303,7 +1382,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 <div className="cl-buttons-row">
                     <OF.PrimaryButton
                         data-testid="button-new-train-dialog"
-                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                        disabled={isEditingDisabled}
                         onClick={() => this.onClickNewTeachSession()}
                         ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
@@ -1315,7 +1394,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             iconProps={{
                                 iconName: "DownloadDocument"
                             }}
-                            disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                            disabled={isEditingDisabled}
                             onClick={this.onClickImportConversation}
                             ariaDescription={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
                             text={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
@@ -1338,6 +1417,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(intl, FM.TRAINDIALOGS_TREEVIEW_BUTTON)}
                         />
                     }
+                    <OF.DefaultButton
+                        iconProps={{
+                            iconName: "Refresh"
+                        }}
+                        disabled={this.state.isReplaySelectedActive || isEditingDisabled || this.state.selectionCount === 0}
+                        onClick={this.onClickReplaySelected}
+                        ariaDescription={Util.formatMessageId(intl, FM.BUTTON_REPLAY_SELECTED, { selectionCount: this.state.selectionCount })}
+                        text={Util.formatMessageId(intl, FM.BUTTON_REPLAY_SELECTED, { selectionCount: this.state.selectionCount })}
+                    />
                 </div>
                 <TreeView
                     open={this.state.isTreeViewModalOpen}
@@ -1351,7 +1439,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     openTrainDialog={this.selectTrainDialog}
                 />
 
-                {trainDialogs.length === 0 &&
+                {isNoDialogs &&
                     <div className="cl-page-placeholder">
                         <div className="cl-page-placeholder__content">
                             <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Train Dialog</div>
@@ -1359,7 +1447,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 iconProps={{
                                     iconName: "Add"
                                 }}
-                                disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                                disabled={isEditingDisabled}
                                 onClick={() => this.onClickNewTeachSession()}
                                 ariaDescription={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                                 text={Util.formatMessageId(intl, FM.TRAINDIALOGS_CREATEBUTTONTITLE)}
@@ -1367,7 +1455,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         </div>
                     </div>
                 }
-                {!this.state.isTreeViewModalOpen && trainDialogs.length !== 0 &&
+                {!this.state.isTreeViewModalOpen && !isNoDialogs &&
                     <React.Fragment>
                         <div>
                             <OF.Label htmlFor="train-dialogs-input-search" className={OF.FontClassNames.medium}>
@@ -1448,15 +1536,21 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 key={this.state.dialogKey}
                                 className={OF.FontClassNames.mediumPlus}
                                 items={computedTrainDialogs}
+                                selection={this.selection}
                                 layoutMode={OF.DetailsListLayoutMode.justified}
+                                getKey={getDialogKey}
+                                setKey="selectionKey"
                                 columns={this.state.columns}
-                                checkboxVisibility={OF.CheckboxVisibility.hidden}
+                                checkboxVisibility={OF.CheckboxVisibility.onHover}
                                 onColumnHeaderClick={this.onClickColumnHeader}
                                 onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
                                 onRenderItemColumn={(trainDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(trainDialog, this))}
                                 onItemInvoked={trainDialog => this.onClickTrainDialogItem(trainDialog)}
                             />}
                     </React.Fragment>}
+
+
+
                 {teachSession && teachSession.teach &&
                     <TeachSessionModal
                         isOpen={this.state.isTeachDialogModalOpen}
@@ -1519,7 +1613,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     importIndex={this.state.transcriptIndex}
                     importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : undefined}
                 />
-                {this.state.isTranscriptImportOpen && 
+                <ProgressModal
+                    open={this.state.replayDialogs.length > 0}
+                    title={'Replaying'}
+                    index={this.state.replayDialogIndex + 1}
+                    total={this.state.replayDialogs.length}
+                    onClose={this.onClickCancelReplaySelected}
+                />
+                {this.state.isTranscriptImportOpen &&
                     <TranscriptImporter
                         app={this.props.app}
                         open={true}
