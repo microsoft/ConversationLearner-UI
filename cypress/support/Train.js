@@ -286,15 +286,15 @@ export function VerifyEntityLabel(word, entity) {
 // textEntityPairs is an array of objects contains these two variables:
 //  text = a word within the utterance that should already be labeled
 //  entity = name of entity to label the word with
-export function VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs) { VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, 'Close') }
-export function VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs) { VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, 'Accept') }
+export function VerifyEntityLabelConflictPopupAndClose(textEntityPairs) { VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, '[data-testid="entity-conflict-cancel"]') }
+export function VerifyEntityLabelConflictPopupAndAccept(textEntityPairs) { VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, '[data-testid="entity-conflict-accept"]') }
 
-function VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, buttonLabel) {
-  cy.Get('[data-testid="extract-conflict-modal-previously-submitted-labels"]').as('ExtractConflictModal')
-    .next('div.entity-labeler')
+function VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, buttonSelector) {
+  cy.Get('[data-testid="extract-conflict-modal-previously-submitted-labels"]')
+    .siblings('[data-testid="extractor-response-editor-entity-labeler"]')
     .within(() => { textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
-
-  cy.get('@ExtractConflictModal').parent().next().contains(buttonLabel).Click()  
+  
+  cy.get(buttonSelector).Click()  
 }
 
 export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index) {
@@ -817,9 +817,11 @@ export function VerifyCloseIsTheOnlyEnabledButton() {
 }
 
 export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
-  const funcName = 'VerifyListOfTrainDialogs'
-  cy.log('Verify List of Train Dialogs', expectedTrainDialogs)
-  cy.Enqueue(() => {
+  const expectedRowCount = expectedTrainDialogs.length
+  const funcName = `VerifyListOfTrainDialogs(expectedRowCount: ${expectedRowCount})`
+  cy.log('Verify List of Train Dialogs', expectedRowCount)
+
+  cy.Get('[data-testid="train-dialogs-turns"]').should('have.length', expectedRowCount).then(() => {
     const firstInputs = trainDialogsGrid.GetFirstInputs()
     const lastInputs = trainDialogsGrid.GetLastInputs()
     const lastResponses = trainDialogsGrid.GetLastResponses()
@@ -844,10 +846,6 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
     
     if (errors) {
       throw new Error('Did not find 1 or more of the expected Train Dialogs in the grid. Refer to the log file for details.')
-    }
-    
-    if (firstInputs.length > expectedTrainDialogs.length) {
-      throw new Error(`Found all of the expected Train Dialogs, however there are an additional ${firstInputs.length - expectedTrainDialogs.length} Train Dialogs in the grid that we were not expecting. Refer to the log file for details.`)
     }
   })
 }

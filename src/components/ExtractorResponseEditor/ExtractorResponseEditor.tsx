@@ -506,7 +506,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             })
 
         return (
-            <div className="entity-labeler">
+            <div className="entity-labeler" data-testid="extractor-response-editor-entity-labeler">
                 {(this.props.isPickerVisible || this.state.isDeleteButtonVisible) &&
                     <div
                         className="entity-labeler-overlay"
