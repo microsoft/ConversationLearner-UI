@@ -611,7 +611,15 @@ export function ClickScoreActionsButtonAfterBranching(lastResponse) {
   })
 }
 
-export function SaveAsIsVerifyInGrid() {
+export function SaveAsIsVerifyInGrid() { 
+  SaveAsIs(() => { 
+    if (isBranched) VerifyTrainingSummaryIsInGrid(originalTrainingSummary)
+    VerifyTrainingSummaryIsInGrid(currentTrainingSummary)
+  })
+}
+
+// The verificationFunction is optional, without it this function will just save the Train Dialog.
+export function SaveAsIs(verificationFunction) {
   const funcName = 'SaveAsIsVerifyInGrid'
 
   cy.DumpHtmlOnDomChange(true)
@@ -645,8 +653,7 @@ export function SaveAsIsVerifyInGrid() {
       }
       helpers.ConLog(funcName, 'No overlays for at least 1 second')
     }).then(() => {
-      if (isBranched) VerifyTrainingSummaryIsInGrid(originalTrainingSummary)
-      VerifyTrainingSummaryIsInGrid(currentTrainingSummary)
+      if (verificationFunction) { verificationFunction() }
     })
   })
   cy.DumpHtmlOnDomChange(false)
