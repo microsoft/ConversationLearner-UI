@@ -6,7 +6,6 @@
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
 import * as train from '../../../support/Train'
-import * as scorerModal from '../../../support/components/ScorerModal'
 import * as helpers from '../../../support/Helpers'
 
 describe('Auto Score End Session Action - End Session', () => {
