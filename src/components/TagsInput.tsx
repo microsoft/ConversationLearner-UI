@@ -82,7 +82,7 @@ class Component extends React.Component<Props, State> {
         })
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (this.props.tags.length !== nextProps.tags.length
             || this.props.allUniqueTags.length !== nextProps.allUniqueTags.length) {
 

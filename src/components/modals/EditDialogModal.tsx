@@ -77,7 +77,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (this.props.open === false && nextProps.open === true) {
             this.setState({
                 ...initialState,

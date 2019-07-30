@@ -245,7 +245,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.handleQueryParameters(this.props.location.search)
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
         // Prevent flash when switching to EditDialogModal by keeping teach session around
         // after teach session has been terminated
         // Will go away once Edit/Teach dialogs are merged

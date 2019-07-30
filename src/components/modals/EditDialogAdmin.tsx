@@ -34,7 +34,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
 
         if (newProps.selectedActivity && newProps.trainDialog) {
             const clData: CLM.CLChannelData = newProps.selectedActivity.channelData.clData

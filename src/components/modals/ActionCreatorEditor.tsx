@@ -378,7 +378,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         await this.initializeActionPresets(this.props)
     }
 
-    async componentWillReceiveProps(nextProps: Props) {
+    async UNSAFE_componentWillReceiveProps(nextProps: Props) {
         let nextState: Partial<ComponentState> = {}
 
         if (nextProps.open === true) {

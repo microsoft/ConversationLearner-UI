@@ -32,7 +32,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
         if (this.props.open && !newProps.open) {
             // Reset
             this.setState({ hasChatActivity: false })

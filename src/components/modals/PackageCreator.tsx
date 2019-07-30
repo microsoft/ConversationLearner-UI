@@ -27,7 +27,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
         isLiveVal: false
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         this.setState({
             versionName: '',
             isLiveVal: false

@@ -42,7 +42,7 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
         if (this.props.isOpen !== newProps.isOpen) {
             this.setState({
                 filledEntityMap: newProps.initMemories || new CLM.FilledEntityMap(),

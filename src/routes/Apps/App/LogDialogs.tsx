@@ -282,7 +282,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.handleQueryParameters(this.props.location.search)
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
         // A hack to prevent the screen from flashing
         // Will go away once Edit/Teach dialogs are merged
         if (newProps.teachSession && newProps.teachSession !== this.props.teachSession) {

@@ -31,7 +31,7 @@ class TranscriptImporter extends React.Component<Props, ComponentState> {
         
     private fileInput: any
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         // Reset when opening modal
         if (this.props.open === false && nextProps.open === true) {
             this.setState({

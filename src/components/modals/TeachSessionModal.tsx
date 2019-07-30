@@ -110,7 +110,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
         this.props.onClose(false)
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
 
         let webchatKey = this.state.webchatKey
         let hasTerminalAction = this.state.hasTerminalAction

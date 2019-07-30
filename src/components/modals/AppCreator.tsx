@@ -49,7 +49,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
         })
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         // Reset when opening modal
         if (this.props.open === false && nextProps.open === true) {
             const firstValue = this.state.localeOptions[0].text

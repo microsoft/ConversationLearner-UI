@@ -131,7 +131,7 @@ class Container extends React.Component<Props, ComponentState> {
         ]
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (nextProps.open !== this.props.open) {
             // Build entity options based on current model locale
             const currentAppLocale = nextProps.app.locale
