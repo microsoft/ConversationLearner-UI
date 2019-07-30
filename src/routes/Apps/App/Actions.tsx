@@ -116,11 +116,12 @@ class Actions extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onChangeSearchString(event: React.ChangeEvent<HTMLInputElement>) {
-        const text = event.target.value
-        this.setState({
-            searchValue: text.toLowerCase()
-        })
+    onChangeSearchString(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
+        if (!newValue) {
+            return
+        }
+
+        this.onSearch(newValue)
     }
 
     @autobind

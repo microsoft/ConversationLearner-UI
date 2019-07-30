@@ -268,12 +268,12 @@ class Entities extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onChangeSearchString(event: React.ChangeEvent<HTMLInputElement>) {
-        const text = event.target.value
-        const lcString = text.toLowerCase()
-        this.setState({
-            searchValue: lcString
-        })
+    onChangeSearchString(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
+        if (!newValue) {
+            return
+        }
+
+        this.onSearch(newValue)
     }
 
     @autobind
