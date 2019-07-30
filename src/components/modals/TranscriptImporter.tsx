@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     files: File[] | null
@@ -40,14 +41,14 @@ class TranscriptImporter extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onChangeAutoImport() {
         this.setState({
             autoImport: !this.state.autoImport
         })
     }
 
-    @OF.autobind
+    @autobind
     onChangeAutoMerge() {
         this.setState({
             autoMerge: !this.state.autoMerge

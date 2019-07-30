@@ -21,6 +21,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './Testing.css'
+import { autobind } from 'core-decorators';
 
 const SAVE_SUFFIX = ".cltr"
 
@@ -49,7 +50,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
     private resultfileInput: any
 
-    @OF.autobind
+    @autobind
     async onSubmitTranscriptValidationPicker(testName: string, transcriptsToValidate: File[]): Promise<void> {
         if (transcriptsToValidate.length > 0) {
             const emptySet: CLM.TranscriptValidationSet = { transcriptValidationResults: [], appId: this.props.app.appId, fileName: testName }
@@ -66,12 +67,12 @@ class Testing extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onAbandonTranscriptValidationPicker(): Promise<void> {
         this.setState({ isTranscriptValidatePickerOpen: false })
     }
 
-    @OF.autobind
+    @autobind
     onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         const transcriptValidationSet = Util.deepCopy(this.state.transcriptValidationSet)
         transcriptValidationSet.fileName = text
@@ -81,7 +82,7 @@ class Testing extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelTest() {
         this.setState({
             transcriptFiles: []
@@ -101,7 +102,7 @@ class Testing extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     async onStartTranscriptValidate() {
 
         if (!this.state.transcriptFiles || this.state.transcriptFiles.length === 0) {
@@ -185,7 +186,7 @@ class Testing extends React.Component<Props, ComponentState> {
         await this.onStartTranscriptValidate()
     }
 
-    @OF.autobind
+    @autobind
     onTest(): void {
         this.setState({
             isTranscriptValidatePickerOpen: true,
@@ -193,22 +194,22 @@ class Testing extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onCompare(results: CLM.TranscriptValidationResult[]) {
         this.setState({ compareDialogs: results })
     }
 
-    @OF.autobind
+    @autobind
     onCloseCompare() {
         this.setState({ compareDialogs: null })
     }
 
-    @OF.autobind
+    @autobind
     onRate() {
         this.setState({ isRateDialogsOpen: true })
     }
 
-    @OF.autobind
+    @autobind
     onCloseRate(transcriptValidationSet: CLM.TranscriptValidationSet) {
         this.setState({
             transcriptValidationSet,
@@ -217,7 +218,7 @@ class Testing extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onSave() {
 
         if (!this.state.transcriptValidationSet.fileName || this.onGetNameErrorMessage(this.state.transcriptValidationSet.fileName) !== '') {
@@ -227,7 +228,7 @@ class Testing extends React.Component<Props, ComponentState> {
         saveAs(blob, `${this.state.transcriptValidationSet.fileName}${SAVE_SUFFIX}`)
     }
 
-    @OF.autobind
+    @autobind
     onChangeResultFiles(files: any) {
         const reader = new FileReader()
         reader.onload = (e: Event) => {
@@ -264,7 +265,7 @@ class Testing extends React.Component<Props, ComponentState> {
         return `${(count / this.state.transcriptValidationSet.transcriptValidationResults.length * 100).toFixed(1)}%`
     }
 
-    @OF.autobind
+    @autobind
     nameErrorCheck(value: string): string {
         const MAX_NAME_LENGTH = 30
 

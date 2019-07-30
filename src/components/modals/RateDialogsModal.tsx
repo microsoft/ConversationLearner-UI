@@ -21,6 +21,7 @@ import { EditDialogType } from '.';
 import { FM } from '../../react-intl-messages'
 import './CompareDialogsModal.css'
 import './RateDialogsModal.css'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     changedItems: CLM.TranscriptValidationResult[]
@@ -83,7 +84,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         return logDialogId
     }
 
-    @OF.autobind
+    @autobind
     async onRight() {
         const logDialogId = this.currentLogDialodId()
         if (this.state.isFlipped) {
@@ -95,14 +96,14 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         this.onNext()
     }
 
-    @OF.autobind
+    @autobind
     async onSame() {
         const logDialogId = this.currentLogDialodId()
         await Util.setStateAsync(this, {sameIds: [...this.state.sameIds, logDialogId]})
         this.onNext()
     }
 
-    @OF.autobind
+    @autobind
     async onLeft() {
         const logDialogId = this.currentLogDialodId()
         if (this.state.isFlipped) {
@@ -115,7 +116,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     //--- SAVE ------
-    @OF.autobind
+    @autobind
     saveResults() {
         const set = Util.deepCopy(this.props.transcriptValidationSet)
 
@@ -146,7 +147,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         this.props.onClose(set)
     }
 
-    @OF.autobind
+    @autobind
     onNext() {
         let resultIndex = this.state.resultIndex + 1
         if (resultIndex === this.state.changedItems.length) {
@@ -227,12 +228,12 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     // Keep scroll position of two webchats in lockstep
-    @OF.autobind
+    @autobind
     onScrollChange(scrollPosition: number) {
         this.setState({scrollPosition})
     }
 
-    @OF.autobind
+    @autobind
     onSelectActivity(history: BotChat.Activity[] | undefined, activity: Activity) {
         if (!history || history.length === 0) {
             return

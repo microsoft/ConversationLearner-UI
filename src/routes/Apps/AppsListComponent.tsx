@@ -12,6 +12,7 @@ import { FM } from '../../react-intl-messages'
 import * as Util from '../../Utils/util'
 import { User, AppCreatorType } from '../../types'
 import * as moment from 'moment'
+import { autobind } from 'core-decorators';
 
 export interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: AppBase, props: Props) => JSX.Element
@@ -186,7 +187,7 @@ export class Component extends React.Component<Props, ComponentState> {
         return sortedApps;
     }
 
-    @OF.autobind
+    @autobind
     onClickColumnHeader(event: React.MouseEvent<HTMLElement, MouseEvent>, clickedColumn: ISortableRenderableColumn) {
         const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
         const columns = this.state.columns.map(column => {

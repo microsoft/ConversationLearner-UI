@@ -15,6 +15,7 @@ import { connect } from 'react-redux'
 import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     filledEntityMap: CLM.FilledEntityMap
@@ -31,26 +32,26 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickCreateEntity() {
         this.setState({
             isEntityEditorModalOpen: true
         })
     }
 
-    @OF.autobind
+    @autobind
     onCloseEntityEditor() {
         this.setState({
             isEntityEditorModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCancel() {
         this.props.handleClose(null)
     }
 
-    @OF.autobind
+    @autobind
     onClickSubmit() {
         // Remove any empty items
         for (const entityName of Object.keys(this.state.filledEntityMap.map)) {
@@ -64,7 +65,7 @@ class TeachSessionInitState extends React.Component<Props, ComponentState> {
         this.props.handleClose(this.state.filledEntityMap)
     }
 
-    @OF.autobind
+    @autobind
     updateFilledEntityMap(map: { [key: string]: CLM.FilledEntity }) {
         this.setState({filledEntityMap: new CLM.FilledEntityMap({map: map})})
     }
