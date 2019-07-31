@@ -31,6 +31,7 @@ import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import './TrainDialogs.css'
+import { autobind } from 'core-decorators';
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -245,7 +246,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         this.handleQueryParameters(this.props.location.search)
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
         // Prevent flash when switching to EditDialogModal by keeping teach session around
         // after teach session has been terminated
         // Will go away once Edit/Teach dialogs are merged
@@ -351,13 +352,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         onSelectionChanged: this.onSelectionChanged
     })
 
-    @OF.autobind
+    @autobind
     onSelectionChanged() {
         const selectionCount = this.selection.getSelectedCount()
         this.setState({ selectionCount })
     }
 
-    @OF.autobind
+    @autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
         const columns = this.state.columns.map(column => {
@@ -398,28 +399,28 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onSelectTagsFilter(event: React.FormEvent<HTMLDivElement>, item: OF.IDropdownOption) {
         this.setState({
             tagsFilter: (item.key !== -1) ? item : null
         })
     }
 
-    @OF.autobind
+    @autobind
     onSelectEntityFilter(event: React.FormEvent<HTMLDivElement>, item: OF.IDropdownOption) {
         this.setState({
             entityFilter: (item.key !== -1) ? item : null
         })
     }
 
-    @OF.autobind
+    @autobind
     onSelectActionFilter(event: React.FormEvent<HTMLDivElement>, item: OF.IDropdownOption) {
         this.setState({
             actionFilter: (item.key !== -1) ? item : null
         })
     }
 
-    @OF.autobind
+    @autobind
     async onSetInitialEntities(initialFilledEntityMap: CLM.FilledEntityMap) {
 
         if (this.props.teachSession.teach) {
@@ -468,7 +469,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         return null
     }
 
-    @OF.autobind
+    @autobind
     async onCloseTeachSession(save: boolean, tags: string[] = [], description: string = '', stopImport: boolean = false) {
         if (this.props.teachSession && this.props.teachSession.teach) {
             // Delete the teach session unless it was already closed with and EndSessionAction
@@ -549,7 +550,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, isLastActivity: boolean, selectionType: SelectionType) {
         try {
             const newTrainDialog = await DialogEditing.onInsertAction(
@@ -570,7 +571,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined) {
         if (!trainScorerStep) {
             throw new Error(`You attempted to change an Action but the step you are editing was undefined. Please open an issue.`)
@@ -596,7 +597,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onChangeExtraction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, extractResponse: CLM.ExtractResponse | undefined, textVariations: CLM.TextVariation[] | undefined) {
         if (!extractResponse || !textVariations) {
             throw new Error("missing args")
@@ -621,7 +622,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onDeleteTurn(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
         const newTrainDialog = await DialogEditing.onDeleteTurn(
             trainDialog,
@@ -635,7 +636,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.CURRENT, this.state.editType)
     }
 
-    @OF.autobind
+    @autobind
     async onReplayTrainDialog(trainDialog: CLM.TrainDialog) {
         try {
             const newTrainDialog = await DialogEditing.onReplayTrainDialog(
@@ -653,7 +654,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onBranchTrainDialog(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string) {
 
         try {
@@ -704,7 +705,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string, selectionType: SelectionType) {
         try {
             const newTrainDialog = await DialogEditing.onInsertInput(
@@ -727,17 +728,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onCloseTreeView() {
         this.setState({ isTreeViewModalOpen: false })
     }
 
-    @OF.autobind
+    @autobind
     onOpenTreeView() {
         this.setState({ isTreeViewModalOpen: true })
     }
 
-    @OF.autobind
+    @autobind
     async mergeTrainDialogs(newTrainDialog: CLM.TrainDialog, matchedTrainDialog: CLM.TrainDialog, description: string | null, tags: string[] | null) {
 
         // If editing an existing train dialog, extract its dialogId
@@ -761,7 +762,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onCloseMergeModal(shouldMerge: boolean, description: string = "", tags: string[] = []) {
 
         if (!this.state.mergeNewTrainDialog || !this.state.mergeExistingTrainDialog) {
@@ -813,7 +814,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     // End Session activity selected.  Switch from Teach to Edit
-    @OF.autobind
+    @autobind
     async onEndSessionActivity(tags: string[] = [], description: string = '') {
 
         try {
@@ -840,7 +841,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType, editDialogType: EditDialogType) {
         const originalId = this.state.originalTrainDialog || this.state.currentTrainDialog
 
@@ -985,20 +986,20 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async selectTrainDialog(trainDialog: CLM.TrainDialog, roundIndex: number, scoreIndex: number | null) {
         const selectedActivityIndex = DialogUtils.activityIndexFromRound(trainDialog, roundIndex, scoreIndex) || null
         await this.openTrainDialog(trainDialog, EditDialogType.TRAIN_ORIGINAL, selectedActivityIndex)
     }
 
-    @OF.autobind
+    @autobind
     async onClickTrainDialogItem(trainDialog: CLM.TrainDialog) {
         const { history } = this.props
         let url = `${this.props.match.url}?id=${trainDialog.trainDialogId}`
         history.push(url, { app: this.props.app })
     }
 
-    @OF.autobind
+    @autobind
     async onClickReplaySelected() {
         const selectedTrainDialogs = this.selection.getSelection() as CLM.TrainDialog[]
         await Util.setStateAsync(this, {
@@ -1039,14 +1040,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     //-----------------------------
     // Transcript import
     //-----------------------------
-    @OF.autobind
+    @autobind
     onClickImportConversation(): void {
         this.setState({
             isTranscriptImportOpen: true
         })
     }
 
-    @OF.autobind
+    @autobind
     async onCloseImportConversation(transcriptsToImport: File[] | null, importAutoCreate: boolean, importAutoMerge: boolean): Promise<void> {
         await Util.setStateAsync(this, {
             isTranscriptImportOpen: false,
@@ -1073,7 +1074,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     async onStartTranscriptImport() {
         if (!this.state.transcriptFiles || this.state.transcriptFiles.length === 0) {
             return
@@ -1235,14 +1236,24 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    onChangeSearchString(newValue: string) {
+    @autobind
+    onChangeSearchString(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
+        if (!newValue) {
+            return
+        }
+
+        this.onSearch(newValue)
+    }
+
+    @autobind
+    onSearch(newValue: string) {
         const lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCancelReplaySelected() {
         this.setState({
             replayDialogs: []
@@ -1468,8 +1479,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                     id="train-dialogs-input-search"
                                     value={this.state.searchValue}
                                     className={OF.FontClassNames.medium}
-                                    onChange={(newValue) => this.onChangeSearchString(newValue)}
-                                    onSearch={(newValue) => this.onChangeSearchString(newValue)}
+                                    onChange={this.onChangeSearchString}
+                                    onSearch={this.onSearch}
                                 />
                                 <OF.PrimaryButton
                                     iconProps={{

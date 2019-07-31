@@ -20,6 +20,7 @@ import { EditDialogType } from '../../components/modals'
 import { FM } from '../../react-intl-messages'
 import { TeachSessionState } from '../../types/StateTypes'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 interface RoundLookup {
     textVariations?: CLM.TextVariation[] | null
@@ -88,7 +89,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         return false
     }
 
-    @OF.autobind
+    @autobind
     async onEntityExtractorSubmit(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]): Promise<void> {
 
         // If I'm editing an existing round
@@ -140,7 +141,7 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onActionScorerSubmit(trainScorerStep: CLM.TrainScorerStep): Promise<void> {
 
         // If I'm editing an existing round

@@ -79,7 +79,7 @@ export default class PayloadEditor extends React.Component<Props, State> {
         ]
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (this.props.options.length !== nextProps.options.length) {
             this.fuse = new Fuse(nextProps.options, fuseOptions)
         }

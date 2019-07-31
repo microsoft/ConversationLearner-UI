@@ -23,6 +23,7 @@ import { onRenderDetailsHeader } from '../ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ActionScorer.css'
+import { autobind } from 'core-decorators';
 
 const MISSING_ACTION = 'missing_action'
 
@@ -354,7 +355,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     focusPrimaryButton(): void {
         if (this.primaryScoreButtonRef.current) {
             this.primaryScoreButtonRef.current.focus();
@@ -394,7 +395,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     handleOpenActionModal() {
         this.setState({
             isActionCreatorModalOpen: true
@@ -404,7 +405,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     //-------------------
     // API Placeholder Creator
     //-------------------
-    @OF.autobind
+    @autobind
     onOpenAPIPlaceholderCreator(placeholder: string | null = null) {
         this.setState({
             apiPlaceholderName: placeholder,
@@ -412,7 +413,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     async onCloseCreateAPIPlaceholder(filledEntityMap: CLM.FilledEntityMap | null, apiName: string, isTerminal: boolean) {
         this.setState({
             apiPlaceholderName: null,
@@ -427,7 +428,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.props.onActionSelected(trainScorerStep)
     }
 
-    @OF.autobind
+    @autobind
     onColumnClick(event: any, column: any) {
         const { columns } = this.state;
         let isSortedDescending = column.isSortedDescending;
@@ -452,7 +453,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         });
     }
 
-    @OF.autobind
+    @autobind
     async handleDefaultSelection() {
         // Look for a valid action
         let scoredBase: CLM.ScoredBase | null = null
@@ -472,7 +473,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async handleReselectAction(scoredBase: CLM.ScoredBase) {
         // If placeholder let user reselect memory values
         if (CLM.ActionBase.isPlaceholderAPI(scoredBase)) {
@@ -483,7 +484,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             this.showAlreadySelectedPopUp()
         }
     }
-    @OF.autobind
+    @autobind
     async handleActionSelection(scoredBase: CLM.ScoredBase) {
 
         // If placeholder get data before selecting
@@ -725,7 +726,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         return (this.props.scoreInput.maskedActions && this.props.scoreInput.maskedActions.indexOf(actionId) > -1);
     }
 
-    @OF.autobind
+    @autobind
     renderItemColumn(action: CLM.ScoredBase, index: number, column: IRenderableColumn) {
 
         // Handle deleted actions
@@ -995,12 +996,12 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         )
     }
 
-    @OF.autobind
+    @autobind
     showAlreadySelectedPopUp() {
         this.setState({ isAlreadySelectedOpen: true })
     }
 
-    @OF.autobind
+    @autobind
     onCloseAlreadySelectedPopUp() {
         this.setState({ isAlreadySelectedOpen: false })
     }

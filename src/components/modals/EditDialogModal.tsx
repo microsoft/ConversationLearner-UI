@@ -30,6 +30,7 @@ import { FM } from '../../react-intl-messages'
 import { TipType } from '../ToolTips/ToolTips'
 import { renderReplayError } from '../../Utils/RenderReplayError'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
@@ -70,14 +71,14 @@ const initialState: ComponentState = {
 class EditDialogModal extends React.Component<Props, ComponentState> {
     state = initialState
 
-    @OF.autobind
+    @autobind
     resetWebchat() {
         this.setState({
             webchatKey: this.state.webchatKey + 1,
         })
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (this.props.open === false && nextProps.open === true) {
             this.setState({
                 ...initialState,
@@ -130,7 +131,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return false
     }
 
-    @OF.autobind
+    @autobind
     onClickAddUserInput(selectionType: SelectionType) {
         // TEMP: until server can exclude label conflicts with self
         if (this.showInternalLabelConflict()) {
@@ -151,7 +152,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickAddScore(activity: BotChat.Activity, selectionType: SelectionType) {
         // TEMP: until server can exclude label conflicts with self
         if (this.showInternalLabelConflict()) {
@@ -175,21 +176,21 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickCloseCantReplay() {
         this.setState({
             cantReplayMessage: null
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelAddUserInput() {
         this.setState({
             isUserInputModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onSubmitAddUserInput(userInput: string) {
         this.setState({
             isUserInputModalOpen: false
@@ -205,7 +206,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
             const trainDialog: CLM.TrainDialog = {
@@ -217,7 +218,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onChangeAction(trainScorerStep: CLM.TrainScorerStep) {
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
             const trainDialog: CLM.TrainDialog = {
@@ -230,7 +231,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     //---- BRANCH ----
-    @OF.autobind
+    @autobind
     onClickBranch() {
         if (this.canReplay(this.state.selectedActivity!)) {
             this.setState({
@@ -244,14 +245,14 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onCancelBranch() {
         this.setState({
             isUserBranchModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onSaveConflictSave() {
         // Save the dialog
         this.onClickSave()
@@ -260,7 +261,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onSaveConflictCancel() {
         // Increment webchat key to reset and clear last input
         // Forces redraw of webchat from TrainDialog (which hasn't been updated yet)
@@ -270,7 +271,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onSubmitBranch(userInput: string) {
         this.setState({
             isUserBranchModalOpen: false
@@ -287,7 +288,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     //---- ABANDON ----
-    @OF.autobind
+    @autobind
     onClickAbandon() {
         if (this.props.editType === EditDialogType.IMPORT) {
             this.setState({
@@ -301,7 +302,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickAbandonCancel() {
         this.setState({
             isConfirmAbandonOpen: false,
@@ -310,7 +311,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     // User is continuing the train dialog by typing something new
-    @OF.autobind
+    @autobind
     async onWebChatPostActivity(activity: Activity) {
 
         if (activity.type === 'message' && activity.text && activity.text !== "") {
@@ -455,7 +456,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return undefined
     }
 
-    @OF.autobind
+    @autobind
     renderSelectedActivity(activity: Activity): (JSX.Element | null) {
 
         if (this.props.editState !== EditState.CAN_EDIT || !this.props.trainDialog) {
@@ -598,7 +599,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return false
     }
 
-    @OF.autobind
+    @autobind
     onClickAbandonApprove(stopImporting: boolean = false) {
         const dialogChanged = this.isDialogChanged()
 
@@ -686,7 +687,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             || !equal(this.state.tags, this.props.trainDialog.tags)
     }
 
-    @OF.autobind
+    @autobind
     onClickConvert() {
         if (this.props.editType !== EditDialogType.LOG_ORIGINAL) {
             throw Error("Invalid Edit Type for onClickConvert")
@@ -700,7 +701,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         this.props.onSaveDialog(trainDialog)
     }
 
-    @OF.autobind
+    @autobind
     onClickSave() {
         const trainDialog: CLM.TrainDialog = {
             ...this.props.trainDialog,
@@ -734,21 +735,21 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onAddTag(tag: string) {
         this.setState(prevState => ({
             tags: [...prevState.tags, tag]
         }))
     }
 
-    @OF.autobind
+    @autobind
     onRemoveTag(tag: string) {
         this.setState(prevState => ({
             tags: prevState.tags.filter(t => t !== tag)
         }))
     }
 
-    @OF.autobind
+    @autobind
     onChangeDescription(description: string) {
         this.setState({
             description
@@ -846,7 +847,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         this.props.setWebchatScrollPosition(position)
     }
 
-    @OF.autobind
+    @autobind
     renderWebchatInput(showDisableInput: boolean): JSX.Element | null {
         if (this.waitingForScore() && this.state.currentTrainDialog) {
             return (

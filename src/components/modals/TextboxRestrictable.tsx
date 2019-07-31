@@ -9,6 +9,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     value: string
@@ -19,7 +20,7 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
         value: '',
     }
 
-    @OF.autobind
+    @autobind
     onChangeText(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             value: text
@@ -30,7 +31,7 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
         return (this.props.matchedText != null) && this.props.matchedText !== this.state.value
     }
 
-    @OF.autobind
+    @autobind
     onClickOK() {
         this.setState({
             value: ""
@@ -38,7 +39,7 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
         this.props.onOK(this.state.value)
     }
 
-    @OF.autobind
+    @autobind
     onClickCancel() {
         this.setState({
             value: ""
@@ -46,7 +47,7 @@ class TextboxRestrictableModal extends React.Component<Props, ComponentState> {
         this.props.onCancel()
     }
 
-    @OF.autobind
+    @autobind
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         if ((event.key === 'Enter') && !this.isContinueDisabled()) {
             this.onClickOK();

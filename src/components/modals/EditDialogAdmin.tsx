@@ -23,6 +23,7 @@ import { EditDialogType, EditState } from '.'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './EditDialogAdmin.css'
 import "./TeachSessionModal.css"
+import { autobind } from 'core-decorators';
 
 class EditDialogAdmin extends React.Component<Props, ComponentState> {
     constructor(p: Props) {
@@ -34,7 +35,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
 
         if (newProps.selectedActivity && newProps.trainDialog) {
             const clData: CLM.CLChannelData = newProps.selectedActivity.channelData.clData
@@ -138,7 +139,7 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
         return false
     }
 
-    @OF.autobind
+    @autobind
     async onEntityExtractorSubmit(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]): Promise<void> {
 
         if (await this.hasConflicts(textVariations)) {

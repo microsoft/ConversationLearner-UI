@@ -20,6 +20,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './Settings.css'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     localeVal: string
@@ -100,7 +101,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             appNameVal: text,
@@ -108,7 +109,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onChangeMarkdown(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             markdownVal: text,
@@ -116,7 +117,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onChangeVideo(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             videoVal: text,
@@ -124,7 +125,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickAddBot() {
         const newBotApps = this.state.botFrameworkAppsVal.concat(this.state.newBotVal);
         this.setState({
@@ -133,21 +134,21 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCopyApp() {
         this.setState({
             isAppCopyModalOpen: true
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelAppCopyModal() {
         this.setState({
             isAppCopyModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     async onSubmitAppCopyModal(app: CLM.AppBase) {
         const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
         this.setState({
@@ -155,7 +156,7 @@ class Settings extends React.Component<Props, ComponentState> {
         }, () => this.props.onCreateApp(app, appDefinition))
     }
 
-    @OF.autobind
+    @autobind
     onToggleLoggingOn() {
         this.setState({
             isLoggingOnVal: !this.state.isLoggingOnVal,
@@ -163,7 +164,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onRenderBotListRow(item?: any, index?: number) {
         return (
             <div>
@@ -172,7 +173,7 @@ class Settings extends React.Component<Props, ComponentState> {
         )
     }
 
-    @OF.autobind
+    @autobind
     onClickDiscard() {
         const app = this.props.app
         this.setState({
@@ -188,7 +189,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickSave() {
         const app = this.props.app
         const modifiedApp: CLM.AppBase = {
@@ -244,7 +245,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onChangeEditingVersion(event: React.FormEvent<HTMLDivElement>, editingOption: OF.IDropdownOption) {
         this.props.editAppEditingTagThunkAsync(this.props.app.appId, editingOption.key as string)
         this.setState({
@@ -252,7 +253,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onChangeLiveVersion(event: React.FormEvent<HTMLDivElement>, liveOption: OF.IDropdownOption) {
         this.props.editAppLiveTagThunkAsync(this.props.app, liveOption.key as string)
         this.setState({
@@ -260,7 +261,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCopy() {
         this.setState({
             isAppCopyModalOpen: true
@@ -268,14 +269,14 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     //--- EXPORT ------
-    @OF.autobind
+    @autobind
     onClickExport() {
         this.setState({
             isExportChoiceOpen: true
         })
     }
 
-    @OF.autobind
+    @autobind
     onCloseExportModal() {
         this.setState({
             isExportChoiceOpen: false
@@ -283,14 +284,14 @@ class Settings extends React.Component<Props, ComponentState> {
     }
 
     //--- DELETE ------
-    @OF.autobind
+    @autobind
     onClickDelete() {
         this.setState({
             isConfirmDeleteAppModalOpen: true
         })
     }
 
-    @OF.autobind
+    @autobind
     onConfirmDeleteApp() {
         this.props.onDeleteApp(this.props.app.appId)
         this.setState({
@@ -298,7 +299,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelDeleteModal() {
         this.setState({
             isConfirmDeleteAppModalOpen: false
@@ -326,14 +327,14 @@ class Settings extends React.Component<Props, ComponentState> {
             })
     }
 
-    @OF.autobind
+    @autobind
     onClickNewTag() {
         this.setState({
             isPackageCreatorOpen: true
         })
     }
 
-    @OF.autobind
+    @autobind
     onSubmitPackageCreator(tagName: string, setLive: boolean) {
         this.props.createAppTagThunkAsync(this.props.app.appId, tagName, setLive)
         this.setState({
@@ -341,7 +342,7 @@ class Settings extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelPackageCreator() {
         this.setState({
             isPackageCreatorOpen: false

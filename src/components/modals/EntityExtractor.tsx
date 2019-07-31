@@ -20,6 +20,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import './EntityExtractor.css'
+import { autobind } from 'core-decorators';
 
 interface ExtractResponseForDisplay {
     extractResponse: CLM.ExtractResponse
@@ -69,7 +70,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         setTimeout(this.focusPrimaryButton, 100)
     }
 
-    @OF.autobind
+    @autobind
     focusPrimaryButton(): void {
         if (this.doneExtractingButtonRef.current) {
             this.doneExtractingButtonRef.current.focus();
@@ -79,7 +80,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
         // If I'm switching my round or have added/removed text variations
         if (this.props.teachId !== newProps.teachId ||
             this.props.roundIndex !== newProps.roundIndex ||
@@ -103,7 +104,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onEntityConflictModalAbandon() {
         this.setState({
             isPendingSubmit: true
@@ -114,7 +115,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.props.clearExtractConflict()
     }
 
-    @OF.autobind
+    @autobind
     async onEntityConflictModalAccept(extractionChange: ExtractionChange) {
         const { extractResponse } = extractionChange
 
@@ -137,14 +138,14 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.props.clearExtractConflict()
     }
 
-    @OF.autobind
+    @autobind
     entityEditorHandleClose() {
         this.setState({
             entityModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onNewEntity(entityTypeFilter: string) {
         this.setState({
             entityModalOpen: true,
@@ -152,7 +153,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCreateEntity(): void {
         this.setState({
             entityModalOpen: true,
@@ -160,12 +161,12 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onOpenPicker(extractResponse: CLM.ExtractResponse): void {
         this.setState({ activePickerText: extractResponse.text })
     }
 
-    @OF.autobind
+    @autobind
     onClosePicker(extractResponse: CLM.ExtractResponse, onlyCloseOthers: boolean): void {
         if (!onlyCloseOthers || extractResponse.text !== this.state.activePickerText) {
             this.setState({ activePickerText: null })
@@ -262,7 +263,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             }))
     }
 
-    @OF.autobind
+    @autobind
     onClickUndoChanges() {
         this.props.clearExtractResponses();
         this.setState({
@@ -274,7 +275,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickSubmitExtractions(): void {
         this.setState({
             isPendingSubmit: false,
@@ -322,7 +323,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onRemoveExtractResponse(extractResponse: CLM.ExtractResponse): void {
 
         // First look for match in extract responses
@@ -345,7 +346,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onUpdateExtractResponse(extractResponse: CLM.ExtractResponse): Promise<void> {
         // First look for match in extract responses
         const foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text)
@@ -387,7 +388,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         });
     }
 
-    @OF.autobind
+    @autobind
     async onSubmitTextVariation() {
         const text = this.state.textVariationValue.trim();
         if (text.length === 0) {
