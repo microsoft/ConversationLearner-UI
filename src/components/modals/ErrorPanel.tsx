@@ -34,7 +34,7 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
         customError: null
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
         if (newProps.error !== this.props.error) {
             const errorBody = this.getErrorBody(newProps.error)
             const errorCode = this.getErrorCode(errorBody)

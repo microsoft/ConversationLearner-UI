@@ -29,6 +29,7 @@ import { RouteComponentProps } from 'react-router'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ActionCreatorEditor.css'
+import { autobind } from 'core-decorators';
 
 const TEXT_SLOT = '#TEXT_SLOT#'
 const CARD_MATCH_THRESHOLD = 0.25
@@ -378,7 +379,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         await this.initializeActionPresets(this.props)
     }
 
-    async componentWillReceiveProps(nextProps: Props) {
+    async UNSAFE_componentWillReceiveProps(nextProps: Props) {
         let nextState: Partial<ComponentState> = {}
 
         if (nextProps.open === true) {
@@ -659,7 +660,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onChangeWaitCheckbox() {
         this.setState(prevState => ({
             isTerminal: !prevState.isTerminal
@@ -719,7 +720,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     async onChangeCardOption(cardOption: OF.IDropdownOption | undefined) {
         if (!cardOption) {
             return
@@ -795,7 +796,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     async onNextCard() {
         let selectedCardIndex = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
         selectedCardIndex = selectedCardIndex + 1
@@ -806,7 +807,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         await this.onChangeCardOption(this.state.cardOptions[selectedCardIndex])
     }
 
-    @OF.autobind
+    @autobind
     async onPreviousCard() {
         let selectedCardIndex = this.state.cardOptions.findIndex(cd => cd.key === this.state.selectedCardOptionKey)
         selectedCardIndex = selectedCardIndex - 1
@@ -944,7 +945,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return action
     }
 
-    @OF.autobind
+    @autobind
     async onClickSaveCreate() {
         const newOrEditedAction = this.convertStateToModel()
         const validationWarnings: string[] = []
@@ -995,12 +996,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickCancel() {
         this.props.handleClose()
     }
 
-    @OF.autobind
+    @autobind
     async onClickDelete() {
         if (!this.props.action) {
             return
@@ -1029,21 +1030,21 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onCancelDeleteInUse() {
         this.setState({
             isConfirmDeleteInUseModalOpen: false,
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelDelete() {
         this.setState({
             isConfirmDeleteModalOpen: false,
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelEdit() {
         this.setState({
             isConfirmEditModalOpen: false,
@@ -1051,7 +1052,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelDuplicate() {
         this.setState({
             isConfirmDuplicateActionModalOpen: false,
@@ -1059,7 +1060,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onConfirmEdit() {
         if (!this.state.newOrEditedAction) {
             console.warn(`You clicked to confirm edit, but there is no action to save`)
@@ -1082,7 +1083,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onConfirmDelete(option: boolean) {
         if (!this.props.action) {
             console.warn(`You clicked to confirm deletion, but there is no action to delete`)
@@ -1095,21 +1096,21 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCreateEntity() {
         this.setState({
             isEntityEditorModalOpen: true
         })
     }
 
-    @OF.autobind
+    @autobind
     onCloseEntityEditor() {
         this.setState({
             isEntityEditorModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     async onChangeActionType(actionTypeOption: OF.IDropdownOption | undefined) {
         if (!actionTypeOption) {
             return
@@ -1327,7 +1328,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             || (!this.state.isTerminal && (this.state.expectedEntityTags.length > 0))
     }
 
-    @OF.autobind
+    @autobind
     onClickTrainDialogs() {
         const { history } = this.props
         history.push(`/home/${this.props.app.appId}/trainDialogs`, { app: this.props.app, actionFilter: this.props.action })
@@ -1341,7 +1342,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return tdString.indexOf(this.props.action.actionId) > -1
     }
 
-    @OF.autobind
+    @autobind
     validationWarning(): JSX.Element | null {
         if (this.state.validationWarnings.length > 0) {
             return (

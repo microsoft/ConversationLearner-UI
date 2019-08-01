@@ -19,6 +19,7 @@ import { connect } from 'react-redux'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 enum ExportType {
     CL = ".cl",
@@ -34,7 +35,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
         exportType: ExportType.CL
     }
 
-    @OF.autobind
+    @autobind
     async onClickExport() {
         switch (this.state.exportType) {
             case ExportType.TRANSCRIPT:
@@ -72,7 +73,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
         saveAs(zipBlob, `${this.props.app.appName}.zip`);
     }
 
-    @OF.autobind
+    @autobind
     onChoiceChange(ev: React.FormEvent<HTMLInputElement>, option: any) {
         this.setState({exportType: option.key})
     }

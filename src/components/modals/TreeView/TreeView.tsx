@@ -17,6 +17,7 @@ import { TreeNodeLabel, TreeNode, TreeScorerStep } from './TreeNodeLabel'
 import { TreeNodeExpanded } from './TreeNodeExpanded'
 import { EditDialogType, EditState } from '..'
 import './TreeView.css';
+import { autobind } from 'core-decorators';
 
 const userShape = {
     shape: 'circle',
@@ -75,19 +76,19 @@ class TreeView extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind 
+    @autobind 
     onNodeDetail(nodeId: string): void {
         const matches: TreeNode[] = this.state.treeElement.findNodesById(nodeId, this.state.treeElement.state.data, []);
         const expandedNode = matches[0];
         this.setState({expandedNode: expandedNode || null})
     }
 
-    @OF.autobind 
+    @autobind 
     onCloseExpando(): void {
         this.setState({expandedNode: null})
     }
 
-    @OF.autobind
+    @autobind
     onClickExpando(nodeId: string): void {
         const matches = this.state.treeElement.findNodesById(nodeId, this.state.treeElement.state.data, []);
         const targetNode = matches[0];
@@ -102,7 +103,7 @@ class TreeView extends React.Component<Props, ComponentState> {
         this.state.treeElement.internalState.targetNode = targetNode;
     }
 
-    @OF.autobind
+    @autobind
     dismissBanner() {
         this.setState({showBanner: false})
     }
@@ -218,7 +219,7 @@ class TreeView extends React.Component<Props, ComponentState> {
         return attributes
     }
 
-    @OF.autobind
+    @autobind
     generateActionDescriptions(treeScorerStep: TreeScorerStep[]): void {
         treeScorerStep.forEach(tss => {
             let action = this.props.actions.find(a => a.actionId === tss.actionId)
@@ -313,7 +314,7 @@ class TreeView extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async openTrainDialog(selectedNode: TreeNode, trainDialogId: string): Promise<void> {
         if (trainDialogId) {    
             this.setState({expandedNode: null})
@@ -326,7 +327,7 @@ class TreeView extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async pinToNode(selectedNode: TreeNode, isSelected: boolean): Promise<void> {
         if (this.state.selectedNode && isSelected) {
             await Util.setStateAsync(this, {selectedNode: null})
@@ -337,12 +338,12 @@ class TreeView extends React.Component<Props, ComponentState> {
         this.updateTree()
     }
 
-    @OF.autobind
+    @autobind
     setTreeRef(treeElement: any): void {
         this.setState({treeElement})
     }
 
-    @OF.autobind
+    @autobind
     toggleFullScreen(): void {
         this.setState({fullScreen: !this.state.fullScreen})
     }

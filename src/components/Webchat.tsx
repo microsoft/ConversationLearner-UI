@@ -132,7 +132,7 @@ class Webchat extends React.Component<Props> {
         }
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (this.props.history !== nextProps.history) {
             if (this.props.history.length > 0 || nextProps.history.length > 0) {
                 this.chatProps = null;

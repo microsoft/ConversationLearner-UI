@@ -17,6 +17,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import Component, { IEnumValueForDisplay } from './EntityCreatorComponent'
+import { autobind } from 'core-decorators';
 
 const entityNameMaxLength = 30
 const prebuiltPrefix = 'builtin-'
@@ -131,7 +132,7 @@ class Container extends React.Component<Props, ComponentState> {
         ]
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (nextProps.open !== this.props.open) {
             // Build entity options based on current model locale
             const currentAppLocale = nextProps.app.locale
@@ -281,7 +282,7 @@ class Container extends React.Component<Props, ComponentState> {
         return newOrEditedEntity
     }
 
-    @OF.autobind
+    @autobind
     async onClickSaveCreate() {
         const newOrEditedEntity = this.convertStateToEntity(this.state)
 
@@ -312,7 +313,7 @@ class Container extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClosePrebuiltWarning(): void {
         this.setState({
             showValidationWarning: false
@@ -485,7 +486,7 @@ class Container extends React.Component<Props, ComponentState> {
         return (this.state.enumValues.filter(v => v && v.enumValue === value).length > 1)
     }
 
-    @OF.autobind
+    @autobind
     async onKeyDownName(event: React.KeyboardEvent<HTMLInputElement>) {
         // On enter attempt to create the entity as long as name is set
         if (event.key === 'Enter' && this.isSaveDisabled() === false) {
@@ -567,7 +568,7 @@ class Container extends React.Component<Props, ComponentState> {
             : JSON.stringify(this.props.trainDialogs).includes(entity.entityId)
     }
 
-    @OF.autobind
+    @autobind
     async onClickDelete() {
         // Check if used by actions (ok if used by TrainDialogs)
         if (this.isRequiredForActions()) {
@@ -595,7 +596,7 @@ class Container extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onCancelDelete() {
         this.setState({
             isConfirmDeleteModalOpen: false,
@@ -603,14 +604,14 @@ class Container extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelEnumDelete() {
         this.setState({
             deleteEnumCheck: null
         })
     }
 
-    @OF.autobind
+    @autobind
     onConfirmEnumDelete() {
         if (this.state.deleteEnumCheck) {
             this.deleteEnum(this.state.deleteEnumCheck)
@@ -620,7 +621,7 @@ class Container extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onConfirmDelete() {
         const entity = this.props.entity
         if (!entity) {
@@ -635,7 +636,7 @@ class Container extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelEdit() {
         this.setState({
             isConfirmEditModalOpen: false,
@@ -672,7 +673,7 @@ class Container extends React.Component<Props, ComponentState> {
         return null
     }
 
-    @OF.autobind
+    @autobind
     onConfirmEdit() {
         if (!this.state.newOrEditedEntity) {
             console.warn(`You confirmed the edit, but the newOrEditedEntity state was not available. This should not be possible. Contact Support`)
@@ -689,7 +690,7 @@ class Container extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickTrainDialogs() {
         const { history } = this.props
         history.push(`/home/${this.props.app.appId}/trainDialogs`, { app: this.props.app, entityFilter: this.props.entity })

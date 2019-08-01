@@ -3,7 +3,6 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import Plain from 'slate-plain-serializer'
 import CustomEntityNode from './CustomEntityNode'
@@ -15,6 +14,7 @@ import { Expando } from '../modals'
 import { IOption, IPosition, IEntityPickerProps, IGenericEntity, NodeType, IGenericEntityData, ExtractorStatus } from './models'
 import { convertEntitiesAndTextToTokenizedEditorValue, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValueUsingTokenData, getSelectedText } from './utilities'
 import './ExtractorResponseEditor.css'
+import { autobind } from 'core-decorators';
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any
@@ -86,7 +86,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         /**
          * This makes assumption that options that are added during the life-cycle of this component are likely
          * added via users clicking the New Entity item in the menu.  We can then simulate a change of custom entities
@@ -257,7 +257,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onChange(change: any) {
         const { value, operations } = change
 
@@ -364,7 +364,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         return undefined
     }
 
-    @OF.autobind
+    @autobind
     onDeleteButtonVisible(isDeleteButtonVisible: boolean): void {
         this.setState({ isDeleteButtonVisible })
     }
@@ -403,7 +403,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         onChange(change)
     }
 
-    @OF.autobind
+    @autobind
     onClickNewEntity(entityTypeFilter: string) {
         if (this.props.isPickerVisible) {
             this.props.onClosePicker()
@@ -422,7 +422,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     }
 
     // For end 2 end unit testing.
-    @OF.autobind
+    @autobind
     onTestSelectWord(val: any) {
         const phrase: string = val.detail
         const words = phrase.split(" ")

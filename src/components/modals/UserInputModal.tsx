@@ -12,6 +12,7 @@ import { connect } from 'react-redux'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     userInputVal: string
@@ -28,14 +29,14 @@ class UserInputModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onChangeUserInputChange(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             userInputVal: text
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCancel() {
         this.setState({
             userInputVal: ""
@@ -43,7 +44,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
         this.props.onCancel()
     }
 
-    @OF.autobind
+    @autobind
     onClickSubmit() {
         this.setState({
             userInputVal: ""
@@ -53,7 +54,7 @@ class UserInputModal extends React.Component<Props, ComponentState> {
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
     // Also has benefit of native browser validation for required fields
-    @OF.autobind
+    @autobind
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file

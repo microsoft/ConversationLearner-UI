@@ -15,6 +15,7 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import * as TC from '../tipComponents'
 import * as ToolTips from '../ToolTips/ToolTips'
 import * as Util from '../../Utils/util'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     versionName: string
@@ -27,26 +28,26 @@ class PackageCreator extends React.Component<Props, ComponentState> {
         isLiveVal: false
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         this.setState({
             versionName: '',
             isLiveVal: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             versionName: text
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCancel() {
         this.props.onCancel()
     }
 
-    @OF.autobind
+    @autobind
     onClickCreate() {
         this.props.onSubmit(this.state.versionName.trim(), this.state.isLiveVal)
     }
@@ -83,7 +84,7 @@ class PackageCreator extends React.Component<Props, ComponentState> {
         return ''
     }
 
-    @OF.autobind
+    @autobind
     onToggleSetLive() {
         this.setState({
             isLiveVal: !this.state.isLiveVal

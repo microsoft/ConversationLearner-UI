@@ -12,7 +12,7 @@ import { fetchTutorialsThunkAsync } from '../../actions/appActions'
 import { AppBase, AppDefinition } from '@conversationlearner/models'
 import { CL_IMPORT_TUTORIALS_USER_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { autobind } from 'office-ui-fabric-react'
+import { autobind } from 'core-decorators'
 import AppsListComponent from './AppsListComponent'
 
 interface ComponentState {

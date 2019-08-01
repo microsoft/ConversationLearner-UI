@@ -811,7 +811,7 @@ i[data-icon-name="Edit"]:hover {
   border-style: solid;
   border-color: rgb(255, 255, 255);
   border-image: initial;
-  outline: rgb(102, 102, 102) solid 1px;
+  outline-color: rgb(102, 102, 102);
 }
 
 .ms-Button--transparent {
@@ -847,7 +847,7 @@ i[data-icon-name="Edit"]:hover {
   border-style: solid;
   border-color: rgb(255, 255, 255);
   border-image: initial;
-  outline: rgb(102, 102, 102) solid 1px;
+  outline-color: rgb(102, 102, 102);
 }
 .ms-Button--default:not(.cl-button-delete):disabled {
   background-color: white !important;

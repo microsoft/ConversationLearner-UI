@@ -14,6 +14,7 @@ import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './TranscriptValidatorPicker.css'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     transcriptFiles: File[]
@@ -28,7 +29,7 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
         
     private transcriptfileInput: any
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         // Reset when opening modal
         if (this.props.open === false && nextProps.open === true) {
             this.setState({
@@ -37,14 +38,14 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, testName: string) {
         this.setState({
             testName
         })
     }
 
-    @OF.autobind
+    @autobind
     onChangeTranscriptFiles(files: any) {
         this.setState({
             transcriptFiles: files

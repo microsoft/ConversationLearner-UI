@@ -19,6 +19,7 @@ import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './EditApiPlaceholder.css'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     filledEntityMap: CLM.FilledEntityMap
@@ -42,7 +43,7 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
         if (this.props.isOpen !== newProps.isOpen) {
             this.setState({
                 filledEntityMap: newProps.initMemories || new CLM.FilledEntityMap(),
@@ -52,26 +53,26 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickCreateEntity() {
         this.setState({
             isEntityEditorModalOpen: true
         })
     }
 
-    @OF.autobind
+    @autobind
     onCloseEntityEditor() {
         this.setState({
             isEntityEditorModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCancel() {
         this.props.handleClose(null, null, false)
     }
 
-    @OF.autobind
+    @autobind
     onClickSubmit() {
         // Remove any empty items
         for (const entityName of Object.keys(this.state.filledEntityMap.map)) {
@@ -85,14 +86,14 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
         this.props.handleClose(this.state.filledEntityMap, this.state.apiNameVal, this.state.isTerminal)
     }
 
-    @OF.autobind
+    @autobind
     onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             apiNameVal: text
         })
     }
 
-    @OF.autobind
+    @autobind
     onChangeWaitCheckbox() {
         this.setState(prevState => ({
             isTerminal: !prevState.isTerminal
@@ -132,7 +133,7 @@ class EditApiPlaceholder extends React.Component<Props, ComponentState> {
         return (this.onGetNameErrorMessage(this.state.apiNameVal) !== '')
     }
 
-    @OF.autobind
+    @autobind
     updateFilledEntityMap(map: { [key: string]: CLM.FilledEntity }) {
         this.setState({filledEntityMap: new CLM.FilledEntityMap({map: map})})
     }
