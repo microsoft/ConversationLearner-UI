@@ -101,3 +101,50 @@ export function VerifyNoEnabledSelectActionButtons() {
     }
   })
 }
+
+export function VerifyScoreActions(expectedScoreActions) {
+  let errorMessages = []
+  let rowIndex = 0
+  let lastErrorRowIndex = -1
+
+  function AcumulateErrors(message) {
+    if (lastErrorRowIndex != rowIndex) {
+      errorMessages.push(`Row ${rowIndex}`)
+      lastErrorRowIndex = rowIndex
+    }
+    errorMessages.push(message)
+  }
+
+  cy.Enqueue(() => {
+    let rowElements = 
+    cy.Get(`div.[role="presentation"][data-list-index="${rowIndex}"]`).then(elements =>{
+      let expectedButtonTestId
+      let score
+      switch (expectedScoreActions.state)
+      {
+        case stateEnum.selected:
+          expectedButtonTestId = 'action-scorer-button-selected'
+          score = '100.0%'
+          break
+        case stateEnum.qualified:
+          expectedButtonTestId = 'action-scorer-button-clickable'
+          score = '-'
+          break
+        case stateEnum.disqualified:
+          expectedButtonTestId = 'action-scorer-button-no-click'
+          score = 'Disqualified'
+          break
+      }
+      let element = Cypress.$(element[0]).find('[data-testid^="action-scorer-button-"]')
+      if (element.length != 1) { throw new Error(`Expected to find 1 and only 1 data-testid starting with "action-scorer-button-", instead we found ${element.length}`)}
+      let attr = element[0].attr('data-testid')
+      if (attr != expectedButtonTestId) { }
+      // data-testid="action-scorer-button-selected"
+    // data-testid="action-scorer-button-clickable"
+    // data-testid="action-scorer-button-no-click"
+    })
+  })
+
+}
+
+export const stateEnum = { selected: 1, qualified: 2, disqualified: 3 }

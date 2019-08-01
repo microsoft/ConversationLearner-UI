@@ -42,7 +42,7 @@ export function RemoveDuplicates(inputArray) {
 
 export function StringArrayFromElementText(selector, retainMarkup = false) {
   let elements = Cypress.$(selector)
-  ConLog(`StringArrayFromElementText(${selector})`, elements.length)
+  ConLog(`StringArrayFromElementText(${selector})`, `Number of Elements Found: ${elements.length}`)
   let returnValues = []
   for (let i = 0; i < elements.length; i++)  {
     let text = retainMarkup ? elements[i].innerHTML : TextContentWithoutNewlines(elements[i])

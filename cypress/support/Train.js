@@ -793,6 +793,11 @@ function SelectAndVerifyEachChatTurn(verificationFunction, index = 0, increment 
   })
 }
 
+export function SelectAndVerifyScoreActionsForEachBotChatTurn(expectedScoreActionsForEachBotTurn) { 
+  function VerificationFunction(element, index) { scorerModal.VerifyScoreActions(expectedScoreActionsForEachBotTurn[index / 2]) }
+  SelectAndVerifyEachChatTurn( VerificationFunction, 1, 2) 
+}
+
 export function AbandonDialog() {
   ClickAbandonDeleteButton()
   ClickConfirmAbandonDialogButton()
