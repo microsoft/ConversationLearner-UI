@@ -12,7 +12,7 @@ interface TranscriptActionInput {
     entityName: string
 }
 
-interface TranscriptActionCall {
+export interface TranscriptActionCall {
     type: string
     actionName: string
     actionInput: TranscriptActionInput[]
@@ -38,6 +38,7 @@ export function isSameActivity(activity1: BB.Activity, activity2: BB.Activity): 
     return true
 }
 
+// Convert .transcript file into a TrainDialog
 export async function trainDialogFromTranscriptImport(
     transcript: BB.Activity[],
     entities: CLM.EntityBase[],
@@ -66,11 +67,16 @@ export async function trainDialogFromTranscriptImport(
     }
 
     let curRound: CLM.TrainRound | null = null
+    let nextFilledEntities: CLM.FilledEntity[] = []
     for (let index = 0; index < transcript.length; index = index + 1) {
         const activity = transcript[index]
         const nextActivity = transcript[index + 1]
+
         // TODO: Handle conversation updates
-        if (!activity.type || activity.type === "message") {
+        if (activity.text === "END_SESSION") {
+            return trainDialog
+        }
+        else if (!activity.type || activity.type === "message") {
             if (activity.from.role === "user") {
                 const textVariations: CLM.TextVariation[] = [{
                     text: activity.text,
@@ -99,21 +105,41 @@ export async function trainDialogFromTranscriptImport(
                 trainDialog.rounds.push(curRound)
             }
             else if (activity.from.role === "bot") {
-                let action: CLM.ActionBase | undefined | null = DialogUtils.importedActionMatch(activity.text, actions)
-                let filledEntities: CLM.FilledEntity[] = []
+                const hashText = hashTextFromActivity(activity, entities, nextFilledEntities)
+                let action: CLM.ActionBase | undefined | null = findActionFromHashText(hashText, actions)
                 let logicResult: CLM.LogicResult | undefined
+                let scoredAction: CLM.ScoredAction | undefined
+                let filledEntities = Util.deepCopy(nextFilledEntities)
 
                 // If I didn't find an action and is API, create API placeholder
-                if (!action && activity.channelData && activity.channelData.type === "ActionCall") {
+                if (activity.channelData && activity.channelData.type === "ActionCall") {
                     const actionCall = activity.channelData as TranscriptActionCall
                     const isTerminal = !nextActivity || nextActivity.from.role === "user"
-                    action = await DialogEditing.getPlaceholderAPIAction(app.appId, actionCall.actionName, isTerminal, actions, createActionThunkAsync as any)
 
+                    if (!action) {
+                        action = await DialogEditing.getPlaceholderAPIAction(app.appId, actionCall.actionName, isTerminal, actions, createActionThunkAsync as any)
+                    }
+                    if (!action) {
+                        throw new Error("Unable to create API placeholder Action")
+                    }
+
+                    scoredAction = {
+                        actionId: action.actionId,
+                        payload: action.payload,
+                        isTerminal: action.isTerminal,
+                        actionType: CLM.ActionTypes.API_LOCAL,
+                        score: 1
+                    }
+
+                    const actionFilledEntities = await importActionOutput(actionCall.actionOutput, entities, app, createEntityThunkAsync)
                     // Store placeholder output in LogicResult
                     logicResult = {
                         logicValue: undefined,
-                        changedFilledEntities: await importActionOutput(actionCall.actionOutput, entities, app, createEntityThunkAsync),
+                        changedFilledEntities: actionFilledEntities,
                     }
+
+                    // Store filled entities for subsequent turns
+                    nextFilledEntities = actionFilledEntities
                 }
 
                 let scoreInput: CLM.ScoreInput = {
@@ -126,8 +152,8 @@ export async function trainDialogFromTranscriptImport(
                     importText: action ? undefined : activity.text,
                     input: scoreInput,
                     labelAction: action ? action.actionId : CLM.CL_STUB_IMPORT_ACTION_ID,
-                    logicResult: logicResult,
-                    scoredAction: undefined
+                    logicResult,
+                    scoredAction
                 }
 
                 if (curRound) {
@@ -142,7 +168,110 @@ export async function trainDialogFromTranscriptImport(
     return trainDialog
 }
 
-async function importActionOutput(
+// Generate entity map for an action, filling in any missing entities with a blank value
+export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityMap: Map<string, string> = new Map<string, string>()): Map<string, string> {
+    const map = new Map<string, string>()
+    action.requiredEntities.forEach(e => {
+        let value = filledEntityMap.get(e)
+        if (value) {
+            map.set(e, value)
+        }
+        else {
+            map.set(e, "")
+        }
+    })
+    return map
+}
+
+// Return hash text for the given activity
+export function hashTextFromActivity(activity: BB.Activity, entities: CLM.EntityBase[], filledEntities: CLM.FilledEntity[] | undefined) : string {
+
+    // If an API placeholder user the action name
+    if (activity.channelData && activity.channelData.type === "ActionCall") {
+        const actionCall = activity.channelData as TranscriptActionCall
+        return actionCall.actionName
+    }
+    // If entites have been set, substitute entityIDs in before hashing
+    else if (filledEntities && filledEntities.length > 0) {
+        const filledEntityMap = DialogUtils.filledEntityIdMap(filledEntities, entities)
+        return importTextWithEntityIds(activity.text, filledEntityMap)
+    }
+    // Default to raw text
+    return activity.text
+}
+
+// Substibute entityIds into imported text when text matches entity value
+export function importTextWithEntityIds(importText: string, valueMap: Map<string, string>) {
+
+    let outText = importText.slice()
+    valueMap.forEach((value: string, entityId: string) => {
+        outText = outText.replace(value, entityId)
+    })
+    return outText
+}
+
+// Look for imported actions in TrainDialog and attempt to replace them
+// with existing actions.  Return true if any replacement occurred
+export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): boolean {
+
+    // Filter out actions that have no hash lookups. If there are none, terminate early
+    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.importHashes && a.clientData.importHashes.length > 0)
+    if (actionsWithHash.length === 0) {
+        return false
+    }
+
+    // Now swap any actions that match
+    let match = false
+    trainDialog.rounds.forEach(round => {
+        round.scorerSteps.forEach(scorerStep => {
+
+            let hashText: string | null = null
+
+            // If replacing imported action
+            if (scorerStep.importText) {
+                // Substitue entityIds back into import text to build import hash lookup
+                const filledEntityMap = DialogUtils.filledEntityIdMap(scorerStep.input.filledEntities, entities)
+                hashText = importTextWithEntityIds(scorerStep.importText, filledEntityMap)
+            }
+            // If replacing placeholder action
+            else if (scorerStep.labelAction && CLM.ActionBase.isPlaceholderAPI(scorerStep.scoredAction)) {
+                const apiAction = new CLM.ApiAction(scorerStep.scoredAction as any)
+                hashText = apiAction.name
+            }
+
+            if (hashText) {
+                const newAction = findActionFromHashText(hashText, actionsWithHash)
+
+                // If action exists replace labelled action with match
+                if (newAction) {
+                    scorerStep.labelAction = newAction.actionId
+                    delete scorerStep.importText
+                    match = true
+                }
+            }
+        })
+    })
+    return match
+}
+
+// Search for an action by hash
+function findActionFromHashText(hashText: string, actions: CLM.ActionBase[]): CLM.ActionBase | undefined {
+    const importHash = Util.hashText(hashText)
+
+    // Try to find matching action with same hash
+    let matchedActions = actions.filter(a => {
+        return a.clientData && a.clientData.importHashes && a.clientData.importHashes.indexOf(importHash) > -1
+    })
+
+    // If more than one, prefer the one that isn't a placeholder
+    if (matchedActions.length > 1) {
+        matchedActions = matchedActions.filter(ma => !CLM.ActionBase.isPlaceholderAPI(ma))
+    }
+
+    return matchedActions[0]
+}
+
+export async function importActionOutput(
     actionResults: TranscriptActionOutput[], 
     entities: CLM.EntityBase[],
     app: CLM.AppBase,
