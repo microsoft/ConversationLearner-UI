@@ -553,7 +553,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (props.newActionPreset) {
             let values = Plain.deserialize(this.presetText(props.newActionPreset.text))
             this.onChangePayloadEditor(values, TEXT_SLOT)
-            this.setState({ isTerminal: props.newActionPreset.isTerminal })
+            await Util.setStateAsync(this, { isTerminal: props.newActionPreset.isTerminal })
 
             // If a good card match exists switch to card view
             const bestCard = this.bestCardMatch(props.newActionPreset.text, CARD_MATCH_THRESHOLD)

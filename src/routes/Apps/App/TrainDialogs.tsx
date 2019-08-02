@@ -1059,21 +1059,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         await this.onStartTranscriptImport()
     }
 
-    // LARS todo move to utils
-    readFileAsync(file: File): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.onload = (e: Event) => {
-                resolve(reader.result as any);
-            };
-
-            reader.onerror = reject;
-
-            reader.readAsText(file);
-        })
-    }
-
     @autobind
     async onStartTranscriptImport() {
         if (!this.state.transcriptFiles || this.state.transcriptFiles.length === 0) {
@@ -1090,7 +1075,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
         this.setState({ transcriptIndex: this.state.transcriptIndex + 1 })
 
-        let source = await this.readFileAsync(transcriptFile)
+        let source = await Util.readFileAsync(transcriptFile)
         try {
             const sourceJson = JSON.parse(source)
             await this.onImport(sourceJson)
@@ -1149,7 +1134,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         DialogUtils.cleanTrainDialog(newTrainDialog)
 
         // Try to map action again now that we have entities
-        DialogUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
+        TranscriptUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
 
         await Util.setStateAsync(this, {
             originalTrainDialog: newTrainDialog

@@ -609,116 +609,11 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
     return mergedTrainDialog
 }
 
-// Generate entity map for an action, filling in any missing entities with a blank value
-export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityMap: Map<string, string> = new Map<string, string>()): Map<string, string> {
-    const map = new Map<string, string>()
-    action.requiredEntities.forEach(e => {
-        let value = filledEntityMap.get(e)
-        if (value) {
-            map.set(e, value)
-        }
-        else {
-            map.set(e, "")
-        }
-    })
-    return map
-}
-
-export function importTextWithEntityIds(importText: string, valueMap: Map<string, string>) {
-
-    let outText = importText.slice()
-    valueMap.forEach((value: string, entityId: string) => {
-        outText = outText.replace(value, entityId)
-    })
-    return outText
-}
-
-function findActionByImportHash(importText: string, actionsWithHash: CLM.ActionBase[]): CLM.ActionBase | undefined {
-    const importHash = Util.hashText(importText)
-
-    // Try to find matching action with same hash
-    let matchedActions = actionsWithHash.filter(a => {
-        // Filter above ensures these are not null
-        return a.clientData!.importHashes!.indexOf(importHash) > -1
-    })
-
-    // If more than one, prefer the one that isn't a placeholder
-    if (matchedActions.length > 1) {
-        matchedActions = matchedActions.filter(ma => !CLM.ActionBase.isPlaceholderAPI(ma))
-    }
-
-    return matchedActions[0]
-}
-
-// Try to find existing action for import based solely on raw text (no filled entites available)
-export function importedActionMatch(importText: string, actions: CLM.ActionBase[], filledEntityMap?: Map<string, string> | undefined): CLM.ActionBase | undefined {
-    // First try match via has of importText
-    // Filter out actions that have no hash lookups. If there are none, terminate early
-    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.importHashes && a.clientData.importHashes.length > 0)
-    const matchedAction = findActionByImportHash(importText, actionsWithHash)
-    if (matchedAction) {
-        return matchedAction
-    }
-
-    // Next try by exact text match (note no filled entities available)
-    return actions.find(action => {
-        if (action.actionType === CLM.ActionTypes.TEXT) {
-            const textAction = new CLM.TextAction(action)
-            const entityMap = generateEntityMapForAction(action, filledEntityMap)
-            const actionText = textAction.renderValue(entityMap)
-            return importText === actionText
-        }
-        return false
-    })
-}
 
 export function filledEntityIdMap(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): Map<string, string> {
     const filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(filledEntities, entities)
     const filledIdMap = filledEntityMap.EntityMapToIdMap()
     return CLM.getEntityDisplayValueMap(filledIdMap)
-}
-
-// Look for imported actions in TrainDialog and attempt to replace them
-// with existing actions.  Return true if any replacement occurred
-export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): boolean {
-
-    // Filter out actions that have no hash lookups. If there are none, terminate early
-    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.importHashes && a.clientData.importHashes.length > 0)
-    if (actionsWithHash.length === 0) {
-        return false
-    }
-
-    // Now swap any actions that match
-    let match = false
-    trainDialog.rounds.forEach(round => {
-        round.scorerSteps.forEach(scorerStep => {
-            let importText: string | null = null
-
-            // If replacing imported action
-            if (scorerStep.importText) {
-                // Substitue entityIds back into import text to build import hash lookup
-                const filledEntityMap = filledEntityIdMap(scorerStep.input.filledEntities, entities)
-                importText = importTextWithEntityIds(scorerStep.importText, filledEntityMap)
-            }
-            // If replacing placeholder action
-            else if (scorerStep.labelAction && CLM.ActionBase.isPlaceholderAPI(scorerStep.scoredAction)) {
-                const apiAction = new CLM.ApiAction(scorerStep.scoredAction as any)
-                importText = apiAction.name
-            }
-
-            if (importText) {
-                const newAction = findActionByImportHash(importText, actionsWithHash)
-
-                // If action exists replace labelled action with match
-                if (newAction) {
-                    scorerStep.labelAction = newAction.actionId
-                    delete scorerStep.importText
-                    match = true
-                }
-            }
-        })
-    })
-    return match
 }
 
 export function filledEntitiesToMemory(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): CLM.Memory[] {

@@ -140,8 +140,13 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         
         // Mark turns that are not aligned
         const replayError = new CLM.ReplayErrorTranscriptValidation()
-        const maxLength = Math.max(history1.length, history2.length)
-        for (let i = 0; i < maxLength; i = i + 1) {
+
+        // Tested dialog may have extra step as .transcript could end on a user input
+        if (history2.length > history2.length) {
+            history2 = history2.slice(history1.length, history2.length)
+        }
+
+        for (let i = 0; i < history1.length; i = i + 1) {
             const activity1 = history1[i] as BB.Activity
             const activity2 = history2[i] as BB.Activity
             if (!TranscriptUtils.isSameActivity(activity1, activity2)) {
@@ -153,6 +158,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                 }
             }
         }
+
         this.setState({
             history1, 
             history2,
