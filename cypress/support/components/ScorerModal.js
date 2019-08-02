@@ -11,68 +11,50 @@ export function SelectAnAction() { cy.Get('[data-testid="action-scorer-button-cl
 export function ClickAddActionButton() { cy.Get('[data-testid="action-scorer-add-action-button"]').Click() }
 export function VerifyMissingActionNotice() { cy.Get('.cl-font--warning').ExactMatch('MISSING ACTION') }
 
-export function ClickTextAction(expectedResponse) {
-  cy.Get('[data-testid="action-scorer-text-response"]').ExactMatch(expectedResponse)
-    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
-    .Click()
+export function ClickTextAction(expectedResponse) { ClickActionButon('[data-testid="action-scorer-text-response"]', expectedResponse) }
+export function ClickApiAction(apiName) { ClickActionButon('[data-testid="action-scorer-api-name"]', apiName) }
+export function ClickEndSessionAction(expectedData) { ClickActionButon('[data-testid="action-scorer-session-response-user"]', expectedData) }
+
+export function VerifyContainsEnabledAction(expectedResponse) { VerifyActionState('[data-testid="action-scorer-text-response"]', expectedResponse, '[data-testid="action-scorer-button-clickable"]', false) }
+export function VerifyContainsDisabledAction(expectedResponse) { VerifyActionState('[data-testid="action-scorer-text-response"]', expectedResponse, '[data-testid="action-scorer-button-no-click"]', true) }
+
+export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-clickable"]', false) }
+export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-no-click"]', true) }
+export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-selected"]', false) }
+
+
+export function FindActionRowElements(selector, expectedData) {
+  helpers.ConLog('FindActionRowElements', `selector: '${selector}' - expectedData: '${expectedData}'`)
+
+  let elements = Cypress.$(selector)
+  if (elements.length == 0) { return `Found ZERO elements using selector ${selector}` }
+
+  elements = helpers.ExactMatch(elements, expectedData)
+  if (elements.length == 0) { return `Found ZERO elements that exactly matches '${expectedData}'` }
+
+  elements = Cypress.$(elements).parents('div.ms-DetailsRow-fields')
+  if (elements.length == 0) { return 'Found ZERO parent elements containing div.ms-DetailsRow-fields' }
+
+  return elements
 }
 
-export function ClickApiAction(apiName, expectedResponse, expectedIndexForActionPlacement) {
-  cy.Get('[data-testid="action-scorer-api-name"]').ExactMatch(apiName)
-    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
-    .Click()
-}
-
-export function ClickEndSessionAction(expectedData) {
-  cy.Get('[data-testid="action-scorer-session-response"]')
-    .ExactMatch('EndSession')
-    .siblings('[data-testid="action-scorer-session-response-user"]')
-    .ExactMatch(expectedData)
-    .parents('div.ms-DetailsRow-fields')
-    .find('[data-testid="action-scorer-button-clickable"]')
-    .Click()
-}
-
-export function VerifyContainsEnabledAction(expectedResponse) {
-  cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
-    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
-    .should('be.enabled')
-}
-
-export function VerifyContainsDisabledAction(expectedResponse) {
-  cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
-    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-no-click"]')
-    .should('be.disabled')
-}
-
-export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-clickable', false) }
-export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-no-click', true) }
-export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-selected', false) }
-
-function VerifyEndSessionActionState(expectedData, selectButtonDataTestId, disabled) {
-  const funcName = `VerifyEndSessionActionState(${expectedData}, ${selectButtonDataTestId}, ${disabled})`
+export function ClickActionButon(selector, expectedData) {
   cy.WaitForStableDOM()
-  
-  // Originally we used straight Cypress code and chained all of these element search functions, and it all worked well,
-  // but a change in the UI rendering caused the chained series to fail every once in a while. So by breaking them up
-  // and putting them inside of a Cypress .should function, we get the retry on the entire chain instead of just the last
-  // elements.
-  cy.wrap(1).should(() =>{
-    let elements = Cypress.$('[data-testid="action-scorer-session-response"]')
-    if (elements.length == 0) { throw new Error('Found ZERO elements containing [data-testid="action-scorer-session-response"]')}
-    
-    elements = helpers.ExactMatch(elements, 'EndSession')
+  cy.Enqueue(() => {
+    const rowElementsOrErrorMessage = FindActionRowElements(selector, expectedData)
+    if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
 
-    elements = Cypress.$(elements).siblings('[data-testid="action-scorer-session-response-user"]')
-    if (elements.length == 0) { throw new Error('Found ZERO sibling elements containing [data-testid="action-scorer-session-response-user"]')}
+    cy.wrap(rowElementsOrErrorMessage).find('[data-testid="action-scorer-button-clickable"]').Click() 
+  })
+}
 
-    helpers.ExactMatch(elements, expectedData)
+export function VerifyActionState(rowSelector, expectedData, buttonSelector, disabled) {
+  cy.wrap(1).should(() => {
+    const rowElementsOrErrorMessage = FindActionRowElements(rowSelector, expectedData)
+    if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
 
-    elements = Cypress.$(elements).parents('div.ms-DetailsRow-fields')
-    if (elements.length == 0) { throw new Error('Found ZERO parent elements containing div.ms-DetailsRow-fields')}
-
-    elements = Cypress.$(elements).find(`[data-testid="${selectButtonDataTestId}"]`)
-    if (elements.length != 1) { throw new Error(`We were expecting only 1 but instead we found ${elements.length} child elements containing [data-testid="${selectButtonDataTestId}"]`)}
+    let elements = Cypress.$(rowElementsOrErrorMessage).find(buttonSelector)
+    if (elements.length == 0) { throw new Error(`Found ZERO elements for buttonSelector: '${buttonSelector}' from rowSelector: '${rowSelector}' with expectedData: '${expectedData}'`) }
     
     if (elements[0].disabled != disabled) {
       helpers.ConLog(funcName, `Element that should be ${disabled ? 'Disabled' : 'Enabled'} --- ${elements[0].outerHTML}`)
@@ -116,11 +98,15 @@ export function VerifyScoreActions(expectedScoreActions) {
   }
 
   cy.Enqueue(() => {
-    let rowElements = 
-    cy.Get(`div.[role="presentation"][data-list-index="${rowIndex}"]`).then(elements =>{
+    let rowElements = Cypress.$('div.cl-dialog-admin-title:contains("Action")')
+                             .parents('div.cl-dialog-admin__content')
+                             .find('div[role="presentation"].ms-List-cell')
+                             .find('div.ms-List-surface[role="presentation"]')
+    
+    expectedScoreActions.foreach(expectedScoreAction => {
       let expectedButtonTestId
       let score
-      switch (expectedScoreActions.state)
+      switch (expectedScoreAction.state)
       {
         case stateEnum.selected:
           expectedButtonTestId = 'action-scorer-button-selected'
@@ -135,13 +121,19 @@ export function VerifyScoreActions(expectedScoreActions) {
           score = 'Disqualified'
           break
       }
-      let element = Cypress.$(element[0]).find('[data-testid^="action-scorer-button-"]')
-      if (element.length != 1) { throw new Error(`Expected to find 1 and only 1 data-testid starting with "action-scorer-button-", instead we found ${element.length}`)}
-      let attr = element[0].attr('data-testid')
-      if (attr != expectedButtonTestId) { }
-      // data-testid="action-scorer-button-selected"
-    // data-testid="action-scorer-button-clickable"
-    // data-testid="action-scorer-button-no-click"
+      
+      let element = Cypress.$(rowElements[rowIndex]).find('[data-testid^="action-scorer-button-"]')
+      if (element.length != 1) { 
+        AcumulateErrors(`Expected to find 1 and only 1 data-testid starting with "action-scorer-button-", instead we found ${element.length}`)
+      } else {
+        let attr = element[0].attr('data-testid')
+        if (attr != expectedButtonTestId) {
+          AcumulateErrors(``)
+        }
+          // data-testid="action-scorer-button-selected"
+        // data-testid="action-scorer-button-clickable"
+        // data-testid="action-scorer-button-no-click"
+      }
     })
   })
 

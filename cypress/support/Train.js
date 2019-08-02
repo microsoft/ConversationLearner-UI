@@ -501,19 +501,19 @@ export function SelectTextAction(expectedResponse, lastResponse) {
 }
 
 export function SelectApiCardAction(apiName, expectedCardTitle, expectedCardText) {
-  scorerModal.ClickApiAction(apiName, expectedCardText)
+  scorerModal.ClickApiAction(apiName)
   VerifyCardChatMessage(expectedCardTitle, expectedCardText)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
 
 export function SelectApiPhotoCardAction(apiName, expectedCardTitle, expectedCardText, expectedCardImage) {
-  scorerModal.ClickApiAction(apiName, expectedCardText)
+  scorerModal.ClickApiAction(apiName)
   VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, expectedCardImage)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
 
 export function SelectApiTextAction(apiName, expectedResponse) {
-  scorerModal.ClickApiAction(apiName, expectedResponse)
+  scorerModal.ClickApiAction(apiName)
   VerifyTextChatMessage(expectedResponse)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }

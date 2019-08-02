@@ -136,7 +136,7 @@ export function ExactMatch(elements, expectedText) {
     ConLog(funcName, `elementText: '${elementText}'`)
     if (elementText === expectedText) return elements[i]
   }
-  throw new Error(`Exact Match '${expectedText}' NOT Found`)
+  return []
 }
 
 export function ExactMatches(elements, expectedText) {
