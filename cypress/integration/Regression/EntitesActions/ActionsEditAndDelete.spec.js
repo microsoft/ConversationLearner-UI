@@ -44,10 +44,14 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
 
       actionsGrid.EditEndSessionAction('Goodbye')
       actionModal.VerifyActionTypeDisabled()
+    })
+
+    it('Should filter the Train Dialog list to only the 1 that contains the last Action we viewed', () => {
       actionModal.ClickTrainDialogFilterButton()
     })
 
     it('Should edit Train Dialog that caused those Actions to have a disabled Type field and delete it', () => {
+// KNOWN TEST BUG HERE: Need to wait for grid filter to take affect cause it first renders the full list then it filters the list.      
       train.EditTraining('API', 'We are done here.', 'Goodbye')
       train.ClickAbandonDeleteButton()
       train.ClickConfirmAbandonDialogButton()

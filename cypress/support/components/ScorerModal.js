@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 
+import * as actionTypeSelector from '../../support/components/ActionTypeSelector'
 import * as helpers from '../../support/Helpers'
 
 // data-testid="teach-session-admin-train-status" (Running, Completed, Failed)
@@ -84,7 +85,7 @@ export function VerifyNoEnabledSelectActionButtons() {
   })
 }
 
-export function VerifyScoreActions(expectedScoreActions) {
+export function VerifyEntierScoreActionList(expectedScoreActions) {
   let errorMessages = []
   let rowIndex = 0
   let lastErrorRowIndex = -1
@@ -106,6 +107,8 @@ export function VerifyScoreActions(expectedScoreActions) {
     expectedScoreActions.foreach(expectedScoreAction => {
       let expectedButtonTestId
       let score
+      let selector
+
       switch (expectedScoreAction.state)
       {
         case stateEnum.selected:
@@ -122,6 +125,12 @@ export function VerifyScoreActions(expectedScoreActions) {
           break
       }
       
+      let rowElements = FindActionRowElements(actionTypeSelector.GetSelector(expectedScoreAction.type), expectedScoreAction.expectedData)
+
+      '[data-testid="action-scorer-text-response"]'
+      '[data-testid="action-scorer-api-name"]'
+      '[data-testid="action-scorer-session-response-user"]'
+            
       let element = Cypress.$(rowElements[rowIndex]).find('[data-testid^="action-scorer-button-"]')
       if (element.length != 1) { 
         AcumulateErrors(`Expected to find 1 and only 1 data-testid starting with "action-scorer-button-", instead we found ${element.length}`)

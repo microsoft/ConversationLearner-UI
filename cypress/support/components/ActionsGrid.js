@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
 */
 
+import * as actionTypeSelector from '../../support/components/ActionTypeSelector'
 import * as helpers from '../../support/Helpers'
 
 export function VerifyPageTitle() { cy.Get('[data-testid="actions-title"]').contains('Actions').should('be.visible') }
@@ -17,12 +18,7 @@ export function EditSetEntityAction(setEntityName) { new Row('SET_ENTITY', setEn
 
 export class Row {
   constructor(actionType, textId) {
-    let typeSelectorPair = Row.typeSelectorPairs.find(typeSelectorPair => typeSelectorPair.type === actionType)
-    if (!typeSelectorPair) {
-      throw new Error(`Test Code Error - Unrecognized Action Type: '${actionType}'`)
-    }
-    
-    cy.Get(typeSelectorPair.selector)
+    cy.Get(actionTypeSelector.GetSelector(actionType))
       .ExactMatch(textId)
       .parents('div.ms-DetailsRow-fields')
       .as('responseDetailsRow')
@@ -44,17 +40,17 @@ export class Row {
   
   // In order to get the 'expectedApiResponse' parameter right, first run a test with this undefined,
   // then look in the log to see the actual value, then add it to the code.
-  VerifyApi(expectedApiResponse) {
-    cy.Get('@responseDetailsRow')
-      .find('[data-testid="action-scorer-api-name"]')
-      .parent('div').then(elements => {
-        let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
-        helpers.ConLog('VerifyApi', textContentWithoutNewlines)
-        if (expectedApiResponse && expectedApiResponse !== textContentWithoutNewlines) {
-          throw new Error(`Expecting API response to show up in the grid like this "${expectedApiResponse}" --- instead we found "${textContentWithoutNewlines}"`)
-        }
-      })
-  }
+// VerifyApi(expectedApiResponse) {
+//   cy.Get('@responseDetailsRow')
+//     .find('[data-testid="action-scorer-api-name"]')
+//     .parent('div').then(elements => {
+//       let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
+//       helpers.ConLog('VerifyApi', textContentWithoutNewlines)
+//       if (expectedApiResponse && expectedApiResponse !== textContentWithoutNewlines) {
+//         throw new Error(`Expecting API response to show up in the grid like this "${expectedApiResponse}" --- instead we found "${textContentWithoutNewlines}"`)
+//       }
+//     })
+// }
 
   // In order to get the 'expetedCardResponse' parameter right, first run a test with this undefined,
   // then look in the log to see the actual value, then add it to the code.
@@ -96,20 +92,12 @@ export class Row {
   }
 }
 
-Row.typeSelectorPairs = [
-  {type: 'TEXT', selector: '[data-testid="action-scorer-text-response"]'},
-  {type: 'API', selector: '[data-testid="action-scorer-api-name"]'},
-  {type: 'END_SESSION', selector: '[data-testid="action-scorer-session-response-user"]'},
-  {type: 'CARD', selector: '[data-testid="action-scorer-card-name"] + div'},
-  {type: 'SET_ENTITY', selector: '[data-testid="actions-list-set-entity"]'}
-]
-
 export function VerifyActionRow(response, type, requiredEntities, disqualifyingEntities, expectedEntity, wait, responseDetails) {
   cy.Enqueue(() => {
     helpers.ConLog('VerifyActionRow', `${response}, ${type}, ${requiredEntities}, ${disqualifyingEntities}, ${expectedEntity}, ${wait}, ${responseDetails}`)
     let actionGridRow = new Row(type, response)
-    if (type === 'API') { actionGridRow.VerifyApi(responseDetails) }
-    else if (type === 'CARD') { actionGridRow.VerifyCard(responseDetails) }
+    // if (type === 'API') { actionGridRow.VerifyApi(responseDetails) }
+    // else if (type === 'CARD') { actionGridRow.VerifyCard(responseDetails) }
     actionGridRow.VerifyActionType(type)
     actionGridRow.VerifyRequiredEntities(requiredEntities)
     actionGridRow.VerifyDisqualifyingEntities(disqualifyingEntities)
@@ -122,8 +110,8 @@ export function VerifyAllActionRows(rows) {
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
     rows.forEach(row => {
-      helpers.ConLog('VerifyAllActionRows', `${row.response}, ${row.type}, ${row.requiredEntities}, ${row.disqualifyingEntities}, ${row.expectedEntity}, ${row.wait}, ${row.responseDetails}`)
-      VerifyActionRow(row.response, row.type, row.requiredEntities, row.disqualifyingEntities, row.expectedEntity, row.wait, row.responseDetails)
+      helpers.ConLog('VerifyAllActionRows', `${row.response}, ${row.type}, ${row.requiredEntities}, ${row.disqualifyingEntities}, ${row.expectedEntity}, ${row.wait}`)//, ${row.responseDetails}`)
+      VerifyActionRow(row.response, row.type, row.requiredEntities, row.disqualifyingEntities, row.expectedEntity, row.wait)//, row.responseDetails)
     })
     
     const gridRowCount = Cypress.$('div[role="presentation"].ms-List-cell').length
@@ -134,7 +122,8 @@ export function VerifyAllActionRows(rows) {
 }
 
 export function GetAllRows() { 
-  helpers.ConLog('GetAllRows', 'start')
+  const funcName = 'GetAllRows'
+  helpers.ConLog(funcName, 'start')
 
   let allRowData = []
 
@@ -142,11 +131,7 @@ export function GetAllRows() {
 
   for (let i = 0; i < allRowElements.length; i++) {
     let type = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-action-type"]')[0])
-    let typeSelectorPair = Row.typeSelectorPairs.find(typeSelectorPair => typeSelectorPair.type === type)
-    if (!typeSelectorPair) {
-      throw new Error(`Test Code Error - Unrecognized type: '${type}'`)
-    }
-    let response = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find(typeSelectorPair.selector)[0])
+    let response = helpers.TextContentWithoutNewlines(Cypress.$(allRowElements[i]).find(actionTypeSelector.GetSelector(type))[0])
 
     let requiredEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-required-entities"]'))
     let disqualifyingEntities = helpers.ArrayOfTextContentWithoutNewlines(Cypress.$(allRowElements[i]).find('[data-testid="action-details-disqualifying-entities"]'))
@@ -154,13 +139,17 @@ export function GetAllRows() {
     let wait = Cypress.$(allRowElements[i]).find('[data-icon-name="CheckMark"][data-testid="action-details-wait"]').length == 1
 
     let responseDetails
-    if (type === 'API') { 
-      let elements = Cypress.$(allRowElements[i]).find('[data-testid="action-scorer-api-name"]').parent('div')
-      responseDetails = helpers.TextContentWithoutNewlines(elements[0])       
-    } else if (type === 'CARD') { 
-      let elements = Cypress.$(allRowElements[i]).find('[data-testid="action-scorer-card-name"]').next('div')
-      responseDetails = helpers.TextContentWithoutNewlines(elements[0])
-    }
+//     if (type === 'API') { 
+// //TODO - Should be a way to use the GetSelector      
+//       helpers.ConLog(funcName, 'API responseDetails')
+//       let elements = Cypress.$(allRowElements[i]).find('[data-testid="action-scorer-api-name"]').parent('div')
+//       responseDetails = helpers.TextContentWithoutNewlines(elements[0])       
+//     } else if (type === 'CARD') { 
+// // This results in the same value for "response" and "responseDetails"
+//       helpers.ConLog(funcName, 'CARD responseDetails')
+//       let elements = Cypress.$(allRowElements[i]).find('[data-testid="action-scorer-card-name"]').next('div')
+//       responseDetails = helpers.TextContentWithoutNewlines(elements[0])
+//     }
 
     allRowData.push({ 
       response: response, 
@@ -169,9 +158,9 @@ export function GetAllRows() {
       disqualifyingEntities: disqualifyingEntities, 
       expectedEntity: expectedEntity, 
       wait: wait, 
-      responseDetails: responseDetails
+//responseDetails: responseDetails
     })
-    helpers.ConLog('GetAllRows', `${response}, ${type}, ${requiredEntities}, ${disqualifyingEntities}, ${expectedEntity}, ${wait}, ${responseDetails}`)
+    helpers.ConLog(funcName, `${response}, ${type}, ${requiredEntities}, ${disqualifyingEntities}, ${expectedEntity}, ${wait}`)//, ${responseDetails}`)
   }
     
   return allRowData

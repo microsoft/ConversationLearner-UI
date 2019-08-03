@@ -72,7 +72,7 @@ export function CreateNewActionThenVerifyInGrid({
   // If we skip this step, the validations that follow will fail.
   let actionsGridRow = new actionsGrid.Row(type, responseNameData)
   
-  if (validateApiResponse) actionsGridRow.VerifyApi(validateApiResponse)
+  //if (validateApiResponse) actionsGridRow.VerifyApi(validateApiResponse)
   actionsGridRow.VerifyActionType(type)
   actionsGridRow.VerifyRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
   actionsGridRow.VerifyDisqualifyingEntities(expectedEntity, disqualifyingEntities)
