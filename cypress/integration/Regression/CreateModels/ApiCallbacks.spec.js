@@ -9,7 +9,7 @@ import * as actions from '../../../support/Actions'
 import * as helpers from '../../../support/Helpers'
 
 // We need to skip this test until the Bug 2132 is fixed.
-describe.skip('API Callbacks - CreateModels', () => {
+describe('API Callbacks - CreateModels', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
@@ -52,15 +52,16 @@ describe.skip('API Callbacks - CreateModels', () => {
         validateApiResponse: 'LogicWithNoArgslogic(memoryManager)'
       })
     })
-    
-    it('Should create LogicWithArgs Action', () => {
-      actions.CreateNewActionThenVerifyInGrid({ 
-        responseNameData: 'LogicWithArgs', 
-        type: 'API',
-        logicArgs: ['$1stArg{enter}', '$2ndArg{enter}'],
-        validateApiResponse: 'LogicWithArgslogic(memoryManager, firstArg, secondArg)firstArg:"$1stArg"secondArg:"$2ndArg"'
-      })
-    })
+
+    // Commented out due to bug 2132
+    // it('Should create LogicWithArgs Action', () => {
+    //   actions.CreateNewActionThenVerifyInGrid({ 
+    //     responseNameData: 'LogicWithArgs', 
+    //     type: 'API',
+    //     logicArgs: ['$1stArg{enter}', '$2ndArg{enter}'],
+    //     validateApiResponse: 'LogicWithArgslogic(memoryManager, firstArg, secondArg)firstArg:"$1stArg"secondArg:"$2ndArg"'
+    //   })
+    // })
 
     it('Should create Malformed Action', () => {
       actions.CreateNewActionThenVerifyInGrid({ 
@@ -70,15 +71,16 @@ describe.skip('API Callbacks - CreateModels', () => {
       })
     })
     
-    it('Should create RenderTheArgs Action', () => {
-      actions.CreateNewActionThenVerifyInGrid({ 
-        responseNameData: 'RenderTheArgs',
-        type: 'API',
-        logicArgs: ['$1stArg{enter}', '$2ndArg{enter}', '333', '4444', 'five', 'six', 'seven'],                                          
-        renderArgs: ['$1stArg{enter}', '$2ndArg{enter}', 'three', 'four', '55555', '666666', '7777777'],
-        validateApiResponse: 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"333"fourthArg:"4444"fifthArg:"five"sixthArg:"six"seventhArg:"seven"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"three"fourthArg:"four"fifthArg:"55555"sixthArg:"666666"seventhArg:"7777777"'
-      })
-    })
+    // Commented out due to bug 2132
+    // it('Should create RenderTheArgs Action', () => {
+    //   actions.CreateNewActionThenVerifyInGrid({ 
+    //     responseNameData: 'RenderTheArgs',
+    //     type: 'API',
+    //     logicArgs: ['$1stArg{enter}', '$2ndArg{enter}', '333', '4444', 'five', 'six', 'seven'],                                          
+    //     renderArgs: ['$1stArg{enter}', '$2ndArg{enter}', 'three', 'four', '55555', '666666', '7777777'],
+    //     validateApiResponse: 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"333"fourthArg:"4444"fifthArg:"five"sixthArg:"six"seventhArg:"seven"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"three"fourthArg:"four"fifthArg:"55555"sixthArg:"666666"seventhArg:"7777777"'
+    //   })
+    // })
 
     it('Should create TextCard Action', () => {
       actions.CreateNewActionThenVerifyInGrid({ 
