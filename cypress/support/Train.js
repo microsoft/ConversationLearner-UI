@@ -863,7 +863,7 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
 }
 
 export function GetAllTrainDialogGridRows() { 
-  helpers.ConLog('GetAllRows', 'start')
+  helpers.ConLog('GetAllTrainDialogGridRows', 'start')
 
   const firstInputs = trainDialogsGrid.GetFirstInputs()
   const lastInputs = trainDialogsGrid.GetLastInputs()
@@ -878,7 +878,7 @@ export function GetAllTrainDialogGridRows() {
       lastResponse: lastResponses[i],
     })
 
-    helpers.ConLog('GetAllRows', `${allRowData.firstInput}, ${allRowData.lastInput}, ${allRowData.lastResponse}`)
+    helpers.ConLog('GetAllTrainDialogGridRows', `${allRowData.firstInput}, ${allRowData.lastInput}, ${allRowData.lastResponse}`)
   }
   
   return allRowData

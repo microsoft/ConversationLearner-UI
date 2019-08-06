@@ -11,10 +11,14 @@ export function ClickNewAction() { cy.Get('[data-testid="actions-button-create"]
 export function VerifyTextActionNotInGrid(actionName) { cy.DoesNotContainExact('[data-testid="action-scorer-text-response"]', actionName) }
 
 export function EditTextAction(actionName) { new Row('TEXT', actionName).EditAction() }
-export function EditApiAction(apiName) { new Row('API', apiName).EditAction() }
 export function EditCardAction(cardText) { new Row('CARD', cardText).EditAction() }
 export function EditEndSessionAction(endSessionData) { new Row('END_SESSION', endSessionData).EditAction() }
 export function EditSetEntityAction(setEntityName) { new Row('SET_ENTITY', setEntityName).EditAction() }
+
+// You can get the fullApiNameAndArguments from the end of log file. Just call this function with any value and 
+// when the test fails view the end of the log file and look for "ExactMatch([your argument]) - elementText:".
+export function EditApiAction(fullApiNameAndArguments) { new Row('API', fullApiNameAndArguments).EditAction() }
+
 
 export class Row {
   constructor(actionType, textId) {

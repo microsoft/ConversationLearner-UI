@@ -26,7 +26,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     it('Should edit some existing Actions to verify that the Action Type Dropdown is disabled', () => {
       modelPage.NavigateToActions()
       
-      actionsGrid.EditApiAction('LogicWithNoArgs')
+      actionsGrid.EditApiAction('LogicWithNoArgslogic(memoryManager)')
       actionModal.VerifyActionTypeDisabled()
       actionModal.ClickCancelButton()
 
@@ -60,7 +60,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     it('Should edit some existing Actions to verify that the Action Type Dropdown is enabled', () => {
       modelPage.NavigateToActions()
 
-      actionsGrid.EditApiAction('LogicWithNoArgs')
+      actionsGrid.EditApiAction('LogicWithNoArgslogic(memoryManager)')
       actionModal.VerifyActionTypeEnabled()
       actionModal.ClickCancelButton()
 
