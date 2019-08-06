@@ -137,7 +137,7 @@ function generateDispatcherSource(sourceModels: SourceModel[]): AppDefinition {
         "actionId": uuid(),
         "createdDateTime": new Date().toJSON(),
         "actionType": "TEXT",
-        "payload": `{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"${sourceModel.model.appId}:${sourceModel.model.appName}\",\"marks\":[]}]}]}]}}}`,
+        "payload": `{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"@DISPATCH:${sourceModel.model.appId}:${sourceModel.model.appName}\",\"marks\":[]}]}]}]}}}`,
         "isTerminal": true,
         "requiredEntitiesFromPayload": [],
         "requiredEntities": [],
