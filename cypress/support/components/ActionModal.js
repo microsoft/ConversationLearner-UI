@@ -7,7 +7,7 @@ import * as popupModal from './PopupModal'
 
 export function VerifyPageTitle() { cy.Get('[data-testid="create-an-action-title"]').contains('Create an Action').should('be.visible') }
 export function CheckWaitForResponse() { throw new Error('CheckWaitForResponse is NOT supported') } // Since this is a button and not a real check box it is difficult/ugly to manage the state. This defaults to checked.
-export function UncheckWaitForResponse() { cy.Get('.cl-modal_body').within(() => { cy.Get('.ms-Checkbox-text').click() }) }
+export function UncheckWaitForResponse() { cy.Get('[data-testid="action-creator-wait-checkbox"] .ms-Checkbox').Click() }
 export function ClickCreateButton() { cy.Get('[data-testid="action-creator-create-button"]').Click() }
 export function ClickDeleteButton() { cy.Get('[data-testid="action-creator-delete-button"]').Click() }
 export function ClickCancelButton() { cy.Get('[data-testid="action-creator-cancel-button"]').Click() }
@@ -51,6 +51,13 @@ export function TypeApiLogicArgs(args) { TypeApiArgs('Logic Arguments', args) }
 export function TypeApiRenderArgs(args) { TypeApiArgs('Render Arguments', args) }
 
 function TypeApiArgs(apiArgLabel, args) {
+  function ClickOnNoOpHack() { 
+    // This has no effect on the data in this Action Modal but it some how
+    // resets something in the UI that enables picking an entity.
+    // Bug 2132: TEST BLOCKER: Automation cannot trigger 2nd Entity picker in API Action arguments
+    cy.get('[data-testid="action-creator-wait-checkbox"]').click() 
+  }
+
   cy.Get('label')
     .contains(apiArgLabel)
     .siblings('div.editor-container')
@@ -60,11 +67,10 @@ function TypeApiArgs(apiArgLabel, args) {
         throw new Error(`Test Code Error: The API ${apiArgLabel} takes ${elements.length} arguments, but test code supplied ${args.length}`)
       }
 
-      cy.DumpHtmlOnDomChange(true)
       for (let i = 0; i < args.length; i++) {
-        cy.wrap(elements[i]).type(args[i]).wait(1000)
+        cy.wrap(elements[i]).type(args[i])
+        ClickOnNoOpHack()
       }
-      cy.DumpHtmlOnDomChange(false)
     })
 }
 

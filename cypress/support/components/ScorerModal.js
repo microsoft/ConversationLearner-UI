@@ -85,67 +85,137 @@ export function VerifyNoEnabledSelectActionButtons() {
   })
 }
 
-export function VerifyEntierScoreActionList(expectedScoreActions) {
+export function VerifyScoreActions(expectedScoreActions) {
+  const funcName = 'VerifyScoreActions'
+  let expectedScoreAction
   let errorMessages = []
   let rowIndex = 0
-  let lastErrorRowIndex = -1
 
-  function AcumulateErrors(message) {
-    if (lastErrorRowIndex != rowIndex) {
-      errorMessages.push(`Row ${rowIndex}`)
-      lastErrorRowIndex = rowIndex
-    }
-    errorMessages.push(message)
+  function AccumulateErrors(message) {
+    const fullMessage = `Row: ${rowIndex} - Response: ${expectedScoreAction.response} - ${message}`
+    errorMessages.push(fullMessage)
+    helpers.ConLog(funcName, fullMessage)
   }
 
   cy.Enqueue(() => {
-    let rowElements = Cypress.$('div.cl-dialog-admin-title:contains("Action")')
-                             .parents('div.cl-dialog-admin__content')
-                             .find('div[role="presentation"].ms-List-cell')
-                             .find('div.ms-List-surface[role="presentation"]')
-    
-    expectedScoreActions.foreach(expectedScoreAction => {
+    for (let i = 0; i < expectedScoreActions.length; i++) {
+      expectedScoreAction = expectedScoreActions[i]
       let expectedButtonTestId
-      let score
-      let selector
+      let expectedScore
 
       switch (expectedScoreAction.state)
       {
         case stateEnum.selected:
           expectedButtonTestId = 'action-scorer-button-selected'
-          score = '100.0%'
+          expectedScore = '100.0%'
           break
         case stateEnum.qualified:
           expectedButtonTestId = 'action-scorer-button-clickable'
-          score = '-'
+          expectedScore = '-'
           break
         case stateEnum.disqualified:
           expectedButtonTestId = 'action-scorer-button-no-click'
-          score = 'Disqualified'
+          expectedScore = 'Disqualified'
           break
       }
+      rowIndex = undefined
       
-      let rowElements = FindActionRowElements(actionTypeSelector.GetSelector(expectedScoreAction.type), expectedScoreAction.expectedData)
-
-      '[data-testid="action-scorer-text-response"]'
-      '[data-testid="action-scorer-api-name"]'
-      '[data-testid="action-scorer-session-response-user"]'
-            
-      let element = Cypress.$(rowElements[rowIndex]).find('[data-testid^="action-scorer-button-"]')
-      if (element.length != 1) { 
-        AcumulateErrors(`Expected to find 1 and only 1 data-testid starting with "action-scorer-button-", instead we found ${element.length}`)
-      } else {
-        let attr = element[0].attr('data-testid')
-        if (attr != expectedButtonTestId) {
-          AcumulateErrors(``)
-        }
-          // data-testid="action-scorer-button-selected"
-        // data-testid="action-scorer-button-clickable"
-        // data-testid="action-scorer-button-no-click"
+      // This gets the row of the Score Action to validate and it also validates the response while doing so.
+      const rowElementsOrErrorMessage = FindActionRowElements(actionTypeSelector.GetSelector(expectedScoreAction.type), expectedScoreAction.response)
+      if (typeof rowElementsOrErrorMessage == 'string') {
+        AccumulateErrors(rowElementsOrErrorMessage)
+        continue
       }
-    })
-  })
+      const rowElements = rowElementsOrErrorMessage
+      helpers.ConLog(funcName, `Element found: ${rowElements[0].outerHTML}`)
 
+      // We use the rowIndex only for the purpose of logging errors as a debugging aid.
+      rowIndex = Cypress.$(rowElements[0]).parents('div[role="presentation"].ms-List-cell')[0].attr('data-list-index')
+      
+      
+      // Verify the button.
+      let elements = Cypress.$(rowElements[0]).find('[data-testid^="action-scorer-button-"]')
+      if (elements.length != 1) { 
+        AccumulateErrors(`Expected to find 1 and only 1 data-testid starting with "action-scorer-button-", instead we found ${elements.length}`)
+      } else {
+        let attr = elements[0].attr('data-testid')
+        if (attr != expectedButtonTestId) {
+          AccumulateErrors(`Expected to find data-testid="${expectedButtonTestId}" instead we found "${attr}"`)
+        }
+      }
+
+      
+      // Verify the score.
+      elements = Cypress.$(rowElements[0]).find('[data-testid="action-scorer-score"]')
+      if (elements.length != 1) { 
+        AccumulateErrors(`Expected to find 1 and only 1 data-testid with "action-scorer-score", instead we found ${elements.length}`)
+      } else {
+        let score = helpers.TextContentWithoutNewlines(elements[0])
+        if (score != expectedScore) {
+          AccumulateErrors(`Expected to find a score with '${expectedScore}' but instead found this '${score}'`)
+        }
+      }
+
+      
+      // Verify the entities.
+      elements = Cypress.$(rowElements[0]).find('[data-testid="action-scorer-entities"]')
+      if (elements.length != expectedScoreAction.entities.length) { 
+        AccumulateErrors(`Expected to find ${expectedScoreAction.entities.length} entities but instead we found ${elements.length}`)
+      }
+      expectedScoreAction.entities.forEach(entity => {
+        let entityElement = Cypress.$(elements).find(`:contains("${entity.name}")`)
+        if (entityElement.length != 1) {
+          AccumulateErrors(`Expected to find 1 and only 1 "action-scorer-entities" named "${entity.name}" instead we found ${entityElement.length}`)
+        } else {
+          function SetEntityElementState(element, strikeOut) { 
+            if (element.hasClass('cl-entity--match')) {
+              return entityQualifierStateEnum.green + strikeOut
+            } 
+            if (element.hasClass('cl-entity--mismatch')) {
+              return entityQualifierStateEnum.red + strikeOut
+            }
+            AccumulateErrors(`Expected to find class with either 'cl-entity--match' or 'cl-entity--mismatch' but found neither. Element: ${element.outerHTML}`)
+            return entityQualifierStateEnum.unknown
+          }
+
+          let entityQualifierState
+          if (entityElement[0].tagName == 'DEL') { entityQualifierState = SetEntityElementState(Cypress.$(entityElement[0]).parent('span'), 1) }
+          else { entityQualifierState = SetEntityElementState(Cypress.$(entityElement), 0) }
+
+          if (entity.qualifierState != entityQualifierState) {
+            AccumulateErrors(`Expected Entity Qualifier State: ${entity.qualifierState} but insteady found: ${entityQualifierState}`)
+          }
+        }
+      })
+
+            
+      // Verify the Wait flag.
+      elements = Cypress.$(rowElements[0]).find('[data-testid="action-scorer-wait"]')
+      if (elements.length != 1) { 
+        AccumulateErrors(`Expected to find 1 and only 1 data-testid with "action-scorer-wait", instead we found ${elements.length}`)
+      } else {
+        let wait = elements[0].attr('data-icon-name') == 'CheckMark'
+        if (wait != expectedScoreAction.wait) {
+          AccumulateErrors(`Expected to find Wait: '${expectedScoreAction.wait}' but instead it was: '${wait}'`)
+        }
+      }
+
+
+      // Verify the Action Type.
+      elements = Cypress.$(rowElements[0]).find('[data-testid="action-details-action-type"]')
+      if (elements.length != 1) { 
+        AccumulateErrors(`Expected to find 1 and only 1 data-testid with "action-details-action-type", instead we found ${elements.length}`)
+      } else {
+        let actionType = helpers.TextContentWithoutNewlines(elements[0])
+        if (actionType != expectedScoreAction.type) {
+          AccumulateErrors(`Expected to find Action Type: '${expectedScoreAction.type}' but instead it was: '${actionType}'`)
+        }
+      }
+    }
+    
+    if (errorMessages.length > 0) {throw new Error(`${errorMessages.length} Errors Detected - See log file for full list. 1st Error: ${errorMessages[0]}`)}    
+  })
 }
 
 export const stateEnum = { selected: 1, qualified: 2, disqualified: 3 }
+export const entityQualifierStateEnum = { unknown: 0, green: 1, greenStrikeout: 2, red: 3, redStrikeout: 4 }
