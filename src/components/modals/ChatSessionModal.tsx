@@ -17,6 +17,7 @@ import { State } from '../../types'
 import { AppBase } from '@conversationlearner/models'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     isSessionEndModalOpen: boolean
@@ -32,13 +33,13 @@ class SessionWindow extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
         if (this.props.open && !newProps.open) {
             // Reset
             this.setState({ hasChatActivity: false })
         }
     }
-    @OF.autobind
+    @autobind
     async onClickDone() {
         if (this.props.chatSession.current !== null) {
             await (this.props.deleteChatSessionThunkAsync(this.props.chatSession.current, this.props.app, this.props.editingPackageId) as any as Promise<void>)
@@ -47,7 +48,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
         this.props.onClose()
     }
 
-    @OF.autobind
+    @autobind
     async onClickAbandon() {
         if (this.props.chatSession.current !== null) {
             const deleteAssociatedLogDialog = this.state.hasChatActivity
@@ -58,7 +59,7 @@ class SessionWindow extends React.Component<Props, ComponentState> {
     }
 
     // Force timeout of the session
-    @OF.autobind
+    @autobind
     onClickExpire() {
         if (this.props.chatSession.current !== null) {
             this.props.editChatSessionExpireThunkAsync(this.props.app.appId, this.props.chatSession.current.sessionId)

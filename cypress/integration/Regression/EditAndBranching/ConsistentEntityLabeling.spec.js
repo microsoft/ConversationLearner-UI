@@ -38,15 +38,15 @@ describe('Consistent Entity Labeling - Edit And Branching', () => {
     
     it('Should verify user cannot submit changes without accepting auto-re-labling of the 1st alternative input that we changed', () => {
       train.ClickSubmitChangesButton()
-      train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+      train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickSubmitChangesButton()
-      train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+      train.VerifyEntityLabelConflictPopupAndAccept(textEntityPairs)
     })
 
     it('Should verify user cannot submit changes without accepting auto-re-labling of the 2nd alternative input that we changed', () => {
-      train.VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs)
+      train.VerifyEntityLabelConflictPopupAndClose(textEntityPairs)
       train.ClickSubmitChangesButton()
-      train.VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs)
+      train.VerifyEntityLabelConflictPopupAndAccept(textEntityPairs)
     })
 
     it('Should abandon the changes', () => {

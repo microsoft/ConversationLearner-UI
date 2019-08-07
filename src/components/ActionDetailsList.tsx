@@ -18,6 +18,7 @@ import { onRenderDetailsHeader } from './ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import './ActionDetailsList.css'
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     columns: IRenderableColumn[]
@@ -112,7 +113,7 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         return actions;
     }
 
-    @OF.autobind
+    @autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
         const columns = this.state.columns.map(column => {

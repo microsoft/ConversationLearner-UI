@@ -8,6 +8,7 @@ import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     stopImport: boolean
@@ -17,7 +18,7 @@ class TranscriptImportCancelModal extends React.Component<Props, ComponentState>
         stopImport: false,
     }
 
-    @OF.autobind
+    @autobind
     onChangeCheckbox() {
         this.setState({
             stopImport: !this.state.stopImport

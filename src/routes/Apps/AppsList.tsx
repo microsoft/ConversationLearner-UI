@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
@@ -12,7 +13,7 @@ import { fetchTutorialsThunkAsync } from '../../actions/appActions'
 import { AppBase, AppDefinition } from '@conversationlearner/models'
 import { CL_IMPORT_TUTORIALS_USER_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import * as OF from 'office-ui-fabric-react'
+import { autobind } from 'core-decorators'
 import AppsListComponent from './AppsListComponent'
 
 interface ComponentState {
@@ -40,7 +41,7 @@ class AppsList extends React.Component<Props, ComponentState> {
     }
 
 
-    @OF.autobind
+    @autobind
     onClickCreateNewApp() {
         this.setState({
             isAppCreateModalOpen: true,
@@ -48,7 +49,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickImportApp() {
         this.setState({
             isAppCreateModalOpen: true,
@@ -56,7 +57,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     async onClickImportDemoApps() {
         const tutorials = this.state.tutorials !== null
             ? this.state.tutorials
@@ -68,20 +69,20 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickApp(app: AppBase) {
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
     }
 
-    @OF.autobind
+    @autobind
     onCloseImportNotification() {
         this.setState({
             isImportTutorialsOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onSubmitAppCreateModal(app: AppBase, source: AppDefinition | null = null) {
         this.setState({
             isAppCreateModalOpen: false
@@ -96,14 +97,14 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelAppCreateModal() {
         this.setState({
             isAppCreateModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCreateNewDispatcherModel() {
         this.setState({
             isAppCreateModalOpen: true,
@@ -111,7 +112,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onSelectionChanged() {
         const selectionCount = this.selection.getSelectedCount()
         this.setState({

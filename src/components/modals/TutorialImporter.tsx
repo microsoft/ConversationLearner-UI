@@ -11,6 +11,7 @@ import { FM } from '../../react-intl-messages'
 import { AppBase } from '@conversationlearner/models'
 import { formatMessageId } from '../../Utils/util'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (app: AppBase, component: TutorialImporter) => React.ReactNode
@@ -89,14 +90,14 @@ class TutorialImporter extends React.Component<Props, ComponentState> {
         this.props.handleClose();
     }
 
-    @OF.autobind
+    @autobind
     onClickInfo(tutorial: AppBase) {
         this.setState({
             moreInfoApp: tutorial
         })
     }
 
-    @OF.autobind
+    @autobind
     onCloseInfo() {
         this.setState({
             moreInfoApp: null

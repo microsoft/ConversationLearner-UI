@@ -24,6 +24,7 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.';
 import { FM } from '../../react-intl-messages'
 import './CompareDialogsModal.css'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     resultIndex: number
@@ -62,7 +63,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         return renderActivity(activityProps, children, setRef, null, EditDialogType.IMPORT, this.state.selectedActivityIndex != null)
     }
 
-    @OF.autobind
+    @autobind
     onNext() {
         let resultIndex = this.state.resultIndex + 1
         if (resultIndex === this.props.transcriptValidationResults.length) {
@@ -71,7 +72,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         this.setState({resultIndex})       
     }
 
-    @OF.autobind
+    @autobind
     onPrevious() {
         let resultIndex = this.state.resultIndex - 1
         if (resultIndex < 0) {
@@ -139,8 +140,13 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         
         // Mark turns that are not aligned
         const replayError = new CLM.ReplayErrorTranscriptValidation()
-        const maxLength = Math.max(history1.length, history2.length)
-        for (let i = 0; i < maxLength; i = i + 1) {
+
+        // Tested dialog may have extra step as .transcript could end on a user input
+        if (history2.length > history2.length) {
+            history2 = history2.slice(history1.length, history2.length)
+        }
+
+        for (let i = 0; i < history1.length; i = i + 1) {
             const activity1 = history1[i] as BB.Activity
             const activity2 = history2[i] as BB.Activity
             if (!TranscriptUtils.isSameActivity(activity1, activity2)) {
@@ -152,6 +158,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                 }
             }
         }
+
         this.setState({
             history1, 
             history2,
@@ -161,7 +168,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onEdit() {
         const validationResult = this.props.transcriptValidationResults[this.state.resultIndex]
         const { history } = this.props
@@ -170,12 +177,12 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     // Keep scroll position of two webchats in lockstep
-    @OF.autobind
+    @autobind
     onScrollChange(scrollPosition: number) {
         this.setState({scrollPosition})
     }
 
-    @OF.autobind
+    @autobind
     onSelectActivity(history: BotChat.Activity[] | undefined, activity: Activity) {
         if (!history || history.length === 0) {
             return

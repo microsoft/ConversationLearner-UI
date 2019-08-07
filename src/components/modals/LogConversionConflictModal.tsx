@@ -39,7 +39,7 @@ class LogConversionConflictModal extends React.Component<Props, State> {
         currentConflictPairIndex: 0
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         // Reset index when modal is opened
         if (nextProps.open && !this.props.open) {
             this.setState({

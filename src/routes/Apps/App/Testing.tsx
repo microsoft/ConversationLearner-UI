@@ -7,6 +7,7 @@ import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../Utils/util'
 import * as BB from 'botbuilder'
+import * as TranscriptUtils from '../../../Utils/transcriptUtils'
 import actions from '../../../actions'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import CompareDialogsModal from '../../../components/modals/CompareDialogsModal'
@@ -21,6 +22,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './Testing.css'
+import { autobind } from 'core-decorators';
 
 const SAVE_SUFFIX = ".cltr"
 
@@ -49,7 +51,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
     private resultfileInput: any
 
-    @OF.autobind
+    @autobind
     async onSubmitTranscriptValidationPicker(testName: string, transcriptsToValidate: File[]): Promise<void> {
         if (transcriptsToValidate.length > 0) {
             const emptySet: CLM.TranscriptValidationSet = { transcriptValidationResults: [], appId: this.props.app.appId, fileName: testName }
@@ -66,12 +68,12 @@ class Testing extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onAbandonTranscriptValidationPicker(): Promise<void> {
         this.setState({ isTranscriptValidatePickerOpen: false })
     }
 
-    @OF.autobind
+    @autobind
     onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         const transcriptValidationSet = Util.deepCopy(this.state.transcriptValidationSet)
         transcriptValidationSet.fileName = text
@@ -81,27 +83,14 @@ class Testing extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelTest() {
         this.setState({
             transcriptFiles: []
         })
     }
 
-    readFileAsync(file: File): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.onload = (e: Event) => {
-                resolve(reader.result as any);
-            }
-
-            reader.onerror = reject;
-            reader.readAsText(file);
-        })
-    }
-
-    @OF.autobind
+    @autobind
     async onStartTranscriptValidate() {
 
         if (!this.state.transcriptFiles || this.state.transcriptFiles.length === 0) {
@@ -119,10 +108,10 @@ class Testing extends React.Component<Props, ComponentState> {
         const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
         this.setState({ transcriptIndex: this.state.transcriptIndex + 1 })
 
-        let source = await this.readFileAsync(transcriptFile)
+        let source = await Util.readFileAsync(transcriptFile)
         try {
             const sourceJson = JSON.parse(source)
-            await this.onValidateTranscript(transcriptFile.name, sourceJson)
+            await this.onValidateTranscript(transcriptFile.name, sourceJson, this.props.entities)
         }
         catch (e) {
             const error = e as Error
@@ -133,25 +122,40 @@ class Testing extends React.Component<Props, ComponentState> {
         }
     }
 
-    async onValidateTranscript(fileName: string, transcript: BB.Activity[]): Promise<void> {
+    async onValidateTranscript(fileName: string, transcript: BB.Activity[], entities: CLM.EntityBase[]): Promise<void> {
 
         const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
-        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", actionHashes: [] }
+        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", actionHashes: [], apiResults: []}
         let invalidTranscript = false
+        let apiResults: CLM.FilledEntity[] = []
         for (let activity of transcript) {
             // TODO: Handle conversation updates
             if (!activity.type || activity.type === "message") {
+                if (activity.text === "END_SESSION") {
+                    break
+                }
                 if (activity.from.role === "user") {
                     // If already have user input push it
                     if (transcriptValidationTurn.inputText !== "") {
                         transcriptValidationTurns.push(transcriptValidationTurn)
                     }
-                    transcriptValidationTurn = { inputText: activity.text, actionHashes: [] }
+                    transcriptValidationTurn = { inputText: activity.text, actionHashes: [], apiResults: []}
                 }
                 else if (activity.from.role === "bot") {
                     if (transcriptValidationTurn) {
-                        const actionHash = Util.hashText(activity.text)
+                        const hashText = TranscriptUtils.hashTextFromActivity(activity, entities, apiResults)
+                        const actionHash = Util.hashText(hashText)
                         transcriptValidationTurn.actionHashes.push(actionHash)
+
+                        // If API call include API results
+                        if (activity.channelData && activity.channelData.type === "ActionCall") {
+                            const actionCall = activity.channelData as TranscriptUtils.TranscriptActionCall
+                            apiResults = await TranscriptUtils.importActionOutput(actionCall.actionOutput, this.props.entities, this.props.app)
+                            transcriptValidationTurn.apiResults.push(apiResults)
+                        }
+                        else {
+                            transcriptValidationTurn.apiResults.push([])
+                        }
                     }
                     else {
                         invalidTranscript = true
@@ -185,7 +189,7 @@ class Testing extends React.Component<Props, ComponentState> {
         await this.onStartTranscriptValidate()
     }
 
-    @OF.autobind
+    @autobind
     onTest(): void {
         this.setState({
             isTranscriptValidatePickerOpen: true,
@@ -193,22 +197,22 @@ class Testing extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onCompare(results: CLM.TranscriptValidationResult[]) {
         this.setState({ compareDialogs: results })
     }
 
-    @OF.autobind
+    @autobind
     onCloseCompare() {
         this.setState({ compareDialogs: null })
     }
 
-    @OF.autobind
+    @autobind
     onRate() {
         this.setState({ isRateDialogsOpen: true })
     }
 
-    @OF.autobind
+    @autobind
     onCloseRate(transcriptValidationSet: CLM.TranscriptValidationSet) {
         this.setState({
             transcriptValidationSet,
@@ -217,7 +221,7 @@ class Testing extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onSave() {
 
         if (!this.state.transcriptValidationSet.fileName || this.onGetNameErrorMessage(this.state.transcriptValidationSet.fileName) !== '') {
@@ -227,7 +231,7 @@ class Testing extends React.Component<Props, ComponentState> {
         saveAs(blob, `${this.state.transcriptValidationSet.fileName}${SAVE_SUFFIX}`)
     }
 
-    @OF.autobind
+    @autobind
     onChangeResultFiles(files: any) {
         const reader = new FileReader()
         reader.onload = (e: Event) => {
@@ -264,7 +268,7 @@ class Testing extends React.Component<Props, ComponentState> {
         return `${(count / this.state.transcriptValidationSet.transcriptValidationResults.length * 100).toFixed(1)}%`
     }
 
-    @OF.autobind
+    @autobind
     nameErrorCheck(value: string): string {
         const MAX_NAME_LENGTH = 30
 
@@ -534,6 +538,7 @@ const mapStateToProps = (state: State) => {
 
     return {
         user: state.user.user,
+        entities: state.entities
     }
 }
 

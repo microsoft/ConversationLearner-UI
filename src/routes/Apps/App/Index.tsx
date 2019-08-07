@@ -55,7 +55,7 @@ class Index extends React.Component<Props, ComponentState> {
         this.setState({ modelLoaded: true })
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const { match, location, history } = this.props
         const app: CLM.AppBase | null = location.state && location.state.app
         if (!app) {

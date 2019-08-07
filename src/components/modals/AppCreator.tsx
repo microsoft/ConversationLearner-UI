@@ -17,6 +17,7 @@ import { AT } from '../../types/ActionTypes'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { AppInput } from '../../types/models'
 import { AppDefinition } from '@conversationlearner/models'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     appNameVal: string
@@ -49,7 +50,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
         })
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         // Reset when opening modal
         if (this.props.open === false && nextProps.open === true) {
             const firstValue = this.state.localeOptions[0].text
@@ -61,21 +62,21 @@ class AppCreator extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         this.setState({
             appNameVal: text.trim().length ? text : ""
         })
     }
 
-    @OF.autobind
+    @autobind
     onChangeLocale(event: React.FormEvent<HTMLDivElement>, localeOption: OF.IDropdownOption) {
         this.setState({
             localeVal: localeOption.text
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCancel() {
         this.props.onCancel()
     }
@@ -102,7 +103,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
     // Also has benefit of native browser validation for required fields
-    @OF.autobind
+    @autobind
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
         // Not on import as explicit button press is required to pick the file

@@ -5,6 +5,7 @@
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import './TreeView.css';
+import { autobind } from 'core-decorators';
 
 export interface TreeScorerStep {
     memory: string[]
@@ -65,14 +66,14 @@ export class TreeNodeLabel extends React.PureComponent<TreeNodeReceivedProps>  {
         return false
     }
 
-    @OF.autobind
+    @autobind
     onClickDetail(nodeId: string): void {
         if (this.props.onDetailClick) {
             this.props.onDetailClick(nodeId)
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickPin(nodeData: TreeNode): void {
         if (this.props.onPinClick) {
             this.props.onPinClick(nodeData, this.isSelected())
