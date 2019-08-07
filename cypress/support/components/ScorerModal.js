@@ -130,7 +130,7 @@ export function VerifyScoreActions(expectedScoreActions) {
       helpers.ConLog(funcName, `Element found: ${rowElements[0].outerHTML}`)
 
       // We use the rowIndex only for the purpose of logging errors as a debugging aid.
-      rowIndex = Cypress.$(rowElements[0]).parents('div[role="presentation"].ms-List-cell')[0].attr('data-list-index')
+      rowIndex = Cypress.$(rowElements[0]).parents('div[role="presentation"].ms-List-cell').attr('data-list-index')
       
       
       // Verify the button.
@@ -138,7 +138,7 @@ export function VerifyScoreActions(expectedScoreActions) {
       if (elements.length != 1) { 
         AccumulateErrors(`Expected to find 1 and only 1 data-testid starting with "action-scorer-button-", instead we found ${elements.length}`)
       } else {
-        let attr = elements[0].attr('data-testid')
+        let attr = elements.attr('data-testid')
         if (attr != expectedButtonTestId) {
           AccumulateErrors(`Expected to find data-testid="${expectedButtonTestId}" instead we found "${attr}"`)
         }
@@ -158,12 +158,12 @@ export function VerifyScoreActions(expectedScoreActions) {
 
       
       // Verify the entities.
-      elements = Cypress.$(rowElements[0]).find('[data-testid="action-scorer-entities"]')
+      elements = Cypress.$(rowElements[0]).find('[data-testid="action-scorer-entities"]').parent('div[role="listitem"]')
       if (elements.length != expectedScoreAction.entities.length) { 
         AccumulateErrors(`Expected to find ${expectedScoreAction.entities.length} entities but instead we found ${elements.length}`)
       }
       expectedScoreAction.entities.forEach(entity => {
-        let entityElement = Cypress.$(elements).find(`:contains("${entity.name}")`)
+        let entityElement = Cypress.$(elements).find(`[data-testid="action-scorer-entities"]:contains("${entity.name}")`)
         if (entityElement.length != 1) {
           AccumulateErrors(`Expected to find 1 and only 1 "action-scorer-entities" named "${entity.name}" instead we found ${entityElement.length}`)
         } else {
@@ -179,11 +179,11 @@ export function VerifyScoreActions(expectedScoreActions) {
           }
 
           let entityQualifierState
-          if (entityElement[0].tagName == 'DEL') { entityQualifierState = SetEntityElementState(Cypress.$(entityElement[0]).parent('span'), 1) }
-          else { entityQualifierState = SetEntityElementState(Cypress.$(entityElement), 0) }
+          if (Cypress.$(entityElement).find(`del:contains("${entity.name}")`).length == 1) { entityQualifierState = SetEntityElementState(entityElement, 1) }
+          else { entityQualifierState = SetEntityElementState(entityElement, 0) }
 
           if (entity.qualifierState != entityQualifierState) {
-            AccumulateErrors(`Expected Entity Qualifier State: ${entity.qualifierState} but insteady found: ${entityQualifierState}`)
+            AccumulateErrors(`Expected '${entity.name}' Entity Qualifier to have State: ${entity.qualifierState} but instead found: ${entityQualifierState}`)
           }
         }
       })
@@ -194,7 +194,7 @@ export function VerifyScoreActions(expectedScoreActions) {
       if (elements.length != 1) { 
         AccumulateErrors(`Expected to find 1 and only 1 data-testid with "action-scorer-wait", instead we found ${elements.length}`)
       } else {
-        let wait = elements[0].attr('data-icon-name') == 'CheckMark'
+        let wait = elements.attr('data-icon-name') == 'CheckMark'
         if (wait != expectedScoreAction.wait) {
           AccumulateErrors(`Expected to find Wait: '${expectedScoreAction.wait}' but instead it was: '${wait}'`)
         }
@@ -213,9 +213,10 @@ export function VerifyScoreActions(expectedScoreActions) {
       }
     }
     
-    if (errorMessages.length > 0) {throw new Error(`${errorMessages.length} Errors Detected - See log file for full list. 1st Error: ${errorMessages[0]}`)}    
+    if (errorMessages.length > 0) {throw new Error(`${errorMessages.length} Errors Detected in Action Scorer Grid- See log file for full list. - 1st Error: ${errorMessages[0]}`)}    
   })
 }
 
 export const stateEnum = { selected: 1, qualified: 2, disqualified: 3 }
-export const entityQualifierStateEnum = { unknown: 0, green: 1, greenStrikeout: 2, red: 3, redStrikeout: 4 }
+//export const entityQualifierStateEnum = { unknown: 0, green: 1, greenStrikeout: 2, red: 3, redStrikeout: 4 }
+export const entityQualifierStateEnum = { unknown: 'unknown', green: 'Green', greenStrikeout: 'GreenStrikeout', red: 'Red', redStrikeout: 'RedStrikeout' }
