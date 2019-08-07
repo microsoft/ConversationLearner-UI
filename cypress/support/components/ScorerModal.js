@@ -132,9 +132,11 @@ export function VerifyScoreActions(expectedScoreActions) {
       // We use the rowIndex only for the purpose of logging errors as a debugging aid.
       rowIndex = Cypress.$(rowElements[0]).parents('div[role="presentation"].ms-List-cell').attr('data-list-index')
       
-      
+      let elements
+
       // Verify the button.
-      let elements = Cypress.$(rowElements[0]).find('[data-testid^="action-scorer-button-"]')
+      //let elements = Cypress.$(rowElements[0]).find('[data-testid^="action-scorer-button-"]')
+      eval(`elements = Cypress.$(rowElements[0]).find('[data-testid^="action"]')`)
       if (elements.length != 1) { 
         AccumulateErrors(`Expected to find 1 and only 1 data-testid starting with "action-scorer-button-", instead we found ${elements.length}`)
       } else {
@@ -167,20 +169,16 @@ export function VerifyScoreActions(expectedScoreActions) {
         if (entityElement.length != 1) {
           AccumulateErrors(`Expected to find 1 and only 1 "action-scorer-entities" named "${entity.name}" instead we found ${entityElement.length}`)
         } else {
-          function SetEntityElementState(element, strikeOut) { 
-            if (element.hasClass('cl-entity--match')) {
-              return entityQualifierStateEnum.green + strikeOut
-            } 
-            if (element.hasClass('cl-entity--mismatch')) {
-              return entityQualifierStateEnum.red + strikeOut
-            }
-            AccumulateErrors(`Expected to find class with either 'cl-entity--match' or 'cl-entity--mismatch' but found neither. Element: ${element.outerHTML}`)
-            return entityQualifierStateEnum.unknown
-          }
-
+          let strikeOut = Cypress.$(entityElement).find(`del:contains("${entity.name}")`).length == 1 ? 'Strikeout' : ''
           let entityQualifierState
-          if (Cypress.$(entityElement).find(`del:contains("${entity.name}")`).length == 1) { entityQualifierState = SetEntityElementState(entityElement, 1) }
-          else { entityQualifierState = SetEntityElementState(entityElement, 0) }
+
+          if (entityElement.hasClass('cl-entity--match')) {
+            entityQualifierState = entityQualifierStateEnum.green + strikeOut
+          } else if (entityElement.hasClass('cl-entity--mismatch')) {
+            entityQualifierState = entityQualifierStateEnum.red + strikeOut
+          } else {
+            AccumulateErrors(`Expected to find class with either 'cl-entity--match' or 'cl-entity--mismatch' but found neither. Element: ${entityElement[0].outerHTML}`)
+          }
 
           if (entity.qualifierState != entityQualifierState) {
             AccumulateErrors(`Expected '${entity.name}' Entity Qualifier to have State: ${entity.qualifierState} but instead found: ${entityQualifierState}`)
