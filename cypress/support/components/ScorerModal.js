@@ -90,11 +90,22 @@ export function VerifyScoreActions(expectedScoreActions) {
   let expectedScoreAction
   let errorMessages = []
   let rowIndex = 0
+  let rowElements
 
   function AccumulateErrors(message) {
     const fullMessage = `Row: ${rowIndex} - Response: ${expectedScoreAction.response} - ${message}`
     errorMessages.push(fullMessage)
     helpers.ConLog(funcName, fullMessage)
+  }
+
+  function SelectAndVerify(selectionCommand, verificationFunction) {
+    let elements = eval(selectionCommand)
+    if (elements.length != 1) { 
+      AccumulateErrors(`Expected to find 1 and only 1 instead we found ${elements.length} - Selection Command: ${selectionCommand}`)
+    } else { 
+      verificationFunction(elements) 
+    }
+    return elements
   }
 
   cy.Enqueue(() => {
@@ -126,37 +137,50 @@ export function VerifyScoreActions(expectedScoreActions) {
         AccumulateErrors(rowElementsOrErrorMessage)
         continue
       }
-      const rowElements = rowElementsOrErrorMessage
+      rowElements = rowElementsOrErrorMessage
       helpers.ConLog(funcName, `Element found: ${rowElements[0].outerHTML}`)
 
       // We use the rowIndex only for the purpose of logging errors as a debugging aid.
       rowIndex = Cypress.$(rowElements[0]).parents('div[role="presentation"].ms-List-cell').attr('data-list-index')
       
-      let elements
-
       // Verify the button.
-      //let elements = Cypress.$(rowElements[0]).find('[data-testid^="action-scorer-button-"]')
-      eval(`elements = Cypress.$(rowElements[0]).find('[data-testid^="action"]')`)
-      if (elements.length != 1) { 
-        AccumulateErrors(`Expected to find 1 and only 1 data-testid starting with "action-scorer-button-", instead we found ${elements.length}`)
-      } else {
+      let elements
+      SelectAndVerify(`Cypress.$(rowElements[0]).find('[data-testid^="action-scorer-button-"]')`, elements => {
         let attr = elements.attr('data-testid')
         if (attr != expectedButtonTestId) {
           AccumulateErrors(`Expected to find data-testid="${expectedButtonTestId}" instead we found "${attr}"`)
         }
-      }
+      })
+
+      //let elements = Cypress.$(rowElements[0]).find('[data-testid^="action-scorer-button-"]')
+      // eval(`elements = Cypress.$(rowElements[0]).find('[data-testid^="action"]')`)
+      // if (elements.length != 1) { 
+      //   AccumulateErrors(`Expected to find 1 and only 1 data-testid starting with "action-scorer-button-", instead we found ${elements.length}`)
+      // } else {
+      //   let attr = elements.attr('data-testid')
+      //   if (attr != expectedButtonTestId) {
+      //     AccumulateErrors(`Expected to find data-testid="${expectedButtonTestId}" instead we found "${attr}"`)
+      //   }
+      // }
 
       
       // Verify the score.
-      elements = Cypress.$(rowElements[0]).find('[data-testid="action-scorer-score"]')
-      if (elements.length != 1) { 
-        AccumulateErrors(`Expected to find 1 and only 1 data-testid with "action-scorer-score", instead we found ${elements.length}`)
-      } else {
+      SelectAndVerify(`Cypress.$(rowElements[0]).find('[data-testid="action-scorer-score"]')`, elements => {
         let score = helpers.TextContentWithoutNewlines(elements[0])
         if (score != expectedScore) {
           AccumulateErrors(`Expected to find a score with '${expectedScore}' but instead found this '${score}'`)
         }
-      }
+      })
+
+      // elements = Cypress.$(rowElements[0]).find('[data-testid="action-scorer-score"]')
+      // if (elements.length != 1) { 
+      //   AccumulateErrors(`Expected to find 1 and only 1 data-testid with "action-scorer-score", instead we found ${elements.length}`)
+      // } else {
+      //   let score = helpers.TextContentWithoutNewlines(elements[0])
+      //   if (score != expectedScore) {
+      //     AccumulateErrors(`Expected to find a score with '${expectedScore}' but instead found this '${score}'`)
+      //   }
+      // }
 
       
       // Verify the entities.
