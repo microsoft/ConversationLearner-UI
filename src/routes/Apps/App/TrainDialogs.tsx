@@ -9,12 +9,14 @@ import * as ValidityUtils from '../../../Utils/validityUtils'
 import * as DialogEditing from '../../../Utils/dialogEditing'
 import * as DialogUtils from '../../../Utils/dialogUtils'
 import * as TranscriptUtils from '../../../Utils/transcriptUtils'
+import * as OBIUtils from '../../../Utils/obiUtil'
 import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
 import * as BB from 'botbuilder'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
+import OBIImporter from '../../../components/modals/OBIImporter'
 import TranscriptImporter from '../../../components/modals/TranscriptImporter'
 import TranscriptImportWaitModal from '../../../components/modals/TranscriptImportWaitModal'
 import ProgressModal from '../../../components/modals/ProgressModal'
@@ -152,6 +154,7 @@ interface ComponentState {
     isTeachDialogModalOpen: boolean
     isEditDialogModalOpen: boolean
     isTranscriptImportOpen: boolean
+    isOBIImportOpen: boolean
     isImportWaitModalOpen: boolean
     transcriptIndex: number
     transcriptFiles: File[] | undefined
@@ -206,6 +209,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTeachDialogModalOpen: false,
             isEditDialogModalOpen: false,
             isTranscriptImportOpen: false,
+            isOBIImportOpen: false,
             isImportWaitModalOpen: false,
             transcriptIndex: 0,
             transcriptFiles: undefined,
@@ -1037,18 +1041,43 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
+    @autobind
+    onClickImportOBI(): void {
+        this.setState({
+            isOBIImportOpen: true
+        })
+    }
+
+    @autobind
+    async onCloseImportOBI(files: File[] | null): Promise<void> {
+        await Util.setStateAsync(this, {
+            isOBIImportOpen: false
+        })
+        if (files) {
+            const trainDialogs = await OBIUtils.getTrainDialogsFromComposer(
+                files,
+                this.props.createActionThunkAsync as any,
+                this.props.createEntityThunkAsync as any)
+            if (trainDialogs) {
+                for (const td of trainDialogs) {
+                    await this.onCreateTrainDialog(td)
+                }
+            }
+        }
+    }
+
     //-----------------------------
     // Transcript import
     //-----------------------------
     @autobind
-    onClickImportConversation(): void {
+    onClickImportTranscripts(): void {
         this.setState({
             isTranscriptImportOpen: true
         })
     }
 
     @autobind
-    async onCloseImportConversation(transcriptsToImport: File[] | null, importAutoCreate: boolean, importAutoMerge: boolean): Promise<void> {
+    async onCloseImportTranscripts(transcriptsToImport: File[] | null, importAutoCreate: boolean, importAutoMerge: boolean): Promise<void> {
         await Util.setStateAsync(this, {
             isTranscriptImportOpen: false,
             transcriptFiles: transcriptsToImport,
@@ -1391,9 +1420,20 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 iconName: "DownloadDocument"
                             }}
                             disabled={isEditingDisabled}
-                            onClick={this.onClickImportConversation}
+                            onClick={this.onClickImportTranscripts}
                             ariaDescription={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
                             text={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
+                        />
+                    }
+                    {this.props.settings.features && this.props.settings.features.indexOf("CCI") >= 0 &&
+                        <OF.DefaultButton
+                            iconProps={{
+                                iconName: "DownloadDocument"
+                            }}
+                            disabled={isEditingDisabled}
+                            onClick={this.onClickImportOBI}
+                            ariaDescription={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
+                            text={"OBI"}//LARS
                         />
                     }
                     {this.state.isTreeViewModalOpen ?
@@ -1620,7 +1660,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     <TranscriptImporter
                         app={this.props.app}
                         open={true}
-                        onClose={this.onCloseImportConversation}
+                        onClose={this.onCloseImportTranscripts}
+                    />
+                }
+                {this.state.isOBIImportOpen &&
+                    <OBIImporter
+                        app={this.props.app}
+                        open={true}
+                        onClose={this.onCloseImportOBI}
                     />
                 }
                 {this.state.isImportWaitModalOpen &&
