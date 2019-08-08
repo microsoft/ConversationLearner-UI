@@ -24,7 +24,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { returntypeof } from 'react-redux-typescript'
 import { State, ErrorType } from '../../../types'
-import { SelectionType } from '../../../types/const'
+import { SelectionType, FeatureStrings } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState, MergeModal } from '../../../components/modals'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
@@ -1385,7 +1385,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         componentRef={this.newTeachSessionButtonRef}
                         iconProps={{ iconName: 'Add' }}
                     />
-                    {this.props.settings.features && this.props.settings.features.indexOf("CCI") >= 0 &&
+                    {this.props.settings.features && this.props.settings.features.toLowerCase().includes(FeatureStrings.CCI.toLowerCase()) &&
                         <OF.DefaultButton
                             iconProps={{
                                 iconName: "DownloadDocument"

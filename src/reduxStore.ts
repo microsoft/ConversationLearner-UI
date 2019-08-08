@@ -15,6 +15,11 @@ import { initialState as initialSettings } from './reducers/settingsReducer'
 export const createReduxStore = (): Store<State> => {
     let persistedState = localStorage.load<Partial<State>>()
 
+    /**
+     * We can't rely on format of state persisted in the localStorage. It could be missing, and old schema, or malformed by user tampering
+     * This is why we always first ensure it is of the correct type at the lowest level instead of blindly assigning it to our state
+     * If is malformed reset to a guaranteed initial / default value.
+     */
     if (typeof persistedState !== 'object') {
         persistedState = {
             settings: initialSettings
@@ -30,6 +35,9 @@ export const createReduxStore = (): Store<State> => {
             }
             if (typeof persistedState.settings.customPort !== 'number') {
                 persistedState.settings.customPort = initialSettings.customPort
+            }
+            if (typeof persistedState.settings.features !== 'string') {
+                persistedState.settings.features = initialSettings.features
             }
         }
     }
