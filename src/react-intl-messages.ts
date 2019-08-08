@@ -639,6 +639,7 @@ export default {
         [FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION]: `Actions must be unique`,
         [FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND]: 'The action you are creating matches an existing action. Actions must be unique. Please change the properties or close.',
         [FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION]: 'You will not be able to edit this action after saving.',
+        [FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT]: 'You cannot save changes to {actionType} Actions.',
         [FM.ACTIONCREATOREDITOR_WARNING_DISPATCH_EDIT]: 'You cannot edit {actionType} Actions.',
 
         // ActionScorer
