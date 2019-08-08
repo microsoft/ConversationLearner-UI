@@ -49,6 +49,7 @@ export enum FM {
     ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND = 'ActionCreatorEditor.warningDuplicateFound',
     ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION = 'ActionCreationEditor.warningSetEntityCreation',
     ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT = 'ActionCreatorEditor.warningSetEntityEdit',
+    ACTIONCREATOREDITOR_WARNING_DISPATCH_EDIT = 'ActionCreatorEditor.warningDispatchEdit',
 
     // ActionDeleteModal
     ACTION_DELETE_INUSE_TITLE = 'ActionDelete.inUse.title',
@@ -638,7 +639,7 @@ export default {
         [FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEACTION]: `Actions must be unique`,
         [FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND]: 'The action you are creating matches an existing action. Actions must be unique. Please change the properties or close.',
         [FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION]: 'You will not be able to edit this action after saving.',
-        [FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT]: 'You cannot save changes to {actionType} Actions.',
+        [FM.ACTIONCREATOREDITOR_WARNING_DISPATCH_EDIT]: 'You cannot edit {actionType} Actions.',
 
         // ActionScorer
         [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
