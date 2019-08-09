@@ -146,8 +146,7 @@ function generateDispatcherSource(sourceModels: SourceModel[]): AppDefinition {
         "negativeConditions": [],
         "clientData": {
             "importHashes": []
-        },
-        "modelId": sourceModel.model.appId,
+        }
     }))
 
     /**
