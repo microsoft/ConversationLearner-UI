@@ -88,6 +88,10 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                     ? true
                     : entity.entityType !== CLM.EntityType.ENUM
             }
+            case CLM.ActionTypes.DISPATCH: {
+                // TODO: Could validate access to model, but don't have access to it within this model
+                return false
+            }
             default: {
                 console.warn(`Could not get validation for unknown action type: ${action.actionType}`)
                 return true
@@ -261,6 +265,12 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
     else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
         const [name, value] = Util.setEntityActionDisplay(action, component.props.entities)
         return <span data-testid="actions-list-set-entity" className={OF.FontClassNames.mediumPlus}>{name}: {value}</span>
+    }
+    else if (action.actionType === CLM.ActionTypes.DISPATCH) {
+        // TODO: Mismatch between fields in payload and actionBase (modelId and modelName vs only modelId)
+        // Need to be able to load model by id to get name but need asynchronous functions etc
+        const dispatchAction = new CLM.DispatchAction(action)
+        return <span data-testid="actions-list-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
     }
 
     return <span className={OF.FontClassNames.mediumPlus}>Unknown Action Type</span>

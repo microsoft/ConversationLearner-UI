@@ -136,8 +136,8 @@ function generateDispatcherSource(sourceModels: SourceModel[]): AppDefinition {
     const actions = sourceModels.map<any>(sourceModel => ({
         "actionId": uuid(),
         "createdDateTime": new Date().toJSON(),
-        "actionType": "TEXT",
-        "payload": `{\"json\":{\"kind\":\"value\",\"document\":{\"kind\":\"document\",\"data\":{},\"nodes\":[{\"kind\":\"block\",\"type\":\"line\",\"isVoid\":false,\"data\":{},\"nodes\":[{\"kind\":\"text\",\"leaves\":[{\"kind\":\"leaf\",\"text\":\"@DISPATCH:${sourceModel.model.appId}:${sourceModel.model.appName}\",\"marks\":[]}]}]}]}}}`,
+        "actionType": "DISPATCH",
+        "payload": `{\"modelId\": \"${sourceModel.model.appId}\", \"modelName\": \"${sourceModel.model.appName}\"}`,
         "isTerminal": true,
         "requiredEntitiesFromPayload": [],
         "requiredEntities": [],

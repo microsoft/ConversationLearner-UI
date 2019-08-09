@@ -227,11 +227,12 @@ const tryCreateSlateValue = (actionType: string, slotName: string, content: obje
     }
 }
 
-const actionTypeOptions = Object.values(CLM.ActionTypes)
+const actionTypeOptions = (Object.values(CLM.ActionTypes) as string[])
     .map<OF.IDropdownOption>(actionTypeString => {
         return {
             key: actionTypeString,
-            text: actionTypeString === 'API_LOCAL'
+            text: actionTypeString === CLM.ActionTypes.API_LOCAL
+                // TODO: Change to "Code" action
                 ? "API"
                 : actionTypeString
         }
@@ -803,7 +804,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (selectedCardIndex === this.state.cardOptions.length) {
             selectedCardIndex = 0
         }
-        this.setState({selectedCardIndex})
+        this.setState({ selectedCardIndex })
         await this.onChangeCardOption(this.state.cardOptions[selectedCardIndex])
     }
 
@@ -814,7 +815,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (selectedCardIndex < 0) {
             selectedCardIndex = this.state.cardOptions.length - 1
         }
-        this.setState({selectedCardIndex})
+        this.setState({ selectedCardIndex })
         await this.onChangeCardOption(this.state.cardOptions[selectedCardIndex])
     }
 
@@ -1319,7 +1320,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
     saveDisabled(): boolean {
         // SET_ENTITY Actions are immutable
-        if (this.props.action && this.props.action.actionType === CLM.ActionTypes.SET_ENTITY) {
+        if (this.props.action
+            && (this.props.action.actionType === CLM.ActionTypes.SET_ENTITY
+            || this.props.action.actionType === CLM.ActionTypes.DISPATCH)) {
             return true
         }
 
@@ -1412,6 +1415,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             disabled={disabled}
                             tipType={ToolTip.TipType.ACTION_TYPE}
                         />
+
+                        {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.DISPATCH
+                            && <div data-testid="action-dispatch-warning" className="cl-text--warning">
+                                <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
+                                <span>{Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_WARNING_DISPATCH_EDIT, { actionType: CLM.ActionTypes.DISPATCH })}</span>
+                            </div>}
+
                         {this.state.selectedActionTypeOptionKey === CLM.ActionTypes.SET_ENTITY
                             && <div data-testid="action-set-entity-warning" className="cl-text--warning">
                                 <OF.Icon iconName="Warning" className="cl-icon" /> Warning:&nbsp;
@@ -1632,6 +1642,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.CARD
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.END_SESSION
                             && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.SET_ENTITY
+                            && this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.DISPATCH
                             && (<div className="cl-action-creator--expected-entity">
                                 <TC.TagPicker
                                     data-testid="action-expected-entity"
@@ -1652,45 +1663,49 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             </div>
                             )}
 
-                        <div className="cl-action-creator--required-entities">
-                            <CLTagPicker
-                                data-testid="action-required-entities"
-                                nonRemovableTags={this.state.requiredEntityTagsFromPayload}
-                                nonRemoveableStrikethrough={false}
-                                label="Required Entities"
-                                onResolveSuggestions={this.onResolveRequiredEntityTags}
-                                onRenderItem={this.onRenderRequiredEntityTag}
-                                getTextFromItem={item => item.name}
-                                onChange={this.onChangeRequiredEntityTags}
-                                pickerSuggestionsProps={
-                                    {
-                                        suggestionsHeaderText: 'Entities',
-                                        noResultsFoundText: 'No Entities Found'
-                                    }
-                                }
-                                selectedItems={this.state.requiredEntityTags}
-                                tipType={ToolTip.TipType.ACTION_REQUIRED}
-                            />
-                        </div>
+                        {this.state.selectedActionTypeOptionKey !== CLM.ActionTypes.DISPATCH
+                            && <>
+                                <div className="cl-action-creator--required-entities">
+                                    <CLTagPicker
+                                        data-testid="action-required-entities"
+                                        nonRemovableTags={this.state.requiredEntityTagsFromPayload}
+                                        nonRemoveableStrikethrough={false}
+                                        label="Required Entities"
+                                        onResolveSuggestions={this.onResolveRequiredEntityTags}
+                                        onRenderItem={this.onRenderRequiredEntityTag}
+                                        getTextFromItem={item => item.name}
+                                        onChange={this.onChangeRequiredEntityTags}
+                                        pickerSuggestionsProps={
+                                            {
+                                                suggestionsHeaderText: 'Entities',
+                                                noResultsFoundText: 'No Entities Found'
+                                            }
+                                        }
+                                        selectedItems={this.state.requiredEntityTags}
+                                        tipType={ToolTip.TipType.ACTION_REQUIRED}
+                                    />
+                                </div>
 
-                        <div className="cl-action-creator--disqualifying-entities">
-                            <TC.TagPicker
-                                data-testid="action-disqualifying-entities"
-                                label="Disqualifying Entities"
-                                onResolveSuggestions={this.onResolveNegativeEntityTags}
-                                onRenderItem={this.onRenderNegativeEntityTag}
-                                getTextFromItem={item => item.name}
-                                onChange={this.onChangeNegativeEntityTags}
-                                pickerSuggestionsProps={
-                                    {
-                                        suggestionsHeaderText: 'Entities',
-                                        noResultsFoundText: 'No Entities Found'
-                                    }
-                                }
-                                selectedItems={this.state.negativeEntityTags}
-                                tipType={ToolTip.TipType.ACTION_NEGATIVE}
-                            />
-                        </div>
+                                <div className="cl-action-creator--disqualifying-entities">
+                                    <TC.TagPicker
+                                        data-testid="action-disqualifying-entities"
+                                        label="Disqualifying Entities"
+                                        onResolveSuggestions={this.onResolveNegativeEntityTags}
+                                        onRenderItem={this.onRenderNegativeEntityTag}
+                                        getTextFromItem={item => item.name}
+                                        onChange={this.onChangeNegativeEntityTags}
+                                        pickerSuggestionsProps={
+                                            {
+                                                suggestionsHeaderText: 'Entities',
+                                                noResultsFoundText: 'No Entities Found'
+                                            }
+                                        }
+                                        selectedItems={this.state.negativeEntityTags}
+                                        tipType={ToolTip.TipType.ACTION_NEGATIVE}
+                                    />
+                                </div>
+                            </>}
+
 
                         <div className="cl-action-creator-form-section">
                             <TC.Checkbox
@@ -1699,7 +1714,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 checked={this.state.isTerminal}
                                 onChange={this.onChangeWaitCheckbox}
                                 style={{ marginTop: '1em', display: 'inline-block' }}
-                                disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                                 tipType={ToolTip.TipType.ACTION_WAIT}
                             />
                         </div>
