@@ -6,6 +6,9 @@
 import * as actionTypeSelector from '../../support/components/ActionTypeSelector'
 import * as helpers from '../../support/Helpers'
 
+export const stateEnum = { selected: 1, qualified: 2, disqualified: 3 }
+export const entityQualifierStateEnum = { unknown: 'unknown', green: 'Green', greenStrikeout: 'GreenStrikeout', red: 'Red', redStrikeout: 'RedStrikeout' }
+
 // data-testid="teach-session-admin-train-status" (Running, Completed, Failed)
 export function ClickRefreshScoreButton() { cy.Get('[data-testid="teach-session-admin-refresh-score-button"]').Click() }
 export function SelectAnAction() { cy.Get('[data-testid="action-scorer-button-clickable"]').should("be.visible").Click() }
@@ -206,5 +209,100 @@ export function VerifyScoreActions(expectedScoreActions) {
   })
 }
 
-export const stateEnum = { selected: 1, qualified: 2, disqualified: 3 }
-export const entityQualifierStateEnum = { unknown: 'unknown', green: 'Green', greenStrikeout: 'GreenStrikeout', red: 'Red', redStrikeout: 'RedStrikeout' }
+export function GenerateScoreActionsDataFromGrid() {
+  const funcName = 'GenerateScoreActionsDataFromGrid'
+  let generatedData = ''
+
+  function AccumulateOutput(line) {
+    generatedData += `  ${line}\r`
+    helpers.ConLog(funcName, line)
+  }
+
+  function FindWithinAndCapture(baseElements, findCommand, captureFunction, oneElementExpected = true) {
+    let elements = eval(`Cypress.$(baseElements).${findCommand}`)
+    if (oneElementExpected && elements.length != 1) { 
+      AccumulateOutput(`Expected to find exactly 1 element instead we found ${elements.length} - Selection Command: ${findCommand}`)
+    } else { 
+      captureFunction(elements) 
+    }
+    return elements
+  }
+
+  cy.Enqueue(() => {
+    const rowsElements = Cypress.$('div.cl-dialog-admin-title:contains("Action")').next('div').find('div[role="presentation"].ms-List-cell')
+    for (let rowIndex = 0; rowIndex < rowsElements.length; rowIndex++) {
+      AccumulateOutput(`{`)
+
+      let rowElement = Cypress.$(rowsElements[rowIndex]).find('div.ms-DetailsRow-fields')[0]
+      helpers.ConLog(funcName, `Row #: ${rowIndex} - Element found: ${rowElement.outerHTML}`)
+
+      
+      // Response
+      FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-text-response"], [data-testid="action-scorer-api"], [data-testid="action-scorer-session-response-user"], [data-testid="action-scorer-card"], [data-testid="action-scorer-action-set-entity"]')`, elements => {
+        let responseData = helpers.TextContentWithoutNewlines(elements[0])
+        AccumulateOutput(`  response: '${responseData}',`)
+      })
+
+      
+      // Action Type.
+      FindWithinAndCapture(rowElement, `find('[data-testid="action-details-action-type"]')`, elements => {
+        let actionType = helpers.TextContentWithoutNewlines(elements[0])
+        AccumulateOutput(`  type: '${actionType}',`)
+      })
+
+      
+      // Get the state from the score.
+      FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
+        const scoreToStateTranslation = [
+          {score: '100.0%', enum: 'scorerModal.stateEnum.selected'}, 
+          {score: '-', enum: 'scorerModal.stateEnum.qualified'}, 
+          {score: 'Disqualified', enum: 'scorerModal.stateEnum.disqualified'},
+        ]
+
+        let score = helpers.TextContentWithoutNewlines(elements[0])
+        let state = scoreToStateTranslation.find(pair => pair.score == score).enum
+        AccumulateOutput(`  state: ${state},`)
+      })
+
+      
+      // Get the entities and their display attributes.
+      let entities
+      FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-entities"]').parent('div[role="listitem"]')`, elements => {
+        if (elements.length == 0) { entities = '  entities: [],' }
+        else {
+          entities = '  entities: ['
+          for (let i = 0; i < elements.length; i++) {
+            const name = helpers.TextContentWithoutNewlines(elements[i])
+
+            const strikeOut = Cypress.$(elements[i]).find(`del:contains("${name}")`).length == 1 ? 'Strikeout' : ''
+            let entityQualifierState
+            
+            const entityElement = Cypress.$(elements[i]).find('[data-testid="action-scorer-entities"]')
+            if (entityElement.hasClass('cl-entity--match')) {
+              entityQualifierState = 'scorerModal.entityQualifierStateEnum.green' + strikeOut
+            } else if (entityElement.hasClass('cl-entity--mismatch')) {
+              entityQualifierState = 'scorerModal.entityQualifierStateEnum.red' + strikeOut
+            } else {
+              entityQualifierState = `ERROR - Expected to find class with either 'cl-entity--match' or 'cl-entity--mismatch' but found neither. Element: ${entityElement[0].outerHTML}`
+            }
+            
+            entities += `\n      { name: '${name}', qualifierState: ${entityQualifierState} },`
+          }
+          entities += `\n    ],`
+        }
+        AccumulateOutput(entities)
+      }, false)
+
+      
+      // Get the Wait flag.
+      FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-wait"]')`, elements => {
+        const wait = elements.attr('data-icon-name') == 'CheckMark'
+        AccumulateOutput(`  wait: ${wait},`)
+      })
+      
+      AccumulateOutput(`},`)
+    }
+    
+    helpers.ConLog(funcName, `Action Scorer Grid Data:\r[\r${generatedData}]`)
+  })
+}

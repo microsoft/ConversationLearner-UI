@@ -16,7 +16,7 @@ import * as helpers from '../support/Helpers'
 // values anyway, and this code does allow for that.
 
 export function CreateNewAction({ 
-  responseNameData, // TEXT-response, API-name, CARD-name, END_SESSION-data - Used by create operation
+  responseNameData, // TEXT-response, API-name, CARD-full-details, END_SESSION-data - Used by create operation
   expectedEntity, 
   requiredEntities, 
   disqualifyingEntities, 
@@ -48,7 +48,7 @@ export function CreateNewAction({
 }
  
 export function CreateNewActionThenVerifyInGrid({ 
-  responseNameData, // TEXT-response, API-name, CARD-name, END_SESSION-data - Used by create operation
+  responseNameData, // TEXT-response, API-name, CARD-full-details, END_SESSION-data - Used by create operation
   expectedEntity, 
   requiredEntities, 
   disqualifyingEntities, 

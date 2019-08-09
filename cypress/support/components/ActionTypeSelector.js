@@ -7,8 +7,9 @@ export const pairs = [
   {type: 'TEXT', selector: '[data-testid="action-scorer-text-response"]'},
   {type: 'API', selector: '[data-testid="action-scorer-api"]'},
   {type: 'END_SESSION', selector: '[data-testid="action-scorer-session-response-user"]'},
-  {type: 'CARD', selector: '[data-testid="action-scorer-card-name"] + div'},
-  {type: 'SET_ENTITY', selector: '[data-testid="actions-list-set-entity"]'}
+  {type: 'CARD', selector: '[data-testid="action-scorer-card"]'},
+  {type: 'SET_ENTITY', selector: '[data-testid="actions-list-set-entity"], [data-testid="action-scorer-action-set-entity"]'},
+  {type: 'MISSING ACTION', selector: '[data-testid="action-scorer-action-set-entity"]'},
 ]
 
 export function GetSelector(actionType) { 
