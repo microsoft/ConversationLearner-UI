@@ -255,7 +255,7 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
 }
 
 // Search for an action by hash
-function findActionFromHashText(hashText: string, actions: CLM.ActionBase[]): CLM.ActionBase | undefined {
+export function findActionFromHashText(hashText: string, actions: CLM.ActionBase[]): CLM.ActionBase | undefined {
     const importHash = Util.hashText(hashText)
 
     // Try to find matching action with same hash

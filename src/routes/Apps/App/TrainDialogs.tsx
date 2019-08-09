@@ -1054,10 +1054,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isOBIImportOpen: false
         })
         if (files) {
-            const trainDialogs = await OBIUtils.getTrainDialogsFromComposer(
-                files,
+            const obiDialogParser = new OBIUtils.ObiDialogParser(
+                this.props.app.appId,
                 this.props.createActionThunkAsync as any,
-                this.props.createEntityThunkAsync as any)
+                this.props.createEntityThunkAsync as any
+            )
+            const trainDialogs = await obiDialogParser.getTrainDialogsFromComposer(files)
             if (trainDialogs) {
                 for (const td of trainDialogs) {
                     await this.onCreateTrainDialog(td)
