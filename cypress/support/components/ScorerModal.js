@@ -95,7 +95,7 @@ export function VerifyScoreActions(expectedScoreActions) {
   let rowIndex = 0
 
   function AccumulateErrors(message) {
-    const fullMessage = `Row: ${rowIndex} - Response: ${expectedScoreAction.response} - ${message}`
+    const fullMessage = `ERROR - Row: ${rowIndex} - Response: ${expectedScoreAction.response} - ${message}`
     errorMessages.push(fullMessage)
     helpers.ConLog(funcName, fullMessage)
   }
@@ -114,22 +114,17 @@ export function VerifyScoreActions(expectedScoreActions) {
     for (let i = 0; i < expectedScoreActions.length; i++) {
       expectedScoreAction = expectedScoreActions[i]
       let expectedButtonTestId
-      let expectedScore
 
-      switch (expectedScoreAction.state)
-      {
-        case stateEnum.selected:
+      switch (expectedScoreAction.score) {
+        case '100.0%':
           expectedButtonTestId = 'action-scorer-button-selected'
-          expectedScore = '100.0%'
           break
-        case stateEnum.qualified:
-          expectedButtonTestId = 'action-scorer-button-clickable'
-          expectedScore = '-'
-          break
-        case stateEnum.disqualified:
+        case 'Disqualified':
           expectedButtonTestId = 'action-scorer-button-no-click'
-          expectedScore = 'Disqualified'
           break
+        default:
+            expectedButtonTestId = 'action-scorer-button-clickable'
+            break
       }
       rowIndex = undefined
       
@@ -158,8 +153,8 @@ export function VerifyScoreActions(expectedScoreActions) {
       // Verify the score.
       FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
         let score = helpers.TextContentWithoutNewlines(elements[0])
-        if (score != expectedScore) {
-          AccumulateErrors(`Expected to find a score with '${expectedScore}' but instead found this '${score}'`)
+        if (score != expectedScoreAction.score) {
+          AccumulateErrors(`Expected to find a score with '${expectedScoreAction.score}' but instead found this '${score}'`)
         }
       })
 
@@ -211,98 +206,90 @@ export function VerifyScoreActions(expectedScoreActions) {
 
 export function GenerateScoreActionsDataFromGrid() {
   const funcName = 'GenerateScoreActionsDataFromGrid'
-  let generatedData = ''
+  let generatedData = []
+  let rowData
 
-  function AccumulateOutput(line) {
-    generatedData += `  ${line}\r`
-    helpers.ConLog(funcName, line)
+  function AccumulateErrors(message) {
+    rowData.errors += `${message}\r`
+    helpers.ConLog(funcName, message)
   }
 
   function FindWithinAndCapture(baseElements, findCommand, captureFunction, oneElementExpected = true) {
     let elements = eval(`Cypress.$(baseElements).${findCommand}`)
     if (oneElementExpected && elements.length != 1) { 
-      AccumulateOutput(`Expected to find exactly 1 element instead we found ${elements.length} - Selection Command: ${findCommand}`)
+      AccumulateErrors(`Expected to find exactly 1 element instead we found ${elements.length} - Selection Command: ${findCommand}`)
     } else { 
       captureFunction(elements) 
     }
     return elements
   }
 
-  cy.Enqueue(() => {
-    const rowsElements = Cypress.$('div.cl-dialog-admin-title:contains("Action")').next('div').find('div[role="presentation"].ms-List-cell')
-    for (let rowIndex = 0; rowIndex < rowsElements.length; rowIndex++) {
-      AccumulateOutput(`{`)
+  // Get all the row DOM elements in the Score Actions pane.
+  const rowsElements = Cypress.$('div.cl-dialog-admin-title:contains("Action")').next('div').find('div[role="presentation"].ms-List-cell')
 
-      let rowElement = Cypress.$(rowsElements[rowIndex]).find('div.ms-DetailsRow-fields')[0]
-      helpers.ConLog(funcName, `Row #: ${rowIndex} - Element found: ${rowElement.outerHTML}`)
+  for (let rowIndex = 0; rowIndex < rowsElements.length; rowIndex++) {
+    rowData = {}
 
-      
-      // Response
-      FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-text-response"], [data-testid="action-scorer-api"], [data-testid="action-scorer-session-response-user"], [data-testid="action-scorer-card"], [data-testid="action-scorer-action-set-entity"]')`, elements => {
-        let responseData = helpers.TextContentWithoutNewlines(elements[0])
-        AccumulateOutput(`  response: '${responseData}',`)
-      })
+    let rowElement = Cypress.$(rowsElements[rowIndex]).find('div.ms-DetailsRow-fields')[0]
+    helpers.ConLog(funcName, `Row #: ${rowIndex} - Element found: ${rowElement.outerHTML}`)
 
-      
-      // Action Type.
-      FindWithinAndCapture(rowElement, `find('[data-testid="action-details-action-type"]')`, elements => {
-        let actionType = helpers.TextContentWithoutNewlines(elements[0])
-        AccumulateOutput(`  type: '${actionType}',`)
-      })
-
-      
-      // Get the state from the score.
-      FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
-        const scoreToStateTranslation = [
-          {score: '100.0%', enum: 'scorerModal.stateEnum.selected'}, 
-          {score: '-', enum: 'scorerModal.stateEnum.qualified'}, 
-          {score: 'Disqualified', enum: 'scorerModal.stateEnum.disqualified'},
-        ]
-
-        let score = helpers.TextContentWithoutNewlines(elements[0])
-        let state = scoreToStateTranslation.find(pair => pair.score == score).enum
-        AccumulateOutput(`  state: ${state},`)
-      })
-
-      
-      // Get the entities and their display attributes.
-      let entities
-      FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-entities"]').parent('div[role="listitem"]')`, elements => {
-        if (elements.length == 0) { entities = '  entities: [],' }
-        else {
-          entities = '  entities: ['
-          for (let i = 0; i < elements.length; i++) {
-            const name = helpers.TextContentWithoutNewlines(elements[i])
-
-            const strikeOut = Cypress.$(elements[i]).find(`del:contains("${name}")`).length == 1 ? 'Strikeout' : ''
-            let entityQualifierState
-            
-            const entityElement = Cypress.$(elements[i]).find('[data-testid="action-scorer-entities"]')
-            if (entityElement.hasClass('cl-entity--match')) {
-              entityQualifierState = 'scorerModal.entityQualifierStateEnum.green' + strikeOut
-            } else if (entityElement.hasClass('cl-entity--mismatch')) {
-              entityQualifierState = 'scorerModal.entityQualifierStateEnum.red' + strikeOut
-            } else {
-              entityQualifierState = `ERROR - Expected to find class with either 'cl-entity--match' or 'cl-entity--mismatch' but found neither. Element: ${entityElement[0].outerHTML}`
-            }
-            
-            entities += `\n      { name: '${name}', qualifierState: ${entityQualifierState} },`
-          }
-          entities += `\n    ],`
-        }
-        AccumulateOutput(entities)
-      }, false)
-
-      
-      // Get the Wait flag.
-      FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-wait"]')`, elements => {
-        const wait = elements.attr('data-icon-name') == 'CheckMark'
-        AccumulateOutput(`  wait: ${wait},`)
-      })
-      
-      AccumulateOutput(`},`)
-    }
     
-    helpers.ConLog(funcName, `Action Scorer Grid Data:\r[\r${generatedData}]`)
-  })
+    // Response
+    FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-text-response"], [data-testid="action-scorer-api"], [data-testid="action-scorer-session-response-user"], [data-testid="action-scorer-card"], [data-testid="action-scorer-action-set-entity"]')`, elements => {
+      let responseData = helpers.TextContentWithoutNewlines(elements[0])
+      rowData.response = responseData
+    })
+
+    
+    // Action Type.
+    FindWithinAndCapture(rowElement, `find('[data-testid="action-details-action-type"]')`, elements => {
+      let actionType = helpers.TextContentWithoutNewlines(elements[0])
+      rowData.type = actionType
+    })
+
+    
+    // Get the score.
+    FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
+      let score = helpers.TextContentWithoutNewlines(elements[0])
+      rowData.score = score
+    })
+
+    
+    // Get the entities and their display attributes.
+    let entities = []
+    FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-entities"]').parent('div[role="listitem"]')`, elements => {
+      if (elements.length > 0) {
+        for (let i = 0; i < elements.length; i++) {
+          const name = helpers.TextContentWithoutNewlines(elements[i])
+
+          const strikeOut = Cypress.$(elements[i]).find(`del:contains("${name}")`).length == 1 ? 'Strikeout' : ''
+          let entityQualifierState
+          
+          const entityElement = Cypress.$(elements[i]).find('[data-testid="action-scorer-entities"]')
+          if (entityElement.hasClass('cl-entity--match')) {
+            entityQualifierState = entityQualifierStateEnum.green + strikeOut
+          } else if (entityElement.hasClass('cl-entity--mismatch')) {
+            entityQualifierState = entityQualifierStateEnum.red + strikeOut
+          } else {
+            entityQualifierState = `ERROR - Expected to find class with either 'cl-entity--match' or 'cl-entity--mismatch' but found neither. Element: ${entityElement[0].outerHTML}`
+            AccumulateErrors(entityQualifierState)
+          }
+          
+          entities.push({ name: name, qualifierState: entityQualifierState })
+        }
+      }
+      rowData.entities = entities
+    }, false)
+
+    
+    // Get the Wait flag.
+    FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-wait"]')`, elements => {
+      const wait = elements.attr('data-icon-name') == 'CheckMark'
+      rowData.wait = wait
+    })
+    
+    generatedData.push(rowData)
+  }
+  
+  return generatedData
 }

@@ -13,8 +13,17 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Disqualifying Entities - Train', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  const generateScoreActionsData = Cypress.env('GENERATE_SCORE_ACTIONS_DATA')
+  helpers.ConLog('GENERATE_SCORE_ACTIONS_DATA', `${generateScoreActionsData}`)
+  let scoreActionsVerificationData = {}
 
   context('Setup', () => {
+    if (!generateScoreActionsData) {
+      it('Write the generated Score Actions data to a JSON file', () => {
+        cy.readFile('cypress/fixtures/scoreActions/disqualifyingEntities.json').then(scoreActionsData => scoreActionsVerificationData = scoreActionsData)
+      })
+    }
+
     it('Should import a model to test against, navigate to Train Dialogs view and wait for training status to complete', () => {
       models.ImportModel('z-disqualifyngEnt', 'z-disqualifyngEnt.cl')
       modelPage.NavigateToTrainDialogs()
@@ -33,12 +42,22 @@ describe('Disqualifying Entities - Train', () => {
         train.ClickScoreActionsButton()
       })
 
-      it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
-        scorerModal.VerifyContainsEnabledAction(common.whatsYourName)
-        scorerModal.VerifyContainsDisabledAction('Hey $name')
-        scorerModal.VerifyContainsDisabledAction('Hey $name, what do you really want?')
-        scorerModal.VerifyContainsDisabledAction("Sorry $name, I can't help you get $want")
-      })
+      if (generateScoreActionsData) {
+        it('Should generate the Score Actions list', () => {
+          cy.WaitForStableDOM().then(() => { scoreActionsVerificationData.hey1 = scorerModal.GenerateScoreActionsDataFromGrid() })
+        })
+      } else {
+        it('Should verify the Score Actions list', () => {
+          scorerModal.VerifyScoreActions(scoreActionsVerificationData.hey1)
+        })
+      }
+
+      // it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
+      //   scorerModal.VerifyContainsEnabledAction(common.whatsYourName)
+      //   scorerModal.VerifyContainsDisabledAction('Hey $name')
+      //   scorerModal.VerifyContainsDisabledAction('Hey $name, what do you really want?')
+      //   scorerModal.VerifyContainsDisabledAction("Sorry $name, I can't help you get $want")
+      // })
 
       it('Should select an action', () => {
         train.SelectTextAction(common.whatsYourName)
@@ -56,12 +75,22 @@ describe('Disqualifying Entities - Train', () => {
         memoryTableComponent.VerifyEntityValues('name', ['Sam'])
       })
 
-      it('Should verify the Action list contains 2 enabled and 2 disabled Actions', () => {
-        scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-        scorerModal.VerifyContainsEnabledAction('Hey Sam')
-        scorerModal.VerifyContainsEnabledAction('Hey Sam, what do you really want?')
-        scorerModal.VerifyContainsDisabledAction("Sorry Sam, I can't help you get $want")
-      })
+      if (generateScoreActionsData) {
+        it('Should generate the Score Actions list', () => {
+          cy.WaitForStableDOM().then(() => { scoreActionsVerificationData.sam = scorerModal.GenerateScoreActionsDataFromGrid() })
+        })
+      } else {
+        it('Should verify the Score Actions list', () => {
+          scorerModal.VerifyScoreActions(scoreActionsVerificationData.sam)
+        })
+      }
+
+      // it('Should verify the Action list contains 2 enabled and 2 disabled Actions', () => {
+      //   scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
+      //   scorerModal.VerifyContainsEnabledAction('Hey Sam')
+      //   scorerModal.VerifyContainsEnabledAction('Hey Sam, what do you really want?')
+      //   scorerModal.VerifyContainsDisabledAction("Sorry Sam, I can't help you get $want")
+      // })
 
       it('Should select an action', () => {
         train.SelectTextAction('Hey Sam', 'Hey $name')
@@ -78,12 +107,22 @@ describe('Disqualifying Entities - Train', () => {
         memoryTableComponent.VerifyEntityValues('name', ['Sam'])
       })
     
-      it('Should verify the Action list contains 2 enabled and 2 disabled Actions', () => {
-        scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-        scorerModal.VerifyContainsEnabledAction('Hey Sam')
-        scorerModal.VerifyContainsEnabledAction('Hey Sam, what do you really want?')
-        scorerModal.VerifyContainsDisabledAction("Sorry Sam, I can't help you get $want")
-      })
+      if (generateScoreActionsData) {
+        it('Should generate the Score Actions list', () => {
+          cy.WaitForStableDOM().then(() => { scoreActionsVerificationData.hey2 = scorerModal.GenerateScoreActionsDataFromGrid() })
+        })
+      } else {
+        it('Should verify the Score Actions list', () => {
+          scorerModal.VerifyScoreActions(scoreActionsVerificationData.hey2)
+        })
+      }
+
+      // it('Should verify the Action list contains 2 enabled and 2 disabled Actions', () => {
+      //   scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
+      //   scorerModal.VerifyContainsEnabledAction('Hey Sam')
+      //   scorerModal.VerifyContainsEnabledAction('Hey Sam, what do you really want?')
+      //   scorerModal.VerifyContainsDisabledAction("Sorry Sam, I can't help you get $want")
+      // })
 
       it('Should select an action', () => {
         train.SelectTextAction('Hey Sam, what do you really want?', 'Hey $name, what do you really want?')
@@ -104,12 +143,22 @@ describe('Disqualifying Entities - Train', () => {
         memoryTableComponent.VerifyEntityValues('want', ['world peace'])
       })
 
-      it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
-        scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-        scorerModal.VerifyContainsDisabledAction('Hey Sam')
-        scorerModal.VerifyContainsDisabledAction('Hey Sam, what do you really want?')
-        scorerModal.VerifyContainsEnabledAction("Sorry Sam, I can't help you get world peace")
-      })
+      if (generateScoreActionsData) {
+        it('Should generate the Score Actions list', () => {
+          cy.WaitForStableDOM().then(() => { scoreActionsVerificationData.worldPeace = scorerModal.GenerateScoreActionsDataFromGrid() })
+        })
+      } else {
+        it('Should verify the Score Actions list', () => {
+          scorerModal.VerifyScoreActions(scoreActionsVerificationData.worldPeace)
+        })
+      }
+
+      // it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
+      //   scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
+      //   scorerModal.VerifyContainsDisabledAction('Hey Sam')
+      //   scorerModal.VerifyContainsDisabledAction('Hey Sam, what do you really want?')
+      //   scorerModal.VerifyContainsEnabledAction("Sorry Sam, I can't help you get world peace")
+      // })
 
       it('Should select an action', () => {
         train.SelectTextAction("Sorry Sam, I can't help you get world peace", "Sorry $name, I can't help you get $want")
@@ -133,12 +182,22 @@ describe('Disqualifying Entities - Train', () => {
         train.ClickScoreActionsButton()
       })
 
-      it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
-        scorerModal.VerifyContainsEnabledAction(common.whatsYourName)
-        scorerModal.VerifyContainsDisabledAction('Hey $name')
-        scorerModal.VerifyContainsDisabledAction('Hey $name, what do you really want?')
-        scorerModal.VerifyContainsDisabledAction("Sorry $name, I can't help you get a million dollars")
-      })
+      if (generateScoreActionsData) {
+        it('Should generate the Score Actions list', () => {
+          cy.WaitForStableDOM().then(() => { scoreActionsVerificationData.million = scorerModal.GenerateScoreActionsDataFromGrid() })
+        })
+      } else {
+        it('Should verify the Score Actions list', () => {
+          scorerModal.VerifyScoreActions(scoreActionsVerificationData.million)
+        })
+      }
+      
+      // it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
+      //   scorerModal.VerifyContainsEnabledAction(common.whatsYourName)
+      //   scorerModal.VerifyContainsDisabledAction('Hey $name')
+      //   scorerModal.VerifyContainsDisabledAction('Hey $name, what do you really want?')
+      //   scorerModal.VerifyContainsDisabledAction("Sorry $name, I can't help you get a million dollars")
+      // })
 
       it('Should select an action', () => {
         train.SelectTextAction(common.whatsYourName)
@@ -152,12 +211,22 @@ describe('Disqualifying Entities - Train', () => {
         train.ClickScoreActionsButton()
       })
 
-      it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
-        scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-        scorerModal.VerifyContainsDisabledAction('Hey Sandeep')
-        scorerModal.VerifyContainsDisabledAction('Hey Sandeep, what do you really want?')
-        scorerModal.VerifyContainsEnabledAction("Sorry Sandeep, I can't help you get a million dollars")
-      })
+      if (generateScoreActionsData) {
+        it('Should generate the Score Actions list', () => {
+          cy.WaitForStableDOM().then(() => { scoreActionsVerificationData.sandeep = scorerModal.GenerateScoreActionsDataFromGrid() })
+        })
+      } else {
+        it('Should verify the Score Actions list', () => {
+          scorerModal.VerifyScoreActions(scoreActionsVerificationData.sandeep)
+        })
+      }
+
+      // it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
+      //   scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
+      //   scorerModal.VerifyContainsDisabledAction('Hey Sandeep')
+      //   scorerModal.VerifyContainsDisabledAction('Hey Sandeep, what do you really want?')
+      //   scorerModal.VerifyContainsEnabledAction("Sorry Sandeep, I can't help you get a million dollars")
+      // })
 
       it('Should select an action', () => {
         train.SelectTextAction("Sorry Sandeep, I can't help you get a million dollars", "Sorry $name, I can't help you get $want")
@@ -167,6 +236,14 @@ describe('Disqualifying Entities - Train', () => {
         train.SaveAsIsVerifyInGrid()
       })
     })
+
+    if (generateScoreActionsData) {
+      context('PERSIST GENERATED DATA', () => {
+        it('Write the generated Score Actions data to a JSON file', () => {
+          cy.writeFile('cypress/fixtures/scoreActions/disqualifyingEntities.json', scoreActionsVerificationData)
+        })
+      })
+    }
   })
 
   // Manually EXPORT this to fixtures folder and name it 'z-disqualifyngEnt.Trained.cl'

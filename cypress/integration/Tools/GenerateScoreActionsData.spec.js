@@ -13,6 +13,8 @@ import * as helpers from '../../support/Helpers'
 describe('Generate Score Actions Data - Tools', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
+  let scoreActionsData
+
   context('Setup', () => {
     it('Should import a model to test against', () => {
       models.ImportModel('z-generateSAData', 'z-scoreActions.cl')
@@ -28,7 +30,11 @@ describe('Generate Score Actions Data - Tools', () => {
     
     it('Should Generate Scored Actions Data', () => {
       train.SelectChatTurnExactMatch('What fruits do you like?')
-      scorerModal.GenerateScoreActionsDataFromGrid()
+      cy.WaitForStableDOM().then(() => { scoreActionsData = scorerModal.GenerateScoreActionsDataFromGrid() })
+    })
+
+    it('Should write the generated data to a JSON file on the hard drive', () => {
+      cy.writeFile('../scoreActions.json', scoreActionsData)
     })
   })
 })

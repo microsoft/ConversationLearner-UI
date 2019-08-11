@@ -1,0 +1,189 @@
+[
+  {
+    "response": "What fruits do you like?",
+    "type": "TEXT",
+    "score": "100.0%",
+    "entities": [],
+    "wait": true
+  },
+  {
+    "response": "Something extra",
+    "type": "TEXT",
+    "score": "-",
+    "entities": [],
+    "wait": true
+  },
+  {
+    "response": "Can be deleted - not used in a Train Dialog",
+    "type": "TEXT",
+    "score": "-",
+    "entities": [],
+    "wait": true
+  },
+  {
+    "response": "LogicWithNoArgslogic(memoryManager)",
+    "type": "API",
+    "score": "-",
+    "entities": [],
+    "wait": true
+  },
+  {
+    "response": "promptquestion:Do you like being questioned?button1:Yesbutton2:No",
+    "type": "CARD",
+    "score": "-",
+    "entities": [],
+    "wait": true
+  },
+  {
+    "response": "fruits: STRAWBERRY",
+    "type": "SET_ENTITY",
+    "score": "-",
+    "entities": [],
+    "wait": false
+  },
+  {
+    "response": "promptWithPicturetitle:Do you like flowers?image:https://cdn.pixabay.com/photo/2018/10/30/16/06/water-lily-3784022__340.jpgline1:Flowers make life beautifulline2:Flower Powerline3:Bees Like Flowersbutton1:I Like Flowersbutton2:Flowers are for the birds and bees",
+    "type": "CARD",
+    "score": "-",
+    "entities": [],
+    "wait": true
+  },
+  {
+    "response": "This is your data: hidden here",
+    "type": "TEXT",
+    "score": "-",
+    "entities": [
+      {
+        "name": "required1",
+        "qualifierState": "Green"
+      }
+    ],
+    "wait": false
+  },
+  {
+    "response": "fruits: BANANA",
+    "type": "SET_ENTITY",
+    "score": "-",
+    "entities": [],
+    "wait": false
+  },
+  {
+    "response": "Do you also like oranges?",
+    "type": "TEXT",
+    "score": "-",
+    "entities": [
+      {
+        "name": "fruits = ORANGE",
+        "qualifierState": "GreenStrikeout"
+      }
+    ],
+    "wait": true
+  },
+  {
+    "response": "fruits: ORANGE",
+    "type": "SET_ENTITY",
+    "score": "-",
+    "entities": [],
+    "wait": false
+  },
+  {
+    "response": "Oranges are petty amazing!",
+    "type": "TEXT",
+    "score": "-",
+    "entities": [],
+    "wait": true
+  },
+  {
+    "response": "fruits: APPLE",
+    "type": "MISSING ACTION",
+    "score": "-",
+    "entities": [],
+    "wait": false
+  },
+  {
+    "response": "fruits: PEACH",
+    "type": "MISSING ACTION",
+    "score": "-",
+    "entities": [],
+    "wait": false
+  },
+  {
+    "response": "Goodbye",
+    "type": "END_SESSION",
+    "score": "Disqualified",
+    "entities": [],
+    "wait": true
+  },
+  {
+    "response": "Your entity contains: $entity",
+    "type": "TEXT",
+    "score": "Disqualified",
+    "entities": [
+      {
+        "name": "entity",
+        "qualifierState": "Red"
+      }
+    ],
+    "wait": true
+  },
+  {
+    "response": "You are required to provide some data",
+    "type": "TEXT",
+    "score": "Disqualified",
+    "entities": [
+      {
+        "name": "required1",
+        "qualifierState": "RedStrikeout"
+      }
+    ],
+    "wait": true
+  },
+  {
+    "response": "Are you qualified?",
+    "type": "TEXT",
+    "score": "Disqualified",
+    "entities": [
+      {
+        "name": "disqualifying1",
+        "qualifierState": "RedStrikeout"
+      }
+    ],
+    "wait": true
+  },
+  {
+    "response": "So, you like bananas, me too",
+    "type": "TEXT",
+    "score": "Disqualified",
+    "entities": [
+      {
+        "name": "fruits = BANANA",
+        "qualifierState": "Red"
+      }
+    ],
+    "wait": false
+  },
+  {
+    "response": "Required and Disqualifying",
+    "type": "TEXT",
+    "score": "Disqualified",
+    "entities": [
+      {
+        "name": "required1",
+        "qualifierState": "Green"
+      },
+      {
+        "name": "required2",
+        "qualifierState": "Red"
+      },
+      {
+        "name": "disqualifying1",
+        "qualifierState": "RedStrikeout"
+      },
+      {
+        "name": "disqualifying2",
+        "qualifierState": "GreenStrikeout"
+      }
+    ],
+    "wait": true
+  }
+]
