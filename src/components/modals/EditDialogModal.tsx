@@ -6,6 +6,7 @@ import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as DialogUtils from '../../Utils/dialogUtils'
+import * as OBIUtils from '../../Utils/obiUtil'
 import * as BotChat from '@conversationlearner/webchat'
 import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
@@ -451,7 +452,14 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             : false
 
         if (importText) {
-            return { text: importText, isTerminal }
+            // Could be JSON object or just string
+            try {
+                const lgItem: OBIUtils.LGItem = JSON.parse(importText)
+                return { text: lgItem.text, buttons: lgItem.suggestions, isTerminal}
+            }
+            catch (e) {
+                return { text: importText, buttons: [], isTerminal }
+            }
         }
         return undefined
     }

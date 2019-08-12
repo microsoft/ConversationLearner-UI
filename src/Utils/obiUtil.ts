@@ -48,13 +48,13 @@ export class ObiDialogParser {
     private appId: string
     private actions: CLM.ActionBase[] = []
     //LARSprivate entities: CLM.EntityBase[] = []
-    private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
+    private createActionThunkAsync: ((appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>) | undefined
     //LARSprivate createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
     
     constructor(
         appId: string,
-        createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
-        createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
+        createActionThunkAsync?: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
+        createEntityThunkAsync?: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
     ) {
         this.appId = appId
         this.createActionThunkAsync = createActionThunkAsync
@@ -95,7 +95,7 @@ export class ObiDialogParser {
             return null
         }
     
-        return await this.getTrainDialogsfromOBIDialog(mainDialog)
+        return this.getTrainDialogsfromOBIDialog(mainDialog)
     }
     
     private addToLUMap(text: string, luMap: Map<string, string[]>): any {
@@ -140,8 +140,7 @@ export class ObiDialogParser {
                     if (rule.steps) {
                         for (const step of rule.steps) {
                             if (typeof step === "string") {
-                                console.log("string todo")
-                                //LARS todo
+                                throw new Error("Unexpected string step")
                             }
                             else {
                                 if (step.$type === "Microsoft.BeginDialog" && typeof step.dialog === "string") {
@@ -177,8 +176,7 @@ export class ObiDialogParser {
         if (obiDialog.steps) {
             for (const step of obiDialog.steps) {
                 if (typeof step === "string") {
-                    console.log("string todo")
-                    //LARS todo
+                    throw new Error("Unexected step of type string")
                 }
                 else if (step.$type === "Microsoft.SendActivity") {
                     if (!trainRound) {
@@ -214,11 +212,6 @@ export class ObiDialogParser {
 
                     const childDialogs = await this.getTrainDialogsfromOBIDialog(subDialog)
                     
-                    // Add extractor step to all the children
-                 /*   childDialogs.forEach(td => {
-                        td.rounds[0].extractorStep = extractorStep
-                    })*/
-
                     // Add children to train dialog list
                     trainDialogs = [...trainDialogs, ...childDialogs]
                 }
@@ -231,7 +224,14 @@ export class ObiDialogParser {
                     trainDialogs.push(this.makeEmptyTrainDialog())
                 }
                 for (const td of trainDialogs) {
-                    td.rounds = [trainRound, ...td.rounds]
+                    // If susequent round has no extractor step, just prepend scorer steps
+                    if (td.rounds.length > 0 && td.rounds[0].extractorStep.textVariations.length === 0) {
+                        td.rounds[0].scorerSteps = [...trainRound.scorerSteps, ...td.rounds[0].scorerSteps]
+                    }
+                    // Otherwise prepend round
+                    else {
+                        td.rounds = [trainRound, ...td.rounds]
+                    }
                 }
             }
         }
@@ -247,14 +247,18 @@ export class ObiDialogParser {
            //LARS temp throw new Error(`LU name ${prompt} undefined`)
         }
     
-        const action = await this.getActionFromLG(response, true)
-    
-        const scoredAction = {
-            actionId: action.actionId,
-            payload: action.payload,
-            isTerminal: action.isTerminal,
-            actionType: CLM.ActionTypes.TEXT,
-            score: 1
+        let scoredAction: CLM.ScoredAction | undefined
+        if (this.createActionThunkAsync) {
+            const action = await this.getActionFromLG(response, true)
+            if (action) {
+                scoredAction = {
+                    actionId: action.actionId,
+                    payload: action.payload,
+                    isTerminal: action.isTerminal,
+                    actionType: CLM.ActionTypes.TEXT,
+                    score: 1
+                }
+            }
         }
     
         let scoreInput: CLM.ScoreInput = {
@@ -263,21 +267,22 @@ export class ObiDialogParser {
             maskedActions: []
         }
     
-        //LARS todo deal with "suggestions"
+        const importText = response.suggestions.length > 0 ? JSON.stringify(response) : response.text
         return {
-            importText: response.text,
+            importText,
             input: scoreInput,
-            labelAction: action.actionId,
+            labelAction: CLM.CL_STUB_IMPORT_ACTION_ID,
             logicResult: undefined,  // LARS handle api calls
             scoredAction
         }
     
     }
     
-    private async getActionFromLG(lg: LGItem, isTerminal: boolean): Promise<CLM.ActionBase> {
+    // Generate action directly from LG
+    private async getActionFromLG(lg: LGItem, isTerminal: boolean): Promise<CLM.ActionBase | undefined> {
     
         let action = TranscriptUtils.findActionFromHashText(lg.text, this.actions)
-        if (!action) {
+        if (!action && this.createActionThunkAsync) {
 
             const tp: CLM.TextPayload = {
                 json: Plain.deserialize(lg.text)
@@ -312,7 +317,7 @@ export class ObiDialogParser {
         }
         return action
     }
-    
+
     private getTextVariations(intentName: string) {
         let userInputs = this.composerDialog.luMap.get(intentName)
         if (!userInputs) {

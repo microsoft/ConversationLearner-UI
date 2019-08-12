@@ -156,8 +156,8 @@ interface ComponentState {
     isTranscriptImportOpen: boolean
     isOBIImportOpen: boolean
     isImportWaitModalOpen: boolean
-    transcriptIndex: number
-    transcriptFiles: File[] | undefined
+    importIndex: number | undefined
+    importedTrainDialogs: CLM.TrainDialog[] | undefined
     importAutoCreate: boolean
     importAutoMerge: boolean
     isTreeViewModalOpen: boolean
@@ -211,8 +211,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTranscriptImportOpen: false,
             isOBIImportOpen: false,
             isImportWaitModalOpen: false,
-            transcriptIndex: 0,
-            transcriptFiles: undefined,
+            importIndex: undefined,
+            importedTrainDialogs: undefined,
             importAutoCreate: false,
             importAutoMerge: false,
             isTreeViewModalOpen: false,
@@ -527,12 +527,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             dialogKey: this.state.dialogKey + 1
         })
 
-        if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
+        if (this.state.importedTrainDialogs && this.state.importedTrainDialogs.length > 0) {
             if (stopImport) {
-                this.setState({ transcriptFiles: undefined })
+                this.setState({ importedTrainDialogs: undefined })
             }
             else {
-                await this.onStartTranscriptImport()
+                await this.onImportNextTrainDialog()
             }
         }
     }
@@ -761,8 +761,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             dialogKey: this.state.dialogKey + 1
         })
 
-        if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
-            await this.onStartTranscriptImport()
+        if (this.state.importedTrainDialogs && this.state.importedTrainDialogs.length > 0) {
+            await this.onImportNextTrainDialog()
         }
     }
 
@@ -796,8 +796,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 dialogKey: this.state.dialogKey + 1
             })
 
-            if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
-                await this.onStartTranscriptImport()
+            if (this.state.importedTrainDialogs && this.state.importedTrainDialogs.length > 0) {
+                await this.onImportNextTrainDialog()
             }
         }
     }
@@ -1054,17 +1054,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isOBIImportOpen: false
         })
         if (files) {
-            const obiDialogParser = new OBIUtils.ObiDialogParser(
-                this.props.app.appId,
-                this.props.createActionThunkAsync as any,
-                this.props.createEntityThunkAsync as any
-            )
-            const trainDialogs = await obiDialogParser.getTrainDialogsFromComposer(files)
-            if (trainDialogs) {
-                for (const td of trainDialogs) {
-                    await this.onCreateTrainDialog(td)
-                }
-            }
+            const obiDialogParser = new OBIUtils.ObiDialogParser(this.props.app.appId)
+            const importedTrainDialogs = await obiDialogParser.getTrainDialogsFromComposer(files)
+
+            await Util.setStateAsync(this, {
+                importIndex: undefined,
+                importedTrainDialogs,
+                importAutoCreate: true,
+                importAutoMerge: false
+            })
+
+            await this.onImportNextTrainDialog()
         }
     }
 
@@ -1082,71 +1082,80 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     async onCloseImportTranscripts(transcriptsToImport: File[] | null, importAutoCreate: boolean, importAutoMerge: boolean): Promise<void> {
         await Util.setStateAsync(this, {
             isTranscriptImportOpen: false,
-            transcriptFiles: transcriptsToImport,
-            transcriptIndex: 0,
             importAutoCreate,
             importAutoMerge
         })
-        await this.onStartTranscriptImport()
-    }
 
-    @autobind
-    async onStartTranscriptImport() {
-        if (!this.state.transcriptFiles || this.state.transcriptFiles.length === 0) {
+        if (!transcriptsToImport) {
             return
         }
 
-        // Check if I'm done importing files
-        if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
-            this.setState({ transcriptFiles: undefined })
-            return
+        const importedTrainDialogs: CLM.TrainDialog[] = []
+        for (const transcriptFile of transcriptsToImport) {
+
+            let source = await Util.readFileAsync(transcriptFile)
+            try {
+                const transcript: BB.Activity[] = JSON.parse(source)
+                const transcriptHash = Util.hashText(JSON.stringify(transcript))
+    
+                // If transcript has already been imported, skip it
+                if (!this.hasTranscriptBeenImported(transcriptHash)) {
+            
+                    const importedTrainDialog = await TranscriptUtils.trainDialogFromTranscriptImport(
+                        transcript,
+                        this.props.entities,
+                        this.props.actions,
+                        this.props.app,
+                        this.props.createActionThunkAsync as any,
+                        this.props.createEntityThunkAsync as any
+                    )
+        
+                    importedTrainDialogs.push(importedTrainDialog)
+                }
+            }
+            catch (e) {
+                const error = e as Error
+                this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
+                this.setState({
+                    importedTrainDialogs: undefined,
+                    isImportWaitModalOpen: false
+                })
+            }
         }
 
-        // Pop the next file
-        const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
-        this.setState({ transcriptIndex: this.state.transcriptIndex + 1 })
+        await Util.setStateAsync(this, {
+            isTranscriptImportOpen: false,
+            importIndex: 0,
+            importedTrainDialogs,
+            importAutoCreate,
+            importAutoMerge
+        })
 
-        let source = await Util.readFileAsync(transcriptFile)
-        try {
-            const sourceJson = JSON.parse(source)
-            await this.onImport(sourceJson)
-        }
-        catch (e) {
-            const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
-            this.setState({
-                transcriptFiles: undefined,
-                isImportWaitModalOpen: false
-            })
-        }
+        await this.onImportNextTrainDialog()
     }
 
     hasTranscriptBeenImported(importHash: string): boolean {
         return this.props.trainDialogs.find(td => td.clientData ? (td.clientData.importHashes.find(ih => ih === importHash) !== undefined) : false) !== undefined
     }
 
-    // Import a .transcript tile
-    async onImport(transcript: BB.Activity[]): Promise<void> {
+    // Import a train dialog
+    async onImportNextTrainDialog(): Promise<void> {
 
-        this.setState({ isImportWaitModalOpen: true })
+        if (!this.state.importedTrainDialogs) {
+            return
+        }
+        const importIndex = this.state.importIndex === undefined ? 0 : this.state.importIndex + 1
+        await Util.setStateAsync(this, { importIndex })
 
-        const transcriptHash = Util.hashText(JSON.stringify(transcript))
-
-        // If transcript has already been imported, go to next one
-        if (this.hasTranscriptBeenImported(transcriptHash)) {
-            this.setState({ isImportWaitModalOpen: false })
-            await this.onStartTranscriptImport()
+        // Check if I'm done importing 
+        if (this.state.importIndex === undefined || this.state.importIndex >= this.state.importedTrainDialogs.length) {
+            this.setState({ importedTrainDialogs: undefined })
             return
         }
 
-        let trainDialog = await TranscriptUtils.trainDialogFromTranscriptImport(
-            transcript,
-            this.props.entities,
-            this.props.actions,
-            this.props.app,
-            this.props.createActionThunkAsync as any,
-            this.props.createEntityThunkAsync as any
-        )
+        this.setState({ isImportWaitModalOpen: true })
+
+        let trainDialog = this.state.importedTrainDialogs[this.state.importIndex]
 
         // Extract entities
         if (this.props.entities.length > 0) {
@@ -1242,12 +1251,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.props.history.replace(this.props.match.url, { app: this.props.app })
         }
 
-        if (this.state.transcriptFiles && this.state.transcriptFiles.length > 0) {
+        if (this.state.importedTrainDialogs && this.state.importedTrainDialogs.length > 0) {
             if (stopImport) {
-                this.setState({ transcriptFiles: undefined })
+                this.setState({ importedTrainDialogs: undefined })
             }
             else {
-                await this.onStartTranscriptImport()
+                await this.onImportNextTrainDialog()
             }
         }
     }
@@ -1611,8 +1620,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
                         allUniqueTags={this.props.allUniqueTags}
-                        importIndex={this.state.transcriptIndex}
-                        importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : undefined}
+                        importIndex={this.state.importIndex}
+                        importCount={this.state.importedTrainDialogs ? this.state.importedTrainDialogs.length : undefined}
                     />
                 }
                 <MergeModal
@@ -1648,8 +1657,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
                     onCreateDialog={(newTrainDialog) => this.onCreateTrainDialog(newTrainDialog)}
                     allUniqueTags={this.props.allUniqueTags}
-                    importIndex={this.state.transcriptIndex}
-                    importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : undefined}
+                    importIndex={this.state.importIndex}
+                    importCount={this.state.importedTrainDialogs ? this.state.importedTrainDialogs.length : undefined}
                 />
                 <ProgressModal
                     open={this.state.replayDialogs.length > 0}
@@ -1672,10 +1681,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onClose={this.onCloseImportOBI}
                     />
                 }
-                {this.state.isImportWaitModalOpen &&
+                {this.state.isImportWaitModalOpen && this.state.importIndex &&
                     <TranscriptImportWaitModal
-                        importIndex={this.state.transcriptIndex}
-                        importCount={this.state.transcriptFiles ? this.state.transcriptFiles.length : 0}
+                        importIndex={this.state.importIndex}
+                        importCount={this.state.importedTrainDialogs ? this.state.importedTrainDialogs.length : 0}
                     />
                 }
             </div>

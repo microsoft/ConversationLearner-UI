@@ -245,6 +245,7 @@ interface IConditionalTag extends OF.ITag {
 
 export interface NewActionPreset {
     text: string,
+    buttons: string[],
     isTerminal: boolean
 }
 
