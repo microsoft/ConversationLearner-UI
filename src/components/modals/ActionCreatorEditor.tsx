@@ -1540,7 +1540,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                             .map(cardTemplateVariable => {
                                                 return (
                                                     <React.Fragment key={cardTemplateVariable.key}>
-                                                        <OF.Label className="cl-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_ARGUMENTS} /></OF.Label>
+                                                        <OF.Label className="cl-label">{cardTemplateVariable.key} <HelpIcon tipType={ToolTip.TipType.ACTION_CARD} /></OF.Label>
                                                         <ActionPayloadEditor.Editor
                                                             options={optionsAvailableForPayload}
                                                             value={this.state.slateValuesMap[cardTemplateVariable.key]}
