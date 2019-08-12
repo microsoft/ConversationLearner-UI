@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
@@ -21,16 +22,24 @@ interface ComponentState {
     isImportTutorialsOpen: boolean
     appToDelete: AppBase | null
     tutorials: AppBase[] | null
+    selectionCount: number
 }
 
 class AppsList extends React.Component<Props, ComponentState> {
+    private selection: OF.ISelection = new OF.Selection({
+        getKey: (app) => (app as AppBase).appId,
+        onSelectionChanged: this.onSelectionChanged
+    })
+
     state: Readonly<ComponentState> = {
         isAppCreateModalOpen: false,
         appCreatorType: AppCreatorType.NEW,
         isImportTutorialsOpen: false,
         appToDelete: null,
-        tutorials: null
+        tutorials: null,
+        selectionCount: 0,
     }
+
 
     @autobind
     onClickCreateNewApp() {
@@ -77,13 +86,37 @@ class AppsList extends React.Component<Props, ComponentState> {
     onSubmitAppCreateModal(app: AppBase, source: AppDefinition | null = null) {
         this.setState({
             isAppCreateModalOpen: false
-        }, () => this.props.onCreateApp(app, source))
+        }, () => {
+            if (this.state.appCreatorType == AppCreatorType.DISPATCHER) {
+                const selectedModels = this.selection.getSelection() as AppBase[]
+                this.props.onCreateDispatchModel(app, selectedModels)
+            }
+            else {
+                this.props.onCreateApp(app, source)
+            }
+        })
     }
 
     @autobind
     onCancelAppCreateModal() {
         this.setState({
             isAppCreateModalOpen: false
+        })
+    }
+
+    @autobind
+    onClickCreateNewDispatcherModel() {
+        this.setState({
+            isAppCreateModalOpen: true,
+            appCreatorType: AppCreatorType.DISPATCHER
+        })
+    }
+
+    @autobind
+    onSelectionChanged() {
+        const selectionCount = this.selection.getSelectedCount()
+        this.setState({
+            selectionCount
         })
     }
 
@@ -95,6 +128,9 @@ class AppsList extends React.Component<Props, ComponentState> {
             apps={this.props.apps}
             activeApps={this.props.activeApps}
             onClickApp={this.onClickApp}
+            selection={this.selection}
+            featuresString={this.props.settings.features}
+            selectionCount={this.state.selectionCount}
 
             isAppCreateModalOpen={this.state.isAppCreateModalOpen}
             onSubmitAppCreateModal={this.onSubmitAppCreateModal}
@@ -104,6 +140,7 @@ class AppsList extends React.Component<Props, ComponentState> {
             onClickCreateNewApp={this.onClickCreateNewApp}
             onClickImportApp={this.onClickImportApp}
             onClickImportDemoApps={this.onClickImportDemoApps}
+            onClickCreateNewDispatcherModel={this.onClickCreateNewDispatcherModel}
 
             isImportTutorialsOpen={this.state.isImportTutorialsOpen}
             tutorials={this.state.tutorials!}
@@ -112,6 +149,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         />
     }
 }
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchTutorialsThunkAsync
@@ -124,7 +162,8 @@ const mapStateToProps = (state: State) => {
 
     return {
         user: state.user.user,
-        activeApps: state.apps.activeApps
+        activeApps: state.apps.activeApps,
+        settings: state.settings,
     }
 }
 
@@ -133,6 +172,7 @@ export interface ReceivedProps {
     onCreateApp: (app: AppBase, source: AppDefinition | null) => void
     onClickDeleteApp: (app: AppBase) => void
     onImportTutorial: (tutorial: AppBase) => void
+    onCreateDispatchModel: (model: AppBase, models: AppBase[]) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

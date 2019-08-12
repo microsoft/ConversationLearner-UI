@@ -49,6 +49,7 @@ export enum FM {
     ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND = 'ActionCreatorEditor.warningDuplicateFound',
     ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION = 'ActionCreationEditor.warningSetEntityCreation',
     ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT = 'ActionCreatorEditor.warningSetEntityEdit',
+    ACTIONCREATOREDITOR_WARNING_DISPATCH_EDIT = 'ActionCreatorEditor.warningDispatchEdit',
 
     // ActionDeleteModal
     ACTION_DELETE_INUSE_TITLE = 'ActionDelete.inUse.title',
@@ -96,6 +97,7 @@ export enum FM {
     APPCREATOR_FIELDERROR_ALPHANUMERIC = 'AppCreator.fieldError.alphanumeric',
     APPCREATOR_TITLE = 'AppCreator.title',
     APPCREATOR_COPY_TITLE = 'AppCreator.copytitle',
+    APPCREATOR_DISPATCHER_TITLE = 'AppCreator.dispatcherTitle',
     APPCREATOR_IMPORT_TITLE = 'AppCreator.importtitle',
     APPCREATOR_FIELDS_NAME_LABEL = 'AppCreator.fields.name.label',
     APPCREATOR_FIELDS_IMPORT_NAME_LABEL = 'AppCreator.fields.importname.label',
@@ -119,6 +121,8 @@ export enum FM {
     APPSLIST_IMPORTAPP_BUTTONTEXT = 'AppsList.importappButtonText',
     APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION = 'AppsList.importtutorialsButtonAriaDescription',
     APPSLIST_IMPORTTUTORIALS_BUTTONTEXT = 'AppsList.importtutorialsButtonText',
+    APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION = 'AppsList.createDispatcherButtonAriaDescription',
+    APPSLIST_CREATEDISPATCHER_BUTTONTEXT = 'AppsList.createDispatcherButtonText',
     APPSLIST_CONFIRMCANCELMODALTITLE = 'AppsList.confirmCancelModalTitle',
     APPSLIST_COLUMN_NAME = 'AppsList.columns.name',
     APPSLIST_COLUMNS_LOCALE = 'AppsList.columns.locale',
@@ -636,6 +640,7 @@ export default {
         [FM.ACTIONCREATOREDITOR_WARNING_DUPLICATEFOUND]: 'The action you are creating matches an existing action. Actions must be unique. Please change the properties or close.',
         [FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_CREATION]: 'You will not be able to edit this action after saving.',
         [FM.ACTIONCREATOREDITOR_WARNING_SET_ENTITY_EDIT]: 'You cannot save changes to {actionType} Actions.',
+        [FM.ACTIONCREATOREDITOR_WARNING_DISPATCH_EDIT]: 'You cannot edit {actionType} Actions.',
 
         // ActionScorer
         [FM.ACTIONSCORER_COLUMNS_RESPONSE]: 'Response',
@@ -669,6 +674,7 @@ export default {
         [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner Model',
         [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner Model',
         [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner Model',
+        [FM.APPCREATOR_DISPATCHER_TITLE]: 'Create a Dispatcher Model',
         [FM.APPCREATOR_FIELDS_NAME_LABEL]: 'Name',
         [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New Model Name',
         [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Model name...',
@@ -711,6 +717,8 @@ export default {
         [FM.APPSLIST_IMPORTAPP_BUTTONTEXT]: 'Import Model',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION]: 'Import Tutorials Models',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT]: 'Import Tutorials',
+        [FM.APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION]: 'Create Dispatcher',
+        [FM.APPSLIST_CREATEDISPATCHER_BUTTONTEXT]: 'Create Dispatcher ({ selectionCount })',
         [FM.APPSLIST_CONFIRMCANCELMODALTITLE]: `Confirm the deletion by entering the Model's name`,
         [FM.APPSLIST_COLUMN_NAME]: 'Name',
         [FM.APPSLIST_COLUMNS_LOCALE]: 'Locale',

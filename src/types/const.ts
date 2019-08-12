@@ -10,7 +10,8 @@ export enum ErrorType {
 export enum AppCreatorType {
     NEW = "NEW",
     IMPORT = "IMPORT",
-    COPY = "COPY"
+    COPY = "COPY",
+    DISPATCHER = "DISPATCHER",
 }
 
 // After an edit takes place which activity should I select in webchat
@@ -31,4 +32,9 @@ export const ports: Readonly<any> = {
     urlBotPort: parseInt(LOCATION_PORT, 10),
     defaultUiPort: 3000,
     defaultBotPort: 3978,
+}
+
+export enum FeatureStrings {
+    CCI = "CCI",
+    DISPATCHER = "dispatcher"
 }
