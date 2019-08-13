@@ -38,7 +38,7 @@ class TranscriptImportCancelModal extends React.Component<Props, ComponentState>
                     isBlocking: false
                 }}
             >
-            {!this.props.isLastImport &&
+            {!this.props.showStopCheckbox &&
                 <OF.Checkbox
                     label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL)}
                     checked={this.state.stopImport}
@@ -68,7 +68,7 @@ export interface ReceivedProps {
     onConfirm: Function
     onCancel: Function
     open: boolean
-    isLastImport: boolean
+    showStopCheckbox: boolean
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

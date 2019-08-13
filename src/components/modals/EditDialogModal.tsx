@@ -1120,7 +1120,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     open={this.state.isImportAbandonOpen}
                     onCancel={this.onClickAbandonCancel}
                     onConfirm={this.onClickAbandonApprove}
-                    isLastImport={this.props.importIndex === this.props.importCount}
+                    // Don't show stop checkbox if on last item or doing OBI import
+                    showStopCheckbox={this.props.importIndex === this.props.importCount || (this.props.importingOBI || false)}
                 />
                 {this.state.cantReplayMessage &&
                     <ConfirmCancelModal
@@ -1187,6 +1188,7 @@ export interface ReceivedProps {
     allUniqueTags: string[]
     importIndex?: number
     importCount?: number
+    importingOBI?: boolean
 
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, isLastActivity: boolean, selectionType: SelectionType) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any

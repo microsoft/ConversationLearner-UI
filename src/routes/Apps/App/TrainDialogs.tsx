@@ -1244,7 +1244,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
 
         if (this.state.importedTrainDialogs && this.state.importedTrainDialogs.length > 0) {
-            if (stopImport) {
+            // If I was doing an OBI import and abandoned, delete the train dialog
+            if (this.props.obiImportFiles && this.props.obiImportFiles.appId === this.props.app.appId) {
+                this.props.onDeleteApp(this.props.app.appId)
+            }
+            else if (stopImport) {
                 this.setState({ importedTrainDialogs: undefined })
             }
             else {
@@ -1638,6 +1642,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     allUniqueTags={this.props.allUniqueTags}
                     importIndex={this.state.importIndex}
                     importCount={this.state.importedTrainDialogs ? this.state.importedTrainDialogs.length : undefined}
+                    importingOBI={this.props.obiImportFiles && this.props.obiImportFiles.appId === this.props.app.appId}
                 />
                 <ProgressModal
                     open={this.state.replayDialogs.length > 0}
@@ -1809,7 +1814,8 @@ export interface ReceivedProps {
     invalidBot: boolean,
     editingPackageId: string,
     filteredAction?: CLM.ActionBase,
-    filteredEntity?: CLM.EntityBase
+    filteredEntity?: CLM.EntityBase,
+    onDeleteApp: (id: string) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
