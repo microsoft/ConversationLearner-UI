@@ -8,9 +8,10 @@ export interface App extends AppBase {
     didPollingExpire: boolean
 }
 
-export interface SourceModel {
+export interface SourceAndModelPair {
     source: AppDefinition,
     model: AppBase,
+    action: any | undefined, // ActionBase source,
 }
 
 export interface AppInput {

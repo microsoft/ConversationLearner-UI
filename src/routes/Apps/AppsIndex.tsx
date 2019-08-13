@@ -12,14 +12,14 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { AppBase, AppDefinition, TrainDialog } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
 import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
 import * as uuid from 'uuid/v4'
 import * as Util from '../../Utils/util'
-import { SourceModel } from '../../types/models';
+import { SourceAndModelPair } from '../../types/models';
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
@@ -38,7 +38,7 @@ class AppsIndex extends React.Component<Props> {
         }
 
         const { history, location } = this.props
-        const appFromLocationState: AppBase | null = location.state && location.state.app
+        const appFromLocationState: CLM.AppBase | null = location.state && location.state.app
         if (appFromLocationState && this.props.apps && this.props.apps.length > 0) {
             const app = this.props.apps.find(a => a.appId === appFromLocationState.appId)
             if (!app) {
@@ -52,17 +52,17 @@ class AppsIndex extends React.Component<Props> {
         }
     }
 
-    onClickDeleteApp = (appToDelete: AppBase) => {
+    onClickDeleteApp = (appToDelete: CLM.AppBase) => {
         this.props.deleteApplicationThunkAsync(appToDelete.appId)
     }
 
-    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
-        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
+    onCreateApp = async (appToCreate: CLM.AppBase, source: CLM.AppDefinition | null = null) => {
+        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<CLM.AppBase>)
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
     }
 
-    onCreateDispatchModel = async (appToCreate: AppBase, childrenModels: AppBase[]) => {
+    onCreateDispatchModel = async (appToCreate: CLM.AppBase, childrenModels: CLM.AppBase[]) => {
         if (childrenModels.length > 5) {
             throw new Error(`Must only select 5 or less models when creating a Dispatcher Model`)
         }
@@ -84,21 +84,23 @@ class AppsIndex extends React.Component<Props> {
         /**
          * Fetch source and associate with each model
          */
-        const childrenSources = await Promise.all(childrenModels.map(async model => {
-            const source = await (this.props.fetchAppSourceThunkAsync(model.appId, model.devPackageId) as any) as AppDefinition
+        const childrenSourceModelPairs = await Promise.all(childrenModels.map<Promise<SourceAndModelPair>>(async model => {
+            const source = await (this.props.fetchAppSourceThunkAsync(model.appId, model.devPackageId) as any) as CLM.AppDefinition
+
             return {
                 source,
                 model,
+                action: undefined
             }
         }))
 
-        const source = generateDispatcherSource(childrenSources)
-        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
+        const source = generateDispatcherSource(childrenSourceModelPairs)
+        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<CLM.AppBase>)
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
     }
 
-    onImportTutorial = (tutorial: AppBase) => {
+    onImportTutorial = (tutorial: CLM.AppBase) => {
         const srcUserId = CL_IMPORT_TUTORIALS_USER_ID;
         const destUserId = this.props.user.id;
 
@@ -129,45 +131,80 @@ class AppsIndex extends React.Component<Props> {
     }
 }
 
-function generateDispatcherSource(sourceModels: SourceModel[]): AppDefinition {
+function generateDispatcherSource(
+    sourceModelPairs: SourceAndModelPair[],
+    transitionRoundLimit: number = 4
+): CLM.AppDefinition {
     /**
-     * Generate new Text Actions 1 per model, with text as format modelId:modelName
+     * Generate 1 Dispatch Action per model and associate with source + model pair
+     * 
+     * Store:
+     * - modelId for dispatching
+     * - modelName for display
      */
-    const actions = sourceModels.map<any>(sourceModel => ({
-        "actionId": uuid(),
-        "createdDateTime": new Date().toJSON(),
-        "actionType": "DISPATCH",
-        "payload": `{\"modelId\": \"${sourceModel.model.appId}\", \"modelName\": \"${sourceModel.model.appName}\"}`,
-        "isTerminal": true,
-        "requiredEntitiesFromPayload": [],
-        "requiredEntities": [],
-        "negativeEntities": [],
-        "requiredConditions": [],
-        "negativeConditions": [],
-        "clientData": {
-            "importHashes": []
+    sourceModelPairs.forEach(smp => {
+        const dispatchPayload: CLM.DispatchPayload = {
+            modelId: smp.model.appId,
+            modelName: smp.model.appName
         }
-    }))
+
+        // TODO: Want strong typing, but this is source schema not ActionBase
+        const dispatchAction = {
+            actionId: uuid(),
+            createdDateTime: new Date().toJSON(),
+            actionType: CLM.ActionTypes.DISPATCH,
+            payload: JSON.stringify(dispatchPayload),
+            isTerminal: true,
+            requiredEntitiesFromPayload: [],
+            requiredEntities: [],
+            negativeEntities: [],
+            requiredConditions: [],
+            negativeConditions: [],
+            clientData: {
+                importHashes: []
+            }
+        }
+
+        smp.action = dispatchAction
+    })
 
     /**
-     * Current train dialogs are still associated with their model
-     * Overwrite label action and filled entities to that model's enum action
+     * For each dialog in model A set each rounds to use that models Dispatch Action
+     * This means, when this input (extraction) is seen, dispatch to this model.
+     * 
+     * Clear all entities, and ensure single scorer step
      */
-    const modelTrainDialogs = sourceModels.map((sm, mIndex) => {
+    const modelTrainDialogs = sourceModelPairs.map((sm, mIndex) => {
+        if (!sm.action) {
+            throw new Error(`(Source + Model) pair must have dispatch action assigned at this point`)
+        }
+
         return sm.source.trainDialogs.map((t, tIndex) => {
             t.rounds.forEach(r => {
-                r.scorerSteps.forEach(s => {
-                    s.input = {
-                        filledEntities: [],
-                        context: {},
-                        maskedActions: [],
-                    }
-                    // Bad to rely on index association here, but it's consistent between action types
-                    s.labelAction = actions[mIndex].actionId
+                // Clear label entities
+                r.extractorStep.textVariations.forEach(tv => {
+                    tv.labelEntities = []
                 })
+
+                // Reuse lastScorerStep which should be terminal
+                // Clear filled entities and any masks
+
+                // TODO: Guard against rounds with no scorer step?
+                const lastScorerStep = r.scorerSteps[r.scorerSteps.length - 1]
+                lastScorerStep.input = {
+                    filledEntities: [],
+                    context: {},
+                    maskedActions: [],
+                }
+                lastScorerStep.labelAction = sm.action.actionId
+
+                r.scorerSteps = [
+                    lastScorerStep
+                ]
             })
 
             t.tags = [`model-${mIndex + 1}`, `dialog-${tIndex + 1}`]
+            // t.description = `Model: ${sm.model.appName} - Dialog ${tIndex + 1}`
 
             return t
         })
@@ -184,50 +221,66 @@ function generateDispatcherSource(sourceModels: SourceModel[]): AppDefinition {
      *   [D,E,F]
      *  ModelC:
      *   [G,H,I]
-     * ..,
+     * ...
      * 
      * Output:
-     * [A,D,E,F]
-     * [A,B,D,E,F]
-     * [A,B,C,D,E,F]
-     * [A,G,H,I]
-     * [A,B,G,H,I]
-     * [A,B,C,G,H,I]
-     * [D,A,B,C]
-     * [D,E,A,B,C]
-     * [D,E,F,A,B,C]
-     * [D,G,H,I]
-     * [D,E,G,H,I]
-     * [D,E,F,G,H,I]
-     * ...
+     * [
+     *  [A,D,E,F],
+     *  [A,B,D,E,F],
+     *  [A,B,C,D,E,F],
+     *  [A,G,H,I],
+     *  [A,B,G,H,I],
+     *  [A,B,C,G,H,I],
+     *  [D,A,B,C],
+     *  [D,E,A,B,C],
+     *  [D,E,F,A,B,C],
+     *  [D,G,H,I],
+     *  [D,E,G,H,I],
+     *  [D,E,F,G,H,I],
+     *  ...
+     * ]
      */
 
     // Flatten dialogs from models
+    // TODO: This could cause dispatch model to train on dispatching to dialogs within itself.
+    // This could be good, but also could be extra noise.
     const allTrainDialogs = modelTrainDialogs
         .reduce((a, b) => [...a, ...b])
 
-    // Ensure the filled entities of first scorer step are empty
-    const unmodifiedTrainDialogs = removeFilledEntitiesOfScorerStep(allTrainDialogs)
+    const unmodifiedTrainDialogs = Util.deepCopy(allTrainDialogs)
 
+    /**
+     * Currently only tests single transition.
+     * A to B or A to C
+     * Could try re-entry patterns: A B A
+     * Could try multi model switch: A B C
+     */
     const mixRounds = allTrainDialogs.map(t => t.rounds)
-        .map((x, i, ys) => {
-            const others = ys.filter((_, j) => j !== i)
-            return others
-                .map((other) => {
-                    // for each item in array
-                    return x.map((_, k) => {
-                        // slice array until item
-                        const first = x.slice(0, k + 1)
-                        const second = other
-                        return [...first, ...second]
-                    })
+        .map((rs, i, allDialogsRounds) => {
+            // Get rounds from dialogs other than the one being dispatched
+            const otherDialogsRounds = allDialogsRounds.filter((_, j) => j !== i)
+
+            // For each round, try to transition to one of the other dialogs
+            return otherDialogsRounds
+                .map((dialogRounds) => {
+                    return rs
+                        // Only attempt to transition within first 4 rounds
+                        // After 4, assume user will stay on task
+                        .filter((_, j) => j <= transitionRoundLimit)
+                        .map((_, k) => {
+                            // Get rounds until index
+                            const firstRounds = rs.slice(0, k + 1)
+                            // Note: always concatenates entire dialog from start
+                            const secondRounds = dialogRounds
+                            return [...firstRounds, ...secondRounds]
+                        })
                 })
                 .reduce((a, b) => [...a, ...b])
         })
         .reduce((a, b) => [...a, ...b])
 
     const mixedDialogs = mixRounds.map(rs => ({
-        tags: [],
+        tags: [`generated`],
         description: "",
         trainDialogId: uuid(),
         rounds: rs,
@@ -237,31 +290,17 @@ function generateDispatcherSource(sourceModels: SourceModel[]): AppDefinition {
         initialFilledEntities: [],
     }))
 
-    const mixedDialogsCorrected = removeFilledEntitiesOfScorerStep(mixedDialogs as unknown as TrainDialog[])
-
     const source = {
         trainDialogs: [
             ...unmodifiedTrainDialogs,
-            ...mixedDialogsCorrected
+            ...mixedDialogs
         ],
-        actions,
+        actions: sourceModelPairs.map(sm => sm.action),
         entities: [],
         packageId: uuid()
     }
 
-    return source as AppDefinition
-}
-
-function removeFilledEntitiesOfScorerStep(trainDialogs: TrainDialog[]): TrainDialog[] {
-    return Util.deepCopy(trainDialogs).map(t => {
-        t.rounds.forEach((r, rIndex) => {
-            if (rIndex === 0) {
-                r.scorerSteps[0].input.filledEntities = []
-            }
-        })
-
-        return t
-    })
+    return source as CLM.AppDefinition
 }
 
 const mapDispatchToProps = (dispatch: any) => {
