@@ -237,7 +237,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.focusNewTeachSessionButton()
         if (this.props.filteredAction) {
             this.setState({
@@ -250,7 +250,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
         }
         if (this.props.obiImportData && this.props.obiImportData.appId === this.props.app.appId) {
-            this.importOBIFiles(this.props.obiImportData)
+            await this.importOBIFiles(this.props.obiImportData)
         }
         else {
             this.handleQueryParameters(this.props.location.search)

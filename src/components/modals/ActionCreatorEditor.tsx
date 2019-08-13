@@ -557,7 +557,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             await Util.setStateAsync(this, { isTerminal: props.newActionPreset.isTerminal })
 
             // If a good card match exists switch to card view
-            const bestCard = this.bestCardMatch(props.newActionPreset.text, CARD_MATCH_THRESHOLD)
+            const bestCard = this.bestCardMatch(props.newActionPreset, CARD_MATCH_THRESHOLD)
             if (bestCard) {
                 let index = actionTypeOptions.findIndex(ao => ao.key === CLM.ActionTypes.CARD)
                 await this.onChangeActionType(actionTypeOptions[index])
@@ -1145,7 +1145,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         // If have preset text, pick the best matching card
         if (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD && this.props.newActionPreset) {
-            const bestCard = this.bestCardMatch(this.props.newActionPreset.text)
+            const bestCard = this.bestCardMatch(this.props.newActionPreset)
             if (bestCard) {
                 await this.onChangeCardOption(bestCard)
             }
@@ -1153,7 +1153,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     // Return card that best matches the given text
-    bestCardMatch(text: string, threshold: number = 0): OF.IDropdownOption | null {
+    bestCardMatch(newActionPreset: NewActionPreset, threshold: number = 0): OF.IDropdownOption | null {
         // Pre-select card that is closest matching to template
         let bestScore = 0
         let bestCard: OF.IDropdownOption | null = null
@@ -1180,7 +1180,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             }
         }
         // Try to map to generic card with right number of buttons
-        if (!bestCard && newActionPreset.buttons.length > 0 ) {
+        if (!bestCard && newActionPreset.buttons.length > 0) {
 
         }
         return bestCard

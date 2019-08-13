@@ -72,13 +72,13 @@ const appsReducer: Reducer<AppsState> = produce((state: AppsState, action: Actio
             state.selectedAppId = action.app.appId
             return
         case AT.DELETE_APPLICATION_FULFILLED:
-            state.all = state.all.filter(app => app.appId !== action.appId)
+            state.all = state.all.filter(curApp => curApp.appId !== action.appId)
             state.selectedAppId = undefined
             return
         case AT.EDIT_APPLICATION_FULFILLED:
         case AT.CREATE_APP_TAG_FULFILLED:
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:
-            state.all = replace(state.all, action.app, app => app.appId)
+            state.all = replace(state.all, action.app, curApp => curApp.appId)
             return
         case AT.EDIT_APP_EDITING_TAG_FULFILLED:
             state.activeApps = action.activeApps
