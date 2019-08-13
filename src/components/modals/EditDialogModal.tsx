@@ -1121,7 +1121,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     onCancel={this.onClickAbandonCancel}
                     onConfirm={this.onClickAbandonApprove}
                     // Don't show stop checkbox if on last item or doing OBI import
-                    showStopCheckbox={this.props.importIndex === this.props.importCount || (this.props.importingOBI || false)}
+                    allowContinue={this.props.importIndex !== this.props.importCount && !this.props.importingOBI}
                 />
                 {this.state.cantReplayMessage &&
                     <ConfirmCancelModal
