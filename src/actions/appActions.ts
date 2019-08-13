@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as ClientFactory from '../services/clientFactory'
+import { OBIImportData } from '../Utils/obiUtil'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import { ActionObject, ErrorType } from '../types'
@@ -12,7 +13,6 @@ import { AxiosError } from 'axios'
 import { Poller, IPollConfig } from '../services/poller'
 import { delay } from '../Utils/util'
 import { setUpdatedAppDefinition } from './sourceActions'
-import { OBIImportFiles } from '../Utils/obiUtil'
 
 const createApplicationAsync = (userId: string, application: CLM.AppBase): ActionObject => {
     return {
@@ -22,15 +22,15 @@ const createApplicationAsync = (userId: string, application: CLM.AppBase): Actio
     }
 }
 
-const createApplicationFulfilled = (app: CLM.AppBase, obiImportFiles?: OBIImportFiles): ActionObject => {
+const createApplicationFulfilled = (app: CLM.AppBase, obiImportData?: OBIImportData): ActionObject => {
     return {
         type: AT.CREATE_APPLICATION_FULFILLED,
         app: app,
-        obiImportFiles
+        obiImportData: obiImportData
     }
 }
 
-export const createApplicationThunkAsync = (userId: string, application: CLM.AppBase, source: CLM.AppDefinition | null = null, files?: File[]) => {
+export const createApplicationThunkAsync = (userId: string, application: CLM.AppBase, source: CLM.AppDefinition | null = null, obiImportData?: OBIImportData) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_APPLICATION_ASYNC)
         try {
@@ -41,9 +41,11 @@ export const createApplicationThunkAsync = (userId: string, application: CLM.App
             if (source) {
                 await clClient.sourcepost(newApp.appId, source)
             }
-            const obiImportFiles: OBIImportFiles | undefined = files ? { appId: newApp.appId, files} : undefined
+            if (obiImportData) {
+                obiImportData.appId = newApp.appId
+            }
 
-            dispatch(createApplicationFulfilled(newApp, obiImportFiles))
+            dispatch(createApplicationFulfilled(newApp, obiImportData))
             dispatch(fetchApplicationTrainingStatusThunkAsync(newApp.appId));
             return newApp
         }

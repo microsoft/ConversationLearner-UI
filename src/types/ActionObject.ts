@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
-import { OBIImportFiles } from '../Utils/obiUtil'
+import { OBIImportData } from '../Utils/obiUtil'
 import { PartialTrainDialog } from '../types/models'
 import { TipType } from '../components/ToolTips/ToolTips'
 import { ErrorType } from './const'
@@ -370,7 +370,7 @@ export type CreateAction = {
 } | {
     type: AT.CREATE_APPLICATION_FULFILLED,
     app: CLM.AppBase,
-    obiImportFiles?: OBIImportFiles
+    obiImportData?: OBIImportData
 } | {
     type: AT.CREATE_CHAT_SESSION_ASYNC
 } | {

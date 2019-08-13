@@ -249,8 +249,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 entityFilter: this.toEntityFilter(this.props.filteredEntity)
             })
         }
-        if (this.props.obiImportFiles && this.props.obiImportFiles.appId === this.props.app.appId) {
-            this.importOBIFiles(this.props.obiImportFiles.files)
+        if (this.props.obiImportData && this.props.obiImportData.appId === this.props.app.appId) {
+            this.importOBIFiles(this.props.obiImportData)
         }
         else {
             this.handleQueryParameters(this.props.location.search)
@@ -1044,20 +1044,19 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async importOBIFiles(files: File[] | null): Promise<void> {
-        if (files) {
-            const obiDialogParser = new OBIUtils.ObiDialogParser(this.props.app.appId)
-            const importedTrainDialogs = await obiDialogParser.getTrainDialogsFromComposer(files)
+    async importOBIFiles(obiImportData: OBIUtils.OBIImportData): Promise<void> {
 
-            await Util.setStateAsync(this, {
-                importIndex: undefined,
-                importedTrainDialogs,
-                importAutoCreate: true,
-                importAutoMerge: false
-            })
+        const obiDialogParser = new OBIUtils.ObiDialogParser(this.props.app.appId)
+        const importedTrainDialogs = await obiDialogParser.getTrainDialogsFromComposer(obiImportData.files)
 
-            await this.onImportNextTrainDialog()
-        }
+        await Util.setStateAsync(this, {
+            importIndex: undefined,
+            importedTrainDialogs,
+            importAutoCreate: obiImportData.autoCreate,
+            importAutoMerge: obiImportData.autoMerge
+        })
+
+        await this.onImportNextTrainDialog()
     }
 
     //-----------------------------
@@ -1244,12 +1243,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
 
         if (this.state.importedTrainDialogs && this.state.importedTrainDialogs.length > 0) {
-            // If I was doing an OBI import and abandoned, delete the train dialog
-            if (this.props.obiImportFiles && this.props.obiImportFiles.appId === this.props.app.appId) {
-                this.props.onDeleteApp(this.props.app.appId)
-            }
-            else if (stopImport) {
-                this.setState({ importedTrainDialogs: undefined })
+            if (stopImport) {
+                // If I was doing an OBI import and abandoned, delete the train dialog
+                if (this.props.obiImportData && this.props.obiImportData.appId === this.props.app.appId) {
+                    this.props.onDeleteApp(this.props.app.appId)
+                }
+                // Otherwise just clear dialogs to be imported
+                else {
+                    this.setState({ importedTrainDialogs: undefined })
+                }
             }
             else {
                 await this.onImportNextTrainDialog()
@@ -1642,7 +1644,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     allUniqueTags={this.props.allUniqueTags}
                     importIndex={this.state.importIndex}
                     importCount={this.state.importedTrainDialogs ? this.state.importedTrainDialogs.length : undefined}
-                    importingOBI={this.props.obiImportFiles && this.props.obiImportFiles.appId === this.props.app.appId}
+                    importingOBI={this.props.obiImportData && this.props.obiImportData.appId === this.props.app.appId}
                 />
                 <ProgressModal
                     open={this.state.replayDialogs.length > 0}
@@ -1803,7 +1805,7 @@ const mapStateToProps = (state: State) => {
         trainDialogs: state.trainDialogs,
         teachSession: state.teachSession,
         settings: state.settings,
-        obiImportFiles: state.apps.obiImportFiles,
+        obiImportData: state.apps.obiImportData,
         // Get all tags from all train dialogs then put in Set to get unique tags
         allUniqueTags: [...new Set(state.trainDialogs.reduce((tags, trainDialog) => [...tags, ...trainDialog.tags], []))]
     }

@@ -13,6 +13,7 @@ import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import { User, AppCreatorType } from '../../types'
 import { autobind } from 'core-decorators';
+import { OBIImportData } from 'src/Utils/obiUtil';
 
 export interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: CLM.AppBase, props: Props) => JSX.Element
@@ -129,7 +130,7 @@ interface Props extends InjectedIntlProps {
     onClickImportDemoApps: () => void
 
     onClickImportOBI: () => void
-    onSubmitImportOBI: (app: CLM.AppBase, files: File[], autoImport: boolean, autoMerge: boolean) => void
+    onSubmitImportOBI: (app: CLM.AppBase, obiImportData: OBIImportData) => void
 
     isImportTutorialsOpen: boolean
     tutorials: CLM.AppBase[]

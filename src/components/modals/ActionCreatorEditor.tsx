@@ -1159,13 +1159,29 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         let bestCard: OF.IDropdownOption | null = null
         for (let cardOption of this.state.cardOptions) {
             const template = this.props.botInfo.templates.find(t => t.name === cardOption.key)
+            if (!template) {
+                continue
+            }
+            const templateButtonCount = template.variables.filter(v => v.type === "Action.Submit").length
+            if (templateButtonCount !== newActionPreset.buttons.length) {
+                continue
+            }
             const score = (template && template.body)
-                ? compareTwoStrings(text, template.body)
+                ? compareTwoStrings(newActionPreset.text, template.body)
                 : 0
             if (score > threshold && score > bestScore) {
                 bestScore = score
                 bestCard = cardOption
             }
+            else if (Util.isTemplateTitleGeneric(template)) {
+                if (templateButtonCount === newActionPreset.buttons.length) {
+                    bestCard = cardOption
+                }
+            }
+        }
+        // Try to map to generic card with right number of buttons
+        if (!bestCard && newActionPreset.buttons.length > 0 ) {
+
         }
         return bestCard
     }

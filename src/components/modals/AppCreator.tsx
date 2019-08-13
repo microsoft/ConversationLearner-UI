@@ -17,6 +17,7 @@ import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators';
+import { OBIImportData } from 'src/Utils/obiUtil';
 
 interface ComponentState {
     appNameVal: string
@@ -24,7 +25,7 @@ interface ComponentState {
     localeOptions: OF.IDropdownOption[]
     clFile: File | null
     obiFiles: File[] | null
-    autoImport: boolean
+    autoCreate: boolean
     autoMerge: boolean
 }
 
@@ -35,7 +36,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
         localeOptions: [],
         clFile: null,
         obiFiles: null,
-        autoImport: true,
+        autoCreate: true,
         autoMerge: true
     }
 
@@ -91,7 +92,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
     @autobind
     onChangeAutoImport() {
         this.setState({
-            autoImport: !this.state.autoImport
+            autoCreate: !this.state.autoCreate
         })
     }
 
@@ -129,9 +130,15 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickCreateOBI() {
-        if (this.props.onSubmitOBI && !this.onGetNameErrorMessage(this.state.appNameVal).length) {
+        if (this.props.onSubmitOBI && this.state.obiFiles && !this.onGetNameErrorMessage(this.state.appNameVal).length) {
             const appInput = this.getAppInput()
-            this.props.onSubmitOBI(appInput, this.state.obiFiles, this.state.autoImport, this.state.autoMerge)
+            const obiImportData: OBIImportData = {
+                appId: "",
+                files: this.state.obiFiles,
+                autoCreate: this.state.autoCreate,
+                autoMerge: this.state.autoMerge
+            }
+            this.props.onSubmitOBI(appInput, obiImportData)
         }   
     }
 
@@ -346,7 +353,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             </div>
                             <OF.Checkbox
                                 label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_AUTOIMPORT)}
-                                checked={this.state.autoImport}
+                                checked={this.state.autoCreate}
                                 onChange={this.onChangeAutoImport}
                             />
                             <OF.Checkbox
@@ -431,7 +438,7 @@ export interface ReceivedProps {
     open: boolean
     creatorType: AppCreatorType
     onSubmit: (app: Partial<CLM.AppBase>, source?: CLM.AppDefinition) => void
-    onSubmitOBI?: (app: Partial<CLM.AppBase>, files: File[] | null, autoImport: boolean, autoMerge: boolean) => void
+    onSubmitOBI?: (app: Partial<CLM.AppBase>, obiImportData: OBIImportData) => void
     onCancel: () => void
 }
 

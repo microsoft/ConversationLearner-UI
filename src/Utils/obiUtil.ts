@@ -26,9 +26,11 @@ export async function toTranscripts(
     return Promise.all(appDefinition.trainDialogs.map(td => getHistory(appId, td, user, definitions, fetchHistoryAsync)))
 }
 
-export interface OBIImportFiles {
+export interface OBIImportData {
     appId: string,
-    files: File[]
+    files: File[],
+    autoCreate: boolean,
+    autoMerge: boolean
 }
 
 export interface LGItem {

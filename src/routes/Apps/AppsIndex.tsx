@@ -17,6 +17,7 @@ import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
 import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
+import { OBIImportData } from 'src/Utils/obiUtil';
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
@@ -53,10 +54,10 @@ class AppsIndex extends React.Component<Props> {
         this.props.deleteApplicationThunkAsync(appToDelete.appId)
     }
 
-    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null, files?: File[]) => {
-        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source, files) as any as Promise<AppBase>)
+    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null, obiImportData?: OBIImportData) => {
+        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source, obiImportData) as any as Promise<AppBase>)
         const { match, history } = this.props
-        history.push(`${match.url}/${app.appId}${files ? "/trainDialogs" : ""}`, { app })
+        history.push(`${match.url}/${app.appId}${obiImportData ? "/trainDialogs" : ""}`, { app })
     }
 
     onImportTutorial = (tutorial: AppBase) => {

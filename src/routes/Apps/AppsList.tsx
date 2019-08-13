@@ -9,6 +9,7 @@ import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { OBIImportData } from '../../Utils/obiUtil'
 import { fetchTutorialsThunkAsync } from '../../actions/appActions'
 import { CL_IMPORT_TUTORIALS_USER_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
@@ -105,10 +106,10 @@ class AppsList extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onSubmitImportOBI(app: CLM.AppBase, files: File[]): Promise<void> {
+    async onSubmitImportOBI(app: CLM.AppBase, obiImportData: OBIImportData): Promise<void> {
         this.setState({
             isAppCreateModalOpen: false
-        }, () => this.props.onCreateApp(app, null, files))
+        }, () => this.props.onCreateApp(app, null, obiImportData))
     }
 
     render() {
@@ -159,7 +160,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     apps: CLM.AppBase[]
-    onCreateApp: (app: Partial<CLM.AppBase>, source: CLM.AppDefinition | null, files?: File[]) => void
+    onCreateApp: (app: Partial<CLM.AppBase>, source: CLM.AppDefinition | null, obiImportData?: OBIImportData) => void
     onClickDeleteApp: (app: CLM.AppBase) => void
     onImportTutorial: (tutorial: CLM.AppBase) => void
 }
