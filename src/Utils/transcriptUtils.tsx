@@ -184,7 +184,7 @@ export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityM
 }
 
 // Return hash text for the given activity
-export function hashTextFromActivity(activity: BB.Activity, entities: CLM.EntityBase[], filledEntities: CLM.FilledEntity[] | undefined) : string {
+export function hashTextFromActivity(activity: BB.Activity, entities: CLM.EntityBase[], filledEntities: CLM.FilledEntity[] | undefined): string {
 
     // If an API placeholder user the action name
     if (activity.channelData && activity.channelData.type === "ActionCall") {

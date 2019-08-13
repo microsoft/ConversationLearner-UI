@@ -13,7 +13,8 @@ import produce from 'immer'
 const initialState: AppsState = {
     all: [],
     activeApps: {},
-    selectedAppId: undefined
+    selectedAppId: undefined,
+    obiImportFiles: undefined
 };
 
 const appsReducer: Reducer<AppsState> = produce((state: AppsState, action: ActionObject) => {
@@ -65,6 +66,7 @@ const appsReducer: Reducer<AppsState> = produce((state: AppsState, action: Actio
         case AT.CREATE_APPLICATION_FULFILLED:
             state.all.push(action.app)
             state.selectedAppId = action.app.appId
+            state.obiImportFiles = action.obiImportFiles
             return
         case AT.SET_CURRENT_APP_FULFILLED:
             state.selectedAppId = action.app.appId

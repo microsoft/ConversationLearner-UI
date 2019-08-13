@@ -12,6 +12,7 @@ import { AxiosError } from 'axios'
 import { Poller, IPollConfig } from '../services/poller'
 import { delay } from '../Utils/util'
 import { setUpdatedAppDefinition } from './sourceActions'
+import { OBIImportFiles } from '../Utils/obiUtil'
 
 const createApplicationAsync = (userId: string, application: CLM.AppBase): ActionObject => {
     return {
@@ -21,14 +22,15 @@ const createApplicationAsync = (userId: string, application: CLM.AppBase): Actio
     }
 }
 
-const createApplicationFulfilled = (app: CLM.AppBase): ActionObject => {
+const createApplicationFulfilled = (app: CLM.AppBase, obiImportFiles?: OBIImportFiles): ActionObject => {
     return {
         type: AT.CREATE_APPLICATION_FULFILLED,
-        app: app
+        app: app,
+        obiImportFiles
     }
 }
 
-export const createApplicationThunkAsync = (userId: string, application: CLM.AppBase, source: CLM.AppDefinition | null = null) => {
+export const createApplicationThunkAsync = (userId: string, application: CLM.AppBase, source: CLM.AppDefinition | null = null, files?: File[]) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_APPLICATION_ASYNC)
         try {
@@ -39,7 +41,9 @@ export const createApplicationThunkAsync = (userId: string, application: CLM.App
             if (source) {
                 await clClient.sourcepost(newApp.appId, source)
             }
-            dispatch(createApplicationFulfilled(newApp))
+            const obiImportFiles: OBIImportFiles | undefined = files ? { appId: newApp.appId, files} : undefined
+
+            dispatch(createApplicationFulfilled(newApp, obiImportFiles))
             dispatch(fetchApplicationTrainingStatusThunkAsync(newApp.appId));
             return newApp
         }

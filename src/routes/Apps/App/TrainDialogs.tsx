@@ -16,7 +16,6 @@ import * as BB from 'botbuilder'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
-import OBIImporter from '../../../components/modals/OBIImporter'
 import TranscriptImporter from '../../../components/modals/TranscriptImporter'
 import TranscriptImportWaitModal from '../../../components/modals/TranscriptImportWaitModal'
 import ProgressModal from '../../../components/modals/ProgressModal'
@@ -154,7 +153,6 @@ interface ComponentState {
     isTeachDialogModalOpen: boolean
     isEditDialogModalOpen: boolean
     isTranscriptImportOpen: boolean
-    isOBIImportOpen: boolean
     isImportWaitModalOpen: boolean
     importIndex: number | undefined
     importedTrainDialogs: CLM.TrainDialog[] | undefined
@@ -188,6 +186,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     newTeachSessionButtonRef = React.createRef<OF.IButton>()
     state: ComponentState
 
+    private selection: OF.ISelection = new OF.Selection({
+        getKey: getDialogKey,
+        onSelectionChanged: this.onSelectionChanged
+    })
+
     constructor(props: Props) {
         super(props)
         const columns = getColumns(this.props.intl)
@@ -209,7 +212,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isTeachDialogModalOpen: false,
             isEditDialogModalOpen: false,
             isTranscriptImportOpen: false,
-            isOBIImportOpen: false,
             isImportWaitModalOpen: false,
             importIndex: undefined,
             importedTrainDialogs: undefined,
@@ -247,7 +249,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 entityFilter: this.toEntityFilter(this.props.filteredEntity)
             })
         }
-        this.handleQueryParameters(this.props.location.search)
+        if (this.props.obiImportFiles && this.props.obiImportFiles.appId === this.props.app.appId) {
+            this.importOBIFiles(this.props.obiImportFiles.files)
+        }
+        else {
+            this.handleQueryParameters(this.props.location.search)
+        }
     }
 
     UNSAFE_componentWillReceiveProps(newProps: Props) {
@@ -350,11 +357,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     : compareValue * -1
             })
     }
-
-    private selection: OF.ISelection = new OF.Selection({
-        getKey: getDialogKey,
-        onSelectionChanged: this.onSelectionChanged
-    })
 
     @autobind
     onSelectionChanged() {
@@ -1042,17 +1044,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onClickImportOBI(): void {
-        this.setState({
-            isOBIImportOpen: true
-        })
-    }
-
-    @autobind
-    async onCloseImportOBI(files: File[] | null): Promise<void> {
-        await Util.setStateAsync(this, {
-            isOBIImportOpen: false
-        })
+    async importOBIFiles(files: File[] | null): Promise<void> {
         if (files) {
             const obiDialogParser = new OBIUtils.ObiDialogParser(this.props.app.appId)
             const importedTrainDialogs = await obiDialogParser.getTrainDialogsFromComposer(files)
@@ -1436,17 +1428,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
                         />
                     }
-                    {this.props.settings.features && this.props.settings.features.indexOf("CCI") >= 0 &&
-                        <OF.DefaultButton
-                            iconProps={{
-                                iconName: "DownloadDocument"
-                            }}
-                            disabled={isEditingDisabled}
-                            onClick={this.onClickImportOBI}
-                            ariaDescription={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}
-                            text={"OBI"}//LARS
-                        />
-                    }
                     {this.state.isTreeViewModalOpen ?
                         <OF.DefaultButton
                             className="cl-rotate"
@@ -1596,8 +1577,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                             />}
                     </React.Fragment>}
 
-
-
                 {teachSession && teachSession.teach &&
                     <TeachSessionModal
                         isOpen={this.state.isTeachDialogModalOpen}
@@ -1672,13 +1651,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         app={this.props.app}
                         open={true}
                         onClose={this.onCloseImportTranscripts}
-                    />
-                }
-                {this.state.isOBIImportOpen &&
-                    <OBIImporter
-                        app={this.props.app}
-                        open={true}
-                        onClose={this.onCloseImportOBI}
                     />
                 }
                 {this.state.isImportWaitModalOpen && this.state.importIndex &&
@@ -1826,6 +1798,7 @@ const mapStateToProps = (state: State) => {
         trainDialogs: state.trainDialogs,
         teachSession: state.teachSession,
         settings: state.settings,
+        obiImportFiles: state.apps.obiImportFiles,
         // Get all tags from all train dialogs then put in Set to get unique tags
         allUniqueTags: [...new Set(state.trainDialogs.reduce((tags, trainDialog) => [...tags, ...trainDialog.tags], []))]
     }

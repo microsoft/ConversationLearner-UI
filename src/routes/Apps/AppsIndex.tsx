@@ -53,10 +53,10 @@ class AppsIndex extends React.Component<Props> {
         this.props.deleteApplicationThunkAsync(appToDelete.appId)
     }
 
-    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
-        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
+    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null, files?: File[]) => {
+        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source, files) as any as Promise<AppBase>)
         const { match, history } = this.props
-        history.push(`${match.url}/${app.appId}`, { app })
+        history.push(`${match.url}/${app.appId}${files ? "/trainDialogs" : ""}`, { app })
     }
 
     onImportTutorial = (tutorial: AppBase) => {

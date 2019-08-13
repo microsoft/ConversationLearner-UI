@@ -3,20 +3,20 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { AppCreator as AppCreatorModal, TutorialImporterModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react'
-import { AppBase, AppDefinition } from '@conversationlearner/models'
+import * as Util from '../../Utils/util'
+import * as moment from 'moment'
+import * as CLM from '@conversationlearner/models'
 import FormattedMessageId from '../../components/FormattedMessageId'
+import { AppCreator as AppCreatorModal, TutorialImporterModal } from '../../components/modals'
 import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import * as Util from '../../Utils/util'
 import { User, AppCreatorType } from '../../types'
-import * as moment from 'moment'
 import { autobind } from 'core-decorators';
 
 export interface ISortableRenderableColumn extends OF.IColumn {
-    render: (app: AppBase, props: Props) => JSX.Element
-    getSortValue: (app: AppBase) => number | string
+    render: (app: CLM.AppBase, props: Props) => JSX.Element
+    getSortValue: (app: CLM.AppBase) => number | string
 }
 
 function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
@@ -114,12 +114,13 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
 
 interface Props extends InjectedIntlProps {
     user: User
-    apps: AppBase[]
+    apps: CLM.AppBase[]
+    canImportOBI: boolean,
     activeApps: { [appId: string]: string }
-    onClickApp: (app: AppBase) => void
+    onClickApp: (app: CLM.AppBase) => void
 
     isAppCreateModalOpen: boolean
-    onSubmitAppCreateModal: (app: AppBase, source: AppDefinition | undefined) => void
+    onSubmitAppCreateModal: (app: CLM.AppBase, source: CLM.AppDefinition | undefined) => void
     onCancelAppCreateModal: () => void
     appCreatorType: AppCreatorType
 
@@ -127,10 +128,13 @@ interface Props extends InjectedIntlProps {
     onClickImportApp: () => void
     onClickImportDemoApps: () => void
 
+    onClickImportOBI: () => void
+    onSubmitImportOBI: (app: CLM.AppBase, files: File[], autoImport: boolean, autoMerge: boolean) => void
+
     isImportTutorialsOpen: boolean
-    tutorials: AppBase[]
+    tutorials: CLM.AppBase[]
     onCloseImportNotification: () => void
-    onImportTutorial: (tutorial: AppBase) => void
+    onImportTutorial: (tutorial: CLM.AppBase) => void
 }
 
 interface ComponentState {
@@ -168,7 +172,7 @@ export class Component extends React.Component<Props, ComponentState> {
         }
     }
 
-    getSortedApplications(sortColumn: ISortableRenderableColumn, apps: AppBase[]): AppBase[] {
+    getSortedApplications(sortColumn: ISortableRenderableColumn, apps: CLM.AppBase[]): CLM.AppBase[] {
         let sortedApps = apps
         if (sortColumn) {
             // Sort the items.
@@ -240,6 +244,14 @@ export class Component extends React.Component<Props, ComponentState> {
                                 iconProps={{ iconName: 'CloudDownload' }}
                             />
                         }
+                        {this.props.canImportOBI &&
+                            <OF.DefaultButton
+                                onClick={props.onClickImportOBI}
+                                ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTOBI_BUTTONARIADESCRIPTION)}
+                                text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTOBI_BUTTONTEXT)}
+                                iconProps={{ iconName: 'CloudDownload' }}
+                            />
+                    }
                     </div>
                     {apps.length === 0
                         ? <div className="cl-page-placeholder">
@@ -266,7 +278,7 @@ export class Component extends React.Component<Props, ComponentState> {
                             items={apps}
                             columns={this.state.columns}
                             checkboxVisibility={OF.CheckboxVisibility.hidden}
-                            onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                            onRenderRow={(myProps, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(myProps)}</div>}
                             onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
                             onColumnHeaderClick={this.onClickColumnHeader}
                             onItemInvoked={app => this.props.onClickApp(app)}
@@ -274,6 +286,7 @@ export class Component extends React.Component<Props, ComponentState> {
                     <AppCreatorModal
                         open={props.isAppCreateModalOpen}
                         onSubmit={props.onSubmitAppCreateModal}
+                        onSubmitOBI={props.onSubmitImportOBI}
                         onCancel={props.onCancelAppCreateModal}
                         creatorType={props.appCreatorType}
                     />

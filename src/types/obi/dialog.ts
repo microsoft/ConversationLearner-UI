@@ -150,7 +150,7 @@ export interface Coordinate {
      *
      * Step to execute if condition is true.
      */
-    steps?: Array<OBIDialog | string>;
+    steps?: (OBIDialog | string)[];
     /**
      * Always will always consult parent dialogs first, never will not consult parent dialogs,
      * notRecognized will consult parent only when it's not recognized
@@ -311,7 +311,7 @@ export interface Coordinate {
     /**
      * Step to execute if condition is false.
      */
-    elseSteps?: Array<OBIDialog | string>;
+    elseSteps?: (OBIDialog | string)[]
     /**
      * type of value to set the property to, object or array.
      */
@@ -369,7 +369,7 @@ export interface Coordinate {
     /**
      * Step to execute if no case is equal to condition
      */
-    default?: Array<OBIDialog | string>;
+    default?: (OBIDialog | string)[]
     /**
      * Name of the trace activity
      */
@@ -426,7 +426,7 @@ export interface MicrosoftIRule {
     /**
      * Sequence of steps or dialogs to execute
      */
-    steps?: Array<OBIDialog | string>;
+    steps?: (OBIDialog | string)[]
     /**
      * Events to trigger this rule for
      */
@@ -572,7 +572,7 @@ export interface OBIDialog {
      *
      * Step to execute if condition is true.
      */
-    steps?: Array<OBIDialog | string>;
+    steps?: (OBIDialog | string)[]
     /**
      * Always will always consult parent dialogs first, never will not consult parent dialogs,
      * notRecognized will consult parent only when it's not recognized
@@ -725,7 +725,7 @@ export interface OBIDialog {
     /**
      * Step to execute if condition is false.
      */
-    elseSteps?: Array<OBIDialog | string>;
+    elseSteps?: (OBIDialog | string)[]
     /**
      * type of value to set the property to, object or array.
      */
@@ -760,7 +760,7 @@ export interface OBIDialog {
     /**
      * Step to execute if no case is equal to condition
      */
-    default?: Array<OBIDialog | string>;
+    default?: (OBIDialog | string)[]
     /**
      * Name of the trace activity
      */
@@ -775,7 +775,7 @@ export interface Case {
     /**
      * Steps to execute if case is equal to condition
      */
-    steps?: Array<OBIDialog | string>;
+    steps?: (OBIDialog | string)[]
     /**
      * Value which must match the condition property
      */

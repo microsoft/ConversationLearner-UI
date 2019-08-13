@@ -4,7 +4,8 @@
  */
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
-import * as Utils from '../../Utils/util'
+import * as Util from '../../Utils/util'
+import * as CLM from '@conversationlearner/models'
 import actions from '../../actions'
 import FormattedMessageId from '../FormattedMessageId'
 import { returntypeof } from 'react-redux-typescript'
@@ -15,15 +16,16 @@ import { State, ErrorType, AppCreatorType } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { AppInput } from '../../types/models'
-import { AppDefinition } from '@conversationlearner/models'
 import { autobind } from 'core-decorators';
 
 interface ComponentState {
     appNameVal: string
     localeVal: string
     localeOptions: OF.IDropdownOption[]
-    file: File | null
+    clFile: File | null
+    obiFiles: File[] | null
+    autoImport: boolean
+    autoMerge: boolean
 }
 
 class AppCreator extends React.Component<Props, ComponentState> {
@@ -31,7 +33,10 @@ class AppCreator extends React.Component<Props, ComponentState> {
         appNameVal: '',
         localeVal: '',
         localeOptions: [],
-        file: null,
+        clFile: null,
+        obiFiles: null,
+        autoImport: true,
+        autoMerge: true
     }
 
     private fileInput: any
@@ -50,14 +55,15 @@ class AppCreator extends React.Component<Props, ComponentState> {
         })
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps: Props) {
+    componentDidUpdate(prevProps: Props) {
         // Reset when opening modal
-        if (this.props.open === false && nextProps.open === true) {
+        if (this.props.open === false && prevProps.open === true) {
             const firstValue = this.state.localeOptions[0].text
             this.setState({
                 appNameVal: '',
                 localeVal: firstValue,
-                file: null
+                clFile: null,
+                obiFiles: null
             })
         }
     }
@@ -76,12 +82,32 @@ class AppCreator extends React.Component<Props, ComponentState> {
         })
     }
 
+    onChangeOBIFiles = (files: any) => {
+        this.setState({
+            obiFiles: files
+        })
+    }
+
+    @autobind
+    onChangeAutoImport() {
+        this.setState({
+            autoImport: !this.state.autoImport
+        })
+    }
+
+    @autobind
+    onChangeAutoMerge() {
+        this.setState({
+            autoMerge: !this.state.autoMerge
+        })
+    }
+
     @autobind
     onClickCancel() {
         this.props.onCancel()
     }
 
-    getAppInput(): AppInput {
+    getAppInput(): Partial<CLM.AppBase> {
         return {
             appName: this.state.appNameVal.trim(),
             locale: this.state.localeVal,
@@ -101,6 +127,14 @@ class AppCreator extends React.Component<Props, ComponentState> {
         }
     }
 
+    @autobind
+    onClickCreateOBI() {
+        if (this.props.onSubmitOBI && !this.onGetNameErrorMessage(this.state.appNameVal).length) {
+            const appInput = this.getAppInput()
+            this.props.onSubmitOBI(appInput, this.state.obiFiles, this.state.autoImport, this.state.autoMerge)
+        }   
+    }
+
     // TODO: Refactor to use default form submission instead of manually listening for keys
     // Also has benefit of native browser validation for required fields
     @autobind
@@ -111,7 +145,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
             this.onClickCreate()
         }
 
-        if (this.props.creatorType === AppCreatorType.IMPORT && event.key === 'Enter' && this.state.appNameVal && this.state.file) {
+        if (this.props.creatorType === AppCreatorType.IMPORT && event.key === 'Enter' && this.state.appNameVal && this.state.clFile) {
             this.onClickImport()
         }
     }
@@ -121,41 +155,41 @@ class AppCreator extends React.Component<Props, ComponentState> {
         const MAX_NAME_LENGTH = 30
 
         if (value.length === 0) {
-            return Utils.formatMessageId(intl, FM.FIELDERROR_REQUIREDVALUE)
+            return Util.formatMessageId(intl, FM.FIELDERROR_REQUIREDVALUE)
         }
 
         if (value.length > MAX_NAME_LENGTH) {
-            return Utils.formatMessageId(intl, FM.FIELDERROR_MAX_30)
+            return Util.formatMessageId(intl, FM.FIELDERROR_MAX_30)
         }
 
         if (!/^[a-zA-Z0-9- ]+$/.test(value)) {
-            return Utils.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_ALPHANUMERIC)
+            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_ALPHANUMERIC)
         }
 
         if (!value.trim().length) {
-            return Utils.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_ALPHANUMERIC)
+            return Util.formatMessageId(intl, FM.APPCREATOR_FIELDERROR_ALPHANUMERIC)
         }
 
         // Check that name isn't in use
         if (this.props.apps.find(a => a.appName === value)) {
-            return Utils.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
+            return Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
         }
 
         return ""
     }
 
     onGetPasswordErrorMessage(value: string): string {
-        return value ? "" : Utils.formatMessageId(this.props.intl, FM.FIELDERROR_REQUIREDVALUE)
+        return value ? "" : Util.formatMessageId(this.props.intl, FM.FIELDERROR_REQUIREDVALUE)
     }
 
-    onChangeFile = (files: any) => {
+    onChangeImportFile = (files: any) => {
         this.setState({
-            file: files[0]
+            clFile: files[0]
         })
     }
 
     onClickImport = () => {
-        if (!this.state.file) {
+        if (!this.state.clFile) {
             console.warn(`You clicked import before a file was selected. This should not be possible. Contact support`)
             return
         }
@@ -166,7 +200,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 if (typeof reader.result !== 'string') {
                     throw new Error("String Expected")
                 }
-                const source = JSON.parse(reader.result) as AppDefinition
+                const source = JSON.parse(reader.result) as CLM.AppDefinition
                 const appInput = this.getAppInput();
                 this.props.onSubmit(appInput, source)
             }
@@ -175,7 +209,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", AT.CREATE_APPLICATION_ASYNC)
             }
         }
-        reader.readAsText(this.state.file)
+        reader.readAsText(this.state.clFile)
     }
 
     getTitle(): React.ReactNode {
@@ -189,6 +223,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
             case AppCreatorType.COPY:
                 return (
                     <FormattedMessageId id={FM.APPCREATOR_COPY_TITLE} />)
+            case AppCreatorType.OBI:
+                return (
+                    <FormattedMessageId id={FM.APPCREATOR_OBI_TITLE} />)
             default:
                 throw new Error(`Could not get title for unknown app creator type: ${this.props.creatorType}`)
         }
@@ -196,15 +233,28 @@ class AppCreator extends React.Component<Props, ComponentState> {
 
     getLabel(intl: ReactIntl.InjectedIntl): string {
         return (this.props.creatorType !== AppCreatorType.NEW) ?
-            Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL)
+            Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL)
             :
-            Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_NAME_LABEL)
+            Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_NAME_LABEL)
     }
 
+    isSubmitDisabled(): boolean {
+        const invalidName = this.onGetNameErrorMessage(this.state.appNameVal) !== ""
+        if (invalidName) {
+            return true
+        }
+
+        switch (this.props.creatorType) {
+            case AppCreatorType.OBI:
+                return this.state.obiFiles === null
+            case AppCreatorType.IMPORT:
+                return this.state.clFile === null
+            default:
+                return true
+        }
+    }
     render() {
         const { intl } = this.props
-        const invalidName = this.onGetNameErrorMessage(this.state.appNameVal) !== ""
-        const invalidImport = invalidName || this.state.file === null
         return (
             <OF.Modal
                 isOpen={this.props.open}
@@ -223,14 +273,14 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                         onChange={this.onChangeName}
                         label={this.getLabel(intl)}
-                        placeholder={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER)}
+                        placeholder={Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER)}
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal}
                     />
                     {this.props.creatorType === AppCreatorType.NEW &&
                         <OF.Dropdown
-                            ariaLabel={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
-                            label={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
+                            ariaLabel={Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
+                            label={Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
                             defaultSelectedKey={this.state.localeVal}
                             options={this.state.localeOptions}
                             onChange={this.onChangeLocale}
@@ -244,7 +294,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                             <input
                                 type="file"
                                 style={{ display: 'none' }}
-                                onChange={(event) => this.onChangeFile(event.target.files)}
+                                onChange={(event) => this.onChangeImportFile(event.target.files)}
                                 ref={ele => (this.fileInput = ele)}
                                 multiple={false}
                             />
@@ -252,19 +302,59 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                 <OF.PrimaryButton
                                     data-testid="model-creator-locate-file-button"
                                     className="cl-file-picker-button"
-                                    ariaDescription={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION)}
-                                    text={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT)}
+                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_ARIADESCRIPTION)}
+                                    text={Util.formatMessageId(this.props.intl, FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT)}
                                     iconProps={{ iconName: 'DocumentSearch' }}
                                     onClick={() => this.fileInput.click()}
                                 />
                                 <OF.TextField
                                     disabled={true}
-                                    value={this.state.file
-                                        ? this.state.file.name
+                                    value={this.state.clFile
+                                        ? this.state.clFile.name
                                         : ''}
                                 />
                             </div>
                         </div>
+                    }
+                    {this.props.creatorType === AppCreatorType.OBI &&
+                        <>
+                            <input
+                                type="file"
+                                style={{ display: 'none' }}
+                                onChange={(event) => this.onChangeOBIFiles(event.target.files)}
+                                ref={ele => (this.fileInput = ele)}
+                                multiple={true}
+                            />
+                            <div className="cl-file-picker">
+                                <OF.PrimaryButton
+                                    data-testid="transcript-locate-file-button"
+                                    className="cl-file-picker-button"
+                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_SELECT_FILES)} 
+                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_SELECT_FILES)} 
+                                    iconProps={{ iconName: 'DocumentSearch' }}
+                                    onClick={() => this.fileInput.click()}
+                                />
+                                <OF.TextField
+                                    disabled={true}
+                                    value={!this.state.obiFiles 
+                                        ? undefined
+                                        : this.state.obiFiles.length === 1
+                                        ? this.state.obiFiles[0].name 
+                                        : `${this.state.obiFiles.length} files selected`
+                                    }
+                                />
+                            </div>
+                            <OF.Checkbox
+                                label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_AUTOIMPORT)}
+                                checked={this.state.autoImport}
+                                onChange={this.onChangeAutoImport}
+                            />
+                            <OF.Checkbox
+                                label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_AUTOMERGE)}
+                                checked={this.state.autoMerge}
+                                onChange={this.onChangeAutoMerge}
+                            />
+                        </>
                     }
                 </div>
                 <div className='cl-modal_footer'>
@@ -273,39 +363,49 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         <div className="cl-modal-buttons_primary">
                             {this.props.creatorType === AppCreatorType.IMPORT &&
                                 <OF.PrimaryButton
-                                    disabled={invalidImport}
+                                    disabled={this.isSubmitDisabled()}
                                     data-testid="model-creator-submit-button"
                                     onClick={this.onClickImport}
-                                    ariaDescription={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION)}
-                                    text={Utils.formatMessageId(this.props.intl, FM.APPCREATOR_IMPORT_BUTTON_TEXT)}
+                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION)}
+                                    text={Util.formatMessageId(this.props.intl, FM.APPCREATOR_IMPORT_BUTTON_TEXT)}
                                     iconProps={{ iconName: 'Accept' }}
                                 />
                             }
-                            {this.props.creatorType === AppCreatorType.NEW &&
+                            {this.props.creatorType === AppCreatorType.OBI &&
                                 <OF.PrimaryButton
-                                    disabled={invalidName}
+                                    disabled={this.isSubmitDisabled()}
+                                    data-testid="model-creator-submit-button"
+                                    onClick={this.onClickCreateOBI}
+                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION)}
+                                    text={Util.formatMessageId(this.props.intl, FM.APPCREATOR_IMPORT_BUTTON_TEXT)}
+                                    iconProps={{ iconName: 'Accept' }}
+                                />
+                            }
+                            {this.props.creatorType === AppCreatorType.NEW  &&
+                                <OF.PrimaryButton
+                                    disabled={this.isSubmitDisabled()}
                                     data-testid="model-creator-submit-button"
                                     onClick={this.onClickCreate}
-                                    ariaDescription={Utils.formatMessageId(intl, FM.BUTTON_CREATE)}
-                                    text={Utils.formatMessageId(intl, FM.BUTTON_CREATE)}
+                                    ariaDescription={Util.formatMessageId(intl, FM.BUTTON_CREATE)}
+                                    text={Util.formatMessageId(intl, FM.BUTTON_CREATE)}
                                     iconProps={{ iconName: 'Accept' }}
                                 />
                             }
                             {this.props.creatorType === AppCreatorType.COPY &&
                                 <OF.PrimaryButton
-                                    disabled={invalidName}
+                                    disabled={this.isSubmitDisabled()}
                                     data-testid="model-creator-submit-button"
                                     onClick={this.onClickCreate}
-                                    ariaDescription={Utils.formatMessageId(intl, FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION)}
-                                    text={Utils.formatMessageId(intl, FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION)}
+                                    ariaDescription={Util.formatMessageId(intl, FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION)}
+                                    text={Util.formatMessageId(intl, FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION)}
                                     iconProps={{ iconName: 'Accept' }}
                                 />
                             }
                             <OF.DefaultButton
                                 data-testid="model-creator-cancel-button"
                                 onClick={this.onClickCancel}
-                                ariaDescription={Utils.formatMessageId(intl, FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION)}
-                                text={Utils.formatMessageId(intl, FM.APPCREATOR_CANCELBUTTON_TEXT)}
+                                ariaDescription={Util.formatMessageId(intl, FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION)}
+                                text={Util.formatMessageId(intl, FM.APPCREATOR_CANCELBUTTON_TEXT)}
                                 iconProps={{ iconName: 'Cancel' }}
                             />
                         </div>
@@ -330,7 +430,8 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     open: boolean
     creatorType: AppCreatorType
-    onSubmit: (app: AppInput, source?: AppDefinition) => void
+    onSubmit: (app: Partial<CLM.AppBase>, source?: CLM.AppDefinition) => void
+    onSubmitOBI?: (app: Partial<CLM.AppBase>, files: File[] | null, autoImport: boolean, autoMerge: boolean) => void
     onCancel: () => void
 }
 
