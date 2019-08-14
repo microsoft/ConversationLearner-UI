@@ -16,8 +16,6 @@ describe('Disqualifying Entities - Train', () => {
   let generatedScoreActionsData = new scorerModal.GeneratedData('disqualifyingEntities.json')
 
   context('Setup', () => {
-    generatedScoreActionsData.LoadGeneratedData()
-
     it('Should import a model to test against, navigate to Train Dialogs view and wait for training status to complete', () => {
       models.ImportModel('z-disqualifyngEnt', 'z-disqualifyngEnt.cl')
       modelPage.NavigateToTrainDialogs()
@@ -38,13 +36,6 @@ describe('Disqualifying Entities - Train', () => {
 
       generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
 
-      // it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
-      //   scorerModal.VerifyContainsEnabledAction(common.whatsYourName)
-      //   scorerModal.VerifyContainsDisabledAction('Hey $name')
-      //   scorerModal.VerifyContainsDisabledAction('Hey $name, what do you really want?')
-      //   scorerModal.VerifyContainsDisabledAction("Sorry $name, I can't help you get $want")
-      // })
-
       it('Should select an action', () => {
         train.SelectTextAction(common.whatsYourName)
       })
@@ -63,13 +54,6 @@ describe('Disqualifying Entities - Train', () => {
 
       generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
 
-      // it('Should verify the Action list contains 2 enabled and 2 disabled Actions', () => {
-      //   scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-      //   scorerModal.VerifyContainsEnabledAction('Hey Sam')
-      //   scorerModal.VerifyContainsEnabledAction('Hey Sam, what do you really want?')
-      //   scorerModal.VerifyContainsDisabledAction("Sorry Sam, I can't help you get $want")
-      // })
-
       it('Should select an action', () => {
         train.SelectTextAction('Hey Sam', 'Hey $name')
       })
@@ -86,13 +70,6 @@ describe('Disqualifying Entities - Train', () => {
       })
     
       generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
-
-      // it('Should verify the Action list contains 2 enabled and 2 disabled Actions', () => {
-      //   scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-      //   scorerModal.VerifyContainsEnabledAction('Hey Sam')
-      //   scorerModal.VerifyContainsEnabledAction('Hey Sam, what do you really want?')
-      //   scorerModal.VerifyContainsDisabledAction("Sorry Sam, I can't help you get $want")
-      // })
 
       it('Should select an action', () => {
         train.SelectTextAction('Hey Sam, what do you really want?', 'Hey $name, what do you really want?')
@@ -114,13 +91,6 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
-
-      // it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
-      //   scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-      //   scorerModal.VerifyContainsDisabledAction('Hey Sam')
-      //   scorerModal.VerifyContainsDisabledAction('Hey Sam, what do you really want?')
-      //   scorerModal.VerifyContainsEnabledAction("Sorry Sam, I can't help you get world peace")
-      // })
 
       it('Should select an action', () => {
         train.SelectTextAction("Sorry Sam, I can't help you get world peace", "Sorry $name, I can't help you get $want")
@@ -146,13 +116,6 @@ describe('Disqualifying Entities - Train', () => {
 
       generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
 
-      // it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
-      //   scorerModal.VerifyContainsEnabledAction(common.whatsYourName)
-      //   scorerModal.VerifyContainsDisabledAction('Hey $name')
-      //   scorerModal.VerifyContainsDisabledAction('Hey $name, what do you really want?')
-      //   scorerModal.VerifyContainsDisabledAction("Sorry $name, I can't help you get a million dollars")
-      // })
-
       it('Should select an action', () => {
         train.SelectTextAction(common.whatsYourName)
       })
@@ -166,13 +129,6 @@ describe('Disqualifying Entities - Train', () => {
       })
 
       generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
-      
-      // it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
-      //   scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-      //   scorerModal.VerifyContainsDisabledAction('Hey Sandeep')
-      //   scorerModal.VerifyContainsDisabledAction('Hey Sandeep, what do you really want?')
-      //   scorerModal.VerifyContainsEnabledAction("Sorry Sandeep, I can't help you get a million dollars")
-      // })
 
       it('Should select an action', () => {
         train.SelectTextAction("Sorry Sandeep, I can't help you get a million dollars", "Sorry $name, I can't help you get $want")
@@ -182,9 +138,8 @@ describe('Disqualifying Entities - Train', () => {
         train.SaveAsIsVerifyInGrid()
       })
     })
-
-    generatedScoreActionsData.SaveGeneratedData()
   })
 
+  generatedScoreActionsData.SaveGeneratedData()
   // Manually EXPORT this to fixtures folder and name it 'z-disqualifyngEnt.Trained.cl'
 })

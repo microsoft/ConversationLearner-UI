@@ -88,7 +88,8 @@ export function VerifyNoEnabledSelectActionButtons() {
   })
 }
 
-export function VerifyScoreActions(expectedScoreActions) {
+// acceptableScoreDeviation is a percentage that we can allow the score to deviate and be exceptable.
+export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviation = 10) {
   const funcName = 'VerifyScoreActions'
   let expectedScoreAction
   let errorMessages = []
@@ -140,19 +141,20 @@ export function VerifyScoreActions(expectedScoreActions) {
       // Verify the score.
       FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
         const score = helpers.TextContentWithoutNewlines(elements[0])
+        const acceptableDeviation = acceptableScoreDeviation * 10
 
         if (score.endsWith('%') && expectedScoreAction.score.endsWith('%')) {
           const actualScore = +score.replace(/(\.|%)/gm, '')
           const expectedScore = +expectedScoreAction.score.replace(/(\.|%)/gm, '')
           helpers.ConLog(funcName, `actualScore: ${actualScore} - expectedScore: ${expectedScore}`)
-          if (actualScore < expectedScore - 100 || actualScore > expectedScore + 100) {
-            AccumulateErrors(`Expected to find a score within 10% of '${expectedScoreAction.score}' but instead found this '${score}'`)
+          if (actualScore < expectedScore - acceptableDeviation || actualScore > expectedScore + acceptableDeviation) {
+            AccumulateErrors(`Expected to find a score within ${acceptableScoreDeviation}% of '${expectedScoreAction.score}' but instead found '${score}'`)
           }
           return
         }
 
         if (score != expectedScoreAction.score) {
-          AccumulateErrors(`Expected to find a score with '${expectedScoreAction.score}' but instead found this '${score}'`)
+          AccumulateErrors(`Expected to find a score with '${expectedScoreAction.score}' but instead found '${score}'`)
         }
       })
 
@@ -301,20 +303,21 @@ export class GeneratedData {
   constructor(dataFileName) {
     this.dataFileName = dataFileName
     this.generateScoreActionsData = Cypress.env('GENERATE_SCORE_ACTIONS_DATA')
-  }
 
-  LoadGeneratedData() {
     if (this.generateScoreActionsData) {
       this.data = []
     } else {
-      it('Read the generated Score Actions data from a JSON file', () => {
-        cy.readFile(`cypress/fixtures/scoreActions/${this.dataFileName}`).then(scoreActionsData => this.data = scoreActionsData)
+      context('Load Generated Verification Data', () => {
+        it('Read the generated Score Actions data from a JSON file', () => {
+          cy.readFile(`cypress/fixtures/scoreActions/${this.dataFileName}`).then(scoreActionsData => this.data = scoreActionsData)
+        })
+        this.index = 0
       })
-      this.index = 0
     }
   }
-  
-  VerifyScoreActionsListOrGenerateData() {
+
+  // acceptableScoreDeviation is a percentage that we can allow the score to deviate and be exceptable.
+  VerifyScoreActionsListOrGenerateData(acceptableScoreDeviation = 10) {
     if (this.generateScoreActionsData) {
       it('GENERATE the Score Actions data', () => {
         cy.wait(2000)
@@ -322,14 +325,14 @@ export class GeneratedData {
       })
     } else {
       it('Verify the Score Actions data', () => {
-        cy.WaitForStableDOM().then(() => VerifyScoreActions(this.data[this.index++]))
+        cy.WaitForStableDOM().then(() => VerifyScoreActions(this.data[this.index++], acceptableScoreDeviation))
       })
     }
   }
 
   SaveGeneratedData() {
     if (this.generateScoreActionsData) {
-      context('PERSIST GENERATED DATA', () => {
+      context('SAVE GENERATED VERIFICATION DATA', () => {
         it('Write the generated Score Actions data to a JSON file', () => {
           cy.writeFile(`cypress/fixtures/scoreActions/${this.dataFileName}`, this.data)
         })
