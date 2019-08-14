@@ -15,6 +15,11 @@ export function generateDispatcherSource(
      * - modelName for display
      */
     sourceModelPairs.forEach(smp => {
+        // If object already has action associated, don't create new one
+        if (smp.action) {
+            return
+        }
+
         const dispatchPayload: CLM.DispatchPayload = {
             modelId: smp.model.appId,
             modelName: smp.model.appName

@@ -15,6 +15,7 @@ import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { AxiosError } from 'axios'
 import { setErrorDisplay } from './displayActions'
 import { EntityLabelConflictError } from '../types/errors'
+import { ActionTypes } from '@conversationlearner/models';
 
 // --------------------------
 // CreateTrainDialog
@@ -274,10 +275,9 @@ export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
     }
 }
 
-const regenerateDispatchDialogsAsync = (modelIds: string[]): ActionObject => {
+const regenerateDispatchDialogsAsync = (): ActionObject => {
     return {
         type: AT.REGENERATE_DISPATCH_DIALOGS_ASYNC,
-        modelIds
     }
 }
 
@@ -288,23 +288,30 @@ const regenerateDispatchDialogsFulfilled = (trainDialogs: CLM.TrainDialog[]): Ac
     }
 }
 
-export const regenerateDispatchTrainDialogsAsync = (modelIds: string[]) => {
+export const regenerateDispatchTrainDialogsAsync = (actions: CLM.ActionBase[]) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.REGENERATE_DISPATCH_DIALOGS_ASYNC)
-        dispatch(regenerateDispatchDialogsAsync(modelIds))
+        dispatch(regenerateDispatchDialogsAsync())
 
         try {
-            const sourceModelPairs = await Promise.all(modelIds.map<Promise<SourceAndModelPair>>(async mId => {
-                const model = await clClient.appGet(mId)
-                const appDefinitionChange = await clClient.source(model.appId, model.devPackageId)
+            // Associate existing DISPATCH actions with sources model pairs instead of regenerating those
+            // need to preserve the ID's 
+            const sourceModelPairs = await Promise.all(actions
+                .filter(a => a.actionType === ActionTypes.DISPATCH)
+                .map<Promise<SourceAndModelPair>>(async a => {
+                    const dispatchAction = new CLM.DispatchAction(a)
 
-                return {
-                    model,
-                    // Assume all models have been updated...
-                    source: appDefinitionChange.currentAppDefinition,
-                    action: undefined
-                }
-            }))
+                    // TODO: Might be able to skip loading models since we don't need them.
+                    const model = await clClient.appGet(dispatchAction.modelId)
+                    // TODO: Throw error if models needed upgrade
+                    const appDefinitionChange = await clClient.source(model.appId, model.devPackageId)
+
+                    return {
+                        model,
+                        source: appDefinitionChange.currentAppDefinition,
+                        action: a,
+                    }
+                }))
 
             const dispatcherSource = DispatchUtils.generateDispatcherSource(sourceModelPairs)
 
@@ -319,7 +326,8 @@ export const regenerateDispatchTrainDialogsAsync = (modelIds: string[]) => {
                     ? JSON.stringify(error.response, null, '  ')
                     : "",
                 AT.REGENERATE_DISPATCH_DIALOGS_ASYNC))
-            return null
+
+            return []
         }
     }
 }

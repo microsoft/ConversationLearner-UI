@@ -34,6 +34,7 @@ import './TrainDialogs.css'
 import { autobind } from 'core-decorators';
 import { DispatchInfo } from 'src/types/models';
 
+
 export interface EditHandlerArgs {
     userInput?: string,
     extractResponse?: CLM.ExtractResponse,
@@ -1072,18 +1073,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onClickRegen(dispatchInfo?: DispatchInfo) {
-        if (!dispatchInfo) {
-            console.warn(`User should not be able to click "Regenerate" if there is no dispatch info`)
-            return
-        }
-
+    async onClickRegen() {
         await Util.setStateAsync(this, {
             isRegenActive: true,
         })
 
-        const modelIds = dispatchInfo.models.map(([modelId, modelName]) => modelId)
-        const trainDialogs = await this.props.regenerateDispatchTrainDialogsAsync(modelIds)
+        const trainDialogs = await this.props.regenerateDispatchTrainDialogsAsync(this.props.actions)
+
         console.log({ trainDialogs })
 
         this.setState({
@@ -1486,7 +1482,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                                 iconName: "Refresh"
                             }}
                             disabled={this.state.isRegenActive}
-                            onClick={(j) => this.onClickRegen(dispatchInfo)}
+                            onClick={this.onClickRegen}
                             ariaDescription={Util.formatMessageId(intl, FM.BUTTON_REGENERATE, { selectionCount: this.state.selectionCount })}
                             text={Util.formatMessageId(intl, FM.BUTTON_REGENERATE, { selectionCount: this.state.selectionCount })}
                         />
