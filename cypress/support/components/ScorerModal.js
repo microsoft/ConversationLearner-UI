@@ -27,6 +27,60 @@ export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyAct
 export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-selected"]', false) }
 
 
+// To VALIDATE All of the Data in the Score Actions Grid use this class.
+// 1) Manually verify that the data in each Score Actions grid for each chat turn that the test suite will verify.
+// 2) Generate and persist the data by running the test with the following environment variable:
+//      set CYPRESS_GENERATE_SCORE_ACTIONS_DATA=true
+//    Doing this will generate a file in the "cypress/fixtures/scoreActions" folder that will be used in #3
+// 3) Clear out that environment variable and run the tests as usual. They will grab the generated test data
+//    and use it during validations that use the VerifyScoreActionsListOrGenerateData() function.
+//
+// See existing test cases that already use this class as an example to follow.
+
+export class GeneratedData {
+  constructor(dataFileName) {
+    this.dataFileName = dataFileName
+    this.generateScoreActionsData = Cypress.env('GENERATE_SCORE_ACTIONS_DATA')
+
+    if (this.generateScoreActionsData) {
+      this.data = []
+    } else {
+      context('Load Generated Verification Data', () => {
+        it('Read the generated Score Actions data from a JSON file', () => {
+          cy.readFile(`cypress/fixtures/scoreActions/${this.dataFileName}`).then(scoreActionsData => this.data = scoreActionsData)
+        })
+        this.index = 0
+      })
+    }
+  }
+
+  // In some cases the score deviates significantly and that is not considered an error. For those pass in 
+  // acceptableScoreDeviation as the percentage points that we can allow the score to deviate and still be acceptable.
+  VerifyScoreActionsListOrGenerateData(acceptableScoreDeviation = 10) {
+    if (this.generateScoreActionsData) {
+      it('GENERATE the Score Actions data', () => {
+        cy.wait(2000)
+        cy.WaitForStableDOM().then(() => { this.data.push(GenerateScoreActionsDataFromGrid()) })
+      })
+    } else {
+      it('Verify the Score Actions data', () => {
+        cy.WaitForStableDOM().then(() => VerifyScoreActions(this.data[this.index++], acceptableScoreDeviation))
+      })
+    }
+  }
+
+  SaveGeneratedData() {
+    if (this.generateScoreActionsData) {
+      context('SAVE GENERATED VERIFICATION DATA', () => {
+        it('Write the generated Score Actions data to a JSON file', () => {
+          cy.writeFile(`cypress/fixtures/scoreActions/${this.dataFileName}`, this.data)
+        })
+      })
+    }    
+  }
+}
+
+
 export function FindActionRowElements(selector, expectedData) {
   helpers.ConLog('FindActionRowElements', `selector: '${selector}' - expectedData: '${expectedData}'`)
 
@@ -88,7 +142,8 @@ export function VerifyNoEnabledSelectActionButtons() {
   })
 }
 
-// acceptableScoreDeviation is a percentage that we can allow the score to deviate and be exceptable.
+// In some cases the score deviates significantly and that is not considered an error. For those pass in 
+// acceptableScoreDeviation as the percentage points that we can allow the score to deviate and still be acceptable.
 export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviation = 10) {
   const funcName = 'VerifyScoreActions'
   let expectedScoreAction
@@ -297,46 +352,4 @@ export function GenerateScoreActionsDataFromGrid() {
   }
   
   return generatedData
-}
-
-export class GeneratedData {
-  constructor(dataFileName) {
-    this.dataFileName = dataFileName
-    this.generateScoreActionsData = Cypress.env('GENERATE_SCORE_ACTIONS_DATA')
-
-    if (this.generateScoreActionsData) {
-      this.data = []
-    } else {
-      context('Load Generated Verification Data', () => {
-        it('Read the generated Score Actions data from a JSON file', () => {
-          cy.readFile(`cypress/fixtures/scoreActions/${this.dataFileName}`).then(scoreActionsData => this.data = scoreActionsData)
-        })
-        this.index = 0
-      })
-    }
-  }
-
-  // acceptableScoreDeviation is a percentage that we can allow the score to deviate and be exceptable.
-  VerifyScoreActionsListOrGenerateData(acceptableScoreDeviation = 10) {
-    if (this.generateScoreActionsData) {
-      it('GENERATE the Score Actions data', () => {
-        cy.wait(2000)
-        cy.WaitForStableDOM().then(() => { this.data.push(GenerateScoreActionsDataFromGrid()) })
-      })
-    } else {
-      it('Verify the Score Actions data', () => {
-        cy.WaitForStableDOM().then(() => VerifyScoreActions(this.data[this.index++], acceptableScoreDeviation))
-      })
-    }
-  }
-
-  SaveGeneratedData() {
-    if (this.generateScoreActionsData) {
-      context('SAVE GENERATED VERIFICATION DATA', () => {
-        it('Write the generated Score Actions data to a JSON file', () => {
-          cy.writeFile(`cypress/fixtures/scoreActions/${this.dataFileName}`, this.data)
-        })
-      })
-    }    
-  }
 }
