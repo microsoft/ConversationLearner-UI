@@ -11,12 +11,8 @@ export interface App extends CLM.AppBase {
 export interface SourceAndModelPair {
     source: CLM.AppDefinition,
     model: CLM.AppBase,
-    action: any | undefined, // ActionBase source,
-}
-
-export type DispatchInfo = {
-    type: 'dispatcher',
-    models: [string, string][]
+    // ActionBase or source, only care about ID for consistent labelAction 
+    action: any | undefined,
 }
 
 export type PartialTrainDialog = Pick<CLM.TrainDialog, "trainDialogId" | "tags" | "description"> & Partial<CLM.TrainDialog>

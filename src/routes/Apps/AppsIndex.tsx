@@ -16,7 +16,7 @@ import * as CLM from '@conversationlearner/models'
 import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
 import { OBIImportData } from '../../Utils/obiUtils'
 import * as DispatchUtils from '../../Utils/dispatchUtils'
-import { SourceAndModelPair, DispatchInfo } from '../../types/models'
+import { SourceAndModelPair } from '../../types/models'
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
@@ -64,27 +64,7 @@ class AppsIndex extends React.Component<Props> {
             throw new Error(`Must only select 5 or less models when creating a Dispatcher Model`)
         }
 
-        /**
-         * Need to add data indicating model is dispatcher and depends on other models for re-generation
-         * Currently overload markdown, but should be separate dedicated, strong typed fields in future.
-         * Originally tried to make it readable, but also interpretable. Newlines were collapsed so using JSON
-         * 
-         * Example:
-         * {
-         *  "type": "dispatcher",
-         *  "models": [
-         *      ['6ed9b965-611f-4949-af64-d84b4c43c610', 'Model Name 1'],
-         *      ['57f34a81-a88b-4804-8a29-f2c0429f9250', 'Model Other Name 2']
-         *      ...
-         *      ['d88b3850-ac9d-4805-a3c9-80216bf9cbfb', 'Model Last Name N']
-         *  ]
-         * }
-         */
-        const dispatchInfo: DispatchInfo = {
-            type: 'dispatcher',
-            models: childrenModels.map(m => [m.appId, m.appName])
-        }
-        appToCreate.metadata.markdown = JSON.stringify(dispatchInfo)
+        appToCreate.metadata.markdown = 'Dispatcher'
 
         /**
          * Fetch source and associate with each model

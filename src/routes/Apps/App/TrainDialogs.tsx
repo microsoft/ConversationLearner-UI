@@ -33,8 +33,7 @@ import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import './TrainDialogs.css'
 import { autobind } from 'core-decorators';
-import { DispatchInfo } from 'src/types/models';
-
+import { ActionTypes } from '@conversationlearner/models';
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -146,37 +145,6 @@ const defaultEntityFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.forma
 const defaultActionFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_ACTIONS) })
 const defaultTagFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
 const getDialogKey = (trainDialog: OF.IObjectWithKey) => (trainDialog as CLM.TrainDialog).trainDialogId
-
-/**
- * If metadata string contains dispatch info, return list of model id and name pairs
- * otherwise, return undefined
- * Example: dispatcher 0dd100e3-6b04-4c7f-b602-1e73f69337e5,pizzaOrder 5dd2adcc-06d6-4f1f-a71c-6c23d7044b3f,uberBooking
- * [[0dd100e3-6b04-4c7f-b602-1e73f69337e5, pizzaOrder], [5dd2adcc-06d6-4f1f-a71c-6c23d7044b3f, uberBooking]]
- * 
- * @param metadata App Metadata
- */
-const getDispatchInfo = (metadata: string | undefined): DispatchInfo | undefined => {
-    if (!metadata) {
-        return undefined
-    }
-
-    try {
-        const dispatcherJson = JSON.parse(metadata)
-
-        // Markdown could be anything, including other JSON. If it has type of `dispatcher` assume it's correct.
-        if (dispatcherJson.type !== 'dispatcher') {
-            return undefined
-        }
-
-        return dispatcherJson
-    }
-    catch (e) {
-        const error: Error = e
-        console.warn(`Error when attempting to parse dispatch info from app metadata. ${error.message}`)
-
-        return undefined
-    }
-}
 
 interface ComponentState {
     columns: IRenderableColumn[]
@@ -1447,8 +1415,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         const isEditingDisabled = (this.props.editingPackageId !== this.props.app.devPackageId) || this.props.invalidBot
 
-        const dispatchInfo = getDispatchInfo(this.props.app.metadata.markdown)
-        const isDispatchModel = Boolean(dispatchInfo)
+        // Assume if app has DISPATCH actions, it must be dispatcher model
+        const isDispatchModel = this.props.actions.some(a => a.actionType === ActionTypes.DISPATCH)
 
         return (
             <div className="cl-page">
