@@ -32,6 +32,7 @@ import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import './TrainDialogs.css'
 import { autobind } from 'core-decorators';
+import { DispatchInfo } from 'src/types/models';
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -152,13 +153,27 @@ const getDialogKey = (trainDialog: OF.IObjectWithKey) => (trainDialog as CLM.Tra
  * 
  * @param metadata App Metadata
  */
-const getDispatchInfo = (metadata: string): [string, string][] | undefined => {
-    if (!metadata.includes('dispatcher')) {
+const getDispatchInfo = (metadata: string | undefined): DispatchInfo | undefined => {
+    if (!metadata) {
         return undefined
     }
 
-    const [, ...modelStrings] = metadata.split('\n')
-    return modelStrings.map(m => m.split(',') as [string, string])
+    try {
+        const dispatcherJson = JSON.parse(metadata)
+
+        // Markdown could be anything, including other JSON. If it has type of `dispatcher` assume it's correct.
+        if (dispatcherJson.type !== 'dispatcher') {
+            return undefined
+        }
+
+        return dispatcherJson
+    }
+    catch (e) {
+        const error: Error = e
+        console.warn(`Error when attempting to parse dispatch info from app metadata. ${error.message}`)
+
+        return undefined
+    }
 }
 
 interface ComponentState {
@@ -1057,7 +1072,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onClickRegen(dispatchInfo?: [string, string][]) {
+    async onClickRegen(dispatchInfo?: DispatchInfo) {
         if (!dispatchInfo) {
             console.warn(`User should not be able to click "Regenerate" if there is no dispatch info`)
             return
@@ -1067,11 +1082,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isRegenActive: true,
         })
 
-        const modelIds = dispatchInfo.map(([modelId, modelName]) => modelId)
-        const trainDialogs = await Promise.all(modelIds.map(modelId => this.props.fetchAllTrainDialogsThunkAsync(modelId)))
+        const modelIds = dispatchInfo.models.map(([modelId, modelName]) => modelId)
+        const trainDialogs = await this.props.regenerateDispatchTrainDialogsAsync(modelIds)
         console.log({ trainDialogs })
-
-        await Util.delay(3000)
 
         this.setState({
             isRegenActive: false,
@@ -1403,8 +1416,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         const isEditingDisabled = (this.props.editingPackageId !== this.props.app.devPackageId) || this.props.invalidBot
 
-        const dispatchInfo = getDispatchInfo(this.props.app.metadata.markdown || '')
-        const isDispatchModel = Array.isArray(dispatchInfo)
+        const dispatchInfo = getDispatchInfo(this.props.app.metadata.markdown)
+        const isDispatchModel = Boolean(dispatchInfo)
 
         return (
             <div className="cl-page">
@@ -1800,7 +1813,7 @@ const mapDispatchToProps = (dispatch: any) => {
         extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
-        fetchAllTrainDialogsThunkAsync: actions.train.fetchAllTrainDialogsThunkAsync,
+        regenerateDispatchTrainDialogsAsync: actions.train.regenerateDispatchTrainDialogsAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         fetchExtractionsThunkAsync: actions.app.fetchExtractionsThunkAsync,
         trainDialogMergeThunkAsync: actions.train.trainDialogMergeThunkAsync,

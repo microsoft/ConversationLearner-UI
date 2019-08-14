@@ -6,10 +6,11 @@ import * as CLM from '@conversationlearner/models'
 import * as ClientFactory from '../services/clientFactory'
 import * as Client from '../services/client'
 import * as DialogUtils from '../Utils/dialogUtils'
+import * as DispatchUtils from '../Utils/dispatchUtils'
 import { ActionObject, ErrorType } from '../types'
 import { AT } from '../types/ActionTypes'
 import { Dispatch } from 'redux'
-import { PartialTrainDialog } from '../types/models'
+import { PartialTrainDialog, SourceAndModelPair } from '../types/models'
 import { fetchApplicationTrainingStatusThunkAsync } from './appActions'
 import { AxiosError } from 'axios'
 import { setErrorDisplay } from './displayActions'
@@ -269,6 +270,56 @@ export const fetchAllTrainDialogsThunkAsync = (appId: string) => {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_TRAIN_DIALOGS_ASYNC))
             return null;
+        }
+    }
+}
+
+const regenerateDispatchDialogsAsync = (modelIds: string[]): ActionObject => {
+    return {
+        type: AT.REGENERATE_DISPATCH_DIALOGS_ASYNC,
+        modelIds
+    }
+}
+
+const regenerateDispatchDialogsFulfilled = (trainDialogs: CLM.TrainDialog[]): ActionObject => {
+    return {
+        type: AT.REGENERATE_DISPATCH_DIALOGS_FULFILLED,
+        trainDialogs
+    }
+}
+
+export const regenerateDispatchTrainDialogsAsync = (modelIds: string[]) => {
+    return async (dispatch: Dispatch<any>) => {
+        const clClient = ClientFactory.getInstance(AT.REGENERATE_DISPATCH_DIALOGS_ASYNC)
+        dispatch(regenerateDispatchDialogsAsync(modelIds))
+
+        try {
+            const sourceModelPairs = await Promise.all(modelIds.map<Promise<SourceAndModelPair>>(async mId => {
+                const model = await clClient.appGet(mId)
+                const appDefinitionChange = await clClient.source(model.appId, model.devPackageId)
+
+                return {
+                    model,
+                    // Assume all models have been updated...
+                    source: appDefinitionChange.currentAppDefinition,
+                    action: undefined
+                }
+            }))
+
+            const dispatcherSource = DispatchUtils.generateDispatcherSource(sourceModelPairs)
+
+            dispatch(regenerateDispatchDialogsFulfilled(dispatcherSource.trainDialogs))
+            return dispatcherSource.trainDialogs
+        } catch (e) {
+            const error = e as AxiosError
+            dispatch(setErrorDisplay(
+                ErrorType.Error,
+                error.message,
+                error.response
+                    ? JSON.stringify(error.response, null, '  ')
+                    : "",
+                AT.REGENERATE_DISPATCH_DIALOGS_ASYNC))
+            return null
         }
     }
 }

@@ -14,6 +14,11 @@ export interface SourceAndModelPair {
     action: any | undefined, // ActionBase source,
 }
 
+export type DispatchInfo = {
+    type: 'dispatcher',
+    models: [string, string][]
+}
+
 export interface AppInput {
     appName: string
     locale: string
