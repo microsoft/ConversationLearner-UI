@@ -5,18 +5,18 @@
 import * as React from 'react'
 import { AppCreator as AppCreatorModal, TutorialImporterModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react'
-import { AppBase, AppDefinition } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import FormattedMessageId from '../../components/FormattedMessageId'
 import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import * as Util from '../../Utils/util'
-import { User, AppCreatorType } from '../../types'
+import { User, AppCreatorType, FeatureStrings } from '../../types'
 import * as moment from 'moment'
 import { autobind } from 'core-decorators';
 
 export interface ISortableRenderableColumn extends OF.IColumn {
-    render: (app: AppBase, props: Props) => JSX.Element
-    getSortValue: (app: AppBase) => number | string
+    render: (app: CLM.AppBase, props: Props) => JSX.Element
+    getSortValue: (app: CLM.AppBase) => number | string
 }
 
 function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
@@ -114,23 +114,27 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
 
 interface Props extends InjectedIntlProps {
     user: User
-    apps: AppBase[]
+    apps: CLM.AppBase[]
     activeApps: { [appId: string]: string }
-    onClickApp: (app: AppBase) => void
+    onClickApp: (app: CLM.AppBase) => void
+    selection: OF.ISelection
+    featuresString: string
+    selectionCount: number
 
     isAppCreateModalOpen: boolean
-    onSubmitAppCreateModal: (app: AppBase, source: AppDefinition | undefined) => void
+    onSubmitAppCreateModal: (app: CLM.AppBase, source: CLM.AppDefinition | undefined) => void
     onCancelAppCreateModal: () => void
     appCreatorType: AppCreatorType
 
     onClickCreateNewApp: () => void
     onClickImportApp: () => void
     onClickImportDemoApps: () => void
+    onClickCreateNewDispatcherModel: () => void
 
     isImportTutorialsOpen: boolean
-    tutorials: AppBase[]
+    tutorials: CLM.AppBase[]
     onCloseImportNotification: () => void
-    onImportTutorial: (tutorial: AppBase) => void
+    onImportTutorial: (tutorial: CLM.AppBase) => void
 }
 
 interface ComponentState {
@@ -141,6 +145,8 @@ interface ComponentState {
 const ifStringReturnLowerCase = (s: string | number) => {
     return (typeof s === "string") ? s.toLowerCase() : s
 }
+
+const getModelKey = (model: OF.IObjectWithKey) => (model as CLM.AppBase).appId
 
 export class Component extends React.Component<Props, ComponentState> {
     constructor(props: Props) {
@@ -168,7 +174,7 @@ export class Component extends React.Component<Props, ComponentState> {
         }
     }
 
-    getSortedApplications(sortColumn: ISortableRenderableColumn, apps: AppBase[]): AppBase[] {
+    private getSortedApplications(sortColumn: ISortableRenderableColumn, apps: CLM.AppBase[]): CLM.AppBase[] {
         let sortedApps = apps
         if (sortColumn) {
             // Sort the items.
@@ -208,7 +214,8 @@ export class Component extends React.Component<Props, ComponentState> {
 
     render() {
         const props = this.props
-        const apps = this.getSortedApplications(this.state.sortColumn, props.apps);
+        const computedApps = this.getSortedApplications(this.state.sortColumn, this.props.apps)
+        const isDispatcherFeaturesEnabled = this.props.featuresString.includes(FeatureStrings.DISPATCHER)
 
         return <div className="cl-o-app-columns">
             <div className="cl-app_content">
@@ -231,6 +238,7 @@ export class Component extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONTEXT)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
+
                         {!Util.isDemoAccount(props.user.id) &&
                             <OF.DefaultButton
                                 data-testid="model-list-import-tutorials-button"
@@ -240,8 +248,20 @@ export class Component extends React.Component<Props, ComponentState> {
                                 iconProps={{ iconName: 'CloudDownload' }}
                             />
                         }
+                        {isDispatcherFeaturesEnabled
+                            && (
+                                <OF.DefaultButton
+                                    data-testid="model-list-button-create-dispatcher"
+                                    disabled={this.props.selectionCount < 2}
+                                    onClick={props.onClickCreateNewDispatcherModel}
+                                    ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION)}
+                                    text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONTEXT, { selectionCount: this.props.selectionCount })}
+                                    iconProps={{ iconName: 'Add' }}
+                                />
+                            )}
+
                     </div>
-                    {apps.length === 0
+                    {computedApps.length === 0
                         ? <div className="cl-page-placeholder">
                             <div className="cl-page-placeholder__content">
                                 <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>{Util.formatMessageId(props.intl, FM.APPSLIST_EMPTY_TEXT)}</div>
@@ -263,9 +283,14 @@ export class Component extends React.Component<Props, ComponentState> {
                         </div>
                         : <OF.DetailsList
                             className={OF.FontClassNames.mediumPlus}
-                            items={apps}
+                            items={computedApps}
+                            getKey={getModelKey}
+                            setKey="selectionKey"
                             columns={this.state.columns}
-                            checkboxVisibility={OF.CheckboxVisibility.hidden}
+                            selection={this.props.selection}
+                            checkboxVisibility={isDispatcherFeaturesEnabled
+                                ? OF.CheckboxVisibility.onHover
+                                : OF.CheckboxVisibility.hidden}
                             onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
                             onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
                             onColumnHeaderClick={this.onClickColumnHeader}

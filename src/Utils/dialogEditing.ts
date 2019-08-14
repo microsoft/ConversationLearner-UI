@@ -6,6 +6,7 @@
 import * as CLM from '@conversationlearner/models'
 import * as Util from './util'
 import * as DialogUtils from './dialogUtils'
+import * as TranscriptUtils from './transcriptUtils'
 import { Activity } from 'botframework-directlinejs'
 import { SelectionType, User } from '../types'
 import { EditDialogType } from '../components/modals';
@@ -230,7 +231,7 @@ export async function onChangeAction(
         if (oldTrainScorerStep.importText) {
             // Substitue entityIds back into import text to build import hash lookup
             const filledEntityIdMap = DialogUtils.filledEntityIdMap(trainScorerStep.input.filledEntities, entities)
-            const importText = DialogUtils.importTextWithEntityIds(oldTrainScorerStep.importText, filledEntityIdMap)
+            const importText = TranscriptUtils.importTextWithEntityIds(oldTrainScorerStep.importText, filledEntityIdMap)
             importHash = Util.hashText(importText)
         }
         // If replacing placeholder action
@@ -252,12 +253,12 @@ export async function onChangeAction(
                 await editActionThunkAsync(appId, newAction)
 
                 // Test if new lookup can be used on any other imported actions
-                DialogUtils.replaceImportActions(replayedDialog, [...actions, newAction], entities)
+                TranscriptUtils.replaceImportActions(replayedDialog, [...actions, newAction], entities)
             }
         }
         else {
             // Attempt to replace import actions with real actions
-            DialogUtils.replaceImportActions(replayedDialog, actions, entities)
+            TranscriptUtils.replaceImportActions(replayedDialog, actions, entities)
         }
     }
     return replayedDialog
@@ -290,7 +291,7 @@ export async function onChangeExtraction(
 
     // If importing attempt to replace any stub actions
     if (editType === EditDialogType.IMPORT) {
-        DialogUtils.replaceImportActions(replayedDialog, actions, entities)
+        TranscriptUtils.replaceImportActions(replayedDialog, actions, entities)
     }
 
     return replayedDialog

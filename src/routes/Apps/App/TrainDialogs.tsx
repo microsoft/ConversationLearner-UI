@@ -24,7 +24,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { returntypeof } from 'react-redux-typescript'
 import { State, ErrorType } from '../../../types'
-import { SelectionType } from '../../../types/const'
+import { SelectionType, FeatureStrings } from '../../../types/const'
 import { TeachSessionModal, EditDialogModal, EditDialogType, EditState, MergeModal } from '../../../components/modals'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
@@ -1059,21 +1059,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         await this.onStartTranscriptImport()
     }
 
-    // LARS todo move to utils
-    readFileAsync(file: File): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.onload = (e: Event) => {
-                resolve(reader.result as any);
-            };
-
-            reader.onerror = reject;
-
-            reader.readAsText(file);
-        })
-    }
-
     @autobind
     async onStartTranscriptImport() {
         if (!this.state.transcriptFiles || this.state.transcriptFiles.length === 0) {
@@ -1090,7 +1075,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const transcriptFile = this.state.transcriptFiles[this.state.transcriptIndex]
         this.setState({ transcriptIndex: this.state.transcriptIndex + 1 })
 
-        let source = await this.readFileAsync(transcriptFile)
+        let source = await Util.readFileAsync(transcriptFile)
         try {
             const sourceJson = JSON.parse(source)
             await this.onImport(sourceJson)
@@ -1149,7 +1134,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         DialogUtils.cleanTrainDialog(newTrainDialog)
 
         // Try to map action again now that we have entities
-        DialogUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
+        TranscriptUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
 
         await Util.setStateAsync(this, {
             originalTrainDialog: newTrainDialog
@@ -1400,7 +1385,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         componentRef={this.newTeachSessionButtonRef}
                         iconProps={{ iconName: 'Add' }}
                     />
-                    {this.props.settings.features && this.props.settings.features.indexOf("CCI") >= 0 &&
+                    {this.props.settings.features && this.props.settings.features.toLowerCase().includes(FeatureStrings.CCI.toLowerCase()) &&
                         <OF.DefaultButton
                             iconProps={{
                                 iconName: "DownloadDocument"

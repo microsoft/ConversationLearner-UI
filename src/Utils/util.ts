@@ -233,6 +233,20 @@ export const getSetEntityActionsFromEnumEntity = (entity: CLM.EntityBase): CLM.A
     })
 }
 
+export function readFileAsync(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+    
+        reader.onload = (e: Event) => {
+            resolve(reader.result as any);
+        };
+    
+        reader.onerror = reject;
+    
+        reader.readAsText(file);
+    })
+}
+
 // Calculate a 32 bit FNV-1a hash
 // Ref.: http://isthe.com/chongo/tech/comp/fnv/
 export function hashText(text: string) {

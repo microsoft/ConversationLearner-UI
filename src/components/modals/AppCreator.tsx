@@ -189,6 +189,9 @@ class AppCreator extends React.Component<Props, ComponentState> {
             case AppCreatorType.COPY:
                 return (
                     <FormattedMessageId id={FM.APPCREATOR_COPY_TITLE} />)
+            case AppCreatorType.DISPATCHER:
+                return (
+                    <FormattedMessageId id={FM.APPCREATOR_DISPATCHER_TITLE} />)
             default:
                 throw new Error(`Could not get title for unknown app creator type: ${this.props.creatorType}`)
         }
@@ -227,7 +230,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal}
                     />
-                    {this.props.creatorType === AppCreatorType.NEW &&
+                    {(this.props.creatorType === AppCreatorType.NEW 
+                    || this.props.creatorType === AppCreatorType.DISPATCHER) &&
                         <OF.Dropdown
                             ariaLabel={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
                             label={Utils.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
@@ -281,7 +285,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                     iconProps={{ iconName: 'Accept' }}
                                 />
                             }
-                            {this.props.creatorType === AppCreatorType.NEW &&
+                            {(this.props.creatorType === AppCreatorType.NEW ||
+                            this.props.creatorType === AppCreatorType.DISPATCHER) &&
                                 <OF.PrimaryButton
                                     disabled={invalidName}
                                     data-testid="model-creator-submit-button"

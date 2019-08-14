@@ -166,7 +166,7 @@ class App extends React.Component<Props, ComponentState> {
                               iconProps={{ iconName: 'Refresh' }}
                             >
                               Retry
-                          </OF.PrimaryButton>
+                            </OF.PrimaryButton>
                           </div>
                         </div>
                       </div>
