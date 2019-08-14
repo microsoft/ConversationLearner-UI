@@ -101,7 +101,7 @@ export function VerifyScoreActions(expectedScoreActions) {
   }
 
   function FindWithinAndVerify(baseElements, findCommand, verificationFunction, expectedElementCount = 1) {
-    let elements = eval(`Cypress.$(baseElements).${findCommand}`)
+    const elements = eval(`Cypress.$(baseElements).${findCommand}`)
     if (elements.length != expectedElementCount) { 
       AccumulateErrors(`Expected to find exactly ${expectedElementCount} element(s) instead we found ${elements.length} - Selection Command: ${findCommand}`)
     } else { 
@@ -113,7 +113,6 @@ export function VerifyScoreActions(expectedScoreActions) {
   cy.Enqueue(() => {
     for (let i = 0; i < expectedScoreActions.length; i++) {
       expectedScoreAction = expectedScoreActions[i]
-      let expectedButtonTestId
       rowIndex = undefined
       
       // This gets the row of the Score Action to validate and it also validates the response while doing so.
@@ -122,7 +121,7 @@ export function VerifyScoreActions(expectedScoreActions) {
         AccumulateErrors(rowElementsOrErrorMessage)
         continue
       }
-      let rowElement = rowElementsOrErrorMessage[0]
+      const rowElement = rowElementsOrErrorMessage[0]
       helpers.ConLog(funcName, `Element found: ${rowElement.outerHTML}`)
 
       // We use the rowIndex only for the purpose of logging errors as a debugging aid.
@@ -131,26 +130,28 @@ export function VerifyScoreActions(expectedScoreActions) {
       
       // Verify the button.
       FindWithinAndVerify(rowElement, `find('[data-testid^="action-scorer-button-"]')`, elements => {
-        let attr = elements.attr('data-testid')
+        const attr = elements.attr('data-testid')
         if (attr != expectedScoreAction.buttonTestId) {
-          AccumulateErrors(`Expected to find data-testid="${expectedButtonTestId}" instead we found "${attr}"`)
+          AccumulateErrors(`Expected to find data-testid="${expectedScoreAction.buttonTestId}" instead we found "${attr}"`)
         }
       })
 
       
       // Verify the score.
       FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
-        let score = helpers.TextContentWithoutNewlines(elements[0])
-        if (score != expectedScoreAction.score) {
-          if (score.endsWith('%') && expectedScoreAction.score.endsWith('%')) {
-            score = +score.replace(/(.|%)/gm, '')
-            const expectedScore = +expectedScoreAction.score.replace(/(\.|%)/gm, '')
-            if (score < expectedScore - 10 || score > expectedScore + 10) {
-              AccumulateErrors(`Expected to find a score within 10% of '${expectedScoreAction.score}' but instead found this '${score}'`)
-            }
-            return
-          }
+        const score = helpers.TextContentWithoutNewlines(elements[0])
 
+        if (score.endsWith('%') && expectedScoreAction.score.endsWith('%')) {
+          const actualScore = +score.replace(/(\.|%)/gm, '')
+          const expectedScore = +expectedScoreAction.score.replace(/(\.|%)/gm, '')
+          helpers.ConLog(funcName, `actualScore: ${actualScore} - expectedScore: ${expectedScore}`)
+          if (actualScore < expectedScore - 100 || actualScore > expectedScore + 100) {
+            AccumulateErrors(`Expected to find a score within 10% of '${expectedScoreAction.score}' but instead found this '${score}'`)
+          }
+          return
+        }
+
+        if (score != expectedScoreAction.score) {
           AccumulateErrors(`Expected to find a score with '${expectedScoreAction.score}' but instead found this '${score}'`)
         }
       })
@@ -160,7 +161,7 @@ export function VerifyScoreActions(expectedScoreActions) {
       FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-entities"]').parent('div[role="listitem"]')`, elements => {
         expectedScoreAction.entities.forEach(entity => {
           FindWithinAndVerify(elements, `find('[data-testid="action-scorer-entities"]:contains("${entity.name}")')`, entityElement => {
-            let strikeOut = Cypress.$(entityElement).find(`del:contains("${entity.name}")`).length == 1 ? 'Strikeout' : ''
+            const strikeOut = Cypress.$(entityElement).find(`del:contains("${entity.name}")`).length == 1 ? 'Strikeout' : ''
             let entityQualifierState
   
             if (entityElement.hasClass('cl-entity--match')) {
@@ -181,7 +182,7 @@ export function VerifyScoreActions(expectedScoreActions) {
       
       // Verify the Wait flag.
       FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-wait"]')`, elements => {
-        let wait = elements.attr('data-icon-name') == 'CheckMark'
+        const wait = elements.attr('data-icon-name') == 'CheckMark'
         if (wait != expectedScoreAction.wait) {
           AccumulateErrors(`Expected to find Wait: '${expectedScoreAction.wait}' but instead it was: '${wait}'`)
         }
@@ -190,7 +191,7 @@ export function VerifyScoreActions(expectedScoreActions) {
 
       // Verify the Action Type.
       FindWithinAndVerify(rowElement, `find('[data-testid="action-details-action-type"]')`, elements => {
-        let actionType = helpers.TextContentWithoutNewlines(elements[0])
+        const actionType = helpers.TextContentWithoutNewlines(elements[0])
         if (actionType != expectedScoreAction.type) {
           AccumulateErrors(`Expected to find Action Type: '${expectedScoreAction.type}' but instead it was: '${actionType}'`)
         }
@@ -212,7 +213,7 @@ export function GenerateScoreActionsDataFromGrid() {
   }
 
   function FindWithinAndCapture(baseElements, findCommand, captureFunction, oneElementExpected = true) {
-    let elements = eval(`Cypress.$(baseElements).${findCommand}`)
+    const elements = eval(`Cypress.$(baseElements).${findCommand}`)
     if (oneElementExpected && elements.length != 1) { 
       AccumulateErrors(`Expected to find exactly 1 element instead we found ${elements.length} - Selection Command: ${findCommand}`)
     } else { 
@@ -227,32 +228,32 @@ export function GenerateScoreActionsDataFromGrid() {
   for (let rowIndex = 0; rowIndex < rowsElements.length; rowIndex++) {
     rowData = {}
 
-    let rowElement = Cypress.$(rowsElements[rowIndex]).find('div.ms-DetailsRow-fields')[0]
+    const rowElement = Cypress.$(rowsElements[rowIndex]).find('div.ms-DetailsRow-fields')[0]
     helpers.ConLog(funcName, `Row #: ${rowIndex} - Element found: ${rowElement.outerHTML}`)
 
     // Verify the button.
     FindWithinAndCapture(rowElement, `find('[data-testid^="action-scorer-button-"]')`, elements => {
-      let attr = elements.attr('data-testid')
+      const attr = elements.attr('data-testid')
       rowData.buttonTestId = attr
     })
     
     // Response
     FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-text-response"], [data-testid="action-scorer-api"], [data-testid="action-scorer-session-response-user"], [data-testid="action-scorer-card"], [data-testid="action-scorer-action-set-entity"]')`, elements => {
-      let responseData = helpers.TextContentWithoutNewlines(elements[0])
+      const responseData = helpers.TextContentWithoutNewlines(elements[0])
       rowData.response = responseData
     })
 
     
     // Action Type.
     FindWithinAndCapture(rowElement, `find('[data-testid="action-details-action-type"]')`, elements => {
-      let actionType = helpers.TextContentWithoutNewlines(elements[0])
+      const actionType = helpers.TextContentWithoutNewlines(elements[0])
       rowData.type = actionType
     })
 
     
     // Get the score.
     FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
-      let score = helpers.TextContentWithoutNewlines(elements[0])
+      const score = helpers.TextContentWithoutNewlines(elements[0])
       rowData.score = score
     })
 
