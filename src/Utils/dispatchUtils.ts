@@ -5,7 +5,7 @@ import * as Util from './util'
 
 export function generateDispatcherSource(
     sourceModelPairs: SourceAndModelPair[],
-    transitionRoundLimit: number = 3
+    transitionRoundLimit: number = 3,
 ): CLM.AppDefinition {
     /**
      * Generate 1 Dispatch Action per model and associate with source + model pair
@@ -58,25 +58,25 @@ export function generateDispatcherSource(
 
         return sm.source.trainDialogs.map((t, tIndex) => {
             t.rounds.forEach(r => {
-                // Clear label entities
+                // Clear label entities since this don't exist in this model
                 r.extractorStep.textVariations.forEach(tv => {
                     tv.labelEntities = []
                 })
 
-                // Reuse lastScorerStep which should be terminal
-                // Clear filled entities and any masks
-
-                // TODO: Guard against rounds with no scorer step?
-                const lastScorerStep = r.scorerSteps[r.scorerSteps.length - 1]
-                lastScorerStep.input = {
-                    filledEntities: [],
-                    context: {},
-                    maskedActions: [],
+                // Create clean scorer step with only labelAction id (no entities, masks, logicResult, etc)
+                const scorerStep: CLM.TrainScorerStep = {
+                    input: {
+                        filledEntities: [],
+                        context: {},
+                        maskedActions: [],
+                    },
+                    labelAction: sm.action.actionId,
+                    logicResult: undefined,
+                    scoredAction: undefined,
                 }
-                lastScorerStep.labelAction = sm.action.actionId
 
                 r.scorerSteps = [
-                    lastScorerStep
+                    scorerStep
                 ]
             })
 
@@ -124,7 +124,7 @@ export function generateDispatcherSource(
     const allTrainDialogs = modelTrainDialogs
         .reduce((a, b) => [...a, ...b])
 
-    const unmodifiedTrainDialogs = Util.deepCopy(allTrainDialogs)
+    const dialogsWithoutModelTransition = Util.deepCopy(allTrainDialogs)
 
     /**
      * Currently only tests single transition.
@@ -173,7 +173,7 @@ export function generateDispatcherSource(
 
     const source = {
         trainDialogs: [
-            ...unmodifiedTrainDialogs,
+            ...dialogsWithoutModelTransition,
             ...mixedDialogs
         ],
         actions: sourceModelPairs.map(sm => sm.action),
