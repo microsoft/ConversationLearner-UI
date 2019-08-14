@@ -11,7 +11,7 @@ import FormattedMessageId from '../../components/FormattedMessageId'
 import { AppCreator as AppCreatorModal, TutorialImporterModal } from '../../components/modals'
 import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import { User, AppCreatorType } from '../../types'
+import { User, AppCreatorType, FeatureStrings } from '../../types'
 import { autobind } from 'core-decorators';
 import { OBIImportData } from '../../Utils/obiUtils';
 
@@ -119,6 +119,9 @@ interface Props extends InjectedIntlProps {
     canImportOBI: boolean,
     activeApps: { [appId: string]: string }
     onClickApp: (app: CLM.AppBase) => void
+    selection: OF.ISelection
+    featuresString: string
+    selectionCount: number
 
     isAppCreateModalOpen: boolean
     onSubmitAppCreateModal: (app: CLM.AppBase, source: CLM.AppDefinition | undefined) => void
@@ -128,6 +131,7 @@ interface Props extends InjectedIntlProps {
     onClickCreateNewApp: () => void
     onClickImportApp: () => void
     onClickImportDemoApps: () => void
+    onClickCreateNewDispatcherModel: () => void
 
     onClickImportOBI: () => void
     onSubmitImportOBI: (app: CLM.AppBase, obiImportData: OBIImportData) => void
@@ -146,6 +150,8 @@ interface ComponentState {
 const ifStringReturnLowerCase = (s: string | number) => {
     return (typeof s === "string") ? s.toLowerCase() : s
 }
+
+const getModelKey = (model: OF.IObjectWithKey) => (model as CLM.AppBase).appId
 
 export class Component extends React.Component<Props, ComponentState> {
     constructor(props: Props) {
@@ -173,25 +179,6 @@ export class Component extends React.Component<Props, ComponentState> {
         }
     }
 
-    getSortedApplications(sortColumn: ISortableRenderableColumn, apps: CLM.AppBase[]): CLM.AppBase[] {
-        let sortedApps = apps
-        if (sortColumn) {
-            // Sort the items.
-            sortedApps = apps.concat([]).sort((a, b) => {
-                const firstValue = ifStringReturnLowerCase(sortColumn.getSortValue(a))
-                const secondValue = ifStringReturnLowerCase(sortColumn.getSortValue(b))
-
-                if (sortColumn.isSortedDescending) {
-                    return firstValue > secondValue ? -1 : 1;
-                } else {
-                    return firstValue > secondValue ? 1 : -1;
-                }
-            });
-        }
-
-        return sortedApps;
-    }
-
     @autobind
     onClickColumnHeader(event: React.MouseEvent<HTMLElement, MouseEvent>, clickedColumn: ISortableRenderableColumn) {
         const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
@@ -213,7 +200,8 @@ export class Component extends React.Component<Props, ComponentState> {
 
     render() {
         const props = this.props
-        const apps = this.getSortedApplications(this.state.sortColumn, props.apps);
+        const computedApps = this.getSortedApplications(this.state.sortColumn, this.props.apps)
+        const isDispatcherFeaturesEnabled = this.props.featuresString.includes(FeatureStrings.DISPATCHER)
 
         return <div className="cl-o-app-columns">
             <div className="cl-app_content">
@@ -236,6 +224,7 @@ export class Component extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTAPP_BUTTONTEXT)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
+
                         {!Util.isDemoAccount(props.user.id) &&
                             <OF.DefaultButton
                                 data-testid="model-list-import-tutorials-button"
@@ -252,9 +241,21 @@ export class Component extends React.Component<Props, ComponentState> {
                                 text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTOBI_BUTTONTEXT)}
                                 iconProps={{ iconName: 'CloudDownload' }}
                             />
-                    }
+                        }
+                        {isDispatcherFeaturesEnabled
+                            && (
+                                <OF.DefaultButton
+                                    data-testid="model-list-button-create-dispatcher"
+                                    disabled={this.props.selectionCount < 2}
+                                    onClick={props.onClickCreateNewDispatcherModel}
+                                    ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION)}
+                                    text={Util.formatMessageId(props.intl, FM.APPSLIST_CREATEDISPATCHER_BUTTONTEXT, { selectionCount: this.props.selectionCount })}
+                                    iconProps={{ iconName: 'Add' }}
+                                />
+                            )}
+
                     </div>
-                    {apps.length === 0
+                    {computedApps.length === 0
                         ? <div className="cl-page-placeholder">
                             <div className="cl-page-placeholder__content">
                                 <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>{Util.formatMessageId(props.intl, FM.APPSLIST_EMPTY_TEXT)}</div>
@@ -276,9 +277,14 @@ export class Component extends React.Component<Props, ComponentState> {
                         </div>
                         : <OF.DetailsList
                             className={OF.FontClassNames.mediumPlus}
-                            items={apps}
+                            items={computedApps}
+                            getKey={getModelKey}
+                            setKey="selectionKey"
                             columns={this.state.columns}
-                            checkboxVisibility={OF.CheckboxVisibility.hidden}
+                            selection={this.props.selection}
+                            checkboxVisibility={isDispatcherFeaturesEnabled
+                                ? OF.CheckboxVisibility.onHover
+                                : OF.CheckboxVisibility.hidden}
                             onRenderRow={(myProps, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(myProps)}</div>}
                             onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
                             onColumnHeaderClick={this.onClickColumnHeader}
@@ -301,6 +307,25 @@ export class Component extends React.Component<Props, ComponentState> {
                 </div>
             </div>
         </div>
+    }
+
+    private getSortedApplications(sortColumn: ISortableRenderableColumn, apps: CLM.AppBase[]): CLM.AppBase[] {
+        let sortedApps = apps
+        if (sortColumn) {
+            // Sort the items.
+            sortedApps = apps.concat([]).sort((a, b) => {
+                const firstValue = ifStringReturnLowerCase(sortColumn.getSortValue(a))
+                const secondValue = ifStringReturnLowerCase(sortColumn.getSortValue(b))
+
+                if (sortColumn.isSortedDescending) {
+                    return firstValue > secondValue ? -1 : 1;
+                } else {
+                    return firstValue > secondValue ? 1 : -1;
+                }
+            });
+        }
+
+        return sortedApps;
     }
 }
 

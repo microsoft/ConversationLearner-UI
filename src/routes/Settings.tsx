@@ -86,8 +86,7 @@ class Settings extends React.Component<Props> {
                         <div>
                             <input
                                 className="cl-input"
-                                min={0}
-                                max={99999}
+                                type="text"
                                 value={this.props.settings.features}
                                 onChange={this.onChangeFeatures}
                             />

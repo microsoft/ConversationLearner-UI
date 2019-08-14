@@ -4,6 +4,8 @@
  */
 import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
+import * as OF from 'office-ui-fabric-react'
+import AppsListComponent from './AppsListComponent'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
@@ -14,7 +16,6 @@ import { fetchTutorialsThunkAsync } from '../../actions/appActions'
 import { CL_IMPORT_TUTORIALS_USER_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators'
-import AppsListComponent from './AppsListComponent'
 
 interface ComponentState {
     isAppCreateModalOpen: boolean
@@ -22,16 +23,24 @@ interface ComponentState {
     isImportTutorialsOpen: boolean
     appToDelete: CLM.AppBase | null
     tutorials: CLM.AppBase[] | null
+    selectionCount: number
 }
 
 class AppsList extends React.Component<Props, ComponentState> {
+
     state: Readonly<ComponentState> = {
         isAppCreateModalOpen: false,
         appCreatorType: AppCreatorType.NEW,
         isImportTutorialsOpen: false,
         appToDelete: null,
-        tutorials: null
+        tutorials: null,
+        selectionCount: 0,
     }
+
+    private selection: OF.ISelection = new OF.Selection({
+        getKey: (app) => (app as CLM.AppBase).appId,
+        onSelectionChanged: this.onSelectionChanged
+    })
 
     @autobind
     onClickApp(app: CLM.AppBase) {
@@ -84,7 +93,15 @@ class AppsList extends React.Component<Props, ComponentState> {
     onSubmitAppCreateModal(app: Partial<CLM.AppBase>, source: CLM.AppDefinition | null = null) {
         this.setState({
             isAppCreateModalOpen: false
-        }, () => this.props.onCreateApp(app, source))
+        }, () => {
+            if (this.state.appCreatorType === AppCreatorType.DISPATCHER) {
+                const selectedModels = this.selection.getSelection() as CLM.AppBase[]
+                this.props.onCreateDispatchModel(app, selectedModels)
+            }
+            else {
+                this.props.onCreateApp(app, source)
+            }
+        })
     }
 
     @autobind
@@ -111,6 +128,21 @@ class AppsList extends React.Component<Props, ComponentState> {
             isAppCreateModalOpen: false
         }, () => this.props.onCreateApp(app, null, obiImportData))
     }
+    
+    @autobind
+    onClickCreateNewDispatcherModel() {
+        this.setState({
+            isAppCreateModalOpen: true,
+            appCreatorType: AppCreatorType.DISPATCHER
+        })
+    }
+
+    onSelectionChanged() {
+        const selectionCount = this.selection.getSelectedCount()
+        this.setState({
+            selectionCount
+        })
+    }
 
     render() {
         return <AppsListComponent
@@ -121,6 +153,9 @@ class AppsList extends React.Component<Props, ComponentState> {
             canImportOBI={this.props.settings.features !== undefined && this.props.settings.features.indexOf("CCI") >= 0}
             activeApps={this.props.activeApps}
             onClickApp={this.onClickApp}
+            selection={this.selection}
+            featuresString={this.props.settings.features}
+            selectionCount={this.state.selectionCount}
 
             isAppCreateModalOpen={this.state.isAppCreateModalOpen}
             onSubmitAppCreateModal={this.onSubmitAppCreateModal}
@@ -130,6 +165,7 @@ class AppsList extends React.Component<Props, ComponentState> {
             onClickCreateNewApp={this.onClickCreateNewApp}
             onClickImportApp={this.onClickImportApp}
             onClickImportDemoApps={this.onClickImportDemoApps}
+            onClickCreateNewDispatcherModel={this.onClickCreateNewDispatcherModel}
 
             onClickImportOBI={this.onClickImportOBI}
             onSubmitImportOBI={this.onSubmitImportOBI}
@@ -141,6 +177,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         />
     }
 }
+
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchTutorialsThunkAsync
@@ -163,6 +200,7 @@ export interface ReceivedProps {
     onCreateApp: (app: Partial<CLM.AppBase>, source: CLM.AppDefinition | null, obiImportData?: OBIImportData) => void
     onClickDeleteApp: (app: CLM.AppBase) => void
     onImportTutorial: (tutorial: CLM.AppBase) => void
+    onCreateDispatchModel: (model: Partial<CLM.AppBase>, models: CLM.AppBase[]) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

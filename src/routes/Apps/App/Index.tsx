@@ -23,7 +23,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
-import { State } from '../../../types'
+import { State, FeatureStrings } from '../../../types'
 import './Index.css'
 
 // TODO: i18n support would be much easier after proper routing is implemented
@@ -273,7 +273,7 @@ class Index extends React.Component<Props, ComponentState> {
                                             <OF.Icon iconName="List" /><span>Log Dialogs</span>
                                             <span className="count">{this.state.modelLoaded && ((filteredLogDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : filteredLogDialogs.length)}</span>
                                         </NavLink>
-                                        {this.props.settings.features && this.props.settings.features.indexOf("CCI") >= 0 &&
+                                        {this.props.settings.features.toLowerCase().includes(FeatureStrings.CCI.toLowerCase()) &&
                                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-testing" to={{ pathname: `${match.url}/testing`, state: { app } }}>
                                                 <OF.Icon iconName="TestPlan" /><span>Testing</span>
                                             </NavLink>
