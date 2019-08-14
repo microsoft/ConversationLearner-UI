@@ -3,55 +3,13 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
-import * as BB from 'botbuilder'
 import * as Util from './util'
-import * as TranscriptUtils from './transcriptUtils'  //LARS merge with OBI utis
+import * as OBIUtils from './obiUtils'  
 import Plain from 'slate-plain-serializer'
-import { User } from '../types'
-import { OBIDialog } from '../types/obi/dialog';
-
-export async function toTranscripts(
-    appDefinition: CLM.AppDefinition, 
-    appId: string,
-    user: User,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
-    ): Promise<BB.Transcript[]> {
-
-    const definitions = {
-        entities: appDefinition.entities,
-        actions: appDefinition.actions,
-        trainDialogs: []
-    }
-
-    return Promise.all(appDefinition.trainDialogs.map(td => getHistory(appId, td, user, definitions, fetchHistoryAsync)))
-}
-
-export interface OBIImportData {
-    appId: string,
-    files: File[],
-    autoCreate: boolean,
-    autoMerge: boolean
-}
-
-export interface LGItem {
-    text: string,
-    suggestions: string[]
-}
-
-export interface ComposerDialog {
-    dialogs: OBIDialog[]
-    luMap: Map<string, string[]>
-    lgMap: Map<string, LGItem>
-}
-
-function removeSuffix(text: string): string {
-    let name = text.split('.')
-    name.pop()
-    return name.join('.')
-}
+import { OBIDialog } from '../types/obiTypes'
 
 export class ObiDialogParser {
-    private composerDialog: ComposerDialog
+    private composerDialog: OBIUtils.ComposerDialog
     private appId: string
     private actions: CLM.ActionBase[] = []
     //LARSprivate entities: CLM.EntityBase[] = []
@@ -72,13 +30,13 @@ export class ObiDialogParser {
     
         const dialogs: OBIDialog[] = []
         const luMap: Map<string, string[]> = new Map()
-        const lgMap: Map<string, LGItem> = new Map()
+        const lgMap: Map<string, OBIUtils.LGItem> = new Map()
         for (const file of files) {
             if (file.name.endsWith('.dialog')) {
                 const fileText = await Util.readFileAsync(file)
                 const obiDialog: OBIDialog = JSON.parse(fileText)
                 // Set name, removing suffix
-                obiDialog.$id = removeSuffix(file.name)
+                obiDialog.$id = this.removeSuffix(file.name)
                 dialogs.push(obiDialog)
             }
             else if (file.name.endsWith('.lu')) {
@@ -116,7 +74,7 @@ export class ObiDialogParser {
         return luMap
     }
     
-    private addToLGMap(text: string, lgMap: Map<string, LGItem>): any {
+    private addToLGMap(text: string, lgMap: Map<string, OBIUtils.LGItem>): any {
         const items = text.split('# ')
         for (const item of items) {
             const key = item.substring(0, item.indexOf("-")).trim()
@@ -250,8 +208,9 @@ export class ObiDialogParser {
         const parsedActivity = prompt.substring(prompt.indexOf("[") + 1, prompt.lastIndexOf("]")).trim()
         let response = this.composerDialog.lgMap.get(parsedActivity)
         if (!response) {
+            // LARS temp to handle badly create dialog
             response = { text: "Can't Parse LU", suggestions: []}
-           //LARS temp throw new Error(`LU name ${prompt} undefined`)
+           //throw new Error(`LU name ${prompt} undefined`)
         }
     
         let scoredAction: CLM.ScoredAction | undefined
@@ -286,9 +245,9 @@ export class ObiDialogParser {
     }
     
     // Generate action directly from LG
-    private async getActionFromLG(lg: LGItem, isTerminal: boolean): Promise<CLM.ActionBase | undefined> {
+    private async getActionFromLG(lg: OBIUtils.LGItem, isTerminal: boolean): Promise<CLM.ActionBase | undefined> {
     
-        let action = TranscriptUtils.findActionFromHashText(lg.text, this.actions)
+        let action = OBIUtils.findActionFromHashText(lg.text, this.actions)
         if (!action && this.createActionThunkAsync) {
 
             const tp: CLM.TextPayload = {
@@ -364,14 +323,9 @@ export class ObiDialogParser {
         } 
     }
     
-}
-
-async function getHistory(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
-    ): Promise<BB.Transcript> {
-    const newTrainDialog = Util.deepCopy(trainDialog)
-    newTrainDialog.definitions = definitions
-
-    const teachWithHistory = await fetchHistoryAsync(appId, newTrainDialog, user.name, user.id, false)
-    return { activities: teachWithHistory.history }
+    private removeSuffix(text: string): string {
+        let name = text.split('.')
+        name.pop()
+        return name.join('.')
+    }
 }

@@ -4,7 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as ClientFactory from '../services/clientFactory'
-import { OBIImportData } from '../Utils/obiUtil'
+import { OBIImportData } from '../Utils/obiDialogParser'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import { ActionObject, ErrorType } from '../types'

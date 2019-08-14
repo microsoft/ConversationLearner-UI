@@ -17,7 +17,7 @@ import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
 import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
-import { OBIImportData } from '../../Utils/obiUtil'
+import { OBIImportData } from '../../Utils/obiDialogParser'
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {

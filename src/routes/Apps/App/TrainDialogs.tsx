@@ -8,8 +8,8 @@ import * as Util from '../../../Utils/util'
 import * as ValidityUtils from '../../../Utils/validityUtils'
 import * as DialogEditing from '../../../Utils/dialogEditing'
 import * as DialogUtils from '../../../Utils/dialogUtils'
-import * as TranscriptUtils from '../../../Utils/transcriptUtils'
-import * as OBIUtils from '../../../Utils/obiUtil'
+import * as OBIUtils from '../../../Utils/obiUtils'
+import * as OBIDialogParser from '../../../Utils/obiDialogParser'
 import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
 import * as BB from 'botbuilder'
@@ -1044,9 +1044,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async importOBIFiles(obiImportData: OBIUtils.OBIImportData): Promise<void> {
+    async importOBIFiles(obiImportData: OBIDialogParser.OBIImportData): Promise<void> {
 
-        const obiDialogParser = new OBIUtils.ObiDialogParser(this.props.app.appId)
+        const obiDialogParser = new OBIDialogParser.ObiDialogParser(this.props.app.appId)
         const importedTrainDialogs = await obiDialogParser.getTrainDialogsFromComposer(obiImportData.files)
 
         await Util.setStateAsync(this, {
@@ -1092,7 +1092,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 // If transcript has already been imported, skip it
                 if (!this.hasTranscriptBeenImported(transcriptHash)) {
             
-                    const importedTrainDialog = await TranscriptUtils.trainDialogFromTranscriptImport(
+                    const importedTrainDialog = await OBIUtils.trainDialogFromTranscriptImport(
                         transcript,
                         this.props.entities,
                         this.props.actions,
@@ -1165,7 +1165,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         DialogUtils.cleanTrainDialog(newTrainDialog)
 
         // Try to map action again now that we have entities
-        TranscriptUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
+        OBIUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
 
         await Util.setStateAsync(this, {
             originalTrainDialog: newTrainDialog

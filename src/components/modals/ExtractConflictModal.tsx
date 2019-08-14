@@ -45,7 +45,6 @@ interface ReceivedProps {
 
 type Props = ReceivedProps & InjectedIntlProps
 
-
 type ReadOnlyEditorProps = {
     entities: CLM.EntityBase[],
     extractResponse: CLM.ExtractResponse,
@@ -73,7 +72,6 @@ const ReadOnlyOkExtractionEditor: React.FC<ReadOnlyEditorProps> = ({ entities, e
         onChange={noOp}
     />
 }
-
 
 const ExtractConflictModal: React.FC<Props> = (props) => {
     const { intl, trainDialogs, attemptedExtractResponse } = props
@@ -121,10 +119,12 @@ const ExtractConflictModal: React.FC<Props> = (props) => {
             <div>
                 <p>{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_SUBTITLE)}</p>
                 <div className="cl-inconsistent-entity-modal-header">{Util.formatMessageId(intl, FM.EXTRACTCONFLICTMODAL_REVIEW)}</div>
-
-                <div className={`cl-inconsistent-entity-modal-option ${selectedAttempted ? 'cl-inconsistent-entity-modal-option--selected' : ''}`}
+                <div 
+                    className={`cl-inconsistent-entity-modal-option ${selectedAttempted ? 'cl-inconsistent-entity-modal-option--selected' : ''}`}
                     data-testid="extract-conflict-modal-attempted"
-                    onClick={() => onClickOption(ExtractionType.Attempted)}>
+                    onClick={() => onClickOption(ExtractionType.Attempted)}
+                    role="button"
+                >
                     <OF.ChoiceGroup
                         options={[
                             {
@@ -147,9 +147,12 @@ const ExtractConflictModal: React.FC<Props> = (props) => {
                     </div>
                 </div>
 
-                <div className={`cl-inconsistent-entity-modal-option ${selectedAttempted ? '' : 'cl-inconsistent-entity-modal-option--selected'}`}
+                <div 
+                    className={`cl-inconsistent-entity-modal-option ${selectedAttempted ? '' : 'cl-inconsistent-entity-modal-option--selected'}`}
                     data-testid="extract-conflict-modal-existing"
-                    onClick={() => onClickOption(ExtractionType.Existing)}>
+                    onClick={() => onClickOption(ExtractionType.Existing)}
+                    role="button"
+                >
                     <OF.ChoiceGroup
                         options={[
                             {
