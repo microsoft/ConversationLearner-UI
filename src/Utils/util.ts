@@ -247,6 +247,12 @@ export function readFileAsync(file: File): Promise<string> {
     })
 }
 
+// Returns true is primary template body is variable substitution
+export function isTemplateTitleGeneric(template: CLM.Template): boolean {
+    const titleVariable = template.variables.find(v => v.key === "title" && v.type === "TextBlock")
+    return (titleVariable !== undefined)
+}
+
 // Calculate a 32 bit FNV-1a hash
 // Ref.: http://isthe.com/chongo/tech/comp/fnv/
 export function hashText(text: string) {

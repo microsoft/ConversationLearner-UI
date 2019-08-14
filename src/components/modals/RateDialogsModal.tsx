@@ -8,7 +8,7 @@ import * as OF from 'office-ui-fabric-react'
 import * as BotChat from '@conversationlearner/webchat'
 import * as Util from '../../Utils/util'
 import * as BB from 'botbuilder'
-import * as TranscriptUtils from '../../Utils/transcriptUtils'
+import * as OBIUtils from '../../Utils/obiUtils'
 import actions from '../../actions'
 import Webchat, { renderActivity } from '../Webchat'
 import { Activity } from 'botframework-directlinejs'
@@ -169,7 +169,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         let history2: BotChat.Activity[] = []
         let missingLog = false
         if (validationResult.sourceHistory) {
-            let trainDialog = await TranscriptUtils.trainDialogFromTranscriptImport(validationResult.sourceHistory, this.props.entities, this.props.actions, this.props.app)
+            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceHistory, this.props.entities, this.props.actions, this.props.app)
             trainDialog.definitions = {
                 actions: this.props.actions,
                 entities: this.props.entities,
@@ -198,7 +198,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         for (let i = 0; i < maxLength; i = i + 1) {
             const activity1 = history1[i] as BB.Activity
             const activity2 = history2[i] as BB.Activity
-            if (!TranscriptUtils.isSameActivity(activity1, activity2)) {
+            if (!OBIUtils.isSameActivity(activity1, activity2)) {
                 if (activity1) {
                     activity1.channelData.clData = {...activity1.channelData.clData, replayError  }
                 }

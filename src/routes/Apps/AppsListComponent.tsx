@@ -3,16 +3,17 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import { AppCreator as AppCreatorModal, TutorialImporterModal } from '../../components/modals'
 import * as OF from 'office-ui-fabric-react'
+import * as Util from '../../Utils/util'
+import * as moment from 'moment'
 import * as CLM from '@conversationlearner/models'
 import FormattedMessageId from '../../components/FormattedMessageId'
+import { AppCreator as AppCreatorModal, TutorialImporterModal } from '../../components/modals'
 import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
-import * as Util from '../../Utils/util'
 import { User, AppCreatorType, FeatureStrings } from '../../types'
-import * as moment from 'moment'
 import { autobind } from 'core-decorators';
+import { OBIImportData } from '../../Utils/obiUtils';
 
 export interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: CLM.AppBase, props: Props) => JSX.Element
@@ -115,6 +116,7 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
 interface Props extends InjectedIntlProps {
     user: User
     apps: CLM.AppBase[]
+    canImportOBI: boolean,
     activeApps: { [appId: string]: string }
     onClickApp: (app: CLM.AppBase) => void
     selection: OF.ISelection
@@ -130,6 +132,9 @@ interface Props extends InjectedIntlProps {
     onClickImportApp: () => void
     onClickImportDemoApps: () => void
     onClickCreateNewDispatcherModel: () => void
+
+    onClickImportOBI: () => void
+    onSubmitImportOBI: (app: CLM.AppBase, obiImportData: OBIImportData) => void
 
     isImportTutorialsOpen: boolean
     tutorials: CLM.AppBase[]
@@ -172,25 +177,6 @@ export class Component extends React.Component<Props, ComponentState> {
             columns,
             sortColumn: defaultSortColumn
         }
-    }
-
-    private getSortedApplications(sortColumn: ISortableRenderableColumn, apps: CLM.AppBase[]): CLM.AppBase[] {
-        let sortedApps = apps
-        if (sortColumn) {
-            // Sort the items.
-            sortedApps = apps.concat([]).sort((a, b) => {
-                const firstValue = ifStringReturnLowerCase(sortColumn.getSortValue(a))
-                const secondValue = ifStringReturnLowerCase(sortColumn.getSortValue(b))
-
-                if (sortColumn.isSortedDescending) {
-                    return firstValue > secondValue ? -1 : 1;
-                } else {
-                    return firstValue > secondValue ? 1 : -1;
-                }
-            });
-        }
-
-        return sortedApps;
     }
 
     @autobind
@@ -248,6 +234,14 @@ export class Component extends React.Component<Props, ComponentState> {
                                 iconProps={{ iconName: 'CloudDownload' }}
                             />
                         }
+                        {this.props.canImportOBI &&
+                            <OF.DefaultButton
+                                onClick={props.onClickImportOBI}
+                                ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTOBI_BUTTONARIADESCRIPTION)}
+                                text={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTOBI_BUTTONTEXT)}
+                                iconProps={{ iconName: 'CloudDownload' }}
+                            />
+                        }
                         {isDispatcherFeaturesEnabled
                             && (
                                 <OF.DefaultButton
@@ -291,7 +285,7 @@ export class Component extends React.Component<Props, ComponentState> {
                             checkboxVisibility={isDispatcherFeaturesEnabled
                                 ? OF.CheckboxVisibility.onHover
                                 : OF.CheckboxVisibility.hidden}
-                            onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                            onRenderRow={(myProps, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(myProps)}</div>}
                             onRenderItemColumn={(app, i, column: ISortableRenderableColumn) => column.render(app, props)}
                             onColumnHeaderClick={this.onClickColumnHeader}
                             onItemInvoked={app => this.props.onClickApp(app)}
@@ -299,6 +293,7 @@ export class Component extends React.Component<Props, ComponentState> {
                     <AppCreatorModal
                         open={props.isAppCreateModalOpen}
                         onSubmit={props.onSubmitAppCreateModal}
+                        onSubmitOBI={props.onSubmitImportOBI}
                         onCancel={props.onCancelAppCreateModal}
                         creatorType={props.appCreatorType}
                     />
@@ -312,6 +307,25 @@ export class Component extends React.Component<Props, ComponentState> {
                 </div>
             </div>
         </div>
+    }
+
+    private getSortedApplications(sortColumn: ISortableRenderableColumn, apps: CLM.AppBase[]): CLM.AppBase[] {
+        let sortedApps = apps
+        if (sortColumn) {
+            // Sort the items.
+            sortedApps = apps.concat([]).sort((a, b) => {
+                const firstValue = ifStringReturnLowerCase(sortColumn.getSortValue(a))
+                const secondValue = ifStringReturnLowerCase(sortColumn.getSortValue(b))
+
+                if (sortColumn.isSortedDescending) {
+                    return firstValue > secondValue ? -1 : 1;
+                } else {
+                    return firstValue > secondValue ? 1 : -1;
+                }
+            });
+        }
+
+        return sortedApps;
     }
 }
 
