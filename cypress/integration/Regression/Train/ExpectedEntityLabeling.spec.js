@@ -37,7 +37,7 @@ describe('Expected Entity Labeling - Train', () => {
       train.ClickScoreActionsButton()
     })
 
-    generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
+    generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should select an action', () => {
       train.SelectTextAction(common.whatsYourName)
@@ -55,7 +55,7 @@ describe('Expected Entity Labeling - Train', () => {
       memoryTableComponent.VerifyEntityValues('name', ['David'])
     })
 
-    generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
+    generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should select an action', () => {
       train.SelectTextAction('Hello David', 'Hello $name')

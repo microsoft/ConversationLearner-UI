@@ -33,7 +33,7 @@ export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyAct
 //      set CYPRESS_GENERATE_SCORE_ACTIONS_DATA=true
 //    Doing this will generate a file in the "cypress/fixtures/scoreActions" folder that will be used in #3
 // 3) Clear out that environment variable and run the tests as usual. They will grab the generated test data
-//    and use it during validations that use the VerifyScoreActionsListOrGenerateData() function.
+//    and use it during validations that use the VerifyScoreActionsList() function.
 //
 // See existing test cases that already use this class as an example to follow.
 
@@ -56,7 +56,7 @@ export class GeneratedData {
 
   // In some cases the score deviates significantly and that is not considered an error. For those pass in 
   // acceptableScoreDeviation as the percentage points that we can allow the score to deviate and still be acceptable.
-  VerifyScoreActionsListOrGenerateData(acceptableScoreDeviation = 10) {
+  VerifyScoreActionsList(acceptableScoreDeviation = 10) {
     if (this.generateScoreActionsData) {
       it('GENERATE the Score Actions data', () => {
         cy.wait(2000)

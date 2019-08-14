@@ -32,7 +32,7 @@ describe('Wait vs Non Wait Actions - Train', () => {
       train.ClickScoreActionsButton()
     })
       
-    generatedScoreActionsData.VerifyScoreActionsListOrGenerateData(30)
+    generatedScoreActionsData.VerifyScoreActionsList(30)
 
     it('Should select a wait Action for the Bot Response', () => {
       train.SelectTextAction('Which animal would you like?')
@@ -45,7 +45,7 @@ describe('Wait vs Non Wait Actions - Train', () => {
       train.ClickScoreActionsButton()
     })
 
-    generatedScoreActionsData.VerifyScoreActionsListOrGenerateData(30)
+    generatedScoreActionsData.VerifyScoreActionsList(30)
 
     it('Should select a non-wait Action for the Bot Response', () => {
       train.SelectTextAction('Cows say moo!')
@@ -62,7 +62,7 @@ describe('Wait vs Non Wait Actions - Train', () => {
       train.ClickScoreActionsButton()
     })
 
-    generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
+    generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should select a non-wait Action for the Bot Response', () => {
       train.SelectTextAction(common.ducksSayQuack)

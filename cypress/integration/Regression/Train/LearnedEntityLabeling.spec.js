@@ -42,7 +42,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
       memoryTableComponent.VerifyEntityValues('name', ['David'])
     })
 
-    generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
+    generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should be able to select an Action', () => {
       train.SelectTextAction('Hello David', 'Hello $name')
@@ -60,7 +60,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
       memoryTableComponent.VerifyDisplacedEntityValues('name', ['David'])
     })
 
-    generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
+    generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should be able to select an Action and save the training', () => {
       train.SelectTextAction('Hello Susan', 'Hello $name')
@@ -84,7 +84,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
       memoryTableComponent.VerifyEntityValues('name', ['Gabriella'])
     })
 
-    generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
+    generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should be able to select an Action and save the training', () => {
       train.SelectTextAction('Hello Gabriella', 'Hello $name')

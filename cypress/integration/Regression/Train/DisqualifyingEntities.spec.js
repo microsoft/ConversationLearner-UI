@@ -34,7 +34,7 @@ describe('Disqualifying Entities - Train', () => {
         train.ClickScoreActionsButton()
       })
 
-      generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
+      generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {
         train.SelectTextAction(common.whatsYourName)
@@ -52,7 +52,7 @@ describe('Disqualifying Entities - Train', () => {
         memoryTableComponent.VerifyEntityValues('name', ['Sam'])
       })
 
-      generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
+      generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {
         train.SelectTextAction('Hey Sam', 'Hey $name')
@@ -69,7 +69,7 @@ describe('Disqualifying Entities - Train', () => {
         memoryTableComponent.VerifyEntityValues('name', ['Sam'])
       })
     
-      generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
+      generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {
         train.SelectTextAction('Hey Sam, what do you really want?', 'Hey $name, what do you really want?')
@@ -90,7 +90,7 @@ describe('Disqualifying Entities - Train', () => {
         memoryTableComponent.VerifyEntityValues('want', ['world peace'])
       })
 
-      generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
+      generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {
         train.SelectTextAction("Sorry Sam, I can't help you get world peace", "Sorry $name, I can't help you get $want")
@@ -114,7 +114,7 @@ describe('Disqualifying Entities - Train', () => {
         train.ClickScoreActionsButton()
       })
 
-      generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
+      generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {
         train.SelectTextAction(common.whatsYourName)
@@ -128,7 +128,7 @@ describe('Disqualifying Entities - Train', () => {
         train.ClickScoreActionsButton()
       })
 
-      generatedScoreActionsData.VerifyScoreActionsListOrGenerateData()
+      generatedScoreActionsData.VerifyScoreActionsList()
 
       it('Should select an action', () => {
         train.SelectTextAction("Sorry Sandeep, I can't help you get a million dollars", "Sorry $name, I can't help you get $want")
