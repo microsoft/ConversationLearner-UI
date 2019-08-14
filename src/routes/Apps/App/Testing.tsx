@@ -7,7 +7,7 @@ import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import * as Util from '../../../Utils/util'
 import * as BB from 'botbuilder'
-import * as TranscriptUtils from '../../../Utils/transcriptUtils'
+import * as OBIUtils from '../../../Utils/obiUtils'
 import actions from '../../../actions'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import CompareDialogsModal from '../../../components/modals/CompareDialogsModal'
@@ -143,14 +143,14 @@ class Testing extends React.Component<Props, ComponentState> {
                 }
                 else if (activity.from.role === "bot") {
                     if (transcriptValidationTurn) {
-                        const hashText = TranscriptUtils.hashTextFromActivity(activity, entities, apiResults)
+                        const hashText = OBIUtils.hashTextFromActivity(activity, entities, apiResults)
                         const actionHash = Util.hashText(hashText)
                         transcriptValidationTurn.actionHashes.push(actionHash)
 
                         // If API call include API results
                         if (activity.channelData && activity.channelData.type === "ActionCall") {
-                            const actionCall = activity.channelData as TranscriptUtils.TranscriptActionCall
-                            apiResults = await TranscriptUtils.importActionOutput(actionCall.actionOutput, this.props.entities, this.props.app)
+                            const actionCall = activity.channelData as OBIUtils.TranscriptActionCall
+                            apiResults = await OBIUtils.importActionOutput(actionCall.actionOutput, this.props.entities, this.props.app)
                             transcriptValidationTurn.apiResults.push(apiResults)
                         }
                         else {

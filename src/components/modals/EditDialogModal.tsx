@@ -6,6 +6,7 @@ import * as React from 'react'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as DialogUtils from '../../Utils/dialogUtils'
+import * as OBIUtils from '../../Utils/obiUtils'
 import * as BotChat from '@conversationlearner/webchat'
 import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
@@ -451,7 +452,14 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             : false
 
         if (importText) {
-            return { text: importText, isTerminal }
+            // Could be JSON object or just string
+            try {
+                const lgItem: OBIUtils.LGItem = JSON.parse(importText)
+                return { text: lgItem.text, buttons: lgItem.suggestions, isTerminal}
+            }
+            catch (e) {
+                return { text: importText, buttons: [], isTerminal }
+            }
         }
         return undefined
     }
@@ -1112,7 +1120,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     open={this.state.isImportAbandonOpen}
                     onCancel={this.onClickAbandonCancel}
                     onConfirm={this.onClickAbandonApprove}
-                    isLastImport={this.props.importIndex === this.props.importCount}
+                    // Don't show stop checkbox if on last item or doing OBI import
+                    allowContinue={this.props.importIndex !== this.props.importCount && !this.props.importingOBI}
                 />
                 {this.state.cantReplayMessage &&
                     <ConfirmCancelModal
@@ -1179,6 +1188,7 @@ export interface ReceivedProps {
     allUniqueTags: string[]
     importIndex?: number
     importCount?: number
+    importingOBI?: boolean
 
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, isLastActivity: boolean, selectionType: SelectionType) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any

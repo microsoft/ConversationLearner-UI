@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
+import { OBIImportData } from '../Utils/obiUtils'
 import { PartialTrainDialog } from '../types/models'
 import { TipType } from '../components/ToolTips/ToolTips'
 import { ErrorType } from './const'
@@ -368,7 +369,8 @@ export type CreateAction = {
     logDialog: CLM.LogDialog,
 } | {
     type: AT.CREATE_APPLICATION_FULFILLED,
-    app: CLM.AppBase
+    app: CLM.AppBase,
+    obiImportData?: OBIImportData
 } | {
     type: AT.CREATE_CHAT_SESSION_ASYNC
 } | {

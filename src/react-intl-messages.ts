@@ -99,6 +99,7 @@ export enum FM {
     APPCREATOR_COPY_TITLE = 'AppCreator.copytitle',
     APPCREATOR_DISPATCHER_TITLE = 'AppCreator.dispatcherTitle',
     APPCREATOR_IMPORT_TITLE = 'AppCreator.importtitle',
+    APPCREATOR_OBI_TITLE = 'AppCreator.obititle',
     APPCREATOR_FIELDS_NAME_LABEL = 'AppCreator.fields.name.label',
     APPCREATOR_FIELDS_IMPORT_NAME_LABEL = 'AppCreator.fields.importname.label',
     APPCREATOR_FIELDS_NAME_PLACEHOLDER = 'AppCreator.fields.name.placeholder',
@@ -119,6 +120,8 @@ export enum FM {
     APPSLIST_EMPTY_TEXT = 'AppsList.emptyText',
     APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION = 'AppsList.importappButtonAriaDescription',
     APPSLIST_IMPORTAPP_BUTTONTEXT = 'AppsList.importappButtonText',
+    APPSLIST_IMPORTOBI_BUTTONARIADESCRIPTION = 'AppsList.importobiButtonAriaDescription',
+    APPSLIST_IMPORTOBI_BUTTONTEXT = 'AppsList.importobiButtonText',
     APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION = 'AppsList.importtutorialsButtonAriaDescription',
     APPSLIST_IMPORTTUTORIALS_BUTTONTEXT = 'AppsList.importtutorialsButtonText',
     APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION = 'AppsList.createDispatcherButtonAriaDescription',
@@ -145,7 +148,7 @@ export enum FM {
     BUTTON_COMPARE = 'Button.COMPARE',
     BUTTON_CREATE = 'Button.CREATE',
     BUTTON_DELETE = 'Button.DELETE',
-    BUTTON_ENTITY ='Button.ENTITY',
+    BUTTON_ENTITY = 'Button.ENTITY',
     BUTTON_EXPORT = 'Button.EXPORT',
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
@@ -674,6 +677,7 @@ export default {
         [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner Model',
         [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner Model',
         [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner Model',
+        [FM.APPCREATOR_OBI_TITLE]: 'Create a Model from OBI Files',
         [FM.APPCREATOR_DISPATCHER_TITLE]: 'Create a Dispatcher Model',
         [FM.APPCREATOR_FIELDS_NAME_LABEL]: 'Name',
         [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New Model Name',
@@ -715,6 +719,8 @@ export default {
         [FM.APPSLIST_EMPTY_TEXT]: 'Create a New Model',
         [FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION]: 'Import Model',
         [FM.APPSLIST_IMPORTAPP_BUTTONTEXT]: 'Import Model',
+        [FM.APPSLIST_IMPORTOBI_BUTTONARIADESCRIPTION]: 'Import OBI',
+        [FM.APPSLIST_IMPORTOBI_BUTTONTEXT]: 'Import OBI',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION]: 'Import Tutorials Models',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT]: 'Import Tutorials',
         [FM.APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION]: 'Create Dispatcher',
@@ -1012,7 +1018,6 @@ export default {
 
         // CompareDialogs
         [FM.COMPAREDIALOGS_EDIT]: 'Edit Dialog',
-
 
         // ConfirmCancelModal
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',

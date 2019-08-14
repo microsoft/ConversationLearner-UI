@@ -7,6 +7,52 @@ import * as BB from 'botbuilder'
 import * as Util from './util'
 import * as DialogEditing from './dialogEditing'
 import * as DialogUtils from './dialogUtils'
+import * as OBITypes from '../types/obiTypes'
+import { User } from '../types'
+
+export async function toTranscripts(
+    appDefinition: CLM.AppDefinition, 
+    appId: string,
+    user: User,
+    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
+    ): Promise<BB.Transcript[]> {
+
+    const definitions = {
+        entities: appDefinition.entities,
+        actions: appDefinition.actions,
+        trainDialogs: []
+    }
+
+    return Promise.all(appDefinition.trainDialogs.map(td => getHistory(appId, td, user, definitions, fetchHistoryAsync)))
+}
+
+export interface OBIImportData {
+    appId: string,
+    files: File[],
+    autoCreate: boolean,
+    autoMerge: boolean
+}
+
+export interface LGItem {
+    text: string,
+    suggestions: string[]
+}
+
+export interface ComposerDialog {
+    dialogs: OBITypes.OBIDialog[]
+    luMap: Map<string, string[]>
+    lgMap: Map<string, LGItem>
+}
+
+async function getHistory(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
+    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
+    ): Promise<BB.Transcript> {
+    const newTrainDialog = Util.deepCopy(trainDialog)
+    newTrainDialog.definitions = definitions
+
+    const teachWithHistory = await fetchHistoryAsync(appId, newTrainDialog, user.name, user.id, false)
+    return { activities: teachWithHistory.history }
+}
 
 interface TranscriptActionInput {
     entityName: string
@@ -184,7 +230,7 @@ export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityM
 }
 
 // Return hash text for the given activity
-export function hashTextFromActivity(activity: BB.Activity, entities: CLM.EntityBase[], filledEntities: CLM.FilledEntity[] | undefined) : string {
+export function hashTextFromActivity(activity: BB.Activity, entities: CLM.EntityBase[], filledEntities: CLM.FilledEntity[] | undefined): string {
 
     // If an API placeholder user the action name
     if (activity.channelData && activity.channelData.type === "ActionCall") {
@@ -255,7 +301,7 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
 }
 
 // Search for an action by hash
-function findActionFromHashText(hashText: string, actions: CLM.ActionBase[]): CLM.ActionBase | undefined {
+export function findActionFromHashText(hashText: string, actions: CLM.ActionBase[]): CLM.ActionBase | undefined {
     const importHash = Util.hashText(hashText)
 
     // Try to find matching action with same hash

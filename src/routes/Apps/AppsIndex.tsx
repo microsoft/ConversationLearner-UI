@@ -3,22 +3,20 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import {
-    Route,
-    Switch
-} from 'react-router-dom'
+import * as uuid from 'uuid/v4'
+import * as Util from '../../Utils/util'
+import actions from '../../actions'
+import AppIndex from './App/Index'
+import AppsList from './AppsList'
+import { Route, Switch } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import { AppBase, AppDefinition, TrainDialog } from '@conversationlearner/models'
-import actions from '../../actions'
-import AppIndex from './App/Index'
-import AppsList from './AppsList'
 import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
-import * as uuid from 'uuid/v4'
-import * as Util from '../../Utils/util'
+import { OBIImportData } from '../../Utils/obiUtils'
 import { SourceModel } from '../../types/models';
 
 class AppsIndex extends React.Component<Props> {
@@ -56,10 +54,10 @@ class AppsIndex extends React.Component<Props> {
         this.props.deleteApplicationThunkAsync(appToDelete.appId)
     }
 
-    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null) => {
-        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
+    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null, obiImportData?: OBIImportData) => {
+        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source, obiImportData) as any as Promise<AppBase>)
         const { match, history } = this.props
-        history.push(`${match.url}/${app.appId}`, { app })
+        history.push(`${match.url}/${app.appId}${obiImportData ? "/trainDialogs" : ""}`, { app })
     }
 
     onCreateDispatchModel = async (appToCreate: AppBase, childrenModels: AppBase[]) => {

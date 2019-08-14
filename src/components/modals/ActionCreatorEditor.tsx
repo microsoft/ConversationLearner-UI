@@ -246,6 +246,7 @@ interface IConditionalTag extends OF.ITag {
 
 export interface NewActionPreset {
     text: string,
+    buttons: string[],
     isTerminal: boolean
 }
 
@@ -557,7 +558,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             await Util.setStateAsync(this, { isTerminal: props.newActionPreset.isTerminal })
 
             // If a good card match exists switch to card view
-            const bestCard = this.bestCardMatch(props.newActionPreset.text, CARD_MATCH_THRESHOLD)
+            const bestCard = this.bestCardMatch(props.newActionPreset, CARD_MATCH_THRESHOLD)
             if (bestCard) {
                 let index = actionTypeOptions.findIndex(ao => ao.key === CLM.ActionTypes.CARD)
                 await this.onChangeActionType(actionTypeOptions[index])
@@ -744,11 +745,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             slateValuesMap: newSlateValues
         })
 
-        // LARS TEMP CCI
         if (this.props.newActionPreset) {
             if (template.variables.length > 0) {
                 const semiSplit = this.presetText(this.props.newActionPreset.text).split(';')
 
+                // TEMP CCI parsing to extract title
                 // Assume first value is question followed by first button
                 let firstSplit = semiSplit[0].split('?')
                 // If no question mark, assume is first period
@@ -760,20 +761,30 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 const title = Plain.deserialize(`${rawTitle}?`)
                 this.onChangePayloadEditor(title, template.variables[0].key)
 
-                // Gather button text
-                let rawButtons: string[]
-                if (firstSplit[1]) {
-                    rawButtons = [firstSplit[firstSplit.length - 1], ...semiSplit.slice(1, semiSplit.length)]
+                let buttons: any[]
+                if (this.props.newActionPreset.buttons.length > 0) {
+                    buttons = this.props.newActionPreset.buttons.map(t => Plain.deserialize(t))
+
                 }
                 else {
-                    rawButtons = semiSplit.slice(1, semiSplit.length)
-                }
-                const buttons = rawButtons.map(t => Plain.deserialize(t))
-                buttons.forEach((button, index) => {
-                    if ((index + 1) < template.variables.length) {
-                        this.onChangePayloadEditor(button, template.variables[index + 1].key)
+                    // TEMP CCI button extraction
+                    // Gather button text
+                    let rawButtons: string[]
+                    if (firstSplit[1]) {
+                        rawButtons = [firstSplit[firstSplit.length - 1], ...semiSplit.slice(1, semiSplit.length)]
                     }
-                })
+                    else {
+                        rawButtons = semiSplit.slice(1, semiSplit.length)
+                    }
+                    buttons = rawButtons.map(t => Plain.deserialize(t))
+                }
+                if (buttons) {
+                    buttons.forEach((button, index) => {
+                        if ((index + 1) < template.variables.length) {
+                            this.onChangePayloadEditor(button, template.variables[index + 1].key)
+                        }
+                    })
+                }
             }
         }
     }
@@ -1145,7 +1156,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         // If have preset text, pick the best matching card
         if (this.state.selectedActionTypeOptionKey === CLM.ActionTypes.CARD && this.props.newActionPreset) {
-            const bestCard = this.bestCardMatch(this.props.newActionPreset.text)
+            const bestCard = this.bestCardMatch(this.props.newActionPreset)
             if (bestCard) {
                 await this.onChangeCardOption(bestCard)
             }
@@ -1153,20 +1164,32 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     // Return card that best matches the given text
-    bestCardMatch(text: string, threshold: number = 0): OF.IDropdownOption | null {
+    bestCardMatch(newActionPreset: NewActionPreset, threshold: number = 0): OF.IDropdownOption | null {
         // Pre-select card that is closest matching to template
         let bestScore = 0
         let bestCard: OF.IDropdownOption | null = null
         for (let cardOption of this.state.cardOptions) {
             const template = this.props.botInfo.templates.find(t => t.name === cardOption.key)
-            const score = (template && template.body)
-                ? compareTwoStrings(text, template.body)
-                : 0
-            if (score > threshold && score > bestScore) {
-                bestScore = score
-                bestCard = cardOption
+            if (template) {
+                const templateButtonCount = template.variables.filter(v => v.type === "Action.Submit").length
+                if (templateButtonCount === newActionPreset.buttons.length) {
+                    const score = (template && template.body)
+                        ? compareTwoStrings(newActionPreset.text, template.body)
+                        : 0
+                    if (score > threshold && score > bestScore) {
+                        bestScore = score
+                        bestCard = cardOption
+                    }
+                    // Try to map to generic card with right number of buttons if no winner yet
+                    else if (!bestCard && Util.isTemplateTitleGeneric(template)) {
+                        if (templateButtonCount === newActionPreset.buttons.length) {
+                            bestCard = cardOption 
+                        }
+                    }
+                }
             }
         }
+        
         return bestCard
     }
 

@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
-import { PartialTrainDialog, AppInput } from '../types/models'
+import { PartialTrainDialog } from '../types/models'
 import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import * as querystring from 'query-string'
 
@@ -127,7 +127,7 @@ export default class ClClient {
     }
 
     // AT.CREATE_APPLICATION_ASYNC
-    async appsCreate(userId: string, appInput: AppInput): Promise<CLM.AppBase> {
+    async appsCreate(userId: string, appInput: Partial<CLM.AppBase>): Promise<CLM.AppBase> {
         const response = await this.send<CLM.AppBase>({
             method: 'post',
             url: `/app?userId=${userId}`,
