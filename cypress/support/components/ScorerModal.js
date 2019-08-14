@@ -142,6 +142,15 @@ export function VerifyScoreActions(expectedScoreActions) {
       FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
         let score = helpers.TextContentWithoutNewlines(elements[0])
         if (score != expectedScoreAction.score) {
+          if (score.endsWith('%') && expectedScoreAction.score.endsWith('%')) {
+            score = +score.replace(/(.|%)/gm, '')
+            const expectedScore = +expectedScoreAction.score.replace(/(\.|%)/gm, '')
+            if (score < expectedScore - 10 || score > expectedScore + 10) {
+              AccumulateErrors(`Expected to find a score within 10% of '${expectedScoreAction.score}' but instead found this '${score}'`)
+            }
+            return
+          }
+
           AccumulateErrors(`Expected to find a score with '${expectedScoreAction.score}' but instead found this '${score}'`)
         }
       })
@@ -291,26 +300,39 @@ export class GeneratedData {
   constructor(dataFileName) {
     this.dataFileName = dataFileName
     this.generateScoreActionsData = Cypress.env('GENERATE_SCORE_ACTIONS_DATA')
+  }
+
+  LoadGeneratedData() {
     if (this.generateScoreActionsData) {
-      this.data = {}
+      this.data = []
     } else {
       it('Read the generated Score Actions data from a JSON file', () => {
-        cy.readFile(`cypress/fixtures/scoreActions/${dataFileName}`).then(scoreActionsData => this.data = scoreActionsData)
+        cy.readFile(`cypress/fixtures/scoreActions/${this.dataFileName}`).then(scoreActionsData => this.data = scoreActionsData)
       })
+      this.index = 0
     }
   }
   
-  VerifyScoreActionsListOrGenerateData
+  VerifyScoreActionsListOrGenerateData() {
+    if (this.generateScoreActionsData) {
+      it('GENERATE the Score Actions data', () => {
+        cy.wait(2000)
+        cy.WaitForStableDOM().then(() => { this.data.push(GenerateScoreActionsDataFromGrid()) })
+      })
+    } else {
+      it('Verify the Score Actions data', () => {
+        cy.WaitForStableDOM().then(() => VerifyScoreActions(this.data[this.index++]))
+      })
+    }
+  }
+
+  SaveGeneratedData() {
+    if (this.generateScoreActionsData) {
+      context('PERSIST GENERATED DATA', () => {
+        it('Write the generated Score Actions data to a JSON file', () => {
+          cy.writeFile(`cypress/fixtures/scoreActions/${this.dataFileName}`, this.data)
+        })
+      })
+    }    
   }
 }
-
-it.GenerateScoreActionsDataFile = () => {
-  if (!generateScoreActionsData) {
-    it('Read the generated Score Actions data from a JSON file', () => {
-      cy.readFile('cypress/fixtures/scoreActions/disqualifyingEntities.json').then(scoreActionsData => scoreActionsVerificationData = scoreActionsData)
-    })
-  }
-
-}
-
-it.VerifyOrGenerateScoreActionList

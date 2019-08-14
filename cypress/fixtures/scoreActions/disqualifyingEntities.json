@@ -1,5 +1,5 @@
-{
-  "hey1": [
+[
+  [
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "What's your name?",
@@ -9,44 +9,6 @@
         {
           "name": "name",
           "qualifierState": "GreenStrikeout"
-        }
-      ],
-      "wait": true
-    },
-    {
-      "buttonTestId": "action-scorer-button-no-click",
-      "response": "Hey $name",
-      "type": "TEXT",
-      "score": "Disqualified",
-      "entities": [
-        {
-          "name": "name",
-          "qualifierState": "Red"
-        },
-        {
-          "name": "sweets",
-          "qualifierState": "GreenStrikeout"
-        },
-        {
-          "name": "want",
-          "qualifierState": "GreenStrikeout"
-        }
-      ],
-      "wait": true
-    },
-    {
-      "buttonTestId": "action-scorer-button-no-click",
-      "response": "Sorry $name, I can't help you get $want",
-      "type": "TEXT",
-      "score": "Disqualified",
-      "entities": [
-        {
-          "name": "name",
-          "qualifierState": "Red"
-        },
-        {
-          "name": "want",
-          "qualifierState": "Red"
         }
       ],
       "wait": true
@@ -71,9 +33,47 @@
         }
       ],
       "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Sorry $name, I can't help you get $want",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "want",
+          "qualifierState": "Red"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Hey $name",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "want",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
     }
   ],
-  "sam": [
+  [
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hey Sam",
@@ -118,19 +118,6 @@
     },
     {
       "buttonTestId": "action-scorer-button-no-click",
-      "response": "What's your name?",
-      "type": "TEXT",
-      "score": "Disqualified",
-      "entities": [
-        {
-          "name": "name",
-          "qualifierState": "RedStrikeout"
-        }
-      ],
-      "wait": true
-    },
-    {
-      "buttonTestId": "action-scorer-button-no-click",
       "response": "Sorry Sam, I can't help you get $want",
       "type": "TEXT",
       "score": "Disqualified",
@@ -145,9 +132,22 @@
         }
       ],
       "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
     }
   ],
-  "hey2": [
+  [
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hey Sam",
@@ -192,19 +192,6 @@
     },
     {
       "buttonTestId": "action-scorer-button-no-click",
-      "response": "What's your name?",
-      "type": "TEXT",
-      "score": "Disqualified",
-      "entities": [
-        {
-          "name": "name",
-          "qualifierState": "RedStrikeout"
-        }
-      ],
-      "wait": true
-    },
-    {
-      "buttonTestId": "action-scorer-button-no-click",
       "response": "Sorry Sam, I can't help you get $want",
       "type": "TEXT",
       "score": "Disqualified",
@@ -219,9 +206,22 @@
         }
       ],
       "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
     }
   ],
-  "worldPeace": [
+  [
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Sorry Sam, I can't help you get world peace",
@@ -235,6 +235,27 @@
         {
           "name": "want",
           "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Hey Sam, what do you really want?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "want",
+          "qualifierState": "RedStrikeout"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
         }
       ],
       "wait": true
@@ -272,30 +293,9 @@
         }
       ],
       "wait": true
-    },
-    {
-      "buttonTestId": "action-scorer-button-no-click",
-      "response": "Hey Sam, what do you really want?",
-      "type": "TEXT",
-      "score": "Disqualified",
-      "entities": [
-        {
-          "name": "name",
-          "qualifierState": "Green"
-        },
-        {
-          "name": "want",
-          "qualifierState": "RedStrikeout"
-        },
-        {
-          "name": "sweets",
-          "qualifierState": "GreenStrikeout"
-        }
-      ],
-      "wait": true
     }
   ],
-  "million": [
+  [
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "What's your name?",
@@ -305,44 +305,6 @@
         {
           "name": "name",
           "qualifierState": "GreenStrikeout"
-        }
-      ],
-      "wait": true
-    },
-    {
-      "buttonTestId": "action-scorer-button-no-click",
-      "response": "Hey $name",
-      "type": "TEXT",
-      "score": "Disqualified",
-      "entities": [
-        {
-          "name": "name",
-          "qualifierState": "Red"
-        },
-        {
-          "name": "sweets",
-          "qualifierState": "GreenStrikeout"
-        },
-        {
-          "name": "want",
-          "qualifierState": "RedStrikeout"
-        }
-      ],
-      "wait": true
-    },
-    {
-      "buttonTestId": "action-scorer-button-no-click",
-      "response": "Sorry $name, I can't help you get a million dollars",
-      "type": "TEXT",
-      "score": "Disqualified",
-      "entities": [
-        {
-          "name": "name",
-          "qualifierState": "Red"
-        },
-        {
-          "name": "want",
-          "qualifierState": "Green"
         }
       ],
       "wait": true
@@ -367,9 +329,47 @@
         }
       ],
       "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Sorry $name, I can't help you get a million dollars",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "want",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Hey $name",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "want",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
     }
   ],
-  "sandeep": [
+  [
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Sorry Sandeep, I can't help you get a million dollars",
@@ -383,6 +383,27 @@
         {
           "name": "want",
           "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "Hey Sandeep, what do you really want?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "want",
+          "qualifierState": "RedStrikeout"
+        },
+        {
+          "name": "sweets",
+          "qualifierState": "GreenStrikeout"
         }
       ],
       "wait": true
@@ -420,27 +441,6 @@
         }
       ],
       "wait": true
-    },
-    {
-      "buttonTestId": "action-scorer-button-no-click",
-      "response": "Hey Sandeep, what do you really want?",
-      "type": "TEXT",
-      "score": "Disqualified",
-      "entities": [
-        {
-          "name": "name",
-          "qualifierState": "Green"
-        },
-        {
-          "name": "want",
-          "qualifierState": "RedStrikeout"
-        },
-        {
-          "name": "sweets",
-          "qualifierState": "GreenStrikeout"
-        }
-      ],
-      "wait": true
     }
   ]
-}
+]
