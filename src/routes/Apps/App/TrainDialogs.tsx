@@ -144,6 +144,23 @@ const defaultActionFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.forma
 const defaultTagFilter = (intl: InjectedIntl) => ({ key: -1, text: Util.formatMessageId(intl, FM.TRAINDIALOGS_FILTERING_TAGS) })
 const getDialogKey = (trainDialog: OF.IObjectWithKey) => (trainDialog as CLM.TrainDialog).trainDialogId
 
+/**
+ * If metadata string contains dispatch info, return list of model id and name pairs
+ * otherwise, return undefined
+ * Example: dispatcher 0dd100e3-6b04-4c7f-b602-1e73f69337e5,pizzaOrder 5dd2adcc-06d6-4f1f-a71c-6c23d7044b3f,uberBooking
+ * [[0dd100e3-6b04-4c7f-b602-1e73f69337e5, pizzaOrder], [5dd2adcc-06d6-4f1f-a71c-6c23d7044b3f, uberBooking]]
+ * 
+ * @param metadata App Metadata
+ */
+const getDispatchInfo = (metadata: string): [string, string][] | undefined => {
+    if (!metadata.includes('dispatcher')) {
+        return undefined
+    }
+
+    const [, ...modelStrings] = metadata.split('\n')
+    return modelStrings.map(m => m.split(',') as [string, string])
+}
+
 interface ComponentState {
     columns: IRenderableColumn[]
     sortColumn: IRenderableColumn
@@ -161,6 +178,7 @@ interface ComponentState {
     replayDialogs: CLM.TrainDialog[]
     replayDialogIndex: number
     isReplaySelectedActive: boolean
+    isRegenActive: boolean
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
@@ -213,6 +231,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             importAutoMerge: false,
             isTreeViewModalOpen: false,
             isReplaySelectedActive: false,
+            isRegenActive: false,
             replayDialogs: [],
             replayDialogIndex: 0,
             mergeExistingTrainDialog: null,
@@ -1037,6 +1056,28 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
+    @autobind
+    async onClickRegen(dispatchInfo?: [string, string][]) {
+        if (!dispatchInfo) {
+            console.warn(`User should not be able to click "Regenerate" if there is no dispatch info`)
+            return
+        }
+
+        await Util.setStateAsync(this, {
+            isRegenActive: true,
+        })
+
+        const modelIds = dispatchInfo.map(([modelId, modelName]) => modelId)
+        const trainDialogs = await Promise.all(modelIds.map(modelId => this.props.fetchAllTrainDialogsThunkAsync(modelId)))
+        console.log({ trainDialogs })
+
+        await Util.delay(3000)
+
+        this.setState({
+            isRegenActive: false,
+        })
+    }
+
     //-----------------------------
     // Transcript import
     //-----------------------------
@@ -1362,6 +1403,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         const isEditingDisabled = (this.props.editingPackageId !== this.props.app.devPackageId) || this.props.invalidBot
 
+        const dispatchInfo = getDispatchInfo(this.props.app.metadata.markdown || '')
+        const isDispatchModel = Array.isArray(dispatchInfo)
+
         return (
             <div className="cl-page">
                 <div data-testid="train-dialogs-title" className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
@@ -1422,6 +1466,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         ariaDescription={Util.formatMessageId(intl, FM.BUTTON_REPLAY_SELECTED, { selectionCount: this.state.selectionCount })}
                         text={Util.formatMessageId(intl, FM.BUTTON_REPLAY_SELECTED, { selectionCount: this.state.selectionCount })}
                     />
+
+                    {isDispatchModel &&
+                        <OF.DefaultButton
+                            iconProps={{
+                                iconName: "Refresh"
+                            }}
+                            disabled={this.state.isRegenActive}
+                            onClick={(j) => this.onClickRegen(dispatchInfo)}
+                            ariaDescription={Util.formatMessageId(intl, FM.BUTTON_REGENERATE, { selectionCount: this.state.selectionCount })}
+                            text={Util.formatMessageId(intl, FM.BUTTON_REGENERATE, { selectionCount: this.state.selectionCount })}
+                        />
+                    }
                 </div>
                 <TreeView
                     open={this.state.isTreeViewModalOpen}
@@ -1744,6 +1800,7 @@ const mapDispatchToProps = (dispatch: any) => {
         extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
+        fetchAllTrainDialogsThunkAsync: actions.train.fetchAllTrainDialogsThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         fetchExtractionsThunkAsync: actions.app.fetchExtractionsThunkAsync,
         trainDialogMergeThunkAsync: actions.train.trainDialogMergeThunkAsync,

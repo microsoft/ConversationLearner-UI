@@ -133,7 +133,7 @@ class AppsIndex extends React.Component<Props> {
 
 function generateDispatcherSource(
     sourceModelPairs: SourceAndModelPair[],
-    transitionRoundLimit: number = 4
+    transitionRoundLimit: number = 3
 ): CLM.AppDefinition {
     /**
      * Generate 1 Dispatch Action per model and associate with source + model pair
@@ -260,13 +260,17 @@ function generateDispatcherSource(
             // Get rounds from dialogs other than the one being dispatched
             const otherDialogsRounds = allDialogsRounds.filter((_, j) => j !== i)
 
+            // TODO: Adapt to be able to transition at multiple points in dialog
+            // Beginning (First 4) and End (Last 4) ?
+            const possibleTransitionRounds = rs
+                // Only attempt to transition within first 4 rounds
+                // After 4, assume user will stay on task
+                .filter((_, j) => j <= transitionRoundLimit)
+
             // For each round, try to transition to one of the other dialogs
             return otherDialogsRounds
                 .map((dialogRounds) => {
-                    return rs
-                        // Only attempt to transition within first 4 rounds
-                        // After 4, assume user will stay on task
-                        .filter((_, j) => j <= transitionRoundLimit)
+                    return possibleTransitionRounds
                         .map((_, k) => {
                             // Get rounds until index
                             const firstRounds = rs.slice(0, k + 1)
