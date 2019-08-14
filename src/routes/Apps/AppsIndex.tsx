@@ -3,8 +3,6 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import * as uuid from 'uuid/v4'
-import * as Util from '../../Utils/util'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
@@ -55,8 +53,8 @@ class AppsIndex extends React.Component<Props> {
         this.props.deleteApplicationThunkAsync(appToDelete.appId)
     }
 
-    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null, obiImportData?: OBIImportData) => {
-        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source, obiImportData) as any as Promise<AppBase>)
+    onCreateApp = async (appToCreate: CLM.AppBase, source: CLM.AppDefinition | null = null, obiImportData?: OBIImportData) => {
+        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source, obiImportData) as any as Promise<CLM.AppBase>)
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}${obiImportData ? "/trainDialogs" : ""}`, { app })
     }
