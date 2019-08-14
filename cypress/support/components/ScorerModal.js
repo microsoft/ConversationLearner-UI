@@ -114,18 +114,6 @@ export function VerifyScoreActions(expectedScoreActions) {
     for (let i = 0; i < expectedScoreActions.length; i++) {
       expectedScoreAction = expectedScoreActions[i]
       let expectedButtonTestId
-
-      switch (expectedScoreAction.score) {
-        case '100.0%':
-          expectedButtonTestId = 'action-scorer-button-selected'
-          break
-        case 'Disqualified':
-          expectedButtonTestId = 'action-scorer-button-no-click'
-          break
-        default:
-            expectedButtonTestId = 'action-scorer-button-clickable'
-            break
-      }
       rowIndex = undefined
       
       // This gets the row of the Score Action to validate and it also validates the response while doing so.
@@ -144,7 +132,7 @@ export function VerifyScoreActions(expectedScoreActions) {
       // Verify the button.
       FindWithinAndVerify(rowElement, `find('[data-testid^="action-scorer-button-"]')`, elements => {
         let attr = elements.attr('data-testid')
-        if (attr != expectedButtonTestId) {
+        if (attr != expectedScoreAction.buttonTestId) {
           AccumulateErrors(`Expected to find data-testid="${expectedButtonTestId}" instead we found "${attr}"`)
         }
       })
@@ -233,6 +221,11 @@ export function GenerateScoreActionsDataFromGrid() {
     let rowElement = Cypress.$(rowsElements[rowIndex]).find('div.ms-DetailsRow-fields')[0]
     helpers.ConLog(funcName, `Row #: ${rowIndex} - Element found: ${rowElement.outerHTML}`)
 
+    // Verify the button.
+    FindWithinAndCapture(rowElement, `find('[data-testid^="action-scorer-button-"]')`, elements => {
+      let attr = elements.attr('data-testid')
+      rowData.buttonTestId = attr
+    })
     
     // Response
     FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-text-response"], [data-testid="action-scorer-api"], [data-testid="action-scorer-session-response-user"], [data-testid="action-scorer-card"], [data-testid="action-scorer-action-set-entity"]')`, elements => {
@@ -293,3 +286,31 @@ export function GenerateScoreActionsDataFromGrid() {
   
   return generatedData
 }
+
+export class GeneratedData {
+  constructor(dataFileName) {
+    this.dataFileName = dataFileName
+    this.generateScoreActionsData = Cypress.env('GENERATE_SCORE_ACTIONS_DATA')
+    if (this.generateScoreActionsData) {
+      this.data = {}
+    } else {
+      it('Read the generated Score Actions data from a JSON file', () => {
+        cy.readFile(`cypress/fixtures/scoreActions/${dataFileName}`).then(scoreActionsData => this.data = scoreActionsData)
+      })
+    }
+  }
+  
+  VerifyScoreActionsListOrGenerateData
+  }
+}
+
+it.GenerateScoreActionsDataFile = () => {
+  if (!generateScoreActionsData) {
+    it('Read the generated Score Actions data from a JSON file', () => {
+      cy.readFile('cypress/fixtures/scoreActions/disqualifyingEntities.json').then(scoreActionsData => scoreActionsVerificationData = scoreActionsData)
+    })
+  }
+
+}
+
+it.VerifyOrGenerateScoreActionList

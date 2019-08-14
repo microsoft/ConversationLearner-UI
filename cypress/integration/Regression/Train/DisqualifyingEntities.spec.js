@@ -19,7 +19,7 @@ describe('Disqualifying Entities - Train', () => {
 
   context('Setup', () => {
     if (!generateScoreActionsData) {
-      it('Write the generated Score Actions data to a JSON file', () => {
+      it('Read the generated Score Actions data from a JSON file', () => {
         cy.readFile('cypress/fixtures/scoreActions/disqualifyingEntities.json').then(scoreActionsData => scoreActionsVerificationData = scoreActionsData)
       })
     }
@@ -40,10 +40,12 @@ describe('Disqualifying Entities - Train', () => {
       it('Should type in a user utterance and click Score Actions button', () => {
         train.TypeYourMessage('Hey')
         train.ClickScoreActionsButton()
+        cy.WaitForStableDOM()
       })
 
       if (generateScoreActionsData) {
         it('Should generate the Score Actions list', () => {
+          cy.wait(2000)
           cy.WaitForStableDOM().then(() => { scoreActionsVerificationData.hey1 = scorerModal.GenerateScoreActionsDataFromGrid() })
         })
       } else {
@@ -69,6 +71,7 @@ describe('Disqualifying Entities - Train', () => {
         train.TypeYourMessage('Sam')
         train.VerifyEntityLabel('Sam', 'name')
         train.ClickScoreActionsButton()
+        cy.WaitForStableDOM()
       })
 
       it('Should verify the labeled Entity appears in the Memory pane', () => {
@@ -77,6 +80,7 @@ describe('Disqualifying Entities - Train', () => {
 
       if (generateScoreActionsData) {
         it('Should generate the Score Actions list', () => {
+          cy.wait(2000)
           cy.WaitForStableDOM().then(() => { scoreActionsVerificationData.sam = scorerModal.GenerateScoreActionsDataFromGrid() })
         })
       } else {
@@ -101,6 +105,7 @@ describe('Disqualifying Entities - Train', () => {
       it('Should type in another user utterance and click Score Actions button', () => {
         train.TypeYourMessage('Hey')
         train.ClickScoreActionsButton()
+        cy.WaitForStableDOM()
       })
 
       it('Should verify the labeled Entity still appears in the Memory pane', () => {
@@ -109,6 +114,7 @@ describe('Disqualifying Entities - Train', () => {
     
       if (generateScoreActionsData) {
         it('Should generate the Score Actions list', () => {
+          cy.wait(2000)
           cy.WaitForStableDOM().then(() => { scoreActionsVerificationData.hey2 = scorerModal.GenerateScoreActionsDataFromGrid() })
         })
       } else {
@@ -133,6 +139,7 @@ describe('Disqualifying Entities - Train', () => {
       it('Should type in the last user utterance and click Score Actions button', () => {
         train.TypeYourMessage('world peace')
         train.ClickScoreActionsButton()
+        cy.WaitForStableDOM()
       })
 
       it('Should verify the 1st labeled Entity still appears in the Memory pane', () => {
@@ -145,6 +152,7 @@ describe('Disqualifying Entities - Train', () => {
 
       if (generateScoreActionsData) {
         it('Should generate the Score Actions list', () => {
+          cy.wait(2000)
           cy.WaitForStableDOM().then(() => { scoreActionsVerificationData.worldPeace = scorerModal.GenerateScoreActionsDataFromGrid() })
         })
       } else {
@@ -180,10 +188,12 @@ describe('Disqualifying Entities - Train', () => {
         train.TypeYourMessage('I want a million dollars')
         train.LabelTextAsEntity('a million dollars', 'want')
         train.ClickScoreActionsButton()
+        cy.WaitForStableDOM()
       })
 
       if (generateScoreActionsData) {
         it('Should generate the Score Actions list', () => {
+          cy.wait(2000)
           cy.WaitForStableDOM().then(() => { scoreActionsVerificationData.million = scorerModal.GenerateScoreActionsDataFromGrid() })
         })
       } else {
@@ -209,10 +219,12 @@ describe('Disqualifying Entities - Train', () => {
         train.TypeYourMessage('Sandeep')
         train.VerifyEntityLabel('Sandeep', 'name')
         train.ClickScoreActionsButton()
+        cy.WaitForStableDOM()
       })
 
       if (generateScoreActionsData) {
         it('Should generate the Score Actions list', () => {
+          cy.wait(2000)
           cy.WaitForStableDOM().then(() => { scoreActionsVerificationData.sandeep = scorerModal.GenerateScoreActionsDataFromGrid() })
         })
       } else {

@@ -1,6 +1,7 @@
 {
   "hey1": [
     {
+      "buttonTestId": "action-scorer-button-clickable",
       "response": "What's your name?",
       "type": "TEXT",
       "score": "100.0%",
@@ -13,6 +14,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "Hey $name",
       "type": "TEXT",
       "score": "Disqualified",
@@ -33,6 +35,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "Sorry $name, I can't help you get $want",
       "type": "TEXT",
       "score": "Disqualified",
@@ -49,6 +52,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "Hey $name, what do you really want?",
       "type": "TEXT",
       "score": "Disqualified",
@@ -71,6 +75,7 @@
   ],
   "sam": [
     {
+      "buttonTestId": "action-scorer-button-clickable",
       "response": "Hey Sam",
       "type": "TEXT",
       "score": "51.3%",
@@ -91,6 +96,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-clickable",
       "response": "Hey Sam, what do you really want?",
       "type": "TEXT",
       "score": "48.7%",
@@ -111,6 +117,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "What's your name?",
       "type": "TEXT",
       "score": "Disqualified",
@@ -123,6 +130,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "Sorry Sam, I can't help you get $want",
       "type": "TEXT",
       "score": "Disqualified",
@@ -141,6 +149,7 @@
   ],
   "hey2": [
     {
+      "buttonTestId": "action-scorer-button-clickable",
       "response": "Hey Sam",
       "type": "TEXT",
       "score": "51.9%",
@@ -161,6 +170,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-clickable",
       "response": "Hey Sam, what do you really want?",
       "type": "TEXT",
       "score": "48.1%",
@@ -181,6 +191,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "What's your name?",
       "type": "TEXT",
       "score": "Disqualified",
@@ -193,6 +204,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "Sorry Sam, I can't help you get $want",
       "type": "TEXT",
       "score": "Disqualified",
@@ -211,6 +223,7 @@
   ],
   "worldPeace": [
     {
+      "buttonTestId": "action-scorer-button-clickable",
       "response": "Sorry Sam, I can't help you get world peace",
       "type": "TEXT",
       "score": "100.0%",
@@ -227,6 +240,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "Hey Sam",
       "type": "TEXT",
       "score": "Disqualified",
@@ -247,6 +261,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "What's your name?",
       "type": "TEXT",
       "score": "Disqualified",
@@ -259,6 +274,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "Hey Sam, what do you really want?",
       "type": "TEXT",
       "score": "Disqualified",
@@ -281,6 +297,7 @@
   ],
   "million": [
     {
+      "buttonTestId": "action-scorer-button-clickable",
       "response": "What's your name?",
       "type": "TEXT",
       "score": "100.0%",
@@ -293,6 +310,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "Hey $name",
       "type": "TEXT",
       "score": "Disqualified",
@@ -313,6 +331,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "Sorry $name, I can't help you get a million dollars",
       "type": "TEXT",
       "score": "Disqualified",
@@ -329,6 +348,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "Hey $name, what do you really want?",
       "type": "TEXT",
       "score": "Disqualified",
@@ -351,6 +371,7 @@
   ],
   "sandeep": [
     {
+      "buttonTestId": "action-scorer-button-clickable",
       "response": "Sorry Sandeep, I can't help you get a million dollars",
       "type": "TEXT",
       "score": "100.0%",
@@ -367,6 +388,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "Hey Sandeep",
       "type": "TEXT",
       "score": "Disqualified",
@@ -387,6 +409,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "What's your name?",
       "type": "TEXT",
       "score": "Disqualified",
@@ -399,6 +422,7 @@
       "wait": true
     },
     {
+      "buttonTestId": "action-scorer-button-no-click",
       "response": "Hey Sandeep, what do you really want?",
       "type": "TEXT",
       "score": "Disqualified",
