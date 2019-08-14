@@ -1084,9 +1084,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isRegenActive: true,
         })
 
-        const trainDialogs = await this.props.regenerateDispatchTrainDialogsAsync(this.props.actions)
-
-        console.log({ trainDialogs })
+        await this.props.regenerateDispatchTrainDialogsAsync(this.props.app.appId, this.props.actions, this.props.trainDialogs)
 
         this.setState({
             isRegenActive: false,

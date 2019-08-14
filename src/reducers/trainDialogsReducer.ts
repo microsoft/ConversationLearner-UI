@@ -18,6 +18,8 @@ const trainDialogsReducer: Reducer<TrainDialogState> = produce((state: TrainDial
             return action.allTrainDialogs
         case AT.FETCH_APPSOURCE_FULFILLED:
             return action.appDefinition.trainDialogs
+        case AT.REGENERATE_DISPATCH_DIALOGS_FULFILLED:
+            return action.trainDialogs
         case AT.SOURCE_PROMOTE_UPDATED_APP_DEFINITION:
             return action.updatedAppDefinition.trainDialogs
         case AT.CREATE_APPLICATION_FULFILLED:

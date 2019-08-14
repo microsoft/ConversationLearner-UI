@@ -288,14 +288,15 @@ const regenerateDispatchDialogsFulfilled = (trainDialogs: CLM.TrainDialog[]): Ac
     }
 }
 
-export const regenerateDispatchTrainDialogsAsync = (actions: CLM.ActionBase[]) => {
+export const regenerateDispatchTrainDialogsAsync = (dispatchModelId: string, actions: CLM.ActionBase[], existingTrainDialogs: CLM.TrainDialog[]) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.REGENERATE_DISPATCH_DIALOGS_ASYNC)
         dispatch(regenerateDispatchDialogsAsync())
 
         try {
-            // Associate existing DISPATCH actions with sources model pairs instead of regenerating those
-            // need to preserve the ID's 
+            // Associate existing DISPATCH actions with sources model pairs to preserve GUID references
+            // Otherwise, will have to delete and recreate Actions as well as Dialogs
+            // generateDispatcherSource, only generates actions if it was undefined
             const sourceModelPairs = await Promise.all(actions
                 .filter(a => a.actionType === ActionTypes.DISPATCH)
                 .map<Promise<SourceAndModelPair>>(async a => {
@@ -314,6 +315,12 @@ export const regenerateDispatchTrainDialogsAsync = (actions: CLM.ActionBase[]) =
                 }))
 
             const dispatcherSource = DispatchUtils.generateDispatcherSource(sourceModelPairs)
+
+            // Delete all existing dialogs
+            await Promise.all(existingTrainDialogs.map(td => clClient.trainDialogsDelete(dispatchModelId, td.trainDialogId)))
+
+            // Create all new dialogs
+            await Promise.all(dispatcherSource.trainDialogs.map(td => clClient.trainDialogsCreate(dispatchModelId, td)))
 
             dispatch(regenerateDispatchDialogsFulfilled(dispatcherSource.trainDialogs))
             return dispatcherSource.trainDialogs
