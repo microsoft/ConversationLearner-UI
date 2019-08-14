@@ -13,7 +13,7 @@ import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import { User, AppCreatorType } from '../../types'
 import { autobind } from 'core-decorators';
-import { OBIImportData } from '../../Utils/obiDialogParser';
+import { OBIImportData } from '../../Utils/obiUtils';
 
 export interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: CLM.AppBase, props: Props) => JSX.Element

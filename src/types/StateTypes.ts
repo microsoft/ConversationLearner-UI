@@ -6,7 +6,7 @@ import * as CLM from '@conversationlearner/models'
 import { ErrorType } from './const'
 import { AT } from './ActionTypes'
 import { TipType } from '../components/ToolTips/ToolTips'
-import { OBIImportData } from '../Utils/obiDialogParser';
+import { OBIImportData } from '../Utils/obiUtils';
 
 export type ActionState = CLM.ActionBase[];
 export type EntityState = CLM.EntityBase[];

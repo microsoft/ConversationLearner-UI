@@ -3,10 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import {
-    Route,
-    Switch
-} from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
@@ -17,7 +14,7 @@ import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
 import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
-import { OBIImportData } from '../../Utils/obiDialogParser'
+import { OBIImportData } from '../../Utils/obiUtils'
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {

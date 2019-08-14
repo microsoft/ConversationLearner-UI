@@ -17,7 +17,7 @@ import { FM } from '../../react-intl-messages'
 import { AT } from '../../types/ActionTypes'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators';
-import { OBIImportData } from '../../Utils/obiDialogParser'
+import { OBIImportData } from '../../Utils/obiUtils'
 
 interface ComponentState {
     appNameVal: string
