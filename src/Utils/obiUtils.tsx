@@ -7,7 +7,7 @@ import * as BB from 'botbuilder'
 import * as Util from './util'
 import * as DialogEditing from './dialogEditing'
 import * as DialogUtils from './dialogUtils'
-import * as OBITypes from '../types/OBITypes'
+import * as OBITypes from '../types/obiTypes'
 import { User } from '../types'
 
 export async function toTranscripts(
