@@ -8,6 +8,17 @@ import * as OBIUtils from './obiUtils'
 import Plain from 'slate-plain-serializer'
 import { OBIDialog } from '../types/obiTypes'
 
+enum OBIStepType {
+    TEXT_INPUT = "Microsoft.TextInput",
+    BEGIN_DIALOG = "Microsoft.BeginDialog",
+    END_TURN = "Microsoft.EndTurn",
+    SEND_ACTIVITY = "Microsoft.SendActivity"
+}
+
+enum OBIRuleType {
+    INTENT_RULE = "Microsoft.IntentRule"
+}
+
 export class ObiDialogParser {
     private composerDialog: OBIUtils.ComposerDialog
     private appId: string
@@ -95,7 +106,7 @@ export class ObiDialogParser {
         let trainDialogs: CLM.TrainDialog[] = []
         if (obiDialog.rules) {
             for (const rule of obiDialog.rules) {
-                if (rule.$type === "Microsoft.IntentRule") {
+                if (rule.$type === OBIRuleType.INTENT_RULE) {
     
                     const textVariations = this.getTextVariations(rule.intent!)
                     const extractorStep: CLM.TrainExtractorStep = {
@@ -108,7 +119,7 @@ export class ObiDialogParser {
                                 throw new Error("Unexpected string step")
                             }
                             else {
-                                if (step.$type === "Microsoft.BeginDialog" && typeof step.dialog === "string") {
+                                if (step.$type === OBIStepType.BEGIN_DIALOG && typeof step.dialog === "string") {
                                     
                                     const subDialog =  this.composerDialog.dialogs.find(d => d.$id === step.dialog)
                                     if (!subDialog) {
@@ -125,9 +136,6 @@ export class ObiDialogParser {
                                     // Add children to train dialog list
                                     trainDialogs = [...trainDialogs, ...childDialogs]
                                 }
-                                else if (step.$type === "Microsoft.SendActivity") {
-    
-                                }
                                 else {
                                     console.log(`Unhandled OBI Type: ${step.$type}`)
                                 }
@@ -143,7 +151,7 @@ export class ObiDialogParser {
                 if (typeof step === "string") {
                     throw new Error("Unexected step of type string")
                 }
-                else if (step.$type === "Microsoft.SendActivity") {
+                else if (step.$type === OBIStepType.SEND_ACTIVITY) {
                     if (!trainRound) {
                         trainRound = {
                             extractorStep: { textVariations: [] },
@@ -156,7 +164,7 @@ export class ObiDialogParser {
                     const scorerStep = await this.getScorerStepfromActivity(step.activity)
                     trainRound.scorerSteps.push(scorerStep)
                 }
-                else if (step.$type === "Microsoft.TextInput") {
+                else if (step.$type === OBIStepType.TEXT_INPUT) {
                     if (!trainRound) {
                         trainRound = {
                             extractorStep: { textVariations: [] },
@@ -169,7 +177,7 @@ export class ObiDialogParser {
                     const scorerStep = await this.getScorerStepfromActivity(step.prompt)
                     trainRound.scorerSteps.push(scorerStep)
                 }
-                else if (step.$type === "Microsoft.BeginDialog") {
+                else if (step.$type === OBIStepType.BEGIN_DIALOG) {
                     const subDialog =  this.composerDialog.dialogs.find(d => d.$id === step.dialog)
                     if (!subDialog) {
                         throw new Error(`Dialog name ${step.dialog} undefined`)
@@ -180,7 +188,7 @@ export class ObiDialogParser {
                     // Add children to train dialog list
                     trainDialogs = [...trainDialogs, ...childDialogs]
                 }
-                else if (step.$type !== "Microsoft.EndTurn") {
+                else if (step.$type !== OBIStepType.END_TURN) {
                     console.log(`Unhandled OBI Type: ${step.$type}`)
                 }
             }
@@ -208,7 +216,7 @@ export class ObiDialogParser {
         const parsedActivity = prompt.substring(prompt.indexOf("[") + 1, prompt.lastIndexOf("]")).trim()
         let response = this.composerDialog.lgMap.get(parsedActivity)
         if (!response) {
-            // LARS temp to handle badly create dialog
+            // LARS thow error once CCI .dialog transformer has been fixed
             response = { text: "Can't Parse LU", suggestions: []}
            //throw new Error(`LU name ${prompt} undefined`)
         }
