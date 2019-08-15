@@ -41,7 +41,7 @@ export class ObiDialogParser {
     
         const dialogs: OBIDialog[] = []
         const luMap: Map<string, string[]> = new Map()
-        const lgMap: Map<string, OBIUtils.LGItem> = new Map()
+        let lgMap: Map<string, OBIUtils.LGItem> = new Map()
         for (const file of files) {
             if (file.name.endsWith('.dialog')) {
                 const fileText = await Util.readFileAsync(file)
@@ -56,7 +56,7 @@ export class ObiDialogParser {
             }
             else if (file.name.endsWith('.lg')) {
                 const fileText = await Util.readFileAsync(file)
-                this.addToLGMap(fileText, lgMap)
+                lgMap = CLM.ObiUtils.parseLGString(fileText)
             }
         }
     
@@ -83,22 +83,6 @@ export class ObiDialogParser {
             }
         }
         return luMap
-    }
-    
-    private addToLGMap(text: string, lgMap: Map<string, OBIUtils.LGItem>): any {
-        const items = text.split('# ')
-        for (const item of items) {
-            const key = item.substring(0, item.indexOf("-")).trim()
-            const body = item.substring(item.indexOf("```") + 3, item.lastIndexOf("[")).trim()
-            const suggestionList = item.substring(item.lastIndexOf("[Suggestions=") + 13, item.lastIndexOf("]"))
-            const suggestions = suggestionList.length > 0 ? suggestionList.split('|') : []
-            const output = {
-                text: body,
-                suggestions
-            }
-            lgMap.set(key, output)
-        }
-        return lgMap
     }
     
     private async getTrainDialogsfromOBIDialog(obiDialog: OBIDialog): Promise<CLM.TrainDialog[]> {
