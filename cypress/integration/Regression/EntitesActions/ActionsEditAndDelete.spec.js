@@ -48,10 +48,10 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
 
     it('Should filter the Train Dialog list to only the 1 that contains the last Action we viewed', () => {
       actionModal.ClickTrainDialogFilterButton()
+      train.VerifyActionFilter('Goodbye')
     })
 
     it('Should edit Train Dialog that caused those Actions to have a disabled Type field and delete it', () => {
-// KNOWN TEST BUG HERE: Need to wait for grid filter to take affect cause it first renders the full list then it filters the list.      
       train.EditTraining('API', 'We are done here.', 'Goodbye')
       train.ClickAbandonDeleteButton()
       train.ClickConfirmAbandonDialogButton()
@@ -118,6 +118,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that filter Train Dialog on Action button works', () => {
       actionModal.ClickTrainDialogFilterButton()
+      train.VerifyActionFilter('Something extra')
       train.VerifyListOfTrainDialogs([
         {firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: 'Something extra'},
       ])
@@ -153,6 +154,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that filter Train Dialog on Action button works', () => {
       actionModal.ClickTrainDialogFilterButton()
+      train.VerifyActionFilter('Your entity contains: $entity')
       train.VerifyListOfTrainDialogs([
         {firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: ''},
         {firstInput: 'An entity: EEEFFFGGG', lastInput: 'An entity: EEEFFFGGG', lastResponse: 'Your entity contains: $entity'},

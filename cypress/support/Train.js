@@ -54,6 +54,8 @@ export function ClickUndoButton() { cy.Get('[data-testid="edit-teach-dialog-undo
 export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }
 export function ClickReplayButton() { cy.Get('[data-testid="edit-dialog-modal-replay-button"]').Click() }
 
+export function VerifyEntityFilter(entity) { cy.Get('[data-testid="dropdown-filter-by-entity"] > span.ms-Dropdown-title').ExactMatch(entity) }
+export function VerifyActionFilter(action) { cy.Get('[data-testid="dropdown-filter-by-action"] > span.ms-Dropdown-title').ExactMatch(action) }
 export function ClickClearFilterButton() { cy.Get('[data-testid="train-dialogs-clear-filter-button"]').Click() }
 
 export function GetDescription() { return Cypress.$('[data-testid="train-dialog-description"]').attr('value') }
@@ -407,7 +409,7 @@ export function CreateNewTrainDialog() {
 export function EditTraining(firstInput, lastInput, lastResponse) {
   const funcName = `EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`
   let trainDialogIndex
-  cy.Enqueue(() => {
+  cy.WaitForStableDOM().then(() => {
     const turns = trainDialogsGrid.GetTurns()
     const firstInputs = trainDialogsGrid.GetFirstInputs()
     const lastInputs = trainDialogsGrid.GetLastInputs()

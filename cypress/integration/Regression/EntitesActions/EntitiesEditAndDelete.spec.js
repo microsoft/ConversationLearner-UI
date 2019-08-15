@@ -51,6 +51,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
+      train.VerifyEntityFilter('name')
       train.VerifyListOfTrainDialogs([
         {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"}
       ])
@@ -84,6 +85,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
+      train.VerifyEntityFilter('sweets')
       train.VerifyListOfTrainDialogs([
         {firstInput: 'I love candy!', lastInput: 'I love candy!', lastResponse: "What's your name?"}
       ])
@@ -117,6 +119,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
+      train.VerifyEntityFilter('want')
       train.VerifyListOfTrainDialogs([
         {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"},
         {firstInput: 'I want a car!', lastInput: 'I want a car!', lastResponse: "What's your name?"}
@@ -172,6 +175,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
+      train.VerifyEntityFilter('canBeDeletedToo')
       train.VerifyListOfTrainDialogs([
         {firstInput: 'We will delete this entity.', lastInput: 'Will also delete this entity.', lastResponse: "What's your name?"}
       ])
