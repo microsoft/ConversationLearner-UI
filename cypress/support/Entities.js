@@ -33,8 +33,6 @@ export function CreateNewEntity({
     type = 'Custom Trained', 
     expectPopup 
   }) {
-  modelPage.NavigateToEntities()
-  entitiesGrid.ClickButtonNewEntity()
 
   if (type != 'Custom Trained') SelectEntityType(type)
   if (name) { entityModal.TypeEntityName(name) }
@@ -54,6 +52,9 @@ export function CreateNewEntityThenVerifyInGrid({
     type = 'Custom Trained', 
     expectPopup 
   }) {
+
+  modelPage.NavigateToEntities()
+  entitiesGrid.ClickButtonNewEntity()
 
   CreateNewEntity(arguments[0])
 

@@ -27,15 +27,19 @@ export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyAct
 export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-selected"]', false) }
 
 
-// To VALIDATE All of the Data in the Score Actions Grid use this class.
-// 1) Manually verify that the data in each Score Actions grid for each chat turn that the test suite will verify.
-// 2) Generate and persist the data by running the test with the following environment variable:
-//      set CYPRESS_GENERATE_SCORE_ACTIONS_DATA=true
-//    Doing this will generate a file in the "cypress/fixtures/scoreActions" folder that will be used in #3
-// 3) Clear out that environment variable and run the tests as usual. They will grab the generated test data
-//    and use it during validations that use the VerifyScoreActionsList() function.
+// To VALIDATE All of the Data in the Score Actions Grid use this class. 
+// Here is the development process:
+// 1) Write your test suite and use this class for the verification of the Score Actions Pane.
+//    See existing test cases that already use this class as an example to follow.
 //
-// See existing test cases that already use this class as an example to follow.
+// 2) Generate and persist the data by running the test suite with the following environment variable:
+//      set CYPRESS_GENERATE_SCORE_ACTIONS_DATA=true
+//    Doing this will generate a file in the "cypress/fixtures/scoreActions" folder that will be used in #4
+//
+// 3) Manually verify the data in each Score Actions grid for each chat turn that the test suite will verify.
+//
+// 4) Clear out that environment variable and run the tests as usual. They will grab the generated test data
+//    and use it during validations that use the VerifyScoreActionsList() function.
 
 export class GeneratedData {
   constructor(dataFileName) {

@@ -8,6 +8,8 @@ import * as actionsGrid from '../support/components/ActionsGrid'
 import * as modelPage from '../support/components/ModelPage'
 import * as helpers from '../support/Helpers'
 
+export function ClickAddEntityButton() { cy.Get('[data-testid="action-button-create-entity"]').Click() }
+
 // ------------------------------------------------------------------------------------------------
 // The UI automatically populates the Required Entities field with entities found in the response 
 // text and it also automatically populates the Disqualtifying Entities field with the expected 

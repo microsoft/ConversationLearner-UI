@@ -353,7 +353,7 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
 export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expectedTurnCount, turnIndex) {
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound === turnTextThatShouldNotMatch) { 
-      throw new Error(`Chat turn ${turnIndex} should NOT be an exact match to: ${turnTextThatShouldNotMatch}`) 
+      throw new Error(`Chat turn ${turnIndex} should NOT be an exact match to: ${turnTextThatShouldNotMatch}, but it is`) 
     }
   })
 }
@@ -361,7 +361,9 @@ export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expe
 export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount, turnIndex) { 
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) { 
-      throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}`) 
+      if (chatMessageFound !== expectedTurnText.replace(/'/g, "’")) {
+        throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
+      }
     }
   })
 }
