@@ -11,13 +11,14 @@ export const entityQualifierStateEnum = { unknown: 'unknown', green: 'Green', gr
 
 // data-testid="teach-session-admin-train-status" (Running, Completed, Failed)
 export function ClickRefreshScoreButton() { cy.Get('[data-testid="teach-session-admin-refresh-score-button"]').Click() }
-export function SelectAnAction() { cy.Get('[data-testid="action-scorer-button-clickable"]').should("be.visible").Click() }
 export function ClickAddActionButton() { cy.Get('[data-testid="action-scorer-add-action-button"]').Click() }
 export function VerifyMissingActionNotice() { cy.Get('.cl-font--warning').ExactMatch('MISSING ACTION') }
 
 export function ClickTextAction(expectedResponse) { ClickActionButon('[data-testid="action-scorer-text-response"]', expectedResponse) }
 export function ClickApiAction(apiName) { ClickActionButon('[data-testid="action-scorer-api-name"]', apiName) }
 export function ClickEndSessionAction(expectedData) { ClickActionButon('[data-testid="action-scorer-session-response-user"]', expectedData) }
+export function ClickSetEntityAction(enumValue) { ClickActionButon('[data-testid="action-scorer-action-set-entity"]', enumValue) }
+
 
 export function VerifyContainsEnabledAction(expectedResponse) { VerifyActionState('[data-testid="action-scorer-text-response"]', expectedResponse, '[data-testid="action-scorer-button-clickable"]', false) }
 export function VerifyContainsDisabledAction(expectedResponse) { VerifyActionState('[data-testid="action-scorer-text-response"]', expectedResponse, '[data-testid="action-scorer-button-no-click"]', true) }

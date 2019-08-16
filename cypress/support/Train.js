@@ -115,6 +115,12 @@ export function VerifyChatMessageCount(expectedCount) {
 // instance of a message.
 // RETURNS: The index of the selected turn.
 
+export function SelectLastChatTurn() {
+  cy.Get(AllChatMessagesSelector).then(elements => {
+    cy.wrap(elements[elements.length - 1]).Click()
+  })
+}
+
 export function SelectChatTurnExactMatch(message, index = 0) { 
   return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText === transformedMessage)}
 
@@ -253,7 +259,7 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
 // Verify that a specific word of a user utterance has been labeled as an entity.
 // word = a word within the utterance that should already be labeled
 // entity = name of entity the word was labeled with
-// *** This may work for multiple word labels, but you must only pass in the one
+// *** This does work for multiple word labels, but you must pass in only one
 // *** word that uniquely identifies the labeled text
 export function RemoveEntityLabel(word, entity, index = 0) {
   cy.Get('div.slate-editor').then(elements => {
