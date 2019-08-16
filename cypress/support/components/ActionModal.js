@@ -68,7 +68,7 @@ function TypeApiArgs(apiArgLabel, args) {
       }
 
       for (let i = 0; i < args.length; i++) {
-        cy.wrap(elements[i]).type(args[i])
+        cy.wrap(elements[i]).type(`${args[i]}{enter}`)
         ClickOnNoOpHack()
       }
     })
@@ -101,7 +101,7 @@ function TypeMultipleEntities(selector, entityNames) {
     cy.Get(selector).within(() => {
       cy.Get('.ms-BasePicker-input')
         .then((element) => {
-          entityNames.forEach(entityName => cy.wrap(element).type(`$${entityName}`).wait(1000).type('{enter}'))
+          entityNames.forEach(entityName => cy.wrap(element).type(`$${entityName}`).wait(1000).type('{enter}{esc}'))
         })
     })
   })

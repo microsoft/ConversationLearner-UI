@@ -56,6 +56,30 @@ describe('Comprehensive - Score Actions', () => {
       train.LabelTextAsEntity('Jeff', 'name')
     })
 
+    it('Create Bot response about the choice of fruit', () => {
+      train.ClickScoreActionsButton()
+      scorerModal.ClickAddActionButton()
+
+      actions.ClickAddEntityButton()
+      entities.CreateNewEntity({ name: '1stArg' })
+      actions.ClickAddEntityButton()
+      entities.CreateNewEntity({ name: '2ndArg' })
+      actions.ClickAddEntityButton()
+      entities.CreateNewEntity({ name: 'disqualifier' })
+      
+// When the Action cannot be selected because it is disqualified like this one will be, then nothing is automatically selected
+// and the user must chose what to do next.
+      actions.CreateNewAction({ 
+        responseNameData: 'RenderTheArgs',
+        type: 'API',
+        logicArgs: ['$1stArg{enter}', '$2ndArg{enter}', '333', '4444', 'five', 'six', 'seven'],                                          
+        renderArgs: ['$1stArg{enter}', '$2ndArg{enter}', 'three', 'four', '55555', '666666', '7777777'],
+        validateApiResponse: 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"333"fourthArg:"4444"fifthArg:"five"sixthArg:"six"seventhArg:"seven"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"three"fourthArg:"four"fifthArg:"55555"sixthArg:"666666"seventhArg:"7777777"',
+        disqualifyingEntities: ['disqualifier']
+      })
+      cy.pause()
+    })
+
     it('2nd Bot Response', () => {
       train.ClickScoreActionsButton()
       scorerModal.ClickAddActionButton()
