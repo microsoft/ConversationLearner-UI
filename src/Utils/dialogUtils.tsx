@@ -261,9 +261,13 @@ export function dialogSampleInput(dialog: CLM.TrainDialog | CLM.LogDialog): stri
     let round = 0
     let length = 0
     while (round < dialog.rounds.length && length < MAX_SAMPLE_INPUT_LENGTH) {
-        const userInput =
-            (dialog as CLM.LogDialog).rounds[round].extractorStep.text ||
-            (dialog as CLM.TrainDialog).rounds[round].extractorStep.textVariations[0].text
+        let userInput = (dialog as CLM.LogDialog).rounds[round].extractorStep.text
+        if (!userInput && (dialog as CLM.TrainDialog).rounds[round].extractorStep.textVariations[0]) {
+            userInput = (dialog as CLM.TrainDialog).rounds[round].extractorStep.textVariations[0].text
+        }
+        if (!userInput) {
+            userInput = "MISSING USER INPUT"
+        }
 
         userInputs.push(userInput)
         length = length + userInput.length

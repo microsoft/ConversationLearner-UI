@@ -88,10 +88,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.EDIT_APP_EDITING_TAG_ASYNC:
         case AT.EDIT_TRAINDIALOG_ASYNC:
         case AT.EDIT_TRAINDIALOG_MERGE_ASYNC:
-
-
         // case AT.EXPIRE_CHAT_SESSION_AYSNC: Don't block
-
         case AT.FETCH_APPSOURCE_ASYNC:
         case AT.FETCH_ACTIONS_ASYNC:
         case AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC:

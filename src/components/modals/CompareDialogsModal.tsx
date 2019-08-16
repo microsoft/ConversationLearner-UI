@@ -9,7 +9,7 @@ import * as BotChat from '@conversationlearner/webchat'
 import * as Util from '../../Utils/util'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import * as BB from 'botbuilder'
-import * as TranscriptUtils from '../../Utils/transcriptUtils'
+import * as OBIUtils from '../../Utils/obiUtils'
 import actions from '../../actions'
 import IndexButtons from '../IndexButtons'
 import Webchat, { renderActivity } from '../Webchat'
@@ -116,7 +116,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         let history2: BotChat.Activity[] = []
         let missingLog = false
         if (validationResult.sourceHistory) {
-            let trainDialog = await TranscriptUtils.trainDialogFromTranscriptImport(validationResult.sourceHistory, this.props.entities, this.props.actions, this.props.app)
+            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceHistory, this.props.entities, this.props.actions, this.props.app)
             trainDialog.definitions = {
                 actions: this.props.actions,
                 entities: this.props.entities,
@@ -149,7 +149,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         for (let i = 0; i < history1.length; i = i + 1) {
             const activity1 = history1[i] as BB.Activity
             const activity2 = history2[i] as BB.Activity
-            if (!TranscriptUtils.isSameActivity(activity1, activity2)) {
+            if (!OBIUtils.isSameActivity(activity1, activity2)) {
                 if (activity1) {
                     activity1.channelData.clData = {...activity1.channelData.clData, replayError  }
                 }

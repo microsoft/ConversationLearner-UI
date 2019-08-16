@@ -580,7 +580,6 @@ const mapDispatchToProps = (dispatch: any) => {
         editAppEditingTagThunkAsync: actions.app.editAppEditingTagThunkAsync,
         editAppLiveTagThunkAsync: actions.app.editAppLiveTagThunkAsync,
         fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
-        deleteApplicationThunkAsync: actions.app.deleteApplicationThunkAsync,
         createAppTagThunkAsync: actions.app.createAppTagThunkAsync,
     }, dispatch);
 }

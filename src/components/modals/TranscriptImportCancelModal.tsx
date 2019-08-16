@@ -38,7 +38,7 @@ class TranscriptImportCancelModal extends React.Component<Props, ComponentState>
                     isBlocking: false
                 }}
             >
-            {!this.props.isLastImport &&
+            {this.props.allowContinue &&
                 <OF.Checkbox
                     label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL)}
                     checked={this.state.stopImport}
@@ -47,7 +47,7 @@ class TranscriptImportCancelModal extends React.Component<Props, ComponentState>
             }
             <OF.DialogFooter>
                     <OF.PrimaryButton
-                        onClick={() => this.props.onConfirm(this.state.stopImport)}
+                        onClick={() => this.props.onConfirm(this.state.stopImport || !this.props.allowContinue)}
                         text={Util.formatMessageId(this.props.intl, FM.BUTTON_CONFIRM)}
                         iconProps={{ iconName: 'Accept' }}
                         data-testid="confirm-cancel-modal-accept"
@@ -68,7 +68,7 @@ export interface ReceivedProps {
     onConfirm: Function
     onCancel: Function
     open: boolean
-    isLastImport: boolean
+    allowContinue: boolean
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
