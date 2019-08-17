@@ -34,8 +34,11 @@ export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyAct
 //    See existing test cases that already use this class as an example to follow.
 //
 // 2) Generate and persist the data by running the test suite with the following environment variable:
-//      set CYPRESS_GENERATE_SCORE_ACTIONS_DATA=true
+//      set CYPRESS_GENERATE_SCORE_ACTIONS_DATA=pause
+//    OR...
+//      set CYPRESS_GENERATE_SCORE_ACTIONS_DATA=true|anything
 //    Doing this will generate a file in the "cypress/fixtures/scoreActions" folder that will be used in #4
+//    If the value is "pause", then the test will pause at each data collection point.
 //
 // 3) Manually verify the data in each Score Actions grid for each chat turn that the test suite will verify.
 //
@@ -64,7 +67,8 @@ export class GeneratedData {
   VerifyScoreActionsList(acceptableScoreDeviation = 10) {
     if (this.generateScoreActionsData) {
       it('GENERATE the Score Actions data', () => {
-        cy.wait(2000)
+        if (this.generateScoreActionsData == 'pause') { cy.pause() }
+        else { cy.wait(2000) }
         cy.WaitForStableDOM().then(() => { this.data.push(GenerateScoreActionsDataFromGrid()) })
       })
     } else {
