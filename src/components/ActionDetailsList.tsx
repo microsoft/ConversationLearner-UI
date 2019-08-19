@@ -461,6 +461,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait"/>
         },
         {
+            key: 'actionReprompt',
+            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_REPROMPT),
+            fieldName: 'actionReprompt',
+            minWidth: 70,
+            isResizable: false,
+            getSortValue: action => action.repromptActionId !== undefined ? 'a' : 'b',
+            render: action => <OF.Icon iconName={action.repromptActionId !== undefined ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait"/>
+        },
+        {
             key: 'createdDateTime',
             name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME),
             fieldName: 'createdDateTime',

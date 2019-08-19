@@ -13,4 +13,11 @@ export interface SourceModel {
     model: CLM.AppBase,
 }
 
+export interface ImportedAction {
+    text: string,
+    buttons: string[],
+    isTerminal: boolean,
+    reprompt: boolean
+}
+
 export type PartialTrainDialog = Pick<CLM.TrainDialog, "trainDialogId" | "tags" | "description"> & Partial<CLM.TrainDialog>

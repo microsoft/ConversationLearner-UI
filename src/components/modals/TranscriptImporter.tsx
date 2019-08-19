@@ -110,12 +110,12 @@ class TranscriptImporter extends React.Component<Props, ComponentState> {
                         />
                     </div>
                     <OF.Checkbox
-                        label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_AUTOIMPORT)}
+                        label={Util.formatMessageId(this.props.intl, FM.IMPORT_AUTOIMPORT)}
                         checked={this.state.autoImport}
                         onChange={this.onChangeAutoImport}
                     />
                     <OF.Checkbox
-                        label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_AUTOMERGE)}
+                        label={Util.formatMessageId(this.props.intl, FM.IMPORT_AUTOMERGE)}
                         checked={this.state.autoMerge}
                         onChange={this.onChangeAutoMerge}
                     />
