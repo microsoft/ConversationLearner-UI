@@ -219,6 +219,7 @@ class Testing extends React.Component<Props, ComponentState> {
             isRateDialogsOpen: false,
             edited: true
         })
+        this.onSave()
     }
 
     @autobind

@@ -456,8 +456,8 @@ i[data-icon-name="Edit"]:hover {
 }
 
 .cl-modal.cl-modal--importwait {
-  height: 90px;
-  width: 400px;
+  height: 100px;
+  width: 500px;
   padding: 20px;
   text-align: center !important;
 }

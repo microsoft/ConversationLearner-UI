@@ -27,6 +27,7 @@ interface ComponentState {
     obiFiles: File[] | null
     autoCreate: boolean
     autoMerge: boolean
+    autoActionMatch: boolean
 }
 
 class AppCreator extends React.Component<Props, ComponentState> {
@@ -37,7 +38,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
         clFile: null,
         obiFiles: null,
         autoCreate: true,
-        autoMerge: true
+        autoMerge: true,
+        autoActionMatch: false
     }
 
     private fileInput: any
@@ -104,6 +106,13 @@ class AppCreator extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    onChangeAutoActionMatch() {
+        this.setState({
+            autoActionMatch: !this.state.autoActionMatch
+        })
+    }
+
+    @autobind
     onClickCancel() {
         this.props.onCancel()
     }
@@ -136,7 +145,8 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 appId: "",
                 files: this.state.obiFiles,
                 autoCreate: this.state.autoCreate,
-                autoMerge: this.state.autoMerge
+                autoMerge: this.state.autoMerge,
+                autoActionCreate: this.state.autoActionMatch
             }
             this.props.onSubmitOBI(appInput, obiImportData)
         }   
@@ -147,13 +157,21 @@ class AppCreator extends React.Component<Props, ComponentState> {
     @autobind
     onKeyDown(event: React.KeyboardEvent<HTMLElement>) {
         // On enter attempt to create the model if required fields are set
-        // Not on import as explicit button press is required to pick the file
-        if (this.props.creatorType !== AppCreatorType.IMPORT && event.key === 'Enter' && this.state.appNameVal) {
-            this.onClickCreate()
-        }
-
-        if (this.props.creatorType === AppCreatorType.IMPORT && event.key === 'Enter' && this.state.appNameVal && this.state.clFile) {
-            this.onClickImport()
+        if (event.key === 'Enter' && this.state.appNameVal) {
+            switch (this.props.creatorType) {
+                case AppCreatorType.IMPORT:
+                    if (this.state.clFile) {
+                        this.onClickImport()
+                    }
+                    break
+                case AppCreatorType.OBI:
+                    if (this.state.obiFiles) {
+                        this.onClickCreateOBI()
+                    }
+                    break
+                default:
+                        this.onClickCreate()
+            }
         }
     }
 
@@ -260,7 +278,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
             case AppCreatorType.IMPORT:
                 return this.state.clFile === null
             default:
-                return true
+                return false
         }
     }
     render() {
@@ -356,14 +374,19 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                 />
                             </div>
                             <OF.Checkbox
-                                label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_AUTOIMPORT)}
+                                label={Util.formatMessageId(this.props.intl, FM.IMPORT_AUTOIMPORT)}
                                 checked={this.state.autoCreate}
                                 onChange={this.onChangeAutoImport}
                             />
                             <OF.Checkbox
-                                label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_AUTOMERGE)}
+                                label={Util.formatMessageId(this.props.intl, FM.IMPORT_AUTOMERGE)}
                                 checked={this.state.autoMerge}
                                 onChange={this.onChangeAutoMerge}
+                            />
+                            <OF.Checkbox
+                                label={Util.formatMessageId(this.props.intl, FM.IMPORT_AUTOACTIONMATCH)}
+                                checked={this.state.autoActionMatch}
+                                onChange={this.onChangeAutoActionMatch}
                             />
                         </>
                     }
