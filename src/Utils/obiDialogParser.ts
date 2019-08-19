@@ -56,7 +56,7 @@ export class ObiDialogParser {
             }
             else if (file.name.endsWith('.lg')) {
                 const fileText = await Util.readFileAsync(file)
-                CLM.ObiUtils.parseLGString(fileText, lgMap)
+                CLM.ObiUtils.addToLGMap(fileText, lgMap)
             }
         }
 
@@ -237,7 +237,7 @@ export class ObiDialogParser {
     }
     
     // Generate action directly from LG
-    private async getActionFromLG(lg: OBIUtils.LGItem, isTerminal: boolean): Promise<CLM.ActionBase | undefined> {
+    private async getActionFromLG(lg: CLM.LGItem, isTerminal: boolean): Promise<CLM.ActionBase | undefined> {
     
         let action = OBIUtils.findActionFromHashText(lg.text, this.actions)
         if (!action && this.createActionThunkAsync) {
