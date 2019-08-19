@@ -12,8 +12,9 @@ import actions from '../../actions'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import actionTypeRenderer from '../ActionTypeRenderer'
 import EditApiPlaceholder from '../modals/EditApiPlaceholder'
-import ActionCreatorEditor, { NewActionPreset } from './ActionCreatorEditor'
+import ActionCreatorEditor from './ActionCreatorEditor'
 import AdaptiveCardViewer , { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
+import { ImportedAction } from '../../types/models'
 import { compareTwoStrings } from 'string-similarity'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -31,11 +32,12 @@ interface ActionForRender extends CLM.ScoredBase {
     similarityScore?: number
     score?: number
     reason?: CLM.ScoreReason | null
+    repromptActionId?: string | undefined
 }
 
 interface IRenderableColumn extends OF.IColumn {
     getSortValue: (actionForRender: ActionForRender, component: ActionScorer) => number | string
-    render: (scoreBase: CLM.ScoredBase, component: ActionScorer, index: number) => React.ReactNode
+    render: (actionForRender: ActionForRender, component: ActionScorer, index: number) => React.ReactNode
 }
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
@@ -62,6 +64,20 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         selected = true
                     }
                 }
+
+                // Was it a reprompt?
+                if (action.actionId === component.props.forcedActionId) {
+                    return (
+                        <OF.PrimaryButton
+                            className="ms-Button--selected"
+                            data-testid="action-scorer-button-selected"
+                            disabled={false}
+                            ariaDescription={Util.formatMessageId(intl, FM.BUTTON_REPROMPT)}
+                            text={Util.formatMessageId(intl, FM.BUTTON_REPROMPT)}
+                            onClick={() => component.handleReselectAction(action)}
+                        />
+                    )  
+                }     
 
                 const buttonText = Util.formatMessageId(intl, selected ? FM.BUTTON_SELECTED : FM.BUTTON_SELECT)
                 if (!component.props.canEdit) {
@@ -185,10 +201,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isSortedDescending: true,
             getSortValue: (actionForRender, component) => {
 
+                // Put forced actions at the top
+                if (actionForRender.actionId === component.props.forcedActionId) {
+                    return 100
+                }
+
                 let score: number | undefined
 
                 // If an import action, sort by string similarity to existing actions
-                if (component.props.newActionPreset) {
+                if (component.props.importedAction) {
                     score = actionForRender.similarityScore || 0
                 }
                 else {
@@ -251,6 +272,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 iconName={(action.isTerminal ? "CheckMark" : "Remove")}
                 className={`cl-icon${action.isTerminal ? " checkIcon" : " notFoundIcon"}`}
             />
+        },
+        {
+            key: 'actionReprompt',
+            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_REPROMPT),
+            fieldName: 'actionReprompt',
+            minWidth: 70,
+            isResizable: false,
+            getSortValue: action => action.repromptActionId !== undefined ? 'a' : 'b',
+            render: action => <OF.Icon iconName={action.repromptActionId !== undefined ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait"/>
         },
         {
             key: 'actionType',
@@ -375,6 +405,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         this.props.onActionCreatorClosed()
     }
 
+    @autobind
     async onClickSubmitActionEditor(action: CLM.ActionBase) {
         await Util.setStateAsync(this, { isActionCreatorModalOpen: false })
         this.props.onActionCreatorClosed()
@@ -727,14 +758,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    renderItemColumn(action: CLM.ScoredBase, index: number, column: IRenderableColumn) {
+    renderItemColumn(action: ActionForRender, index: number, column: IRenderableColumn) {
 
         // Handle deleted actions
         if (action.actionId === MISSING_ACTION) {
             if (column.key === 'select') {
-                const score: number | string = (action as CLM.ScoredAction).score
-                    
-                const buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && score === 1) ? "Selected" : "Select";
+ 
+                const buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && action.score === 1) ? "Selected" : "Select";
                 return (
                     <OF.PrimaryButton
                         disabled={true}
@@ -743,7 +773,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     />
                 )
             } else if (column.key === 'actionResponse') {
-                if (this.props.newActionPreset) {
+                if (this.props.importedAction) {
                     return <span className="cl-font--warning cl-action-scorer-warning">IMPORTED ACTION</span>;
                 }
                 else {
@@ -774,7 +804,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
 
     // Calculate distance between imported bot action and given action
     calcSimilarity(scoredBase: CLM.ScoredBase): number {
-        if (!this.props.newActionPreset || scoredBase.actionId === MISSING_ACTION) {
+        if (!this.props.importedAction || scoredBase.actionId === MISSING_ACTION) {
             return 0
         }
         const defaultEntityMap = Util.getDefaultEntityMap(this.props.entities)
@@ -790,7 +820,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 actionText = getRawTemplateText(template, renderedActionArguments)
             }
         }
-        return compareTwoStrings(actionText, this.props.newActionPreset.text)
+        return compareTwoStrings(actionText, this.props.importedAction.text)
     }
 
     getActionsForRender(): ActionForRender[] {
@@ -821,7 +851,8 @@ class ActionScorer extends React.Component<Props, ComponentState> {
             ({
                 ...action,
                 reason: CLM.ScoreReason.NotCalculated,
-                score: 0
+                score: 0,
+                repromptActionId: action.repromptActionId
             }))
 
         scoredItems = [...scoredItems, ...missingItems]
@@ -856,7 +887,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         scoredItems = [...scoredItems, ...missingSetEntityItems]
 
         // If imported action selected, pre-calculate sort scores
-        if (this.props.newActionPreset) { 
+        if (this.props.importedAction) { 
             scoredItems = scoredItems.map(si => ({
                 ...si,
                 similarityScore: this.calcSimilarity(si), 
@@ -958,18 +989,20 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     </div>
                 }
 
-                <ActionCreatorEditor
-                    app={this.props.app}
-                    editingPackageId={this.props.editingPackageId}
-                    open={this.state.isActionCreatorModalOpen}
-                    action={null}
-                    actions={this.props.actions}
-                    newActionPreset={this.props.newActionPreset}
-                    handleClose={() => this.onClickCancelActionEditor()}
-                    // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete 
-                    handleDelete={action => { }}
-                    handleEdit={action => this.onClickSubmitActionEditor(action)}
-                />
+                {this.state.isActionCreatorModalOpen &&
+                    <ActionCreatorEditor
+                        app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
+                        open={true}
+                        action={null}
+                        actions={this.props.actions}
+                        importedAction={this.props.importedAction}
+                        handleClose={() => this.onClickCancelActionEditor()}
+                        // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete 
+                        handleDelete={action => { }}
+                        handleEdit={action => this.onClickSubmitActionEditor(action)}
+                    />
+                }
                 <AdaptiveCardViewer
                     open={this.state.cardViewerAction != null}
                     onDismiss={() => this.onCloseCardViewer()}
@@ -1017,10 +1050,11 @@ export interface ReceivedProps {
     scoreResponse: CLM.ScoreResponse,
     scoreInput: CLM.ScoreInput,
     selectedActionId: string | undefined,
+    forcedActionId: string | undefined,
     memories: CLM.Memory[],
     canEdit: boolean,
     isEndSessionAvailable: boolean,
-    newActionPreset?: NewActionPreset 
+    importedAction?: ImportedAction 
     onActionSelected: (trainScorerStep: CLM.TrainScorerStep) => void,
     onActionCreatorClosed: () => void
 }

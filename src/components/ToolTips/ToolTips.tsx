@@ -22,6 +22,7 @@ export enum TipType {
     ACTION_END_SESSION = 'actionEndSession',
     ACTION_ENTITIES = 'actionEntities',
     ACTION_NEGATIVE = 'negativeEntities',
+    ACTION_REPROMPT = 'actionReprompt',
     ACTION_REQUIRED = 'requiredEntities',
     ACTION_RESPONSE = 'actionResponse',
     ACTION_RESPONSE_TEXT = 'actionResponseText',
@@ -286,6 +287,8 @@ export function getTip(tipType: string) {
                     { key: 'Response:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW3 },
                     { key: 'Disqualifying:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW4 }
                 ]);
+        case TipType.ACTION_REPROMPT:
+                    return render(FM.TOOLTIP_ACTION_REPROMPT_TITLE, [FM.TOOLTIP_ACTION_REPROMPT]);
         case TipType.ACTION_REQUIRED:
             return render(
                 FM.TOOLTIP_ACTION_REQUIRED_TITLE,

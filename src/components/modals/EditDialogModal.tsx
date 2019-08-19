@@ -18,7 +18,7 @@ import UserInputModal from './UserInputModal'
 import FormattedMessageId from '../FormattedMessageId'
 import TranscriptImportCancelModal from './TranscriptImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
-import { NewActionPreset } from './ActionCreatorEditor'
+import { ImportedAction } from '../../types/models'
 import { formatMessageId, equal, deepCopy } from '../../Utils/util'
 import { State } from '../../types'
 import { EditDialogAdmin, EditDialogType, EditState } from '.'
@@ -38,7 +38,7 @@ interface ComponentState {
     isImportAbandonOpen: boolean
     cantReplayMessage: FM | null
     isUserInputModalOpen: boolean
-    newActionPreset?: NewActionPreset
+    importedAction?: ImportedAction
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
     isSaveConflictModalOpen: boolean
@@ -56,7 +56,7 @@ const initialState: ComponentState = {
     isImportAbandonOpen: false,
     cantReplayMessage: null,
     isUserInputModalOpen: false,
-    newActionPreset: undefined,
+    importedAction: undefined,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
     isSaveConflictModalOpen: false,
@@ -384,8 +384,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             selectedActivity: activity,
         })
 
-        const newActionPreset = this.getNewActionPreset(activity)
-        this.setState({newActionPreset})
+        const importedAction = this.getImportedAction(activity)
+        this.setState({importedAction})
     }
 
     onPendingStatusChanged(changed: boolean) {
@@ -434,7 +434,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType, this.state.selectedActivity != null)
     }
 
-    getNewActionPreset(activity: Activity): NewActionPreset | undefined {
+    getImportedAction(activity: Activity): ImportedAction | undefined {
         const clData: CLM.CLChannelData = activity.channelData.clData
         const senderType = clData.senderType
         const scoreIndex = clData.scoreIndex || 0
@@ -452,14 +452,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             : false
 
         if (importText) {
-            // Could be JSON object or just string
-            try {
-                const lgItem: OBIUtils.LGItem = JSON.parse(importText)
-                return { text: lgItem.text, buttons: lgItem.suggestions, isTerminal}
-            }
-            catch (e) {
-                return { text: importText, buttons: [], isTerminal }
-            }
+            return OBIUtils.importedActionFromImportText(importText, isTerminal)
         }
         return undefined
     }
@@ -1037,7 +1030,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onChangeAction={this.onChangeAction}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
-                                    newActionPreset={this.state.newActionPreset}
+                                    importedAction={this.state.importedAction}
                                     importIndex={this.props.importIndex}
                                     importCount={this.props.importCount}
                                     allUniqueTags={this.props.allUniqueTags}
@@ -1047,7 +1040,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
                                     description={this.state.description}
                                     onChangeDescription={this.onChangeDescription}
-                                    onActionCreatorClosed={() => this.setState({newActionPreset: undefined})}
+                                    onActionCreatorClosed={() => this.setState({importedAction: undefined})}
                                 />
                             </div>
                             {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay" />}
