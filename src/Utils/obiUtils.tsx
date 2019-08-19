@@ -8,6 +8,9 @@ import * as Util from './util'
 import * as DialogEditing from './dialogEditing'
 import * as DialogUtils from './dialogUtils'
 import * as OBITypes from '../types/obiTypes'
+import Plain from 'slate-plain-serializer'
+import { REPROMPT_SELF } from '../types/const'
+import { ImportedAction } from '../types/models'
 import { User } from '../types'
 
 export async function toTranscripts(
@@ -30,7 +33,8 @@ export interface OBIImportData {
     appId: string,
     files: File[],
     autoCreate: boolean,
-    autoMerge: boolean
+    autoMerge: boolean,
+    autoActionCreate: boolean
 }
 
 export interface LGItem {
@@ -165,27 +169,30 @@ export async function trainDialogFromTranscriptImport(
                     if (!action) {
                         action = await DialogEditing.getPlaceholderAPIAction(app.appId, actionCall.actionName, isTerminal, actions, createActionThunkAsync as any)
                     }
-                    if (!action) {
+                    // Throw error if I was supposed to create actions
+                    if (!action && createActionThunkAsync) {
                         throw new Error("Unable to create API placeholder Action")
                     }
+                    // Otherwise pick action if created (may not exist when testing)
+                    if (action) {
+                        scoredAction = {
+                            actionId: action.actionId,
+                            payload: action.payload,
+                            isTerminal: action.isTerminal,
+                            actionType: CLM.ActionTypes.API_LOCAL,
+                            score: 1
+                        }
 
-                    scoredAction = {
-                        actionId: action.actionId,
-                        payload: action.payload,
-                        isTerminal: action.isTerminal,
-                        actionType: CLM.ActionTypes.API_LOCAL,
-                        score: 1
+                        const actionFilledEntities = await importActionOutput(actionCall.actionOutput, entities, app, createEntityThunkAsync)
+                        // Store placeholder output in LogicResult
+                        logicResult = {
+                            logicValue: undefined,
+                            changedFilledEntities: actionFilledEntities,
+                        }
+
+                        // Store filled entities for subsequent turns
+                        nextFilledEntities = actionFilledEntities
                     }
-
-                    const actionFilledEntities = await importActionOutput(actionCall.actionOutput, entities, app, createEntityThunkAsync)
-                    // Store placeholder output in LogicResult
-                    logicResult = {
-                        logicValue: undefined,
-                        changedFilledEntities: actionFilledEntities,
-                    }
-
-                    // Store filled entities for subsequent turns
-                    nextFilledEntities = actionFilledEntities
                 }
 
                 let scoreInput: CLM.ScoreInput = {
@@ -271,33 +278,167 @@ export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.
     trainDialog.rounds.forEach(round => {
         round.scorerSteps.forEach(scorerStep => {
 
-            let hashText: string | null = null
+            let foundAction = findActionFromScorerStepHash(scorerStep, actionsWithHash, entities)
 
-            // If replacing imported action
-            if (scorerStep.importText) {
-                // Substitue entityIds back into import text to build import hash lookup
-                const filledEntityMap = DialogUtils.filledEntityIdMap(scorerStep.input.filledEntities, entities)
-                hashText = importTextWithEntityIds(scorerStep.importText, filledEntityMap)
-            }
-            // If replacing placeholder action
-            else if (scorerStep.labelAction && CLM.ActionBase.isPlaceholderAPI(scorerStep.scoredAction)) {
-                const apiAction = new CLM.ApiAction(scorerStep.scoredAction as any)
-                hashText = apiAction.name
-            }
-
-            if (hashText) {
-                const newAction = findActionFromHashText(hashText, actionsWithHash)
-
-                // If action exists replace labelled action with match
-                if (newAction) {
-                    scorerStep.labelAction = newAction.actionId
-                    delete scorerStep.importText
-                    match = true
-                }
+            // If action found replace labelled action with match
+            if (foundAction) {
+                scorerStep.labelAction = foundAction.actionId
+                delete scorerStep.importText
+                match = true
             }
         })
     })
     return match
+}
+
+// Attempt to find action for the given scorer step
+function findActionFromScorerStepHash(scorerStep: CLM.TrainScorerStep, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): CLM.ActionBase | undefined {
+
+    let hashText: string | null = null
+
+    // If replacing imported action
+    if (scorerStep.importText) {
+        // Substitue entityIds back into import text to build import hash lookup
+        const filledEntityMap = DialogUtils.filledEntityIdMap(scorerStep.input.filledEntities, entities)
+        hashText = importTextWithEntityIds(scorerStep.importText, filledEntityMap)
+    }
+    // If replacing placeholder action
+    else if (scorerStep.labelAction && CLM.ActionBase.isPlaceholderAPI(scorerStep.scoredAction)) {
+        const apiAction = new CLM.ApiAction(scorerStep.scoredAction as any)
+        hashText = apiAction.name
+    }
+
+    if (hashText) {
+        return findActionFromHashText(hashText, actions)
+    }
+
+    return undefined
+}
+
+// Replace imported actions in TrainDialog with real Actions
+export async function createImportedActions(
+    appId: string,
+    trainDialog: CLM.TrainDialog,
+    templates: CLM.Template[],
+    createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
+): Promise<void> {
+
+    const newActions: CLM.ActionBase[] = []
+    for (const round of trainDialog.rounds) {
+        for (let scoreIndex = 0; scoreIndex < round.scorerSteps.length; scoreIndex = scoreIndex + 1) {
+            const scorerStep = round.scorerSteps[scoreIndex]
+
+            if (scorerStep.importText) {
+                let action: CLM.ActionBase | undefined
+
+                // First check to see if matching action already exists
+                // TODO: Support for entities / entity substitution
+                action = findActionFromScorerStepHash(scorerStep, newActions, [])
+
+                // Otherwise create a new one
+                if (!action) {
+                    const isTerminal = round.scorerSteps.length === scoreIndex + 1
+                    const importedAction = importedActionFromImportText(scorerStep.importText, isTerminal)
+                    action = await createActionFromImport(appId, importedAction, scorerStep.importText, templates, createActionThunkAsync)
+                    newActions.push(action)
+                }
+
+                // Update scorer step
+                scorerStep.labelAction = action.actionId
+                delete scorerStep.importText
+            }
+        }
+    }
+}
+
+// Greated an real action for an imported one, looking for a matching template
+async function createActionFromImport(
+    appId: string,
+    importedAction: ImportedAction,
+    importText: string,
+    templates: CLM.Template[],
+    createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
+    ): Promise<CLM.ActionBase> {
+    const template = DialogUtils.bestTemplateMatch(importedAction, templates)
+    const actionType = template ? CLM.ActionTypes.CARD : CLM.ActionTypes.TEXT
+    const repromptActionId = template && importedAction.buttons.length > 0 ? REPROMPT_SELF : undefined
+    const textValue = Plain.deserialize(`${importedAction.text}`)
+    let payload: string | null = null
+
+    // If a template was found, create a CARD action
+    if (template) {
+        const actionArguments: CLM.IActionArgument[] = []
+
+        // Put text on first TextBody variable
+        const textBody = template.variables.find(v => v.type = "TextBody")
+        if (textBody) {
+            const title = Plain.deserialize(importedAction.text)
+            actionArguments.push({parameter: textBody.key, value: {json: title.toJSON()}})
+        }
+
+        // Map additional variables to buttons
+        if (importedAction.buttons.length > 0) {
+            const buttons = importedAction.buttons.map(t => Plain.deserialize(t))
+            buttons.forEach((button, index) => {
+                if ((index + 1) < template.variables.length) {
+                    actionArguments.push({parameter: template.variables[index + 1].key, value: {json: button.toJSON()}})
+                }
+            })
+        }
+        const cp: CLM.CardPayload = {
+            payload: template.name,
+            arguments: actionArguments
+        }
+        payload = JSON.stringify(cp)
+    }
+    // Otherwise create ordinary text action
+    else {
+        const tp: CLM.TextPayload = {
+            json: textValue.toJSON()
+        }
+        payload = JSON.stringify(tp)
+    }
+
+    const action = new CLM.ActionBase({
+        actionId: null!,
+        payload,
+        createdDateTime: new Date().toJSON(),
+        isTerminal: importedAction.isTerminal,
+        repromptActionId,
+        requiredEntitiesFromPayload: [],
+        requiredEntities: [],
+        negativeEntities: [],
+        requiredConditions: [],
+        negativeConditions: [],
+        suggestedEntity: undefined,
+        version: 0,
+        packageCreationId: 0,
+        packageDeletionId: 0,
+        actionType,
+        entityId: undefined,
+        enumValueId: undefined,
+        clientData: { importHashes: [Util.hashText(importText)]}
+    })
+
+    const newAction = await createActionThunkAsync(appId, action)
+    if (!newAction) {
+        throw new Error("Unable to create action")
+    }
+    return newAction     
+}
+
+// NOTE: eventually LGItems could be adaptive cards
+export function importedActionFromImportText(importText: string, isTerminal: boolean): ImportedAction {
+    // Could be JSON object or just string
+    try {
+        const lgItem: LGItem = JSON.parse(importText)
+        // Assume reprompt if item has buttons
+        return { text: lgItem.text, buttons: lgItem.suggestions, isTerminal, reprompt: lgItem.suggestions.length > 0}
+    }
+    catch (e) {
+        // Assume no repropmt for plain text
+        return { text: importText, buttons: [], isTerminal, reprompt: false }
+    }
 }
 
 // Search for an action by hash
