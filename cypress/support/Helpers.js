@@ -42,7 +42,7 @@ export function RemoveDuplicates(inputArray) {
 
 export function StringArrayFromElementText(selector, retainMarkup = false) {
   let elements = Cypress.$(selector)
-  ConLog(`StringArrayFromElementText(${selector})`, elements.length)
+  ConLog(`StringArrayFromElementText(${selector})`, `Number of Elements Found: ${elements.length}`)
   let returnValues = []
   for (let i = 0; i < elements.length; i++)  {
     let text = retainMarkup ? elements[i].innerHTML : TextContentWithoutNewlines(elements[i])
@@ -136,7 +136,7 @@ export function ExactMatch(elements, expectedText) {
     ConLog(funcName, `elementText: '${elementText}'`)
     if (elementText === expectedText) return elements[i]
   }
-  throw new Error(`Exact Match '${expectedText}' NOT Found`)
+  return []
 }
 
 export function ExactMatches(elements, expectedText) {

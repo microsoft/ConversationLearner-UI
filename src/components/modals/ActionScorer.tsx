@@ -247,7 +247,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         fieldContent = "Disqualified";
                     }
                 }
-                return <span className={OF.FontClassNames.mediumPlus}>{fieldContent}</span>
+                return <span className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-score">{fieldContent}</span>
             }
         },
         {
@@ -271,6 +271,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             render: action => <OF.Icon
                 iconName={(action.isTerminal ? "CheckMark" : "Remove")}
                 className={`cl-icon${action.isTerminal ? " checkIcon" : " notFoundIcon"}`}
+                data-testid="action-scorer-wait"
             />
         },
         {
@@ -657,7 +658,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         return null
                     }
                     
-                    return <span className={item.type}>{item.neg ? (<del>{item.name}</del>) : item.name}</span>
+                    return <span className={item.type} data-testid="action-scorer-entities">{item.neg ? (<del>{item.name}</del>) : item.name}</span>
                 }}
             />
         )
