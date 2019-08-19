@@ -12,6 +12,8 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Date Time Resolver - Train', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  // NOTE: We cannot use the scorerModal.GeneratedData helper class due to the 
+  //       dynamic nature of the Action Scorer Data in this test suite.
 
   const today = Cypress.moment()
   const tomorrow = today.add(1, 'days').format("YYYY-MM-DD")

@@ -49,7 +49,7 @@ export default class Component extends React.Component<Props, State> {
         const showToggle = pairedLogicArguments.argumentsDiffer
 
         return <div className="cl-api-payload">
-            <div>
+            <div data-testid="action-scorer-api">
                 <div className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-api-name">{this.props.name}</div>
                 {this.props.showLogicFunction && !this.props.isPlaceholder &&
                     <div className="cl-api-payload__fn">

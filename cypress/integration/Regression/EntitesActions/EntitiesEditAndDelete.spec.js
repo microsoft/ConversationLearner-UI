@@ -33,8 +33,8 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
       actionsGrid.VerifyActionRow('Hey $name', 'TEXT', ['name'], ['sweets', 'want'], undefined, true)
       actionsGrid.VerifyActionRow('Hey $name, what do you really want?', 'TEXT', ['name'], ['want', 'sweets'], 'want', true)
       actionsGrid.VerifyActionRow('name:$name sweets:$sweets want:$want', 'END_SESSION', ['name', 'sweets', 'want'], undefined, undefined, true)
-      actionsGrid.VerifyActionRow('question:Hi $name', 'CARD', ['name'], undefined, undefined, true, 'question:Hi $name')
-      actionsGrid.VerifyActionRow('RenderTheArgs', 'API', ['name', 'sweets', 'want'], undefined, undefined, false, 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"')
+      actionsGrid.VerifyActionRow('promptquestion:Hi $name', 'CARD', ['name'], undefined, undefined, true, 'question:Hi $name')
+      actionsGrid.VerifyActionRow('RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"', 'API', ['name', 'sweets', 'want'], undefined, undefined, false)
       actionsGrid.VerifyActionRow("Sorry $name, I can't help you get $want", 'TEXT', ['name', 'want'], undefined, undefined, true)
     })
 
@@ -51,6 +51,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
+      train.VerifyEntityFilter('name')
       train.VerifyListOfTrainDialogs([
         {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"}
       ])
@@ -68,7 +69,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
     it('Should verify "Required For Action" tab contains expected Action details', () => {
       entityModal.SelectRequiredForActionsTab()
       actionsGrid.VerifyActionRow('name:$name sweets:$sweets want:$want', 'END_SESSION', ['name', 'sweets', 'want'], undefined, undefined, true)
-      actionsGrid.VerifyActionRow('RenderTheArgs', 'API', ['name', 'sweets', 'want'], undefined, undefined, false, 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"')
+      actionsGrid.VerifyActionRow('RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"', 'API', ['name', 'sweets', 'want'], undefined, undefined, false)
     })
 
     it('Should verify "Blocked Actions" tab contains expected Action details', () => {
@@ -84,6 +85,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
+      train.VerifyEntityFilter('sweets')
       train.VerifyListOfTrainDialogs([
         {firstInput: 'I love candy!', lastInput: 'I love candy!', lastResponse: "What's your name?"}
       ])
@@ -100,7 +102,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
     it('Should verify "Required For Action" tab contains expected Action details', () => {
       entityModal.SelectRequiredForActionsTab()
       actionsGrid.VerifyActionRow('name:$name sweets:$sweets want:$want', 'END_SESSION', ['name', 'sweets', 'want'], undefined, undefined, true)
-      actionsGrid.VerifyActionRow('RenderTheArgs', 'API', ['name', 'sweets', 'want'], undefined, undefined, false, 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"')
+      actionsGrid.VerifyActionRow('RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$name"secondArg:"$sweets"thirdArg:"$want"fourthArg:"4"fifthArg:"5"sixthArg:"6"seventhArg:"7"', 'API', ['name', 'sweets', 'want'], undefined, undefined, false)
       actionsGrid.VerifyActionRow("Sorry $name, I can't help you get $want", 'TEXT', ['name', 'want'], undefined, undefined, true)
     })
 
@@ -117,6 +119,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
+      train.VerifyEntityFilter('want')
       train.VerifyListOfTrainDialogs([
         {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"},
         {firstInput: 'I want a car!', lastInput: 'I want a car!', lastResponse: "What's your name?"}
@@ -172,6 +175,7 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that filter Train Dialog on Entity button works', () => {
       entityModal.ClickTrainDialogFilterButton()
+      train.VerifyEntityFilter('canBeDeletedToo')
       train.VerifyListOfTrainDialogs([
         {firstInput: 'We will delete this entity.', lastInput: 'Will also delete this entity.', lastResponse: "What's your name?"}
       ])

@@ -126,18 +126,22 @@ describe("Settings - Settings", () => {
     })
   })
 
-  context('Export Model', () => {
-    it('Export the model', () => {
-      settings.ClickExportModelButton()
-      exportModelModal.VerifyPageTitle()
-      exportModelModal.ClickExportButton()
+  // On the Electron Browser this code brings up the Windows Dialog window 
+  // to select the download folder. Since we manually use this feature on
+  // a regular bases, we can safely leave this code out.
+  //
+  // context('Export Model', () => {
+  //   it('Export the model', () => {
+  //     settings.ClickExportModelButton()
+  //     exportModelModal.VerifyPageTitle()
+  //     exportModelModal.ClickExportButton()
 
-      // We are not verifying that the exported model can be imported and is a true copy
-      // because we have not found a way to definitively know what folder path the file
-      // was exported to. If we ever come up with a way to determine this path then we
-      // should add that logic here.
-    })
-  })
+  //     // We are not verifying that the exported model can be imported and is a true copy
+  //     // because we have not found a way to definitively know what folder path the file
+  //     // was exported to. If we ever come up with a way to determine this path then we
+  //     // should add that logic here.
+  //   })
+  // })
 
   context('Delete the Renamed Copy', () => {
     it('Delete this renamed copy of the model we started testing with', () => {

@@ -8,6 +8,9 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
+// This test case was created to reproduce bug 2027 and prevent its regression once it is fixed.
+// It was originally thought to be related to an END_SESSION Action, but it was shown to reproduce
+// on a TEXT Action as well.
 describe('Auto Score End Session Action - End Session', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
   
