@@ -41,7 +41,7 @@ export class ObiDialogParser {
     
         const dialogs: OBIDialog[] = []
         const luMap: Map<string, string[]> = new Map()
-        const lgMap: Map<string, OBIUtils.LGItem> = new Map()
+        const lgMap: Map<string, CLM.LGItem> = new Map()
         for (const file of files) {
             if (file.name.endsWith('.dialog')) {
                 const fileText = await Util.readFileAsync(file)
