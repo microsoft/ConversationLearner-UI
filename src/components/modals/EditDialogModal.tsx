@@ -2,12 +2,12 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react'
+import * as BotChat from '@conversationlearner/webchat'
 import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react'
 import * as DialogUtils from '../../Utils/dialogUtils'
 import * as OBIUtils from '../../Utils/obiUtils'
-import * as BotChat from '@conversationlearner/webchat'
+import * as OF from 'office-ui-fabric-react'
+import * as React from 'react'
 import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
 import AddButtonInput from './AddButtonInput'

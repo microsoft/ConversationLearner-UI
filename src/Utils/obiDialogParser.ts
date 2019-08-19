@@ -41,7 +41,7 @@ export class ObiDialogParser {
     
         const dialogs: OBIDialog[] = []
         const luMap: Map<string, string[]> = new Map()
-        const lgMap: Map<string, OBIUtils.LGItem> = new Map()
+        const lgMap: Map<string, CLM.LGItem> = new Map()
         for (const file of files) {
             if (file.name.endsWith('.dialog')) {
                 const fileText = await Util.readFileAsync(file)
@@ -56,10 +56,10 @@ export class ObiDialogParser {
             }
             else if (file.name.endsWith('.lg')) {
                 const fileText = await Util.readFileAsync(file)
-                this.addToLGMap(fileText, lgMap)
+                CLM.ObiUtils.addToLGMap(fileText, lgMap)
             }
         }
-    
+
         this.composerDialog = {
             dialogs,
             luMap,
@@ -83,22 +83,6 @@ export class ObiDialogParser {
             }
         }
         return luMap
-    }
-    
-    private addToLGMap(text: string, lgMap: Map<string, OBIUtils.LGItem>): any {
-        const items = text.split('# ')
-        for (const item of items) {
-            const key = item.substring(0, item.indexOf("-")).trim()
-            const body = item.substring(item.indexOf("```") + 3, item.lastIndexOf("[")).trim()
-            const suggestionList = item.substring(item.lastIndexOf("[Suggestions=") + 13, item.lastIndexOf("]"))
-            const suggestions = suggestionList.length > 0 ? suggestionList.split('|') : []
-            const output = {
-                text: body,
-                suggestions
-            }
-            lgMap.set(key, output)
-        }
-        return lgMap
     }
     
     private async getTrainDialogsfromOBIDialog(obiDialog: OBIDialog): Promise<CLM.TrainDialog[]> {
@@ -253,7 +237,7 @@ export class ObiDialogParser {
     }
     
     // Generate action directly from LG
-    private async getActionFromLG(lg: OBIUtils.LGItem, isTerminal: boolean): Promise<CLM.ActionBase | undefined> {
+    private async getActionFromLG(lg: CLM.LGItem, isTerminal: boolean): Promise<CLM.ActionBase | undefined> {
     
         let action = OBIUtils.findActionFromHashText(lg.text, this.actions)
         if (!action && this.createActionThunkAsync) {

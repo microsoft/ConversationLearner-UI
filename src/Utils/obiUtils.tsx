@@ -37,15 +37,10 @@ export interface OBIImportData {
     autoActionCreate: boolean
 }
 
-export interface LGItem {
-    text: string,
-    suggestions: string[]
-}
-
 export interface ComposerDialog {
     dialogs: OBITypes.OBIDialog[]
     luMap: Map<string, string[]>
-    lgMap: Map<string, LGItem>
+    lgMap: Map<string, CLM.LGItem>
 }
 
 async function getHistory(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
@@ -431,7 +426,7 @@ async function createActionFromImport(
 export function importedActionFromImportText(importText: string, isTerminal: boolean): ImportedAction {
     // Could be JSON object or just string
     try {
-        const lgItem: LGItem = JSON.parse(importText)
+        const lgItem: CLM.LGItem = JSON.parse(importText)
         // Assume reprompt if item has buttons
         return { text: lgItem.text, buttons: lgItem.suggestions, isTerminal, reprompt: lgItem.suggestions.length > 0}
     }
