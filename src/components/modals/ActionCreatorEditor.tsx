@@ -1710,7 +1710,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             tipType={ToolTip.TipType.ACTION_WAIT}
                         />
                         <TC.Checkbox
-                            data-testid="action-creator-wait-checkbox"
+                            data-testid="action-creator-reprompt-checkbox"
                             label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL)}
                             checked={this.state.reprompt}
                             onChange={this.onChangeRepromptCheckbox}
