@@ -37,6 +37,8 @@ export enum FM {
     ACTIONCREATOREDITOR_DELETEBUTTON_TEXT = 'ActionCreatorEditor.deleteButton.text',
     ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.traindialogsButton.ariaDescription',
     ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT = 'ActionCreatorEditor.traindialogsButton.text',
+    ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL = 'ActionCreatorEditor.checkboxTerminalLabel',
+    ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL = 'ActionCreatorEditor.checkboxRepromptLabel',
     ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE = 'ActionCreatorEditor.confirmDeleteTitle',
     ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING = 'ActionCreatorEditor.confirmDeleteWarning',
     ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE = 'ActionCreatorEditor.confirmEditTitle',
@@ -64,6 +66,7 @@ export enum FM {
     ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES = 'ActionDetailsList.columns.disqualifyingEntities',
     ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY = 'ActionDetailsList.columns.suggestedEntity',
     ACTIONDETAILSLIST_COLUMNS_ISTERMINAL = 'ActionDetailsList.columns.isTerminal',
+    ACTIONDETAILSLIST_COLUMNS_REPROMPT = 'ActionDetailsList.columns.reprompt',
     ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME = 'ActionDetailsList.columns.createdDateTime',
 
     // ActionScorer
@@ -99,6 +102,7 @@ export enum FM {
     APPCREATOR_COPY_TITLE = 'AppCreator.copytitle',
     APPCREATOR_DISPATCHER_TITLE = 'AppCreator.dispatcherTitle',
     APPCREATOR_IMPORT_TITLE = 'AppCreator.importtitle',
+    APPCREATOR_OBI_TITLE = 'AppCreator.obititle',
     APPCREATOR_FIELDS_NAME_LABEL = 'AppCreator.fields.name.label',
     APPCREATOR_FIELDS_IMPORT_NAME_LABEL = 'AppCreator.fields.importname.label',
     APPCREATOR_FIELDS_NAME_PLACEHOLDER = 'AppCreator.fields.name.placeholder',
@@ -119,6 +123,8 @@ export enum FM {
     APPSLIST_EMPTY_TEXT = 'AppsList.emptyText',
     APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION = 'AppsList.importappButtonAriaDescription',
     APPSLIST_IMPORTAPP_BUTTONTEXT = 'AppsList.importappButtonText',
+    APPSLIST_IMPORTOBI_BUTTONARIADESCRIPTION = 'AppsList.importobiButtonAriaDescription',
+    APPSLIST_IMPORTOBI_BUTTONTEXT = 'AppsList.importobiButtonText',
     APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION = 'AppsList.importtutorialsButtonAriaDescription',
     APPSLIST_IMPORTTUTORIALS_BUTTONTEXT = 'AppsList.importtutorialsButtonText',
     APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION = 'AppsList.createDispatcherButtonAriaDescription',
@@ -145,7 +151,7 @@ export enum FM {
     BUTTON_COMPARE = 'Button.COMPARE',
     BUTTON_CREATE = 'Button.CREATE',
     BUTTON_DELETE = 'Button.DELETE',
-    BUTTON_ENTITY ='Button.ENTITY',
+    BUTTON_ENTITY = 'Button.ENTITY',
     BUTTON_EXPORT = 'Button.EXPORT',
     BUTTON_INFO = 'Button.INFO',
     BUTTON_IMPORT = 'Button.IMPORT',
@@ -161,6 +167,7 @@ export enum FM {
     BUTTON_SUBMIT = 'Button.SUMBIT',
     BUTTON_UNDO = 'Button.UNDO',
     BUTTON_RATE = 'Button.RATE',
+    BUTTON_REPROMPT = 'Button.REPROMPT',
     BUTTON_SELECT = 'Button.SELECT',
     BUTTON_SELECTED = 'Button.SELECTED',
     BUTTON_TEST = 'Button.TEST',
@@ -317,6 +324,11 @@ export enum FM {
     FIELDERROR_MAX_30 = 'fieldError.max30',
     FIELDERROR_REQUIREDVALUE = 'fieldError.requiredValue',
     
+    // Import
+    IMPORT_AUTOIMPORT = 'Importer.autoimport',
+    IMPORT_AUTOMERGE = 'Importer.automerge',
+    IMPORT_AUTOACTIONMATCH ='Import.autoactionmatch',
+
     // LogConversionConflictModal
     LOGCONVERSIONCONFLICTMODAL_TITLE = 'LogConversionConflictModal.title',
     LOGCONVERSIONCONFLICTMODAL_SUBTITLE = 'LogConversionConflictModal.subTitle',
@@ -476,6 +488,9 @@ export enum FM {
     TOOLTIP_ACTION_DISQUAL_ROW3 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW3',
     TOOLTIP_ACTION_DISQUAL_ROW4 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW4',
 
+    TOOLTIP_ACTION_REPROMPT = 'ToolTip.ACTION_REPROMPT',
+    TOOLTIP_ACTION_REPROMPT_TITLE = 'ToolTip.ACTION_REPROMPT_TITLE',
+
     TOOLTIP_ACTION_RESPONSE = 'ToolTip.ACTION_RESPONSE',
     TOOLTIP_ACTION_RESPONSE_TEXT1 = 'ToolTip.ACTION_RESPONSE_TEXT1',
     TOOLTIP_ACTION_RESPONSE_TEXT2 = 'ToolTip.ACTION_RESPONSE_TEXT2',
@@ -567,8 +582,6 @@ export enum FM {
     // Transcript Importer
     TRANSCRIPT_IMPORTER_TITLE = 'TranscriptImporter.title',
     TRANSCRIPT_IMPORTER_DESCRIPTION = 'TranscriptImporter.description',
-    TRANSCRIPT_IMPORTER_AUTOIMPORT = 'TranscriptImporter.autoimport',
-    TRANSCRIPT_IMPORTER_AUTOMERGE = 'TranscriptImporter.automerge',
 
     // Transcript Validator
     TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
@@ -628,6 +641,8 @@ export default {
         [FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT]: 'Delete',
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
+        [FM.ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL]: 'Wait for Response?',
+        [FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL]: 'Reprompt on unexected user input',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this Action?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure?',
@@ -662,6 +677,7 @@ export default {
         [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Entities',
         [FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY]: 'Expected Entity',
         [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
+        [FM.ACTIONDETAILSLIST_COLUMNS_REPROMPT]: 'Reprompt',
 
         // Actions
         [FM.ACTIONS_TITLE]: 'Actions',
@@ -674,6 +690,7 @@ export default {
         [FM.APPCREATOR_TITLE]: 'Create a Conversation Learner Model',
         [FM.APPCREATOR_COPY_TITLE]: 'Copy a Conversation Learner Model',
         [FM.APPCREATOR_IMPORT_TITLE]: 'Import a Conversation Learner Model',
+        [FM.APPCREATOR_OBI_TITLE]: 'Create a Model from OBI Files',
         [FM.APPCREATOR_DISPATCHER_TITLE]: 'Create a Dispatcher Model',
         [FM.APPCREATOR_FIELDS_NAME_LABEL]: 'Name',
         [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New Model Name',
@@ -715,6 +732,8 @@ export default {
         [FM.APPSLIST_EMPTY_TEXT]: 'Create a New Model',
         [FM.APPSLIST_IMPORTAPP_BUTTONARIADESCRIPTION]: 'Import Model',
         [FM.APPSLIST_IMPORTAPP_BUTTONTEXT]: 'Import Model',
+        [FM.APPSLIST_IMPORTOBI_BUTTONARIADESCRIPTION]: 'Import OBI',
+        [FM.APPSLIST_IMPORTOBI_BUTTONTEXT]: 'Import OBI',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONARIADESCRIPTION]: 'Import Tutorials Models',
         [FM.APPSLIST_IMPORTTUTORIALS_BUTTONTEXT]: 'Import Tutorials',
         [FM.APPSLIST_CREATEDISPATCHER_BUTTONARIADESCRIPTION]: 'Create Dispatcher',
@@ -756,6 +775,7 @@ export default {
         [FM.BUTTON_SELECT_FILES]: 'Select File(s)',
         [FM.BUTTON_SUBMIT]: 'Submit',
         [FM.BUTTON_RATE]: 'Rate',
+        [FM.BUTTON_REPROMPT]: 'Reprompt',
         [FM.BUTTON_UNDO]: 'Undo',
         [FM.BUTTON_SELECT]: 'Select',
         [FM.BUTTON_SELECTED]: 'Selected',
@@ -888,6 +908,9 @@ export default {
         [FM.TOOLTIP_ACTION_DISQUAL_ROW3]: '"When were you born?"',
         [FM.TOOLTIP_ACTION_DISQUAL_ROW4]: '$birthdate',
 
+        [FM.TOOLTIP_ACTION_REPROMPT]: "When selected and not in a Train Dialog, Bot will repeat the given action if it isn't confident on how to respond to the user's input.",
+        [FM.TOOLTIP_ACTION_REPROMPT_TITLE]: 'Reprompt',
+
         [FM.TOOLTIP_ACTION_RESPONSE]: 'Value of Response that Bot will take',
         [FM.TOOLTIP_ACTION_RESPONSE_TEXT1]: 'Text the Bot will display to the user.',
         [FM.TOOLTIP_ACTION_RESPONSE_TEXT2]: 'Prefix text with a $ to substitute Entity values.',
@@ -1013,7 +1036,6 @@ export default {
         // CompareDialogs
         [FM.COMPAREDIALOGS_EDIT]: 'Edit Dialog',
 
-
         // ConfirmCancelModal
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
@@ -1123,6 +1145,11 @@ export default {
         [FM.FIELDERROR_MAX_30]: 'May not exceed 30 characters',
         [FM.FIELDERROR_REQUIREDVALUE]: 'Required Value',
 
+        // Import
+        [FM.IMPORT_AUTOIMPORT]: 'Auto Import',
+        [FM.IMPORT_AUTOMERGE]: 'Auto Merge',
+        [FM.IMPORT_AUTOACTIONMATCH]: 'Auto Action Match',
+
          // LogConversionConflictModal
         [FM.LOGCONVERSIONCONFLICTMODAL_TITLE]: 'Incompatible Log Dialog',
         [FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE]: 'You attempted to save this log dialog as a train dialog but this dialog is incompatible with the current model due to conflicts in entity labels.  This may occur if the model has changed from the version of model used to create the log dialog. You need to update the dialog to match current model to convert it.',
@@ -1184,8 +1211,6 @@ export default {
         // Transcript Importer
         [FM.TRANSCRIPT_IMPORTER_TITLE]: 'Import Transripts...',
         [FM.TRANSCRIPT_IMPORTER_DESCRIPTION]: 'Create Train Dialogs from .transcript files',
-        [FM.TRANSCRIPT_IMPORTER_AUTOIMPORT]: 'Auto Import',
-        [FM.TRANSCRIPT_IMPORTER_AUTOMERGE]: 'Auto Merge',
         
         // Transcript Validator
         [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Testing',

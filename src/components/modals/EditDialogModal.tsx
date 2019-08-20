@@ -2,11 +2,12 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react'
-import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react'
-import * as DialogUtils from '../../Utils/dialogUtils'
 import * as BotChat from '@conversationlearner/webchat'
+import * as CLM from '@conversationlearner/models'
+import * as DialogUtils from '../../Utils/dialogUtils'
+import * as OBIUtils from '../../Utils/obiUtils'
+import * as OF from 'office-ui-fabric-react'
+import * as React from 'react'
 import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
 import AddButtonInput from './AddButtonInput'
@@ -17,7 +18,7 @@ import UserInputModal from './UserInputModal'
 import FormattedMessageId from '../FormattedMessageId'
 import TranscriptImportCancelModal from './TranscriptImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
-import { NewActionPreset } from './ActionCreatorEditor'
+import { ImportedAction } from '../../types/models'
 import { formatMessageId, equal, deepCopy } from '../../Utils/util'
 import { State } from '../../types'
 import { EditDialogAdmin, EditDialogType, EditState } from '.'
@@ -37,7 +38,7 @@ interface ComponentState {
     isImportAbandonOpen: boolean
     cantReplayMessage: FM | null
     isUserInputModalOpen: boolean
-    newActionPreset?: NewActionPreset
+    importedAction?: ImportedAction
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
     isSaveConflictModalOpen: boolean
@@ -55,7 +56,7 @@ const initialState: ComponentState = {
     isImportAbandonOpen: false,
     cantReplayMessage: null,
     isUserInputModalOpen: false,
-    newActionPreset: undefined,
+    importedAction: undefined,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
     isSaveConflictModalOpen: false,
@@ -383,8 +384,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             selectedActivity: activity,
         })
 
-        const newActionPreset = this.getNewActionPreset(activity)
-        this.setState({newActionPreset})
+        const importedAction = this.getImportedAction(activity)
+        this.setState({importedAction})
     }
 
     onPendingStatusChanged(changed: boolean) {
@@ -433,7 +434,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType, this.state.selectedActivity != null)
     }
 
-    getNewActionPreset(activity: Activity): NewActionPreset | undefined {
+    getImportedAction(activity: Activity): ImportedAction | undefined {
         const clData: CLM.CLChannelData = activity.channelData.clData
         const senderType = clData.senderType
         const scoreIndex = clData.scoreIndex || 0
@@ -451,7 +452,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             : false
 
         if (importText) {
-            return { text: importText, isTerminal }
+            return OBIUtils.importedActionFromImportText(importText, isTerminal)
         }
         return undefined
     }
@@ -1029,7 +1030,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onChangeAction={this.onChangeAction}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
-                                    newActionPreset={this.state.newActionPreset}
+                                    importedAction={this.state.importedAction}
                                     importIndex={this.props.importIndex}
                                     importCount={this.props.importCount}
                                     allUniqueTags={this.props.allUniqueTags}
@@ -1039,7 +1040,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
                                     description={this.state.description}
                                     onChangeDescription={this.onChangeDescription}
-                                    onActionCreatorClosed={() => this.setState({newActionPreset: undefined})}
+                                    onActionCreatorClosed={() => this.setState({importedAction: undefined})}
                                 />
                             </div>
                             {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay" />}
@@ -1112,7 +1113,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     open={this.state.isImportAbandonOpen}
                     onCancel={this.onClickAbandonCancel}
                     onConfirm={this.onClickAbandonApprove}
-                    isLastImport={this.props.importIndex === this.props.importCount}
+                    // Don't show stop checkbox if on last item or doing OBI import
+                    allowContinue={this.props.importIndex !== this.props.importCount && !this.props.importingOBI}
                 />
                 {this.state.cantReplayMessage &&
                     <ConfirmCancelModal
@@ -1179,6 +1181,7 @@ export interface ReceivedProps {
     allUniqueTags: string[]
     importIndex?: number
     importCount?: number
+    importingOBI?: boolean
 
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, isLastActivity: boolean, selectionType: SelectionType) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any

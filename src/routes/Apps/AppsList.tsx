@@ -3,33 +3,30 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
+import AppsListComponent from './AppsListComponent'
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { OBIImportData } from '../../Utils/obiUtils'
 import { fetchTutorialsThunkAsync } from '../../actions/appActions'
-import { AppBase, AppDefinition } from '@conversationlearner/models'
 import { CL_IMPORT_TUTORIALS_USER_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators'
-import AppsListComponent from './AppsListComponent'
 
 interface ComponentState {
     isAppCreateModalOpen: boolean
     appCreatorType: AppCreatorType
     isImportTutorialsOpen: boolean
-    appToDelete: AppBase | null
-    tutorials: AppBase[] | null
+    appToDelete: CLM.AppBase | null
+    tutorials: CLM.AppBase[] | null
     selectionCount: number
 }
 
 class AppsList extends React.Component<Props, ComponentState> {
-    private selection: OF.ISelection = new OF.Selection({
-        getKey: (app) => (app as AppBase).appId,
-        onSelectionChanged: this.onSelectionChanged
-    })
 
     state: Readonly<ComponentState> = {
         isAppCreateModalOpen: false,
@@ -40,13 +37,15 @@ class AppsList extends React.Component<Props, ComponentState> {
         selectionCount: 0,
     }
 
+    private selection: OF.ISelection = new OF.Selection({
+        getKey: (app) => (app as CLM.AppBase).appId,
+        onSelectionChanged: this.onSelectionChanged
+    })
 
     @autobind
-    onClickCreateNewApp() {
-        this.setState({
-            isAppCreateModalOpen: true,
-            appCreatorType: AppCreatorType.NEW
-        })
+    onClickApp(app: CLM.AppBase) {
+        const { match, history } = this.props
+        history.push(`${match.url}/${app.appId}`, { app })
     }
 
     @autobind
@@ -57,22 +56,19 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
+    //------------------
+    // Import Tutorials
+    //------------------
     @autobind
     async onClickImportDemoApps() {
         const tutorials = this.state.tutorials !== null
             ? this.state.tutorials
-            : await ((this.props.fetchTutorialsThunkAsync(CL_IMPORT_TUTORIALS_USER_ID) as any) as Promise<AppBase[]>)
+            : await ((this.props.fetchTutorialsThunkAsync(CL_IMPORT_TUTORIALS_USER_ID) as any) as Promise<CLM.AppBase[]>)
 
         this.setState({
             tutorials: tutorials,
             isImportTutorialsOpen: true
         })
-    }
-
-    @autobind
-    onClickApp(app: AppBase) {
-        const { match, history } = this.props
-        history.push(`${match.url}/${app.appId}`, { app })
     }
 
     @autobind
@@ -82,13 +78,24 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
+    //------------------
+    // App Create
+    //------------------
     @autobind
-    onSubmitAppCreateModal(app: AppBase, source: AppDefinition | null = null) {
+    onClickCreateNewApp() {
+        this.setState({
+            isAppCreateModalOpen: true,
+            appCreatorType: AppCreatorType.NEW
+        })
+    }
+
+    @autobind
+    onSubmitAppCreateModal(app: Partial<CLM.AppBase>, source: CLM.AppDefinition | null = null) {
         this.setState({
             isAppCreateModalOpen: false
         }, () => {
-            if (this.state.appCreatorType == AppCreatorType.DISPATCHER) {
-                const selectedModels = this.selection.getSelection() as AppBase[]
+            if (this.state.appCreatorType === AppCreatorType.DISPATCHER) {
+                const selectedModels = this.selection.getSelection() as CLM.AppBase[]
                 this.props.onCreateDispatchModel(app, selectedModels)
             }
             else {
@@ -104,6 +111,24 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
+    //------------------
+    // OBI Import
+    //------------------
+    @autobind
+    onClickImportOBI(): void {
+        this.setState({
+            isAppCreateModalOpen: true,
+            appCreatorType: AppCreatorType.OBI
+        })
+    }
+
+    @autobind
+    async onSubmitImportOBI(app: CLM.AppBase, obiImportData: OBIImportData): Promise<void> {
+        this.setState({
+            isAppCreateModalOpen: false
+        }, () => this.props.onCreateApp(app, null, obiImportData))
+    }
+    
     @autobind
     onClickCreateNewDispatcherModel() {
         this.setState({
@@ -112,7 +137,6 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
-    @autobind
     onSelectionChanged() {
         const selectionCount = this.selection.getSelectedCount()
         this.setState({
@@ -126,6 +150,7 @@ class AppsList extends React.Component<Props, ComponentState> {
 
             user={this.props.user}
             apps={this.props.apps}
+            canImportOBI={this.props.settings.features !== undefined && this.props.settings.features.indexOf("CCI") >= 0}
             activeApps={this.props.activeApps}
             onClickApp={this.onClickApp}
             selection={this.selection}
@@ -141,6 +166,9 @@ class AppsList extends React.Component<Props, ComponentState> {
             onClickImportApp={this.onClickImportApp}
             onClickImportDemoApps={this.onClickImportDemoApps}
             onClickCreateNewDispatcherModel={this.onClickCreateNewDispatcherModel}
+
+            onClickImportOBI={this.onClickImportOBI}
+            onSubmitImportOBI={this.onSubmitImportOBI}
 
             isImportTutorialsOpen={this.state.isImportTutorialsOpen}
             tutorials={this.state.tutorials!}
@@ -168,11 +196,11 @@ const mapStateToProps = (state: State) => {
 }
 
 export interface ReceivedProps {
-    apps: AppBase[]
-    onCreateApp: (app: AppBase, source: AppDefinition | null) => void
-    onClickDeleteApp: (app: AppBase) => void
-    onImportTutorial: (tutorial: AppBase) => void
-    onCreateDispatchModel: (model: AppBase, models: AppBase[]) => void
+    apps: CLM.AppBase[]
+    onCreateApp: (app: Partial<CLM.AppBase>, source: CLM.AppDefinition | null, obiImportData?: OBIImportData) => void
+    onClickDeleteApp: (app: CLM.AppBase) => void
+    onImportTutorial: (tutorial: CLM.AppBase) => void
+    onCreateDispatchModel: (model: Partial<CLM.AppBase>, models: CLM.AppBase[]) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
