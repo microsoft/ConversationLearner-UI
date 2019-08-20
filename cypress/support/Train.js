@@ -259,13 +259,13 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
 // Verify that a specific word of a user utterance has been labeled as an entity.
 // word = a word within the utterance that should already be labeled
 // entity = name of entity the word was labeled with
+// index = into one of the alternative inputs
 // *** This does work for multiple word labels, but you must pass in only one
 // *** word that uniquely identifies the labeled text
 export function RemoveEntityLabel(word, entity, index = 0) {
   cy.Get('div.slate-editor').then(elements => {
     expect(elements.length).to.be.at.least(index - 1)
     cy.wrap(elements[index]).within(() => {
-      cy.wrap(elements[index]).click()
       cy.Get('[data-testid="token-node-entity-value"] > span > span')
         .ExactMatch(word)
         .parents('.cl-entity-node--custom')

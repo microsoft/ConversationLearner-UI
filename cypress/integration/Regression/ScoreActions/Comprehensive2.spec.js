@@ -16,7 +16,7 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Comprehensive 2 - Score Actions', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  let generatedScoreActionsData = new scorerModal.GeneratedData('comprehensive.json')
+  let generatedScoreActionsData = new scorerModal.GeneratedData('comprehensive2.json')
 
   context('Setup', () => {
     it('Should import a model to test against, navigate to Train Dialogs view and wait for training status to complete', () => {
@@ -28,18 +28,17 @@ describe('Comprehensive 2 - Score Actions', () => {
 
   context('Continue Training', () => {
     it('Edit existing Train Dialog', () => {
-      train.EditTraining('Hi', 'I love oranges!', 'I like $fruit{enter} too')
+      train.EditTraining('Hi', 'I love oranges!', 'I like $fruit too')
     })
 
     it('User prompts Bot for other Actions', () => {
       train.TypeYourMessage('Render these API Arguments: OneFromAnEntity, TwoToBeUsedByApiCall - and temporarily disqualify the Api response')
-      train.LabelTextAsEntity('OneFromAnEntity', '1stArg')
-      train.LabelTextAsEntity('TwoToBeUsedByApiCall', '2ndArg')
-      train.LabelTextAsEntity('disqualify', 'disqualifier')
+      train.ClickScoreActionsButton()
     })
 
+    generatedScoreActionsData.VerifyScoreActionsList()
+
     it('Create Bot response about the choice of fruit', () => {
-      train.ClickScoreActionsButton()
       scorerModal.ClickAddActionButton()
 
       actions.ClickAddEntityButton()
@@ -60,22 +59,57 @@ describe('Comprehensive 2 - Score Actions', () => {
       // When the Action cannot be selected because it is disqualified like this one is at this point in the test, 
       // then nothing is automatically selected and the user must chose what to do next.
 
+      scorerModal.ClickAddActionButton()
       actions.CreateNewAction({ responseNameData: 'Uhhhh...' })
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
 
-    it('Label entities in prior User Turn to cause a change in the API qualification', () => {
-      train.SelectChatTurnStartsWith('Render these API Arguments')
-      train.LabelTextAsEntity('OneFromAnEntity', '1stArg')
-      train.LabelTextAsEntity('TwoToBeUsedByApiCall', '2ndArg')
+    it('Label an entity from prior User Turn to cause a change in the API qualification', () => {
+      train.SelectChatTurnStartsWith('Render these')
       train.LabelTextAsEntity('disqualify', 'disqualifier')
+      train.ClickSubmitChangesButton()
+      train.SelectChatTurnExactMatch('Uhhhh…')
     })
 
-    it('', () => {
+    generatedScoreActionsData.VerifyScoreActionsList()
+
+    it('Label another entity from prior User Turn to cause a change in the API qualification', () => {
+      train.SelectChatTurnStartsWith('Render these')
+      train.LabelTextAsEntity('OneFromAnEntity', '1stArg')
+      train.ClickSubmitChangesButton()
+      train.SelectChatTurnExactMatch('Uhhhh…')
     })
 
-    it('', () => {
+    generatedScoreActionsData.VerifyScoreActionsList()
+
+    it('Label yet another entity from prior User Turn to cause a change in the API qualification', () => {
+      train.SelectChatTurnStartsWith('Render these')
+      train.LabelTextAsEntity('TwoToBeUsedByApiCall', '2ndArg')
+      train.ClickSubmitChangesButton()
+      train.SelectChatTurnExactMatch('Uhhhh…')
+    })
+
+    generatedScoreActionsData.VerifyScoreActionsList()
+
+    it('Remove label from the disqualifying entity from prior User Turn to cause a change in the API qualification', () => {
+      train.SelectChatTurnStartsWith('Render these')
+      train.RemoveEntityLabel('disqualify', 'disqualifier')
+      train.ClickSubmitChangesButton()
+      train.SelectChatTurnExactMatch('Uhhhh…')
+    })
+
+    generatedScoreActionsData.VerifyScoreActionsList()
+
+    it('Select RenderTheArgs API action', () => {
+      train.SelectApiTextAction('RenderTheArgs', 'The Logic Args: ‘OneFromAnEntity’, ‘TwoToBeUsedByApiCall’, ‘333’, ‘4444’, ‘five’, ‘six’, ‘seven’The Render Args: ‘OneFromAnEntity’, ‘TwoToBeUsedByApiCall’, ‘three’, ‘four’, ‘55555’, ‘666666’, ‘7777777’')
+    })
+
+    it('Save the Train Dialog', () => {
+      train.SaveAsIs()
     })
   })
+
+  generatedScoreActionsData.SaveGeneratedData()
+  // Manually EXPORT this to fixtures folder and name it 'z-comprehensive2.cl'
 })
