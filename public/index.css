@@ -661,6 +661,7 @@ i[data-icon-name="Edit"]:hover {
 
 .cl-file-picker-button {
   white-space: nowrap;
+  width: 160px;
 }
 
 .cl-form {

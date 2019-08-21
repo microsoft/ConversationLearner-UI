@@ -5,7 +5,6 @@
 import * as CLM from '@conversationlearner/models'
 import * as Util from './util'
 import * as OBIUtils from './obiUtils'  
-import Plain from 'slate-plain-serializer'
 import { OBIDialog } from '../types/obiTypes'
 
 enum OBIStepType {
@@ -21,24 +20,9 @@ enum OBIRuleType {
 
 export class ObiDialogParser {
     private composerDialog: OBIUtils.ComposerDialog
-    private appId: string
-    private actions: CLM.ActionBase[] = []
-    //LARSprivate entities: CLM.EntityBase[] = []
-    private createActionThunkAsync: ((appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>) | undefined
-    //LARSprivate createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
-    
-    constructor(
-        appId: string,
-        createActionThunkAsync?: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
-        createEntityThunkAsync?: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
-    ) {
-        this.appId = appId
-        this.createActionThunkAsync = createActionThunkAsync
-        //LARSthis.createEntityThunkAsync = createEntityThunkAsync
-    }
 
-    async getTrainDialogsFromComposer(files: File[]): Promise<CLM.TrainDialog[] | null> {
-    
+    async getTrainDialogs(files: File[]): Promise<CLM.TrainDialog[] | null> {
+
         const dialogs: OBIDialog[] = []
         const luMap: Map<string, string[]> = new Map()
         const lgMap: Map<string, CLM.LGItem> = new Map()
@@ -57,6 +41,9 @@ export class ObiDialogParser {
             else if (file.name.endsWith('.lg')) {
                 const fileText = await Util.readFileAsync(file)
                 CLM.ObiUtils.addToLGMap(fileText, lgMap)
+            }
+            else {
+                throw new Error(`Expecting .dialog, .lu and .lg files. ${file.name} is of unknown file type`)
             }
         }
 
@@ -202,23 +189,11 @@ export class ObiDialogParser {
         if (!response) {
             // LARS thow error once CCI .dialog transformer has been fixed
             response = { text: "Can't Parse LU", suggestions: []}
-           //throw new Error(`LU name ${prompt} undefined`)
+           //throw new Error(`LG name ${prompt} undefined`)
         }
     
         let scoredAction: CLM.ScoredAction | undefined
-        if (this.createActionThunkAsync) {
-            const action = await this.getActionFromLG(response, true)
-            if (action) {
-                scoredAction = {
-                    actionId: action.actionId,
-                    payload: action.payload,
-                    isTerminal: action.isTerminal,
-                    actionType: CLM.ActionTypes.TEXT,
-                    score: 1
-                }
-            }
-        }
-    
+
         let scoreInput: CLM.ScoreInput = {
             filledEntities: [],  //LARS handle filled entities from api calls
             context: {},
@@ -233,49 +208,8 @@ export class ObiDialogParser {
             logicResult: undefined,  // LARS handle api calls
             scoredAction
         }
-    
     }
     
-    // Generate action directly from LG
-    private async getActionFromLG(lg: CLM.LGItem, isTerminal: boolean): Promise<CLM.ActionBase | undefined> {
-    
-        let action = OBIUtils.findActionFromHashText(lg.text, this.actions)
-        if (!action && this.createActionThunkAsync) {
-
-            const tp: CLM.TextPayload = {
-                json: Plain.deserialize(lg.text)
-            }
-            const payload = JSON.stringify(tp)
-
-            const actionBody = new CLM.ActionBase({
-                actionId: null!,
-                payload,
-                createdDateTime: new Date().toJSON(),
-                isTerminal,
-                requiredEntitiesFromPayload: [],
-                requiredEntities: [],
-                negativeEntities: [],
-                requiredConditions: [],
-                negativeConditions: [],
-                suggestedEntity: undefined,
-                version: 0,
-                packageCreationId: 0,
-                packageDeletionId: 0,
-                actionType: CLM.ActionTypes.TEXT,
-                entityId: undefined,
-                enumValueId: undefined,
-                clientData: { importHashes: [Util.hashText(lg.text)]}
-            })
-            const newAction = await this.createActionThunkAsync(this.appId, actionBody)
-            if (!newAction) {
-                throw new Error("Unable to create action")
-            }
-            this.actions.push(newAction)
-            return newAction
-        }
-        return action
-    }
-
     private getTextVariations(intentName: string) {
         let userInputs = this.composerDialog.luMap.get(intentName)
         if (!userInputs) {

@@ -116,7 +116,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         let history2: BotChat.Activity[] = []
         let missingLog = false
         if (validationResult.sourceHistory) {
-            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceHistory, this.props.entities, this.props.actions, this.props.app)
+            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceHistory, null, this.props.entities, this.props.actions, this.props.app)
             trainDialog.definitions = {
                 actions: this.props.actions,
                 entities: this.props.entities,
