@@ -327,7 +327,7 @@ export enum FM {
     // Import
     IMPORT_AUTOIMPORT = 'Importer.autoimport',
     IMPORT_AUTOMERGE = 'Importer.automerge',
-    IMPORT_AUTOACTIONMATCH ='Import.autoactionmatch',
+    IMPORT_AUTOACTIONMATCH = 'Import.autoactionmatch',
 
     // LogConversionConflictModal
     LOGCONVERSIONCONFLICTMODAL_TITLE = 'LogConversionConflictModal.title',
@@ -582,7 +582,9 @@ export enum FM {
     // Transcript Importer
     TRANSCRIPT_IMPORTER_TITLE = 'TranscriptImporter.title',
     TRANSCRIPT_IMPORTER_DESCRIPTION = 'TranscriptImporter.description',
-
+    TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON = 'TranscriptImporter.transcriptbutton',
+    TRANSCRIPT_IMPORTER_LG_BUTTON = 'TranscriptImporter.lgbutton',
+    
     // Transcript Validator
     TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
     TRANSCRIPT_VALIDATOR_SUBTITLE = 'TranscriptValidator.subtitle',
@@ -1209,13 +1211,15 @@ export default {
         [FM.TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL]: 'Skip remaining imports',
 
         // Transcript Importer
-        [FM.TRANSCRIPT_IMPORTER_TITLE]: 'Import Transripts...',
+        [FM.TRANSCRIPT_IMPORTER_TITLE]: 'Import Transcripts...',
         [FM.TRANSCRIPT_IMPORTER_DESCRIPTION]: 'Create Train Dialogs from .transcript files',
-        
+        [FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON]: '.transcript files',
+        [FM.TRANSCRIPT_IMPORTER_LG_BUTTON]: '.lg files',
+
         // Transcript Validator
         [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Testing',
         [FM.TRANSCRIPT_VALIDATOR_SUBTITLE]: `Compare Model's output to .transcript files`,
-        [FM.TRANSCRIPT_VALIDATOR_PICKER_TITLE]: 'Select .transcript files to test',
+        [FM.TRANSCRIPT_VALIDATOR_PICKER_TITLE]: 'Select Transcript files to test',
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE]: 'Name for Test Results',
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER]: 'Name',
         [FM.TRANSCRIPT_VALIDATOR_NAME_LABEL]: 'Test Name',

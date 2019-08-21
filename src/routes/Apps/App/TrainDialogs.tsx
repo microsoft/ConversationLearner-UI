@@ -10,9 +10,9 @@ import * as DialogEditing from '../../../Utils/dialogEditing'
 import * as DialogUtils from '../../../Utils/dialogUtils'
 import * as OBIUtils from '../../../Utils/obiUtils'
 import * as OBIDialogParser from '../../../Utils/obiDialogParser'
+import * as OBITranscriptParser from '../../../Utils/obiTranscriptParser'
 import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
-import * as BB from 'botbuilder'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
@@ -1059,18 +1059,26 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     @autobind
     async importOBIFiles(obiImportData: OBIUtils.OBIImportData): Promise<void> {
 
-        const obiDialogParser = new OBIDialogParser.ObiDialogParser(this.props.app.appId)
-        const importedTrainDialogs = await obiDialogParser.getTrainDialogsFromComposer(obiImportData.files)
+        const obiDialogParser = new OBIDialogParser.ObiDialogParser()
+        try {
+            const importedTrainDialogs = await obiDialogParser.getTrainDialogs(obiImportData.files)
 
-        await Util.setStateAsync(this, {
-            importIndex: undefined,
-            importedTrainDialogs,
-            importAutoCreate: obiImportData.autoCreate,
-            importAutoMerge: obiImportData.autoMerge,
-            importAutoActionCreate: obiImportData.autoActionCreate
-        })
-
-        await this.onImportNextTrainDialog()
+            await Util.setStateAsync(this, {
+                importIndex: undefined,
+                importedTrainDialogs,
+                importAutoCreate: obiImportData.autoCreate,
+                importAutoMerge: obiImportData.autoMerge,
+                importAutoActionCreate: obiImportData.autoActionCreate
+            })
+    
+            await this.onImportNextTrainDialog()
+        }
+        catch (error) {
+            await Util.setStateAsync(this, {
+                importedTrainDialogs: undefined
+            })
+            this.props.setErrorDisplay(ErrorType.Error, "Import Failed", error.message, null)       
+        }
     }
 
     //-----------------------------
@@ -1084,65 +1092,54 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onCloseImportTranscripts(transcriptsToImport: File[] | null, importAutoCreate: boolean, importAutoMerge: boolean): Promise<void> {
+    onCancelImportTranscripts(): void {
+        this.setState({
+            isTranscriptImportOpen: false
+        })
+    }
+
+    @autobind
+    async onSubmitImportTranscripts(transcriptFiles: File[], lgFiles: File[], importAutoCreate: boolean, importAutoMerge: boolean, importAutoActionCreate: boolean): Promise<void> {
         await Util.setStateAsync(this, {
             isTranscriptImportOpen: false,
             importAutoCreate,
             importAutoMerge,
-            // No auto action matching on transcript files
-            importAutoActionCreate: false
+            importAutoActionCreate: importAutoActionCreate
         })
 
-        if (!transcriptsToImport) {
+        if (transcriptFiles.length === 0) {
             return
         }
 
-        const importedTrainDialogs: CLM.TrainDialog[] = []
-        for (const transcriptFile of transcriptsToImport) {
-
-            let source = await Util.readFileAsync(transcriptFile)
-            try {
-                const transcript: BB.Activity[] = JSON.parse(source)
-                const transcriptHash = Util.hashText(JSON.stringify(transcript))
-    
-                // If transcript has already been imported, skip it
-                if (!this.hasTranscriptBeenImported(transcriptHash)) {
-            
-                    const importedTrainDialog = await OBIUtils.trainDialogFromTranscriptImport(
-                        transcript,
-                        this.props.entities,
-                        this.props.actions,
-                        this.props.app,
-                        this.props.createActionThunkAsync as any,
-                        this.props.createEntityThunkAsync as any
-                    )
+        const obiTranscriptParser = new OBITranscriptParser.ObiTranscriptParser(
+            this.props.app,
+            this.props.actions,
+            this.props.entities,
+            this.props.trainDialogs,
+            this.props.createActionThunkAsync as any,
+            this.props.createEntityThunkAsync as any
+            )
         
-                    importedTrainDialogs.push(importedTrainDialog)
-                }
-            }
-            catch (e) {
-                const error = e as Error
-                this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
-                this.setState({
-                    importedTrainDialogs: undefined,
-                    isImportWaitModalOpen: false
-                })
-            }
+        try {
+            const importedTrainDialogs = await obiTranscriptParser.getTrainDialogs(transcriptFiles, lgFiles)
+            await Util.setStateAsync(this, {
+                isTranscriptImportOpen: false,
+                importIndex: undefined,
+                importedTrainDialogs,
+                importAutoCreate,
+                importAutoMerge
+            })
+    
+            await this.onImportNextTrainDialog()
         }
-
-        await Util.setStateAsync(this, {
-            isTranscriptImportOpen: false,
-            importIndex: 0,
-            importedTrainDialogs,
-            importAutoCreate,
-            importAutoMerge
-        })
-
-        await this.onImportNextTrainDialog()
-    }
-
-    hasTranscriptBeenImported(importHash: string): boolean {
-        return this.props.trainDialogs.find(td => td.clientData ? (td.clientData.importHashes.find(ih => ih === importHash) !== undefined) : false) !== undefined
+        catch (e) {
+            const error = e as Error
+            this.props.setErrorDisplay(ErrorType.Error, error.message, error.message, null)//LARS
+            this.setState({
+                importedTrainDialogs: undefined,
+                isImportWaitModalOpen: false
+            })
+        }
     }
 
     // Import a train dialog
@@ -1694,7 +1691,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     <TranscriptImporter
                         app={this.props.app}
                         open={true}
-                        onClose={this.onCloseImportTranscripts}
+                        onSubmit={this.onSubmitImportTranscripts}
+                        onCancel={this.onCancelImportTranscripts}
                     />
                 }
                 {this.state.isImportWaitModalOpen && this.state.importIndex &&

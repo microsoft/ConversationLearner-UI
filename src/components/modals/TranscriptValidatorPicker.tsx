@@ -18,22 +18,26 @@ import { autobind } from 'core-decorators';
 
 interface ComponentState {
     transcriptFiles: File[]
+    lgFiles: File[]
     testName: string
 }
 
 class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
     state: ComponentState = {
         transcriptFiles: [],
+        lgFiles: [],
         testName: ''
     }
         
-    private transcriptfileInput: any
+    private transcriptFileInput: any
+    private lgFileInput: any
 
-    UNSAFE_componentWillReceiveProps(nextProps: Props) {
+    componentDidUpdate(prevProps: Props) {
         // Reset when opening modal
-        if (this.props.open === false && nextProps.open === true) {
+        if (prevProps.open === false && this.props.open === true) {
             this.setState({
-                transcriptFiles: []
+                transcriptFiles: [],
+                lgFiles: []
             })
         }
     }
@@ -49,6 +53,12 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
     onChangeTranscriptFiles(files: any) {
         this.setState({
             transcriptFiles: files
+        })
+    }
+
+    onChangeLGFiles = (lgFiles: any) => {
+        this.setState({
+            lgFiles
         })
     }
 
@@ -72,7 +82,7 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                         type="file"
                         style={{ display: 'none' }}
                         onChange={(event) => this.onChangeTranscriptFiles(event.target.files)}
-                        ref={ele => (this.transcriptfileInput = ele)}
+                        ref={ele => (this.transcriptFileInput = ele)}
                         multiple={true}
                     />
                     <OF.TextField
@@ -85,10 +95,10 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                     <div className="cl-file-picker">
                         <OF.PrimaryButton
                             className="cl-file-picker-button"
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_SELECT_FILES)} 
-                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_SELECT_FILES)} 
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON)} 
+                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON)} 
                             iconProps={{ iconName: 'DocumentSearch' }}
-                            onClick={() => this.transcriptfileInput.click()}
+                            onClick={() => this.transcriptFileInput.click()}
                         />
                         <OF.TextField
                             disabled={true}
@@ -100,6 +110,32 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                             }
                         />
                     </div>
+                    <input
+                        type="file"
+                        style={{ display: 'none' }}
+                        onChange={(event) => this.onChangeLGFiles(event.target.files)}
+                        ref={ele => (this.lgFileInput = ele)}
+                        multiple={true}
+                    />
+                    <div className="cl-file-picker">
+                        <OF.PrimaryButton
+                            data-testid="transcript-locate-file-button"
+                            className="cl-file-picker-button"
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_LG_BUTTON)} 
+                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_LG_BUTTON)} 
+                            iconProps={{ iconName: 'DocumentSearch' }}
+                            onClick={() => this.lgFileInput.click()}
+                        />
+                        <OF.TextField
+                            disabled={true}
+                            value={!this.state.lgFiles 
+                                ? undefined
+                                : this.state.lgFiles.length === 1
+                                ? this.state.lgFiles[0].name 
+                                : `${this.state.lgFiles.length} files selected`
+                            }
+                        />
+                    </div>
                 </div>
                 <div className='cl-modal_footer cl-modal-buttons'>
                     <div className="cl-modal-buttons_secondary" />
@@ -107,7 +143,7 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                         <OF.PrimaryButton
                             disabled={this.state.transcriptFiles.length === 0 || this.props.onGetNameErrorMessage(this.state.testName) !== ''}
                             data-testid="transcript-submit-button"
-                            onClick={() => this.props.onValidateFiles(this.state.testName, this.state.transcriptFiles)}
+                            onClick={() => this.props.onValidateFiles(this.state.testName, this.state.transcriptFiles, this.state.lgFiles)}
                             ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
                             text={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
                             iconProps={{ iconName: 'TestCase' }}
@@ -143,7 +179,7 @@ export interface ReceivedProps {
     app: CLM.AppBase
     open: boolean
     onAbandon: () => void
-    onValidateFiles: (testName: string, files: File[]) => void
+    onValidateFiles: (testName: string, transcriptFiles: File[], glFiles: File[]) => void
     onGetNameErrorMessage: (value: string) => string 
 }
 
