@@ -99,19 +99,24 @@ export async function lgMapFromLGFiles(lgFiles: File[] | null): Promise<Map<stri
     return lgMap
 }
 
-export function substituteLG(text: string, lgMap: Map<string, CLM.LGItem> | null): string {
-    
-    // If not LG substitution just return the text
-    if (!lgMap || !text.startsWith('[') || !text.endsWith(']')) {
-        return text
-    }
-    const lgName = text.substring(text.indexOf("[") + 1, text.lastIndexOf("]")).trim()
-    let response = lgMap.get(lgName)
-    if (!response) {
-        throw new Error(`LG name ${lgName} undefined`)
-    }
+// Given a transcript file, replace and LG references with actual LG content
+export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.LGItem>): void {
 
-    return (response.suggestions.length > 0) ? JSON.stringify(response) : response.text
+    for (let activity of transcript) {
+        if (activity.type && activity.type === 'message' && activity.from.role === 'bot') {
+
+            if (activity.text.startsWith('[') && activity.text.endsWith(']')) {
+
+                const lgName = activity.text.substring(activity.text.indexOf("[") + 1, activity.text.lastIndexOf("]")).trim()
+                let response = lgMap.get(lgName)
+                if (!response) {
+                    throw new Error(`LG name ${lgName} undefined`)
+                }
+
+                activity.text = (response.suggestions.length > 0) ? JSON.stringify(response) : response.text
+            }
+        }
+    }
 }
 
 // Convert .transcript file into a TrainDialog
@@ -142,6 +147,11 @@ export async function trainDialogFromTranscriptImport(
         // It's initially invalid
         validity: CLM.Validity.INVALID,
         clientData: {importHashes: [transcriptHash]}
+    }
+
+    // If I have an LG map, substitute in LG values
+    if (lgMap) {
+        substituteLG(transcript, lgMap)
     }
 
     let curRound: CLM.TrainRound | null = null
@@ -183,8 +193,7 @@ export async function trainDialogFromTranscriptImport(
                 trainDialog.rounds.push(curRound)
             }
             else if (activity.from.role === "bot") {
-                const importText = substituteLG(activity.text, lgMap)
-                const hashText = hashTextFromActivity(importText, activity, entities, nextFilledEntities)
+                const hashText = hashTextFromActivity(activity, entities, nextFilledEntities)
                 let action: CLM.ActionBase | undefined | null = findActionFromHashText(hashText, actions)
                 let logicResult: CLM.LogicResult | undefined
                 let scoredAction: CLM.ScoredAction | undefined
@@ -231,7 +240,7 @@ export async function trainDialogFromTranscriptImport(
                 }
                 // As a first pass, try to match by exact text
                 let scorerStep: CLM.TrainScorerStep = {
-                    importText: action ? undefined : importText,
+                    importText: action ? undefined : activity.text,
                     input: scoreInput,
                     labelAction: action ? action.actionId : CLM.CL_STUB_IMPORT_ACTION_ID,
                     logicResult,
@@ -266,7 +275,7 @@ export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityM
 }
 
 // Return hash text for the given activity
-export function hashTextFromActivity(importText: string, activity: BB.Activity, entities: CLM.EntityBase[], filledEntities: CLM.FilledEntity[] | undefined): string {
+export function hashTextFromActivity(activity: BB.Activity, entities: CLM.EntityBase[], filledEntities: CLM.FilledEntity[] | undefined): string {
 
     // If an API placeholder user the action name
     if (activity.channelData && activity.channelData.type === "ActionCall") {
@@ -276,10 +285,10 @@ export function hashTextFromActivity(importText: string, activity: BB.Activity, 
     // If entites have been set, substitute entityIDs in before hashing
     else if (filledEntities && filledEntities.length > 0) {
         const filledEntityMap = DialogUtils.filledEntityIdMap(filledEntities, entities)
-        return importTextWithEntityIds(importText, filledEntityMap)
+        return importTextWithEntityIds(activity.text, filledEntityMap)
     }
     // Default to raw text
-    return importText
+    return activity.text
 }
 
 // Substibute entityIds into imported text when text matches entity value

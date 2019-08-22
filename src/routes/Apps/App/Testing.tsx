@@ -137,6 +137,12 @@ class Testing extends React.Component<Props, ComponentState> {
         let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", actionHashes: [], apiResults: []}
         let invalidTranscript = false
         let apiResults: CLM.FilledEntity[] = []
+
+        // If I have an LG map, substitute in LG text
+        if (this.state.lgMap) {
+            OBIUtils.substituteLG(transcript, this.state.lgMap)
+        }
+
         for (let activity of transcript) {
             // TODO: Handle conversation updates
             if (!activity.type || activity.type === "message") {
@@ -152,8 +158,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 }
                 else if (activity.from.role === "bot") {
                     if (transcriptValidationTurn) {
-                        const importText = OBIUtils.substituteLG(activity.text, this.state.lgMap)
-                        const hashText = OBIUtils.hashTextFromActivity(importText, activity, entities, apiResults)
+                        const hashText = OBIUtils.hashTextFromActivity(activity, entities, apiResults)
                         const actionHash = Util.hashText(hashText)
                         transcriptValidationTurn.actionHashes.push(actionHash)
 
@@ -500,6 +505,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 {this.state.compareDialogs &&
                     <CompareDialogsModal
                         app={this.props.app}
+                        lgMap={this.state.lgMap}
                         transcriptValidationResults={this.state.compareDialogs}
                         onClose={this.onCloseCompare}
                     />
