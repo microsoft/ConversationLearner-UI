@@ -255,7 +255,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             await this.importOBIFiles(this.props.obiImportData)
         }
         else {
-            this.handleQueryParameters(this.props.location.search)
+            await this.handleQueryParameters(this.props.location.search)
         }
     }
 
@@ -285,7 +285,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     async componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        this.handleQueryParameters(this.props.location.search, prevProps.location.search)
+        await this.handleQueryParameters(this.props.location.search, prevProps.location.search)
     }
 
     async handleQueryParameters(newSearch: string, oldSearch?: string): Promise<void> {
@@ -315,7 +315,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.history.replace(this.props.match.url, { app: this.props.app })
                 return
             }
-            this.openTrainDialog(trainDialog)
+            await this.openTrainDialog(trainDialog)
         }
     }
 
@@ -1040,7 +1040,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.trainDialogReplayThunkAsync as any,
             )
 
-            await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, trainDialog.trainDialogId, newTrainDialog, false)
+            await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, trainDialog.trainDialogId, newTrainDialog, false) as any) as Promise<void>)
 
             // If user clicks 'Cancel' replay dialogs will be reset
             if (this.state.replayDialogs.length === 0) {

@@ -188,7 +188,7 @@ export class ObiDialogParser {
         let response = this.composerDialog.lgMap.get(parsedActivity)
         if (!response) {
             // LARS thow error once CCI .dialog transformer has been fixed
-            response = { text: "Can't Parse LU", suggestions: []}
+            response = { text: "Can't Parse LG", suggestions: []}
            //throw new Error(`LG name ${prompt} undefined`)
         }
     
