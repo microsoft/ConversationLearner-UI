@@ -83,12 +83,50 @@ export function isSameActivity(activity1: BB.Activity, activity2: BB.Activity): 
     return true
 }
 
+export async function lgMapFromLGFiles(lgFiles: File[] | null): Promise<Map<string, CLM.LGItem>> {
+    const lgMap: Map<string, CLM.LGItem> = new Map()
+    if (lgFiles) {
+        for (const lgFile of lgFiles) {
+            if (lgFile.name.endsWith('.lg')) {
+                const fileText = await Util.readFileAsync(lgFile)
+                CLM.ObiUtils.addToLGMap(fileText, lgMap)
+            }
+            else {
+                throw new Error(`Expecting .lg file.\n\n Given: ${lgFile.name}`)
+            }
+        }
+    }
+    return lgMap
+}
+
+// Given a transcript file, replace and LG references with actual LG content
+export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.LGItem>): void {
+
+    for (let activity of transcript) {
+        if (activity.type && activity.type === 'message' && activity.from.role === 'bot') {
+
+            if (activity.text.startsWith('[') && activity.text.endsWith(']')) {
+
+                const lgName = activity.text.substring(activity.text.indexOf("[") + 1, activity.text.lastIndexOf("]")).trim()
+                let response = lgMap.get(lgName)
+                if (!response) {
+                    throw new Error(`LG name ${lgName} undefined`)
+                }
+
+                activity.text = (response.suggestions.length > 0) ? JSON.stringify(response) : response.text
+            }
+        }
+    }
+}
+
 // Convert .transcript file into a TrainDialog
 export async function trainDialogFromTranscriptImport(
     transcript: BB.Activity[],
+    lgMap: Map<string, CLM.LGItem> | null,
     entities: CLM.EntityBase[],
     actions: CLM.ActionBase[],
     app: CLM.AppBase,
+
     createActionThunkAsync?: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
     createEntityThunkAsync?: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
     ): Promise<CLM.TrainDialog> {
@@ -109,6 +147,11 @@ export async function trainDialogFromTranscriptImport(
         // It's initially invalid
         validity: CLM.Validity.INVALID,
         clientData: {importHashes: [transcriptHash]}
+    }
+
+    // If I have an LG map, substitute in LG values
+    if (lgMap) {
+        substituteLG(transcript, lgMap)
     }
 
     let curRound: CLM.TrainRound | null = null
