@@ -39,7 +39,7 @@ describe('Comprehensive 1 - Score Actions', () => {
     it('Create Bot Response', () => {
       train.ClickScoreActionsButton()
       scorerModal.ClickAddActionButton()
-      actions.ClickAddEntityButton()
+      actionModal.ClickAddEntityButton()
       entities.CreateNewEntity({ name: 'name' })
       actions.CreateNewAction({ responseNameData: common.whatsYourName, expectedEntity: 'name' })
     })
@@ -90,7 +90,7 @@ describe('Comprehensive 1 - Score Actions', () => {
 
     it('Create some Enums to use as SET_ENTITY Actions', () => {
       scorerModal.ClickAddActionButton()
-      actions.ClickAddEntityButton()
+      actionModal.ClickAddEntityButton()
       entities.CreateNewEntity({ type: 'Enum', name: 'fruit', enumValues: ['APPLES', 'BANANAS', 'MANGOES', 'ORANGES', 'PEACHES'] })
       actionModal.ClickCancelButton()
     })

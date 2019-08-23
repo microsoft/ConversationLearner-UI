@@ -8,8 +8,6 @@ import * as actionsGrid from '../support/components/ActionsGrid'
 import * as modelPage from '../support/components/ModelPage'
 import * as helpers from '../support/Helpers'
 
-export function ClickAddEntityButton() { cy.Get('[data-testid="action-button-create-entity"]').Click() }
-
 // ------------------------------------------------------------------------------------------------
 // The UI automatically populates the Required Entities field with entities found in the response 
 // text and it also automatically populates the Disqualtifying Entities field with the expected 
@@ -25,6 +23,13 @@ export function CreateNewAction({
   uncheckWaitForResponse, 
   logicArgs,  // provide an array of strings
   renderArgs, // provide an array of strings
+  title,
+  image,
+  line1,
+  line2,
+  line3,
+  button1,
+  button2,
   type = 'TEXT'
 }) {
   // We do this first since we had a bug (1910) where it is not reset by the UI when
@@ -36,16 +41,30 @@ export function CreateNewAction({
     case 'TEXT':
     case 'END_SESSION':
       actionModal.TypeResponse(responseNameData)
-      break;
+      break
+
     case 'API':
       actionModal.SelectApi(responseNameData)
       if (logicArgs) actionModal.TypeApiLogicArgs(logicArgs)
       if (renderArgs) actionModal.TypeApiRenderArgs(renderArgs)
-      break;
+      break
+
+    case 'CARD':
+      actionModal.SelectCard(responseNameData)
+      if (title) actionModal.TypeCardTitle(title)
+      if (image) actionModal.TypeCardImage(image)
+      if (line1) actionModal.TypeCardLine1(line1)
+      if (line2) actionModal.TypeCardLine2(line2)
+      if (line3) actionModal.TypeCardLine3(line3)
+      if (button1) actionModal.TypeCardButton1(button1)
+      if (button2) actionModal.TypeCardButton2(button2)
+      break
   }
+  
   if (expectedEntity) actionModal.TypeExpectedEntity(expectedEntity)
   if (requiredEntities) actionModal.TypeRequiredEntities(requiredEntities)
   if (disqualifyingEntities) actionModal.TypeDisqualifyingEntities(disqualifyingEntities)
+
   actionModal.ClickCreateButton()
 }
  
@@ -57,6 +76,13 @@ export function CreateNewActionThenVerifyInGrid({
   uncheckWaitForResponse, 
   logicArgs,  // provide an array of strings
   renderArgs, // provide an array of strings
+  title,
+  image,
+  line1,
+  line2,
+  line3,
+  button1,
+  button2,
   type = 'TEXT',
   validateApiResponse  // The easiest way to get this is from the logs after a test run...search for 'VerifyApi'
 }) {

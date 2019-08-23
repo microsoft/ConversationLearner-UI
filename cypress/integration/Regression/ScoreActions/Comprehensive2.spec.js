@@ -41,11 +41,11 @@ describe('Comprehensive 2 - Score Actions', () => {
     it('Create Bot response about the choice of fruit', () => {
       scorerModal.ClickAddActionButton()
 
-      actions.ClickAddEntityButton()
+      actionModal.ClickAddEntityButton()
       entities.CreateNewEntity({ name: '1stArg' })
-      actions.ClickAddEntityButton()
+      actionModal.ClickAddEntityButton()
       entities.CreateNewEntity({ name: '2ndArg' })
-      actions.ClickAddEntityButton()
+      actionModal.ClickAddEntityButton()
       entities.CreateNewEntity({ name: 'disqualifier' })
       
       actions.CreateNewAction({ 
@@ -54,7 +54,8 @@ describe('Comprehensive 2 - Score Actions', () => {
         logicArgs: ['$1stArg{enter}', '$2ndArg{enter}', '333', '4444', 'five', 'six', 'seven'],                                          
         renderArgs: ['$1stArg{enter}', '$2ndArg{enter}', 'three', 'four', '55555', '666666', '7777777'],
         validateApiResponse: 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"333"fourthArg:"4444"fifthArg:"five"sixthArg:"six"seventhArg:"seven"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"three"fourthArg:"four"fifthArg:"55555"sixthArg:"666666"seventhArg:"7777777"',
-        disqualifyingEntities: ['disqualifier']
+        disqualifyingEntities: ['disqualifier'],
+        uncheckWaitForResponse: true
       })
       // When the Action cannot be selected because it is disqualified like this one is at this point in the test, 
       // then nothing is automatically selected and the user must chose what to do next.
