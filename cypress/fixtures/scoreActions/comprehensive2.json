@@ -4,7 +4,7 @@
       "buttonTestId": "action-scorer-button-clickable",
       "response": "I like ORANGES too",
       "type": "TEXT",
-      "score": "72.4%",
+      "score": "61.4%",
       "entities": [
         {
           "name": "fruit",
@@ -17,7 +17,7 @@
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: ORANGES",
       "type": "SET_ENTITY",
-      "score": "17.0%",
+      "score": "30.1%",
       "entities": [],
       "wait": false
     },
@@ -25,29 +25,29 @@
       "buttonTestId": "action-scorer-button-clickable",
       "response": "What kind of fruit do you like?",
       "type": "TEXT",
-      "score": "5.1%",
+      "score": "4.0%",
       "entities": [],
       "wait": true
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "type": "TEXT",
+      "score": "3.2%",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello Jeff",
       "type": "TEXT",
-      "score": "4.1%",
+      "score": "1.3%",
       "entities": [
         {
           "name": "name",
           "qualifierState": "Green"
         }
       ],
-      "wait": false
-    },
-    {
-      "buttonTestId": "action-scorer-button-clickable",
-      "response": "Hello",
-      "type": "TEXT",
-      "score": "1.3%",
-      "entities": [],
       "wait": false
     },
     {
@@ -96,7 +96,132 @@
       "wait": true
     }
   ],
-  [],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "I like ORANGES too",
+      "type": "TEXT",
+      "score": "61.4%",
+      "entities": [
+        {
+          "name": "fruit",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: ORANGES",
+      "type": "SET_ENTITY",
+      "score": "30.1%",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "What kind of fruit do you like?",
+      "type": "TEXT",
+      "score": "4.0%",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "type": "TEXT",
+      "score": "3.2%",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello Jeff",
+      "type": "TEXT",
+      "score": "1.3%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-selected",
+      "response": "Uhhhh...",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: APPLES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: BANANAS",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: MANGOES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: PEACHES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"$2ndArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"$2ndArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "type": "API",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "1stArg",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "2ndArg",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "disqualifier",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    }
+  ],
   [
     {
       "buttonTestId": "action-scorer-button-selected",

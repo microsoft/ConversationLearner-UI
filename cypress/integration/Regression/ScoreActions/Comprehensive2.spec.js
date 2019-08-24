@@ -62,6 +62,7 @@ describe('Comprehensive 2 - Score Actions', () => {
 
       scorerModal.ClickAddActionButton()
       actions.CreateNewAction({ responseNameData: 'Uhhhh...' })
+      train.SelectLastChatTurn()
     })
 
     generatedScoreActionsData.VerifyScoreActionsList()
