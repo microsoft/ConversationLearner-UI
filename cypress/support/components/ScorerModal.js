@@ -78,6 +78,16 @@ export class GeneratedData {
     }
   }
 
+  VerifyScoreActionsListUnwrapped(acceptableScoreDeviation = 10) {
+    if (this.generateScoreActionsData) {
+      if (this.generateScoreActionsData == 'pause') { cy.pause() }
+      else { cy.wait(2000) }
+      cy.WaitForStableDOM().then(() => { this.data.push(GenerateScoreActionsDataFromGrid()) })
+    } else {
+      cy.WaitForStableDOM().then(() => VerifyScoreActions(this.data[this.index++], acceptableScoreDeviation))
+    }
+  }
+
   SaveGeneratedData() {
     if (this.generateScoreActionsData) {
       context('SAVE GENERATED VERIFICATION DATA', () => {

@@ -897,3 +897,32 @@ export function GetAllTrainDialogGridRows() {
   
   return allRowData
 }
+
+export class BotChatElements {
+  constructor() {
+    this.botChatElements = Cypress.$('div.wc-message-from-bot[data-testid="web-chat-utterances"]')
+    this.index = this.botChatElements.length > 0 ? 0 : undefined
+  }
+  
+  SelectNext() {
+    if (!this.index) { return undefined }
+
+    const chatText = helpers.TextContentWithoutNewlines(botChatElements[i])
+    it(`Select Bot Response: ${chatText.substring(0,32)}`, () => {
+      Cypress.$(botChatElements[i]).Click()
+    })
+
+    return this.botChatElements.length >= ++this.index ? 0 : undefined
+  }
+}
+
+export function VerifyEachBotChatTurn(verificationFunction) {
+  cy.Get('div.wc-message-from-bot[data-testid="web-chat-utterances"]').then(botChatElements => {
+    for (let i = 0; i < botChatElements.length; i++) {
+      const chatText = helpers.TextContentWithoutNewlines(botChatElements[i])
+      cy.log(`Select Bot Response: ${chatText.substring(0,32)}`)
+      cy.wrap(botChatElements[i]).Click()
+      verificationFunction()
+    }
+  })
+}
