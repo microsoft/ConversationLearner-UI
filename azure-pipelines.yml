@@ -35,8 +35,8 @@ jobs:
   - bash: npm test
     displayName: 'npm test'
 
-  - bash: npm run build
-    displayName: 'npm run build'
+  - bash: npm run cibuild
+    displayName: 'npm run cibuild'
 
 - job: windows_build
   pool:
