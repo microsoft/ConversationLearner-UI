@@ -67,6 +67,7 @@ export const getPrebuiltEntityName = (preBuiltType: string): string => {
 }
 
 class Container extends React.Component<Props, ComponentState> {
+    staticEntityOptions: CLDropdownOption[]
     staticResolverOptions: CLDropdownOption[]
     entityOptions: CLDropdownOption[]
     resolverOptions: CLDropdownOption[]
@@ -78,8 +79,10 @@ class Container extends React.Component<Props, ComponentState> {
             entityTypeVal: CLM.EntityType.LUIS,
             entityResolverVal: this.NONE_RESOLVER,
         }
-        this.entityOptions = this.getStaticEntityOptions(this.props.intl)
+        this.staticEntityOptions = this.getStaticEntityOptions(this.props.intl)
+        this.entityOptions = this.staticEntityOptions
         this.staticResolverOptions = this.getStaticResolverOptions(this.props.intl)
+        this.entityOptions = this.staticResolverOptions
     }
 
     getStaticEntityOptions(intl: InjectedIntl): CLDropdownOption[] {
@@ -142,8 +145,9 @@ class Container extends React.Component<Props, ComponentState> {
                     }))
 
             this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
-
             if (nextProps.entity === null) {
+                this.entityOptions = [...this.staticEntityOptions]
+
                 this.setState({
                     ...initState,
                     title: nextProps.intl.formatMessage({
