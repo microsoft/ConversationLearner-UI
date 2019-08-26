@@ -16,15 +16,15 @@ import * as helpers from '../support/Helpers'
 // values anyway, and this code does allow for that.
 
 export function CreateNewAction({ 
-    responseNameData, // TEXT-response, API-name, CARD-name, END_SESSION-data
-    expectedEntity, 
-    requiredEntities, 
-    disqualifyingEntities, 
-    uncheckWaitForResponse, 
-    logicArgs,  // provide an array of strings
-    renderArgs, // provide an array of strings
-    type = 'TEXT'
-  }) {
+  responseNameData, // TEXT-response, API-name, CARD-full-details, END_SESSION-data - Used by create operation
+  expectedEntity, 
+  requiredEntities, 
+  disqualifyingEntities, 
+  uncheckWaitForResponse, 
+  logicArgs,  // provide an array of strings
+  renderArgs, // provide an array of strings
+  type = 'TEXT'
+}) {
   // We do this first since we had a bug (1910) where it is not reset by the UI when
   // type END_SESSION is selected.
   if (uncheckWaitForResponse) actionModal.UncheckWaitForResponse()
@@ -48,16 +48,16 @@ export function CreateNewAction({
 }
  
 export function CreateNewActionThenVerifyInGrid({ 
-    responseNameData, // TEXT-response, API-name, CARD-name, END_SESSION-data
-    expectedEntity, 
-    requiredEntities, 
-    disqualifyingEntities, 
-    uncheckWaitForResponse, 
-    logicArgs,  // provide an array of strings
-    renderArgs, // provide an array of strings
-    type = 'TEXT',
-    validateResponse: validateApiResponse  // The easiest way to get this is from the logs after a test run...search for 'VerifyApi'
-  }) {
+  responseNameData, // TEXT-response, API-name, CARD-full-details, END_SESSION-data - Used by create operation
+  expectedEntity, 
+  requiredEntities, 
+  disqualifyingEntities, 
+  uncheckWaitForResponse, 
+  logicArgs,  // provide an array of strings
+  renderArgs, // provide an array of strings
+  type = 'TEXT',
+  validateApiResponse  // The easiest way to get this is from the logs after a test run...search for 'VerifyApi'
+}) {
   modelPage.NavigateToActions()
   actionsGrid.ClickNewAction()
 
@@ -66,13 +66,14 @@ export function CreateNewActionThenVerifyInGrid({
   const joined = (responseNameData ? responseNameData : '') + (logicArgs ? logicArgs.join() : '') + (renderArgs ? renderArgs.join() : '')
   const requiredEntitiesFromResponse = ExtractEntities(joined)
 
+  if (validateApiResponse) { responseNameData = validateApiResponse }
   responseNameData = responseNameData.replace(/{enter}/g, '')
 
   // Get the row that we are going to validate and assign a Cypress Alias to it.
   // If we skip this step, the validations that follow will fail.
   let actionsGridRow = new actionsGrid.Row(type, responseNameData)
   
-  if (validateApiResponse) actionsGridRow.VerifyApi(validateApiResponse)
+  //if (validateApiResponse) actionsGridRow.VerifyApi(validateApiResponse)
   actionsGridRow.VerifyActionType(type)
   actionsGridRow.VerifyRequiredEntities(requiredEntitiesFromResponse, requiredEntities)
   actionsGridRow.VerifyDisqualifyingEntities(expectedEntity, disqualifyingEntities)

@@ -10,9 +10,9 @@ import * as DialogEditing from '../../../Utils/dialogEditing'
 import * as DialogUtils from '../../../Utils/dialogUtils'
 import * as OBIUtils from '../../../Utils/obiUtils'
 import * as OBIDialogParser from '../../../Utils/obiDialogParser'
+import * as OBITranscriptParser from '../../../Utils/obiTranscriptParser'
 import * as OF from 'office-ui-fabric-react'
 import * as moment from 'moment'
-import * as BB from 'botbuilder'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import TreeView from '../../../components/modals/TreeView/TreeView'
@@ -159,6 +159,7 @@ interface ComponentState {
     importedTrainDialogs: CLM.TrainDialog[] | undefined
     importAutoCreate: boolean
     importAutoMerge: boolean
+    importAutoActionCreate: boolean
     isTreeViewModalOpen: boolean
     replayDialogs: CLM.TrainDialog[]
     replayDialogIndex: number
@@ -219,6 +220,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             importedTrainDialogs: undefined,
             importAutoCreate: false,
             importAutoMerge: false,
+            importAutoActionCreate: false,
             isTreeViewModalOpen: false,
             isReplaySelectedActive: false,
             isRegenActive: false,
@@ -252,11 +254,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 entityFilter: this.toEntityFilter(this.props.filteredEntity)
             })
         }
-        if (this.props.obiImportData && this.props.obiImportData.appId === this.props.app.appId) {
+        if (this.props.trainDialogs.length === 0 && this.props.obiImportData && this.props.obiImportData.appId === this.props.app.appId) {
             await this.importOBIFiles(this.props.obiImportData)
         }
         else {
-            this.handleQueryParameters(this.props.location.search)
+            await this.handleQueryParameters(this.props.location.search)
         }
     }
 
@@ -286,7 +288,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     async componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        this.handleQueryParameters(this.props.location.search, prevProps.location.search)
+        await this.handleQueryParameters(this.props.location.search, prevProps.location.search)
     }
 
     async handleQueryParameters(newSearch: string, oldSearch?: string): Promise<void> {
@@ -316,7 +318,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.history.replace(this.props.match.url, { app: this.props.app })
                 return
             }
-            this.openTrainDialog(trainDialog)
+            await this.openTrainDialog(trainDialog)
         }
     }
 
@@ -882,6 +884,17 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 isTeachDialogModalOpen: false,
                 editType
             })
+
+            // If auto importing and new dialog has matched all actions
+            if (this.state.importAutoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
+                // Fetch activityHistory as needed for validation checks
+                await Util.setStateAsync(this, {
+                    activityHistory: teachWithHistory.history,
+                    editType: EditDialogType.IMPORT
+                })
+                newTrainDialog.validity = CLM.Validity.VALID
+                await this.onCreateTrainDialog(newTrainDialog)
+            }
         }
         catch (error) {
             console.warn(`Error when attempting to update activityHistory: `, error)
@@ -1030,7 +1043,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 this.props.trainDialogReplayThunkAsync as any,
             )
 
-            await this.props.trainDialogReplaceThunkAsync(this.props.app.appId, trainDialog.trainDialogId, newTrainDialog, false)
+            await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, trainDialog.trainDialogId, newTrainDialog, false) as any) as Promise<void>)
 
             // If user clicks 'Cancel' replay dialogs will be reset
             if (this.state.replayDialogs.length === 0) {
@@ -1061,17 +1074,26 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     async importOBIFiles(obiImportData: OBIUtils.OBIImportData): Promise<void> {
 
-        const obiDialogParser = new OBIDialogParser.ObiDialogParser(this.props.app.appId)
-        const importedTrainDialogs = await obiDialogParser.getTrainDialogsFromComposer(obiImportData.files)
+        const obiDialogParser = new OBIDialogParser.ObiDialogParser()
+        try {
+            const importedTrainDialogs = await obiDialogParser.getTrainDialogs(obiImportData.files)
 
-        await Util.setStateAsync(this, {
-            importIndex: undefined,
-            importedTrainDialogs,
-            importAutoCreate: obiImportData.autoCreate,
-            importAutoMerge: obiImportData.autoMerge
-        })
-
-        await this.onImportNextTrainDialog()
+            await Util.setStateAsync(this, {
+                importIndex: undefined,
+                importedTrainDialogs,
+                importAutoCreate: obiImportData.autoCreate,
+                importAutoMerge: obiImportData.autoMerge,
+                importAutoActionCreate: obiImportData.autoActionCreate
+            })
+    
+            await this.onImportNextTrainDialog()
+        }
+        catch (error) {
+            await Util.setStateAsync(this, {
+                importedTrainDialogs: undefined
+            })
+            this.props.setErrorDisplay(ErrorType.Error, "Import Failed", error.message, null)       
+        }
     }
 
     //-----------------------------
@@ -1085,63 +1107,54 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onCloseImportTranscripts(transcriptsToImport: File[] | null, importAutoCreate: boolean, importAutoMerge: boolean): Promise<void> {
+    onCancelImportTranscripts(): void {
+        this.setState({
+            isTranscriptImportOpen: false
+        })
+    }
+
+    @autobind
+    async onSubmitImportTranscripts(transcriptFiles: File[], lgFiles: File[], importAutoCreate: boolean, importAutoMerge: boolean, importAutoActionCreate: boolean): Promise<void> {
         await Util.setStateAsync(this, {
             isTranscriptImportOpen: false,
             importAutoCreate,
-            importAutoMerge
+            importAutoMerge,
+            importAutoActionCreate: importAutoActionCreate
         })
 
-        if (!transcriptsToImport) {
+        if (transcriptFiles.length === 0) {
             return
         }
 
-        const importedTrainDialogs: CLM.TrainDialog[] = []
-        for (const transcriptFile of transcriptsToImport) {
-
-            let source = await Util.readFileAsync(transcriptFile)
-            try {
-                const transcript: BB.Activity[] = JSON.parse(source)
-                const transcriptHash = Util.hashText(JSON.stringify(transcript))
-    
-                // If transcript has already been imported, skip it
-                if (!this.hasTranscriptBeenImported(transcriptHash)) {
-            
-                    const importedTrainDialog = await OBIUtils.trainDialogFromTranscriptImport(
-                        transcript,
-                        this.props.entities,
-                        this.props.actions,
-                        this.props.app,
-                        this.props.createActionThunkAsync as any,
-                        this.props.createEntityThunkAsync as any
-                    )
+        const obiTranscriptParser = new OBITranscriptParser.ObiTranscriptParser(
+            this.props.app,
+            this.props.actions,
+            this.props.entities,
+            this.props.trainDialogs,
+            this.props.createActionThunkAsync as any,
+            this.props.createEntityThunkAsync as any
+            )
         
-                    importedTrainDialogs.push(importedTrainDialog)
-                }
-            }
-            catch (e) {
-                const error = e as Error
-                this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
-                this.setState({
-                    importedTrainDialogs: undefined,
-                    isImportWaitModalOpen: false
-                })
-            }
+        try {
+            const importedTrainDialogs = await obiTranscriptParser.getTrainDialogs(transcriptFiles, lgFiles)
+            await Util.setStateAsync(this, {
+                isTranscriptImportOpen: false,
+                importIndex: undefined,
+                importedTrainDialogs,
+                importAutoCreate,
+                importAutoMerge
+            })
+    
+            await this.onImportNextTrainDialog()
         }
-
-        await Util.setStateAsync(this, {
-            isTranscriptImportOpen: false,
-            importIndex: 0,
-            importedTrainDialogs,
-            importAutoCreate,
-            importAutoMerge
-        })
-
-        await this.onImportNextTrainDialog()
-    }
-
-    hasTranscriptBeenImported(importHash: string): boolean {
-        return this.props.trainDialogs.find(td => td.clientData ? (td.clientData.importHashes.find(ih => ih === importHash) !== undefined) : false) !== undefined
+        catch (e) {
+            const error = e as Error
+            this.props.setErrorDisplay(ErrorType.Error, error.message, error.message, null)//LARS
+            this.setState({
+                importedTrainDialogs: undefined,
+                isImportWaitModalOpen: false
+            })
+        }
     }
 
     // Import a train dialog
@@ -1155,7 +1168,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         // Check if I'm done importing 
         if (this.state.importIndex === undefined || this.state.importIndex >= this.state.importedTrainDialogs.length) {
-            this.setState({ importedTrainDialogs: undefined })
+            this.setState({ 
+                importedTrainDialogs: undefined,
+                isImportWaitModalOpen: false 
+            })
             return
         }
 
@@ -1169,7 +1185,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
 
         // Replay to fill in memory
-        const newTrainDialog = await DialogEditing.onReplayTrainDialog(
+        let newTrainDialog = await DialogEditing.onReplayTrainDialog(
             trainDialog,
             this.props.app.appId,
             this.props.entities,
@@ -1181,6 +1197,24 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         // Try to map action again now that we have entities
         OBIUtils.replaceImportActions(newTrainDialog, this.props.actions, this.props.entities)
+
+        // Automatically create actions for imported actions if requested
+        if (this.state.importAutoActionCreate) {
+            await OBIUtils.createImportedActions(
+                this.props.app.appId,
+                newTrainDialog, 
+                this.props.botInfo.templates,
+                this.props.createActionThunkAsync as any)
+
+            // Replay to validate
+            newTrainDialog = await DialogEditing.onReplayTrainDialog(
+                newTrainDialog,
+                this.props.app.appId,
+                this.props.entities,
+                this.props.actions,
+                this.props.trainDialogReplayAsync as any,
+            )
+        }
 
         await Util.setStateAsync(this, {
             originalTrainDialog: newTrainDialog
@@ -1194,13 +1228,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 activityHistory: teachWithHistory.history,
                 editType: EditDialogType.IMPORT
             })
+            newTrainDialog.validity = CLM.Validity.VALID
             await this.onCreateTrainDialog(newTrainDialog)
         }
         else {
+            this.setState({ isImportWaitModalOpen: false })
             await this.openTrainDialog(newTrainDialog, EditDialogType.IMPORT)
         }
-
-        this.setState({ isImportWaitModalOpen: false })
     }
 
     async addEntityExtractions(trainDialog: CLM.TrainDialog) {
@@ -1687,7 +1721,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     <TranscriptImporter
                         app={this.props.app}
                         open={true}
-                        onClose={this.onCloseImportTranscripts}
+                        onSubmit={this.onSubmitImportTranscripts}
+                        onCancel={this.onCancelImportTranscripts}
                     />
                 }
                 {this.state.isImportWaitModalOpen && this.state.importIndex &&
@@ -1829,6 +1864,10 @@ const mapStateToProps = (state: State) => {
         throw new Error(`You attempted to render TrainDialogs but the user was not defined. This is likely a problem with higher level component. Please open an issue.`)
     }
 
+    if (!state.bot.botInfo) {
+        throw new Error(`You attempted to render the TrainDialogs which requires botInfo, but botInfo was not defined. This is likely a problem with higher level component. Please open an issue.`)
+    }
+
     return {
         user: state.user.user,
         actions: state.actions,
@@ -1836,6 +1875,7 @@ const mapStateToProps = (state: State) => {
         trainDialogs: state.trainDialogs,
         teachSession: state.teachSession,
         settings: state.settings,
+        botInfo: state.bot.botInfo,
         obiImportData: state.apps.obiImportData,
         // Get all tags from all train dialogs then put in Set to get unique tags
         allUniqueTags: [...new Set(state.trainDialogs.reduce((tags, trainDialog) => [...tags, ...trainDialog.tags], []))]

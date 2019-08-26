@@ -17,6 +17,7 @@ import * as helpers from '../../../support/Helpers'
 // model created by that test scenario.
 describe('Learned Entity Labeling - Train Dialog', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  let generatedScoreActionsData = new scorerModal.GeneratedData('learnedEntityLabeling.json')
 
   context('Setup', () => {
     it('Should import a model and wait for training to complete', () => {
@@ -41,10 +42,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
       memoryTableComponent.VerifyEntityValues('name', ['David'])
     })
 
-    it('Should show one disabled and one enabled Action', () => {
-      scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-      scorerModal.VerifyContainsEnabledAction('Hello David')
-    })
+    generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should be able to select an Action', () => {
       train.SelectTextAction('Hello David', 'Hello $name')
@@ -62,10 +60,7 @@ describe('Learned Entity Labeling - Train Dialog', () => {
       memoryTableComponent.VerifyDisplacedEntityValues('name', ['David'])
     })
 
-    it('Should show one disabled and one enabled Action', () => {
-      scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-      scorerModal.VerifyContainsEnabledAction('Hello Susan')
-    })
+    generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should be able to select an Action and save the training', () => {
       train.SelectTextAction('Hello Susan', 'Hello $name')
@@ -89,15 +84,14 @@ describe('Learned Entity Labeling - Train Dialog', () => {
       memoryTableComponent.VerifyEntityValues('name', ['Gabriella'])
     })
 
-    it('Should show one disabled and one enabled Action', () => {
-      scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-      scorerModal.VerifyContainsEnabledAction('Hello Gabriella')
-    })
+    generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should be able to select an Action and save the training', () => {
       train.SelectTextAction('Hello Gabriella', 'Hello $name')
       train.SaveAsIsVerifyInGrid()
     })
   })
+
+  generatedScoreActionsData.SaveGeneratedData()
   // Manually EXPORT this to fixtures folder and name it 'z-learnedEntLabel.cl'
 })

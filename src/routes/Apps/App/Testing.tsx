@@ -29,6 +29,7 @@ const SAVE_SUFFIX = ".cltr"
 interface ComponentState {
     transcriptIndex: number
     transcriptFiles: File[]
+    lgMap: Map<string, CLM.LGItem> | null
     transcriptValidationSet: CLM.TranscriptValidationSet
     isTranscriptValidatePickerOpen: boolean
     compareDialogs: CLM.TranscriptValidationResult[] | null
@@ -39,6 +40,7 @@ interface ComponentState {
 const initialState: ComponentState = {
     transcriptIndex: 0,
     transcriptFiles: [],
+    lgMap: null,
     transcriptValidationSet: { transcriptValidationResults: [] },
     isTranscriptValidatePickerOpen: false,
     compareDialogs: null,
@@ -52,12 +54,14 @@ class Testing extends React.Component<Props, ComponentState> {
     private resultfileInput: any
 
     @autobind
-    async onSubmitTranscriptValidationPicker(testName: string, transcriptsToValidate: File[]): Promise<void> {
-        if (transcriptsToValidate.length > 0) {
+    async onSubmitTranscriptValidationPicker(testName: string, transcriptFiles: File[], lgFiles: File[]): Promise<void> {
+        if (transcriptFiles.length > 0) {
+            const lgMap = await OBIUtils.lgMapFromLGFiles(lgFiles)
             const emptySet: CLM.TranscriptValidationSet = { transcriptValidationResults: [], appId: this.props.app.appId, fileName: testName }
             await Util.setStateAsync(this, {
                 isTranscriptValidatePickerOpen: false,
-                transcriptFiles: transcriptsToValidate,
+                transcriptFiles,
+                lgMap,
                 transcriptValidationSet: emptySet,
                 edited: true
             })
@@ -86,7 +90,8 @@ class Testing extends React.Component<Props, ComponentState> {
     @autobind
     onCancelTest() {
         this.setState({
-            transcriptFiles: []
+            transcriptFiles: [],
+            lgMap: null
         })
     }
 
@@ -99,7 +104,10 @@ class Testing extends React.Component<Props, ComponentState> {
 
         // Check if I'm done importing files
         if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
-            this.setState({ transcriptFiles: [] })
+            this.setState({ 
+                transcriptFiles: [],
+                lgMap: null
+            })
             this.onSave()
             return
         }
@@ -117,7 +125,8 @@ class Testing extends React.Component<Props, ComponentState> {
             const error = e as Error
             this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
             this.setState({
-                transcriptFiles: []
+                transcriptFiles: [],
+                lgMap: null
             })
         }
     }
@@ -128,6 +137,12 @@ class Testing extends React.Component<Props, ComponentState> {
         let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", actionHashes: [], apiResults: []}
         let invalidTranscript = false
         let apiResults: CLM.FilledEntity[] = []
+
+        // If I have an LG map, substitute in LG text
+        if (this.state.lgMap) {
+            OBIUtils.substituteLG(transcript, this.state.lgMap)
+        }
+
         for (let activity of transcript) {
             // TODO: Handle conversation updates
             if (!activity.type || activity.type === "message") {
@@ -219,6 +234,7 @@ class Testing extends React.Component<Props, ComponentState> {
             isRateDialogsOpen: false,
             edited: true
         })
+        this.onSave()
     }
 
     @autobind
@@ -489,6 +505,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 {this.state.compareDialogs &&
                     <CompareDialogsModal
                         app={this.props.app}
+                        lgMap={this.state.lgMap}
                         transcriptValidationResults={this.state.compareDialogs}
                         onClose={this.onCloseCompare}
                     />
@@ -505,7 +522,7 @@ class Testing extends React.Component<Props, ComponentState> {
                         app={this.props.app}
                         open={true}
                         onAbandon={() => this.onAbandonTranscriptValidationPicker()}
-                        onValidateFiles={(testName: string, files: File[]) => this.onSubmitTranscriptValidationPicker(testName, files)}
+                        onValidateFiles={(testName: string, transcriptFiles: File[], lgFiles: File[]) => this.onSubmitTranscriptValidationPicker(testName, transcriptFiles, lgFiles)}
                         onGetNameErrorMessage={this.nameErrorCheck}
                     />
                 }

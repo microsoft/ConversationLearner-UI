@@ -3,7 +3,11 @@
  * Licensed under the MIT License.
  */
 
+import * as actionTypeSelector from '../../support/components/ActionTypeSelector'
 import * as helpers from '../../support/Helpers'
+
+export const stateEnum = { selected: 1, qualified: 2, disqualified: 3 }
+export const entityQualifierStateEnum = { unknown: 'unknown', green: 'Green', greenStrikeout: 'GreenStrikeout', red: 'Red', redStrikeout: 'RedStrikeout' }
 
 // data-testid="teach-session-admin-train-status" (Running, Completed, Failed)
 export function ClickRefreshScoreButton() { cy.Get('[data-testid="teach-session-admin-refresh-score-button"]').Click() }
@@ -11,68 +15,104 @@ export function SelectAnAction() { cy.Get('[data-testid="action-scorer-button-cl
 export function ClickAddActionButton() { cy.Get('[data-testid="action-scorer-add-action-button"]').Click() }
 export function VerifyMissingActionNotice() { cy.Get('.cl-font--warning').ExactMatch('MISSING ACTION') }
 
-export function ClickTextAction(expectedResponse) {
-  cy.Get('[data-testid="action-scorer-text-response"]').ExactMatch(expectedResponse)
-    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
-    .Click()
+export function ClickTextAction(expectedResponse) { ClickActionButon('[data-testid="action-scorer-text-response"]', expectedResponse) }
+export function ClickApiAction(apiName) { ClickActionButon('[data-testid="action-scorer-api-name"]', apiName) }
+export function ClickEndSessionAction(expectedData) { ClickActionButon('[data-testid="action-scorer-session-response-user"]', expectedData) }
+
+export function VerifyContainsEnabledAction(expectedResponse) { VerifyActionState('[data-testid="action-scorer-text-response"]', expectedResponse, '[data-testid="action-scorer-button-clickable"]', false) }
+export function VerifyContainsDisabledAction(expectedResponse) { VerifyActionState('[data-testid="action-scorer-text-response"]', expectedResponse, '[data-testid="action-scorer-button-no-click"]', true) }
+
+export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-clickable"]', false) }
+export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-no-click"]', true) }
+export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-selected"]', false) }
+
+
+// To VALIDATE All of the Data in the Score Actions Grid use this class.
+// 1) Manually verify that the data in each Score Actions grid for each chat turn that the test suite will verify.
+// 2) Generate and persist the data by running the test with the following environment variable:
+//      set CYPRESS_GENERATE_SCORE_ACTIONS_DATA=true
+//    Doing this will generate a file in the "cypress/fixtures/scoreActions" folder that will be used in #3
+// 3) Clear out that environment variable and run the tests as usual. They will grab the generated test data
+//    and use it during validations that use the VerifyScoreActionsList() function.
+//
+// See existing test cases that already use this class as an example to follow.
+
+export class GeneratedData {
+  constructor(dataFileName) {
+    this.dataFileName = dataFileName
+    this.generateScoreActionsData = Cypress.env('GENERATE_SCORE_ACTIONS_DATA')
+
+    if (this.generateScoreActionsData) {
+      this.data = []
+    } else {
+      context('Load Generated Verification Data', () => {
+        it('Read the generated Score Actions data from a JSON file', () => {
+          cy.readFile(`cypress/fixtures/scoreActions/${this.dataFileName}`).then(scoreActionsData => this.data = scoreActionsData)
+        })
+        this.index = 0
+      })
+    }
+  }
+
+  // In some cases the score deviates significantly and that is not considered an error. For those pass in 
+  // acceptableScoreDeviation as the percentage points that we can allow the score to deviate and still be acceptable.
+  VerifyScoreActionsList(acceptableScoreDeviation = 10) {
+    if (this.generateScoreActionsData) {
+      it('GENERATE the Score Actions data', () => {
+        cy.wait(2000)
+        cy.WaitForStableDOM().then(() => { this.data.push(GenerateScoreActionsDataFromGrid()) })
+      })
+    } else {
+      it('Verify the Score Actions data', () => {
+        cy.WaitForStableDOM().then(() => VerifyScoreActions(this.data[this.index++], acceptableScoreDeviation))
+      })
+    }
+  }
+
+  SaveGeneratedData() {
+    if (this.generateScoreActionsData) {
+      context('SAVE GENERATED VERIFICATION DATA', () => {
+        it('Write the generated Score Actions data to a JSON file', () => {
+          cy.writeFile(`cypress/fixtures/scoreActions/${this.dataFileName}`, this.data)
+        })
+      })
+    }    
+  }
 }
 
-export function ClickApiAction(apiName, expectedResponse, expectedIndexForActionPlacement) {
-  cy.Get('[data-testid="action-scorer-api-name"]').ExactMatch(apiName)
-    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
-    .Click()
+
+export function FindActionRowElements(selector, expectedData) {
+  helpers.ConLog('FindActionRowElements', `selector: '${selector}' - expectedData: '${expectedData}'`)
+
+  let elements = Cypress.$(selector)
+  if (elements.length == 0) { return `Found ZERO elements using selector ${selector}` }
+
+  elements = helpers.ExactMatch(elements, expectedData)
+  if (elements.length == 0) { return `Found ZERO elements that exactly matches '${expectedData}'` }
+
+  elements = Cypress.$(elements).parents('div.ms-DetailsRow-fields')
+  if (elements.length == 0) { return 'Found ZERO parent elements containing div.ms-DetailsRow-fields' }
+
+  return elements
 }
 
-export function ClickEndSessionAction(expectedData) {
-  cy.Get('[data-testid="action-scorer-session-response"]')
-    .ExactMatch('EndSession')
-    .siblings('[data-testid="action-scorer-session-response-user"]')
-    .ExactMatch(expectedData)
-    .parents('div.ms-DetailsRow-fields')
-    .find('[data-testid="action-scorer-button-clickable"]')
-    .Click()
-}
-
-export function VerifyContainsEnabledAction(expectedResponse) {
-  cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
-    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-clickable"]')
-    .should('be.enabled')
-}
-
-export function VerifyContainsDisabledAction(expectedResponse) {
-  cy.Get('[data-testid="action-scorer-text-response"]').contains(expectedResponse)
-    .parents('div.ms-DetailsRow-fields').find('[data-testid="action-scorer-button-no-click"]')
-    .should('be.disabled')
-}
-
-export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-clickable', false) }
-export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-no-click', true) }
-export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyEndSessionActionState(expectedData, 'action-scorer-button-selected', false) }
-
-function VerifyEndSessionActionState(expectedData, selectButtonDataTestId, disabled) {
-  const funcName = `VerifyEndSessionActionState(${expectedData}, ${selectButtonDataTestId}, ${disabled})`
+export function ClickActionButon(selector, expectedData) {
   cy.WaitForStableDOM()
-  
-  // Originally we used straight Cypress code and chained all of these element search functions, and it all worked well,
-  // but a change in the UI rendering caused the chained series to fail every once in a while. So by breaking them up
-  // and putting them inside of a Cypress .should function, we get the retry on the entire chain instead of just the last
-  // elements.
-  cy.wrap(1).should(() =>{
-    let elements = Cypress.$('[data-testid="action-scorer-session-response"]')
-    if (elements.length == 0) { throw new Error('Found ZERO elements containing [data-testid="action-scorer-session-response"]')}
-    
-    elements = helpers.ExactMatch(elements, 'EndSession')
+  cy.Enqueue(() => {
+    const rowElementsOrErrorMessage = FindActionRowElements(selector, expectedData)
+    if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
 
-    elements = Cypress.$(elements).siblings('[data-testid="action-scorer-session-response-user"]')
-    if (elements.length == 0) { throw new Error('Found ZERO sibling elements containing [data-testid="action-scorer-session-response-user"]')}
+    cy.wrap(rowElementsOrErrorMessage).find('[data-testid="action-scorer-button-clickable"]').Click() 
+  })
+}
 
-    helpers.ExactMatch(elements, expectedData)
+export function VerifyActionState(rowSelector, expectedData, buttonSelector, disabled) {
+  cy.wrap(1).should(() => {
+    const rowElementsOrErrorMessage = FindActionRowElements(rowSelector, expectedData)
+    if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
 
-    elements = Cypress.$(elements).parents('div.ms-DetailsRow-fields')
-    if (elements.length == 0) { throw new Error('Found ZERO parent elements containing div.ms-DetailsRow-fields')}
-
-    elements = Cypress.$(elements).find(`[data-testid="${selectButtonDataTestId}"]`)
-    if (elements.length != 1) { throw new Error(`We were expecting only 1 but instead we found ${elements.length} child elements containing [data-testid="${selectButtonDataTestId}"]`)}
+    let elements = Cypress.$(rowElementsOrErrorMessage).find(buttonSelector)
+    if (elements.length == 0) { throw new Error(`Found ZERO elements for buttonSelector: '${buttonSelector}' from rowSelector: '${rowSelector}' with expectedData: '${expectedData}'`) }
     
     if (elements[0].disabled != disabled) {
       helpers.ConLog(funcName, `Element that should be ${disabled ? 'Disabled' : 'Enabled'} --- ${elements[0].outerHTML}`)
@@ -100,4 +140,216 @@ export function VerifyNoEnabledSelectActionButtons() {
       throw new Error(`We are expecting to find NO enabled Action Scorer buttons, instead we found ${length} of them. See log file for details.`)
     }
   })
+}
+
+// In some cases the score deviates significantly and that is not considered an error. For those pass in 
+// acceptableScoreDeviation as the percentage points that we can allow the score to deviate and still be acceptable.
+export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviation = 10) {
+  const funcName = 'VerifyScoreActions'
+  let expectedScoreAction
+  let errorMessages = []
+  let rowIndex = 0
+
+  function AccumulateErrors(message) {
+    const fullMessage = `ERROR - Row: ${rowIndex} - Response: ${expectedScoreAction.response} - ${message}`
+    errorMessages.push(fullMessage)
+    helpers.ConLog(funcName, fullMessage)
+  }
+
+  function FindWithinAndVerify(baseElements, findCommand, verificationFunction, expectedElementCount = 1) {
+    const elements = eval(`Cypress.$(baseElements).${findCommand}`)
+    if (elements.length != expectedElementCount) { 
+      AccumulateErrors(`Expected to find exactly ${expectedElementCount} element(s) instead we found ${elements.length} - Selection Command: ${findCommand}`)
+    } else { 
+      verificationFunction(elements) 
+    }
+    return elements
+  }
+
+  cy.Enqueue(() => {
+    for (let i = 0; i < expectedScoreActions.length; i++) {
+      expectedScoreAction = expectedScoreActions[i]
+      rowIndex = undefined
+      
+      // This gets the row of the Score Action to validate and it also validates the response while doing so.
+      const rowElementsOrErrorMessage = FindActionRowElements(actionTypeSelector.GetSelector(expectedScoreAction.type), expectedScoreAction.response)
+      if (typeof rowElementsOrErrorMessage == 'string') {
+        AccumulateErrors(rowElementsOrErrorMessage)
+        continue
+      }
+      const rowElement = rowElementsOrErrorMessage[0]
+      helpers.ConLog(funcName, `Element found: ${rowElement.outerHTML}`)
+
+      // We use the rowIndex only for the purpose of logging errors as a debugging aid.
+      rowIndex = Cypress.$(rowElement).parents('div[role="presentation"].ms-List-cell').attr('data-list-index')
+      
+      
+      // Verify the button.
+      FindWithinAndVerify(rowElement, `find('[data-testid^="action-scorer-button-"]')`, elements => {
+        const attr = elements.attr('data-testid')
+        if (attr != expectedScoreAction.buttonTestId) {
+          AccumulateErrors(`Expected to find data-testid="${expectedScoreAction.buttonTestId}" instead we found "${attr}"`)
+        }
+      })
+
+      
+      // Verify the score.
+      FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
+        const score = helpers.TextContentWithoutNewlines(elements[0])
+        const acceptableDeviation = acceptableScoreDeviation * 10
+
+        if (score.endsWith('%') && expectedScoreAction.score.endsWith('%')) {
+          const actualScore = +score.replace(/(\.|%)/gm, '')
+          const expectedScore = +expectedScoreAction.score.replace(/(\.|%)/gm, '')
+          helpers.ConLog(funcName, `actualScore: ${actualScore} - expectedScore: ${expectedScore}`)
+          if (actualScore < expectedScore - acceptableDeviation || actualScore > expectedScore + acceptableDeviation) {
+            AccumulateErrors(`Expected to find a score within ${acceptableScoreDeviation}% of '${expectedScoreAction.score}' but instead found '${score}'`)
+          }
+          return
+        }
+
+        if (score != expectedScoreAction.score) {
+          AccumulateErrors(`Expected to find a score with '${expectedScoreAction.score}' but instead found '${score}'`)
+        }
+      })
+
+      
+      // Verify the entities.
+      FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-entities"]').parent('div[role="listitem"]')`, elements => {
+        expectedScoreAction.entities.forEach(entity => {
+          FindWithinAndVerify(elements, `find('[data-testid="action-scorer-entities"]:contains("${entity.name}")')`, entityElement => {
+            const strikeOut = Cypress.$(entityElement).find(`del:contains("${entity.name}")`).length == 1 ? 'Strikeout' : ''
+            let entityQualifierState
+  
+            if (entityElement.hasClass('cl-entity--match')) {
+              entityQualifierState = entityQualifierStateEnum.green + strikeOut
+            } else if (entityElement.hasClass('cl-entity--mismatch')) {
+              entityQualifierState = entityQualifierStateEnum.red + strikeOut
+            } else {
+              AccumulateErrors(`Expected to find class with either 'cl-entity--match' or 'cl-entity--mismatch' but found neither. Element: ${entityElement[0].outerHTML}`)
+            }
+  
+            if (entity.qualifierState != entityQualifierState) {
+              AccumulateErrors(`Expected '${entity.name}' Entity Qualifier to have State: ${entity.qualifierState} but instead found: ${entityQualifierState}`)
+            }
+          })
+        })
+      }, expectedScoreAction.entities.length)
+
+      
+      // Verify the Wait flag.
+      FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-wait"]')`, elements => {
+        const wait = elements.attr('data-icon-name') == 'CheckMark'
+        if (wait != expectedScoreAction.wait) {
+          AccumulateErrors(`Expected to find Wait: '${expectedScoreAction.wait}' but instead it was: '${wait}'`)
+        }
+      })
+
+
+      // Verify the Action Type.
+      FindWithinAndVerify(rowElement, `find('[data-testid="action-details-action-type"]')`, elements => {
+        const actionType = helpers.TextContentWithoutNewlines(elements[0])
+        if (actionType != expectedScoreAction.type) {
+          AccumulateErrors(`Expected to find Action Type: '${expectedScoreAction.type}' but instead it was: '${actionType}'`)
+        }
+      })
+    }
+    
+    if (errorMessages.length > 0) {throw new Error(`${errorMessages.length} Errors Detected in Action Scorer Grid - See log file for full list. --- 1st Error: ${errorMessages[0]}`)}    
+  })
+}
+
+export function GenerateScoreActionsDataFromGrid() {
+  const funcName = 'GenerateScoreActionsDataFromGrid'
+  let generatedData = []
+  let rowData
+
+  function AccumulateErrors(message) {
+    rowData.errors += `${message}\r`
+    helpers.ConLog(funcName, message)
+  }
+
+  function FindWithinAndCapture(baseElements, findCommand, captureFunction, oneElementExpected = true) {
+    const elements = eval(`Cypress.$(baseElements).${findCommand}`)
+    if (oneElementExpected && elements.length != 1) { 
+      AccumulateErrors(`Expected to find exactly 1 element instead we found ${elements.length} - Selection Command: ${findCommand}`)
+    } else { 
+      captureFunction(elements) 
+    }
+    return elements
+  }
+
+  // Get all the row DOM elements in the Score Actions pane.
+  const rowsElements = Cypress.$('div.cl-dialog-admin-title:contains("Action")').next('div').find('div[role="presentation"].ms-List-cell')
+
+  for (let rowIndex = 0; rowIndex < rowsElements.length; rowIndex++) {
+    rowData = {}
+
+    const rowElement = Cypress.$(rowsElements[rowIndex]).find('div.ms-DetailsRow-fields')[0]
+    helpers.ConLog(funcName, `Row #: ${rowIndex} - Element found: ${rowElement.outerHTML}`)
+
+    // Verify the button.
+    FindWithinAndCapture(rowElement, `find('[data-testid^="action-scorer-button-"]')`, elements => {
+      const attr = elements.attr('data-testid')
+      rowData.buttonTestId = attr
+    })
+    
+    // Response
+    FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-text-response"], [data-testid="action-scorer-api"], [data-testid="action-scorer-session-response-user"], [data-testid="action-scorer-card"], [data-testid="action-scorer-action-set-entity"]')`, elements => {
+      const responseData = helpers.TextContentWithoutNewlines(elements[0])
+      rowData.response = responseData
+    })
+
+    
+    // Action Type.
+    FindWithinAndCapture(rowElement, `find('[data-testid="action-details-action-type"]')`, elements => {
+      const actionType = helpers.TextContentWithoutNewlines(elements[0])
+      rowData.type = actionType
+    })
+
+    
+    // Get the score.
+    FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
+      const score = helpers.TextContentWithoutNewlines(elements[0])
+      rowData.score = score
+    })
+
+    
+    // Get the entities and their display attributes.
+    let entities = []
+    FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-entities"]').parent('div[role="listitem"]')`, elements => {
+      if (elements.length > 0) {
+        for (let i = 0; i < elements.length; i++) {
+          const name = helpers.TextContentWithoutNewlines(elements[i])
+
+          const strikeOut = Cypress.$(elements[i]).find(`del:contains("${name}")`).length == 1 ? 'Strikeout' : ''
+          let entityQualifierState
+          
+          const entityElement = Cypress.$(elements[i]).find('[data-testid="action-scorer-entities"]')
+          if (entityElement.hasClass('cl-entity--match')) {
+            entityQualifierState = entityQualifierStateEnum.green + strikeOut
+          } else if (entityElement.hasClass('cl-entity--mismatch')) {
+            entityQualifierState = entityQualifierStateEnum.red + strikeOut
+          } else {
+            entityQualifierState = `ERROR - Expected to find class with either 'cl-entity--match' or 'cl-entity--mismatch' but found neither. Element: ${entityElement[0].outerHTML}`
+            AccumulateErrors(entityQualifierState)
+          }
+          
+          entities.push({ name: name, qualifierState: entityQualifierState })
+        }
+      }
+      rowData.entities = entities
+    }, false)
+
+    
+    // Get the Wait flag.
+    FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-wait"]')`, elements => {
+      const wait = elements.attr('data-icon-name') == 'CheckMark'
+      rowData.wait = wait
+    })
+    
+    generatedData.push(rowData)
+  }
+  
+  return generatedData
 }

@@ -12,6 +12,7 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Wait vs Non Wait Actions - Train', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  let generatedScoreActionsData = new scorerModal.GeneratedData('waitVsNoWaitActions.json')
 
   context('Setup', () => {
     it('Should import a model to test against, navigate to Train Dialogs view and wait for training status to complete', () => {
@@ -31,11 +32,7 @@ describe('Wait vs Non Wait Actions - Train', () => {
       train.ClickScoreActionsButton()
     })
       
-    it('Should verify all 3 actions are enabled', () => {
-      scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
-      scorerModal.VerifyContainsEnabledAction('Cows say moo!')
-      scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
-    })
+    generatedScoreActionsData.VerifyScoreActionsList(30)
 
     it('Should select a wait Action for the Bot Response', () => {
       train.SelectTextAction('Which animal would you like?')
@@ -48,11 +45,7 @@ describe('Wait vs Non Wait Actions - Train', () => {
       train.ClickScoreActionsButton()
     })
 
-    it('Should verify 3 actions are enabled', () => {
-      scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
-      scorerModal.VerifyContainsEnabledAction('Cows say moo!')
-      scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
-    })
+    generatedScoreActionsData.VerifyScoreActionsList(30)
 
     it('Should select a non-wait Action for the Bot Response', () => {
       train.SelectTextAction('Cows say moo!')
@@ -69,11 +62,7 @@ describe('Wait vs Non Wait Actions - Train', () => {
       train.ClickScoreActionsButton()
     })
 
-    it('Should verify 3 actions are enabled', () => {
-      scorerModal.VerifyContainsEnabledAction('Which animal would you like?')
-      scorerModal.VerifyContainsEnabledAction('Cows say moo!')
-      scorerModal.VerifyContainsEnabledAction(common.ducksSayQuack)
-    })
+    generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should select a non-wait Action for the Bot Response', () => {
       train.SelectTextAction(common.ducksSayQuack)
@@ -87,4 +76,6 @@ describe('Wait vs Non Wait Actions - Train', () => {
       train.SaveAsIsVerifyInGrid()
     })
   })
+
+  generatedScoreActionsData.SaveGeneratedData()
 })

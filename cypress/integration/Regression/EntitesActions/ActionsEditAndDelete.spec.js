@@ -26,7 +26,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     it('Should edit some existing Actions to verify that the Action Type Dropdown is disabled', () => {
       modelPage.NavigateToActions()
       
-      actionsGrid.EditApiAction('LogicWithNoArgs')
+      actionsGrid.EditApiAction('LogicWithNoArgslogic(memoryManager)')
       actionModal.VerifyActionTypeDisabled()
       actionModal.ClickCancelButton()
 
@@ -34,7 +34,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
       actionModal.VerifyActionTypeDisabled()
       actionModal.ClickCancelButton()
 
-      actionsGrid.EditCardAction('question:Do you like being questioned?button1:Yesbutton2:No')
+      actionsGrid.EditCardAction('promptquestion:Do you like being questioned?button1:Yesbutton2:No')
       actionModal.VerifyActionTypeDisabled()
       actionModal.ClickCancelButton()
 
@@ -44,7 +44,11 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
 
       actionsGrid.EditEndSessionAction('Goodbye')
       actionModal.VerifyActionTypeDisabled()
+    })
+
+    it('Should filter the Train Dialog list to only the 1 that contains the last Action we viewed', () => {
       actionModal.ClickTrainDialogFilterButton()
+      train.VerifyActionFilter('Goodbye')
     })
 
     it('Should edit Train Dialog that caused those Actions to have a disabled Type field and delete it', () => {
@@ -56,7 +60,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
     it('Should edit some existing Actions to verify that the Action Type Dropdown is enabled', () => {
       modelPage.NavigateToActions()
 
-      actionsGrid.EditApiAction('LogicWithNoArgs')
+      actionsGrid.EditApiAction('LogicWithNoArgslogic(memoryManager)')
       actionModal.VerifyActionTypeEnabled()
       actionModal.ClickCancelButton()
 
@@ -64,7 +68,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
       actionModal.VerifyActionTypeEnabled()
       actionModal.ClickCancelButton()
 
-      actionsGrid.EditCardAction('question:Do you like being questioned?button1:Yesbutton2:No')
+      actionsGrid.EditCardAction('promptquestion:Do you like being questioned?button1:Yesbutton2:No')
       actionModal.VerifyActionTypeEnabled()
       actionModal.ClickCancelButton()
 
@@ -114,6 +118,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that filter Train Dialog on Action button works', () => {
       actionModal.ClickTrainDialogFilterButton()
+      train.VerifyActionFilter('Something extra')
       train.VerifyListOfTrainDialogs([
         {firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: 'Something extra'},
       ])
@@ -149,6 +154,7 @@ describe('Actions Edit and Delete - EntitiesActions', () => {
 
     it('Should verify that filter Train Dialog on Action button works', () => {
       actionModal.ClickTrainDialogFilterButton()
+      train.VerifyActionFilter('Your entity contains: $entity')
       train.VerifyListOfTrainDialogs([
         {firstInput: 'My entity: AABBCC', lastInput: 'Error is Intentional', lastResponse: ''},
         {firstInput: 'An entity: EEEFFFGGG', lastInput: 'An entity: EEEFFFGGG', lastResponse: 'Your entity contains: $entity'},

@@ -15,4 +15,11 @@ export interface SourceAndModelPair {
     action: any | undefined,
 }
 
+export interface ImportedAction {
+    text: string,
+    buttons: string[],
+    isTerminal: boolean,
+    reprompt: boolean
+}
+
 export type PartialTrainDialog = Pick<CLM.TrainDialog, "trainDialogId" | "tags" | "description"> & Partial<CLM.TrainDialog>

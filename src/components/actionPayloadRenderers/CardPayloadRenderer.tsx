@@ -70,7 +70,7 @@ export default class Component extends React.Component<Props, State> {
         const showToggle = pairedArguments.argumentsDiffer
 
         return <div className="cl-card-payload">
-            <div>
+            <div data-testid="action-scorer-card">
                 <div className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-card-name">{this.props.name}</div>
                 <div className="cl-card-payload__arguments ms-ListItem-primaryText">
                     {pairedArguments.argumentPairs.length !== 0

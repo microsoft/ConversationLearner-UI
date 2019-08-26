@@ -54,6 +54,8 @@ export function ClickUndoButton() { cy.Get('[data-testid="edit-teach-dialog-undo
 export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }
 export function ClickReplayButton() { cy.Get('[data-testid="edit-dialog-modal-replay-button"]').Click() }
 
+export function VerifyEntityFilter(entity) { cy.Get('[data-testid="dropdown-filter-by-entity"] > span.ms-Dropdown-title').ExactMatch(entity) }
+export function VerifyActionFilter(action) { cy.Get('[data-testid="dropdown-filter-by-action"] > span.ms-Dropdown-title').ExactMatch(action) }
 export function ClickClearFilterButton() { cy.Get('[data-testid="train-dialogs-clear-filter-button"]').Click() }
 
 export function GetDescription() { return Cypress.$('[data-testid="train-dialog-description"]').attr('value') }
@@ -283,6 +285,10 @@ export function VerifyEntityLabel(word, entity) {
     .contains(entity)
 }
 
+const entityLabelConflictPopupSelector = '[data-testid="entity-conflict-cancel"], [data-testid="entity-conflict-accept"]'
+export function VerifyEntityLabelConflictPopup() { cy.Get(entityLabelConflictPopupSelector).should('have.length', 2) }
+export function VerifyNoEntityLabelConflictPopup() { cy.Get(entityLabelConflictPopupSelector).should('have.length', 0) }
+
 // textEntityPairs is an array of objects contains these two variables:
 //  text = a word within the utterance that should already be labeled
 //  entity = name of entity to label the word with
@@ -407,7 +413,7 @@ export function CreateNewTrainDialog() {
 export function EditTraining(firstInput, lastInput, lastResponse) {
   const funcName = `EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`
   let trainDialogIndex
-  cy.Enqueue(() => {
+  cy.WaitForStableDOM().then(() => {
     const turns = trainDialogsGrid.GetTurns()
     const firstInputs = trainDialogsGrid.GetFirstInputs()
     const lastInputs = trainDialogsGrid.GetLastInputs()
@@ -501,19 +507,19 @@ export function SelectTextAction(expectedResponse, lastResponse) {
 }
 
 export function SelectApiCardAction(apiName, expectedCardTitle, expectedCardText) {
-  scorerModal.ClickApiAction(apiName, expectedCardText)
+  scorerModal.ClickApiAction(apiName)
   VerifyCardChatMessage(expectedCardTitle, expectedCardText)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
 
 export function SelectApiPhotoCardAction(apiName, expectedCardTitle, expectedCardText, expectedCardImage) {
-  scorerModal.ClickApiAction(apiName, expectedCardText)
+  scorerModal.ClickApiAction(apiName)
   VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, expectedCardImage)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
 
 export function SelectApiTextAction(apiName, expectedResponse) {
-  scorerModal.ClickApiAction(apiName, expectedResponse)
+  scorerModal.ClickApiAction(apiName)
   VerifyTextChatMessage(expectedResponse)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
@@ -793,6 +799,11 @@ function SelectAndVerifyEachChatTurn(verificationFunction, index = 0, increment 
   })
 }
 
+export function SelectAndVerifyScoreActionsForEachBotChatTurn(expectedScoreActionsForEachBotTurn) { 
+  function VerificationFunction(element, index) { scorerModal.VerifyScoreActions(expectedScoreActionsForEachBotTurn[index / 2]) }
+  SelectAndVerifyEachChatTurn( VerificationFunction, 1, 2) 
+}
+
 export function AbandonDialog() {
   ClickAbandonDeleteButton()
   ClickConfirmAbandonDialogButton()
@@ -858,7 +869,7 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
 }
 
 export function GetAllTrainDialogGridRows() { 
-  helpers.ConLog('GetAllRows', 'start')
+  helpers.ConLog('GetAllTrainDialogGridRows', 'start')
 
   const firstInputs = trainDialogsGrid.GetFirstInputs()
   const lastInputs = trainDialogsGrid.GetLastInputs()
@@ -873,10 +884,8 @@ export function GetAllTrainDialogGridRows() {
       lastResponse: lastResponses[i],
     })
 
-    helpers.ConLog('GetAllRows', `${allRowData.firstInput}, ${allRowData.lastInput}, ${allRowData.lastResponse}`)
+    helpers.ConLog('GetAllTrainDialogGridRows', `${allRowData.firstInput}, ${allRowData.lastInput}, ${allRowData.lastResponse}`)
   }
   
   return allRowData
 }
-
-

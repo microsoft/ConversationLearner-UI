@@ -26,6 +26,8 @@ export const CL_IMPORT_TUTORIALS_USER_ID = '9c110735ea8b440d8f31c5c68ffb767d'
 
 export const BOT_HOST_NAME: Readonly<string> = location.hostname
 
+export const REPROMPT_SELF = "SELF"
+
 // if location.port is empty, the port will be set to 443 or 80 based on location.protocol
 const LOCATION_PORT: Readonly<string> = location.port === '' ? location.protocol === 'https:' ? '443' : '80' : location.port
 

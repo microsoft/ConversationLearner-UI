@@ -30,11 +30,11 @@ describe('Bot Missing API - ErrorHandling', () => {
     
     it('Should verify the Action grid shows an IncidentTriangle', () => {
       modelPage.NavigateToActions()
-      new actionsGrid.Row('API', 'RandomGreeting').VerifyIncidentTriangle()
+      new actionsGrid.Row('API', 'RandomGreetinglogic(memoryManager)render(result, memoryManager)').VerifyIncidentTriangle()
     })
     
     it('Should edit the Action and verify it contains the expected error message', () => {
-      actionsGrid.EditApiAction('RandomGreeting')
+      actionsGrid.EditApiAction('RandomGreetinglogic(memoryManager)render(result, memoryManager)')
       actionModal.VerifyErrorMessage('ERROR: Bot Missing Callback: RandomGreeting')
       actionModal.ClickCancelButton()
     })
@@ -75,7 +75,7 @@ describe('Bot Missing API - ErrorHandling', () => {
   context('Fix Broken Model - Delete Action with Missing API', () => {
     it('Should delete the action that uses the missing API', () => {
       modelPage.NavigateToActions()
-      actions.DeleteActionThatIsUsedByATrainDialog('RandomGreeting', 'API')
+      actions.DeleteActionThatIsUsedByATrainDialog('RandomGreetinglogic(memoryManager)render(result, memoryManager)', 'API')
     })
 
     it('Should verify that Home link/panel no longer shows an IncidentTriangle and nor the error message', () => {

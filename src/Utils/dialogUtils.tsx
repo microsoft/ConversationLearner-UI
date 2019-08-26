@@ -7,11 +7,15 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../Utils/util'
 import * as BotChat from '@conversationlearner/webchat'
+import { compareTwoStrings } from 'string-similarity'
 import { deepCopy, getDefaultEntityMap } from './util'
 import { Activity } from 'botframework-directlinejs'
+import { ImportedAction } from '../types/models'
 import TagsReadOnly from '../components/TagsReadOnly'
 
 const MAX_SAMPLE_INPUT_LENGTH = 150
+
+export const CARD_MATCH_THRESHOLD = 0.25
 
 export const DialogQueryParams = {
     id: "id"
@@ -26,6 +30,7 @@ export interface DialogRenderData {
     scoreResponse?: CLM.ScoreResponse
     scoreInput?: CLM.ScoreInput
     selectedActionId?: string
+    forcedActionId?: string
     extractResponses?: CLM.ExtractResponse[]
 }
 
@@ -162,6 +167,28 @@ export function getCorrectedDialogs(attemptedTextVariation: CLM.TextVariation, t
     }
 
     return correctedDialogs
+}
+
+export function cleanText(rawText: string | null): string {
+    if (!rawText) {
+        return ""
+    }
+    return rawText
+        .trim()
+        .split('&nbsp;').join(" ") // Switch to actual spaces
+        .split(" </").join("</")  // Markdown can't have space before end
+        .split("\n").join("")
+        .split("<b>").join("**")
+        .split("</b>").join("**")
+        .split("<i>").join("*")
+        .split("</i>").join("*")
+        .split("<strong>").join("**_")
+        .split("</strong>").join("_**")
+        .split("<br>").join("")
+        .split("<br/>").join("")
+        .split("<br />").join("")
+        .split('&gt;').join("")
+        .replace(/[\n\r]+/g, '')  // Adaptive cards can't handle newlines
 }
 
 export function activityIndexFromRound(trainDialog: CLM.TrainDialog, roundIndex: number | null, scoreIndex: number | null): number | undefined {
@@ -678,6 +705,7 @@ export function getDialogRenderData(
     let round: CLM.TrainRound | undefined
     let memories: CLM.Memory[] = [];
     let prevMemories: CLM.Memory[] = [];
+    let forcedActionId: string | undefined
 
     if (roundIndex !== null && roundIndex < trainDialog.rounds.length) {
         round = trainDialog.rounds[roundIndex];
@@ -688,6 +716,7 @@ export function getDialogRenderData(
                 if (!scorerStep) {
                     throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
                 }
+                forcedActionId = scorerStep.forcedActionId
 
                 let selectedAction = actions.find(action => action.actionId === scorerStep!.labelAction);
 
@@ -763,10 +792,43 @@ export function getDialogRenderData(
         dialogMode: (senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
         scoreInput: scorerStep ? scorerStep.input : undefined,
         scoreResponse: scoreResponse,
+        forcedActionId,
         roundIndex,
         textVariations: round ? round.extractorStep.textVariations : [],
         memories: filterDummyEntities(memories),
         prevMemories: filterDummyEntities(prevMemories),
         extractResponses: []
     }
+}
+
+ // Return template that best matches the given imported action
+export function bestTemplateMatch(importedAction: ImportedAction, templates: CLM.Template[]): CLM.Template | null {
+    let bestScore = 0
+    let bestTemplate: CLM.Template | null = null
+    for (let template of templates) {
+        if (template.body) {
+            // Calculate number of buttons on the template
+            // TODO: support other button types
+            const templateButtonCount = (template.body.match(/Action.Submit/g) || []).length
+            
+            // If cound is the same, find string similarity in body
+            if (templateButtonCount === importedAction.buttons.length) {
+                const score = (template && template.body)
+                    ? compareTwoStrings(importedAction.text, template.body)
+                    : 0
+                if (score > CARD_MATCH_THRESHOLD && score > bestScore) {
+                    bestScore = score
+                    bestTemplate = template
+                }
+                // Try to map to generic card with right number of buttons if no winner yet
+                else if (!bestTemplate && Util.isTemplateTitleGeneric(template)) {
+                    if (templateButtonCount === importedAction.buttons.length) {
+                        bestTemplate = template 
+                    }
+                }
+            }
+        }
+    }
+    
+    return bestTemplate
 }

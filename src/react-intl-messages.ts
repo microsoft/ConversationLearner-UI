@@ -37,6 +37,8 @@ export enum FM {
     ACTIONCREATOREDITOR_DELETEBUTTON_TEXT = 'ActionCreatorEditor.deleteButton.text',
     ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION = 'ActionCreatorEditor.traindialogsButton.ariaDescription',
     ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT = 'ActionCreatorEditor.traindialogsButton.text',
+    ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL = 'ActionCreatorEditor.checkboxTerminalLabel',
+    ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL = 'ActionCreatorEditor.checkboxRepromptLabel',
     ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE = 'ActionCreatorEditor.confirmDeleteTitle',
     ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING = 'ActionCreatorEditor.confirmDeleteWarning',
     ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE = 'ActionCreatorEditor.confirmEditTitle',
@@ -64,6 +66,7 @@ export enum FM {
     ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES = 'ActionDetailsList.columns.disqualifyingEntities',
     ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY = 'ActionDetailsList.columns.suggestedEntity',
     ACTIONDETAILSLIST_COLUMNS_ISTERMINAL = 'ActionDetailsList.columns.isTerminal',
+    ACTIONDETAILSLIST_COLUMNS_REPROMPT = 'ActionDetailsList.columns.reprompt',
     ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME = 'ActionDetailsList.columns.createdDateTime',
 
     // ActionScorer
@@ -165,6 +168,7 @@ export enum FM {
     BUTTON_SUBMIT = 'Button.SUMBIT',
     BUTTON_UNDO = 'Button.UNDO',
     BUTTON_RATE = 'Button.RATE',
+    BUTTON_REPROMPT = 'Button.REPROMPT',
     BUTTON_SELECT = 'Button.SELECT',
     BUTTON_SELECTED = 'Button.SELECTED',
     BUTTON_TEST = 'Button.TEST',
@@ -321,6 +325,11 @@ export enum FM {
     FIELDERROR_MAX_30 = 'fieldError.max30',
     FIELDERROR_REQUIREDVALUE = 'fieldError.requiredValue',
     
+    // Import
+    IMPORT_AUTOIMPORT = 'Importer.autoimport',
+    IMPORT_AUTOMERGE = 'Importer.automerge',
+    IMPORT_AUTOACTIONMATCH = 'Import.autoactionmatch',
+
     // LogConversionConflictModal
     LOGCONVERSIONCONFLICTMODAL_TITLE = 'LogConversionConflictModal.title',
     LOGCONVERSIONCONFLICTMODAL_SUBTITLE = 'LogConversionConflictModal.subTitle',
@@ -480,6 +489,9 @@ export enum FM {
     TOOLTIP_ACTION_DISQUAL_ROW3 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW3',
     TOOLTIP_ACTION_DISQUAL_ROW4 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW4',
 
+    TOOLTIP_ACTION_REPROMPT = 'ToolTip.ACTION_REPROMPT',
+    TOOLTIP_ACTION_REPROMPT_TITLE = 'ToolTip.ACTION_REPROMPT_TITLE',
+
     TOOLTIP_ACTION_RESPONSE = 'ToolTip.ACTION_RESPONSE',
     TOOLTIP_ACTION_RESPONSE_TEXT1 = 'ToolTip.ACTION_RESPONSE_TEXT1',
     TOOLTIP_ACTION_RESPONSE_TEXT2 = 'ToolTip.ACTION_RESPONSE_TEXT2',
@@ -571,9 +583,9 @@ export enum FM {
     // Transcript Importer
     TRANSCRIPT_IMPORTER_TITLE = 'TranscriptImporter.title',
     TRANSCRIPT_IMPORTER_DESCRIPTION = 'TranscriptImporter.description',
-    TRANSCRIPT_IMPORTER_AUTOIMPORT = 'TranscriptImporter.autoimport',
-    TRANSCRIPT_IMPORTER_AUTOMERGE = 'TranscriptImporter.automerge',
-
+    TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON = 'TranscriptImporter.transcriptbutton',
+    TRANSCRIPT_IMPORTER_LG_BUTTON = 'TranscriptImporter.lgbutton',
+    
     // Transcript Validator
     TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
     TRANSCRIPT_VALIDATOR_SUBTITLE = 'TranscriptValidator.subtitle',
@@ -632,6 +644,8 @@ export default {
         [FM.ACTIONCREATOREDITOR_DELETEBUTTON_TEXT]: 'Delete',
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_ARIADESCRIPTION]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
+        [FM.ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL]: 'Wait for Response?',
+        [FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL]: 'Reprompt on unexected user input',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this Action?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure?',
@@ -666,6 +680,7 @@ export default {
         [FM.ACTIONDETAILSLIST_COLUMNS_DISQUALIFYINGENTITIES]: 'Disqualifying Entities',
         [FM.ACTIONDETAILSLIST_COLUMNS_SUGGESTEDENTITY]: 'Expected Entity',
         [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
+        [FM.ACTIONDETAILSLIST_COLUMNS_REPROMPT]: 'Reprompt',
 
         // Actions
         [FM.ACTIONS_TITLE]: 'Actions',
@@ -764,6 +779,7 @@ export default {
         [FM.BUTTON_SELECT_FILES]: 'Select File(s)',
         [FM.BUTTON_SUBMIT]: 'Submit',
         [FM.BUTTON_RATE]: 'Rate',
+        [FM.BUTTON_REPROMPT]: 'Reprompt',
         [FM.BUTTON_UNDO]: 'Undo',
         [FM.BUTTON_SELECT]: 'Select',
         [FM.BUTTON_SELECTED]: 'Selected',
@@ -895,6 +911,9 @@ export default {
         [FM.TOOLTIP_ACTION_DISQUAL_ROW2]: '$paymentDetails',
         [FM.TOOLTIP_ACTION_DISQUAL_ROW3]: '"When were you born?"',
         [FM.TOOLTIP_ACTION_DISQUAL_ROW4]: '$birthdate',
+
+        [FM.TOOLTIP_ACTION_REPROMPT]: "When selected and not in a Train Dialog, Bot will repeat the given action if it isn't confident on how to respond to the user's input.",
+        [FM.TOOLTIP_ACTION_REPROMPT_TITLE]: 'Reprompt',
 
         [FM.TOOLTIP_ACTION_RESPONSE]: 'Value of Response that Bot will take',
         [FM.TOOLTIP_ACTION_RESPONSE_TEXT1]: 'Text the Bot will display to the user.',
@@ -1130,6 +1149,11 @@ export default {
         [FM.FIELDERROR_MAX_30]: 'May not exceed 30 characters',
         [FM.FIELDERROR_REQUIREDVALUE]: 'Required Value',
 
+        // Import
+        [FM.IMPORT_AUTOIMPORT]: 'Auto Import',
+        [FM.IMPORT_AUTOMERGE]: 'Auto Merge',
+        [FM.IMPORT_AUTOACTIONMATCH]: 'Auto Action Match',
+
          // LogConversionConflictModal
         [FM.LOGCONVERSIONCONFLICTMODAL_TITLE]: 'Incompatible Log Dialog',
         [FM.LOGCONVERSIONCONFLICTMODAL_SUBTITLE]: 'You attempted to save this log dialog as a train dialog but this dialog is incompatible with the current model due to conflicts in entity labels.  This may occur if the model has changed from the version of model used to create the log dialog. You need to update the dialog to match current model to convert it.',
@@ -1189,15 +1213,15 @@ export default {
         [FM.TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL]: 'Skip remaining imports',
 
         // Transcript Importer
-        [FM.TRANSCRIPT_IMPORTER_TITLE]: 'Import Transripts...',
+        [FM.TRANSCRIPT_IMPORTER_TITLE]: 'Import Transcripts...',
         [FM.TRANSCRIPT_IMPORTER_DESCRIPTION]: 'Create Train Dialogs from .transcript files',
-        [FM.TRANSCRIPT_IMPORTER_AUTOIMPORT]: 'Auto Import',
-        [FM.TRANSCRIPT_IMPORTER_AUTOMERGE]: 'Auto Merge',
-        
+        [FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON]: '.transcript files',
+        [FM.TRANSCRIPT_IMPORTER_LG_BUTTON]: '.lg files',
+
         // Transcript Validator
         [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Testing',
         [FM.TRANSCRIPT_VALIDATOR_SUBTITLE]: `Compare Model's output to .transcript files`,
-        [FM.TRANSCRIPT_VALIDATOR_PICKER_TITLE]: 'Select .transcript files to test',
+        [FM.TRANSCRIPT_VALIDATOR_PICKER_TITLE]: 'Select Transcript files to test',
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE]: 'Name for Test Results',
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER]: 'Name',
         [FM.TRANSCRIPT_VALIDATOR_NAME_LABEL]: 'Test Name',
