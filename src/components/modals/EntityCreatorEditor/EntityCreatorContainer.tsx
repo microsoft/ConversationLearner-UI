@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -98,18 +98,6 @@ class Container extends React.Component<Props, ComponentState> {
                 text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM),
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
-            },
-            {
-                key: 'divider',
-                text: '-',
-                itemType: OF.DropdownMenuItemType.Divider,
-                style: 'clDropdown--normal'
-            },
-            {
-                key: 'Header',
-                text: 'Pre-Trained',
-                itemType: OF.DropdownMenuItemType.Header,
-                style: 'clDropdown--normal'
             }
         ]
     }
@@ -151,8 +139,7 @@ class Container extends React.Component<Props, ComponentState> {
                     }))
 
             if (nextProps.entity === null) {
-                const filteredPreBuiltOptions = localePreBuiltOptions.filter(entityOption => !nextProps.entities.some(e => !e.doNotMemorize && e.entityType === entityOption.key))
-                this.entityOptions = [...this.staticEntityOptions, ...filteredPreBuiltOptions]
+                this.entityOptions = this.staticEntityOptions
                 this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
 
                 this.setState({
@@ -166,7 +153,7 @@ class Container extends React.Component<Props, ComponentState> {
                     enumValues: this.initEnumValues(undefined)
                 });
             } else {
-                this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
+                this.entityOptions = this.staticEntityOptions
                 this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
                 const entityType = nextProps.entity.entityType
                 const isPrebuilt = CLM.isPrebuilt(nextProps.entity)
@@ -381,7 +368,7 @@ class Container extends React.Component<Props, ComponentState> {
         const enumValueObj = enumValuesObjs[index]
 
         if (newValue.length > 0) {
-            // Create new EnumValue if needed 
+            // Create new EnumValue if needed
             if (!enumValueObj) {
                 enumValuesObjs[index] = { enumValue: newValue }
             }
@@ -545,7 +532,7 @@ class Container extends React.Component<Props, ComponentState> {
                 .some(condition =>
                     condition.entityId === entity.entityId
                     && condition.valueId === enumValue.enumValueId)
-            
+
             const usedToSetValue = (a.actionType === CLM.ActionTypes.SET_ENTITY)
                     && a.entityId === entity.entityId
                     && a.enumValueId === enumValue.enumValueId
