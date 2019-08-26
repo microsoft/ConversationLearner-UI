@@ -67,15 +67,18 @@ export const getPrebuiltEntityName = (preBuiltType: string): string => {
 }
 
 class Container extends React.Component<Props, ComponentState> {
-    staticEntityOptions: CLDropdownOption[]
     staticResolverOptions: CLDropdownOption[]
     entityOptions: CLDropdownOption[]
     resolverOptions: CLDropdownOption[]
 
     constructor(props: Props) {
         super(props)
-        this.state = { ...initState, entityTypeVal: CLM.EntityType.LUIS, entityResolverVal: this.NONE_RESOLVER }
-        this.staticEntityOptions = this.getStaticEntityOptions(this.props.intl)
+        this.state = {
+            ...initState,
+            entityTypeVal: CLM.EntityType.LUIS,
+            entityResolverVal: this.NONE_RESOLVER,
+        }
+        this.entityOptions = this.getStaticEntityOptions(this.props.intl)
         this.staticResolverOptions = this.getStaticResolverOptions(this.props.intl)
     }
 
@@ -138,10 +141,9 @@ class Container extends React.Component<Props, ComponentState> {
                         style: 'clDropdown--normal'
                     }))
 
-            if (nextProps.entity === null) {
-                this.entityOptions = this.staticEntityOptions
-                this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
+            this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
 
+            if (nextProps.entity === null) {
                 this.setState({
                     ...initState,
                     title: nextProps.intl.formatMessage({
@@ -153,8 +155,6 @@ class Container extends React.Component<Props, ComponentState> {
                     enumValues: this.initEnumValues(undefined)
                 });
             } else {
-                this.entityOptions = this.staticEntityOptions
-                this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
                 const entityType = nextProps.entity.entityType
                 const isPrebuilt = CLM.isPrebuilt(nextProps.entity)
                 const resolverType = nextProps.entity.resolverType === null ? this.NONE_RESOLVER : nextProps.entity.resolverType
@@ -534,8 +534,8 @@ class Container extends React.Component<Props, ComponentState> {
                     && condition.valueId === enumValue.enumValueId)
 
             const usedToSetValue = (a.actionType === CLM.ActionTypes.SET_ENTITY)
-                    && a.entityId === entity.entityId
-                    && a.enumValueId === enumValue.enumValueId
+                && a.entityId === entity.entityId
+                && a.enumValueId === enumValue.enumValueId
 
             return usedAsCondition || usedToSetValue
         })
