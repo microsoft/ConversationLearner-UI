@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -128,7 +128,7 @@ class AppsList extends React.Component<Props, ComponentState> {
             isAppCreateModalOpen: false
         }, () => this.props.onCreateApp(app, null, obiImportData))
     }
-    
+
     @autobind
     onClickCreateNewDispatcherModel() {
         this.setState({
@@ -137,6 +137,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         })
     }
 
+    @autobind
     onSelectionChanged() {
         const selectionCount = this.selection.getSelectedCount()
         this.setState({
