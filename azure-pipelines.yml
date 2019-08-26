@@ -38,6 +38,59 @@ jobs:
   - bash: npm run cibuild
     displayName: 'npm run cibuild'
 
+- job: linux_test
+  dependsOn: linux_build
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'Install Node.js 10.x'
+
+  - bash: npm --version
+    displayName: 'npm --version'
+
+  - bash: npm ci
+    displayName: 'npm ci'
+
+  # Randomly pick 1 out of 5 LUIS Authoring Keys and set the BASH_ENV with it.
+  # - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
+
+  - bash: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
+    displayName: 'Clone the Samples BOT'
+
+  - bash: npm ci
+    workingDirectory: ../cl-samples
+    displayName: 'Samples - npm ci'
+
+  - bash: npm run build
+    workingDirectory: ../cl-samples
+    displayName: 'Samples - npm run build'
+
+  - bash: npm run test-apicallbacks
+    workingDirectory: ../cl-samples
+    displayName: 'Samples - npm start'
+    # background: true
+
+  # Run UI
+  - bash: npm start
+    displayName: 'UI - npm start'
+    enabled: false
+    # background: true
+
+  - bash: npx wait-on -- http://localhost:3978
+  # - bash: npx wait-on -- http://localhost:3000
+
+  - bash: npm run cypress -- run --record false --spec  "cypress/integration/Regression/**/*.spec.js"
+
+  - bash: npm run cypress -- run --record false --spec  "cypress/integration/regressionTs/**/*.spec.*"
+    condition: always()
+
+  - bash: npm run cypress -- run --record false --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js"
+    condition: always()
+
 - job: windows_build
   pool:
     vmImage: 'windows-2019'
