@@ -3,8 +3,6 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
-import * as uuid from 'uuid/v4'
-import * as Util from '../../Utils/util'
 import actions from '../../actions'
 import AppIndex from './App/Index'
 import AppsList from './AppsList'
@@ -14,10 +12,11 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
-import { AppBase, AppDefinition, TrainDialog } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
 import { OBIImportData } from '../../Utils/obiUtils'
-import { SourceModel } from '../../types/models';
+import * as DispatchUtils from '../../Utils/dispatchUtils'
+import { SourceAndModelPair } from '../../types/models'
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
@@ -36,7 +35,7 @@ class AppsIndex extends React.Component<Props> {
         }
 
         const { history, location } = this.props
-        const appFromLocationState: AppBase | null = location.state && location.state.app
+        const appFromLocationState: CLM.AppBase | null = location.state && location.state.app
         if (appFromLocationState && this.props.apps && this.props.apps.length > 0) {
             const app = this.props.apps.find(a => a.appId === appFromLocationState.appId)
             if (!app) {
@@ -50,53 +49,43 @@ class AppsIndex extends React.Component<Props> {
         }
     }
 
-    onClickDeleteApp = (appToDelete: AppBase) => {
+    onClickDeleteApp = (appToDelete: CLM.AppBase) => {
         this.props.deleteApplicationThunkAsync(appToDelete.appId)
     }
 
-    onCreateApp = async (appToCreate: AppBase, source: AppDefinition | null = null, obiImportData?: OBIImportData) => {
-        const app: AppBase = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source, obiImportData) as any as Promise<AppBase>)
+    onCreateApp = async (appToCreate: CLM.AppBase, source: CLM.AppDefinition | null = null, obiImportData?: OBIImportData) => {
+        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source, obiImportData) as any as Promise<CLM.AppBase>)
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}${obiImportData ? "/trainDialogs" : ""}`, { app })
     }
 
-    onCreateDispatchModel = async (appToCreate: AppBase, childrenModels: AppBase[]) => {
+    onCreateDispatchModel = async (appToCreate: CLM.AppBase, childrenModels: CLM.AppBase[]) => {
         if (childrenModels.length > 5) {
             throw new Error(`Must only select 5 or less models when creating a Dispatcher Model`)
         }
 
-        /**
-         * Need to add data indicating model is dispatcher for behavior change in SDK
-         * Currently overload markdown, but could be separate dedicated fields in future but we need to finalize what data we need
-         * Based on splitting by newline and comma should be able to reconstruct data, could go to CSV parser
-         * 
-         * Example:
-         * dispatcher
-         * 6ed9b965-611f-4949-af64-d84b4c43c610,Model Name 1
-         * 57f34a81-a88b-4804-8a29-f2c0429f9250,Model Other Name 2
-         * ...
-         * d88b3850-ac9d-4805-a3c9-80216bf9cbfb,Model Last Name N
-         */
-        appToCreate.metadata.markdown = `dispatcher\n${childrenModels.map(m => `${m.appId},${m.appName}`).join('\n')}`
+        appToCreate.metadata.markdown = 'Dispatcher'
 
         /**
          * Fetch source and associate with each model
          */
-        const childrenSources = await Promise.all(childrenModels.map(async model => {
-            const source = await (this.props.fetchAppSourceThunkAsync(model.appId, model.devPackageId) as any) as AppDefinition
+        const childrenSourceModelPairs = await Promise.all(childrenModels.map<Promise<SourceAndModelPair>>(async model => {
+            const source = await (this.props.fetchAppSourceThunkAsync(model.appId, model.devPackageId) as any) as CLM.AppDefinition
+            
             return {
                 source,
                 model,
+                action: undefined
             }
         }))
 
-        const source = generateDispatcherSource(childrenSources)
-        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<AppBase>)
+        const source = DispatchUtils.generateDispatcherSource(childrenSourceModelPairs)
+        const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<CLM.AppBase>)
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
     }
 
-    onImportTutorial = (tutorial: AppBase) => {
+    onImportTutorial = (tutorial: CLM.AppBase) => {
         const srcUserId = CL_IMPORT_TUTORIALS_USER_ID;
         const destUserId = this.props.user.id;
 
@@ -127,140 +116,6 @@ class AppsIndex extends React.Component<Props> {
     }
 }
 
-function generateDispatcherSource(sourceModels: SourceModel[]): AppDefinition {
-    /**
-     * Generate new Text Actions 1 per model, with text as format modelId:modelName
-     */
-    const actions = sourceModels.map<any>(sourceModel => ({
-        "actionId": uuid(),
-        "createdDateTime": new Date().toJSON(),
-        "actionType": "DISPATCH",
-        "payload": `{\"modelId\": \"${sourceModel.model.appId}\", \"modelName\": \"${sourceModel.model.appName}\"}`,
-        "isTerminal": true,
-        "requiredEntitiesFromPayload": [],
-        "requiredEntities": [],
-        "negativeEntities": [],
-        "requiredConditions": [],
-        "negativeConditions": [],
-        "clientData": {
-            "importHashes": []
-        }
-    }))
-
-    /**
-     * Current train dialogs are still associated with their model
-     * Overwrite label action and filled entities to that model's enum action
-     */
-    const modelTrainDialogs = sourceModels.map((sm, mIndex) => {
-        return sm.source.trainDialogs.map((t, tIndex) => {
-            t.rounds.forEach(r => {
-                r.scorerSteps.forEach(s => {
-                    s.input = {
-                        filledEntities: [],
-                        context: {},
-                        maskedActions: [],
-                    }
-                    // Bad to rely on index association here, but it's consistent between action types
-                    s.labelAction = actions[mIndex].actionId
-                })
-            })
-
-            t.tags = [`model-${mIndex + 1}`, `dialog-${tIndex + 1}`]
-
-            return t
-        })
-    })
-
-    /**
-     * Intermix rounds from different dialogs to implicitly demonstrate dispatching/context switching to other model
-     * 
-     * Example
-     * Dialogs:
-     *  ModelA: 
-     *   [A,B,C]
-     *  ModelB:
-     *   [D,E,F]
-     *  ModelC:
-     *   [G,H,I]
-     * ..,
-     * 
-     * Output:
-     * [A,D,E,F]
-     * [A,B,D,E,F]
-     * [A,B,C,D,E,F]
-     * [A,G,H,I]
-     * [A,B,G,H,I]
-     * [A,B,C,G,H,I]
-     * [D,A,B,C]
-     * [D,E,A,B,C]
-     * [D,E,F,A,B,C]
-     * [D,G,H,I]
-     * [D,E,G,H,I]
-     * [D,E,F,G,H,I]
-     * ...
-     */
-
-    // Flatten dialogs from models
-    const allTrainDialogs = modelTrainDialogs
-        .reduce((a, b) => [...a, ...b])
-
-    // Ensure the filled entities of first scorer step are empty
-    const unmodifiedTrainDialogs = removeFilledEntitiesOfScorerStep(allTrainDialogs)
-
-    const mixRounds = allTrainDialogs.map(t => t.rounds)
-        .map((x, i, ys) => {
-            const others = ys.filter((_, j) => j !== i)
-            return others
-                .map((other) => {
-                    // for each item in array
-                    return x.map((_, k) => {
-                        // slice array until item
-                        const first = x.slice(0, k + 1)
-                        const second = other
-                        return [...first, ...second]
-                    })
-                })
-                .reduce((a, b) => [...a, ...b])
-        })
-        .reduce((a, b) => [...a, ...b])
-
-    const mixedDialogs = mixRounds.map(rs => ({
-        tags: [],
-        description: "",
-        trainDialogId: uuid(),
-        rounds: rs,
-        clientData: {
-            importHashes: []
-        },
-        initialFilledEntities: [],
-    }))
-
-    const mixedDialogsCorrected = removeFilledEntitiesOfScorerStep(mixedDialogs as unknown as TrainDialog[])
-
-    const source = {
-        trainDialogs: [
-            ...unmodifiedTrainDialogs,
-            ...mixedDialogsCorrected
-        ],
-        actions,
-        entities: [],
-        packageId: uuid()
-    }
-
-    return source as AppDefinition
-}
-
-function removeFilledEntitiesOfScorerStep(trainDialogs: TrainDialog[]): TrainDialog[] {
-    return Util.deepCopy(trainDialogs).map(t => {
-        t.rounds.forEach((r, rIndex) => {
-            if (rIndex === 0) {
-                r.scorerSteps[0].input.filledEntities = []
-            }
-        })
-
-        return t
-    })
-}
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({

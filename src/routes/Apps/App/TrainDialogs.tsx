@@ -33,6 +33,7 @@ import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import './TrainDialogs.css'
 import { autobind } from 'core-decorators';
+import { ActionTypes } from '@conversationlearner/models';
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -163,6 +164,7 @@ interface ComponentState {
     replayDialogs: CLM.TrainDialog[]
     replayDialogIndex: number
     isReplaySelectedActive: boolean
+    isRegenActive: boolean
     mergeExistingTrainDialog: CLM.TrainDialog | null
     mergeNewTrainDialog: CLM.TrainDialog | null
     // Item selected in webchat window
@@ -221,6 +223,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             importAutoActionCreate: false,
             isTreeViewModalOpen: false,
             isReplaySelectedActive: false,
+            isRegenActive: false,
             replayDialogs: [],
             replayDialogIndex: 0,
             mergeExistingTrainDialog: null,
@@ -1057,6 +1060,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    async onClickRegen() {
+        await Util.setStateAsync(this, {
+            isRegenActive: true,
+        })
+
+        await this.props.regenerateDispatchTrainDialogsAsync(this.props.app.appId, this.props.actions, this.props.trainDialogs)
+
+        this.setState({
+            isRegenActive: false,
+        })
+    }
+
     async importOBIFiles(obiImportData: OBIUtils.OBIImportData): Promise<void> {
 
         const obiDialogParser = new OBIDialogParser.ObiDialogParser()
@@ -1434,6 +1449,9 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
         const isEditingDisabled = (this.props.editingPackageId !== this.props.app.devPackageId) || this.props.invalidBot
 
+        // Assume if app has DISPATCH actions, it must be dispatcher model
+        const isDispatchModel = this.props.actions.some(a => a.actionType === ActionTypes.DISPATCH)
+
         return (
             <div className="cl-page">
                 <div data-testid="train-dialogs-title" className={`cl-dialog-title cl-dialog-title--train ${OF.FontClassNames.xxLarge}`}>
@@ -1494,6 +1512,18 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         ariaDescription={Util.formatMessageId(intl, FM.BUTTON_REPLAY_SELECTED, { selectionCount: this.state.selectionCount })}
                         text={Util.formatMessageId(intl, FM.BUTTON_REPLAY_SELECTED, { selectionCount: this.state.selectionCount })}
                     />
+
+                    {isDispatchModel &&
+                        <OF.DefaultButton
+                            iconProps={{
+                                iconName: "Refresh"
+                            }}
+                            disabled={this.state.isRegenActive}
+                            onClick={this.onClickRegen}
+                            ariaDescription={Util.formatMessageId(intl, FM.BUTTON_REGENERATE, { selectionCount: this.state.selectionCount })}
+                            text={Util.formatMessageId(intl, FM.BUTTON_REGENERATE, { selectionCount: this.state.selectionCount })}
+                        />
+                    }
                 </div>
                 <TreeView
                     open={this.state.isTreeViewModalOpen}
@@ -1816,6 +1846,7 @@ const mapDispatchToProps = (dispatch: any) => {
         extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
         fetchApplicationTrainingStatusThunkAsync: actions.app.fetchApplicationTrainingStatusThunkAsync,
+        regenerateDispatchTrainDialogsAsync: actions.train.regenerateDispatchTrainDialogsAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         fetchExtractionsThunkAsync: actions.app.fetchExtractionsThunkAsync,
         trainDialogMergeThunkAsync: actions.train.trainDialogMergeThunkAsync,

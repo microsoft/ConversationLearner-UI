@@ -8,9 +8,11 @@ export interface App extends CLM.AppBase {
     didPollingExpire: boolean
 }
 
-export interface SourceModel {
+export interface SourceAndModelPair {
     source: CLM.AppDefinition,
     model: CLM.AppBase,
+    // ActionBase or source, only care about ID for consistent labelAction 
+    action: any | undefined,
 }
 
 export interface ImportedAction {
