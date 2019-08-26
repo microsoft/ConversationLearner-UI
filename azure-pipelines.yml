@@ -32,11 +32,11 @@ jobs:
   #   path: $(npm_config_cache)
   #   displayName: Cache npm
 
-  - bash: npm run build
-    displayName: 'npm run build'
-
   - bash: npm test
     displayName: 'npm test'
+
+  - bash: npm run build
+    displayName: 'npm run build'
 
 - job: windows_build
   pool:
