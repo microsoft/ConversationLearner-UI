@@ -456,8 +456,8 @@ i[data-icon-name="Edit"]:hover {
 }
 
 .cl-modal.cl-modal--importwait {
-  height: 90px;
-  width: 400px;
+  height: 100px;
+  width: 500px;
   padding: 20px;
   text-align: center !important;
 }
@@ -656,10 +656,12 @@ i[data-icon-name="Edit"]:hover {
   grid-template: auto / min-content 1fr;
   grid-gap: 1em;
   width: 100%;
+  position: relative;
 }
 
 .cl-file-picker-button {
   white-space: nowrap;
+  width: 160px;
 }
 
 .cl-form {
@@ -810,7 +812,7 @@ i[data-icon-name="Edit"]:hover {
   border-style: solid;
   border-color: rgb(255, 255, 255);
   border-image: initial;
-  outline: rgb(102, 102, 102) solid 1px;
+  outline-color: rgb(102, 102, 102);
 }
 
 .ms-Button--transparent {
@@ -846,7 +848,7 @@ i[data-icon-name="Edit"]:hover {
   border-style: solid;
   border-color: rgb(255, 255, 255);
   border-image: initial;
-  outline: rgb(102, 102, 102) solid 1px;
+  outline-color: rgb(102, 102, 102);
 }
 .ms-Button--default:not(.cl-button-delete):disabled {
   background-color: white !important;

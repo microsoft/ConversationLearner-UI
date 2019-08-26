@@ -1,0 +1,104 @@
+[
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Ducks say quack!",
+      "type": "TEXT",
+      "score": "50.4%",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Which animal would you like?",
+      "type": "TEXT",
+      "score": "31.2%",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Cows say moo!",
+      "type": "TEXT",
+      "score": "10.4%",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Fish just swim.",
+      "type": "TEXT",
+      "score": "8.0%",
+      "entities": [],
+      "wait": false
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Ducks say quack!",
+      "type": "TEXT",
+      "score": "45.1%",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Which animal would you like?",
+      "type": "TEXT",
+      "score": "42.4%",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Fish just swim.",
+      "type": "TEXT",
+      "score": "10.1%",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Cows say moo!",
+      "type": "TEXT",
+      "score": "2.4%",
+      "entities": [],
+      "wait": false
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Ducks say quack!",
+      "type": "TEXT",
+      "score": "83.3%",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Which animal would you like?",
+      "type": "TEXT",
+      "score": "13.0%",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Fish just swim.",
+      "type": "TEXT",
+      "score": "2.5%",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Cows say moo!",
+      "type": "TEXT",
+      "score": "1.2%",
+      "entities": [],
+      "wait": false
+    }
+  ]
+]

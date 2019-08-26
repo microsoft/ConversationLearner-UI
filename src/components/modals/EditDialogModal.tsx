@@ -2,11 +2,12 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
-import * as React from 'react'
-import * as CLM from '@conversationlearner/models'
-import * as OF from 'office-ui-fabric-react'
-import * as DialogUtils from '../../Utils/dialogUtils'
 import * as BotChat from '@conversationlearner/webchat'
+import * as CLM from '@conversationlearner/models'
+import * as DialogUtils from '../../Utils/dialogUtils'
+import * as OBIUtils from '../../Utils/obiUtils'
+import * as OF from 'office-ui-fabric-react'
+import * as React from 'react'
 import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
 import AddButtonInput from './AddButtonInput'
@@ -17,7 +18,7 @@ import UserInputModal from './UserInputModal'
 import FormattedMessageId from '../FormattedMessageId'
 import TranscriptImportCancelModal from './TranscriptImportCancelModal';
 import Webchat, { renderActivity } from '../Webchat'
-import { NewActionPreset } from './ActionCreatorEditor'
+import { ImportedAction } from '../../types/models'
 import { formatMessageId, equal, deepCopy } from '../../Utils/util'
 import { State } from '../../types'
 import { EditDialogAdmin, EditDialogType, EditState } from '.'
@@ -30,13 +31,14 @@ import { FM } from '../../react-intl-messages'
 import { TipType } from '../ToolTips/ToolTips'
 import { renderReplayError } from '../../Utils/RenderReplayError'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     isConfirmAbandonOpen: boolean
     isImportAbandonOpen: boolean
     cantReplayMessage: FM | null
     isUserInputModalOpen: boolean
-    newActionPreset?: NewActionPreset
+    importedAction?: ImportedAction
     addUserInputSelectionType: SelectionType
     isUserBranchModalOpen: boolean
     isSaveConflictModalOpen: boolean
@@ -54,7 +56,7 @@ const initialState: ComponentState = {
     isImportAbandonOpen: false,
     cantReplayMessage: null,
     isUserInputModalOpen: false,
-    newActionPreset: undefined,
+    importedAction: undefined,
     addUserInputSelectionType: SelectionType.NONE,
     isUserBranchModalOpen: false,
     isSaveConflictModalOpen: false,
@@ -70,14 +72,14 @@ const initialState: ComponentState = {
 class EditDialogModal extends React.Component<Props, ComponentState> {
     state = initialState
 
-    @OF.autobind
+    @autobind
     resetWebchat() {
         this.setState({
             webchatKey: this.state.webchatKey + 1,
         })
     }
 
-    componentWillReceiveProps(nextProps: Props) {
+    UNSAFE_componentWillReceiveProps(nextProps: Props) {
         if (this.props.open === false && nextProps.open === true) {
             this.setState({
                 ...initialState,
@@ -89,7 +91,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
             let selectedActivity = null
             if (nextProps.initialSelectedActivityIndex !== null) {
-                selectedActivity = nextProps.history[nextProps.initialSelectedActivityIndex]
+                selectedActivity = nextProps.activityHistory[nextProps.initialSelectedActivityIndex]
             }
 
             this.setState({
@@ -130,7 +132,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return false
     }
 
-    @OF.autobind
+    @autobind
     onClickAddUserInput(selectionType: SelectionType) {
         // TEMP: until server can exclude label conflicts with self
         if (this.showInternalLabelConflict()) {
@@ -151,7 +153,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickAddScore(activity: BotChat.Activity, selectionType: SelectionType) {
         // TEMP: until server can exclude label conflicts with self
         if (this.showInternalLabelConflict()) {
@@ -159,7 +161,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         if (this.canReplay(activity)) {
             if (activity && this.state.currentTrainDialog) {
-                const isLastActivity = activity === this.props.history[this.props.history.length - 1]
+                const isLastActivity = activity === this.props.activityHistory[this.props.activityHistory.length - 1]
                 const trainDialog: CLM.TrainDialog = {
                     ...this.state.currentTrainDialog,
                     tags: this.state.tags,
@@ -175,21 +177,21 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickCloseCantReplay() {
         this.setState({
             cantReplayMessage: null
         })
     }
 
-    @OF.autobind
+    @autobind
     onCancelAddUserInput() {
         this.setState({
             isUserInputModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onSubmitAddUserInput(userInput: string) {
         this.setState({
             isUserInputModalOpen: false
@@ -205,7 +207,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onChangeExtraction(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) {
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
             const trainDialog: CLM.TrainDialog = {
@@ -217,7 +219,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onChangeAction(trainScorerStep: CLM.TrainScorerStep) {
         if (this.state.selectedActivity && this.state.currentTrainDialog) {
             const trainDialog: CLM.TrainDialog = {
@@ -230,7 +232,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     //---- BRANCH ----
-    @OF.autobind
+    @autobind
     onClickBranch() {
         if (this.canReplay(this.state.selectedActivity!)) {
             this.setState({
@@ -244,14 +246,14 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onCancelBranch() {
         this.setState({
             isUserBranchModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onSaveConflictSave() {
         // Save the dialog
         this.onClickSave()
@@ -260,7 +262,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onSaveConflictCancel() {
         // Increment webchat key to reset and clear last input
         // Forces redraw of webchat from TrainDialog (which hasn't been updated yet)
@@ -270,7 +272,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onSubmitBranch(userInput: string) {
         this.setState({
             isUserBranchModalOpen: false
@@ -287,7 +289,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     //---- ABANDON ----
-    @OF.autobind
+    @autobind
     onClickAbandon() {
         if (this.props.editType === EditDialogType.IMPORT) {
             this.setState({
@@ -301,7 +303,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickAbandonCancel() {
         this.setState({
             isConfirmAbandonOpen: false,
@@ -310,7 +312,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     }
 
     // User is continuing the train dialog by typing something new
-    @OF.autobind
+    @autobind
     async onWebChatPostActivity(activity: Activity) {
 
         if (activity.type === 'message' && activity.text && activity.text !== "") {
@@ -346,7 +348,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             */
             // If next action should be score, need to insert, not continue
             if (this.waitingForScore()) {
-                const lastActivity = this.props.history[this.props.history.length - 1]
+                const lastActivity = this.props.activityHistory[this.props.activityHistory.length - 1]
                 await this.props.onInsertInput(this.state.currentTrainDialog!, lastActivity, userInput.text, this.state.addUserInputSelectionType)
             }
             // Otherwise continue
@@ -382,8 +384,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             selectedActivity: activity,
         })
 
-        const newActionPreset = this.getNewActionPreset(activity)
-        this.setState({newActionPreset})
+        const importedAction = this.getImportedAction(activity)
+        this.setState({importedAction})
     }
 
     onPendingStatusChanged(changed: boolean) {
@@ -396,28 +398,28 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     // Returns false if dialog has fatal replay error occuring before
     // the selected activity that would prevent a teach 
     canReplay(activity: BotChat.Activity): boolean {
-        if (this.props.history.length === 0) {
+        if (this.props.activityHistory.length === 0) {
             return true
         }
         // Loop until I hit the current activity
         let activityIndex = 0
         do {
-            const clData: CLM.CLChannelData = this.props.history[activityIndex].channelData.clData
+            const clData: CLM.CLChannelData = this.props.activityHistory[activityIndex].channelData.clData
             if (clData && clData.replayError && clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
                 return false
             }
             activityIndex = activityIndex + 1
         }
-        while (activity !== this.props.history[activityIndex - 1])
+        while (activity !== this.props.activityHistory[activityIndex - 1])
         return true
     }
 
     // Returns true if blocking error exists
     hasBlockingError(): boolean {
-        if (this.props.history.length === 0) {
+        if (this.props.activityHistory.length === 0) {
             return false
         }
-        for (const activity of this.props.history) {
+        for (const activity of this.props.activityHistory) {
             const clData: CLM.CLChannelData = activity.channelData.clData
             if (clData &&
                 clData.replayError &&
@@ -432,7 +434,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return renderActivity(activityProps, children, setRef, this.renderSelectedActivity, this.props.editType, this.state.selectedActivity != null)
     }
 
-    getNewActionPreset(activity: Activity): NewActionPreset | undefined {
+    getImportedAction(activity: Activity): ImportedAction | undefined {
         const clData: CLM.CLChannelData = activity.channelData.clData
         const senderType = clData.senderType
         const scoreIndex = clData.scoreIndex || 0
@@ -450,12 +452,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             : false
 
         if (importText) {
-            return { text: importText, isTerminal }
+            return OBIUtils.importedActionFromImportText(importText, isTerminal)
         }
         return undefined
     }
 
-    @OF.autobind
+    @autobind
     renderSelectedActivity(activity: Activity): (JSX.Element | null) {
 
         if (this.props.editState !== EditState.CAN_EDIT || !this.props.trainDialog) {
@@ -494,7 +496,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             this.state.pendingExtractionChanges ||
             this.props.editState !== EditState.CAN_EDIT
         
-        const isLastActivity = activity === this.props.history[this.props.history.length - 1]
+        const isLastActivity = activity === this.props.activityHistory[this.props.activityHistory.length - 1]
         const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
         const isEndSession = isLastActivity && this.state.hasEndSession
         return (
@@ -598,7 +600,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return false
     }
 
-    @OF.autobind
+    @autobind
     onClickAbandonApprove(stopImporting: boolean = false) {
         const dialogChanged = this.isDialogChanged()
 
@@ -686,7 +688,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             || !equal(this.state.tags, this.props.trainDialog.tags)
     }
 
-    @OF.autobind
+    @autobind
     onClickConvert() {
         if (this.props.editType !== EditDialogType.LOG_ORIGINAL) {
             throw Error("Invalid Edit Type for onClickConvert")
@@ -700,7 +702,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         this.props.onSaveDialog(trainDialog)
     }
 
-    @OF.autobind
+    @autobind
     onClickSave() {
         const trainDialog: CLM.TrainDialog = {
             ...this.props.trainDialog,
@@ -734,21 +736,21 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onAddTag(tag: string) {
         this.setState(prevState => ({
             tags: [...prevState.tags, tag]
         }))
     }
 
-    @OF.autobind
+    @autobind
     onRemoveTag(tag: string) {
         this.setState(prevState => ({
             tags: prevState.tags.filter(t => t !== tag)
         }))
     }
 
-    @OF.autobind
+    @autobind
     onChangeDescription(description: string) {
         this.setState({
             description
@@ -846,7 +848,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         this.props.setWebchatScrollPosition(position)
     }
 
-    @OF.autobind
+    @autobind
     renderWebchatInput(showDisableInput: boolean): JSX.Element | null {
         if (this.waitingForScore() && this.state.currentTrainDialog) {
             return (
@@ -855,7 +857,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                         data-testid="score-actions-button"
                         className="cl-rightjustify"
                         disabled={this.props.editState !== EditState.CAN_EDIT}
-                        onClick={() => this.onClickAddScore(this.props.history[this.props.history.length - 1], SelectionType.NONE)}
+                        onClick={() => this.onClickAddScore(this.props.activityHistory[this.props.activityHistory.length - 1], SelectionType.NONE)}
                         ariaDescription={'Score Actions'}
                         text={'Score Actions'} // TODO internationalize
                     />
@@ -922,7 +924,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         // No Activity selected, but Replay error exists on an Activity
-        const worstReplayError = this.props.history ? DialogUtils.getMostSevereReplayError(this.props.history) : null
+        const worstReplayError = this.props.activityHistory ? DialogUtils.getMostSevereReplayError(this.props.activityHistory) : null
         if (worstReplayError) {
             // Only show activity based warning if train dialog isn't invalid
             if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.WARNING &&
@@ -982,7 +984,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const chatDisable = this.state.pendingExtractionChanges ? <div className="cl-overlay" /> : null;
         const hasBlockingError = this.hasBlockingError()
         const disableUserInput = this.shouldDisableUserInput()
-        const isLastActivitySelected = this.state.selectedActivity ? this.state.selectedActivity === this.props.history[this.props.history.length - 1] : false
+        const isLastActivitySelected = this.state.selectedActivity ? this.state.selectedActivity === this.props.activityHistory[this.props.activityHistory.length - 1] : false
         const containerClassName = `cl-modal cl-modal--large cl-modal--${this.props.editType === EditDialogType.LOG_EDITED ? "teach" : "log"}`
         return (
             <OF.Modal
@@ -998,7 +1000,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 isOpen={this.props.open}
                                 key={this.state.webchatKey}
                                 app={this.props.app}
-                                history={this.props.history}
+                                history={this.props.activityHistory}
                                 onPostActivity={activity => this.onWebChatPostActivity(activity)}
                                 onSelectActivity={activity => this.onWebChatSelectActivity(activity)}
                                 onScrollChange={position => this.onScrollChange(position)}
@@ -1028,7 +1030,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                     onChangeAction={this.onChangeAction}
                                     onSubmitExtraction={(extractResponse: CLM.ExtractResponse, textVariations: CLM.TextVariation[]) => this.onChangeExtraction(extractResponse, textVariations)}
                                     onPendingStatusChanged={(changed: boolean) => this.onPendingStatusChanged(changed)}
-                                    newActionPreset={this.state.newActionPreset}
+                                    importedAction={this.state.importedAction}
                                     importIndex={this.props.importIndex}
                                     importCount={this.props.importCount}
                                     allUniqueTags={this.props.allUniqueTags}
@@ -1038,7 +1040,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
                                     description={this.state.description}
                                     onChangeDescription={this.onChangeDescription}
-                                    onActionCreatorClosed={() => this.setState({newActionPreset: undefined})}
+                                    onActionCreatorClosed={() => this.setState({importedAction: undefined})}
                                 />
                             </div>
                             {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay" />}
@@ -1111,7 +1113,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                     open={this.state.isImportAbandonOpen}
                     onCancel={this.onClickAbandonCancel}
                     onConfirm={this.onClickAbandonApprove}
-                    isLastImport={this.props.importIndex === this.props.importCount}
+                    // Don't show stop checkbox if on last item or doing OBI import
+                    allowContinue={this.props.importIndex !== this.props.importCount && !this.props.importingOBI}
                 />
                 {this.state.cantReplayMessage &&
                     <ConfirmCancelModal
@@ -1123,11 +1126,13 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 <UserInputModal
                     open={this.state.isUserInputModalOpen}
                     titleFM={FM.USERINPUT_ADD_TITLE}
+                    placeholderFM={FM.USERINPUT_PLACEHOLDER}
                     onCancel={this.onCancelAddUserInput}
                     onSubmit={this.onSubmitAddUserInput}
                 />
                 <UserInputModal
                     titleFM={FM.USERINPUT_BRANCH_TITLE}
+                    placeholderFM={FM.USERINPUT_PLACEHOLDER}
                     open={this.state.isUserBranchModalOpen}
                     onCancel={this.onCancelBranch}
                     onSubmit={this.onSubmitBranch}
@@ -1168,7 +1173,7 @@ export interface ReceivedProps {
     originalTrainDialog: CLM.TrainDialog | null
     // If editing a log dialog, this was the source
     editingLogDialogId: string | null
-    history: Activity[]
+    activityHistory: Activity[]
     // Is it a new dialog, a TrainDialog or LogDialog 
     editType: EditDialogType
     // If starting with activity selected
@@ -1176,6 +1181,7 @@ export interface ReceivedProps {
     allUniqueTags: string[]
     importIndex?: number
     importCount?: number
+    importingOBI?: boolean
 
     onInsertAction: (trainDialog: CLM.TrainDialog, activity: Activity, isLastActivity: boolean, selectionType: SelectionType) => any
     onInsertInput: (trainDialog: CLM.TrainDialog, activity: Activity, userText: string, selectionType: SelectionType) => any

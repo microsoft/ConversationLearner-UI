@@ -8,7 +8,7 @@ import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as ToolTips from '../ToolTips/ToolTips'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
-import ExtractConflictModal from './ExtractConflictModal'
+import ExtractConflictModal, { ExtractionChange, ExtractionType } from './ExtractConflictModal'
 import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
 import EntityCreatorEditor from './EntityCreatorEditor'
@@ -20,6 +20,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import './EntityExtractor.css'
+import { autobind } from 'core-decorators';
 
 interface ExtractResponseForDisplay {
     extractResponse: CLM.ExtractResponse
@@ -69,7 +70,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         setTimeout(this.focusPrimaryButton, 100)
     }
 
-    @OF.autobind
+    @autobind
     focusPrimaryButton(): void {
         if (this.doneExtractingButtonRef.current) {
             this.doneExtractingButtonRef.current.focus();
@@ -79,7 +80,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
         // If I'm switching my round or have added/removed text variations
         if (this.props.teachId !== newProps.teachId ||
             this.props.roundIndex !== newProps.roundIndex ||
@@ -103,7 +104,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onEntityConflictModalAbandon() {
         this.setState({
             isPendingSubmit: true
@@ -114,13 +115,18 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.props.clearExtractConflict()
     }
 
-    @OF.autobind
-    async onEntityConflictModalAccept() {
+    @autobind
+    async onEntityConflictModalAccept(extractionChange: ExtractionChange) {
+        const { extractResponse } = extractionChange
 
-        if (!this.props.extractConflict) {
-            throw new Error("ExtractConflict is null")
+        if (extractionChange.chosenExtractType === ExtractionType.Existing) {
+            await this.onUpdateExtractResponse(extractResponse)
         }
-        await this.onUpdateExtractResponse(this.props.extractConflict)
+        else if (extractionChange.chosenExtractType === ExtractionType.Attempted) {
+            for (const trainDialog of extractionChange.trainDialogs) {
+                await this.props.editTrainDialogThunkAsync(this.props.app.appId, trainDialog, { ignoreLabelConflicts: true })
+            }
+        }
 
         // If extractions are valid, go ahead and submit them
         const allResponses = this.allResponses()
@@ -132,22 +138,22 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         this.props.clearExtractConflict()
     }
 
-    @OF.autobind
+    @autobind
     entityEditorHandleClose() {
         this.setState({
             entityModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onNewEntity(entityTypeFilter: string) {
         this.setState({
             entityModalOpen: true,
             entityTypeFilter
         })
     }
-    
-    @OF.autobind
+
+    @autobind
     onClickCreateEntity(): void {
         this.setState({
             entityModalOpen: true,
@@ -155,12 +161,12 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onOpenPicker(extractResponse: CLM.ExtractResponse): void {
         this.setState({ activePickerText: extractResponse.text })
     }
 
-    @OF.autobind
+    @autobind
     onClosePicker(extractResponse: CLM.ExtractResponse, onlyCloseOthers: boolean): void {
         if (!onlyCloseOthers || extractResponse.text !== this.state.activePickerText) {
             this.setState({ activePickerText: null })
@@ -257,7 +263,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
             }))
     }
 
-    @OF.autobind
+    @autobind
     onClickUndoChanges() {
         this.props.clearExtractResponses();
         this.setState({
@@ -269,7 +275,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickSubmitExtractions(): void {
         this.setState({
             isPendingSubmit: false,
@@ -317,7 +323,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     onRemoveExtractResponse(extractResponse: CLM.ExtractResponse): void {
 
         // First look for match in extract responses
@@ -340,7 +346,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onUpdateExtractResponse(extractResponse: CLM.ExtractResponse): Promise<void> {
         // First look for match in extract responses
         const foundResponse = this.props.extractResponses.find(e => e.text === extractResponse.text)
@@ -382,7 +388,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         });
     }
 
-    @OF.autobind
+    @autobind
     async onSubmitTextVariation() {
         const text = this.state.textVariationValue.trim();
         if (text.length === 0) {
@@ -641,6 +647,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             extractResponse={this.props.extractConflict}
                             onClose={this.onEntityConflictModalAbandon}
                             onAccept={this.onEntityConflictModalAccept}
+                            trainDialogs={this.props.trainDialogs}
                         />
                     }
                 </div>
@@ -650,11 +657,13 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
 }
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
+        fetchTrainDialog: actions.train.fetchTrainDialogThunkAsync,
         updateExtractResponse: actions.teach.updateExtractResponse,
         removeExtractResponse: actions.teach.removeExtractResponse,
         runExtractorThunkAsync: actions.teach.runExtractorThunkAsync,
         clearExtractResponses: actions.teach.clearExtractResponses,
-        clearExtractConflict: actions.teach.clearExtractConflict
+        clearExtractConflict: actions.teach.clearExtractConflict,
+        editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State, ownProps: any) => {
@@ -664,7 +673,9 @@ const mapStateToProps = (state: State, ownProps: any) => {
 
     return {
         user: state.user.user,
-        entities: state.entities
+        entities: state.entities,
+        trainDialogs: state.trainDialogs,
+        teachSession: state.teachSession.teach,
     }
 }
 

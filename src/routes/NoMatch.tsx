@@ -9,14 +9,16 @@ import { NavLink } from 'react-router-dom'
 import { FM } from '../react-intl-messages'
 
 const component = () => (
-    <div>
-        <div className={FontClassNames.superLarge}>
-            <FormattedMessageId id={FM.NOMATCH_TITLE} />
-        </div>
-        <div>
-            <NavLink to="/">
-                <FormattedMessageId id={FM.NOMATCH_HOME} />
-            </NavLink>
+    <div className="cl-o-app-columns">
+        <div className="cl-app_content">
+            <div className={FontClassNames.superLarge}>
+                <FormattedMessageId id={FM.NOMATCH_TITLE} />
+            </div>
+            <div>
+                <NavLink to="/">
+                    <FormattedMessageId id={FM.NOMATCH_HOME} />
+                </NavLink>
+            </div>
         </div>
     </div>
 )

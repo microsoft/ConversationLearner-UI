@@ -12,13 +12,10 @@ import * as trainDialogsGrid from '../../support/components/TrainDialogsGrid'
 
 describe('zTemp', () => {
   it('Temporary Experimental Test', () => {
-    homePage.Visit()
-    cy.pause()
-    cy.get('[data-testid="action-scorer-card-name"] + div').contains('button2:')
-    // helpers.ConLog('zTemp', Cypress.env('CIRCLE_BUILD_NUM'))
-    // helpers.ConLog('zTemp', `Not--'${Cypress.env('NotAnEnvVar')}'`)
+    models.ImportModel('z-importTest', 'z-whatsYourName.cl')
+    
     // homePage.Visit()
-    // homePage.GetModelListRowCount()
+    // cy.pause()
   })
 
   it.skip('Temporary Experimental Test', () => {

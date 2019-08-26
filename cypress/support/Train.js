@@ -54,17 +54,22 @@ export function ClickUndoButton() { cy.Get('[data-testid="edit-teach-dialog-undo
 export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }
 export function ClickReplayButton() { cy.Get('[data-testid="edit-dialog-modal-replay-button"]').Click() }
 
-export function VerifyDescription(expectedDescription) { cy.Get(`input.cl-borderless-text-input#description[value="${expectedDescription}"]`) }
-export function TypeDescription(description) { cy.Get('input.cl-borderless-text-input#description').clear().type(`${description}{enter}`) }
-export function ClickAddTagButton() { cy.Get('[data-testid="tags-input-add-tag-button"]').Click() }
-export function VerifyNoTags() { cy.Get('div.cl-tags > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
-
+export function VerifyEntityFilter(entity) { cy.Get('[data-testid="dropdown-filter-by-entity"] > span.ms-Dropdown-title').ExactMatch(entity) }
+export function VerifyActionFilter(action) { cy.Get('[data-testid="dropdown-filter-by-action"] > span.ms-Dropdown-title').ExactMatch(action) }
 export function ClickClearFilterButton() { cy.Get('[data-testid="train-dialogs-clear-filter-button"]').Click() }
+
+export function GetDescription() { return Cypress.$('[data-testid="train-dialog-description"]').attr('value') }
+export function VerifyDescription(expectedDescription) { cy.Get(`[data-testid="train-dialog-description"][value="${expectedDescription}"]`) }
+export function TypeDescription(description) { cy.Get('[data-testid="train-dialog-description"]').clear().type(`${description}{enter}`) }
+
+export function GetAllTags() { return helpers.ArrayOfTextContentWithoutNewlines('[data-testid="train-dialog-tags"] > div.cl-tags__tag > span') }
+export function ClickAddTagButton() { cy.Get('[data-testid="tags-input-add-tag-button"]').Click() }
+export function VerifyNoTags() { cy.Get('[data-testid="train-dialog-tags"] > div.cl-tags__tag > button > i [data-icon-name="Clear"]').should('have.length', 0) }
 
 export function VerifyTags(tags) { 
   cy.Enqueue(() => {
     helpers.ConLog('VerifyTags', 'Start')
-    const tagsOnPage = helpers.StringArrayFromElementText('div.cl-tags > div.cl-tags__tag > span')
+    const tagsOnPage = helpers.StringArrayFromElementText('[data-testid="train-dialog-tags"] > div.cl-tags__tag > span')
     let missingTags = []
     tags.forEach(tag => {
       if (!tagsOnPage.find(tagOnPage => tag === tagOnPage)) missingTags.push(tag)
@@ -280,18 +285,22 @@ export function VerifyEntityLabel(word, entity) {
     .contains(entity)
 }
 
+const entityLabelConflictPopupSelector = '[data-testid="entity-conflict-cancel"], [data-testid="entity-conflict-accept"]'
+export function VerifyEntityLabelConflictPopup() { cy.Get(entityLabelConflictPopupSelector).should('have.length', 2) }
+export function VerifyNoEntityLabelConflictPopup() { cy.Get(entityLabelConflictPopupSelector).should('have.length', 0) }
+
 // textEntityPairs is an array of objects contains these two variables:
 //  text = a word within the utterance that should already be labeled
 //  entity = name of entity to label the word with
-export function VerifyEntityLabeledDifferentPopupAndClose(textEntityPairs) { VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, 'Close') }
-export function VerifyEntityLabeledDifferentPopupAndAccept(textEntityPairs) { VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, 'Accept') }
+export function VerifyEntityLabelConflictPopupAndClose(textEntityPairs) { VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, '[data-testid="entity-conflict-cancel"]') }
+export function VerifyEntityLabelConflictPopupAndAccept(textEntityPairs) { VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, '[data-testid="entity-conflict-accept"]') }
 
-function VerifyEntityLabeledDifferentPopupAndClickButton(textEntityPairs, buttonLabel) {
-  cy.Get('[data-testid="extract-conflict-modal-previously-submitted-labels"]').as('ExtractConflictModal')
-    .next('div.entity-labeler')
+function VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, buttonSelector) {
+  cy.Get('[data-testid="extract-conflict-modal-previously-submitted-labels"]')
+    .siblings('[data-testid="extractor-response-editor-entity-labeler"]')
     .within(() => { textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
-
-  cy.get('@ExtractConflictModal').parent().next().contains(buttonLabel).Click()  
+  
+  cy.get(buttonSelector).Click()  
 }
 
 export function VerifyEntityLabelWithinSpecificInput(textEntityPairs, index) {
@@ -402,7 +411,9 @@ export function CreateNewTrainDialog() {
 }
 
 export function EditTraining(firstInput, lastInput, lastResponse) {
-  cy.Enqueue(() => {
+  const funcName = `EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`
+  let trainDialogIndex
+  cy.WaitForStableDOM().then(() => {
     const turns = trainDialogsGrid.GetTurns()
     const firstInputs = trainDialogsGrid.GetFirstInputs()
     const lastInputs = trainDialogsGrid.GetLastInputs()
@@ -410,7 +421,7 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
     const lastModifiedDates = trainDialogsGrid.GetLastModifiedDates()
     const createdDates = trainDialogsGrid.GetCreatedDates()
 
-    helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `${turns.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
+    helpers.ConLog(funcName, `${turns.length}, ${lastInputs[0]}, ${lastInputs[1]}, ${lastInputs[2]}`)
 
     for (let i = 0; i < firstInputs.length; i++) {
       if (firstInputs[i] == firstInput && lastInputs[i] == lastInput && lastResponses[i] == lastResponse) {
@@ -430,12 +441,44 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
         originalTrainingSummary = Object.create(currentTrainingSummary)
         isBranched = false
 
-        helpers.ConLog(`EditTraining(${firstInput}, ${lastInput}, ${lastResponse})`, `ClickTraining for ${i} - ${turns[i]}, ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
+        helpers.ConLog(funcName, `ClickTraining for Train Dialog Row #${i} - ${turns[i]}, ${firstInputs[i]}, ${lastInputs[i]}, ${lastResponses[i]}`)
         trainDialogsGrid.ClickTraining(i)
+        trainDialogIndex = i
         return
       }
     }
     throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: FirstInput: ${firstInput} -- LastInput: ${lastInput} -- LastResponse: ${lastResponse}`)
+  })
+  .then(() => {
+    // Sometimes the first click on the grid row does not work, so we implemented this logic to watch and see
+    // if it loaded, and if not to re-click on the row. So far we've never seen it require a 3rd click.
+    cy.WaitForStableDOM()
+
+    const funcName2 = funcName + ' - VALIDATION PHASE'
+    let retryCount = 0
+
+    helpers.ConLog(funcName2, `Row #${trainDialogIndex}`)
+
+    cy.wrap(1, {timeout: 8000}).should(() => {
+      const allChatMessages = GetAllChatMessages()
+      if (allChatMessages.length > 0) {
+        helpers.ConLog(funcName2, `The expected Train Dialog from row #${trainDialogIndex} has loaded`)
+        return
+      }
+      
+      helpers.ConLog(funcName2, `We are still waiting for the Train Dialog to load`)
+      retryCount++
+      if (retryCount % 5 == 0) {
+        helpers.ConLog(funcName2, `Going to click on Train Dialog Row #${trainDialogIndex} again.`)
+        
+        // The problem with calling ClickTraining is that it causes the cy.wrap timeout to be canceled.
+        // CANNOT USE THIS - trainDialogsGrid.ClickTraining(trainDialogIndex)
+        Cypress.$('[data-testid="train-dialogs-description"]')[trainDialogIndex].click({force: true})
+
+        throw new Error(`Retry - We just finished clicking on Train Dialog Row #${trainDialogIndex} again.`)
+      }
+      throw new Error('Retry - We have not yet achieved our goal')
+    })
   })
 }
 
@@ -464,19 +507,19 @@ export function SelectTextAction(expectedResponse, lastResponse) {
 }
 
 export function SelectApiCardAction(apiName, expectedCardTitle, expectedCardText) {
-  scorerModal.ClickApiAction(apiName, expectedCardText)
+  scorerModal.ClickApiAction(apiName)
   VerifyCardChatMessage(expectedCardTitle, expectedCardText)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
 
 export function SelectApiPhotoCardAction(apiName, expectedCardTitle, expectedCardText, expectedCardImage) {
-  scorerModal.ClickApiAction(apiName, expectedCardText)
+  scorerModal.ClickApiAction(apiName)
   VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, expectedCardImage)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
 
 export function SelectApiTextAction(apiName, expectedResponse) {
-  scorerModal.ClickApiAction(apiName, expectedResponse)
+  scorerModal.ClickApiAction(apiName)
   VerifyTextChatMessage(expectedResponse)
   cy.Enqueue(() => { currentTrainingSummary.LastResponse = apiName })
 }
@@ -574,7 +617,15 @@ export function ClickScoreActionsButtonAfterBranching(lastResponse) {
   })
 }
 
-export function SaveAsIsVerifyInGrid() {
+export function SaveAsIsVerifyInGrid() { 
+  SaveAsIs(() => { 
+    if (isBranched) VerifyTrainingSummaryIsInGrid(originalTrainingSummary)
+    VerifyTrainingSummaryIsInGrid(currentTrainingSummary)
+  })
+}
+
+// The verificationFunction is optional, without it this function will just save the Train Dialog.
+export function SaveAsIs(verificationFunction) {
   const funcName = 'SaveAsIsVerifyInGrid'
 
   cy.DumpHtmlOnDomChange(true)
@@ -608,8 +659,7 @@ export function SaveAsIsVerifyInGrid() {
       }
       helpers.ConLog(funcName, 'No overlays for at least 1 second')
     }).then(() => {
-      if (isBranched) VerifyTrainingSummaryIsInGrid(originalTrainingSummary)
-      VerifyTrainingSummaryIsInGrid(currentTrainingSummary)
+      if (verificationFunction) { verificationFunction() }
     })
   })
   cy.DumpHtmlOnDomChange(false)
@@ -675,26 +725,9 @@ function VerifyTrainingSummaryIsInGrid(trainingSummary) {
     })
 }
 
-export function CaptureOriginalChatMessages() {
-  cy.WaitForStableDOM().then(() => { originalChatMessages = GetAllChatMessages() })
-}
-
-export function VerifyOriginalChatMessages() {
-  VerifyAllChatMessages(() => { return originalChatMessages })
-}
-
-export function CaptureEditedChatMessages() {
-  cy.WaitForStableDOM().then(() => { editedChatMessages = GetAllChatMessages() })
-}
-
-export function VerifyEditedChatMessages() {
-  VerifyAllChatMessages(() => { return editedChatMessages })
-}
-
-function VerifyAllChatMessages(functionGetChatMessagesToBeVerified) {
+export function VerifyAllChatMessages(chatMessagesToBeVerified) {
   cy.WaitForStableDOM().then(() => {
     let errorMessage = ''
-    const chatMessagesToBeVerified = functionGetChatMessagesToBeVerified()
     const allChatMessages = GetAllChatMessages()
 
     if (allChatMessages.length != chatMessagesToBeVerified.length)
@@ -737,11 +770,13 @@ export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
     cy.Get('@branchButton').Click()
     cy.Get('[data-testid="user-input-modal-new-message-input"]').type(`${newMessage}{enter}`)
   
-    isBranched = true
-    originalTrainingSummary.TrainGridRowCount++
-    currentTrainingSummary.TrainGridRowCount++
+    cy.WaitForStableDOM().then(() => {
+      isBranched = true
+      originalTrainingSummary.TrainGridRowCount++
+      currentTrainingSummary.TrainGridRowCount++
 
-    VerifyAllChatMessages(() => { return branchedChatMessages })
+      VerifyAllChatMessages(branchedChatMessages)
+    })
   })
 }
 
@@ -762,6 +797,11 @@ function SelectAndVerifyEachChatTurn(verificationFunction, index = 0, increment 
       })
     }
   })
+}
+
+export function SelectAndVerifyScoreActionsForEachBotChatTurn(expectedScoreActionsForEachBotTurn) { 
+  function VerificationFunction(element, index) { scorerModal.VerifyScoreActions(expectedScoreActionsForEachBotTurn[index / 2]) }
+  SelectAndVerifyEachChatTurn( VerificationFunction, 1, 2) 
 }
 
 export function AbandonDialog() {
@@ -795,9 +835,11 @@ export function VerifyCloseIsTheOnlyEnabledButton() {
 }
 
 export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
-  const funcName = 'VerifyListOfTrainDialogs'
-  cy.log('Verify List of Train Dialogs', expectedTrainDialogs)
-  cy.Enqueue(() => {
+  const expectedRowCount = expectedTrainDialogs.length
+  const funcName = `VerifyListOfTrainDialogs(expectedRowCount: ${expectedRowCount})`
+  cy.log('Verify List of Train Dialogs', expectedRowCount)
+
+  cy.Get('[data-testid="train-dialogs-turns"]').should('have.length', expectedRowCount).then(() => {
     const firstInputs = trainDialogsGrid.GetFirstInputs()
     const lastInputs = trainDialogsGrid.GetLastInputs()
     const lastResponses = trainDialogsGrid.GetLastResponses()
@@ -823,9 +865,27 @@ export function VerifyListOfTrainDialogs(expectedTrainDialogs) {
     if (errors) {
       throw new Error('Did not find 1 or more of the expected Train Dialogs in the grid. Refer to the log file for details.')
     }
-    
-    if (firstInputs.length > expectedTrainDialogs.length) {
-      throw new Error(`Found all of the expected Train Dialogs, however there are an additional ${firstInputs.length - expectedTrainDialogs.length} Train Dialogs in the grid that we were not expecting. Refer to the log file for details.`)
-    }
   })
+}
+
+export function GetAllTrainDialogGridRows() { 
+  helpers.ConLog('GetAllTrainDialogGridRows', 'start')
+
+  const firstInputs = trainDialogsGrid.GetFirstInputs()
+  const lastInputs = trainDialogsGrid.GetLastInputs()
+  const lastResponses = trainDialogsGrid.GetLastResponses()
+
+  let allRowData = []
+
+  for (let i = 0; i < firstInputs.length; i++) {
+    allRowData.push({
+      firstInput: firstInputs[i],
+      lastInput: lastInputs[i],
+      lastResponse: lastResponses[i],
+    })
+
+    helpers.ConLog('GetAllTrainDialogGridRows', `${allRowData.firstInput}, ${allRowData.lastInput}, ${allRowData.lastResponse}`)
+  }
+  
+  return allRowData
 }

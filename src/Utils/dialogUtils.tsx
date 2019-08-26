@@ -7,11 +7,19 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../Utils/util'
 import * as BotChat from '@conversationlearner/webchat'
+import { compareTwoStrings } from 'string-similarity'
 import { deepCopy, getDefaultEntityMap } from './util'
 import { Activity } from 'botframework-directlinejs'
+import { ImportedAction } from '../types/models'
 import TagsReadOnly from '../components/TagsReadOnly'
 
 const MAX_SAMPLE_INPUT_LENGTH = 150
+
+export const CARD_MATCH_THRESHOLD = 0.25
+
+export const DialogQueryParams = {
+    id: "id"
+}
 
 export interface DialogRenderData {
     dialogMode: CLM.DialogMode
@@ -22,6 +30,7 @@ export interface DialogRenderData {
     scoreResponse?: CLM.ScoreResponse
     scoreInput?: CLM.ScoreInput
     selectedActionId?: string
+    forcedActionId?: string
     extractResponses?: CLM.ExtractResponse[]
 }
 
@@ -50,8 +59,140 @@ export function internalConflict(textVariation: CLM.TextVariation, trainDialog: 
     return null
 }
 
+/**
+ * If text variation has same text, but different entities, return true
+ * Otherwise. return false
+ * 
+ * @param tvA Text Variation A
+ * @param tvB Text Variation B
+ */
+export function isConflictingTextVariation(tvA: CLM.TextVariation, tvB: CLM.TextVariation) {
+    if (tvA.text.toLowerCase() !== tvB.text.toLowerCase()) {
+        return false
+    }
+
+    if (tvA.labelEntities.length !== tvB.labelEntities.length) {
+        return true
+    }
+
+    const sameEntities = tvA.labelEntities.every(le =>
+        tvB.labelEntities.find(ale =>
+            ale.entityId === le.entityId
+            && ale.entityText === le.entityText
+            && ale.startCharIndex === le.startCharIndex
+            && ale.endCharIndex === le.endCharIndex
+        )
+    )
+
+    if (sameEntities) {
+        return false
+    }
+
+    return true
+}
+
+/**
+ * If text variation have different entities present they don't qualify as equivalent variations, return true
+ * Otherwise, return false
+ * 
+ * Note: incompatibility is usually computed for text variations within same round / extraction step
+ * 
+ * @param tvA Text Variation A
+ * @param tvB Text Variation B
+ */
+export function isIncompatibleTextVariation(tvA: CLM.TextVariation, tvB: CLM.TextVariation) {
+    if (tvA.labelEntities.length !== tvB.labelEntities.length) {
+        return true
+    }
+
+    // TODO: Would need to save which entities we've already visited, to prevent re-using on each find
+    const sameEntitiesPresent = tvA.labelEntities.every(le =>
+        tvB.labelEntities.find(ale => ale.entityId === le.entityId)
+    )
+
+    if (sameEntitiesPresent) {
+        return false
+    }
+
+    return true
+}
+
+/**
+ * Given new text variation and train dialogs return new set of train dialogs with 
+ * all matching text variations updated and validity changed.
+ * If any text variation in any round is a conflict, correct that variation and set Validity to WARNING
+ * If any corrected text variation becomes incompatible with other text variations in the extraction step set Validity to INVALID
+ * 
+ * @param attemptedTextVariation Text Variation with new/updated Labels
+ * @param trainDialogs Existing Train Dialogs with old/outdated labels
+ */
+export function getCorrectedDialogs(attemptedTextVariation: CLM.TextVariation, trainDialogs: CLM.TrainDialog[]) {
+    const correctedDialogs: CLM.TrainDialog[] = []
+
+    for (const td of Util.deepCopy(trainDialogs)) {
+        let isConflict = false
+        for (const r of td.rounds) {
+            let isConflictWithinRound = false
+
+            for (const [i, tv] of r.extractorStep.textVariations.entries()) {
+                const isConflictingWithTextVariation = isConflictingTextVariation(tv, attemptedTextVariation)
+
+                // If text variation is conflict, over write to use the attempted variation and mark td as invalid
+                if (isConflictingWithTextVariation) {
+                    r.extractorStep.textVariations[i] = Util.deepCopy(attemptedTextVariation)
+                    td.validity = CLM.Validity.WARNING
+                }
+
+                isConflictWithinRound = isConflictWithinRound || isConflictingWithTextVariation
+            }
+
+            // If we changed one of the text variations, also check compatibility between them
+            // If not compatible, mark dialog INVALID
+            // Otherwise, do nothing
+            if (isConflictWithinRound) {
+                for (const tv of r.extractorStep.textVariations) {
+                    const isIncompatibleWithOtherVariations = isIncompatibleTextVariation(tv, attemptedTextVariation)
+                    if (isIncompatibleWithOtherVariations) {
+                        td.validity = CLM.Validity.INVALID
+                    }
+                }
+            }
+
+            isConflict = isConflict || isConflictWithinRound
+        }
+
+        if (isConflict) {
+            correctedDialogs.push(td)
+        }
+    }
+
+    return correctedDialogs
+}
+
+export function cleanText(rawText: string | null): string {
+    if (!rawText) {
+        return ""
+    }
+    return rawText
+        .trim()
+        .split('&nbsp;').join(" ") // Switch to actual spaces
+        .split(" </").join("</")  // Markdown can't have space before end
+        .split("\n").join("")
+        .split("<b>").join("**")
+        .split("</b>").join("**")
+        .split("<i>").join("*")
+        .split("</i>").join("*")
+        .split("<strong>").join("**_")
+        .split("</strong>").join("_**")
+        .split("<br>").join("")
+        .split("<br/>").join("")
+        .split("<br />").join("")
+        .split('&gt;').join("")
+        .replace(/[\n\r]+/g, '')  // Adaptive cards can't handle newlines
+}
+
 export function activityIndexFromRound(trainDialog: CLM.TrainDialog, roundIndex: number | null, scoreIndex: number | null): number | undefined {
-    if (!roundIndex) { 
+    if (!roundIndex) {
         return undefined
     }
 
@@ -67,7 +208,7 @@ export function activityIndexFromRound(trainDialog: CLM.TrainDialog, roundIndex:
             }
         }
         else {
-            currentRoundIndex =  currentRoundIndex + 1
+            currentRoundIndex = currentRoundIndex + 1
             activityIndex = activityIndex + 1 + round.scorerSteps.length
         }
     }
@@ -147,10 +288,14 @@ export function dialogSampleInput(dialog: CLM.TrainDialog | CLM.LogDialog): stri
     let round = 0
     let length = 0
     while (round < dialog.rounds.length && length < MAX_SAMPLE_INPUT_LENGTH) {
-        const userInput = 
-            (dialog as CLM.LogDialog).rounds[round].extractorStep.text ||
-            (dialog as CLM.TrainDialog).rounds[round].extractorStep.textVariations[0].text
-        
+        let userInput = (dialog as CLM.LogDialog).rounds[round].extractorStep.text
+        if (!userInput && (dialog as CLM.TrainDialog).rounds[round].extractorStep.textVariations[0]) {
+            userInput = (dialog as CLM.TrainDialog).rounds[round].extractorStep.textVariations[0].text
+        }
+        if (!userInput) {
+            userInput = "MISSING USER INPUT"
+        }
+
         userInputs.push(userInput)
         length = length + userInput.length
         round = round + 1
@@ -213,7 +358,7 @@ export function hasImportActions(trainDialog: CLM.TrainDialog): boolean {
 }
 
 // Does history have any replay errors
-export function getMostSevereReplayError(history: BotChat.Activity[]): CLM.ReplayError| null {
+export function getMostSevereReplayError(history: BotChat.Activity[]): CLM.ReplayError | null {
     // Return most severe error level found
     let worstReplayError: CLM.ReplayError | null = null
     for (const h of history) {
@@ -225,7 +370,7 @@ export function getMostSevereReplayError(history: BotChat.Activity[]): CLM.Repla
             else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
                 worstReplayError = clData.replayError
             }
-            else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING && 
+            else if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING &&
                 (!worstReplayError || worstReplayError.errorLevel !== CLM.ReplayErrorLevel.ERROR)) {
                 worstReplayError = clData.replayError
             }
@@ -306,7 +451,7 @@ export function hasInternalLabelConflict(originalTrainDialog: CLM.TrainDialog, n
     // Only need to check one as train dialogs have self-consistent labelling, so make unique
     originalExtractorSteps = originalExtractorSteps.filter((item, i, ar) => ar.findIndex(es => es.text === item.text) === i)
     newExtractorSteps = newExtractorSteps.filter((item, i, ar) => ar.findIndex(es => es.text === item.text) === i)
-    
+
     for (let newVariation of newExtractorSteps) {
         const sourceVariation = originalExtractorSteps.find(tv => tv.text === newVariation.text)
         if (sourceVariation) {
@@ -320,21 +465,21 @@ export function hasInternalLabelConflict(originalTrainDialog: CLM.TrainDialog, n
 
 function doLabelledEntitiesMatch(labelEntities1: CLM.LabeledEntity[], labelEntities2: CLM.LabeledEntity[]): boolean {
 
-        // Get unique ids
-        const entityIds1 = labelEntities1.map(le => le.entityId).filter((item, i, ar) => ar.indexOf(item) === i)
-        const entityIds2 = labelEntities2.map(le => le.entityId).filter((item, i, ar) => ar.indexOf(item) === i)
-    
-        if (entityIds1.length !== entityIds2.length) {
-            return false
-        }
-    
-        if (entityIds1.filter(entityId => entityIds2.indexOf(entityId) < 0).length > 0) {
-            return false
-        }
-        if (entityIds2.filter(entityId => entityIds1.indexOf(entityId) < 0).length > 0) {
-            return false
-        }
-        return true
+    // Get unique ids
+    const entityIds1 = labelEntities1.map(le => le.entityId).filter((item, i, ar) => ar.indexOf(item) === i)
+    const entityIds2 = labelEntities2.map(le => le.entityId).filter((item, i, ar) => ar.indexOf(item) === i)
+
+    if (entityIds1.length !== entityIds2.length) {
+        return false
+    }
+
+    if (entityIds1.filter(entityId => entityIds2.indexOf(entityId) < 0).length > 0) {
+        return false
+    }
+    if (entityIds2.filter(entityId => entityIds1.indexOf(entityId) < 0).length > 0) {
+        return false
+    }
+    return true
 }
 
 function doesExtractorStepMatch(extractorStep1: CLM.TrainExtractorStep, extractorStep2: CLM.TrainExtractorStep): boolean {
@@ -346,7 +491,7 @@ function doesExtractorStepMatch(extractorStep1: CLM.TrainExtractorStep, extracto
 }
 
 function doesRoundMatch(round1: CLM.TrainRound, round2: CLM.TrainRound, isLastRound: boolean): boolean {
-    
+
     // Check that text variations are equivalent in the extractor step
     if (!doesExtractorStepMatch(round1.extractorStep, round2.extractorStep)) {
         return false
@@ -355,8 +500,8 @@ function doesRoundMatch(round1: CLM.TrainRound, round2: CLM.TrainRound, isLastRo
     // If one has scorer steps and the other doesn't, only ok, on last round
     if (round1.scorerSteps && !round2.scorerSteps ||
         !round1.scorerSteps && round2.scorerSteps) {
-            return isLastRound
-        }
+        return isLastRound
+    }
     // If they both don't have scorer steps
     if (!round1.scorerSteps && !round2.scorerSteps) {
         return true
@@ -390,7 +535,7 @@ export function doesTrainDialogMatch(trainDialog1: CLM.TrainDialog, trainDialog2
     const maxRounds = Math.max(trainDialog1.rounds.length, trainDialog2.rounds.length)
     const minRounds = Math.min(trainDialog1.rounds.length, trainDialog2.rounds.length)
     let roundIndex = 0
-    while (roundIndex < maxRounds) { 
+    while (roundIndex < maxRounds) {
         const round1 = trainDialog1.rounds[roundIndex]
         const round2 = trainDialog2.rounds[roundIndex]
         // If one ran out of rounds that's ok, one dialog can be longer than the other  
@@ -449,15 +594,15 @@ export function mergeTrainDialogTags(trainDialog1: CLM.TrainDialog, trainDialog2
 }
 
 export function mergeTrainDialogDescription(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): string {
-     // Assume longest description is best 
-    return trainDialog1.description.length > trainDialog2.description.length 
+    // Assume longest description is best 
+    return trainDialog1.description.length > trainDialog2.description.length
         ? trainDialog1.description : trainDialog2.description
 }
 
 export function mergeTrainDialogClientData(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): CLM.TrainDialogClientData {
     const importHashes1 = trainDialog1.clientData ? trainDialog1.clientData.importHashes : []
     const importHashes2 = trainDialog2.clientData ? trainDialog2.clientData.importHashes : []
-    
+
     return { importHashes: [...importHashes1, ...importHashes2].filter((item, i, ar) => ar.indexOf(item) === i) }
 }
 
@@ -475,7 +620,7 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
 
     // Copy text variations from small dialog onto large one
     let roundIndex = 0
-    while (roundIndex < primaryTrainDialog.rounds.length && roundIndex < mergedTrainDialog.rounds.length) { 
+    while (roundIndex < primaryTrainDialog.rounds.length && roundIndex < mergedTrainDialog.rounds.length) {
         const roundSmall = primaryTrainDialog.rounds[roundIndex]
         const roundLarge = mergedTrainDialog.rounds[roundIndex]
         const extractorStepSmall = roundSmall.extractorStep
@@ -484,7 +629,7 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
         // Add novel text variatitions to large dialog
         const newTextVariations = extractorStepSmall.textVariations.filter(tvs => !extractorStepLarge.textVariations.find(tvl => tvl.text === tvs.text))
         roundLarge.extractorStep.textVariations = [...roundLarge.extractorStep.textVariations, ...newTextVariations].slice(0, CLM.MAX_TEXT_VARIATIONS)
-        
+
         roundIndex = roundIndex + 1
     }
 
@@ -495,116 +640,11 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
     return mergedTrainDialog
 }
 
-// Genereate entity map for an action, filling in any missing entities with a blank value
-export function generateEntityMapForAction(action: CLM.ActionBase, filledEntityMap: Map<string, string> = new Map<string, string>()): Map<string, string> {
-    const map = new Map<string, string>()
-    action.requiredEntities.forEach(e => {
-        let value = filledEntityMap.get(e)
-        if (value) {
-            map.set(e, value)
-        }
-        else {
-            map.set(e, "")
-        }
-    })
-    return map
-}
-
-export function importTextWithEntityIds(importText: string, valueMap: Map<string, string>) {
-
-    let outText = importText.slice()
-    valueMap.forEach((value: string, entityId: string) => {
-        outText = outText.replace(value, entityId)
-    })
-    return outText
-}
-
-function findActionByImportHash(importText: string, actionsWithHash: CLM.ActionBase[]): CLM.ActionBase | undefined {
-    const importHash = Util.hashText(importText)
-
-    // Try to find matching action with same hash
-    let matchedActions = actionsWithHash.filter(a => {
-        // Filter above ensures these are not null
-        return a.clientData!.importHashes!.indexOf(importHash) > -1
-    })
-
-    // If more than one, prefer the one that isn't a stub
-    if (matchedActions.length > 1) {
-        matchedActions = matchedActions.filter(ma => !CLM.ActionBase.isStubbedAPI(ma))
-    }
-
-    return matchedActions[0]
-}
-
-// Try to find existing action for import based solely on raw text (no filled entites available)
-export function importedActionMatch(importText: string, actions: CLM.ActionBase[], filledEntityMap?: Map<string, string> | undefined): CLM.ActionBase | undefined {
-    // First try match via has of importText
-    // Filter out actions that have no hash lookups. If there are none, terminate early
-    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.importHashes && a.clientData.importHashes.length > 0)
-    const matchedAction = findActionByImportHash(importText, actionsWithHash)
-    if (matchedAction) {
-        return matchedAction
-    }
-    
-    // Next try by exact text match (note no filled entities available)
-    return actions.find(action => {
-            if (action.actionType === CLM.ActionTypes.TEXT) {
-                const textAction = new CLM.TextAction(action)
-                const entityMap = generateEntityMapForAction(action, filledEntityMap)
-                const actionText = textAction.renderValue(entityMap)
-                return importText === actionText
-            }
-            return false
-        })
-}
 
 export function filledEntityIdMap(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): Map<string, string> {
     const filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(filledEntities, entities)
     const filledIdMap = filledEntityMap.EntityMapToIdMap()
     return CLM.getEntityDisplayValueMap(filledIdMap)
-}
-
-// Look for imported actions in TrainDialog and attempt to replace them
-// with existing actions.  Return true if any replacement occurred
-export function replaceImportActions(trainDialog: CLM.TrainDialog, actions: CLM.ActionBase[], entities: CLM.EntityBase[]): boolean {
-
-    // Filter out actions that have no hash lookups. If there are none, terminate early
-    const actionsWithHash = actions.filter(a => a.clientData != null && a.clientData.importHashes && a.clientData.importHashes.length > 0)
-    if (actionsWithHash.length === 0) {
-        return false
-    }
-
-    // Now swap any actions that match
-    let match = false
-    trainDialog.rounds.forEach(round => {
-        round.scorerSteps.forEach(scorerStep => {
-            let importText: string | null = null
-
-            // If replacing imported action
-            if (scorerStep.importText) {
-                // Substitue entityIds back into import text to build import hash lookup
-                const filledEntityMap = filledEntityIdMap(scorerStep.input.filledEntities, entities)
-                importText = importTextWithEntityIds(scorerStep.importText, filledEntityMap)
-            }
-            // If replacing stub action
-            else if (scorerStep.labelAction && CLM.ActionBase.isStubbedAPI(scorerStep.scoredAction)) {
-                const apiAction = new CLM.ApiAction(scorerStep.scoredAction as any)
-                importText = apiAction.name
-            }
-            
-            if (importText) {
-                const newAction = findActionByImportHash(importText, actionsWithHash)
-
-                // If action exists replace labelled action with match
-                if (newAction) {
-                    scorerStep.labelAction = newAction.actionId
-                    delete scorerStep.importText
-                    match = true
-                }
-            }
-        })
-    })
-    return match
 }
 
 export function filledEntitiesToMemory(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): CLM.Memory[] {
@@ -640,31 +680,32 @@ export function getPrevMemories(trainDialog: CLM.TrainDialog, entities: CLM.Enti
         scorerStep = round.scorerSteps[0]
     }
     // Is bot response after a non-wait bot response
-    else { 
+    else {
         // Prev memory comes from previous score
         const round = trainDialog.rounds[roundIndex]
         scorerStep = round.scorerSteps[scoreIndex - 1]
     }
-    
+
     if (scorerStep) {
         return filledEntitiesToMemory(scorerStep.input.filledEntities, entities)
-    } 
+    }
     return []
 }
 
 export function getDialogRenderData(
-    trainDialog: CLM.TrainDialog, 
-    entities: CLM.EntityBase[], 
+    trainDialog: CLM.TrainDialog,
+    entities: CLM.EntityBase[],
     actions: CLM.ActionBase[],
-    roundIndex: number | null, 
+    roundIndex: number | null,
     scoreIndex: number | null,
     senderType: CLM.SenderType | null
-    ): DialogRenderData {
+): DialogRenderData {
     let scorerStep: CLM.TrainScorerStep | undefined
     let scoreResponse: CLM.ScoreResponse | undefined
     let round: CLM.TrainRound | undefined
     let memories: CLM.Memory[] = [];
     let prevMemories: CLM.Memory[] = [];
+    let forcedActionId: string | undefined
 
     if (roundIndex !== null && roundIndex < trainDialog.rounds.length) {
         round = trainDialog.rounds[roundIndex];
@@ -675,6 +716,7 @@ export function getDialogRenderData(
                 if (!scorerStep) {
                     throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
                 }
+                forcedActionId = scorerStep.forcedActionId
 
                 let selectedAction = actions.find(action => action.actionId === scorerStep!.labelAction);
 
@@ -750,10 +792,43 @@ export function getDialogRenderData(
         dialogMode: (senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
         scoreInput: scorerStep ? scorerStep.input : undefined,
         scoreResponse: scoreResponse,
+        forcedActionId,
         roundIndex,
         textVariations: round ? round.extractorStep.textVariations : [],
         memories: filterDummyEntities(memories),
         prevMemories: filterDummyEntities(prevMemories),
         extractResponses: []
     }
+}
+
+ // Return template that best matches the given imported action
+export function bestTemplateMatch(importedAction: ImportedAction, templates: CLM.Template[]): CLM.Template | null {
+    let bestScore = 0
+    let bestTemplate: CLM.Template | null = null
+    for (let template of templates) {
+        if (template.body) {
+            // Calculate number of buttons on the template
+            // TODO: support other button types
+            const templateButtonCount = (template.body.match(/Action.Submit/g) || []).length
+            
+            // If cound is the same, find string similarity in body
+            if (templateButtonCount === importedAction.buttons.length) {
+                const score = (template && template.body)
+                    ? compareTwoStrings(importedAction.text, template.body)
+                    : 0
+                if (score > CARD_MATCH_THRESHOLD && score > bestScore) {
+                    bestScore = score
+                    bestTemplate = template
+                }
+                // Try to map to generic card with right number of buttons if no winner yet
+                else if (!bestTemplate && Util.isTemplateTitleGeneric(template)) {
+                    if (templateButtonCount === importedAction.buttons.length) {
+                        bestTemplate = template 
+                    }
+                }
+            }
+        }
+    }
+    
+    return bestTemplate
 }

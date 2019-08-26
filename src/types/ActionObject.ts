@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
+import { OBIImportData } from '../Utils/obiUtils'
 import { PartialTrainDialog } from '../types/models'
 import { TipType } from '../components/ToolTips/ToolTips'
 import { ErrorType } from './const'
@@ -48,6 +49,7 @@ export type UpdateAction = {
     type: AT.EDIT_TRAINDIALOG_MERGE_FULFILLED
 } | {
     type: AT.EDIT_TRAINDIALOG_REPLACE_ASYNC
+    enableSpinner: boolean
 } | {
     type: AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED,
     updatedTrainDialog: CLM.TrainDialog,
@@ -73,6 +75,9 @@ export type UpdateAction = {
 } | {
     type: AT.SETTINGS_UPDATE_PORT,
     port: number
+} | {
+    type: AT.SETTINGS_UPDATE_FEATURES,
+    features: string
 } | {
     type: AT.SETTINGS_RESET
 } | {
@@ -206,6 +211,8 @@ export type FetchAction = {
     type: AT.FETCH_LOG_DIALOG_FULFILLED,
     logDialog: CLM.LogDialog,
     replaceLocal: boolean
+} | {
+    type: AT.FETCH_LOG_DIALOG_NOTFOUND
 } | {
     type: AT.FETCH_LOG_DIALOGS_ASYNC,
     appId: string,
@@ -362,7 +369,8 @@ export type CreateAction = {
     logDialog: CLM.LogDialog,
 } | {
     type: AT.CREATE_APPLICATION_FULFILLED,
-    app: CLM.AppBase
+    app: CLM.AppBase,
+    obiImportData?: OBIImportData
 } | {
     type: AT.CREATE_CHAT_SESSION_ASYNC
 } | {
@@ -530,7 +538,7 @@ export type TeachAction = {
     key: string,
     appId: string,
     sessionId: string,
-    uiScoreResponse: CLM.UIScoreResponse
+    uiScoreResponse: CLM.UIScoreResponse,
 } | {
     type: AT.POST_SCORE_FEEDBACK_ASYNC,
     key: string,

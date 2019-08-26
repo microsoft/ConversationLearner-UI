@@ -8,6 +8,7 @@ import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
     stopImport: boolean
@@ -17,7 +18,7 @@ class TranscriptImportCancelModal extends React.Component<Props, ComponentState>
         stopImport: false,
     }
 
-    @OF.autobind
+    @autobind
     onChangeCheckbox() {
         this.setState({
             stopImport: !this.state.stopImport
@@ -37,7 +38,7 @@ class TranscriptImportCancelModal extends React.Component<Props, ComponentState>
                     isBlocking: false
                 }}
             >
-            {!this.props.isLastImport &&
+            {this.props.allowContinue &&
                 <OF.Checkbox
                     label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL)}
                     checked={this.state.stopImport}
@@ -46,7 +47,7 @@ class TranscriptImportCancelModal extends React.Component<Props, ComponentState>
             }
             <OF.DialogFooter>
                     <OF.PrimaryButton
-                        onClick={() => this.props.onConfirm(this.state.stopImport)}
+                        onClick={() => this.props.onConfirm(this.state.stopImport || !this.props.allowContinue)}
                         text={Util.formatMessageId(this.props.intl, FM.BUTTON_CONFIRM)}
                         iconProps={{ iconName: 'Accept' }}
                         data-testid="confirm-cancel-modal-accept"
@@ -67,10 +68,10 @@ export interface ReceivedProps {
     onConfirm: Function
     onCancel: Function
     open: boolean
-    isLastImport: boolean
+    allowContinue: boolean
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
 type Props = ReceivedProps & InjectedIntlProps
 
-export default connect<null, null, ReceivedProps>(null, null)(injectIntl(TranscriptImportCancelModal))
+export default connect<{}, {}, ReceivedProps>(null)(injectIntl(TranscriptImportCancelModal))

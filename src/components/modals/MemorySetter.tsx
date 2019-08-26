@@ -13,6 +13,7 @@ import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './MemorySetter.css'
+import { autobind } from 'core-decorators';
 
 class MemorySetter extends React.Component<Props> {
 
@@ -20,14 +21,14 @@ class MemorySetter extends React.Component<Props> {
         super(props)
     }
 
-    @OF.autobind
+    @autobind
     onClickAdd(entity: CLM.EntityBase) {
         const map = Util.deepCopy(this.props.map)
         this.addEntity(map, entity)
         this.props.onUpdate(map)
     }
 
-    @OF.autobind
+    @autobind
     onClickRemove(index: number, entity: CLM.EntityBase) {
         const map = Util.deepCopy(this.props.map)
         map[entity.entityName].values.splice(index, 1)
@@ -37,7 +38,7 @@ class MemorySetter extends React.Component<Props> {
         this.props.onUpdate(map)
     }
 
-    @OF.autobind
+    @autobind
     onClickNext(index: number, entity: CLM.EntityBase) {
         const editableEntities = this.getEditableEntities()
         const map = Util.deepCopy(this.props.map)
@@ -58,7 +59,7 @@ class MemorySetter extends React.Component<Props> {
         this.insertValue(map, insertEntity, removedValue[0])
     }
 
-    @OF.autobind
+    @autobind
     onClickPrev(index: number, entity: CLM.EntityBase) {
         const editableEntities = this.getEditableEntities()
         const map = Util.deepCopy(this.props.map)

@@ -77,7 +77,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.DELETE_MEMORY_ASYNC:
         // case AT.DELETE_LOG_DIALOG_ASYNC: Don't block
         // case AT.DELETE_LOG_DIALOGS_ASYNC: Don't block
-        case AT.DELETE_TEACH_SESSION_ASYNC: 
+        case AT.DELETE_TEACH_SESSION_ASYNC:
         // case AT.DELETE_TRAIN_DIALOG_ASYNC: Don't block
 
         case AT.EDIT_ACTION_ASYNC:
@@ -86,11 +86,9 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.EDIT_ENTITY_ASYNC:
         case AT.EDIT_APP_LIVE_TAG_ASYNC:
         case AT.EDIT_APP_EDITING_TAG_ASYNC:
+        case AT.EDIT_TRAINDIALOG_ASYNC:
         case AT.EDIT_TRAINDIALOG_MERGE_ASYNC:
-        case AT.EDIT_TRAINDIALOG_REPLACE_ASYNC:
-
         // case AT.EXPIRE_CHAT_SESSION_AYSNC: Don't block
-
         case AT.FETCH_APPSOURCE_ASYNC:
         case AT.FETCH_ACTIONS_ASYNC:
         case AT.FETCH_ACTION_DELETE_VALIDATION_ASYNC:
@@ -119,6 +117,11 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.POST_SCORE_FEEDBACK_ASYNC:
         case AT.SPINNER_ADD:
             state.displaySpinner.push(spinnerName(action.type))
+            return
+        case AT.EDIT_TRAINDIALOG_REPLACE_ASYNC:
+            if (action.enableSpinner) {
+                state.displaySpinner.push(spinnerName(action.type))
+            }
             return
         case AT.CREATE_ACTION_FULFILLED:
         case AT.CREATE_APP_TAG_FULFILLED:
@@ -150,6 +153,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.EDIT_ENTITY_FULFILLED:
         case AT.EDIT_APP_LIVE_TAG_FULFILLED:
         case AT.EDIT_APP_EDITING_TAG_FULFILLED:
+        case AT.EDIT_TRAINDIALOG_FULFILLED:
         case AT.EDIT_TRAINDIALOG_MERGE_FULFILLED:
         case AT.EDIT_TRAINDIALOG_REPLACE_FULFILLED:
 
@@ -165,6 +169,7 @@ const displayReducer: Reducer<DisplayState> = produce((state: DisplayState, acti
         case AT.FETCH_ENTITIES_FULFILLED:
         case AT.FETCH_HISTORY_FULFILLED:
         case AT.FETCH_LOG_DIALOG_FULFILLED:
+        case AT.FETCH_LOG_DIALOG_NOTFOUND:
         // case AT.FETCH_LOG_DIALOGS_FULFILLED: Doesn't block
         case AT.FETCH_SCOREFROMHISTORY_FULFILLED:
         case AT.FETCH_SCOREFROMHISTORY_REJECTED:

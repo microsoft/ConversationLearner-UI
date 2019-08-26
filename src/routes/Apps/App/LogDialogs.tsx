@@ -12,6 +12,8 @@ import * as moment from 'moment'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import actions from '../../../actions'
 import produce from 'immer'
+import { withRouter } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -24,6 +26,7 @@ import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import { EntityLabelConflictError } from '../../../types/errors'
+import { autobind } from 'core-decorators';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: CLM.LogDialog, component: LogDialogs) => React.ReactNode
@@ -109,8 +112,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
     ]
 }
 
+const getDialogKey = (logDialog: OF.IObjectWithKey) => (logDialog as CLM.LogDialog).logDialogId
+
 interface ComponentState {
-    logDialogs: CLM.LogDialog[]
     columns: IRenderableColumn[]
     sortColumn: IRenderableColumn
     chatSession: CLM.Session | null
@@ -133,7 +137,7 @@ interface ComponentState {
     searchValue: string
     // Allows user to re-open modal for same row ()
     dialogKey: number
-    history: Activity[]
+    activityHistory: Activity[]
     lastAction: CLM.ActionBase | null
     validationErrors: CLM.ReplayError[]
     // Hack to keep screen from flashing when transition to Edit Page
@@ -149,10 +153,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     state: ComponentState
 
     private selection: OF.ISelection = new OF.Selection({
-        getKey: (logDialog) => (logDialog as CLM.LogDialog).logDialogId,
+        getKey: getDialogKey,
         onSelectionChanged: this.onSelectionChanged
     })
-    
+
     static GetConflicts(rounds: CLM.TrainRound[], previouslySubmittedTextVariations: CLM.TextVariation[]) {
         const conflictPairs: ConflictPair[] = []
 
@@ -192,7 +196,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
 
         this.state = {
-            logDialogs: props.logDialogs,
             columns,
             sortColumn,
             chatSession: null,
@@ -210,14 +213,14 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             editType: EditDialogType.LOG_ORIGINAL,
             searchValue: '',
             dialogKey: 0,
-            history: [],
+            activityHistory: [],
             lastAction: null,
             validationErrors: [],
             lastTeachSession: null
         }
     }
 
-    @OF.autobind
+    @autobind
     onSelectionChanged() {
         const selectionCount = this.selection.getSelectedCount()
         this.setState({ selectionCount })
@@ -228,7 +231,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         columns: IRenderableColumn[],
         sortColumn: IRenderableColumn | undefined,
     ): CLM.LogDialog[] {
-        // If column header selected sort the items
+        // If column header not selected, no sorting needed, return items
         if (!sortColumn) {
             return logDialogs
         }
@@ -255,7 +258,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
-    @OF.autobind
+    @autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
         const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
         // Toggle isSortedDescending of clickedColumn and reset all other columns
@@ -269,20 +272,18 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             return column
         })
 
-        const logDialogs = this.sortLogDialogs(this.state.logDialogs, columns, sortColumn)
-
         this.setState({
             columns,
             sortColumn,
-            logDialogs,
         })
     }
 
     componentDidMount() {
         this.focusNewChatButton()
+        this.handleQueryParameters(this.props.location.search)
     }
 
-    componentWillReceiveProps(newProps: Props) {
+    UNSAFE_componentWillReceiveProps(newProps: Props) {
         // A hack to prevent the screen from flashing
         // Will go away once Edit/Teach dialogs are merged
         if (newProps.teachSession && newProps.teachSession !== this.props.teachSession) {
@@ -301,38 +302,49 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 })
             }
         }
-
-        if (this.props.logDialogs.length !== newProps.logDialogs.length) {
-            let logDialogs = this.getFilteredDialogs(
-                newProps.logDialogs,
-                newProps.entities,
-                newProps.actions,
-                this.state.searchValue)
-
-            logDialogs = this.sortLogDialogs(logDialogs, this.state.columns, this.state.sortColumn)
-
-            this.setState({
-                logDialogs
-            })
-        }
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        // If any of the filters changed, recompute filtered dialogs based on updated filers
-        if (prevState.searchValue !== this.state.searchValue) {
-            let logDialogs = this.getFilteredDialogs(
-                this.props.logDialogs,
-                this.props.entities,
-                this.props.actions,
-                this.state.searchValue)
+        this.handleQueryParameters(this.props.location.search, prevProps.location.search)
+    }
 
-            this.setState({
-                logDialogs
-            })
+    async handleQueryParameters(newSearch: string, oldSearch?: string): Promise<void> {
+
+        const searchParams = new URLSearchParams(newSearch)
+        const selectedDialogId = searchParams.get(DialogUtils.DialogQueryParams.id)
+
+        // Check that I need to update
+        if (oldSearch) {
+            const searchParamsPrev = new URLSearchParams(oldSearch)
+            const selectedDialogIdPrev = searchParamsPrev.get(DialogUtils.DialogQueryParams.id)
+            if (selectedDialogId === selectedDialogIdPrev) {
+                return
+            }
+        }
+
+        // TODO: Handle reload when actions not yet loaded
+        if (this.props.actions.length === 0) {
+            return
+        }
+
+        // If dialog id is in query param and edit modal not open, open it
+        if (selectedDialogId &&
+            (!this.state.isEditDialogModalOpen && !this.state.isTeachDialogModalOpen)) {
+            let logDialog = this.props.logDialogs.find(ld => ld.logDialogId === selectedDialogId)
+            if (!logDialog) {
+                // If log isn't loaded yet attempt to load it
+                logDialog = await ((this.props.fetchLogDialogAsync(this.props.app.appId, selectedDialogId, true, true) as any) as Promise<CLM.LogDialog>)
+                if (!logDialog) {
+                    // Invalid log dialog, go back to LD list
+                    this.props.history.replace(this.props.match.url, { app: this.props.app })
+                    return
+                }
+            }
+            this.openLogDialog(logDialog)
         }
     }
 
-    @OF.autobind
+    @autobind
     async onClickNewChatSession() {
         try {
             // TODO: Find cleaner solution for the types.  Thunks return functions but when using them on props they should be returning result of the promise.
@@ -349,7 +361,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onCloseChatSessionWindow() {
         this.setState({
             chatSession: null,
@@ -358,43 +370,35 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
-    onChange(newValue: string) {
+    @autobind
+    onChangeSearchString(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
+        if (!newValue) {
+            return
+        }
+
+        this.onSearch(newValue)
+    }
+
+    @autobind
+    onSearch(newValue: string) {
         const lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
         })
     }
 
+    @autobind
     async onClickLogDialogItem(logDialog: CLM.LogDialog) {
-        // Reset WebChat scroll position
-        this.props.clearWebchatScrollPosition()
-
-        // Convert to trainDialog until schema update change, and pass in app definition too
-        const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
-
-        try {
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-
-            this.setState({
-                history: teachWithHistory.history,
-                lastAction: teachWithHistory.lastAction,
-                currentLogDialogId: logDialog.logDialogId,
-                currentTrainDialog: CLM.ModelUtils.ToTrainDialog(logDialog),
-                isEditDialogModalOpen: true,
-                editType: EditDialogType.LOG_ORIGINAL,
-                validationErrors: teachWithHistory.replayErrors
-            })
-        }
-        catch (error) {
-            console.warn(`Error when attempting to create history: `, error)
-        }
+        const { history } = this.props
+        let url = `${this.props.match.url}?id=${logDialog.logDialogId}`
+        history.push(url, { app: this.props.app })
     }
 
     async onClickSync() {
         await ((this.props.fetchAllLogDialogsThunkAsync(this.props.app, this.props.editingPackageId) as any) as Promise<void>)
     }
 
-    @OF.autobind
+    @autobind
     async onDeleteLogDialog() {
         this.setState({
             isEditDialogModalOpen: false,
@@ -406,7 +410,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         await this.onCloseEditDialogModal();
     }
 
-    @OF.autobind
+    @autobind
     async onInsertAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, isLastActivity: boolean) {
         try {
             const newTrainDialog = await DialogEditing.onInsertAction(
@@ -437,7 +441,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onChangeAction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, trainScorerStep: CLM.TrainScorerStep | undefined) {
         if (!trainScorerStep) {
             throw new Error("missing args")
@@ -463,7 +467,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onChangeExtraction(trainDialog: CLM.TrainDialog, selectedActivity: Activity, extractResponse: CLM.ExtractResponse | undefined, textVariations: CLM.TextVariation[] | undefined) {
         if (!extractResponse || !textVariations) {
             throw new Error("missing args")
@@ -488,7 +492,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onDeleteTurn(trainDialog: CLM.TrainDialog, selectedActivity: Activity) {
         const newTrainDialog = await DialogEditing.onDeleteTurn(
             trainDialog,
@@ -502,7 +506,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.CURRENT)
     }
 
-    @OF.autobind
+    @autobind
     async onReplayTrainDialog(trainDialog: CLM.TrainDialog) {
         try {
             const newTrainDialog = await DialogEditing.onReplayTrainDialog(
@@ -520,7 +524,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onInsertInput(trainDialog: CLM.TrainDialog, selectedActivity: Activity, inputText: string | undefined) {
         if (!inputText) {
             throw new Error("inputText is null")
@@ -551,7 +555,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 return
             }
 
-            console.warn(`Error when attempting to create teach session from history: `, { error })
+            console.warn(`Error when attempting to create teach session from activityHistory: `, { error })
         }
     }
 
@@ -573,7 +577,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
             // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
             this.setState({
-                history: teachWithHistory.history,
+                activityHistory: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
                 isEditDialogModalOpen: false,
                 selectedActivityIndex: null,
@@ -597,7 +601,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     // End Session activity selected.  Switch from Teach to Edit
-    @OF.autobind
+    @autobind
     async onEndSessionActivity(tags: string[] = [], description: string = '') {
 
         try {
@@ -615,7 +619,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 // Delete the teach session w/o saving
                 await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
 
-                // Generate history
+                // Generate activityHistory
                 await this.onUpdateHistory(trainDialog, null, SelectionType.NONE)
             }
 
@@ -625,7 +629,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType) {
         try {
             const { teachWithHistory, activityIndex } = await DialogEditing.onUpdateHistory(
@@ -639,7 +643,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             )
 
             this.setState({
-                history: teachWithHistory.history,
+                activityHistory: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: newTrainDialog,
                 isEditDialogModalOpen: true,
@@ -649,7 +653,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             })
         }
         catch (error) {
-            console.warn(`Error when attempting to update history: `, error)
+            console.warn(`Error when attempting to update activityHistory: `, error)
         }
     }
 
@@ -675,7 +679,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         try {
             const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
             this.setState({
-                history: teachWithHistory.history,
+                activityHistory: teachWithHistory.history,
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: trainDialog,
                 isEditDialogModalOpen: true,
@@ -685,11 +689,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         }
         catch (e) {
             const error = e as Error
-            console.warn(`Error when attempting to create history: `, error)
+            console.warn(`Error when attempting to create activityHistory: `, error)
         }
     }
 
-    @OF.autobind
+    @autobind
     async onCloseMergeModal(shouldMerge: boolean, description: string | null = null, tags: string[] | null = null) {
 
         if (!this.state.mergeNewTrainDialog || !this.state.mergeExistingTrainDialog) {
@@ -708,7 +712,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             mergeExistingTrainDialog: null,
             mergeNewTrainDialog: null,
             isTeachDialogModalOpen: false,
-            history: [],
+            activityHistory: [],
             lastAction: null,
             currentLogDialogId: null,
             currentTrainDialog: null,
@@ -731,17 +735,24 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             selectedActivityIndex: null,
             currentTrainDialog: null,
             currentLogDialogId: null,
-            history: [],
+            activityHistory: [],
             lastAction: null,
             dialogKey: this.state.dialogKey + 1
         })
+
+        // Remove selection from query parameter
+        const searchParams = new URLSearchParams(this.props.location.search)
+        const selectedDialogId = searchParams.get(DialogUtils.DialogQueryParams.id)
+        if (selectedDialogId) {
+            this.props.history.replace(this.props.match.url, { app: this.props.app })
+        }
     }
 
     async onSaveTrainDialog(newTrainDialog: CLM.TrainDialog) {
         // Remove any data added for rendering
         DialogUtils.cleanTrainDialog(newTrainDialog)
 
-        const validity = DialogUtils.getTrainDialogValidity(newTrainDialog, this.state.history)
+        const validity = DialogUtils.getTrainDialogValidity(newTrainDialog, this.state.activityHistory)
 
         const cleanedDialog = {
             ...newTrainDialog,
@@ -793,7 +804,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         await this.onCloseEditDialogModal()
     }
 
-    @OF.autobind
+    @autobind
     async onCloseTeachSession(save: boolean, tags: string[] = [], description: string = '') {
         if (this.props.teachSession && this.props.teachSession.teach) {
 
@@ -831,7 +842,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         this.setState({
             isTeachDialogModalOpen: false,
-            history: [],
+            activityHistory: [],
             lastAction: null,
             currentLogDialogId: null,
             currentTrainDialog: null,
@@ -877,7 +888,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             })
     }
 
-    @OF.autobind
+    @autobind
     async onAcceptConflictChanges(conflictPairs: ConflictPair[]) {
         // This shouldn't be possible but have to check.
         // Would be better for the modal to return all the data required to continue the conversion
@@ -907,28 +918,28 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         this.acceptConflictResolutionFn = defaultAcceptConflictResolutionFn
     }
 
-    @OF.autobind
+    @autobind
     onAbortConflictChanges() {
         this.setState({
             conflictPairs: []
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickDeleteSelected() {
         this.setState({
             isConfirmDeleteModalOpen: true
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickCancelDelete() {
         this.setState({
             isConfirmDeleteModalOpen: false
         })
     }
 
-    @OF.autobind
+    @autobind
     onClickConfirmDelete() {
         const logDialogs = this.selection.getSelection() as CLM.LogDialog[]
         const logDialogIds = logDialogs.map(logDialog => logDialog.logDialogId)
@@ -938,8 +949,21 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         })
     }
 
+    getFilteredAndSortedDialogs() {
+        let computedLogDialogs = this.getFilteredDialogs(
+            this.props.logDialogs,
+            this.props.entities,
+            this.props.actions,
+            this.state.searchValue)
+
+        computedLogDialogs = this.sortLogDialogs(computedLogDialogs, this.state.columns, this.state.sortColumn)
+        return computedLogDialogs
+    }
+
     render() {
         const { intl } = this.props
+        const computedLogDialogs = this.getFilteredAndSortedDialogs()
+
         const editState = (this.props.editingPackageId !== this.props.app.devPackageId)
             ? EditState.INVALID_PACKAGE
             : this.props.invalidBot
@@ -952,6 +976,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         const isPlaceholderVisible = this.props.logDialogs.length === 0
 
+        const isEditingDisabled = this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot;
         return (
             <div className="cl-page">
                 <div data-testid="log-dialogs-title" className={`cl-dialog-title cl-dialog-title--log ${OF.FontClassNames.xxLarge}`}>
@@ -973,7 +998,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 <div className="cl-buttons-row">
                     <OF.PrimaryButton
                         data-testid="log-dialogs-new-button"
-                        disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                        disabled={isEditingDisabled}
                         onClick={this.onClickNewChatSession}
                         ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                         text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
@@ -1007,40 +1032,45 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                                     iconProps={{
                                         iconName: "Add"
                                     }}
-                                    disabled={this.props.editingPackageId !== this.props.app.devPackageId || this.props.invalidBot}
+                                    disabled={isEditingDisabled}
                                     onClick={this.onClickNewChatSession}
                                     ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
                                     text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
                                 />
                             </div>
                         </div>
-                        : <div>
-                            <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
-                                Search:
-                            </OF.Label>
-                            <OF.SearchBox
-                                id="logdialogs-input-search"
-                                data-testid="logdialogs-search-box"
+                        : <>
+                            <div>
+                                <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
+                                    Search:
+                                </OF.Label>
+                                <OF.SearchBox
+                                    id="logdialogs-input-search"
+                                    data-testid="logdialogs-search-box"
+                                    className={OF.FontClassNames.mediumPlus}
+                                    onChange={this.onChangeSearchString}
+                                    onSearch={this.onSearch}
+                                />
+                            </div>
+                            <OF.DetailsList
+                                data-testid="logdialogs-details-list"
+                                key={this.state.dialogKey}
                                 className={OF.FontClassNames.mediumPlus}
-                                onChange={(newValue) => this.onChange(newValue)}
-                                onSearch={(newValue) => this.onChange(newValue)}
+                                items={computedLogDialogs}
+                                selection={this.selection}
+                                getKey={getDialogKey}
+                                setKey="selectionKey"
+                                columns={this.state.columns}
+                                checkboxVisibility={OF.CheckboxVisibility.onHover}
+                                onColumnHeaderClick={this.onClickColumnHeader}
+                                onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                                onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
+                                onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
                             />
-                        </div>
+                        </>
                 }
 
-                <OF.DetailsList
-                    data-testid="logdialogs-details-list"
-                    key={this.state.dialogKey}
-                    className={`${OF.FontClassNames.mediumPlus} ${isPlaceholderVisible ? 'cl-hidden' : ''}`}
-                    items={this.state.logDialogs}
-                    selection={this.selection}
-                    columns={this.state.columns}
-                    checkboxVisibility={OF.CheckboxVisibility.onHover}
-                    onColumnHeaderClick={this.onClickColumnHeader}
-                    onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
-                    onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
-                    onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
-                />
+
 
                 <ChatSessionModal
                     app={this.props.app}
@@ -1067,7 +1097,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         onEndSessionActivity={this.onEndSessionActivity}
                         onReplayDialog={(trainDialog) => this.onReplayTrainDialog(trainDialog)}
                         editType={this.state.editType}
-                        initialHistory={this.state.history}
+                        initialHistory={this.state.activityHistory}
                         lastAction={this.state.lastAction}
                         sourceTrainDialog={this.state.currentTrainDialog}
                         allUniqueTags={this.props.allUniqueTags}
@@ -1090,7 +1120,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                     trainDialog={this.state.currentTrainDialog!}
                     editingLogDialogId={this.state.currentLogDialogId}
                     originalTrainDialog={null}
-                    history={this.state.history}
+                    activityHistory={this.state.activityHistory}
                     initialSelectedActivityIndex={this.state.selectedActivityIndex}
                     editType={this.state.editType}
                     onInsertAction={(trainDialog, activity, isLastActivity) => this.onInsertAction(trainDialog, activity, isLastActivity)}
@@ -1124,10 +1154,35 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             </div>
         );
     }
-   
+
     private focusNewChatButton() {
         if (this.newChatSessionButtonRef.current) {
             this.newChatSessionButtonRef.current.focus()
+        }
+    }
+
+    private async openLogDialog(logDialog: CLM.LogDialog) {
+        // Reset WebChat scroll position
+        this.props.clearWebchatScrollPosition()
+
+        // Convert to trainDialog until schema update change, and pass in app definition too
+        const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
+
+        try {
+            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+
+            this.setState({
+                activityHistory: teachWithHistory.history,
+                lastAction: teachWithHistory.lastAction,
+                currentLogDialogId: logDialog.logDialogId,
+                currentTrainDialog: CLM.ModelUtils.ToTrainDialog(logDialog),
+                isEditDialogModalOpen: true,
+                editType: EditDialogType.LOG_ORIGINAL,
+                validationErrors: teachWithHistory.replayErrors
+            })
+        }
+        catch (error) {
+            console.warn(`Error when attempting to create activityHistory: `, error)
         }
     }
 
@@ -1181,6 +1236,7 @@ const mapDispatchToProps = (dispatch: any) => {
         editActionThunkAsync: actions.action.editActionThunkAsync,
         editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
         extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
+        fetchLogDialogAsync: actions.log.fetchLogDialogThunkAsync,
         fetchAllLogDialogsThunkAsync: actions.log.fetchAllLogDialogsThunkAsync,
         fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
@@ -1216,6 +1272,6 @@ export interface ReceivedProps {
 // Props types inferred from mapStateToProps & dispatchToProps
 const stateProps = returntypeof(mapStateToProps)
 const dispatchProps = returntypeof(mapDispatchToProps)
-type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps;
+type Props = typeof stateProps & typeof dispatchProps & ReceivedProps & InjectedIntlProps & RouteComponentProps<any>
 
-export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(LogDialogs))
+export default connect<typeof stateProps, typeof dispatchProps, ReceivedProps>(mapStateToProps, mapDispatchToProps)(withRouter(injectIntl(LogDialogs)))

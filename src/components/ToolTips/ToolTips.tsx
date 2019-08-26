@@ -22,6 +22,7 @@ export enum TipType {
     ACTION_END_SESSION = 'actionEndSession',
     ACTION_ENTITIES = 'actionEntities',
     ACTION_NEGATIVE = 'negativeEntities',
+    ACTION_REPROMPT = 'actionReprompt',
     ACTION_REQUIRED = 'requiredEntities',
     ACTION_RESPONSE = 'actionResponse',
     ACTION_RESPONSE_TEXT = 'actionResponseText',
@@ -72,7 +73,7 @@ export enum TipType {
     REPLAYERROR_DESC_API_BADCARD = "REPLAYERROR_DESC_API_BADCARD",
     REPLAYERROR_DESC_API_EXCEPTION = "REPLAYERROR_DESC_API_EXCEPTION",
     REPLAYERROR_DESC_API_MALFORMED = "REPLAYERROR_DESC_API_MALFORMED",
-    REPLAYERROR_DESC_API_STUB = "REPLAYERROR_DESC_API_STUB",
+    REPLAYERROR_DESC_API_PLACEHOLDER = "REPLAYERROR_DESC_API_PLACEHOLDER",
     REPLAYERROR_DESC_API_UNDEFINED = "REPLAYERROR_DESC_API_UNDEFINED",
     REPLAYERROR_DESC_ENTITY_UNDEFINED = "REPLAYERROR_DESC_ENTITY_UNDEFINED",
     REPLAYERROR_DESC_ENTITY_EMPTY = "REPLAYERROR_DESC_ENTITY_EMPTY",
@@ -80,7 +81,7 @@ export enum TipType {
     REPLAYERROR_DESC_ACTION_UNDEFINED = "REPLAYERROR_DESC_ACTION_UNDEFINED",
     REPLAYERROR_DESC_ACTION_STUB = "REPLAYERROR_DESC_ACTION_STUB",
 
-    STUB_API = 'STUB_API',
+    PLACEHOLDER_API = 'PLACEHOLDER_API',
 
     TRANSCRIPT_IMPORTER = 'transcriptImporter'
 }
@@ -286,6 +287,8 @@ export function getTip(tipType: string) {
                     { key: 'Response:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW3 },
                     { key: 'Disqualifying:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW4 }
                 ]);
+        case TipType.ACTION_REPROMPT:
+                    return render(FM.TOOLTIP_ACTION_REPROMPT_TITLE, [FM.TOOLTIP_ACTION_REPROMPT]);
         case TipType.ACTION_REQUIRED:
             return render(
                 FM.TOOLTIP_ACTION_REQUIRED_TITLE,
@@ -763,14 +766,14 @@ export function getTip(tipType: string) {
                 </div>
             )
 
-        case TipType.REPLAYERROR_DESC_API_STUB:
+        case TipType.REPLAYERROR_DESC_API_PLACEHOLDER:
             return (
                 <div>
-                    <h2>Error: API call is just a stub</h2>
+                    <h2>Error: API call is just a placeholder</h2>
                     <p>Ways to fix:</p>
                     <ol>
-                        <li>Delete the API stub</li>
-                        <li>Replace Stub will an actual API call</li>
+                        <li>Delete the placeholder</li>
+                        <li>Replace placeholder will an actual API call</li>
                     </ol>
                     <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
                 </div>
@@ -899,14 +902,14 @@ export function getTip(tipType: string) {
                 </div>
             )
 
-        case TipType.STUB_API:
+        case TipType.PLACEHOLDER_API:
             return (
                 <div>
-                    <h2>Stub APIs</h2>
-                    <p>Stub APIs can be used as placeholders for real API calls.  This can be useful if you want to define your conversation flow before writing any code.</p>
-                    <p>In an API Stub you specify what should be in the Bot's memory after the API is called.</p>
-                    <p>For example, you may need an API call to check whether an item is in stock (say for a pizza bot).  Your temporary stub call can move an item from the "Toppings" Entity to the "OutOfStock" Entity </p>
-                    <p>API Stubs must be replaced with actual API callbacks for your Bot to function.</p>
+                    <h2>Placeholder APIs</h2>
+                    <p>Placeholder APIs can be used as placeholders for real API calls.  This can be useful if you want to define your conversation flow before writing any code.</p>
+                    <p>In a placeholder you specify what should be in the Bot's memory after the API is called.</p>
+                    <p>For example, you may need an API call to check whether an item is in stock (say for a pizza bot).  Your temporary placeholder call can move an item from the "Toppings" Entity to the "OutOfStock" Entity </p>
+                    <p>Placeholders must be replaced with actual API callbacks for your Bot to function.</p>
                     <div><br />More about <HelpLink label="API callbacks" tipType={TipType.ACTION_API1} /></div>
                 </div>
             )

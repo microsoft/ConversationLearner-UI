@@ -18,6 +18,7 @@ import { onRenderDetailsHeader } from './ToolTips/ToolTips'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../react-intl-messages'
 import './ActionDetailsList.css'
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     columns: IRenderableColumn[]
@@ -67,8 +68,8 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
             }
             case CLM.ActionTypes.API_LOCAL: {
                 const apiAction = new CLM.ApiAction(action)
-                // If stub not expecting action to exist
-                if (apiAction.isStub) {
+                // If placeholder not expecting action to exist
+                if (apiAction.isPlaceholder) {
                     return false
                 }
                 // Otherwise make sure callback exists
@@ -86,6 +87,10 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
                 return !entity
                     ? true
                     : entity.entityType !== CLM.EntityType.ENUM
+            }
+            case CLM.ActionTypes.DISPATCH: {
+                // TODO: Could validate access to model, but don't have access to it within this model
+                return false
             }
             default: {
                 console.warn(`Could not get validation for unknown action type: ${action.actionType}`)
@@ -112,19 +117,22 @@ class ActionDetailsList extends React.Component<Props, ComponentState> {
         return actions;
     }
 
-    @OF.autobind
+    @autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
-        const { columns } = this.state;
-        const sortColumn = columns.find(c => clickedColumn.key === c.key)!
-        const isSortedDescending = !clickedColumn.isSortedDescending;
+        const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
+        const columns = this.state.columns.map(column => {
+            column.isSorted = false
+            column.isSortedDescending = false
+            if (column === sortColumn) {
+                column.isSorted = true
+                column.isSortedDescending = !clickedColumn.isSortedDescending
+            }
+            return column
+        })
 
         // Reset the items and columns to match the state.
         this.setState({
-            columns: columns.map(column => {
-                column.isSorted = (column.key === clickedColumn.key);
-                column.isSortedDescending = isSortedDescending;
-                return column;
-            }),
+            columns,
             sortColumn
         });
     }
@@ -258,6 +266,12 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
         const [name, value] = Util.setEntityActionDisplay(action, component.props.entities)
         return <span data-testid="actions-list-set-entity" className={OF.FontClassNames.mediumPlus}>{name}: {value}</span>
     }
+    else if (action.actionType === CLM.ActionTypes.DISPATCH) {
+        // TODO: Mismatch between fields in payload and actionBase (modelId and modelName vs only modelId)
+        // Need to be able to load model by id to get name but need asynchronous functions etc
+        const dispatchAction = new CLM.DispatchAction(action)
+        return <span data-testid="actions-list-dispatch" className={OF.FontClassNames.mediumPlus}>Dispatch to model: {dispatchAction.modelName}</span>
+    }
 
     return <span className={OF.FontClassNames.mediumPlus}>Unknown Action Type</span>
 }
@@ -267,7 +281,7 @@ function renderCondition(text: string, isRequired: boolean): JSX.Element {
         <div 
             className='ms-ListItem is-selectable ms-ListItem-primaryText' 
             key={text} 
-            data-testid={isRequired ? "action-details-required-entity" : "action-details-disqualifying-entity"}
+            data-testid={isRequired ? "action-details-required-entities" : "action-details-disqualifying-entities"}
         >
                 {text}
         </div>
@@ -445,6 +459,15 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isResizable: false,
             getSortValue: action => action.isTerminal ? 'a' : 'b',
             render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait"/>
+        },
+        {
+            key: 'actionReprompt',
+            name: Util.formatMessageId(intl, FM.ACTIONDETAILSLIST_COLUMNS_REPROMPT),
+            fieldName: 'actionReprompt',
+            minWidth: 70,
+            isResizable: false,
+            getSortValue: action => action.repromptActionId !== undefined ? 'a' : 'b',
+            render: action => <OF.Icon iconName={action.repromptActionId !== undefined ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait"/>
         },
         {
             key: 'createdDateTime',

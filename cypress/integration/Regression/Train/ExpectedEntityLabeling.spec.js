@@ -17,6 +17,7 @@ import * as helpers from '../../../support/Helpers'
 // model created by this test scenario.
 describe('Expected Entity Labeling - Train', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
+  let generatedScoreActionsData = new scorerModal.GeneratedData('expectedEntityLabeling.json')
 
   context('Setup', () => {
     it('Should import a model to test against, navigate to Train Dialogs view and wait for training status to complete', () => {
@@ -36,10 +37,7 @@ describe('Expected Entity Labeling - Train', () => {
       train.ClickScoreActionsButton()
     })
 
-    it('Should verify the Action list contains 1 enabled and 1 disabled Action', () => {
-      scorerModal.VerifyContainsEnabledAction(common.whatsYourName)
-      scorerModal.VerifyContainsDisabledAction('Hello $name')
-    })
+    generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should select an action', () => {
       train.SelectTextAction(common.whatsYourName)
@@ -57,10 +55,7 @@ describe('Expected Entity Labeling - Train', () => {
       memoryTableComponent.VerifyEntityValues('name', ['David'])
     })
 
-    it('Should verify the Action list contains 1 enabled Action and 3 disabled Actions', () => {
-      scorerModal.VerifyContainsDisabledAction(common.whatsYourName)
-      scorerModal.VerifyContainsEnabledAction('Hello David')
-    })
+    generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Should select an action', () => {
       train.SelectTextAction('Hello David', 'Hello $name')
@@ -70,5 +65,7 @@ describe('Expected Entity Labeling - Train', () => {
       train.SaveAsIsVerifyInGrid()
     })
   })
+
+  generatedScoreActionsData.SaveGeneratedData()
   // Manually EXPORT this to fixtures folder and name it 'z-expectedEntLabl.cl'
 })

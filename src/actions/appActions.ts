@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as ClientFactory from '../services/clientFactory'
+import { OBIImportData } from '../Utils/obiUtils'
 import { Dispatch } from 'redux'
 import { setErrorDisplay } from './displayActions'
 import { ActionObject, ErrorType } from '../types'
@@ -21,14 +22,15 @@ const createApplicationAsync = (userId: string, application: CLM.AppBase): Actio
     }
 }
 
-const createApplicationFulfilled = (app: CLM.AppBase): ActionObject => {
+const createApplicationFulfilled = (app: CLM.AppBase, obiImportData?: OBIImportData): ActionObject => {
     return {
         type: AT.CREATE_APPLICATION_FULFILLED,
-        app: app
+        app: app,
+        obiImportData: obiImportData
     }
 }
 
-export const createApplicationThunkAsync = (userId: string, application: CLM.AppBase, source: CLM.AppDefinition | null = null) => {
+export const createApplicationThunkAsync = (userId: string, application: CLM.AppBase, source: CLM.AppDefinition | null = null, obiImportData?: OBIImportData) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.CREATE_APPLICATION_ASYNC)
         try {
@@ -39,7 +41,11 @@ export const createApplicationThunkAsync = (userId: string, application: CLM.App
             if (source) {
                 await clClient.sourcepost(newApp.appId, source)
             }
-            dispatch(createApplicationFulfilled(newApp))
+            if (obiImportData) {
+                obiImportData.appId = newApp.appId
+            }
+
+            dispatch(createApplicationFulfilled(newApp, obiImportData))
             dispatch(fetchApplicationTrainingStatusThunkAsync(newApp.appId));
             return newApp
         }

@@ -17,6 +17,7 @@ import FormattedMessageId from '../../../components/FormattedMessageId'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import * as Util from '../../../Utils/util'
 import * as moment from 'moment'
+import { autobind } from 'core-decorators';
 
 interface IRenderableColumn extends OF.IColumn {
     render: (entity: EntityBase, component: Entities) => JSX.Element | JSX.Element[]
@@ -179,7 +180,7 @@ class Entities extends React.Component<Props, ComponentState> {
         this.focusNewEntityButton()
     }
 
-    @OF.autobind
+    @autobind
     handleDelete(entity: EntityBase) {
         this.setState({
             createEditModalOpen: false,
@@ -189,7 +190,7 @@ class Entities extends React.Component<Props, ComponentState> {
         setTimeout(() => this.focusNewEntityButton(), 1000)
     }
 
-    @OF.autobind
+    @autobind
     handleOpenCreateModal() {
         this.setState({
             createEditModalOpen: true,
@@ -197,7 +198,7 @@ class Entities extends React.Component<Props, ComponentState> {
         })
     }
 
-    @OF.autobind
+    @autobind
     handleCloseCreateModal() {
         this.setState({
             createEditModalOpen: false,
@@ -217,24 +218,27 @@ class Entities extends React.Component<Props, ComponentState> {
         }
     }
 
-    @OF.autobind
+    @autobind
     onClickColumnHeader(event: any, clickedColumn: IRenderableColumn) {
-        const { columns } = this.state;
-        const sortColumn = columns.find(c => c.key === clickedColumn.key)!
-        const isSortedDescending = !clickedColumn.isSortedDescending;
+        const sortColumn = this.state.columns.find(c => c.key === clickedColumn.key)!
+        const columns = this.state.columns.map(column => {
+            column.isSorted = false
+            column.isSortedDescending = false
+            if (column === sortColumn) {
+                column.isSorted = true
+                column.isSortedDescending = !clickedColumn.isSortedDescending
+            }
+            return column
+        })
 
         // Reset the items and columns to match the state.
         this.setState({
-            columns: columns.map(col => {
-                col.isSorted = (col.key === sortColumn.key);
-                col.isSortedDescending = isSortedDescending;
-                return col;
-            }),
+            columns,
             sortColumn
-        });
+        })
     }
 
-    @OF.autobind
+    @autobind
     getFilteredAndSortedEntities(): EntityBase[] {
         //runs when user changes the text or sort
         const lcString = this.state.searchValue.toLowerCase();
@@ -263,14 +267,24 @@ class Entities extends React.Component<Props, ComponentState> {
         return filteredEntities;
     }
 
-    @OF.autobind
-    onChange(newValue: string) {
+    @autobind
+    onChangeSearchString(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
+        if (!newValue) {
+            return
+        }
+
+        this.onSearch(newValue)
+    }
+
+    @autobind
+    onSearch(newValue: string) {
         // runs when user changes the text 
         const lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString
         })
     }
+
     render() {
         const { entities } = this.props
         const computedEntities = this.getFilteredAndSortedEntities()
@@ -333,8 +347,8 @@ class Entities extends React.Component<Props, ComponentState> {
                             <OF.SearchBox
                                 id="entities-input-search"
                                 className={OF.FontClassNames.mediumPlus}
-                                onChange={(newValue) => this.onChange(newValue)}
-                                onSearch={(newValue) => this.onChange(newValue)}
+                                onChange={this.onChangeSearchString}
+                                onSearch={this.onSearch}
                             />
                         </div>
                         <OF.DetailsList

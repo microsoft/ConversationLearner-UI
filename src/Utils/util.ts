@@ -75,9 +75,14 @@ export function getDefaultEntityMap(entities: CLM.EntityBase[]): Map<string, str
 }
 
 export function setStateAsync(that: any, newState: any) {
+    Object.keys(newState).forEach(key => {
+        if (!that.state.hasOwnProperty(key)) {
+            throw new Error(`Object state does not contain property ${key}`)
+        }
+    })
     return new Promise((resolve) => {
         that.setState(newState, () => {
-            resolve();
+            resolve()
         });
     });
 }
@@ -226,6 +231,26 @@ export const getSetEntityActionsFromEnumEntity = (entity: CLM.EntityBase): CLM.A
 
         return getSetEntityActionForEnumValue(entity.entityId, evo.enumValueId)
     })
+}
+
+export function readFileAsync(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+    
+        reader.onload = (e: Event) => {
+            resolve(reader.result as any);
+        };
+    
+        reader.onerror = reject;
+    
+        reader.readAsText(file);
+    })
+}
+
+// Returns true is primary template body is variable substitution
+export function isTemplateTitleGeneric(template: CLM.Template): boolean {
+    const titleVariable = template.variables.find(v => v.key === "title" && v.type === "TextBlock")
+    return (titleVariable !== undefined)
 }
 
 // Calculate a 32 bit FNV-1a hash

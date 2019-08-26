@@ -72,9 +72,19 @@
     --gutter-width: 100px;
     --nav-link-padding: 1em 2em;
 }
-.cl-app {
+
+/**
+Most of our classes are component classes but this is object class (not o- prefix) to be re-used across app
+https://csswizardry.com/2015/08/bemit-taking-the-bem-naming-convention-a-step-further/
+
+.cl-app prefix refers to the UI as an Application
+This is NOT to be confused with our concept of Model/App within Conversation Learner.
+
+This causes deviation from traditional BEM naming for remaining .cl-app-* classes since it is not always a parent if these children
+*/
+.cl-o-app-columns {
     display: grid;
-    grid-template: min-content 1fr / minmax(var(--min-gutter-width), var(--gutter-width)) 1fr minmax(var(--min-gutter-width), var(--gutter-width))
+    grid-template-columns: minmax(var(--min-gutter-width), var(--gutter-width)) 1fr minmax(var(--min-gutter-width), var(--gutter-width));
 }
 .cl-app_header-placeholder {
     background-color: var(--color-neutralDark)
@@ -85,10 +95,6 @@
 .cl-app_content {
     grid-column: 2;
     padding: 2em 0;
-}
-.cl-app_modals {
-    grid-row: 3;
-    grid-column: 2;
 }
 
 .cl-header {

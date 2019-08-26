@@ -1,0 +1,86 @@
+[
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello David",
+      "type": "TEXT",
+      "score": "100.0%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello Susan",
+      "type": "TEXT",
+      "score": "100.0%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello Gabriella",
+      "type": "TEXT",
+      "score": "100.0%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    }
+  ]
+]

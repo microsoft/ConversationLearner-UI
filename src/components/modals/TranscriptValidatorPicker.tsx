@@ -7,79 +7,59 @@ import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as CLM from '@conversationlearner/models'
 import actions from '../../actions'
-import { ErrorType } from '../../types/const'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
+import './TranscriptValidatorPicker.css'
+import { autobind } from 'core-decorators';
 
 interface ComponentState {
-    transcriptFiles: File[] | null
-    autoImport: boolean
-    autoMerge: boolean
+    transcriptFiles: File[]
+    lgFiles: File[]
+    testName: string
 }
 
 class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
     state: ComponentState = {
-        transcriptFiles: null,
-        autoImport: false,
-        autoMerge: false
+        transcriptFiles: [],
+        lgFiles: [],
+        testName: ''
     }
         
-    private transcriptfileInput: any
-    private resultfileInput: any
+    private transcriptFileInput: any
+    private lgFileInput: any
 
-    componentWillReceiveProps(nextProps: Props) {
+    componentDidUpdate(prevProps: Props) {
         // Reset when opening modal
-        if (this.props.open === false && nextProps.open === true) {
+        if (prevProps.open === false && this.props.open === true) {
             this.setState({
-                transcriptFiles: null
+                transcriptFiles: [],
+                lgFiles: []
             })
         }
     }
 
-    @OF.autobind
-    onChangeAutoImport() {
+    @autobind
+    onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, testName: string) {
         this.setState({
-            autoImport: !this.state.autoImport
+            testName
         })
     }
 
-    @OF.autobind
-    onChangeAutoMerge() {
-        this.setState({
-            autoMerge: !this.state.autoMerge
-        })
-    }
-
-    @OF.autobind
+    @autobind
     onChangeTranscriptFiles(files: any) {
         this.setState({
             transcriptFiles: files
         })
     }
-    @OF.autobind
-    onChangeResultFiles(files: any) {
-        const reader = new FileReader()
-        reader.onload = (e: Event) => {
-            try {
-                if (typeof reader.result !== 'string') {
-                    throw new Error("String Expected")
-                }
-                const transcriptValidationResults = JSON.parse(reader.result) as CLM.TranscriptValidationResult[]
-                if (!transcriptValidationResults || transcriptValidationResults.length === 0 || !transcriptValidationResults[0].validity) {
-                    throw new Error("No test results found in file")
-                }
-                this.props.onViewResults(transcriptValidationResults)
-            }
-            catch (e) {
-                const error = e as Error
-                this.props.setErrorDisplay(ErrorType.Error, error.message, "Invalid file contents", null)
-            }
-        }
-        reader.readAsText(files[0])
+
+    onChangeLGFiles = (lgFiles: any) => {
+        this.setState({
+            lgFiles
+        })
     }
 
     render() {
@@ -90,38 +70,35 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                 isBlocking={false}
                 containerClassName='cl-modal cl-modal--small'
             >
-                <div className='cl-modal_header'>
-                    <span className={OF.FontClassNames.xxLarge}>
-                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_TITLE)} 
-                    </span>
+                <div className="cl-modal_header">
+                    <div className={`cl-dialog-title ${OF.FontClassNames.xxLarge}`}>
+                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_PICKER_TITLE)} 
+                    </div>
                 </div>
                 <div 
-                    data-testid="transcript-import-file-picker"
-                    className="cl-form"
+                    className="cl-transcript-validator-body"
                 >
-                    <input
-                        hidden={true}
-                        type="file"
-                        style={{ display: 'none' }}
-                        onChange={(event) => this.onChangeResultFiles(event.target.files)}
-                        ref={ele => (this.resultfileInput = ele)}
-                        multiple={false}
-                    />
                     <input
                         type="file"
                         style={{ display: 'none' }}
                         onChange={(event) => this.onChangeTranscriptFiles(event.target.files)}
-                        ref={ele => (this.transcriptfileInput = ele)}
+                        ref={ele => (this.transcriptFileInput = ele)}
                         multiple={true}
+                    />
+                    <OF.TextField
+                        className={OF.FontClassNames.mediumPlus}
+                        onChange={this.onChangeName}
+                        label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_NAME_LABEL)}
+                        onGetErrorMessage={value => this.props.onGetNameErrorMessage(value)}
+                        value={this.state.testName}
                     />
                     <div className="cl-file-picker">
                         <OF.PrimaryButton
-                            data-testid="transcript-locate-file-button"
                             className="cl-file-picker-button"
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_LOCATE_FILES)} 
-                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_LOCATE_FILES)} 
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON)} 
+                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON)} 
                             iconProps={{ iconName: 'DocumentSearch' }}
-                            onClick={() => this.transcriptfileInput.click()}
+                            onClick={() => this.transcriptFileInput.click()}
                         />
                         <OF.TextField
                             disabled={true}
@@ -133,36 +110,51 @@ class TranscriptValidatorPicker extends React.Component<Props, ComponentState> {
                             }
                         />
                     </div>
+                    <input
+                        type="file"
+                        style={{ display: 'none' }}
+                        onChange={(event) => this.onChangeLGFiles(event.target.files)}
+                        ref={ele => (this.lgFileInput = ele)}
+                        multiple={true}
+                    />
+                    <div className="cl-file-picker">
+                        <OF.PrimaryButton
+                            data-testid="transcript-locate-file-button"
+                            className="cl-file-picker-button"
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_LG_BUTTON)} 
+                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_IMPORTER_LG_BUTTON)} 
+                            iconProps={{ iconName: 'DocumentSearch' }}
+                            onClick={() => this.lgFileInput.click()}
+                        />
+                        <OF.TextField
+                            disabled={true}
+                            value={!this.state.lgFiles 
+                                ? undefined
+                                : this.state.lgFiles.length === 1
+                                ? this.state.lgFiles[0].name 
+                                : `${this.state.lgFiles.length} files selected`
+                            }
+                        />
+                    </div>
                 </div>
-                <div className='cl-modal_footer'>
-                    <div className="cl-modal-buttons">
-                        <div className="cl-modal-buttons_secondary" />
-                        <div className="cl-modal-buttons_primary">
-                            <OF.PrimaryButton
-                                disabled={this.state.transcriptFiles !== null}
-                                data-testid="transcript-locate-results-file-button"
-                                className="cl-file-picker-button"
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON)} 
-                                text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_RESULTS_BUTTON)} 
-                                iconProps={{ iconName: 'DownloadDocument' }}
-                                onClick={() => this.resultfileInput.click()}
-                            />
-                            <OF.PrimaryButton
-                                disabled={this.state.transcriptFiles === null}
-                                data-testid="transcript-submit-button"
-                                onClick={() => this.props.onTestFiles(this.state.transcriptFiles, this.state.autoImport, this.state.autoMerge)}
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
-                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
-                                iconProps={{ iconName: 'TestCase' }}
-                            />
-                            <OF.DefaultButton
-                                data-testid="transcript-cancel-button"
-                                onClick={this.props.onAbandon}
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
-                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
-                                iconProps={{ iconName: 'Cancel' }}
-                            />
-                        </div>
+                <div className='cl-modal_footer cl-modal-buttons'>
+                    <div className="cl-modal-buttons_secondary" />
+                    <div className="cl-modal-buttons_primary">
+                        <OF.PrimaryButton
+                            disabled={this.state.transcriptFiles.length === 0 || this.props.onGetNameErrorMessage(this.state.testName) !== ''}
+                            data-testid="transcript-submit-button"
+                            onClick={() => this.props.onValidateFiles(this.state.testName, this.state.transcriptFiles, this.state.lgFiles)}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
+                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_TEST)}
+                            iconProps={{ iconName: 'TestCase' }}
+                        />
+                        <OF.DefaultButton
+                            data-testid="transcript-cancel-button"
+                            onClick={this.props.onAbandon}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
+                            text={Util.formatMessageId(this.props.intl, FM.BUTTON_CANCEL)}
+                            iconProps={{ iconName: 'Cancel' }}
+                        />
                     </div>
                 </div>
             </OF.Modal>
@@ -187,8 +179,8 @@ export interface ReceivedProps {
     app: CLM.AppBase
     open: boolean
     onAbandon: () => void
-    onTestFiles: (files: File[] | null, autoImport: boolean, autoMerge: boolean) => void
-    onViewResults: (transcriptValidationResults: CLM.TranscriptValidationResult[]) => void
+    onValidateFiles: (testName: string, transcriptFiles: File[], glFiles: File[]) => void
+    onGetNameErrorMessage: (value: string) => string 
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

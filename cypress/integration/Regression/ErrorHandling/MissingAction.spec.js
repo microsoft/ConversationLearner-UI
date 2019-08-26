@@ -38,7 +38,7 @@ describe('Missing Action - ErrorHandling', () => {
   context('Action', () => {
     it('Should delete the action we just used in the Train Dialog', () => {
       modelPage.NavigateToActions()
-      actions.DeleteAction(common.whatsYourName)
+      actions.DeleteActionThatIsUsedByATrainDialog(common.whatsYourName)
     })
   })
 

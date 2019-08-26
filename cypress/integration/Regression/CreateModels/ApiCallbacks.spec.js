@@ -9,7 +9,7 @@ import * as actions from '../../../support/Actions'
 import * as helpers from '../../../support/Helpers'
 
 // We need to skip this test until the Bug 2132 is fixed.
-describe.skip('API Callbacks - CreateModels', () => {
+describe('API Callbacks - CreateModels', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
@@ -52,7 +52,7 @@ describe.skip('API Callbacks - CreateModels', () => {
         validateApiResponse: 'LogicWithNoArgslogic(memoryManager)'
       })
     })
-    
+
     it('Should create LogicWithArgs Action', () => {
       actions.CreateNewActionThenVerifyInGrid({ 
         responseNameData: 'LogicWithArgs', 
