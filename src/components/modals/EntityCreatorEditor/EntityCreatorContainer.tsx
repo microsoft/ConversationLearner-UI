@@ -145,6 +145,7 @@ class Container extends React.Component<Props, ComponentState> {
                     }))
 
             this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
+
             if (nextProps.entity === null) {
                 this.entityOptions = [...this.staticEntityOptions]
 
@@ -159,6 +160,7 @@ class Container extends React.Component<Props, ComponentState> {
                     enumValues: this.initEnumValues(undefined)
                 });
             } else {
+                this.entityOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
                 const entityType = nextProps.entity.entityType
                 const isPrebuilt = CLM.isPrebuilt(nextProps.entity)
                 const resolverType = nextProps.entity.resolverType === null ? this.NONE_RESOLVER : nextProps.entity.resolverType
