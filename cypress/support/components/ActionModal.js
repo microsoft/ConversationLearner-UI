@@ -8,6 +8,7 @@ import * as popupModal from './PopupModal'
 export function VerifyPageTitle() { cy.Get('[data-testid="create-an-action-title"]').contains('Create an Action').should('be.visible') }
 export function CheckWaitForResponse() { throw new Error('CheckWaitForResponse is NOT supported') } // Since this is a button and not a real check box it is difficult/ugly to manage the state. This defaults to checked.
 export function UncheckWaitForResponse() { cy.Get('[data-testid="action-creator-wait-checkbox"] .ms-Checkbox').Click() }
+export function ClickAddEntityButton() { cy.Get('[data-testid="action-button-create-entity"]').Click() }
 export function ClickCreateButton() { cy.Get('[data-testid="action-creator-create-button"]').Click() }
 export function ClickDeleteButton() { cy.Get('[data-testid="action-creator-delete-button"]').Click() }
 export function ClickCancelButton() { cy.Get('[data-testid="action-creator-cancel-button"]').Click() }
@@ -25,8 +26,23 @@ export function ClickTrainDialogFilterButton() { cy.Get('[data-testid="action-cr
 export function TypeExpectedEntity(entityName) { TypeMultipleEntities('.cl-action-creator--expected-entity', [entityName]) }
 export function TypeRequiredEntities(entityNames) { TypeMultipleEntities('.cl-action-creator--required-entities', entityNames) }
 export function TypeDisqualifyingEntities(entityNames) { TypeMultipleEntities('.cl-action-creator--disqualifying-entities', entityNames) }
+
 export function SelectType(type) { SelectFromDropdown('[data-testid="dropdown-action-type"]', type) }
 export function SelectApi(apiName) { SelectFromDropdown('[data-testid="dropdown-api-option"]', apiName) }
+export function SelectCard(cardName) { SelectFromDropdown('[data-testid="action-card-template"]', cardName) }
+
+export function TypeCardTitle(title) { TypeInField('[data-testid="action-card-argument-title"] div[data-slate-editor="true"]', title) }
+export function TypeCardImage(image) { TypeInField('[data-testid="action-card-argument-image"] div[data-slate-editor="true"]', image) }
+export function TypeCardLine1(line) { TypeInField('[data-testid="action-card-argument-line1"] div[data-slate-editor="true"]', line) }
+export function TypeCardLine2(line) { TypeInField('[data-testid="action-card-argument-line2"] div[data-slate-editor="true"]', line) }
+export function TypeCardLine3(line) { TypeInField('[data-testid="action-card-argument-line3"] div[data-slate-editor="true"]', line) }
+export function TypeCardButton1(buttonText) { TypeInField('[data-testid="action-card-argument-button1"] div[data-slate-editor="true"]', buttonText) }
+export function TypeCardButton2(buttonText) { TypeInField('[data-testid="action-card-argument-button2"] div[data-slate-editor="true"]', buttonText) }
+
+function TypeInField(fieldSelector, text) { 
+  cy.Get(fieldSelector).clear().type(text)
+  ClickOnNoOpHack()
+}
 
 export function VerifyActionTypeEnabled() { cy.Get('[aria-disabled="false"][data-testid="dropdown-action-type"]') }
 export function VerifyActionTypeDisabled() { cy.Get('[aria-disabled="true"][data-testid="dropdown-action-type"]') }
@@ -50,14 +66,14 @@ export function TypeResponse(textToType) {
 export function TypeApiLogicArgs(args) { TypeApiArgs('Logic Arguments', args) }
 export function TypeApiRenderArgs(args) { TypeApiArgs('Render Arguments', args) }
 
-function TypeApiArgs(apiArgLabel, args) {
-  function ClickOnNoOpHack() { 
-    // This has no effect on the data in this Action Modal but it some how
-    // resets something in the UI that enables picking an entity.
-    // Bug 2132: TEST BLOCKER: Automation cannot trigger 2nd Entity picker in API Action arguments
-    cy.get('[data-testid="action-creator-wait-checkbox"]').click() 
-  }
+function ClickOnNoOpHack() { 
+  // This has no effect on the data in this Action Modal but it some how
+  // resets something in the UI that enables picking an entity.
+  // Bug 2132: TEST BLOCKER: Automation cannot trigger 2nd Entity picker in API Action arguments
+  cy.get('[data-testid="action-creator-wait-checkbox"]').click() 
+}
 
+function TypeApiArgs(apiArgLabel, args) {
   cy.Get('label')
     .contains(apiArgLabel)
     .siblings('div.editor-container')
@@ -68,7 +84,7 @@ function TypeApiArgs(apiArgLabel, args) {
       }
 
       for (let i = 0; i < args.length; i++) {
-        cy.wrap(elements[i]).type(args[i])
+        cy.wrap(elements[i]).type(`${args[i]}{enter}`)
         ClickOnNoOpHack()
       }
     })
@@ -101,7 +117,7 @@ function TypeMultipleEntities(selector, entityNames) {
     cy.Get(selector).within(() => {
       cy.Get('.ms-BasePicker-input')
         .then((element) => {
-          entityNames.forEach(entityName => cy.wrap(element).type(`$${entityName}`).wait(1000).type('{enter}'))
+          entityNames.forEach(entityName => cy.wrap(element).type(`$${entityName}`).wait(1000).type('{enter}{esc}'))
         })
     })
   })

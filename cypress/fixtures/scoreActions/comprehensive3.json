@@ -1,0 +1,600 @@
+[
+  [
+    {
+      "buttonTestId": "action-scorer-button-selected",
+      "response": "Uhhhh...",
+      "type": "TEXT",
+      "score": "100.0%",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello Jeff",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "What kind of fruit do you like?",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: ORANGES",
+      "type": "SET_ENTITY",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "I like ORANGES too",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [
+        {
+          "name": "fruit",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"OneFromAnEntity\"secondArg:\"TwoToBeUsedByApiCall\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"OneFromAnEntity\"secondArg:\"TwoToBeUsedByApiCall\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "type": "API",
+      "score": "-",
+      "entities": [
+        {
+          "name": "1stArg",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "2ndArg",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "disqualifier",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: APPLES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: BANANAS",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: MANGOES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: PEACHES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello Jeff",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "What kind of fruit do you like?",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: ORANGES",
+      "type": "SET_ENTITY",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "I like ORANGES too",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [
+        {
+          "name": "fruit",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Uhhhh...",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:\"1stArg and 2ndArg\"render(result, memoryManager)",
+      "type": "API",
+      "score": "Training...",
+      "entities": [
+        {
+          "name": "clear",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: APPLES",
+      "type": "MISSING ACTION",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: BANANAS",
+      "type": "MISSING ACTION",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: MANGOES",
+      "type": "MISSING ACTION",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: PEACHES",
+      "type": "MISSING ACTION",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"$2ndArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"$2ndArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "type": "API",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "1stArg",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "2ndArg",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "disqualifier",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": false
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello Jeff",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "What kind of fruit do you like?",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: ORANGES",
+      "type": "SET_ENTITY",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "I like ORANGES too",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [
+        {
+          "name": "fruit",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Uhhhh...",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:\"1stArg and 2ndArg\"render(result, memoryManager)",
+      "type": "API",
+      "score": "Training...",
+      "entities": [
+        {
+          "name": "clear",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "promptWithPicturetitle:Do you like flowers?image:https://cdn.pixabay.com/photo/2018/10/30/16/06/water-lily-3784022__340.jpgline1:Flowers make life beautifulline2:ORANGES start out as a flowerline3:Bees Like Flowersbutton1:I Like Flowersbutton2:Flowers are for the birds and bees",
+      "type": "CARD",
+      "score": "Training...",
+      "entities": [
+        {
+          "name": "fruit",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "1stArg",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "2ndArg",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: APPLES",
+      "type": "MISSING ACTION",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: BANANAS",
+      "type": "MISSING ACTION",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: MANGOES",
+      "type": "MISSING ACTION",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: PEACHES",
+      "type": "MISSING ACTION",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"$2ndArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"$2ndArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "type": "API",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "1stArg",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "2ndArg",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "disqualifier",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": false
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello Jeff",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "What kind of fruit do you like?",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: ORANGES",
+      "type": "SET_ENTITY",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "I like PEACHES too",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [
+        {
+          "name": "fruit",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-selected",
+      "response": "Uhhhh...",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:\"1stArg and 2ndArg\"render(result, memoryManager)",
+      "type": "API",
+      "score": "-",
+      "entities": [
+        {
+          "name": "clear",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:\"2ndArg: SecondArg and fruit: PEACHES\"render(result, memoryManager)",
+      "type": "API",
+      "score": "-",
+      "entities": [
+        {
+          "name": "set",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: APPLES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: BANANAS",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: MANGOES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: PEACHES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "type": "API",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "1stArg",
+          "qualifierState": "Red"
+        },
+        {
+          "name": "2ndArg",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "disqualifier",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "promptWithPicturetitle:Do you like flowers?image:https://cdn.pixabay.com/photo/2018/10/30/16/06/water-lily-3784022__340.jpgline1:Flowers make life beautifulline2:PEACHES start out as a flowerline3:Bees Like Flowersbutton1:I Like Flowersbutton2:Flowers are for the birds and bees",
+      "type": "CARD",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "fruit",
+          "qualifierState": "Green"
+        },
+        {
+          "name": "1stArg",
+          "qualifierState": "GreenStrikeout"
+        },
+        {
+          "name": "2ndArg",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    }
+  ]
+]

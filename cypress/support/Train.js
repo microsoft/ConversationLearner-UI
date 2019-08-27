@@ -115,6 +115,12 @@ export function VerifyChatMessageCount(expectedCount) {
 // instance of a message.
 // RETURNS: The index of the selected turn.
 
+export function SelectLastChatTurn() {
+  cy.Get(AllChatMessagesSelector).then(elements => {
+    cy.wrap(elements[elements.length - 1]).Click()
+  })
+}
+
 export function SelectChatTurnExactMatch(message, index = 0) { 
   return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText === transformedMessage)}
 
@@ -253,13 +259,13 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
 // Verify that a specific word of a user utterance has been labeled as an entity.
 // word = a word within the utterance that should already be labeled
 // entity = name of entity the word was labeled with
-// *** This may work for multiple word labels, but you must only pass in the one
+// index = into one of the alternative inputs
+// *** This does work for multiple word labels, but you must pass in only one
 // *** word that uniquely identifies the labeled text
 export function RemoveEntityLabel(word, entity, index = 0) {
   cy.Get('div.slate-editor').then(elements => {
     expect(elements.length).to.be.at.least(index - 1)
     cy.wrap(elements[index]).within(() => {
-      cy.wrap(elements[index]).click()
       cy.Get('[data-testid="token-node-entity-value"] > span > span')
         .ExactMatch(word)
         .parents('.cl-entity-node--custom')
@@ -357,7 +363,7 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
 export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expectedTurnCount, turnIndex) {
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound === turnTextThatShouldNotMatch) { 
-      throw new Error(`Chat turn ${turnIndex} should NOT be an exact match to: ${turnTextThatShouldNotMatch}`) 
+      throw new Error(`Chat turn ${turnIndex} should NOT be an exact match to: ${turnTextThatShouldNotMatch}, but it is`) 
     }
   })
 }
@@ -365,7 +371,9 @@ export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expe
 export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount, turnIndex) { 
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) { 
-      throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}`) 
+      if (chatMessageFound !== expectedTurnText.replace(/'/g, "’")) {
+        throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
+      }
     }
   })
 }
@@ -888,4 +896,33 @@ export function GetAllTrainDialogGridRows() {
   }
   
   return allRowData
+}
+
+export class BotChatElements {
+  constructor() {
+    this.botChatElements = Cypress.$('div.wc-message-from-bot[data-testid="web-chat-utterances"]')
+    this.index = this.botChatElements.length > 0 ? 0 : undefined
+  }
+  
+  SelectNext() {
+    if (!this.index) { return undefined }
+
+    const chatText = helpers.TextContentWithoutNewlines(botChatElements[i])
+    it(`Select Bot Response: ${chatText.substring(0,32)}`, () => {
+      Cypress.$(botChatElements[i]).Click()
+    })
+
+    return this.botChatElements.length >= ++this.index ? 0 : undefined
+  }
+}
+
+export function VerifyEachBotChatTurn(verificationFunction) {
+  cy.Get('div.wc-message-from-bot[data-testid="web-chat-utterances"]').then(botChatElements => {
+    for (let i = 0; i < botChatElements.length; i++) {
+      const chatText = helpers.TextContentWithoutNewlines(botChatElements[i])
+      cy.log(`Select Bot Response: ${chatText.substring(0,32)}`)
+      cy.wrap(botChatElements[i]).Click()
+      verificationFunction()
+    }
+  })
 }
