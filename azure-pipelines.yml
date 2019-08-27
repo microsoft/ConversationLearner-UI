@@ -69,16 +69,12 @@ jobs:
     workingDirectory: ../cl-samples
     displayName: 'Samples - npm run build'
 
-  - bash: npm run test-apicallbacks
+  - bash: npm run test-apicallbacks &
     workingDirectory: ../cl-samples
     displayName: 'Samples - npm start'
-    # background: true
 
-  # Run UI
-  - bash: npm start
+  - bash: npm start &
     displayName: 'UI - npm start'
-    enabled: false
-    # background: true
 
   - bash: npx wait-on -- http://localhost:3978
   # - bash: npx wait-on -- http://localhost:3000
