@@ -62,9 +62,10 @@ export class GeneratedData {
     }
   }
 
-  // In some cases the score deviates significantly and that is not considered an error. For those pass in 
-  // acceptableScoreDeviation as the percentage points that we can allow the score to deviate and still be acceptable.
-  VerifyScoreActionsList(acceptableScoreDeviation = 10) {
+  // In many cases the score deviates significantly and that is not considered an error. But, in some cases, with a well
+  // trained model, these values should deviate only slightly, for those pass in acceptableScoreDeviation as the 
+  // percentage points that we can allow the score to deviate and still be acceptable.
+  VerifyScoreActionsList(acceptableScoreDeviation = 50) {
     if (this.generateScoreActionsData) {
       it('GENERATE the Score Actions data', () => {
         if (this.generateScoreActionsData == 'pause') { cy.pause() }
