@@ -21,7 +21,7 @@ import { autobind } from 'core-decorators';
 
 const entityNameMaxLength = 30
 const prebuiltPrefix = 'builtin-'
-export const NONE_RESOLVER_KEY = 'NONE_RESOLVER'
+export const NONE_RESOLVER_KEY = 'none'
 
 const initState: ComponentState = {
     entityNameVal: '',
@@ -117,18 +117,11 @@ class Container extends React.Component<Props, ComponentState> {
         ]
     }
 
-    get NONE_RESOLVER_TEXT(): string {
-        return this.props.intl.formatMessage({
-            id: FM.ENTITYCREATOREDITOR_ENTITY_RESOLVEROPTION_NONE,
-            defaultMessage: 'none'
-        });
-    }
-
     getStaticResolverOptions(intl: InjectedIntl): CLDropdownOption[] {
         return [
             {
                 key: NONE_RESOLVER_KEY,
-                text: this.NONE_RESOLVER_TEXT,
+                text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITY_RESOLVEROPTION_NONE),
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             }
@@ -258,7 +251,9 @@ class Container extends React.Component<Props, ComponentState> {
     convertStateToEntity(state: ComponentState): CLM.EntityBase {
         let entityName = this.state.entityNameVal
         const entityType = this.state.entityTypeVal
-        const resolverType = this.state.entityResolverVal
+        const resolverType = this.state.entityResolverVal === NONE_RESOLVER_KEY
+            ? null
+            : this.state.entityResolverVal
         if (this.state.isPrebuilt) {
             entityName = getPrebuiltEntityName(entityType)
         }
@@ -266,7 +261,7 @@ class Container extends React.Component<Props, ComponentState> {
         const newOrEditedEntity: CLM.EntityBase = {
             entityId: undefined!,
             entityName,
-            resolverType: resolverType,
+            resolverType,
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
             isResolverStrict: this.state.isResolverStrict,
