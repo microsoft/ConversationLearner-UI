@@ -491,7 +491,11 @@ export function getTip(tipType: string) {
         case TipType.ENTITY_RESOLVER_STRICT:
             return (
                 <div>
-                    Entities with strict resolvers must have resolution in order to be present (predicted or labeled manually). Select this option if the entity only makes sense with concrete resolved value. E.g. `numberOfPeople` has resolutin of type `number`
+                    <h3>Strict Resolvers</h3>
+                    <p>Entities with strict resolvers must have resolution in order to be present (predicted or labeled manually).</p>
+                    <p>Select this option if the entity only makes sense with concrete resolved value. <br />
+                    E.g. `numberOfPeople` has resolutin of type `number`</p>
+                    <p>Warning: If entity is predicted, but no matching resolution is available then entity will be removed</p>
                 </div>
             )
         case TipType.ENTITY_TYPE:
