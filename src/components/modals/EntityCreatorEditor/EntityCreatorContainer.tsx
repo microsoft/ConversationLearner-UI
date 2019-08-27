@@ -213,6 +213,7 @@ class Container extends React.Component<Props, ComponentState> {
             return
         }
 
+        const isResolverStrictChanged = this.state.isResolverStrict !== entity.isResolverStrict
         const isNameChanged = this.state.entityNameVal !== entity.entityName
         const isMultiValueChanged = this.state.isMultivalueVal !== entity.isMultivalue
         const isNegatableChanged = this.state.isNegatableVal !== entity.isNegatible
@@ -223,7 +224,12 @@ class Container extends React.Component<Props, ComponentState> {
             const oldEnums = entity.enumValues || []
             hasPendingEnumChanges = !this.areEnumsIdentical(newEnums, oldEnums)
         }
-        const hasPendingChanges = isNameChanged || isMultiValueChanged || isNegatableChanged || isResolverChanged || hasPendingEnumChanges
+        const hasPendingChanges = isNameChanged
+            || isResolverStrictChanged
+            || isMultiValueChanged
+            || isNegatableChanged
+            || isResolverChanged
+            || hasPendingEnumChanges
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
             this.setState({
@@ -561,8 +567,8 @@ class Container extends React.Component<Props, ComponentState> {
                     && condition.valueId === enumValue.enumValueId)
 
             const usedToSetValue = (a.actionType === CLM.ActionTypes.SET_ENTITY)
-                    && a.entityId === entity.entityId
-                    && a.enumValueId === enumValue.enumValueId
+                && a.entityId === entity.entityId
+                && a.enumValueId === enumValue.enumValueId
 
             return usedAsCondition || usedToSetValue
         })
