@@ -14,7 +14,7 @@ import { ImportedAction } from '../types/models'
 import { User } from '../types'
 
 export async function toTranscripts(
-    appDefinition: CLM.AppDefinition, 
+    appDefinition: CLM.AppDefinition,
     appId: string,
     user: User,
     fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
@@ -131,7 +131,7 @@ export async function trainDialogFromTranscriptImport(
     createEntityThunkAsync?: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
     ): Promise<CLM.TrainDialog> {
     const transcriptHash = Util.hashText(JSON.stringify(transcript))
-    
+
     let trainDialog: CLM.TrainDialog = {
         trainDialogId: undefined!,
         version: undefined!,
@@ -140,7 +140,7 @@ export async function trainDialogFromTranscriptImport(
         sourceLogDialogId: undefined!,
         initialFilledEntities: [],
         rounds: [],
-        tags: [], 
+        tags: [],
         description: '',
         createdDateTime: new Date().toJSON(),
         lastModifiedDateTime: new Date().toJSON(),
@@ -176,7 +176,7 @@ export async function trainDialogFromTranscriptImport(
                         if (textVariations.length < CLM.MAX_TEXT_VARIATIONS && activity.text !== tv.text) {
 
                             let altTextVariation: CLM.TextVariation = {
-                                text: tv.text, 
+                                text: tv.text,
                                 labelEntities: []
                             }
                             textVariations.push(altTextVariation)
@@ -462,7 +462,7 @@ async function createActionFromImport(
     if (!newAction) {
         throw new Error("Unable to create action")
     }
-    return newAction     
+    return newAction
 }
 
 // NOTE: eventually LGItems could be adaptive cards
@@ -497,14 +497,14 @@ export function findActionFromHashText(hashText: string, actions: CLM.ActionBase
 }
 
 export async function importActionOutput(
-    actionResults: TranscriptActionOutput[], 
+    actionResults: TranscriptActionOutput[],
     entities: CLM.EntityBase[],
     app: CLM.AppBase,
     createEntityThunkAsync?: ((appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>)
     ): Promise<CLM.FilledEntity[]> {
 
     const filledEntities: CLM.FilledEntity[] = []
-    
+
     for (const actionResult of actionResults) {
         // Check if entity already exists
         const foundEntity = entities.find(e => e.entityName === actionResult.entityName)
@@ -521,6 +521,7 @@ export async function importActionOutput(
                 resolverType: "none",
                 createdDateTime: new Date().toJSON(),
                 lastModifiedDateTime: new Date().toJSON(),
+                isResolverStrict: false,
                 isMultivalue: false,
                 isNegatible: false,
                 negativeId: null,
@@ -537,7 +538,7 @@ export async function importActionOutput(
             if (!entityId) {
                 throw new Error("Invalid Entity Definition")
             }
-        
+
         }
         else {
             entityId = "UNKNOWN ENTITY"

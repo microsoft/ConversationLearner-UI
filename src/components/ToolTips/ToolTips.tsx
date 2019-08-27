@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -46,6 +46,7 @@ export enum TipType {
     ENTITY_NAME = 'entityName',
     ENTITY_NEGATABLE = 'isNegatable',
     ENTITY_PROGAMMATIC = 'isProgrammatic',
+    ENTITY_RESOLVER_STRICT = 'isResolverStrict',
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
     ENTITY_RESOLVER = 'entityResolver',
@@ -60,7 +61,7 @@ export enum TipType {
 
     MEMORY_CONVERTER = 'memoryConverter',
     MEMORY_MANAGER = 'memoryManager',
- 
+
     MODEL_VERSION_EDITING = 'modelVersionEditing',
     MODEL_VERSION_LIVE = 'modelVersionLIve',
 
@@ -147,8 +148,8 @@ const memoryConverterSample =
     `
     AS_VALUE_LIST       returns MemoryValue[]
     AS_STRING           returns string
-    AS_STRING_LIST      returns string[] 
-    AS_NUMBER           returns number 
+    AS_STRING_LIST      returns string[]
+    AS_NUMBER           returns number
     AS_NUMBER_LIST      returns  number[]
     AS_BOOLEAN          returns boolean
     AS_BOOLEAN_LIST     returns boolean[]`
@@ -166,7 +167,7 @@ const memoryManagerSample =
     // SET
     memoryManager.Set(entityName: string, true)
     i.e. memoryManager.Set("toppings", ["cheese", "peppers"])
-   
+
     // DELETE
     memoryManager.Delete(entityName: string, value?: string): void
     memoryManager.DeleteAll(saveEntityNames: string[]): void
@@ -231,7 +232,7 @@ export function getTip(tipType: string) {
                     <p><FormattedMessageId id={FM.TOOLTIP_ACTION_SET_ENTITY} /></p>
                 </div>
             )
-            // return render(FM.TOOLTIP_ACTION_SET_ENTITY_TITLE, [FM.TOOLTIP_ACTION_SET_ENTITY])
+        // return render(FM.TOOLTIP_ACTION_SET_ENTITY_TITLE, [FM.TOOLTIP_ACTION_SET_ENTITY])
         case TipType.ACTION_ENTITIES:
             return (
                 <div>
@@ -288,7 +289,7 @@ export function getTip(tipType: string) {
                     { key: 'Disqualifying:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW4 }
                 ]);
         case TipType.ACTION_REPROMPT:
-                    return render(FM.TOOLTIP_ACTION_REPROMPT_TITLE, [FM.TOOLTIP_ACTION_REPROMPT]);
+            return render(FM.TOOLTIP_ACTION_REPROMPT_TITLE, [FM.TOOLTIP_ACTION_REPROMPT]);
         case TipType.ACTION_REQUIRED:
             return render(
                 FM.TOOLTIP_ACTION_REQUIRED_TITLE,
@@ -485,6 +486,12 @@ export function getTip(tipType: string) {
                         <dt>Entity:</dt><dd>isLoggedIn</dd>
                     </dl>
                     The "isLoggedIn" Entity is set in code. When not set, it can be used to disqualify Actions that require authorized users
+                </div>
+            )
+        case TipType.ENTITY_RESOLVER_STRICT:
+            return (
+                <div>
+                    Entities with strict resolvers must have resolution in order to be present (predicted or labeled manually). Select this option if the entity only makes sense with concrete resolved value. E.g. `numberOfPeople` has resolutin of type `number`
                 </div>
             )
         case TipType.ENTITY_TYPE:

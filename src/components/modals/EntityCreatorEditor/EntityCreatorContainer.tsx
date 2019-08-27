@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -21,14 +21,16 @@ import { autobind } from 'core-decorators';
 
 const entityNameMaxLength = 30
 const prebuiltPrefix = 'builtin-'
+export const NONE_RESOLVER_KEY = 'NONE_RESOLVER'
 
 const initState: ComponentState = {
     entityNameVal: '',
-    entityTypeVal: '',
-    entityResolverVal: '',
+    entityTypeVal: CLM.EntityType.LUIS,
+    entityResolverVal: NONE_RESOLVER_KEY,
     isPrebuilt: false,
     isMultivalueVal: false,
     isNegatableVal: false,
+    isResolverStrict: false,
     isEditing: false,
     enumValues: [],
     title: '',
@@ -49,6 +51,7 @@ interface ComponentState {
     isPrebuilt: boolean
     isMultivalueVal: boolean
     isNegatableVal: boolean
+    isResolverStrict: boolean
     isEditing: boolean
     enumValues: (CLM.EnumValue | null)[]
     title: string
@@ -74,7 +77,7 @@ class Container extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        this.state = { ...initState, entityTypeVal: CLM.EntityType.LUIS, entityResolverVal: this.NONE_RESOLVER }
+        this.state = { ...initState }
         this.staticEntityOptions = this.getStaticEntityOptions(this.props.intl)
         this.staticResolverOptions = this.getStaticResolverOptions(this.props.intl)
     }
@@ -114,7 +117,7 @@ class Container extends React.Component<Props, ComponentState> {
         ]
     }
 
-    get NONE_RESOLVER(): string {
+    get NONE_RESOLVER_TEXT(): string {
         return this.props.intl.formatMessage({
             id: FM.ENTITYCREATOREDITOR_ENTITY_RESOLVEROPTION_NONE,
             defaultMessage: 'none'
@@ -124,8 +127,8 @@ class Container extends React.Component<Props, ComponentState> {
     getStaticResolverOptions(intl: InjectedIntl): CLDropdownOption[] {
         return [
             {
-                key: this.NONE_RESOLVER,
-                text: this.NONE_RESOLVER,
+                key: NONE_RESOLVER_KEY,
+                text: this.NONE_RESOLVER_TEXT,
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             }
@@ -162,7 +165,9 @@ class Container extends React.Component<Props, ComponentState> {
                         defaultMessage: 'Create an Entity'
                     }),
                     entityTypeVal: CLM.EntityType.LUIS,
-                    entityResolverVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS ? nextProps.entityTypeFilter : this.NONE_RESOLVER,
+                    entityResolverVal: (nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS)
+                        ? nextProps.entityTypeFilter
+                        : NONE_RESOLVER_KEY,
                     enumValues: this.initEnumValues(undefined)
                 });
             } else {
@@ -170,7 +175,9 @@ class Container extends React.Component<Props, ComponentState> {
                 this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
                 const entityType = nextProps.entity.entityType
                 const isPrebuilt = CLM.isPrebuilt(nextProps.entity)
-                const resolverType = nextProps.entity.resolverType === null ? this.NONE_RESOLVER : nextProps.entity.resolverType
+                const resolverType = nextProps.entity.resolverType === null
+                    ? NONE_RESOLVER_KEY
+                    : nextProps.entity.resolverType
 
                 this.setState({
                     entityNameVal: nextProps.entity.entityName,
@@ -179,6 +186,7 @@ class Container extends React.Component<Props, ComponentState> {
                     isPrebuilt: isPrebuilt,
                     isMultivalueVal: nextProps.entity.isMultivalue,
                     isNegatableVal: nextProps.entity.isNegatible,
+                    isResolverStrict: nextProps.entity.isResolverStrict,
                     isEditing: true,
                     title: nextProps.intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
@@ -255,6 +263,7 @@ class Container extends React.Component<Props, ComponentState> {
             resolverType: resolverType,
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
+            isResolverStrict: this.state.isResolverStrict,
             isMultivalue: this.state.isMultivalueVal,
             isNegatible: this.state.isNegatableVal,
             negativeId: null,
@@ -381,7 +390,7 @@ class Container extends React.Component<Props, ComponentState> {
         const enumValueObj = enumValuesObjs[index]
 
         if (newValue.length > 0) {
-            // Create new EnumValue if needed 
+            // Create new EnumValue if needed
             if (!enumValueObj) {
                 enumValuesObjs[index] = { enumValue: newValue }
             }
@@ -406,8 +415,13 @@ class Container extends React.Component<Props, ComponentState> {
     }
     onChangeResolverType = (obj: CLDropdownOption) => {
         this.setState({
-            entityResolverVal: obj.text
+            entityResolverVal: obj.key as string
         })
+    }
+    onChangeResolverStrict = () => {
+        this.setState(prevState => ({
+            isResolverStrict: !prevState.isResolverStrict,
+        }))
     }
     onChangeMultivalue = () => {
         this.setState(prevState => ({
@@ -545,7 +559,7 @@ class Container extends React.Component<Props, ComponentState> {
                 .some(condition =>
                     condition.entityId === entity.entityId
                     && condition.valueId === enumValue.enumValueId)
-            
+
             const usedToSetValue = (a.actionType === CLM.ActionTypes.SET_ENTITY)
                     && a.entityId === entity.entityId
                     && a.enumValueId === enumValue.enumValueId
@@ -803,6 +817,9 @@ class Container extends React.Component<Props, ComponentState> {
             selectedResolverKey={this.state.entityResolverVal}
             resolverOptions={this.resolverOptions}
             onChangeResolver={this.onChangeResolverType}
+
+            isResolverStrict={this.state.isResolverStrict}
+            onChangeResolverStrict={this.onChangeResolverStrict}
 
             enumValues={enumValues}
             onChangeEnum={this.onChangeEnum}

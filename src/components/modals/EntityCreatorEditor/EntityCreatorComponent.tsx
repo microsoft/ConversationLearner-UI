@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -15,6 +15,8 @@ import './styles.css'
 import { FM } from '../../../react-intl-messages'
 import FormattedMessageId from '../../FormattedMessageId'
 import { InjectedIntlProps } from 'react-intl'
+// TODO: Eliminate circular reference
+import { NONE_RESOLVER_KEY } from './EntityCreatorContainer'
 
 export interface IEnumValueForDisplay extends CLM.EnumValue {
     allowDelete: boolean
@@ -73,6 +75,8 @@ interface ReceivedProps {
     selectedResolverKey: string
     resolverOptions: OF.IDropdownOption[]
     onChangeResolver: (option?: OF.IDropdownOption) => void
+    isResolverStrict: boolean
+    onChangeResolverStrict: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
 
     enumValues: (IEnumValueForDisplay | null)[]
     onChangeEnum: (index: number, value?: string) => void
@@ -139,7 +143,7 @@ const EditComponent: React.FC<Props> = (props) => {
             />
         }
         {props.entityTypeKey === CLM.EntityType.ENUM &&
-            
+
             props.enumValues.map((value, index) => {
                 return (
                     <div
@@ -172,7 +176,17 @@ const EditComponent: React.FC<Props> = (props) => {
 
         }
         <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
-            {props.entityTypeKey !== CLM.EntityType.ENUM &&            
+            {props.entityTypeKey == CLM.EntityType.LUIS &&
+                <TC.Checkbox
+                    data-testid="entity-creator-resolver-strict"
+                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_STRICT_LABEL)}
+                    checked={props.isResolverStrict}
+                    onChange={props.onChangeResolverStrict}
+                    disabled={props.selectedResolverKey === NONE_RESOLVER_KEY}
+                    tipType={ToolTip.TipType.ENTITY_RESOLVER_STRICT}
+                />
+            }
+            {props.entityTypeKey !== CLM.EntityType.ENUM &&
                 <TC.Checkbox
                     data-testid="entity-creator-multi-valued-checkbox"
                     label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL)}
@@ -247,7 +261,7 @@ const Component: React.SFC<Props> = (props) => {
         </div >
         <div className="cl-modal_footer cl-modal-buttons">
             <div className="cl-modal-buttons_secondary">
-                {props.isEditing && 
+                {props.isEditing &&
                     <OF.DefaultButton
                         onClick={props.onClickTrainDialogs}
                         disabled={!props.isSaveButtonDisabled} // Disable so user doesn't lose work if clicked
