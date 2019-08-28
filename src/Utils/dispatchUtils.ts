@@ -2,14 +2,27 @@ import * as CLM from '@conversationlearner/models'
 import { SourceAndModelPair } from "src/types/models"
 import * as uuid from 'uuid/v4'
 import * as Util from './util'
+import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator';
 
 export function generateDispatcherSource(
+    sourceModelPairs: SourceAndModelPair[],
+    algorithmType: DispatcherAlgorithmType,
+) {
+    switch (algorithmType) {
+        case DispatcherAlgorithmType.DeterministicSingleTransfer:
+            return generageDeterministicDispatcherSource(sourceModelPairs)
+    }
+
+    throw new Error(`Could not associate Dispatcher Algorithm Type with algorithm. You passed: ${algorithmType}`)
+}
+
+function generageDeterministicDispatcherSource(
     sourceModelPairs: SourceAndModelPair[],
     transitionRoundLimit: number = 3,
 ): CLM.AppDefinition {
     /**
      * Generate 1 Dispatch Action per model and associate with source + model pair
-     * 
+     *
      * Store:
      * - modelId for dispatching
      * - modelName for display
@@ -48,7 +61,7 @@ export function generateDispatcherSource(
     /**
      * For each dialog in model A set each rounds to use that models Dispatch Action
      * This means, when this input (extraction) is seen, dispatch to this model.
-     * 
+     *
      * Clear all entities, and ensure single scorer step
      */
     const modelTrainDialogs = sourceModelPairs.map((sm, mIndex) => {
@@ -89,17 +102,17 @@ export function generateDispatcherSource(
 
     /**
      * Intermix rounds from different dialogs to implicitly demonstrate dispatching/context switching to other model
-     * 
+     *
      * Example
      * Dialogs:
-     *  ModelA: 
+     *  ModelA:
      *   [A,B,C]
      *  ModelB:
      *   [D,E,F]
      *  ModelC:
      *   [G,H,I]
      * ...
-     * 
+     *
      * Output:
      * [
      *  [A,D,E,F],
