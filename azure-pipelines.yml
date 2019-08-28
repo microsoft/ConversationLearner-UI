@@ -76,8 +76,8 @@ jobs:
   - bash: npm start &
     displayName: 'UI - npm start'
 
-  - bash: npx wait-on -- http://localhost:3978
-  # - bash: npx wait-on -- http://localhost:3000
+  # - bash: npx wait-on -- http://localhost:3978
+  - bash: npx wait-on -- http://localhost:3000
 
   - bash: npm run cypress -- run --record false --spec  "cypress/integration/Regression/**/*.spec.js"
 
