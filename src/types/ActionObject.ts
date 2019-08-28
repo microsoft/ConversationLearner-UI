@@ -320,6 +320,11 @@ export type FetchAction = {
     type: AT.FETCH_TRANSCRIPT_VALIDATION_ASYNC
 } | {
     type: AT.FETCH_TRANSCRIPT_VALIDATION_FULFILLED
+} | {
+    type: AT.REGENERATE_DISPATCH_DIALOGS_ASYNC,
+} | {
+    type: AT.REGENERATE_DISPATCH_DIALOGS_FULFILLED,
+    trainDialogs: CLM.TrainDialog[]
 }
 
 export type CreateAction = {

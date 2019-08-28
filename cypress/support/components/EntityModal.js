@@ -45,3 +45,12 @@ export function VerifyEmptyGrid() {
     }
   })
 }
+
+export function TypeEnumValues(enumValues) {
+  cy.Get('[data-testid="entity-enum-value-value-name"]').then(elements => {
+    for (let i = 0; i < enumValues.length; i++) {
+      cy.wrap(elements[i]).type(`${enumValues[i]}{enter}`)
+    }
+  })
+}
+

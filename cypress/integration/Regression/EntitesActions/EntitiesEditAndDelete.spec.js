@@ -56,7 +56,6 @@ describe('Entities Edit and Delete - EntitiesActions', () => {
         {firstInput: 'Hey', lastInput: 'world peace', lastResponse: "Sorry $name, I can't help you get $want"}
       ])
     })
-
   })
 
   context('"sweets" Entity', () => {

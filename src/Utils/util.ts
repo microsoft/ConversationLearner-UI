@@ -268,3 +268,4 @@ export function hashText(text: string) {
     // Return 8 digit hex string
     return `0000000${(hval >>> 0).toString(16)}`.substr(-8)
 }
+

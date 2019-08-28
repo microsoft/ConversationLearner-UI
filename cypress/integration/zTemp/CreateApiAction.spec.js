@@ -23,8 +23,8 @@ describe('aAPITemp - CreateModels', () => {
       actions.CreateNewActionThenVerifyInGrid({ 
         responseNameData: 'LogicWithArgs', 
         type: 'API',
-        logicArgs: ['$1stArg{enter}', '$2ndArg{enter}'],
-        //logicArgs: ['1stArg', '2ndArg'],
+        //logicArgs: ['$1stArg{enter}', '$2ndArg{enter}'],
+        logicArgs: ['$1stArg', '$2ndArg'],
         validateApiResponse: 'LogicWithArgslogic(memoryManager, firstArg, secondArg)firstArg:"$1stArg"secondArg:"$2ndArg"' 
       })
     })
