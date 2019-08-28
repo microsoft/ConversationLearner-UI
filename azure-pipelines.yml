@@ -78,13 +78,17 @@ jobs:
 
   # - bash: npx wait-on -- http://localhost:3978
   - bash: npx wait-on -- http://localhost:3000
+    displayName: 'npx wait-on -- http://localhost:3000'
 
   - bash: npm run cypress -- run --record false --spec  "cypress/integration/Regression/**/*.spec.js"
+    displayName: 'Run Cypress Regression Tests'
 
   - bash: npm run cypress -- run --record false --spec  "cypress/integration/regressionTs/**/*.spec.*"
+    displayName: 'Run Cypress Typescript Regression Tests'
     condition: always()
 
   - bash: npm run cypress -- run --record false --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js"
+    displayName: 'Run Cypress Delete Models'
     condition: always()
 
 - job: windows_build
