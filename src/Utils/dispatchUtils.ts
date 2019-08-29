@@ -18,10 +18,26 @@ export function generateDispatcherSource(
         case DispatcherAlgorithmType.DeterministicSingleTransfer:
             return generageDeterministicDispatcherSource(sourceModelPairs, 3)
         case DispatcherAlgorithmType.RandomSingleTransfer:
-            return generageRandomTransitonDispatcherSource(sourceModelPairs, 2)
+            return generageRandomTransitonDispatcherSource(sourceModelPairs, defaultGetPercentageOfRoundsToTransferAt)
     }
 
     throw new Error(`Could not associate Dispatcher Algorithm Type with algorithm. You passed: ${algorithmType}`)
+}
+
+function defaultGetPercentageOfRoundsToTransferAt(numOfRounds: number): number {
+    // If dialog is short attempt transfer at all pionts
+    if (numOfRounds <= 3) {
+        return numOfRounds
+    }
+    else if (numOfRounds <= 10) {
+        return Math.round(numOfRounds * 0.4)
+    }
+    else if (numOfRounds <= 20) {
+        return Math.round(numOfRounds * 0.2)
+    }
+    else {
+        return Math.round(numOfRounds * 0.15)
+    }
 }
 
 /**
@@ -46,18 +62,18 @@ function generageDeterministicDispatcherSource(
 
 /**
  * Attempt to transition at random N position in rounds for each dialog in model, to a dialog in another model.
- * @param numRandomTransfersPoints Limit on number of places to transfer between models. Defaults to 3
+ * @param getPercentageOfRoundsToTransferAt Limit on number of places to transfer between models. Defaults to 3
  */
 function generageRandomTransitonDispatcherSource(
     sourceModelPairs: SourceAndModelPair[],
     // TODO: Should be percentage of dialog instead of fixed number?
     // 2 transition in 50 round dialog isn't good coverage
     // 2 transitions in 5 step dialog is better?
-    numRandomTransfersPoints: number,
+    getPercentageOfRoundsToTransferAt: (x: number) => number,
 ): CLM.AppDefinition {
     generateDispatchActions(sourceModelPairs);
     const modelsTrainDialogs = associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs)
-    const trainDialogs = randomSingleTransfer(modelsTrainDialogs, numRandomTransfersPoints)
+    const trainDialogs = randomSingleTransfer(modelsTrainDialogs, getPercentageOfRoundsToTransferAt)
     const source: CLM.AppDefinition = {
         trainDialogs,
         actions: sourceModelPairs.map(sm => sm.action),
@@ -216,11 +232,11 @@ function determisticSingleTransfer(
  */
 function randomSingleTransfer(
     modelsTrainDialogs: CLM.TrainDialog[][],
-    numRandomTransfersPoints: number
+    getPercentageOfRoundsToTransferAt: (x: number) => number,
 ): CLM.TrainDialog[] {
     const allTrainDialogs = modelsTrainDialogs.reduce((a, b) => [...a, ...b])
     const dialogsWithoutModelTransition = Util.deepCopy(allTrainDialogs)
-    const dialogTransitionGroups = generateRandomDialogTransitionGroups(modelsTrainDialogs, numRandomTransfersPoints)
+    const dialogTransitionGroups = generateRandomDialogTransitionGroups(modelsTrainDialogs, getPercentageOfRoundsToTransferAt)
     const dialogsWithModelTransition = concatTransitionDialogsWithOtherDialogs(dialogTransitionGroups)
         .map(generateDispatchDialog)
 
@@ -276,7 +292,7 @@ function concatTransitionDialogsWithOtherDialogs(dialogTransitionGroups: DialogT
 
 function generateRandomDialogTransitionGroups(
     modelsTrainDialogs: CLM.TrainDialog[][],
-    numRandomTransfersPoints: number,
+    getPercentageOfRoundsToTransferAt: (x: number) => number,
 ) {
     return modelsTrainDialogs
         .map((modelDialogs, mIndex) => {
@@ -290,6 +306,7 @@ function generateRandomDialogTransitionGroups(
 
             const trainDialogsToTransitionFrom = modelDialogs
                 .map(t => {
+                    const numRandomTransfersPoints = getPercentageOfRoundsToTransferAt(t.rounds.length)
                     const transitionRoundIncies = getUniqueRandomNumbers(numRandomTransfersPoints, t.rounds.length)
                     console.log({ transitionRoundIncies })
 
