@@ -1,7 +1,7 @@
 import { AT } from "./types";
 
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 export enum FM {
@@ -56,7 +56,7 @@ export enum FM {
     // ActionDeleteModal
     ACTION_DELETE_INUSE_TITLE = 'ActionDelete.inUse.title',
     ACTION_DELETE_INUSE_PLACEHOLDER_PRESERVE = 'ActionDelete.inUse.placeholderPreserve',
-    ACTION_DELETE_INUSE_PLACEHOLDER_REMOVE = 'ActionDelete.inUse.placeholderRemove', 
+    ACTION_DELETE_INUSE_PLACEHOLDER_REMOVE = 'ActionDelete.inUse.placeholderRemove',
 
     // ActionDetails
     ACTIONDETAILSLIST_COLUMNS_RESPONSE = 'ActionDetailsList.columns.response',
@@ -185,7 +185,7 @@ export enum FM {
 
     // CompareDialogs
     COMPAREDIALOGS_EDIT = 'CompareDialogs.button.edit',
-    
+
     // ConfirmCancelModal
     CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT = 'ConfirmCancelModal.primaryButton.text',
     CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT = 'ConfirmCancelModal.defaultButton.text',
@@ -256,6 +256,7 @@ export enum FM {
     // EntityCreatorEditor
     ENTITYCREATOREDITOR_FIELDERROR_NOBLANK = 'EntityCreatorEditor.fieldError.noblank',
     ENTITYCREATOREDITOR_FIELDERROR_RESERVED = 'EntityCreatorEditor.fields.reserved',
+    ENTITYCREATOREDITOR_FIELDERROR_ENUM_MAX_LENGTH = 'EntityCreatorEditor.fields.enumMaxLength',
     ENTITYCREATOREDITOR_ENTITYOPTION_ENUM = 'EntityCreatorEditor.entityOption.enum',
     ENTITYCREATOREDITOR_ENTITYOPTION_LUIS = 'EntityCreatorEditor.entityOption.new',
     ENTITYCREATOREDITOR_ENTITYOPTION_PROG = 'EntityCreatorEditor.entityOption.programmatic',
@@ -304,7 +305,7 @@ export enum FM {
     ERROR_PRIMARYBUTTON_TEXT = 'Error.text',
     ERROR_TOOMANYCHARACTERS = 'Error.tooManyChars',
 
-    // ExportChoice 
+    // ExportChoice
     EXPORT_CHOICE_TITLE = 'ExportChoice.title',
     EXPORT_CHOICE_DESCRIPTION = 'ExportChoice.description',
     EXPORT_CHOICE_LABEL = 'ExportChoice.label',
@@ -324,7 +325,7 @@ export enum FM {
     FIELDERROR_DISTINCT = 'FieldError.distinct',
     FIELDERROR_MAX_30 = 'fieldError.max30',
     FIELDERROR_REQUIREDVALUE = 'fieldError.requiredValue',
-    
+
     // Import
     IMPORT_AUTOIMPORT = 'Importer.autoimport',
     IMPORT_AUTOMERGE = 'Importer.automerge',
@@ -575,17 +576,17 @@ export enum FM {
     TRAINDIALOGS_FILTERING_RESET = 'TrainDialogs.Filters.reset',
     TRAINDIALOGS_LISTVIEW_BUTTON = 'TrainDialogs.ListView.Button',
     TRAINDIALOGS_TREEVIEW_BUTTON = 'TrainDialogs.TreeView.Button',
-    
+
     // Trainscript Import Cancel
     TRANSCRIPT_IMPORT_CANCEL_TITLE = 'TranscriptImportCancel.title',
     TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL = 'TranscriptImportCancel.Checkbox.label',
-    
+
     // Transcript Importer
     TRANSCRIPT_IMPORTER_TITLE = 'TranscriptImporter.title',
     TRANSCRIPT_IMPORTER_DESCRIPTION = 'TranscriptImporter.description',
     TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON = 'TranscriptImporter.transcriptbutton',
     TRANSCRIPT_IMPORTER_LG_BUTTON = 'TranscriptImporter.lgbutton',
-    
+
     // Transcript Validator
     TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
     TRANSCRIPT_VALIDATOR_SUBTITLE = 'TranscriptValidator.subtitle',
@@ -667,7 +668,7 @@ export default {
         [FM.ACTIONSCORER_COLUMNS_ENTITIES]: 'Entities',
         [FM.ACTIONSCORER_COLUMNS_ISTERMINAL]: 'Wait',
         [FM.ACTIONSCORER_COLUMNS_TYPE]: 'Type',
-        
+
         [FM.ACTION_DELETE_INUSE_TITLE]: 'Deleting actions used by train dialogs',
         [FM.ACTION_DELETE_INUSE_PLACEHOLDER_PRESERVE]: 'This operation will preserves the reference to the action leaving a placeholder. All the dialogs using the action will become invalid.  This option can be useful to see where and how the action was used as you correct the dialogs or replace the action.',
         [FM.ACTION_DELETE_INUSE_PLACEHOLDER_REMOVE]: 'This operation will remove the reference to the action. The dialog may become invalid if removal of the action affected memory or left a round unterminated. This option can be useful to if you think most of the dialogs will remain valid and you do not want to have to correct each dialog.',
@@ -1043,7 +1044,7 @@ export default {
         // ConfirmCancelModal
         [FM.CONFIRMCANCELMODAL_PRIMARYBUTTON_TEXT]: 'Confirm',
         [FM.CONFIRMCANCELMODAL_DEFAULTBUTTON_TEXT]: 'Cancel',
-        
+
         // DialogMetadata
         [FM.DIALOGMETADATA_TAGS_LABEL]: 'Tags',
         [FM.DIALOGMETADATA_DESCRIPTION_LABEL]: 'Description',
@@ -1080,10 +1081,11 @@ export default {
         [FM.EDITDIALOGMODAL_WARNING_INVALID_PACKAGE]: 'Editing only permitted on the Master tag',
         [FM.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY]: 'Entity or Action changes require replay of the TrainDialog',
         [FM.EDITDIALOGMODAL_WARNING_NEED_REPLAY]: 'Entity or Action changes require replay of the TrainDialog',
-        
+
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED]: 'Name is reserved.',
+        [FM.ENTITYCREATOREDITOR_FIELDERROR_ENUM_MAX_LENGTH]: 'Value must not be greater than 10 characters.',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM]: 'Enum',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_LUIS]: 'Custom Trained',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_PROG]: 'Programmatic',
@@ -1234,9 +1236,9 @@ export default {
         [FM.USERINPUT_BRANCH_TITLE]: 'Add Different User Input',
         [FM.USERINPUT_PLACEHOLDER]: 'User Input...',
 
-        /** 
+        /**
          * This is kind of hack which re-uses redux action types as unit strings for localized error messages
-         * 
+         *
          * It should probably be `errors.application.create` but we're using something like: `CREATE_APPLICATION_ASYNC`
          */
         [AT.CREATE_APPLICATION_ASYNC]: 'Creating Application',
