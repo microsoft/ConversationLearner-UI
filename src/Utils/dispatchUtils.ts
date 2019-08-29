@@ -2,7 +2,7 @@ import * as CLM from '@conversationlearner/models'
 import { SourceAndModelPair } from "src/types/models"
 import * as uuid from 'uuid/v4'
 import * as Util from './util'
-import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator';
+import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator'
 
 /**
  * Generations new source based on child sources and given algorithm
@@ -13,9 +13,12 @@ export function generateDispatcherSource(
     sourceModelPairs: SourceAndModelPair[],
     algorithmType: DispatcherAlgorithmType,
 ) {
+    // TODO: Use declarative map [Type, Fn] instead of switch case
     switch (algorithmType) {
         case DispatcherAlgorithmType.DeterministicSingleTransfer:
-            return generageDeterministicDispatcherSource(sourceModelPairs)
+            return generageDeterministicDispatcherSource(sourceModelPairs, 3)
+        case DispatcherAlgorithmType.RandomSingleTransfer:
+            return generageRandomTransitonDispatcherSource(sourceModelPairs, 2)
     }
 
     throw new Error(`Could not associate Dispatcher Algorithm Type with algorithm. You passed: ${algorithmType}`)
@@ -23,18 +26,38 @@ export function generateDispatcherSource(
 
 /**
  * Attempt to transition at first N number of rounds for each dialog in model, to a dialog in another model.
- * @param transitionRoundLimit Limit on number of places to transfer between models. Defaults to 3
+ * @param transitionAtFirstNRounds Limit on number of places to transfer between models. Defaults to 3
  */
 function generageDeterministicDispatcherSource(
     sourceModelPairs: SourceAndModelPair[],
-    transitionRoundLimit: number = 3,
+    transitionAtFirstNRounds: number,
 ): CLM.AppDefinition {
     generateDispatchActions(sourceModelPairs);
-
     const modelsTrainDialogs = associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs)
+    const trainDialogs = determisticSingleTransfer(modelsTrainDialogs, transitionAtFirstNRounds);
+    const source: CLM.AppDefinition = {
+        trainDialogs,
+        actions: sourceModelPairs.map(sm => sm.action),
+        entities: [],
+    }
 
-    const trainDialogs = determisticSingleTransfer(modelsTrainDialogs, transitionRoundLimit);
+    return source
+}
 
+/**
+ * Attempt to transition at random N position in rounds for each dialog in model, to a dialog in another model.
+ * @param numRandomTransfersPoints Limit on number of places to transfer between models. Defaults to 3
+ */
+function generageRandomTransitonDispatcherSource(
+    sourceModelPairs: SourceAndModelPair[],
+    // TODO: Should be percentage of dialog instead of fixed number?
+    // 2 transition in 50 round dialog isn't good coverage
+    // 2 transitions in 5 step dialog is better?
+    numRandomTransfersPoints: number,
+): CLM.AppDefinition {
+    generateDispatchActions(sourceModelPairs);
+    const modelsTrainDialogs = associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs)
+    const trainDialogs = randomSingleTransfer(modelsTrainDialogs, numRandomTransfersPoints)
     const source: CLM.AppDefinition = {
         trainDialogs,
         actions: sourceModelPairs.map(sm => sm.action),
@@ -93,7 +116,7 @@ function generateDispatchActions(sourceModelPairs: SourceAndModelPair[]) {
 function associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs: SourceAndModelPair[]): CLM.TrainDialog[][] {
     return sourceModelPairs.map((sm, mIndex) => {
         if (!sm.action) {
-            throw new Error(`(Source + Model) pair must have dispatch action assigned at this point`);
+            throw new Error(`(Source + Model) pair must have dispatch action assigned at this point`)
         }
 
         return sm.source.trainDialogs.map((t, tIndex) => {
@@ -120,12 +143,12 @@ function associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs: Sour
                 ]
             })
 
-            t.tags = [`model-${mIndex + 1}`, `dialog-${tIndex + 1}`];
+            t.tags = [`model-${mIndex + 1}`, `dialog-${tIndex + 1}`]
             // t.description = `Model: ${sm.model.appName} - Dialog ${tIndex + 1}
 
-            return t;
-        });
-    });
+            return t
+        })
+    })
 }
 
 /**
@@ -157,84 +180,184 @@ function associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs: Sour
  *  [D,E,F,G,H,I],
  *  ...
  * ]
+ *
+ * Currently only tests single transition.
+ * A to B or A to C
+ * Could try re-entry patterns: A B A
+ * Could try multi model switch: A B C
  */
-
 function determisticSingleTransfer(
     modelsTrainDialogs: CLM.TrainDialog[][],
-    transitionRoundLimit: number
+    transitionAtFirstNRounds: number
 ): CLM.TrainDialog[] {
     const allTrainDialogs = modelsTrainDialogs
         .reduce((a, b) => [...a, ...b])
 
     const dialogsWithoutModelTransition = Util.deepCopy(allTrainDialogs)
+    const dialogTransitionGroups = generateDeterministicDialogTransitionGroups(modelsTrainDialogs, transitionAtFirstNRounds)
+    const dialogsWithModelTransition = concatTransitionDialogsWithOtherDialogs(dialogTransitionGroups)
+        .map(generateDispatchDialog)
 
-    /**
-     * Currently only tests single transition.
-     * A to B or A to C
-     * Could try re-entry patterns: A B A
-     * Could try multi model switch: A B C
-     */
-    const mixRounds = modelsTrainDialogs
-        .map((modelDialogs, mIndex) => {
+    return [
+        ...dialogsWithoutModelTransition,
+        ...dialogsWithModelTransition
+    ]
+}
 
-            /**
-             * Original implementation attempted transitions within same model and preserved action
-             * This could be good or introduce noise. Consider it as option
-             */
-            const trainDialogsFromOtherModels = modelsTrainDialogs.filter((_, k) => k !== mIndex);
-            return modelDialogs
-                .map(t => t.rounds)
-                .map((rs, i, allDialogsRounds) => {
-                    // Get rounds from dialogs other than the one being dispatched
-                    const otherDialogsRounds = trainDialogsFromOtherModels
-                        .reduce((a, b) => [...a, ...b])
-                        .map(t => t.rounds)
 
-                    // TODO: Adapt to be able to transition at multiple points in dialog
-                    // Beginning (First 4) and End (Last 4) ?
-                    const possibleTransitionRounds = rs
-                        // Only attempt to transition within first 4 rounds
-                        // After 4, assume user will stay on task
-                        .filter((_, j) => j <= transitionRoundLimit);
+/**
+ * Similar to deterministic transfer except try to transition and random N positions within dialog
+ *
+ * Array of rounds (with random transition points)
+ *      1   2          3    4
+ * [1,2,3,4,5,6,7,8,9,10,11,12,13,...]
+ *  1   2         3            4
+ * [1,2,3,4,5,6,7,8,9,10,11,12,13,...]
+ */
+function randomSingleTransfer(
+    modelsTrainDialogs: CLM.TrainDialog[][],
+    numRandomTransfersPoints: number
+): CLM.TrainDialog[] {
+    const allTrainDialogs = modelsTrainDialogs.reduce((a, b) => [...a, ...b])
+    const dialogsWithoutModelTransition = Util.deepCopy(allTrainDialogs)
+    const dialogTransitionGroups = generateRandomDialogTransitionGroups(modelsTrainDialogs, numRandomTransfersPoints)
+    const dialogsWithModelTransition = concatTransitionDialogsWithOtherDialogs(dialogTransitionGroups)
+        .map(generateDispatchDialog)
 
-                    // For each round, try to transition to one of the other dialogs
-                    return otherDialogsRounds
-                        .map((dialogRounds) => {
-                            return possibleTransitionRounds
-                                .map((_, k) => {
-                                    // Get rounds until index
-                                    const firstRounds = rs.slice(0, k + 1)
-                                    // Note: always concatenates entire dialog from start
-                                    const secondRounds = dialogRounds
-                                    return [...firstRounds, ...secondRounds]
-                                });
+    return [
+        ...dialogsWithoutModelTransition,
+        ...dialogsWithModelTransition
+    ]
+}
+
+const generateDispatchDialog = (t: CLM.TrainDialog) => ({
+    tags: [`generated`],
+    description: "",
+    trainDialogId: uuid(),
+    rounds: t.rounds,
+
+    // Ignored fields (Irrelevant for Dispatch function)
+    clientData: {
+        importHashes: []
+    },
+    initialFilledEntities: [],
+    createdDateTime: new Date().toJSON(),
+    lastModifiedDateTime: new Date().toJSON(),
+} as unknown as CLM.TrainDialog)
+
+type DialogTransitionGroup = {
+    trainDialogsToTransitionFrom: CLM.TrainDialog[]
+    trainDialogsFromOtherModels: CLM.TrainDialog[]
+}
+
+/**
+ * For each dialog to transition from, generate dialog for each of the other model dialogs with concatenation of rounds from A to B
+ */
+function concatTransitionDialogsWithOtherDialogs(dialogTransitionGroups: DialogTransitionGroup[]) {
+    return dialogTransitionGroups
+        .map(dialogTransitionGroup => {
+            return dialogTransitionGroup.trainDialogsToTransitionFrom
+                .map(t => {
+                    return dialogTransitionGroup.trainDialogsFromOtherModels
+                        .map(dialogFromOtherModel => {
+                            const dialogCopy = Util.deepCopy(t)
+                            dialogCopy.rounds = [
+                                ...dialogCopy.rounds,
+                                ...dialogFromOtherModel.rounds,
+                            ]
+
+                            return dialogCopy
                         })
-                        .reduce((a, b) => [...a, ...b])
                 })
                 .reduce((a, b) => [...a, ...b])
         })
         .reduce((a, b) => [...a, ...b])
+}
 
-    const mixedDialogs = mixRounds.map<CLM.TrainDialog>(rs => {
-        return {
-            tags: [`generated`],
-            description: "",
-            trainDialogId: uuid(),
-            rounds: rs,
+function generateRandomDialogTransitionGroups(
+    modelsTrainDialogs: CLM.TrainDialog[][],
+    numRandomTransfersPoints: number,
+) {
+    return modelsTrainDialogs
+        .map((modelDialogs, mIndex) => {
+            /**
+             * Original implementation attempted transitions within same model and preserved action
+             * This could be good or introduce noise. Consider it as option
+             */
+            const trainDialogsFromOtherModels = modelsTrainDialogs
+                .filter((_, k) => k !== mIndex)
+                .reduce((a, b) => [...a, ...b])
 
-            // Ignored fields
-            clientData: {
-                importHashes: []
-            },
-            initialFilledEntities: [],
-            createdDateTime: new Date().toJSON(),
-            lastModifiedDateTime: new Date().toJSON(),
-        } as unknown as CLM.TrainDialog
-    })
+            const trainDialogsToTransitionFrom = modelDialogs
+                .map(t => {
+                    const transitionRoundIncies = getUniqueRandomNumbers(numRandomTransfersPoints, t.rounds.length)
+                    console.log({ transitionRoundIncies })
 
-    return [
-        ...dialogsWithoutModelTransition,
-        ...mixedDialogs
-    ]
+                    // For each transition point generate a new dialog with rounds up to that point
+                    return transitionRoundIncies
+                        .map(transitionRoundIndex => {
+                            const dialogCopy = Util.deepCopy(t);
+                            dialogCopy.rounds = dialogCopy.rounds.slice(0, transitionRoundIndex)
+                            return dialogCopy
+                        })
+                })
+                .reduce((a, b) => [...a, ...b])
+
+            return {
+                trainDialogsToTransitionFrom,
+                trainDialogsFromOtherModels
+            }
+        })
+}
+
+function getUniqueRandomNumbers(length: number, max: number) {
+    const numbers: number[] = []
+
+    while (numbers.length < length) {
+        const n = Math.ceil(Math.random() * max)
+        if (!numbers.includes(n)) {
+            numbers.push(n)
+        }
+    }
+
+    return numbers
+}
+
+function generateDeterministicDialogTransitionGroups(
+    modelsTrainDialogs: CLM.TrainDialog[][],
+    transitionAtFirstNRounds: number
+) {
+    return modelsTrainDialogs
+        .map((modelDialogs, mIndex) => {
+            /**
+             * Original implementation attempted transitions within same model and preserved action
+             * This could be good or introduce noise. Consider it as option
+             */
+            const trainDialogsFromOtherModels = modelsTrainDialogs
+                .filter((_, k) => k !== mIndex)
+                .reduce((a, b) => [...a, ...b])
+
+            const trainDialogsToTransitionFrom = modelDialogs
+                .map(t => {
+                    // TODO: Adapt to be able to transition at multiple points in dialog
+                    // Beginning (First 4) and End (Last 4) ?
+                    const possibleTransitionRounds = t.rounds.slice(0, transitionAtFirstNRounds)
+
+                    // For each transition point generate a new dialog
+                    return possibleTransitionRounds
+                        .map((_, rIndex, rounds) => {
+                            const dialogCopy = Util.deepCopy(t)
+                            const roundsUpToTransitionPoint = rounds.slice(0, rIndex + 1)
+                            dialogCopy.rounds = roundsUpToTransitionPoint
+                            return dialogCopy
+                        })
+                })
+                .reduce((a, b) => [...a, ...b])
+
+            return {
+                trainDialogsToTransitionFrom,
+                trainDialogsFromOtherModels,
+            }
+        })
 }
 
