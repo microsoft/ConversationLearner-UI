@@ -13,7 +13,7 @@ import * as train from '../../../support/Train'
 import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
-describe('Bug 2259 - Repro - EditAndBranching', () => {
+describe('Bug 2259 Repro', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
