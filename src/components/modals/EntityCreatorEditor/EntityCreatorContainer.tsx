@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -20,6 +20,7 @@ import Component, { IEnumValueForDisplay } from './EntityCreatorComponent'
 import { autobind } from 'core-decorators';
 
 const entityNameMaxLength = 30
+const enumMaxLength = 10
 const prebuiltPrefix = 'builtin-'
 
 const initState: ComponentState = {
@@ -381,7 +382,7 @@ class Container extends React.Component<Props, ComponentState> {
         const enumValueObj = enumValuesObjs[index]
 
         if (newValue.length > 0) {
-            // Create new EnumValue if needed 
+            // Create new EnumValue if needed
             if (!enumValueObj) {
                 enumValuesObjs[index] = { enumValue: newValue }
             }
@@ -468,6 +469,10 @@ class Container extends React.Component<Props, ComponentState> {
             return enumValue.enumValueId ? Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK) : ""
         }
 
+        if (enumValue.enumValue.length > enumMaxLength) {
+            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_ENUM_MAX_LENGTH)
+        }
+
         if (!/^[a-zA-Z0-9-]+$/.test(enumValue.enumValue)) {
             return Util.formatMessageId(intl, FM.FIELDERROR_ALPHANUMERIC)
         }
@@ -545,7 +550,7 @@ class Container extends React.Component<Props, ComponentState> {
                 .some(condition =>
                     condition.entityId === entity.entityId
                     && condition.valueId === enumValue.enumValueId)
-            
+
             const usedToSetValue = (a.actionType === CLM.ActionTypes.SET_ENTITY)
                     && a.entityId === entity.entityId
                     && a.enumValueId === enumValue.enumValueId

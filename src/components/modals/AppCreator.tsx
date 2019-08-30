@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -149,7 +149,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                 autoActionCreate: this.state.autoActionMatch
             }
             this.props.onSubmitOBI(appInput, obiImportData)
-        }   
+        }
     }
 
     // TODO: Refactor to use default form submission instead of manually listening for keys
@@ -251,9 +251,6 @@ class AppCreator extends React.Component<Props, ComponentState> {
             case AppCreatorType.OBI:
                 return (
                     <FormattedMessageId id={FM.APPCREATOR_OBI_TITLE} />)
-            case AppCreatorType.DISPATCHER:
-                return (
-                    <FormattedMessageId id={FM.APPCREATOR_DISPATCHER_TITLE} />)
             default:
                 throw new Error(`Could not get title for unknown app creator type: ${this.props.creatorType}`)
         }
@@ -305,8 +302,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                         onKeyDown={key => this.onKeyDown(key)}
                         value={this.state.appNameVal}
                     />
-                    {(this.props.creatorType === AppCreatorType.NEW 
-                    || this.props.creatorType === AppCreatorType.DISPATCHER) &&
+                    {this.props.creatorType === AppCreatorType.NEW &&
                         <OF.Dropdown
                             ariaLabel={Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
                             label={Util.formatMessageId(intl, FM.APPCREATOR_FIELDS_LOCALE_LABEL)}
@@ -358,17 +354,17 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                 <OF.PrimaryButton
                                     data-testid="transcript-locate-file-button"
                                     className="cl-file-picker-button"
-                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_SELECT_FILES)} 
-                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_SELECT_FILES)} 
+                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_SELECT_FILES)}
+                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_SELECT_FILES)}
                                     iconProps={{ iconName: 'DocumentSearch' }}
                                     onClick={() => this.fileInput.click()}
                                 />
                                 <OF.TextField
                                     disabled={true}
-                                    value={!this.state.obiFiles 
+                                    value={!this.state.obiFiles
                                         ? undefined
                                         : this.state.obiFiles.length === 1
-                                        ? this.state.obiFiles[0].name 
+                                        ? this.state.obiFiles[0].name
                                         : `${this.state.obiFiles.length} files selected`
                                     }
                                 />
@@ -415,8 +411,7 @@ class AppCreator extends React.Component<Props, ComponentState> {
                                     iconProps={{ iconName: 'Accept' }}
                                 />
                             }
-                            {(this.props.creatorType === AppCreatorType.NEW ||
-                            this.props.creatorType === AppCreatorType.DISPATCHER) &&
+                            {this.props.creatorType === AppCreatorType.NEW &&
                                 <OF.PrimaryButton
                                     disabled={this.isSubmitDisabled()}
                                     data-testid="model-creator-submit-button"
