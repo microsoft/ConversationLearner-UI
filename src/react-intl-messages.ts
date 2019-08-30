@@ -260,6 +260,7 @@ export enum FM {
     // EntityCreatorEditor
     ENTITYCREATOREDITOR_FIELDERROR_NOBLANK = 'EntityCreatorEditor.fieldError.noblank',
     ENTITYCREATOREDITOR_FIELDERROR_RESERVED = 'EntityCreatorEditor.fields.reserved',
+    ENTITYCREATOREDITOR_FIELDERROR_ENUM_MAX_LENGTH = 'EntityCreatorEditor.fields.enumMaxLength',
     ENTITYCREATOREDITOR_ENTITYOPTION_ENUM = 'EntityCreatorEditor.entityOption.enum',
     ENTITYCREATOREDITOR_ENTITYOPTION_LUIS = 'EntityCreatorEditor.entityOption.new',
     ENTITYCREATOREDITOR_ENTITYOPTION_PROG = 'EntityCreatorEditor.entityOption.programmatic',
@@ -1092,6 +1093,7 @@ export default {
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED]: 'Name is reserved.',
+        [FM.ENTITYCREATOREDITOR_FIELDERROR_ENUM_MAX_LENGTH]: 'Value must not be greater than 10 characters.',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM]: 'Enum',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_LUIS]: 'Custom Trained',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_PROG]: 'Programmatic',
