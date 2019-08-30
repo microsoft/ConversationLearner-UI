@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -34,6 +34,7 @@ import { TeachSessionState } from '../../../types/StateTypes'
 import './TrainDialogs.css'
 import { autobind } from 'core-decorators';
 import { ActionTypes } from '@conversationlearner/models';
+import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator';
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -530,7 +531,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             activityHistory: [],
             lastAction: null,
             currentTrainDialog: null,
-            // originalTrainDialogId - do not clear. Need for later 
+            // originalTrainDialogId - do not clear. Need for later
             dialogKey: this.state.dialogKey + 1
         })
 
@@ -764,7 +765,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             activityHistory: [],
             lastAction: null,
             currentTrainDialog: null,
-            // originalTrainDialogId - do not clear. Need for later 
+            // originalTrainDialogId - do not clear. Need for later
             dialogKey: this.state.dialogKey + 1
         })
 
@@ -799,7 +800,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 activityHistory: [],
                 lastAction: null,
                 currentTrainDialog: null,
-                // originalTrainDialogId - do not clear. Need for later 
+                // originalTrainDialogId - do not clear. Need for later
                 dialogKey: this.state.dialogKey + 1
             })
 
@@ -953,7 +954,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
             const originalTrainDialogId = this.state.originalTrainDialog ? this.state.originalTrainDialog.trainDialogId : null
 
-            // Remove any data added for rendering 
+            // Remove any data added for rendering
             DialogUtils.cleanTrainDialog(newTrainDialog)
 
             newTrainDialog.validity = validity
@@ -977,7 +978,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
     }
 
-    // Create a new trainDialog 
+    // Create a new trainDialog
     async onCreateTrainDialog(newTrainDialog: CLM.TrainDialog) {
 
         this.setState({
@@ -1065,7 +1066,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isRegenActive: true,
         })
 
-        await this.props.regenerateDispatchTrainDialogsAsync(this.props.app.appId, this.props.actions, this.props.trainDialogs)
+        let algorithmType = DispatcherAlgorithmType.DeterministicSingleTransfer
+        const match = (this.props.app.metadata.markdown || '').match(/Type: ([\w ]+)/)
+        if (match && match[1]) {
+            console.log(`Dispatch Algorithm Type: `, { match })
+            // TODO: Find way to extract algorithm type
+        }
+
+        await this.props.regenerateDispatchTrainDialogsAsync(this.props.app.appId, algorithmType, this.props.actions, this.props.trainDialogs)
 
         this.setState({
             isRegenActive: false,
@@ -1085,14 +1093,14 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 importAutoMerge: obiImportData.autoMerge,
                 importAutoActionCreate: obiImportData.autoActionCreate
             })
-    
+
             await this.onImportNextTrainDialog()
         }
         catch (error) {
             await Util.setStateAsync(this, {
                 importedTrainDialogs: undefined
             })
-            this.props.setErrorDisplay(ErrorType.Error, "Import Failed", error.message, null)       
+            this.props.setErrorDisplay(ErrorType.Error, "Import Failed", error.message, null)
         }
     }
 
@@ -1134,7 +1142,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.props.createActionThunkAsync as any,
             this.props.createEntityThunkAsync as any
             )
-        
+
         try {
             const importedTrainDialogs = await obiTranscriptParser.getTrainDialogs(transcriptFiles, lgFiles)
             await Util.setStateAsync(this, {
@@ -1144,7 +1152,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 importAutoCreate,
                 importAutoMerge
             })
-    
+
             await this.onImportNextTrainDialog()
         }
         catch (e) {
@@ -1166,11 +1174,11 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const importIndex = this.state.importIndex === undefined ? 0 : this.state.importIndex + 1
         await Util.setStateAsync(this, { importIndex })
 
-        // Check if I'm done importing 
+        // Check if I'm done importing
         if (this.state.importIndex === undefined || this.state.importIndex >= this.state.importedTrainDialogs.length) {
-            this.setState({ 
+            this.setState({
                 importedTrainDialogs: undefined,
-                isImportWaitModalOpen: false 
+                isImportWaitModalOpen: false
             })
             return
         }
@@ -1202,7 +1210,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         if (this.state.importAutoActionCreate) {
             await OBIUtils.createImportedActions(
                 this.props.app.appId,
-                newTrainDialog, 
+                newTrainDialog,
                 this.props.botInfo.templates,
                 this.props.createActionThunkAsync as any)
 
@@ -1278,7 +1286,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             isEditDialogModalOpen: false,
             selectedActivityIndex: null,
             currentTrainDialog: null,
-            // originalTrainDialog: Do not clear.  Save for later 
+            // originalTrainDialog: Do not clear.  Save for later
             activityHistory: [],
             lastAction: null,
             dialogKey: this.state.dialogKey + 1
