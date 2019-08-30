@@ -16,8 +16,10 @@ import { fetchTutorialsThunkAsync } from '../../actions/appActions'
 import { CL_IMPORT_TUTORIALS_USER_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators'
+import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator';
 
 interface ComponentState {
+    isDispatcherCreateModalOpen: boolean
     isAppCreateModalOpen: boolean
     appCreatorType: AppCreatorType
     isImportTutorialsOpen: boolean
@@ -29,6 +31,7 @@ interface ComponentState {
 class AppsList extends React.Component<Props, ComponentState> {
 
     state: Readonly<ComponentState> = {
+        isDispatcherCreateModalOpen: false,
         isAppCreateModalOpen: false,
         appCreatorType: AppCreatorType.NEW,
         isImportTutorialsOpen: false,
@@ -94,13 +97,7 @@ class AppsList extends React.Component<Props, ComponentState> {
         this.setState({
             isAppCreateModalOpen: false
         }, () => {
-            if (this.state.appCreatorType === AppCreatorType.DISPATCHER) {
-                const selectedModels = this.selection.getSelection() as CLM.AppBase[]
-                this.props.onCreateDispatchModel(app, selectedModels)
-            }
-            else {
-                this.props.onCreateApp(app, source)
-            }
+            this.props.onCreateApp(app, source)
         })
     }
 
@@ -108,6 +105,23 @@ class AppsList extends React.Component<Props, ComponentState> {
     onCancelAppCreateModal() {
         this.setState({
             isAppCreateModalOpen: false
+        })
+    }
+
+    @autobind
+    onSubmitDispatcherCreateModal(app: Partial<CLM.AppBase>, algorithmType: DispatcherAlgorithmType) {
+        this.setState({
+            isDispatcherCreateModalOpen: false
+        }, () => {
+            const selectedModels = this.selection.getSelection() as CLM.AppBase[]
+            this.props.onCreateDispatchModel(app, selectedModels, algorithmType)
+        })
+    }
+
+    @autobind
+    onCancelDispatcherCreateModal() {
+        this.setState({
+            isDispatcherCreateModalOpen: false
         })
     }
 
@@ -132,8 +146,7 @@ class AppsList extends React.Component<Props, ComponentState> {
     @autobind
     onClickCreateNewDispatcherModel() {
         this.setState({
-            isAppCreateModalOpen: true,
-            appCreatorType: AppCreatorType.DISPATCHER
+            isDispatcherCreateModalOpen: true,
         })
     }
 
@@ -162,6 +175,10 @@ class AppsList extends React.Component<Props, ComponentState> {
             onSubmitAppCreateModal={this.onSubmitAppCreateModal}
             onCancelAppCreateModal={this.onCancelAppCreateModal}
             appCreatorType={this.state.appCreatorType}
+
+            isDispatcherCreateModalOpen={this.state.isDispatcherCreateModalOpen}
+            onSubmitDispatcherCreateModal={this.onSubmitDispatcherCreateModal}
+            onCancelDispatcherCreateModal={this.onCancelDispatcherCreateModal}
 
             onClickCreateNewApp={this.onClickCreateNewApp}
             onClickImportApp={this.onClickImportApp}
@@ -201,7 +218,7 @@ export interface ReceivedProps {
     onCreateApp: (app: Partial<CLM.AppBase>, source: CLM.AppDefinition | null, obiImportData?: OBIImportData) => void
     onClickDeleteApp: (app: CLM.AppBase) => void
     onImportTutorial: (tutorial: CLM.AppBase) => void
-    onCreateDispatchModel: (model: Partial<CLM.AppBase>, models: CLM.AppBase[]) => void
+    onCreateDispatchModel: (model: Partial<CLM.AppBase>, models: CLM.AppBase[], algorithmType: DispatcherAlgorithmType) => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps
