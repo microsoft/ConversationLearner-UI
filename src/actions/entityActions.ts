@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as ClientFactory from '../services/clientFactory'
@@ -36,7 +36,7 @@ export const createEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
         dispatch(createEntityAsync(appId, entity))
         const clClient = ClientFactory.getInstance(AT.CREATE_ENTITY_ASYNC)
 
-        try {     
+        try {
             const posEntity = await clClient.entitiesCreate(appId, entity);
             dispatch(createEntityFulfilled(posEntity));
 
@@ -46,14 +46,14 @@ export const createEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
                 dispatch(createEntityFulfilled(negEntity));
             }
 
-            // If created entity has resolver, we fetch all entities to make sure 
+            // If created entity has resolver, we fetch all entities to make sure
             // that definition of prebuilt entity is in the memory
             if (typeof entity.resolverType !== 'undefined' && entity.resolverType !== null) {
                 dispatch(fetchAllEntitiesThunkAsync(appId));
             }
 
             return posEntity.entityId
-            
+
         } catch (e) {
             const error = e as AxiosError
             dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_ENTITY_ASYNC))
@@ -86,13 +86,13 @@ export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prev
         dispatch(editEntityAsync(appId, entity))
 
         try {
-            const changedEntityResponse = await clClient.entitiesUpdate(appId, entity)
-            dispatch(editEntityFulfilled(entity))
+            const updateEntityResponse = await clClient.entitiesUpdate(appId, entity)
+            dispatch(editEntityFulfilled(updateEntityResponse.entity))
 
             // If we're setting negatable flag
             if (entity.isNegatible && !prevEntity.isNegatible) {
                 // Need to fetch negative entity in order to load it into memory
-                const negEntity = await clClient.entitiesGetById(appId, changedEntityResponse.negativeEntityId)
+                const negEntity = await clClient.entitiesGetById(appId, updateEntityResponse.entity.negativeId!)
                 dispatch(createEntityFulfilled(negEntity))
             }
             // If we're UNsetting negatable flag
@@ -101,12 +101,12 @@ export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prev
                 dispatch(deleteEntityFulfilled(prevEntity.negativeId!))
             }
             // If entity is negatable and negative entity have changed as a result of this edit
-            else if (entity.isNegatible && changedEntityResponse.negativeEntityId) {
-                const negEntity = await clClient.entitiesGetById(appId, changedEntityResponse.negativeEntityId)
+            else if (entity.isNegatible && updateEntityResponse.entity.negativeId) {
+                const negEntity = await clClient.entitiesGetById(appId, updateEntityResponse.entity.negativeId)
                 dispatch(editEntityFulfilled(negEntity))
             }
 
-            // If updated entity has a different resolver, we fetch all entities to make sure 
+            // If updated entity has a different resolver, we fetch all entities to make sure
             // that definition of prebuilt entity is in the memory
             if (entity.resolverType !== prevEntity.resolverType) {
                 dispatch(fetchAllEntitiesThunkAsync(appId));
@@ -118,8 +118,8 @@ export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prev
                 dispatch(fetchAllActionsThunkAsync(appId))
             }
 
-            // If any train dialogs were modified fetch train dialogs 
-            if (changedEntityResponse.trainDialogIds && changedEntityResponse.trainDialogIds.length > 0) {
+            // If any train dialogs were modified fetch train dialogs
+            if (updateEntityResponse.trainDialogIds && updateEntityResponse.trainDialogIds.length > 0) {
                 dispatch(fetchAllTrainDialogsThunkAsync(appId));
             }
 
@@ -167,7 +167,7 @@ export const deleteEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
                 dispatch(deleteEntityFulfilled(negativeEntityId))
             }
 
-            // If deleted entity is prebuilt entity, we fetch all entities to make sure 
+            // If deleted entity is prebuilt entity, we fetch all entities to make sure
             // that entities in the memory are all up to date
             if (CLM.isPrebuilt(entity)) {
                 dispatch(fetchAllEntitiesThunkAsync(appId));
@@ -178,7 +178,7 @@ export const deleteEntityThunkAsync = (appId: string, entity: CLM.EntityBase) =>
                 dispatch(fetchAllActionsThunkAsync(appId))
             }
 
-            // If any train dialogs were modified fetch train dialogs 
+            // If any train dialogs were modified fetch train dialogs
             if (deleteEditResponse.trainDialogIds && deleteEditResponse.trainDialogIds.length > 0) {
                 dispatch(fetchAllTrainDialogsThunkAsync(appId));
             }

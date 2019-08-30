@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
@@ -210,14 +210,15 @@ export default class ClClient {
     }
 
     async entitiesCreate(appId: string, entity: CLM.EntityBase): Promise<CLM.EntityBase> {
-        const response = await this.send<CLM.ChangeEntityResponse>({
+        const response = await this.send<CLM.AddEntityResponse>({
             method: 'post',
             url: `/app/${appId}/entity`,
             data: entity
         })
-        const changeEntityResponse = response.data;
-        entity.entityId = changeEntityResponse.entityId;
-        entity.negativeId = changeEntityResponse.negativeEntityId;
+        const addEntityResponse = response.data
+        // Copy updated fields from server such as entityId, negativeId, and enumValueIds
+        Object.assign(entity, addEntityResponse.entity)
+
         return entity
     }
 
@@ -237,17 +238,16 @@ export default class ClClient {
         return response.data
     }
 
-    async entitiesUpdate(appId: string, entity: CLM.EntityBase): Promise<CLM.ChangeEntityResponse> {
+    async entitiesUpdate(appId: string, entity: CLM.EntityBase): Promise<CLM.UpdateEntityResponse> {
         const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
-        const response = await this.send<CLM.ChangeEntityResponse>({
+        const response = await this.send<CLM.UpdateEntityResponse>({
             method: 'put',
             url: `/app/${appId}/entity/${entity.entityId}`,
             data: entityToSend
         })
-        const changeEntityResponse = response.data;
-        entity.entityId = changeEntityResponse.entityId;
-        entity.negativeId = changeEntityResponse.negativeEntityId;
-        return changeEntityResponse
+        const updateEntityResponse = response.data;
+        Object.assign(entity, updateEntityResponse.entity)
+        return updateEntityResponse
     }
 
     async entitiesUpdateValidation(appId: string, packageId: string, entity: CLM.EntityBase): Promise<string[]> {
