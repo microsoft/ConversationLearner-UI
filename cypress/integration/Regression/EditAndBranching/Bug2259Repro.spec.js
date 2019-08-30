@@ -17,10 +17,9 @@ describe('Bug 2259 - Repro - EditAndBranching', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
-    it('Should import a model to test against, navigate to Train Dialogs view and wait for training status to complete', () => {
+    it('Should import a model to test against and navigate to Train Dialogs view', () => {
       models.ImportModel('z-bug2259', 'z-comprehensive4.cl')
       modelPage.NavigateToTrainDialogs()
-      //cy.WaitForTrainingStatusCompleted()
     })
   })
 
