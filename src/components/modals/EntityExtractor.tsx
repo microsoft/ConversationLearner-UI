@@ -570,6 +570,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                                 iconProps={{ iconName: 'Accept' }}
                             />
                             <OF.PrimaryButton
+                                data-testid="undo-changes-button"
                                 disabled={!this.state.isPendingSubmit}
                                 onClick={this.onClickUndoChanges}
                                 ariaDescription="Undo Changes"

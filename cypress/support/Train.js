@@ -28,7 +28,6 @@ export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).C
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
-export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
 export function GetAllChatMessages() { return helpers.StringArrayFromElementText(AllChatMessagesSelector) }
 export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
 export function VerifyWarningMessage(expectedMessage) { cy.Get('[data-testid="dialog-modal-warning"]').find('span').ExactMatch(expectedMessage) }
@@ -50,7 +49,11 @@ export function ClickConfirmDeleteLogDialogButton() { popupModal.VerifyExactTitl
 export function VerifyDeleteButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Delete') }
 export function VerifyAbandonBranchButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Abandon Branch') }
 
-export function ClickUndoButton() { cy.Get('[data-testid="edit-teach-dialog-undo-button"]').Click() }
+export function VerifySubmitChangesButtonIsDisabled() { cy.Get('[data-testid="submit-changes-button"].is-disabled') }
+export function VerifyUndoButtonIsDisabled() { cy.Get('[data-testid="undo-changes-button"].is-disabled') }
+
+export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
+export function ClickUndoButton() { cy.Get('[data-testid="undo-changes-button"]').Click() }
 export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }
 export function ClickReplayButton() { cy.Get('[data-testid="edit-dialog-modal-replay-button"]').Click() }
 
@@ -256,13 +259,15 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
   }
 }
 
-// Verify that a specific word of a user utterance has been labeled as an entity.
+// Select and Remove an entity label
 // word = a word within the utterance that should already be labeled
 // entity = name of entity the word was labeled with
 // index = into one of the alternative inputs
 // *** This does work for multiple word labels, but you must pass in only one
 // *** word that uniquely identifies the labeled text
-export function RemoveEntityLabel(word, entity, index = 0) {
+export function SelectEntityLabel(remove, word, entity, index = 0) { SelectRemoveEntityLabel(false, word, entity, index) }
+export function RemoveEntityLabel(remove, word, entity, index = 0) { SelectRemoveEntityLabel(true, word, entity, index) }
+function SelectRemoveEntityLabel(remove, word, entity, index = 0) {
   cy.Get('div.slate-editor').then(elements => {
     expect(elements.length).to.be.at.least(index - 1)
     cy.wrap(elements[index]).within(() => {
@@ -272,11 +277,14 @@ export function RemoveEntityLabel(word, entity, index = 0) {
         .find('[data-testid="custom-entity-name-button"]')
         .contains(entity)
         .Click()
-
-      cy.Get('button[title="Unselect Entity"]').Click()
+      
+      if (remove) { 
+        cy.Get('button[title="Unselect Entity"]').Click() 
+      }
     })
   })
 }
+
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
 //  word = a word within the utterance that should already be labeled
