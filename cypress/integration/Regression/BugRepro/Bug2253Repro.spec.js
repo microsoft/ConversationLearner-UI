@@ -8,7 +8,7 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
-describe("Bug 2253 Repro - EditAndBranching", () => {
+describe("Bug 2253 Repro", () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
@@ -22,7 +22,7 @@ describe("Bug 2253 Repro - EditAndBranching", () => {
   context('Attempt to reproduce Bug 2253', () => {
     it('Should edit a Train Dialog and add a round of turns', () => {
       train.EditTraining('My foot is dirty.', 'My foot is dirty.', 'Your foot is $conditionOfFoot.')
-      train.TypeYourMessage('I that all you have to say about it?')
+      train.TypeYourMessage('Is that all you have to say about it?')
       train.ClickScoreActionsButton()
       train.SelectTextAction("I don't know what to say.")
     })

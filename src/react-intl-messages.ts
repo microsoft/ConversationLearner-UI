@@ -107,6 +107,7 @@ export enum FM {
     APPCREATOR_FIELDS_IMPORT_NAME_LABEL = 'AppCreator.fields.importname.label',
     APPCREATOR_FIELDS_NAME_PLACEHOLDER = 'AppCreator.fields.name.placeholder',
     APPCREATOR_FIELDS_LOCALE_LABEL = 'AppCreator.fields.locale.label',
+    APPCREATOR_FIELDS_DISPATCHER_ALGORITHM_LABEL = 'AppCreator.fields.dispatcherAlgorithm.label',
     APPCREATOR_COPYBUTTON_ARIADESCRIPTION = 'AppCreator.copyButton.ariaDescription',
     APPCREATOR_COPYBUTTON_TEXT = 'AppCreator.copyButton.text',
     APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION = 'AppCreator.importButton.ariaDescription',
@@ -115,6 +116,9 @@ export enum FM {
     APPCREATOR_CHOOSE_FILE_BUTTON_TEXT = 'AppCreator.chooseFileButton.text',
     APPCREATOR_CANCELBUTTON_ARIADESCRIPTION = 'AppCreator.cancelButton.ariaDescription',
     APPCREATOR_CANCELBUTTON_TEXT = 'AppCreator.cancelButton.text',
+
+    // Dispatcher Creator
+    DISPATCHCREATOR_ALGORITHM_TYPE_LABEL = 'DispatcherCreator.algorithmType.label',
 
     // Apps List
     APPSLIST_SUBTITLE = 'AppsList.subtitle',
@@ -700,6 +704,7 @@ export default {
         [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New Model Name',
         [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Model name...',
         [FM.APPCREATOR_FIELDS_LOCALE_LABEL]: 'Locale',
+        [FM.APPCREATOR_FIELDS_DISPATCHER_ALGORITHM_LABEL]: 'Algorithm Type',
         [FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION]: 'Copy',
         [FM.APPCREATOR_COPYBUTTON_TEXT]: 'Copy',
         [FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION]: 'Import application',
@@ -708,6 +713,9 @@ export default {
         [FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT]: 'Select File',
         [FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.APPCREATOR_CANCELBUTTON_TEXT]: 'Cancel',
+
+        // Dispatch Creator
+        [FM.DISPATCHCREATOR_ALGORITHM_TYPE_LABEL]: 'Algorithm Type',
 
         // App
         [FM.APP_HEADER_MODELS]: 'My Models',

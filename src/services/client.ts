@@ -210,14 +210,20 @@ export default class ClClient {
     }
 
     async entitiesCreate(appId: string, entity: CLM.EntityBase): Promise<CLM.EntityBase> {
-        const response = await this.send<CLM.AddEntityResponse>({
+        const response = await this.send<CLM.ChangeEntityResponse>({
             method: 'post',
             url: `/app/${appId}/entity`,
             data: entity
         })
-        const addEntityResponse = response.data
-        // Copy updated fields from server such as entityId, negativeId, and enumValueIds
-        Object.assign(entity, addEntityResponse.entity)
+
+        const changeEntityResponse = response.data;
+        entity.entityId = changeEntityResponse.entityId;
+        entity.negativeId = changeEntityResponse.negativeEntityId;
+
+        // Note: Is synchronous API and could return whole object but there was hesitance of breaking change
+        // Make second request to get other fields from new entity such as enumValueIds
+        const newEntity = await this.entitiesGetById(appId, entity.entityId)
+        Object.assign(entity, newEntity)
 
         return entity
     }
@@ -238,16 +244,24 @@ export default class ClClient {
         return response.data
     }
 
-    async entitiesUpdate(appId: string, entity: CLM.EntityBase): Promise<CLM.UpdateEntityResponse> {
+    async entitiesUpdate(appId: string, entity: CLM.EntityBase): Promise<CLM.ChangeEntityResponse> {
         const { version, packageCreationId, packageDeletionId, ...entityToSend } = entity;
-        const response = await this.send<CLM.UpdateEntityResponse>({
+        const response = await this.send<CLM.ChangeEntityResponse>({
             method: 'put',
             url: `/app/${appId}/entity/${entity.entityId}`,
             data: entityToSend
         })
-        const updateEntityResponse = response.data;
-        Object.assign(entity, updateEntityResponse.entity)
-        return updateEntityResponse
+
+        const changeEntityResponse = response.data;
+        entity.entityId = changeEntityResponse.entityId;
+        entity.negativeId = changeEntityResponse.negativeEntityId;
+
+        // Note: Is synchronous API and could return whole object but there was hesitance of breaking change
+        // Make second request to get other fields from new entity such as enumValueIds
+        const newEntity = await this.entitiesGetById(appId, entity.entityId)
+        Object.assign(entity, newEntity)
+
+        return changeEntityResponse
     }
 
     async entitiesUpdateValidation(appId: string, packageId: string, entity: CLM.EntityBase): Promise<string[]> {

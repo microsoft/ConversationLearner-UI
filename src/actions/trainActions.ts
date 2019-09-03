@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
@@ -16,6 +16,7 @@ import { AxiosError } from 'axios'
 import { setErrorDisplay } from './displayActions'
 import { EntityLabelConflictError } from '../types/errors'
 import { ActionTypes } from '@conversationlearner/models';
+import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator';
 
 // --------------------------
 // CreateTrainDialog
@@ -288,7 +289,7 @@ const regenerateDispatchDialogsFulfilled = (trainDialogs: CLM.TrainDialog[]): Ac
     }
 }
 
-export const regenerateDispatchTrainDialogsAsync = (dispatchModelId: string, actions: CLM.ActionBase[], existingTrainDialogs: CLM.TrainDialog[]) => {
+export const regenerateDispatchTrainDialogsAsync = (dispatchModelId: string, algorithmType: DispatcherAlgorithmType, actions: CLM.ActionBase[], existingTrainDialogs: CLM.TrainDialog[]) => {
     return async (dispatch: Dispatch<any>) => {
         const clClient = ClientFactory.getInstance(AT.REGENERATE_DISPATCH_DIALOGS_ASYNC)
         dispatch(regenerateDispatchDialogsAsync())
@@ -314,7 +315,7 @@ export const regenerateDispatchTrainDialogsAsync = (dispatchModelId: string, act
                     }
                 }))
 
-            const dispatcherSource = DispatchUtils.generateDispatcherSource(sourceModelPairs)
+            const dispatcherSource = DispatchUtils.generateDispatcherSource(sourceModelPairs, algorithmType)
 
             // Delete all existing dialogs
             await Promise.all(existingTrainDialogs.map(td => clClient.trainDialogsDelete(dispatchModelId, td.trainDialogId)))
