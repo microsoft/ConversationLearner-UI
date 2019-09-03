@@ -1,0 +1,121 @@
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema
+
+trigger:
+- master
+
+pr:
+  autoCancel: true
+  branches:
+    include:
+    - master
+
+jobs:
+- job: linux_build
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'Install Node.js 10.x'
+
+  - bash: npm --version
+    displayName: 'npm --version'
+
+  - bash: npm ci
+    displayName: 'npm ci'
+
+  # - task: CacheBeta@0
+  #   inputs:
+  #   key: $(Build.SourcesDirectory)/package-lock.json
+  #   path: $(npm_config_cache)
+  #   displayName: Cache npm
+
+  - bash: npm test
+    displayName: 'npm test'
+
+  - bash: npm run cibuild
+    displayName: 'npm run cibuild'
+
+- job: linux_test
+  dependsOn: linux_build
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'Install Node.js 10.x'
+
+  - bash: npm --version
+    displayName: 'npm --version'
+
+  - bash: npm ci
+    displayName: 'npm ci'
+
+  # Randomly pick 1 out of 5 LUIS Authoring Keys and set the BASH_ENV with it.
+  # - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
+
+  - bash: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
+    displayName: 'Clone the Samples BOT'
+
+  - bash: npm ci
+    workingDirectory: ../cl-samples
+    displayName: 'Samples - npm ci'
+
+  - bash: npm run build
+    workingDirectory: ../cl-samples
+    displayName: 'Samples - npm run build'
+
+  - bash: npm run test-apicallbacks &
+    workingDirectory: ../cl-samples
+    displayName: 'Samples - npm start'
+
+  - bash: npm start &
+    displayName: 'UI - npm start'
+
+  # - bash: npx wait-on -- http://localhost:3978
+  - bash: npx wait-on -- http://localhost:3000
+    displayName: 'npx wait-on -- http://localhost:3000'
+
+  - bash: npm run cypress -- run --record false --spec  "cypress/integration/Regression/**/*.spec.js"
+    displayName: 'Run Cypress Regression Tests'
+
+  - bash: npm run cypress -- run --record false --spec  "cypress/integration/regressionTs/**/*.spec.*"
+    displayName: 'Run Cypress Typescript Regression Tests'
+    condition: always()
+
+  - bash: npm run cypress -- run --record false --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js"
+    displayName: 'Run Cypress Delete Models'
+    condition: always()
+
+- job: windows_build
+  pool:
+    vmImage: 'windows-2019'
+
+  steps:
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
+    displayName: 'Run CredScan'
+    inputs:
+      debugMode: false
+
+  - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
+    displayName: 'Post Analysis'
+    inputs:
+      CredScan: true
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'Install Node.js 10.x'
+
+  - script: npm ci
+    displayName: 'npm ci'
+
+  - script: npm run cibuild
+    displayName: 'npm run cibuild'
+
+  - script: npm test
+    displayName: 'npm test'

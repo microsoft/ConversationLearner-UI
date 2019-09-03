@@ -949,6 +949,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         </div>
                         <div>
                             <OF.PrimaryButton
+                                data-testid="action-scorer-add-action-button"
                                 text="Create Action"
                                 iconProps={{ iconName: 'Add' }}
                                 onClick={this.handleOpenActionModal}

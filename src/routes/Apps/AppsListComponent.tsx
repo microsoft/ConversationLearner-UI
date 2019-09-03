@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -13,7 +13,8 @@ import { InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import { User, AppCreatorType, FeatureStrings } from '../../types'
 import { autobind } from 'core-decorators';
-import { OBIImportData } from '../../Utils/obiUtils';
+import { OBIImportData } from '../../Utils/obiUtils'
+import DispatcherCreator, { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator'
 
 export interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: CLM.AppBase, props: Props) => JSX.Element
@@ -123,6 +124,7 @@ interface Props extends InjectedIntlProps {
     featuresString: string
     selectionCount: number
 
+    isDispatcherCreateModalOpen: boolean
     isAppCreateModalOpen: boolean
     onSubmitAppCreateModal: (app: CLM.AppBase, source: CLM.AppDefinition | undefined) => void
     onCancelAppCreateModal: () => void
@@ -132,6 +134,9 @@ interface Props extends InjectedIntlProps {
     onClickImportApp: () => void
     onClickImportDemoApps: () => void
     onClickCreateNewDispatcherModel: () => void
+
+    onSubmitDispatcherCreateModal: (model: CLM.AppBase, algorithmType: DispatcherAlgorithmType) => void
+    onCancelDispatcherCreateModal: () => void
 
     onClickImportOBI: () => void
     onSubmitImportOBI: (app: CLM.AppBase, obiImportData: OBIImportData) => void
@@ -296,6 +301,11 @@ export class Component extends React.Component<Props, ComponentState> {
                         onSubmitOBI={props.onSubmitImportOBI}
                         onCancel={props.onCancelAppCreateModal}
                         creatorType={props.appCreatorType}
+                    />
+                    <DispatcherCreator
+                        open={props.isDispatcherCreateModalOpen}
+                        onSubmit={props.onSubmitDispatcherCreateModal}
+                        onCancel={props.onCancelDispatcherCreateModal}
                     />
                     <TutorialImporterModal
                         open={props.isImportTutorialsOpen}

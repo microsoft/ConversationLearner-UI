@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 export enum ErrorType {
@@ -12,7 +12,6 @@ export enum AppCreatorType {
     IMPORT = "IMPORT",
     COPY = "COPY",
     OBI = "OBI",
-    DISPATCHER = "DISPATCHER",
 }
 
 // After an edit takes place which activity should I select in webchat

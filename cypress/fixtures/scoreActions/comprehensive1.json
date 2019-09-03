@@ -1,0 +1,288 @@
+[
+  [
+    {
+      "buttonTestId": "action-scorer-button-selected",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-selected",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "100.0%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "GreenStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello Jeff",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello Jeff",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "What kind of fruit do you like?",
+      "type": "TEXT",
+      "score": "Training...",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello Jeff",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-selected",
+      "response": "What kind of fruit do you like?",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: APPLES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: BANANAS",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: MANGOES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: ORANGES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: PEACHES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "Disqualified",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    }
+  ],
+  [
+    {
+      "buttonTestId": "action-scorer-button-no-click",
+      "response": "What's your name?",
+      "type": "TEXT",
+      "score": "100.0%",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "RedStrikeout"
+        }
+      ],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello Jeff",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [
+        {
+          "name": "name",
+          "qualifierState": "Green"
+        }
+      ],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "What kind of fruit do you like?",
+      "type": "TEXT",
+      "score": "-",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: ORANGES",
+      "type": "SET_ENTITY",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: APPLES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: BANANAS",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: MANGOES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "fruit: PEACHES",
+      "type": "MISSING ACTION",
+      "score": "-",
+      "entities": [],
+      "wait": false
+    }
+  ]
+]

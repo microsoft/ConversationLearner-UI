@@ -20,6 +20,7 @@ import Component, { IEnumValueForDisplay } from './EntityCreatorComponent'
 import { autobind } from 'core-decorators';
 
 const entityNameMaxLength = 30
+const enumMaxLength = 10
 const prebuiltPrefix = 'builtin-'
 
 const initState: ComponentState = {
@@ -469,6 +470,10 @@ class Container extends React.Component<Props, ComponentState> {
         if (enumValue.enumValue.length === 0) {
             // Existing enumvalue can't be blank
             return enumValue.enumValueId ? Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK) : ""
+        }
+
+        if (enumValue.enumValue.length > enumMaxLength) {
+            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_ENUM_MAX_LENGTH)
         }
 
         if (!/^[a-zA-Z0-9-]+$/.test(enumValue.enumValue)) {

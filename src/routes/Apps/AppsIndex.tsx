@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -17,6 +17,7 @@ import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
 import { OBIImportData } from '../../Utils/obiUtils'
 import * as DispatchUtils from '../../Utils/dispatchUtils'
 import { SourceAndModelPair } from '../../types/models'
+import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator';
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
@@ -59,19 +60,15 @@ class AppsIndex extends React.Component<Props> {
         history.push(`${match.url}/${app.appId}${obiImportData ? "/trainDialogs" : ""}`, { app })
     }
 
-    onCreateDispatchModel = async (appToCreate: CLM.AppBase, childrenModels: CLM.AppBase[]) => {
-        if (childrenModels.length > 5) {
-            throw new Error(`Must only select 5 or less models when creating a Dispatcher Model`)
-        }
-
-        appToCreate.metadata.markdown = 'Dispatcher'
+    onCreateDispatchModel = async (appToCreate: CLM.AppBase, childrenModels: CLM.AppBase[], algorithmType: DispatcherAlgorithmType) => {
+        appToCreate.metadata.markdown = `Dispatcher - Type: ${algorithmType}`
 
         /**
          * Fetch source and associate with each model
          */
         const childrenSourceModelPairs = await Promise.all(childrenModels.map<Promise<SourceAndModelPair>>(async model => {
             const source = await (this.props.fetchAppSourceThunkAsync(model.appId, model.devPackageId) as any) as CLM.AppDefinition
-            
+
             return {
                 source,
                 model,
@@ -79,7 +76,7 @@ class AppsIndex extends React.Component<Props> {
             }
         }))
 
-        const source = DispatchUtils.generateDispatcherSource(childrenSourceModelPairs)
+        const source = DispatchUtils.generateDispatcherSource(childrenSourceModelPairs, algorithmType)
         const app = await (this.props.createApplicationThunkAsync(this.props.user.id, appToCreate, source) as any as Promise<CLM.AppBase>)
         const { match, history } = this.props
         history.push(`${match.url}/${app.appId}`, { app })
