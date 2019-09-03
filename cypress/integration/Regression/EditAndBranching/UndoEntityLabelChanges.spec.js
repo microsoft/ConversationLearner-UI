@@ -30,14 +30,40 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
       train.VerifyUndoButtonIsDisabled()
     })
     
-    it('Bug 2264 Repro', () => {
-      cy.wait(3000)
+    it('Verify that after selecting an entity to label, we can select a different user turn and label text', () => {
       train.SelectEntityLabel('user', 'one')
       train.SelectChatTurnExactMatch('The user asks another question')
-      train.LabelTextAsEntity('user', 'one')
     })
 
-    it('', () => {
+    // Bug 2264: Selecting a labeled Entity then selecting a different user turn disables the ability to label Entities
+    // When block of code breaks, it is likely because this bug has been fixed. Comment it out and uncomment the next.
+    it('Verify that Bug 2264 reproduces', () => {
+      train.VerifyCanNotLabelTextAsEntity('user')
+    })
+
+    // it('Verify that Bug 2264 does not re-occur', () => {
+    //   train.VerifyCanLabelTextAsEntity('user')
+    // })
+
+    it('Select a Bot turn to reset the internal UI state', () => {
+      // This resets the internal UI state so that either the bug no longer has an effect,
+      // or the Entity selector goes away and we can continue testing other scenarios.
+      train.SelectChatTurnExactMatch('Bot responds with a silly answer')
+    })
+
+    it('Remove Entity label from the 1st user turn', () => {
+      train.SelectChatTurnExactMatch('The user asks a silly question')
+      train.RemoveEntityLabel('user', 'one')
+    })
+
+    it('Verify the "Submit Changes" and "Undo" buttons are enabled', () => {
+      train.VerifySubmitChangesButtonIsEnabled()
+      train.VerifyUndoButtonIsEnabled()
+    })
+
+    it('Undo the change and verify that the Entity label returns', () => {
+      train.ClickUndoButton()
+      train.VerifyTextIsLabeledAsEntity('user', 'one')
     })
 
     it('', () => {

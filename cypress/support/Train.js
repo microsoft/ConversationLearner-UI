@@ -50,7 +50,9 @@ export function VerifyDeleteButtonLabel() { cy.Get('[data-testid="edit-dialog-mo
 export function VerifyAbandonBranchButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Abandon Branch') }
 
 export function VerifySubmitChangesButtonIsDisabled() { cy.Get('[data-testid="submit-changes-button"].is-disabled') }
+export function VerifySubmitChangesButtonIsEnabled() { cy.Get('[data-testid="submit-changes-button"]:not(.is-disabled)') }
 export function VerifyUndoButtonIsDisabled() { cy.Get('[data-testid="undo-changes-button"].is-disabled') }
+export function VerifyUndoButtonIsEnabled() { cy.Get('[data-testid="undo-changes-button"]:not(.is-disabled)') }
 
 export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
 export function ClickUndoButton() { cy.Get('[data-testid="undo-changes-button"]').Click() }
@@ -225,9 +227,40 @@ export function VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector(userMes
   })
 }
 
+// This works whether text is a word or a phrase.
+export function VerifyCanLabelTextAsEntity(text) { _VerifyLabelTextAsEntity(text, 'be.visible') }
+export function VerifyCanNotLabelTextAsEntity(text) { _VerifyLabelTextAsEntity(text, 'be.hidden') }
+function _VerifyLabelTextAsEntity(text, verification) {
+  cy.Get('body').trigger('Test_SelectWord', { detail: text })
+  cy.Get('[data-testid="entity-picker-entity-search"').should(verification)
+}
+
+export function VerifyTextIsLabeledAsEntity(text, entity) {
+  cy.WaitForStableDOM().then(() => {
+    if (!IsTextLabeledAsEntity(text, entity)) { throw new Error(`Failed to find "${text}" labeled as "${entity}"`) }
+  })
+}
+
+function IsTextLabeledAsEntity(text, entity) {
+  let isLabeled = false
+  const elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
+
+  // If you need to find a phrase, this part of the code will fail, 
+  // you will need to upgrade this code in that case.
+  for (let i = 0; i < elements.length; i++) {
+    if (helpers.TextContentWithoutNewlines(elements[i]) === text) {
+      isLabeled = Cypress.$(elements[i]).parents('.cl-entity-node--custom')
+                        .find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`)
+                        .length > 0
+      break;
+    }
+  }
+  return isLabeled
+}
+
 export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
   function LabelIt() {
-    // This actually works if text is a word or a phrase.
+    // This works whether text is a word or a phrase.
     cy.Get('body').trigger('Test_SelectWord', { detail: text })
     cy.Get('[data-testid="fuse-match-option"]').contains(entity).Click()
   }
@@ -236,38 +269,17 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
     LabelIt()
   } else {
     // First make sure it is not already labeled before trying to label it.
-    cy.WaitForStableDOM()
-    cy.Enqueue(() => {
-      let labeledAlready = false
-      const elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
-
-      // If you need to find a phrase, this part of the code will fail, 
-      // you will need to upgrade this code in that case.
-      for (let i = 0; i < elements.length; i++) {
-        if (helpers.TextContentWithoutNewlines(elements[i]) === text) {
-          labeledAlready = Cypress.$(elements[i]).parents('.cl-entity-node--custom')
-                            .find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`)
-                            .length > 0
-          break;
-        }
-      }
-      
-      if (!labeledAlready) {
-        LabelIt()
-      }
-    })
+    cy.WaitForStableDOM().then(() => { if (!IsTextLabeledAsEntity(text, entity)) LabelIt() })
   }
 }
 
-// Select and Remove an entity label
+// SelectEntityLabel and RemoveEntityLabel
 // word = a word within the utterance that should already be labeled
 // entity = name of entity the word was labeled with
 // index = into one of the alternative inputs
 // *** This does work for multiple word labels, but you must pass in only one
 // *** word that uniquely identifies the labeled text
-export function SelectEntityLabel(remove, word, entity, index = 0) { SelectRemoveEntityLabel(false, word, entity, index) }
-export function RemoveEntityLabel(remove, word, entity, index = 0) { SelectRemoveEntityLabel(true, word, entity, index) }
-function SelectRemoveEntityLabel(remove, word, entity, index = 0) {
+export function SelectEntityLabel(word, entity, index = 0) {
   cy.Get('div.slate-editor').then(elements => {
     expect(elements.length).to.be.at.least(index - 1)
     cy.wrap(elements[index]).within(() => {
@@ -277,13 +289,14 @@ function SelectRemoveEntityLabel(remove, word, entity, index = 0) {
         .find('[data-testid="custom-entity-name-button"]')
         .contains(entity)
         .Click()
-      
-      if (remove) { 
-        cy.Get('button[title="Unselect Entity"]').Click() 
-      }
     })
   })
 }
+export function RemoveEntityLabel(word, entity, index = 0) {
+  SelectEntityLabel(word, entity, index)
+  cy.Get('button[title="Unselect Entity"]').Click() 
+}
+
 
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
