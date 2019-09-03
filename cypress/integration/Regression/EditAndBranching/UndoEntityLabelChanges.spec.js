@@ -22,7 +22,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     })
   })
 
-  context('Train', () => {
+  context('Undo Entity Label Change', () => {
     it('Edit user turn and verify that "Submit Changes" and "Undo" buttons are disabled', () => {
       train.EditTraining('The user asks a silly question', 'The user asks another question', 'The Bot responds once again')
       train.SelectChatTurnExactMatch('The user asks a silly question')
@@ -30,6 +30,11 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
       train.VerifyUndoButtonIsDisabled()
     })
     
+    it('Verify the formatted user turn', () => {
+      train.VerifyChatTurnIsAnExactMatchWithMarkup('The <strong><em>user</em></strong> asks a silly question', 4, 0)
+      //train.VerifyChatTurnIsAnExactMatchWithMarkup('The \n<strong>\n<em>user</em>\n</strong>\n asks a silly question', 4, 0)
+    })
+
     it('Verify that after selecting an entity to label, we can select a different user turn and label text', () => {
       train.SelectEntityLabel('user', 'one')
       train.SelectChatTurnExactMatch('The user asks another question')
@@ -61,12 +66,15 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
       train.VerifyUndoButtonIsEnabled()
     })
 
-    it('Undo the change and verify that the Entity label returns', () => {
+    it('Undo the change and verify that the Entity label is restored', () => {
       train.ClickUndoButton()
       train.VerifyTextIsLabeledAsEntity('user', 'one')
     })
 
-    it('', () => {
+    it('Verify the formatted user turn', () => {
+      train.VerifyChatTurnIsAnExactMatchWithMarkup('The <strong><em>user</em></strong> asks a silly question', 4, 0)
+      //train.VerifyChatTurnIsAnExactMatchWithMarkup('The \n<strong>\n<em>user</em>\n</strong>\n asks a silly question', 4, 0)
+      
     })
 
     it('', () => {

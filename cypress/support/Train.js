@@ -18,7 +18,7 @@ let editedChatMessages
 
 function Today() { return Cypress.moment().format("MM/DD/YYYY") }
 
-export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div'
+export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p'
 export const TypeYourMessageSelector = 'input.wc-shellinput[placeholder="Type your message..."]' // data-testid NOT possible
 export const ScoreActionsButtonSelector = '[data-testid="score-actions-button"]'
 
@@ -28,7 +28,7 @@ export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).C
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
-export function GetAllChatMessages() { return helpers.StringArrayFromElementText(AllChatMessagesSelector) }
+export function GetAllChatMessages(retainMarkup = false) { return helpers.StringArrayFromElementText(AllChatMessagesSelector, retainMarkup) }
 export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
 export function VerifyWarningMessage(expectedMessage) { cy.Get('[data-testid="dialog-modal-warning"]').find('span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
@@ -399,13 +399,23 @@ export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount
   })
 }
 
+export function VerifyChatTurnIsAnExactMatchWithMarkup(expectedTurnText, expectedTurnCount, turnIndex) { 
+  VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
+    if (chatMessageFound !== expectedTurnText) { 
+      if (chatMessageFound !== expectedTurnText.replace(/'/g, "’")) {
+        throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
+      }
+    }
+  }, true)
+}
+
 // This function does the hard work of retrying until the chat message count is what we expect
 // before it verifies a specific chat turn with a custom verification.
-function VerifyChatTurnInternal(expectedTurnCount, turnIndex, doVerification) {
+function VerifyChatTurnInternal(expectedTurnCount, turnIndex, verificationFunc, retainMarkup = false) {
   cy.WaitForStableDOM()
   let chatMessages
   cy.wrap(1).should(() => { 
-    chatMessages = GetAllChatMessages()
+    chatMessages = GetAllChatMessages(retainMarkup)
     if (chatMessages.length != expectedTurnCount) { 
       throw new Error(`${chatMessages.length} chat turns were found, however we were expecting ${expectedTurnCount}`)
     }
@@ -414,7 +424,7 @@ function VerifyChatTurnInternal(expectedTurnCount, turnIndex, doVerification) {
       throw new Error(`VerifyChatTurnInternal(${expectedTurnCount}, ${turnIndex}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`) 
     }
     
-    doVerification(chatMessages[turnIndex])
+    verificationFunc(chatMessages[turnIndex])
   })
 }
 
