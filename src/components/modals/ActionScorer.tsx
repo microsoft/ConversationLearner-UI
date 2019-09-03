@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react';
@@ -76,8 +76,8 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                             text={Util.formatMessageId(intl, FM.BUTTON_REPROMPT)}
                             onClick={() => component.handleReselectAction(action)}
                         />
-                    )  
-                }     
+                    )
+                }
 
                 const buttonText = Util.formatMessageId(intl, selected ? FM.BUTTON_SELECTED : FM.BUTTON_SELECT)
                 if (!component.props.canEdit) {
@@ -341,6 +341,13 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                 actionForRender: this.getActionsForRender()
             })
         }
+
+        // If new Entity was added (possibly Enum) recompute to generate new SET_ENTITY actions
+        if (this.props.entities.length > prevProps.entities.length) {
+            this.setState({
+                actionForRender: this.getActionsForRender()
+            })
+        }
     }
 
     async componentDidMount() {
@@ -580,7 +587,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         return { match, name: `${entity.entityName} = ${enumValue ? enumValue.enumValue : "NOT FOUND"}` };
     }
 
-    // Check if entity is in memory and return it's name 
+    // Check if entity is in memory and return it's name
     entityInMemory(entityId: string): { match: boolean, name: string } {
         const entity = this.props.entities.filter(e => e.entityId === entityId)[0];
 
@@ -657,7 +664,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                     if (!item) {
                         return null
                     }
-                    
+
                     return <span className={item.type} data-testid="action-scorer-entities">{item.neg ? (<del>{item.name}</del>) : item.name}</span>
                 }}
             />
@@ -764,7 +771,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         // Handle deleted actions
         if (action.actionId === MISSING_ACTION) {
             if (column.key === 'select') {
- 
+
                 const buttonText = (this.props.dialogType !== CLM.DialogType.TEACH && action.score === 1) ? "Selected" : "Select";
                 return (
                     <OF.PrimaryButton
@@ -888,10 +895,10 @@ class ActionScorer extends React.Component<Props, ComponentState> {
         scoredItems = [...scoredItems, ...missingSetEntityItems]
 
         // If imported action selected, pre-calculate sort scores
-        if (this.props.importedAction) { 
+        if (this.props.importedAction) {
             scoredItems = scoredItems.map(si => ({
                 ...si,
-                similarityScore: this.calcSimilarity(si), 
+                similarityScore: this.calcSimilarity(si),
             }))
         }
 
@@ -956,7 +963,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                             />
                         </div>
                     </div>
-                    : 
+                    :
                     <div>
                         <div className="cl-modal-buttons_primary">
                             <OF.DefaultButton
@@ -1000,7 +1007,7 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                         actions={this.props.actions}
                         importedAction={this.props.importedAction}
                         handleClose={() => this.onClickCancelActionEditor()}
-                        // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete 
+                        // It is not possible to delete from this modal since you cannot select existing action so disregard implementation of delete
                         handleDelete={action => { }}
                         handleEdit={action => this.onClickSubmitActionEditor(action)}
                     />
@@ -1056,7 +1063,7 @@ export interface ReceivedProps {
     memories: CLM.Memory[],
     canEdit: boolean,
     isEndSessionAvailable: boolean,
-    importedAction?: ImportedAction 
+    importedAction?: ImportedAction
     onActionSelected: (trainScorerStep: CLM.TrainScorerStep) => void,
     onActionCreatorClosed: () => void
 }
