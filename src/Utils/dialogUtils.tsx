@@ -7,13 +7,14 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../Utils/util'
 import * as BotChat from '@conversationlearner/webchat'
+import TagsReadOnly from '../components/TagsReadOnly'
 import { compareTwoStrings } from 'string-similarity'
 import { deepCopy, getDefaultEntityMap } from './util'
 import { Activity } from 'botframework-directlinejs'
 import { ImportedAction } from '../types/models'
-import TagsReadOnly from '../components/TagsReadOnly'
 
 const MAX_SAMPLE_INPUT_LENGTH = 150
+export const CONTEXT_MARKER = "## "
 
 export const CARD_MATCH_THRESHOLD = 0.25
 
@@ -787,14 +788,15 @@ export function getDialogRenderData(
             }
         }
     }
-
+    const textVariations = round ? removeContext(round.extractorStep.textVariations) as CLM.TextVariation[] : []
+                    
     return {
         dialogMode: (senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
         scoreInput: scorerStep ? scorerStep.input : undefined,
         scoreResponse: scoreResponse,
         forcedActionId,
         roundIndex,
-        textVariations: round ? round.extractorStep.textVariations : [],
+        textVariations,
         memories: filterDummyEntities(memories),
         prevMemories: filterDummyEntities(prevMemories),
         extractResponses: []
@@ -831,4 +833,42 @@ export function bestTemplateMatch(importedAction: ImportedAction, templates: CLM
     }
     
     return bestTemplate
+}
+
+// Given list of extract reponses / text variations remove any context
+// Example:  "What how many tables? ## 5"  => "5"
+export function removeContext(responses: (CLM.ExtractResponse | CLM.TextVariation)[]): (CLM.ExtractResponse | CLM.TextVariation)[] {
+  //  let blah = extractResponses.map(extractResponse => {
+    const results: (CLM.ExtractResponse | CLM.TextVariation)[] = []
+    for (const response of responses) {
+        let contextEnd = response.text.indexOf(CONTEXT_MARKER)  // LARS make a constant
+        if (contextEnd === -1) {
+            results.push({...response})
+        }
+        else {
+            contextEnd = contextEnd + CONTEXT_MARKER.length
+
+            // Remove context from string
+            const text = response.text.substr(contextEnd)
+
+            // Determine if ExractResponse or TextVariation
+            const isExtractResponse = response.hasOwnProperty("predictedEntities")
+
+            // Shift char indexes
+            const entityLabels: CLM.PredictedEntity[] | CLM.LabeledEntity[] = isExtractResponse 
+                ? (response as CLM.ExtractResponse).predictedEntities
+                : (response as CLM.TextVariation).labelEntities
+
+            const newEntityLabels: CLM.PredictedEntity[] | CLM.LabeledEntity[] = entityLabels.map(entityLabel => {
+                    const startCharIndex = entityLabel.startCharIndex - contextEnd
+                    const endCharIndex = entityLabel.endCharIndex - contextEnd
+                    return {...entityLabel, startCharIndex, endCharIndex }
+                })
+
+            isExtractResponse 
+                ? results.push({...response, text, predictedEntities: newEntityLabels as CLM.PredictedEntity[]})
+                : results.push({...response, text, labelEntities: newEntityLabels as CLM.LabeledEntity[]})
+        }
+    }
+    return results
 }

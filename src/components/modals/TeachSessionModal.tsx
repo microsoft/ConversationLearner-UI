@@ -56,6 +56,8 @@ interface ComponentState {
     replaceActivityIndex: number | null
     tags: string[]
     description: string
+    //LARS
+    lastScoredAction: CLM.ScoredAction | undefined
 }
 
 class TeachModal extends React.Component<Props, ComponentState> {
@@ -78,7 +80,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
         replaceActivityText: null,
         replaceActivityIndex: null,
         tags: [],
-        description: ''
+        description: '',
+        lastScoredAction: undefined
     }
 
     private callbacksId: string | null = null;
@@ -298,7 +301,21 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
             // Content could come from button submit
             const buttonSubmit = activity.channelData && activity.channelData.imback
-            const userInput: CLM.UserInput = { text: activity.text! }
+            
+            let userInput: CLM.UserInput | undefined = undefined
+            if (this.state.lastScoredAction) {//&& this.props.lastScoredAction.actionType === CLM.ActionTypes.TEXT) {
+                const lastActionId = this.state.lastScoredAction.actionId
+                const action = this.props.actions.find(a => a.actionId === lastActionId)
+                if (action) {
+                    const textAction = new CLM.TextAction(action as any)
+                    const defaultEntityMap = Util.getDefaultEntityMap(this.props.entities)
+                    const actionRender = textAction.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
+                    userInput = {text: `${actionRender}${DialogUtils.CONTEXT_MARKER}${activity.text!}`}
+                }
+            }            
+            if (!userInput) {
+                userInput = { text: activity.text! }
+            }
 
             if (buttonSubmit) {
                 // For now always add button response to bottom of dialog even
@@ -590,7 +607,8 @@ class TeachModal extends React.Component<Props, ComponentState> {
     onScoredAction(scoredAction: CLM.ScoredAction) {
         this.setState({
             hasTerminalAction: scoredAction.isTerminal,
-            nextActivityIndex: this.state.nextActivityIndex + 1
+            nextActivityIndex: this.state.nextActivityIndex + 1,
+            lastScoredAction: scoredAction
         })
         if (scoredAction.actionType === CLM.ActionTypes.END_SESSION) {
             this.props.onEndSessionActivity(this.state.tags, this.state.description)

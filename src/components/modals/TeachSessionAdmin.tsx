@@ -251,6 +251,8 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                     ? prevTurn.memories 
                     : []
 
+                const extractResponses =this.props.teachSession.extractResponses//LARS DialogUtils.removeContext(this.props.teachSession.extractResponses) as CLM.ExtractResponse[]
+                
                 if (turnData.uiScoreResponse) {
                     return {
                         dialogMode: CLM.DialogMode.Scorer,
@@ -259,16 +261,18 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                         selectedActionId: turnData.selectedActionId,
                         memories: turnData.memories ? DialogUtils.filterDummyEntities(memories) : [],
                         prevMemories: DialogUtils.filterDummyEntities(prevMemories),
-                        extractResponses: this.props.teachSession.extractResponses,
+                        extractResponses,
                         textVariations: [],
                         roundIndex: this.roundIndex(lookupIndex) + this.state.turnLookupOffset
                     }
                 }
                 else if (turnData.textVariations) {
+                    const textVariations = turnData.textVariations//LARSDialogUtils.removeContext(turnData.textVariations) as CLM.TextVariation[]
+                    
                     return {
                         dialogMode: CLM.DialogMode.Extractor,
-                        extractResponses: this.props.teachSession.extractResponses,
-                        textVariations: turnData.textVariations,
+                        extractResponses,
+                        textVariations,
                         memories: turnData.memories ? DialogUtils.filterDummyEntities(turnData.memories) : [],
                         prevMemories: DialogUtils.filterDummyEntities(prevMemories),
                         roundIndex: this.roundIndex(lookupIndex) + this.state.turnLookupOffset
@@ -286,13 +290,15 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                 ? this.props.initialEntities.ToMemory()
                 : this.props.teachSession.memories
 
+            const extractResponses = this.props.teachSession.extractResponses//LARSDialogUtils.removeContext(this.props.teachSession.extractResponses) as CLM.ExtractResponse[]
+                
             return {
                 dialogMode: this.props.teachSession.dialogMode,
                 scoreInput: this.props.teachSession.scoreInput!,
                 scoreResponse: this.props.teachSession.scoreResponse!,
                 memories: DialogUtils.filterDummyEntities(memories),
                 prevMemories: DialogUtils.filterDummyEntities(this.props.teachSession.prevMemories),
-                extractResponses: this.props.teachSession.extractResponses,
+                extractResponses,
                 textVariations: [],
                 roundIndex: null
             }

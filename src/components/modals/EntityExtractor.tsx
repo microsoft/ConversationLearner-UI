@@ -7,6 +7,7 @@ import * as Util from '../../Utils/util'
 import * as CLM from '@conversationlearner/models'
 import * as OF from 'office-ui-fabric-react'
 import * as ToolTips from '../ToolTips/ToolTips'
+import * as DialogUtils from '../../Utils/dialogUtils'
 import * as ExtractorResponseEditor from '../ExtractorResponseEditor'
 import ExtractConflictModal, { ExtractionChange, ExtractionType } from './ExtractConflictModal'
 import actions from '../../actions'
@@ -453,18 +454,20 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
         // If editing is not allowed, only show the primary response which is the first response
         const extractResponsesToRender = canEdit ? allResponses : [primaryExtractResponse]
         const extractResponsesForDisplay = extractResponsesToRender
-            .map<ExtractResponseForDisplay>(extractResponse =>
-                ({
-                    extractResponse,
+            .map<ExtractResponseForDisplay>(extractResponse => {
+                const responses = DialogUtils.removeContext([extractResponse]) as CLM.ExtractResponse[] // LARS
+                return ({
+                    extractResponse: responses[0],
                     isValid: this.isValid(primaryExtractResponse, extractResponse),
                     duplicateEntityNames: this.duplicateEntityNames(extractResponse),
-                    isPickerVisible: this.state.activePickerText === extractResponse.text
-                }))
+                    isPickerVisible: this.state.activePickerText === responses[0].text
+                })
+            })
         const allExtractResponsesValid = extractResponsesForDisplay.every(e => e.isValid)
 
         // Need to save this to separate variable for typescript control flow
         const extractConflict = this.props.extractConflict
-        const attemptedExtractResponse = extractConflict && allResponses.find(e => e.text.toLowerCase() === extractConflict.text.toLowerCase())
+      const attemptedExtractResponse = extractConflict //LARS TEMP  && allResponses.find(e => e.text.toLowerCase() === extractConflict.text.toLowerCase())
 
         return (
             <div className="entity-extractor">

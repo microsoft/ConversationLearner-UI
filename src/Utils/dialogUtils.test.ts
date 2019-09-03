@@ -3,7 +3,7 @@
  * Licensed under the MIT License.
  */
 
-import { doesTrainDialogMatch, findMatchingTrainDialog, isPrimaryTrainDialog, mergeTrainDialogs, hasInternalLabelConflict, isConflictingTextVariation, isIncompatibleTextVariation, getCorrectedDialogs } from './dialogUtils'
+import { doesTrainDialogMatch, findMatchingTrainDialog, isPrimaryTrainDialog, mergeTrainDialogs, hasInternalLabelConflict, isConflictingTextVariation, isIncompatibleTextVariation, getCorrectedDialogs, removeContext } from './dialogUtils'
 import { makeTrainDialog, makeExtractorStep, makeScorerStep, makeLabelEntities } from './testDataUtil'
 import { deepCopy } from './util'
 import * as CLM from '@conversationlearner/models'
@@ -659,6 +659,130 @@ describe('dialogUtils', () => {
             expect(correctedDialogs[0].rounds[0].extractorStep.textVariations[0]).toEqual(attemptedTextVariationConflict)
             expect(correctedDialogs[1].validity).toBe(CLM.Validity.INVALID)
             expect(correctedDialogs[1].rounds[0].extractorStep.textVariations[0]).toEqual(attemptedTextVariationConflict)
+        })
+    })
+
+    describe('removeContext', () => {
+
+        test('removeContext', () => {
+        const extractResponseInput: CLM.ExtractResponse[] = 
+            [  
+                {  
+                    "text": "5",
+                    "packageId": "",
+                    "definitions": {entities: [], actions: [], trainDialogs: []},
+                    "metrics": {wallTime: 0},
+                    "predictedEntities": [  
+                        {  
+                            "score": 0,
+                            "entityId": "1aed2d0b-a06f-4e53-ac9b-3231847baf83",
+                            "startCharIndex": 0,
+                            "endCharIndex": 0,
+                            "entityText": "5",
+                            "resolution": { "subtype": "integer", "value": "5"},
+                            "builtinType": "builtin.number"
+                        },
+                        {  
+                            "entityId": "d3a83fa1-8e12-4953-b6be-f9ed98a7ce12",
+                            "startCharIndex": 0,
+                            "endCharIndex": 0,
+                            "entityText": "5",
+                            "resolution": {},
+                            "builtinType": "LUIS",
+                            "score": 0
+                        }
+                    ]
+                },
+                {  
+                    "text": "How many tables? ## 5",
+                    "packageId": "",
+                    "definitions": {entities: [], actions: [], trainDialogs: []},
+                    "metrics": {wallTime: 0},
+                    "predictedEntities": [  
+                        {  
+                            "score": 0,
+                            "entityId": "1aed2d0b-a06f-4e53-ac9b-3231847baf83",
+                            "startCharIndex": 20,
+                            "endCharIndex": 20,
+                            "entityText": "5",
+                            "resolution": {  
+                                "subtype": "integer",
+                                "value": "5"
+                            },
+                            "builtinType": "builtin.number"
+                        },
+                        {  
+                            "entityId": "d3a83fa1-8e12-4953-b6be-f9ed98a7ce12",
+                            "startCharIndex": 20,
+                            "endCharIndex": 20,
+                            "entityText": "5",
+                            "resolution": {},
+                            "builtinType": "LUIS",
+                            "score": 0
+                        }
+                    ]
+                }
+            ]
+
+            const extractResponseOutput: CLM.ExtractResponse[] = 
+            [  
+                {  
+                    "text": "5",
+                    "packageId": "",
+                    "definitions": {entities: [], actions: [], trainDialogs: []},
+                    "metrics": {wallTime: 0},
+                    "predictedEntities": [  
+                        {  
+                            "score": 0,
+                            "entityId": "1aed2d0b-a06f-4e53-ac9b-3231847baf83",
+                            "startCharIndex": 0,
+                            "endCharIndex": 0,
+                            "entityText": "5",
+                            "resolution": { "subtype": "integer", "value": "5"},
+                            "builtinType": "builtin.number"
+                        },
+                        {  
+                            "entityId": "d3a83fa1-8e12-4953-b6be-f9ed98a7ce12",
+                            "startCharIndex": 0,
+                            "endCharIndex": 0,
+                            "entityText": "5",
+                            "resolution": {},
+                            "builtinType": "LUIS",
+                            "score": 0
+                        }
+                    ]
+                },
+                {  
+                    "text": "5",
+                    "packageId": "",
+                    "definitions": {entities: [], actions: [], trainDialogs: []},
+                    "metrics": {wallTime: 0},
+                    "predictedEntities": [  
+                        {  
+                            "score": 0,
+                            "entityId": "1aed2d0b-a06f-4e53-ac9b-3231847baf83",
+                            "startCharIndex": 0,
+                            "endCharIndex": 0,
+                            "entityText": "5",
+                            "resolution": { "subtype": "integer", "value": "5"},
+                            "builtinType": "builtin.number"
+                        },
+                        {  
+                            "entityId": "d3a83fa1-8e12-4953-b6be-f9ed98a7ce12",
+                            "startCharIndex": 0,
+                            "endCharIndex": 0,
+                            "entityText": "5",
+                            "resolution": {},
+                            "builtinType": "LUIS",
+                            "score": 0
+                        }
+                    ]
+                }
+            ]
+
+            let result = removeContext(extractResponseInput)
+            expect(JSON.stringify(result[0])).toEqual(JSON.stringify(extractResponseOutput[0]))
+            expect(JSON.stringify(result[1])).toEqual(JSON.stringify(extractResponseOutput[1]))
         })
     })
 })
