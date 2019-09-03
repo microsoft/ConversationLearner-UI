@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -20,6 +20,7 @@ import Component, { IEnumValueForDisplay } from './EntityCreatorComponent'
 import { autobind } from 'core-decorators';
 
 const entityNameMaxLength = 30
+const enumMaxLength = 10
 const prebuiltPrefix = 'builtin-'
 
 const initState: ComponentState = {
@@ -241,7 +242,7 @@ class Container extends React.Component<Props, ComponentState> {
         return enumEntity ? enumEntity.enumValueId : undefined
     }
 
-    convertStateToEntity(state: ComponentState): CLM.EntityBase {
+    convertStateToEntity(state: ComponentState, originalEntity?: CLM.EntityBase): CLM.EntityBase {
         let entityName = this.state.entityNameVal
         const entityType = this.state.entityTypeVal
         const resolverType = this.state.entityResolverVal
@@ -263,7 +264,10 @@ class Container extends React.Component<Props, ComponentState> {
             version: null,
             packageCreationId: null,
             packageDeletionId: null,
-            doNotMemorize: this.state.isPrebuilt
+            // Note: This is set by server when resolver is created, do not change/set on client.
+            doNotMemorize: originalEntity
+                ? originalEntity.doNotMemorize
+                : null
         }
 
         if (entityType === CLM.EntityType.ENUM) {
@@ -284,7 +288,7 @@ class Container extends React.Component<Props, ComponentState> {
 
     @autobind
     async onClickSaveCreate() {
-        const newOrEditedEntity = this.convertStateToEntity(this.state)
+        const newOrEditedEntity = this.convertStateToEntity(this.state, this.props.entity ? this.props.entity : undefined)
 
         const needPrebuildWarning = this.newPrebuilt(newOrEditedEntity)
         let needValidationWarning = false
@@ -381,7 +385,7 @@ class Container extends React.Component<Props, ComponentState> {
         const enumValueObj = enumValuesObjs[index]
 
         if (newValue.length > 0) {
-            // Create new EnumValue if needed 
+            // Create new EnumValue if needed
             if (!enumValueObj) {
                 enumValuesObjs[index] = { enumValue: newValue }
             }
@@ -468,6 +472,10 @@ class Container extends React.Component<Props, ComponentState> {
             return enumValue.enumValueId ? Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK) : ""
         }
 
+        if (enumValue.enumValue.length > enumMaxLength) {
+            return Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_FIELDERROR_ENUM_MAX_LENGTH)
+        }
+
         if (!/^[a-zA-Z0-9-]+$/.test(enumValue.enumValue)) {
             return Util.formatMessageId(intl, FM.FIELDERROR_ALPHANUMERIC)
         }
@@ -545,10 +553,10 @@ class Container extends React.Component<Props, ComponentState> {
                 .some(condition =>
                     condition.entityId === entity.entityId
                     && condition.valueId === enumValue.enumValueId)
-            
+
             const usedToSetValue = (a.actionType === CLM.ActionTypes.SET_ENTITY)
-                    && a.entityId === entity.entityId
-                    && a.enumValueId === enumValue.enumValueId
+                && a.entityId === entity.entityId
+                && a.enumValueId === enumValue.enumValueId
 
             return usedAsCondition || usedToSetValue
         })

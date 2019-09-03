@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -34,6 +34,8 @@ export enum TipType {
     ACTION_WAIT = 'isTerminal',
     ACTION_DELETE_INUSE = 'actionDeleteInUse',
 
+    DISPATCHER_CREATOR_ALGORITHM_TYPE = 'dispatcherCreatorAlgorithmType',
+
     EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY = "EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY",
     EDITDIALOGMODAL_WARNING_NEED_REPLAY = "EDITDIALOGMODAL_WARNING_NEED_REPLAY",
 
@@ -60,7 +62,7 @@ export enum TipType {
 
     MEMORY_CONVERTER = 'memoryConverter',
     MEMORY_MANAGER = 'memoryManager',
- 
+
     MODEL_VERSION_EDITING = 'modelVersionEditing',
     MODEL_VERSION_LIVE = 'modelVersionLIve',
 
@@ -147,8 +149,8 @@ const memoryConverterSample =
     `
     AS_VALUE_LIST       returns MemoryValue[]
     AS_STRING           returns string
-    AS_STRING_LIST      returns string[] 
-    AS_NUMBER           returns number 
+    AS_STRING_LIST      returns string[]
+    AS_NUMBER           returns number
     AS_NUMBER_LIST      returns  number[]
     AS_BOOLEAN          returns boolean
     AS_BOOLEAN_LIST     returns boolean[]`
@@ -166,7 +168,7 @@ const memoryManagerSample =
     // SET
     memoryManager.Set(entityName: string, true)
     i.e. memoryManager.Set("toppings", ["cheese", "peppers"])
-   
+
     // DELETE
     memoryManager.Delete(entityName: string, value?: string): void
     memoryManager.DeleteAll(saveEntityNames: string[]): void
@@ -402,7 +404,12 @@ export function getTip(tipType: string) {
                     />
                 </div>
             )
-
+        case TipType.DISPATCHER_CREATOR_ALGORITHM_TYPE:
+            return (
+                <div>
+                    <h2>Dispatcher Algorithm Type</h2>
+                </div>
+            )
         case TipType.EDITDIALOGMODAL_UNKNOWN_NEED_REPLAY:
             return (
                 <div>

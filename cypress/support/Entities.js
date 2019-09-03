@@ -31,16 +31,16 @@ export function CreateNewEntity({
     negatable, 
     resolverType, 
     type = 'Custom Trained', 
-    expectPopup 
+    expectPopup,
+    enumValues,
   }) {
-  modelPage.NavigateToEntities()
-  entitiesGrid.ClickButtonNewEntity()
 
   if (type != 'Custom Trained') SelectEntityType(type)
   if (name) { entityModal.TypeEntityName(name) }
   if (multiValued) { entityModal.ClickMultiValueCheckbox() }
   if (negatable) { entityModal.ClickNegatableCheckbox() }
   if (resolverType) { entityModal.SelectResolverType(resolverType) }
+  if (enumValues) { entityModal.TypeEnumValues(enumValues) }
 
   entityModal.ClickCreateButton()
   if (expectPopup) { entityModal.ClickOkButtonOnNoteAboutPreTrained() }
@@ -54,6 +54,9 @@ export function CreateNewEntityThenVerifyInGrid({
     type = 'Custom Trained', 
     expectPopup 
   }) {
+
+  modelPage.NavigateToEntities()
+  entitiesGrid.ClickButtonNewEntity()
 
   CreateNewEntity(arguments[0])
 
