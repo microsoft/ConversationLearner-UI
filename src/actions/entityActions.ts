@@ -86,13 +86,13 @@ export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prev
         dispatch(editEntityAsync(appId, entity))
 
         try {
-            const updateEntityResponse = await clClient.entitiesUpdate(appId, entity)
-            dispatch(editEntityFulfilled(updateEntityResponse.entity))
+            const changedEntityResponse = await clClient.entitiesUpdate(appId, entity)
+            dispatch(editEntityFulfilled(entity))
 
             // If we're setting negatable flag
             if (entity.isNegatible && !prevEntity.isNegatible) {
                 // Need to fetch negative entity in order to load it into memory
-                const negEntity = await clClient.entitiesGetById(appId, updateEntityResponse.entity.negativeId!)
+                const negEntity = await clClient.entitiesGetById(appId, changedEntityResponse.negativeEntityId)
                 dispatch(createEntityFulfilled(negEntity))
             }
             // If we're UNsetting negatable flag
@@ -101,8 +101,8 @@ export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prev
                 dispatch(deleteEntityFulfilled(prevEntity.negativeId!))
             }
             // If entity is negatable and negative entity have changed as a result of this edit
-            else if (entity.isNegatible && updateEntityResponse.entity.negativeId) {
-                const negEntity = await clClient.entitiesGetById(appId, updateEntityResponse.entity.negativeId)
+            else if (entity.isNegatible && changedEntityResponse.negativeEntityId) {
+                const negEntity = await clClient.entitiesGetById(appId, changedEntityResponse.negativeEntityId)
                 dispatch(editEntityFulfilled(negEntity))
             }
 
@@ -119,7 +119,7 @@ export const editEntityThunkAsync = (appId: string, entity: CLM.EntityBase, prev
             }
 
             // If any train dialogs were modified fetch train dialogs
-            if (updateEntityResponse.trainDialogIds && updateEntityResponse.trainDialogIds.length > 0) {
+            if (changedEntityResponse.trainDialogIds && changedEntityResponse.trainDialogIds.length > 0) {
                 dispatch(fetchAllTrainDialogsThunkAsync(appId));
             }
 
