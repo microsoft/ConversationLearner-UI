@@ -249,7 +249,7 @@ export function readFileAsync(file: File): Promise<string> {
 
 // Returns true is primary template body is variable substitution
 export function isTemplateTitleGeneric(template: CLM.Template): boolean {
-    const titleVariable = template.variables.find(v => v.key === "title" && v.type === "TextBlock")
+    const titleVariable = template.variables.find(v => v.key === "title" && (v.type === "TextBlock" || v.type === "TextBody"))
     return (titleVariable !== undefined)
 }
 
