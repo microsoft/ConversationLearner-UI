@@ -40,8 +40,11 @@ export function RemoveDuplicates(inputArray) {
   return uniqueOutputArray
 }
 
+// selector can be either a selector string of a function that returns the elements
 export function StringArrayFromElementText(selector, retainMarkup = false) {
-  let elements = Cypress.$(selector)
+  let elements
+  if (typeof selector === 'function') { elements = selector() }
+  else elements = Cypress.$(selector)
   ConLog(`StringArrayFromElementText(${selector})`, `Number of Elements Found: ${elements.length}`)
   let returnValues = []
   for (let i = 0; i < elements.length; i++)  {

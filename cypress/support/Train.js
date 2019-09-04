@@ -18,7 +18,6 @@ let editedChatMessages
 
 function Today() { return Cypress.moment().format("MM/DD/YYYY") }
 
-export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div > div.format-markdown > p'
 export const TypeYourMessageSelector = 'input.wc-shellinput[placeholder="Type your message..."]' // data-testid NOT possible
 export const ScoreActionsButtonSelector = '[data-testid="score-actions-button"]'
 
@@ -28,7 +27,7 @@ export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).C
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
-export function GetAllChatMessages(retainMarkup = false) { return helpers.StringArrayFromElementText(AllChatMessagesSelector, retainMarkup) }
+export function GetAllChatMessages(retainMarkup = false) { return helpers.StringArrayFromElementText(GetAllChatMessageElements, retainMarkup) }
 export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
 export function VerifyWarningMessage(expectedMessage) { cy.Get('[data-testid="dialog-modal-warning"]').find('span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
@@ -95,6 +94,12 @@ export function AddTags(tags) {
   cy.Get('[data-testid="tags-input-tag-input"]').type(tagList)
 }
 
+export function GetAllChatMessageElements() { 
+  return Cypress.$('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
+                //.find('div.format-markdown > p, div.wc-list ')
+                .find('p')
+}
+
 // Verify that the branch button is within the same control group as the message.
 export function VerifyBranchButtonGroupContainsMessage(message) {
   cy.Get('[data-testid="edit-dialog-modal-branch-button"]').as('branchButton')
@@ -123,7 +128,8 @@ export function VerifyChatMessageCount(expectedCount) {
 // RETURNS: The index of the selected turn.
 
 export function SelectLastChatTurn() {
-  cy.Get(AllChatMessagesSelector).then(elements => {
+  cy.WaitForStableDOM().then(() => {
+    const elements = GetAllChatMessageElements()
     cy.wrap(elements[elements.length - 1]).Click()
   })
 }
@@ -135,13 +141,13 @@ export function SelectChatTurnStartsWith(message, index = 0) {
   return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText.startsWith(transformedMessage))}
 
 function SelectChatTurnInternal(message, index, matchPredicate) {
-  const funcName = `SelectChatTurnInternal(${message}, ${index})`
+  const funcName = `SelectChatTurnInternal('${message}', ${index})`
   cy.ConLog(funcName, `Start`)
 
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
     message = message.replace(/'/g, "’")
-    const elements = Cypress.$(AllChatMessagesSelector)
+    const elements = GetAllChatMessageElements() //Cypress.$(AllChatMessagesSelector)
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (let i = 0; i < elements.length; i++) {
       const innerText = helpers.TextContentWithoutNewlines(elements[i])
