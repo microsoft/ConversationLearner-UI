@@ -56,6 +56,8 @@ export function VerifyUndoButtonIsEnabled() { cy.Get('[data-testid="undo-changes
 
 export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
 export function ClickUndoButton() { cy.Get('[data-testid="undo-changes-button"]').Click() }
+export function ClickNewEntityButton() { cy.Get('[data-testid="entity-extractor-create-button"]').Click() }
+
 export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }
 export function ClickReplayButton() { cy.Get('[data-testid="edit-dialog-modal-replay-button"]').Click() }
 
@@ -238,6 +240,12 @@ function _VerifyLabelTextAsEntity(text, verification) {
 export function VerifyTextIsLabeledAsEntity(text, entity) {
   cy.WaitForStableDOM().then(() => {
     if (!IsTextLabeledAsEntity(text, entity)) { throw new Error(`Failed to find "${text}" labeled as "${entity}"`) }
+  })
+}
+
+export function VerifyTextIsNotLabeledAsEntity(text, entity) {
+  cy.WaitForStableDOM().then(() => {
+    if (IsTextLabeledAsEntity(text, entity)) { throw new Error(`We found that "${text}" is labeled as "${entity}" - it should have no label`) }
   })
 }
 
