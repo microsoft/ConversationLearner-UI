@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { Value } from 'slate'
@@ -67,7 +67,7 @@ export const tokenizeText = (text: string, tokenRegex: RegExp): IToken[] => {
         return tokens
     }
 
-    let result: RegExpExecArray | null = null 
+    let result: RegExpExecArray | null = null
     let lastIndex = tokenRegex.lastIndex
     // tslint:disable-next-line:no-conditional-assignment
     while ((result = tokenRegex.exec(text)) !== null) {
@@ -125,26 +125,26 @@ export const addTokenIndicesToCustomEntities = (tokens: IToken[], customEntities
             console.warn(`Could not find valid token for custom entity: `, ce)
         }
 
-//         if (startTokenIndex !== -1 && endTokenIndex !== -1) {
-//             const startToken = tokens[startTokenIndex]
-//             const endToken = tokens[endTokenIndex]
+        //         if (startTokenIndex !== -1 && endTokenIndex !== -1) {
+        //             const startToken = tokens[startTokenIndex]
+        //             const endToken = tokens[endTokenIndex]
 
-//             console.log(`
-// token indices found:
-// ce.startIndex: ${ce.startIndex}
-// ce.endIndex: ${ce.endIndex}
+        //             console.log(`
+        // token indices found:
+        // ce.startIndex: ${ce.startIndex}
+        // ce.endIndex: ${ce.endIndex}
 
-// startTokenIndex: ${startTokenIndex}
-// startToken.isSelectable: ${startToken.isSelectable}
-// startToken.startIndex: ${startToken.startIndex}
-// startToken.endIndex: ${startToken.endIndex}
+        // startTokenIndex: ${startTokenIndex}
+        // startToken.isSelectable: ${startToken.isSelectable}
+        // startToken.startIndex: ${startToken.startIndex}
+        // startToken.endIndex: ${startToken.endIndex}
 
-// endTokenIndex: ${endTokenIndex}
-// endToken.isSelectable: ${endToken.isSelectable}
-// endToken.startIndex: ${endToken.startIndex}
-// endToken.endIndex: ${endToken.endIndex}
-// `)
-//         }
+        // endTokenIndex: ${endTokenIndex}
+        // endToken.isSelectable: ${endToken.isSelectable}
+        // endToken.startIndex: ${endToken.startIndex}
+        // endToken.endIndex: ${endToken.endIndex}
+        // `)
+        //         }
 
         return {
             ...ce,
@@ -159,7 +159,7 @@ export const wrapTokensWithEntities = (tokens: IToken[], customEntitiesWithToken
     if (customEntitiesWithTokens.length === 0) {
         return tokens
     }
-    
+
     const sortedCustomEntities = [...customEntitiesWithTokens].sort((a, b) => a.startIndex - b.startIndex)
     // Include all non labeled tokens before first entity
     const firstCet = sortedCustomEntities[0]
@@ -283,7 +283,7 @@ export const convertToSlateValue = (tokensWithEntities: TokenArray): any => {
 }
 
 /**
- * Note: this is more like a negative match used to determine characters that split the string instead of 
+ * Note: this is more like a negative match used to determine characters that split the string instead of
  * positive match would specify characters which are tokens. Only chose this because it seems like a much
  * simpler regex / smaller set of characters, but I imagine alternative approach would work
  */
@@ -508,7 +508,17 @@ export const getPreBuiltEntityDisplayName = (entity: CLM.EntityBase, pe: CLM.Pre
     }
 
     const names = pe.builtinType.split('.')
-    return names[names.length - 1]
+    const [builtinPrefix, ...segements] = names
+    /**
+     * Expect resolutions to have builtinType to be of form:
+     * builtin.datetimeV2.duration
+     * If it somehow is not '.'(period) delimeted. Return whole type
+     */
+    if (segements.length === 0) {
+        return builtinPrefix
+    }
+
+    return segements.join('.')
 }
 
 export const convertPredictedEntityToGenericEntity = (pe: CLM.PredictedEntity, entityName: string, displayName: string): models.IGenericEntity<models.IGenericEntityData<CLM.PredictedEntity>> =>
@@ -522,7 +532,7 @@ export const convertPredictedEntityToGenericEntity = (pe: CLM.PredictedEntity, e
             option: {
                 id: pe.entityId,
                 name: entityName,
-                type: pe.builtinType, 
+                type: pe.builtinType,
                 resolverType: null
             },
             text: pe.entityText,
@@ -577,7 +587,7 @@ export const convertExtractorResponseToEditorModels = (extractResponse: CLM.Extr
                 id: e.entityId,
                 name: util.entityDisplayName(e),
                 type: e.entityType,
-                resolverType: e.resolverType                
+                resolverType: e.resolverType
             })
         )
 
