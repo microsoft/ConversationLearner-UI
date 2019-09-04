@@ -305,11 +305,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
         }
 
-        // TODO: Handle reload when actions not yet loaded
-        if (this.props.actions.length === 0) {
-            return
-        }
-
         // If dialog id is in query param and edit modal not open, open it
         if (selectedDialogId &&
             (!this.state.isEditDialogModalOpen && !this.state.isTeachDialogModalOpen)) {
