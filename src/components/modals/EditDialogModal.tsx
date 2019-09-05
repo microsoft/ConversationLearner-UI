@@ -978,6 +978,17 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         return null
     }
 
+    @autobind
+    private onClickReplayDialog() {
+        const dialog: CLM.TrainDialog = {
+            ...this.props.trainDialog,
+            tags: this.state.tags,
+            description: this.state.description,
+        }
+
+        this.props.onReplayDialog(dialog)
+    }
+
     render() {
         const { intl } = this.props
         // Put mask of webchat if waiting for extraction labelling
@@ -1075,7 +1086,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                                 <OF.PrimaryButton
                                     data-testid="edit-dialog-modal-replay-button"
                                     disabled={this.state.pendingExtractionChanges || this.props.editState !== EditState.CAN_EDIT}
-                                    onClick={() => this.props.onReplayDialog(this.props.trainDialog)}
+                                    onClick={this.onClickReplayDialog}
                                     ariaDescription={formatMessageId(intl, FM.BUTTON_REPLAY)}
                                     text={formatMessageId(intl, FM.BUTTON_REPLAY)}
                                     iconProps={{ iconName: 'Refresh' }}
