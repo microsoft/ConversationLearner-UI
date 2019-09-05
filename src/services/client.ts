@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
@@ -215,9 +215,16 @@ export default class ClClient {
             url: `/app/${appId}/entity`,
             data: entity
         })
+
         const changeEntityResponse = response.data;
         entity.entityId = changeEntityResponse.entityId;
         entity.negativeId = changeEntityResponse.negativeEntityId;
+
+        // Note: Is synchronous API and could return whole object but there was hesitance of breaking change
+        // Make second request to get other fields from new entity such as enumValueIds
+        const newEntity = await this.entitiesGetById(appId, entity.entityId)
+        Object.assign(entity, newEntity)
+
         return entity
     }
 
@@ -244,9 +251,18 @@ export default class ClClient {
             url: `/app/${appId}/entity/${entity.entityId}`,
             data: entityToSend
         })
+
         const changeEntityResponse = response.data;
         entity.entityId = changeEntityResponse.entityId;
         entity.negativeId = changeEntityResponse.negativeEntityId;
+
+        // TODO: Might be able to avoid since we still return the changeEntityResponse instead of updatedEntity
+        // people should be using the return value instead of relying on mutation of passed in value
+        // Note: Is synchronous API and could return whole object but there was hesitance of breaking change
+        // Make second request to get other fields from new entity such as enumValueIds
+        const newEntity = await this.entitiesGetById(appId, entity.entityId)
+        Object.assign(entity, newEntity)
+
         return changeEntityResponse
     }
 
