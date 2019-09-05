@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -69,7 +69,7 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
         return (
             <div>
                 <OF.DefaultButton
-                    className="cl-button-close cl-ux-flexpanel--right" 
+                    className="cl-button-close cl-ux-flexpanel--right"
                     style={{ marginBottom: '1em' }}
                     onClick={() => this.handleClose(this.props.error.actionType)}
                 >
@@ -166,8 +166,8 @@ class ErrorPanel extends React.Component<Props, ComponentState> {
     render() {
         return (
             <OF.Panel
-                focusTrapZoneProps={{}}
                 isOpen={this.props.error.title != null}
+                isLightDismiss={true}
                 type={OF.PanelType.medium}
                 onDismiss={() => this.handleClose(this.props.error.actionType)}
                 isFooterAtBottom={true}

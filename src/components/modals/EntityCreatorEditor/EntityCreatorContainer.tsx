@@ -242,7 +242,7 @@ class Container extends React.Component<Props, ComponentState> {
         return enumEntity ? enumEntity.enumValueId : undefined
     }
 
-    convertStateToEntity(state: ComponentState): CLM.EntityBase {
+    convertStateToEntity(state: ComponentState, originalEntity?: CLM.EntityBase): CLM.EntityBase {
         let entityName = this.state.entityNameVal
         const entityType = this.state.entityTypeVal
         const resolverType = this.state.entityResolverVal
@@ -264,7 +264,10 @@ class Container extends React.Component<Props, ComponentState> {
             version: null,
             packageCreationId: null,
             packageDeletionId: null,
-            doNotMemorize: this.state.isPrebuilt
+            // Note: This is set by server when resolver is created, do not change/set on client.
+            doNotMemorize: originalEntity
+                ? originalEntity.doNotMemorize
+                : null
         }
 
         if (entityType === CLM.EntityType.ENUM) {
@@ -285,7 +288,7 @@ class Container extends React.Component<Props, ComponentState> {
 
     @autobind
     async onClickSaveCreate() {
-        const newOrEditedEntity = this.convertStateToEntity(this.state)
+        const newOrEditedEntity = this.convertStateToEntity(this.state, this.props.entity ? this.props.entity : undefined)
 
         const needPrebuildWarning = this.newPrebuilt(newOrEditedEntity)
         let needValidationWarning = false
@@ -552,8 +555,8 @@ class Container extends React.Component<Props, ComponentState> {
                     && condition.valueId === enumValue.enumValueId)
 
             const usedToSetValue = (a.actionType === CLM.ActionTypes.SET_ENTITY)
-                    && a.entityId === entity.entityId
-                    && a.enumValueId === enumValue.enumValueId
+                && a.entityId === entity.entityId
+                && a.enumValueId === enumValue.enumValueId
 
             return usedAsCondition || usedToSetValue
         })

@@ -1670,7 +1670,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)}
                         onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)}
                         onEndSessionActivity={this.onEndSessionActivity}
-                        onReplayDialog={(trainDialog) => this.onReplayTrainDialog(trainDialog)}
+                        onReplayDialog={this.onReplayTrainDialog}
                         onSetInitialEntities={this.onSetInitialEntities}
                         initialHistory={this.state.activityHistory}
                         editType={this.state.editType}
@@ -1711,7 +1711,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onDeleteDialog={() => this.onDeleteTrainDialog()}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onSaveDialog={(editedTrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
-                    onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
+                    onReplayDialog={this.onReplayTrainDialog}
                     onCreateDialog={(newTrainDialog) => this.onCreateTrainDialog(newTrainDialog)}
                     allUniqueTags={this.props.allUniqueTags}
                     importIndex={this.state.importIndex}
