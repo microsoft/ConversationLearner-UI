@@ -27,7 +27,7 @@ export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).C
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
-export function GetAllChatMessages(retainMarkup = false) { return helpers.StringArrayFromElementText(GetAllChatMessageElements, retainMarkup) }
+//export function GetAllChatMessages(retainMarkup = false) { return helpers.StringArrayFromElementText(GetAllChatMessageElements, retainMarkup) }
 export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
 export function VerifyWarningMessage(expectedMessage) { cy.Get('[data-testid="dialog-modal-warning"]').find('span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
@@ -95,9 +95,27 @@ export function AddTags(tags) {
 }
 
 export function GetAllChatMessageElements() { 
-  return Cypress.$('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
-                //.find('div.format-markdown > p, div.wc-list ')
-                .find('p')
+  const elements = Cypress.$('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
+  helpers.DumpElements('GetAllChatMessageElements', elements)
+  return elements
+}
+
+export function GetAllChatMessages(retainMarkup = false) {
+  let funcName = `GetAllChatMessages(retainMarkup: ${retainMarkup})`
+  let elements = GetAllChatMessageElements()
+
+  helpers.ConLog(funcName, `Number of Chat Elements Found: ${elements.length}`)
+  let returnValues = []
+  for (let i = 0; i < elements.length; i++)  {
+    let pElements = Cypress.$(elements[i]).find('p')
+    let text = ''
+    for (let ip = 0; ip < pElements.length; ip++) {
+      text += retainMarkup ? pElements[ip].innerHTML : helpers.TextContentWithoutNewlines(pElements[ip])
+    }
+    returnValues.push(text)
+    helpers.ConLog(funcName, text)
+  }
+  return returnValues
 }
 
 // Verify that the branch button is within the same control group as the message.
@@ -113,7 +131,7 @@ export function AbandonBranchChanges() {
 
 export function VerifyChatMessageCount(expectedCount) {
   cy.wrap(1, {timeout: 10000}).should(() => {
-    let actualCount = GetAllChatMessages().length
+    let actualCount = GetAllChatMessageElements().length
     if(actualCount != expectedCount) {
       throw new Error(`Expecting the number of chat messages to be ${expectedCount} instead it is ${actualCount}`)
     }
@@ -194,7 +212,7 @@ export function VerifyChatTurnControlButtons(element, index) {
   if (element.classList.contains('wc-message-from-me')) turnIsUserTurn = true
   else if (element.classList.contains('wc-message-from-bot')) turnIsUserTurn = false
   else {
-    helpers.Dump(`VerifyChatTurnControlButtons()`, element)
+    helpers.ConLog(`VerifyChatTurnControlButtons()`, element.outerHTML)
     throw new Error('Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)')
   }
 
@@ -513,8 +531,8 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
     helpers.ConLog(funcName2, `Row #${trainDialogIndex}`)
 
     cy.wrap(1, {timeout: 8000}).should(() => {
-      const allChatMessages = GetAllChatMessages()
-      if (allChatMessages.length > 0) {
+      const allChatMessageElements = GetAllChatMessageElements()
+      if (allChatMessageElements.length > 0) {
         helpers.ConLog(funcName2, `The expected Train Dialog from row #${trainDialogIndex} has loaded`)
         return
       }
