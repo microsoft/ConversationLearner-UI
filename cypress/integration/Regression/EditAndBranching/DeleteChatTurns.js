@@ -5,8 +5,6 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as entityModal from '../../../support/components/EntityModal'
-import * as entities from '../../../support/Entities'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
@@ -43,20 +41,51 @@ describe('Delete Chat Turns - Edit and Branching', () => {
       train.VerifySelectedChatTurn('Set Entity:memory.Set(fruit, APPLES)')
     })
 
-    it('', () => {
+    it('Delete a Bot turn', () => {
+      train.ClickDeleteChatTurn()
     })
 
-    it('', () => {
+    it('Verify the next turn, which is also a Bot turn, was selected', () => {
+      train.VerifySelectedChatTurn('Set Entity:memory.Set(fruit, BANANAS)')
     })
 
-    it('', () => {
+    it('Delete two more Bot turns, verify the selector ends up at the following User turn', () => {
+      train.ClickDeleteChatTurn()
+      train.VerifySelectedChatTurn('Uhhhh…')
+      train.ClickDeleteChatTurn()
+      train.VerifySelectedChatTurn('Mangoes and Peaches')
     })
 
-    it('', () => {
+    it('Delete the last Bot turn, verify expected UI Elements', () => {
+      train.SelectChatTurnExactMatch('EndSession: Goodbye')
+      train.ClickDeleteChatTurn()
+      train.VerifyNoChatTurnSelected()
+      train.VerifyScoreActionsButtonIsPresent()
+      train.VerifyTypeYourMessageIsMissing()
     })
 
-    it('', () => {
+    it('Delete the last Bot turn again, verify expected UI Elements', () => {
+      train.SelectChatTurnExactMatch('Set Entity:memory.Set(fruit, PEACHES)')
+      train.ClickDeleteChatTurn()
+      train.VerifyNoChatTurnSelected()
+      train.VerifyScoreActionsButtonIsPresent()
+      train.VerifyTypeYourMessageIsMissing()
     })
 
+    it('Delete the last Bot turn yet again, verify expected UI Elements', () => {
+      train.SelectChatTurnExactMatch('Set Entity:memory.Set(fruit, MANGOES)')
+      train.ClickDeleteChatTurn()
+      train.VerifyNoChatTurnSelected()
+      train.VerifyScoreActionsButtonIsPresent()
+      train.VerifyTypeYourMessageIsMissing()
+    })
+
+    it('Delete the last User turn, verify expected UI Elements', () => {
+      train.SelectChatTurnExactMatch('Mangoes and Peaches')
+      train.ClickDeleteChatTurn()
+      train.VerifyNoChatTurnSelected()
+      train.VerifyScoreActionsButtonIsMissing()
+      train.VerifyTypeYourMessageIsPresent()
+    })
   })
 })
