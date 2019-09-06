@@ -12,10 +12,9 @@ describe("Bug 2253 Repro", () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
-    it('Should import a model to test against, navigate to Train Dialogs and wait for Training Status to Complete', () => {
+    it('Should import a model to test against, navigate to Train Dialogs', () => {
       models.ImportModel('z-bug2253Repro', 'z-bug2253Repro.cl')
       modelPage.NavigateToTrainDialogs()
-      cy.WaitForTrainingStatusCompleted()
     })
   })
 
