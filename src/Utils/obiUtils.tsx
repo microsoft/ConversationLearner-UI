@@ -407,8 +407,8 @@ async function createActionFromImport(
     if (template) {
         const actionArguments: CLM.IActionArgument[] = []
 
-        // Put text on first TextBody variable
-        const textBody = template.variables.find(v => v.type = "TextBody")
+        // Put text on first TextBody or TextBlock variable
+        const textBody = template.variables.find(v => v.type === "TextBody" || v.type === "TextBlock")
         if (textBody) {
             const title = Plain.deserialize(importedAction.text)
             actionArguments.push({parameter: textBody.key, value: {json: title.toJSON()}})

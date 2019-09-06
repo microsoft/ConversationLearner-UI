@@ -305,11 +305,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
         }
 
-        // TODO: Handle reload when actions not yet loaded
-        if (this.props.actions.length === 0) {
-            return
-        }
-
         // If dialog id is in query param and edit modal not open, open it
         if (selectedDialogId &&
             (!this.state.isEditDialogModalOpen && !this.state.isTeachDialogModalOpen)) {
@@ -542,6 +537,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             else {
                 await this.onImportNextTrainDialog()
             }
+        }
+
+        // Remove active dialog from query parameter if present
+        const searchParams = new URLSearchParams(this.props.location.search)
+        const selectedDialogId = searchParams.get(DialogUtils.DialogQueryParams.id)
+        if (selectedDialogId) {
+            this.props.history.replace(this.props.match.url, { app: this.props.app })
         }
     }
 
@@ -1670,7 +1672,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         onChangeExtraction={(trainDialog, activity, editHandlerArgs) => this.onChangeExtraction(trainDialog, activity, editHandlerArgs.extractResponse, editHandlerArgs.textVariations)}
                         onChangeAction={(trainDialog, activity, editHandlerArgs) => this.onChangeAction(trainDialog, activity, editHandlerArgs.trainScorerStep)}
                         onEndSessionActivity={this.onEndSessionActivity}
-                        onReplayDialog={(trainDialog) => this.onReplayTrainDialog(trainDialog)}
+                        onReplayDialog={this.onReplayTrainDialog}
                         onSetInitialEntities={this.onSetInitialEntities}
                         initialHistory={this.state.activityHistory}
                         editType={this.state.editType}
@@ -1711,7 +1713,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     onDeleteDialog={() => this.onDeleteTrainDialog()}
                     onContinueDialog={(editedTrainDialog, initialUserInput) => this.onContinueTrainDialog(editedTrainDialog, initialUserInput)}
                     onSaveDialog={(editedTrainDialog) => this.onReplaceTrainDialog(editedTrainDialog)}
-                    onReplayDialog={(editedTrainDialog) => this.onReplayTrainDialog(editedTrainDialog)}
+                    onReplayDialog={this.onReplayTrainDialog}
                     onCreateDialog={(newTrainDialog) => this.onCreateTrainDialog(newTrainDialog)}
                     allUniqueTags={this.props.allUniqueTags}
                     importIndex={this.state.importIndex}

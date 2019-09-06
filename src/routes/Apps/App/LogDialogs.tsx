@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -320,11 +320,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             if (selectedDialogId === selectedDialogIdPrev) {
                 return
             }
-        }
-
-        // TODO: Handle reload when actions not yet loaded
-        if (this.props.actions.length === 0) {
-            return
         }
 
         // If dialog id is in query param and edit modal not open, open it
