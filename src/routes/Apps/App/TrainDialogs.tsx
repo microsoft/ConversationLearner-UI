@@ -543,6 +543,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 await this.onImportNextTrainDialog()
             }
         }
+
+        // Remove active dialog from query parameter if present
+        const searchParams = new URLSearchParams(this.props.location.search)
+        const selectedDialogId = searchParams.get(DialogUtils.DialogQueryParams.id)
+        if (selectedDialogId) {
+            this.props.history.replace(this.props.match.url, { app: this.props.app })
+        }
     }
 
     async handlePotentialMerge(newTrainDialog: CLM.TrainDialog, matchedTrainDialog: CLM.TrainDialog) {
