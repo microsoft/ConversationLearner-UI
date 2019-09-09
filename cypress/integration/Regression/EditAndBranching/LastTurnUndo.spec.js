@@ -5,8 +5,6 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as entityModal from '../../../support/components/EntityModal'
-import * as entities from '../../../support/Entities'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
