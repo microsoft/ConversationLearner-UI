@@ -305,11 +305,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
         }
 
-        // TODO: Handle reload when actions not yet loaded
-        if (this.props.actions.length === 0) {
-            return
-        }
-
         // If dialog id is in query param and edit modal not open, open it
         if (selectedDialogId &&
             (!this.state.isEditDialogModalOpen && !this.state.isTeachDialogModalOpen)) {
@@ -542,6 +537,13 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             else {
                 await this.onImportNextTrainDialog()
             }
+        }
+
+        // Remove active dialog from query parameter if present
+        const searchParams = new URLSearchParams(this.props.location.search)
+        const selectedDialogId = searchParams.get(DialogUtils.DialogQueryParams.id)
+        if (selectedDialogId) {
+            this.props.history.replace(this.props.match.url, { app: this.props.app })
         }
     }
 
