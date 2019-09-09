@@ -37,20 +37,20 @@ describe('Bug 2259 Repro', () => {
 
     // Bug 2259: Adding a new Enum Entity from Train Dialog -> Add Action Cause UI to Crash
     // Once this bug is fixed comment out this block of code and uncomment the next block
-    it('Verify that Bug 2259 reproduced', () => {
-      cy.WaitForStableDOM()
-      cy.wrap(1, {timeout: 15000}).should(() => {
-        const element = Cypress.$('[data-testid="action-creator-cancel-button"]')[0]
-        if (Cypress.$(element).is(':visible')) {
-          throw new Error('Retry and wait for error message to show up')
-        }
-      })
-    })
+    // it('Verify that Bug 2259 reproduced', () => {
+    //   cy.WaitForStableDOM()
+    //   cy.wrap(1, {timeout: 15000}).should(() => {
+    //     const element = Cypress.$('[data-testid="action-creator-cancel-button"]')[0]
+    //     if (Cypress.$(element).is(':visible')) {
+    //       throw new Error('Retry and wait for error message to show up')
+    //     }
+    //   })
+    // })
     
     // This code should work once bug 2259 is fixed...
     // Uncomment this and comment out the above to detect a regression.
-    // it('Verify that Bug 2259 did not reproduce', () => {
-    //   actionModal.ClickCancelButton()
-    // })
+    it('Verify that Bug 2259 did not reproduce', () => {
+      actionModal.ClickCancelButton()
+    })
   })
 })

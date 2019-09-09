@@ -27,14 +27,15 @@ export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).C
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
-//export function GetAllChatMessages(retainMarkup = false) { return helpers.StringArrayFromElementText(GetAllChatMessageElements, retainMarkup) }
 export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
 export function VerifyWarningMessage(expectedMessage) { cy.Get('[data-testid="dialog-modal-warning"]').find('span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
 export function VerifyErrorPopup(expectedMessage) { cy.Get('p.ms-Dialog-title').ExactMatch(expectedMessage) }
 export function ClickPopupConfirmCancelOkButton() { cy.Get('[data-testid="confirm-cancel-modal-ok"]').Click() }
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="chat-edit-delete-turn-button"]').Click() }
+export function VerifyTypeYourMessageIsPresent() { cy.Get(TypeYourMessageSelector) }
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
+export function VerifyScoreActionsButtonIsPresent() { cy.Get(ScoreActionsButtonSelector) }
 export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreActionsButtonSelector) }
 
 export function ClickSaveCloseButton() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
@@ -100,6 +101,15 @@ export function GetAllChatMessageElements() {
   return elements
 }
 
+export function GetChatTurnText(element, retainMarkup = false) {
+  let pElements = Cypress.$(element).find('p')
+  let text = ''
+  for (let ip = 0; ip < pElements.length; ip++) {
+    text += retainMarkup ? pElements[ip].innerHTML : helpers.TextContentWithoutNewlines(pElements[ip])
+  }
+  return text
+}
+
 export function GetAllChatMessages(retainMarkup = false) {
   let funcName = `GetAllChatMessages(retainMarkup: ${retainMarkup})`
   let elements = GetAllChatMessageElements()
@@ -107,15 +117,22 @@ export function GetAllChatMessages(retainMarkup = false) {
   helpers.ConLog(funcName, `Number of Chat Elements Found: ${elements.length}`)
   let returnValues = []
   for (let i = 0; i < elements.length; i++)  {
-    let pElements = Cypress.$(elements[i]).find('p')
-    let text = ''
-    for (let ip = 0; ip < pElements.length; ip++) {
-      text += retainMarkup ? pElements[ip].innerHTML : helpers.TextContentWithoutNewlines(pElements[ip])
-    }
+    let text = GetChatTurnText(elements[i], retainMarkup)
     returnValues.push(text)
     helpers.ConLog(funcName, text)
   }
   return returnValues
+}
+
+export function VerifyNoChatTurnSelected() { cy.Get('[data-testid="chat-edit-add-user-input-button"], [data-testid="chat-edit-delete-turn-button"]').should('have.length', 0) }
+export function VerifySelectedChatTurn(expectedMessage) { 
+  cy.Get('[data-testid="chat-edit-add-user-input-button"], [data-testid="chat-edit-delete-turn-button"]')
+    .parents('div.wc-message-wrapper')
+    .find('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
+    .then(elements => {
+      let text = GetChatTurnText(elements[0])
+      if (text !== expectedMessage) { throw new Error (`Expecting selected chat turn to be '${expectedMessage}', instead '${text}' was selected.`) }
+    })
 }
 
 // Verify that the branch button is within the same control group as the message.
