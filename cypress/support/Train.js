@@ -53,6 +53,7 @@ export function VerifyAbandonBranchButtonLabel() { cy.Get('[data-testid="edit-di
 
 export function VerifyTurnUndoButtonIsPresent() { cy.Get(TurnUndoButtonSelector) }
 export function VerifyTurnUndoButtonIsMissing() { cy.DoesNotContain(TurnUndoButtonSelector) }
+export function ClickTurnUndoButton() { cy.Get(TurnUndoButtonSelector).Click() }
 
 export function VerifySubmitChangesButtonIsDisabled() { cy.Get('[data-testid="submit-changes-button"].is-disabled') }
 export function VerifySubmitChangesButtonIsEnabled() { cy.Get('[data-testid="submit-changes-button"]:not(.is-disabled)') }
@@ -100,6 +101,9 @@ export function AddTags(tags) {
   tags.forEach(tag => { tagList += `${tag}{enter}` })
   cy.Get('[data-testid="tags-input-tag-input"]').type(tagList)
 }
+
+export function VerifyChatPanelIsDisabled() { cy.Get('div.cl-chatmodal_webchat').find('div.cl-overlay') }
+export function VerifyChatPanelIsEnabled() { cy.Get('div.cl-chatmodal_webchat').DoesNotContain('div.cl-overlay') }
 
 export function GetAllChatMessageElements() { 
   const elements = Cypress.$('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
