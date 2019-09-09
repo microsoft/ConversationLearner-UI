@@ -20,9 +20,9 @@ export function generateDispatcherSource(
         case DispatcherAlgorithmType.RandomSingleTransfer:
             return generateRandomTransitonDispatcherSource(sourceModelPairs, defaultGetPercentageOfRoundsToTransferAt)
         case DispatcherAlgorithmType.RandomMultiTransfer:
-            return generateRandomMultiTransferDispatcherSource(sourceModelPairs, 10, 40, 5)
+            return generateRandomMultiTransferDispatcherSource(sourceModelPairs, 20, 10)
         case DispatcherAlgorithmType.TestData:
-            return generateTestData(sourceModelPairs, 10, 40, 5)
+            return generateTestData(sourceModelPairs, 20, 10)
     }
 
     throw new Error(`Could not associate Dispatcher Algorithm Type with algorithm. You passed: ${algorithmType}`)
@@ -89,16 +89,14 @@ function generateRandomTransitonDispatcherSource(
 
 function generateRandomMultiTransferDispatcherSource(
     sourceModelPairs: SourceAndModelPair[],
-    numberOfTransitions: number,
-    numberRoundsPerDialog: number,
+    numberOfTransitionsPerDialog: number,
     numberOfDialogs: number,
 ): CLM.AppDefinition {
     generateDispatchActions(sourceModelPairs);
     const modelsTrainDialogs = associateModelDialogsWithDispatchActionsAndClean(sourceModelPairs)
     const trainDialogs = randomMultiTransfer(
         modelsTrainDialogs,
-        numberOfTransitions,
-        numberRoundsPerDialog,
+        numberOfTransitionsPerDialog,
         numberOfDialogs)
 
     const source: CLM.AppDefinition = {
@@ -284,22 +282,22 @@ function randomSingleTransfer(
  *
  * @param modelsTrainDialogs Dialogs per models
  * @param numberOfTransitionsPerDialog Number of Transitions per Dialog
- * @param numberRoundsPerDialog Number of Rounds per Dialog
  * @param numberOfDialogs Number of Dialogs
  */
 function randomMultiTransfer(
     modelsTrainDialogs: CLM.TrainDialog[][],
     numberOfTransitionsPerDialog: number,
-    numberOfRoundsPerTransition: number,
     numberOfDialogs: number,
 ): CLM.TrainDialog[] {
     const trainDialogs: CLM.TrainDialog[] = []
-
+    // Server limitation of 100 rounds
+    const maxRounds = 100
     // Could expose roundsPerDialog and calculate roundsPerTransition from the desired length but thought that was harder to imagine
-    const numberOfRoundsPerDialog = numberOfTransitionsPerDialog * numberOfRoundsPerTransition
+    const numberOfRoundsPerTransition = Math.floor(maxRounds / numberOfTransitionsPerDialog)
+    const numberOfRoundsPerDialog = maxRounds - numberOfRoundsPerTransition
 
     while (trainDialogs.length < numberOfDialogs) {
-        const rounds: CLM.TrainRound[] = []
+        let rounds: CLM.TrainRound[] = []
         let previousModelIndex: number = 0
 
         while (rounds.length < numberOfRoundsPerDialog) {
@@ -332,7 +330,9 @@ function randomMultiTransfer(
             previousModelIndex = modelIndex
         }
 
-        const trainDialog = dispatchDialogTemplate
+        const trainDialog = generateDispatchDialog(rounds)
+        trainDialogs.push(trainDialog)
+        rounds = []
     }
 
     return trainDialogs
