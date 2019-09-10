@@ -1,12 +1,8 @@
 import Html from 'slate-html-serializer'
 import * as React from 'react'
+import { NodeTypes } from './APEModels'
 
 type SlateValue = any
-
-enum NODE_TYPES {
-    OPTIONAL = 'optional-inline-node',
-    REQUIRED = 'mention-inline-node'
-}
 
 const BLOCK_TAGS = {
     // Note: Think 'line' is required from other serializer that produces line types.
@@ -14,8 +10,8 @@ const BLOCK_TAGS = {
 }
 
 const INLINES_TAGS = {
-    i: NODE_TYPES.OPTIONAL,
-    b: NODE_TYPES.REQUIRED,
+    i: NodeTypes.Optional,
+    b: NodeTypes.Mention,
 }
 
 /**
@@ -25,7 +21,7 @@ const INLINES_TAGS = {
  * Display: 'This required $myEntity and [optional $otherEntity ] ending.'
  * HTML:
  * <p>This required <b data-id="1f99bb7a-41af-46bb-b2f0-9c5c23404266" data-name="myEntity">$myEntity</b> and <i>[optional <b data-id="7d27f6a3-566a-487f-9345-79ea1db62708" data-name="otherEntity">$otherEntity</b> ]</i> ending.</p>
- *
+ * JSON: {"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"This required ","marks":[]}]},{"kind":"inline","type":"mention-inline-node","isVoid":false,"data":{"completed":true,"option":{"id":"1f99bb7a-41af-46bb-b2f0-9c5c23404266","name":"myEntity"}},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"$myEntity","marks":[]}]}]},{"kind":"text","leaves":[{"kind":"leaf","text":" and [optional ","marks":[]}]},{"kind":"inline","type":"mention-inline-node","isVoid":false,"data":{"completed":true,"option":{"id":"7d27f6a3-566a-487f-9345-79ea1db62708","name":"otherEntity"}},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"$otherEntity","marks":[]}]}]},{"kind":"text","leaves":[{"kind":"leaf","text":" ] ending.","marks":[]}]}]}]}}}
  * See: https://docs.slatejs.org/walkthroughs/saving-and-loading-html-content
  */
 const rules: any[] = [
@@ -52,7 +48,7 @@ const rules: any[] = [
     {
         deserialize(el: any, next: any): object | void {
             const type = INLINES_TAGS[el.tagName.toLowerCase()]
-            if (type == NODE_TYPES.REQUIRED) {
+            if (type == NodeTypes.Mention) {
                 return {
                     object: 'inline',
                     kind: 'inline',
@@ -67,7 +63,7 @@ const rules: any[] = [
                     nodes: next(el.childNodes),
                 }
             }
-            else if (type == NODE_TYPES.OPTIONAL) {
+            else if (type == NodeTypes.Optional) {
                 return {
                     object: 'inline',
                     kind: 'inline',
@@ -79,9 +75,9 @@ const rules: any[] = [
         },
         serialize(obj: SlateValue, children: any): object | void {
             switch (obj.type) {
-                case NODE_TYPES.OPTIONAL:
+                case NodeTypes.Optional:
                     return <i>{children}</i>
-                case NODE_TYPES.REQUIRED: {
+                case NodeTypes.Mention: {
                     const option = obj.data.get('option')
                     const { id, name } = option
                     return <b data-id={id} data-name={name}>{children}</b>
