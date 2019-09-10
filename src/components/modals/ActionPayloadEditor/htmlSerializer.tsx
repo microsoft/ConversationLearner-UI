@@ -18,10 +18,13 @@ const INLINES_TAGS = {
  * Deserialize: HTML(string) -> SlateValue (block, inline, text, marks, etc...)
  * Serialize: SlateValue -> HTML (string)
  *
- * Display: 'This required $myEntity and [optional $otherEntity ] ending.'
+ * Display:
+ * 'This required $myEntity and [optional $otherEntity ] ending.'
  * HTML:
  * <p>This required <b data-id="1f99bb7a-41af-46bb-b2f0-9c5c23404266" data-name="myEntity">$myEntity</b> and <i>[optional <b data-id="7d27f6a3-566a-487f-9345-79ea1db62708" data-name="otherEntity">$otherEntity</b> ]</i> ending.</p>
- * JSON: {"json":{"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"This required ","marks":[]}]},{"kind":"inline","type":"mention-inline-node","isVoid":false,"data":{"completed":true,"option":{"id":"1f99bb7a-41af-46bb-b2f0-9c5c23404266","name":"myEntity"}},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"$myEntity","marks":[]}]}]},{"kind":"text","leaves":[{"kind":"leaf","text":" and [optional ","marks":[]}]},{"kind":"inline","type":"mention-inline-node","isVoid":false,"data":{"completed":true,"option":{"id":"7d27f6a3-566a-487f-9345-79ea1db62708","name":"otherEntity"}},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"$otherEntity","marks":[]}]}]},{"kind":"text","leaves":[{"kind":"leaf","text":" ] ending.","marks":[]}]}]}]}}}
+ * JSON:
+ * {"kind":"value","document":{"kind":"document","data":{},"nodes":[{"kind":"block","type":"line","isVoid":false,"data":{},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"This required ","marks":[]}]},{"kind":"inline","type":"mention-inline-node","isVoid":false,"data":{"completed":true,"option":{"id":"1f99bb7a-41af-46bb-b2f0-9c5c23404266","name":"myEntity"}},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"$myEntity","marks":[]}]}]},{"kind":"text","leaves":[{"kind":"leaf","text":" and [optional ","marks":[]}]},{"kind":"inline","type":"mention-inline-node","isVoid":false,"data":{"completed":true,"option":{"id":"7d27f6a3-566a-487f-9345-79ea1db62708","name":"otherEntity"}},"nodes":[{"kind":"text","leaves":[{"kind":"leaf","text":"$otherEntity","marks":[]}]}]},{"kind":"text","leaves":[{"kind":"leaf","text":" ] ending.","marks":[]}]}]}]}}
+ *
  * See: https://docs.slatejs.org/walkthroughs/saving-and-loading-html-content
  */
 const rules: any[] = [
