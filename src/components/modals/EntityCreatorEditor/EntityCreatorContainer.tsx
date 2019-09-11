@@ -311,13 +311,12 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         if (needPrebuildWarning || needValidationWarning) {
-            this.setState(
-                {
-                    isConfirmEditModalOpen: needValidationWarning,
-                    showValidationWarning: needValidationWarning,
-                    needPrebuiltWarning: needPrebuildWarning,
-                    newOrEditedEntity: newOrEditedEntity
-                })
+            this.setState({
+                isConfirmEditModalOpen: needValidationWarning,
+                showValidationWarning: needValidationWarning,
+                needPrebuiltWarning: needPrebuildWarning,
+                newOrEditedEntity: newOrEditedEntity
+            })
         }
         // Save and close
         else {
@@ -438,7 +437,8 @@ class Container extends React.Component<Props, ComponentState> {
         }))
     }
 
-    onChangeRangePoints = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, rangePointsString?: string) => {
+    @autobind
+    onChangeRangePoints(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, rangePointsString?: string) {
         if (typeof rangePointsString === 'undefined') {
             return
         }
@@ -449,19 +449,20 @@ class Container extends React.Component<Props, ComponentState> {
 
         // Merge user editted labels on top of generated labels preserving index
         // Note: If user inserted range, edited label will be at incorrect index
-        const mergedRangeLabels = [...defaultRangeLabels]
-        for (const [i, label] of this.state.rangesLabels) {
-            mergedRangeLabels[i] = label
-        }
+        // const mergedRangeLabels = [...defaultRangeLabels]
+        // for (const [i, label] of this.state.rangesLabels) {
+        //     mergedRangeLabels[i] = label
+        // }
 
         this.setState({
             rangePointsString,
             rangePoints,
-            rangesLabels: mergedRangeLabels
+            rangesLabels: defaultRangeLabels
         })
     }
 
-    onResetRangeLabel = (rangeLabelIndex: number) => {
+    @autobind
+    onResetRangeLabel(rangeLabelIndex: number) {
         const rangePoints = this.getRangePointsFromString(this.state.rangePointsString)
         const defaultRangeLabels = this.getDefaultLabelsFromRangePoints(rangePoints)
         const rangesLabels = [...this.state.rangesLabels]
@@ -472,25 +473,51 @@ class Container extends React.Component<Props, ComponentState> {
         })
     }
 
+    @autobind
     private getRangePointsFromString(rangePointsString: string): number[] {
         const rangePoints = rangePointsString
             .trim()
             .split(',')
             .map(s => s.trim().replace(/[^\d]/g, ''))
+            .filter(s => s !== '')
             .map(s => Number(s))
 
-        return rangePoints
+        const sortedRangePoints = [...rangePoints]
+            .sort((a, b) => a - b)
+
+        const uniqueRangePonts = [...new Set(sortedRangePoints)]
+
+        return uniqueRangePonts
     }
 
+    @autobind
     private getDefaultLabelsFromRangePoints(rangePoints: number[]): string[] {
-        return [
-            '<18',
-            '18-65',
-            '65+'
-        ]
+        if (rangePoints.length === 0) {
+            return []
+        }
+
+        const generatedLabels = rangePoints.reduce<string[]>((labels, nextPoint, i) => {
+            let newLabel: string
+            if (labels.length === 0) {
+                newLabel = `<${nextPoint}`
+            }
+            else {
+                const prevPoint = rangePoints[i - 1]
+                newLabel = `${prevPoint}-${nextPoint}`
+            }
+
+            return [...labels, newLabel]
+        }, [])
+
+        const lastPoint = rangePoints[rangePoints.length - 1]
+        const newLabel = `${lastPoint}+`
+        generatedLabels.push(newLabel)
+
+        return generatedLabels
     }
 
-    onChangeRangeLabel = (index: number, label: string): void => {
+    @autobind
+    onChangeRangeLabel(index: number, label: string): void {
         const rangesLabels = [...this.state.rangesLabels]
 
         // TODO: Implement
@@ -502,7 +529,8 @@ class Container extends React.Component<Props, ComponentState> {
         })
     }
 
-    onGetRangePointsErrorMessage = (rangePointsString: string): string => {
+    @autobind
+    onGetRangePointsErrorMessage(rangePointsString: string): string {
         const { intl } = this.props
 
         if (rangePointsString.length === 0) {

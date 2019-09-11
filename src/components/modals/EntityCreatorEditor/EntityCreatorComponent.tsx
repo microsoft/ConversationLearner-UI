@@ -215,8 +215,8 @@ const EditComponent: React.FC<Props> = (props) => {
             }
             {props.isQuantized && (
                 <div>
-                    <h3>Quantize Options</h3>
-                    <p>Specify ranges using comma delimited format. See help for details.</p>
+                    <OF.Label>Quantize Options</OF.Label>
+                    <div>Specify possible ranges using a comma delimited format. See help for details.</div>
                     <div>
                         <OF.Label className="cl-label">Range Points
                             <HelpIcon tipType={ToolTip.TipType.ENTITY_RANGE_INPUT} />
@@ -234,13 +234,13 @@ const EditComponent: React.FC<Props> = (props) => {
                         />
                     </div>
                     <OF.Label className="cl-label">Range Labels: [{props.rangePoints.join(', ')}]
-                            <HelpIcon tipType={ToolTip.TipType.ENTITY_RANGE_INPUT} />
+                        <HelpIcon tipType={ToolTip.TipType.ENTITY_RANGE_INPUT} />
                     </OF.Label>
                     <div className="cl-entity-creator-quantize-range-labels">
                         {props.rangesLabels.length === 0
                             ? 'No Ranges detected from input'
                             : props.rangesLabels.map((rangeLabel, i) => (
-                                <>
+                                <React.Fragment key={i}>
                                     <OF.TextField
                                         data-testid="entity-creator-quantize-range-label-value"
                                         onGetErrorMessage={props.onGetRangePointsErrorMessage}
@@ -251,7 +251,7 @@ const EditComponent: React.FC<Props> = (props) => {
                                         // required={props.isQuantized}
                                         required={false}
                                         // Disable Editing generated labels for now
-                                        readOnly={true}
+                                        disabled={true}
                                         value={rangeLabel}
                                         autoComplete="off"
                                     />
@@ -263,7 +263,7 @@ const EditComponent: React.FC<Props> = (props) => {
                                         onClick={() => props.onResetRangeLabel(i)}
                                         ariaDescription="Reset Label"
                                     />
-                                </>
+                                </React.Fragment>
                             ))
                         }
                     </div>
