@@ -74,6 +74,7 @@ export class GeneratedData {
       })
     } else {
       it('Verify the Score Actions data', () => {
+cy.pause()        
         cy.WaitForStableDOM().then(() => VerifyScoreActions(this.data[this.index++], acceptableScoreDeviation))
       })
     }
@@ -123,6 +124,16 @@ export function ClickActionButon(selector, expectedData) {
     if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
 
     cy.wrap(rowElementsOrErrorMessage).find('[data-testid="action-scorer-button-clickable"]').Click() 
+  })
+}
+
+export function ClickEntityValueNameToggleButon(selector, expectedData) {
+  cy.WaitForStableDOM()
+  cy.Enqueue(() => {
+    const rowElementsOrErrorMessage = FindActionRowElements(selector, expectedData)
+    if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
+
+    cy.wrap(rowElementsOrErrorMessage).find('[data-testid="action-scorer-entity-toggle"]').Click() 
   })
 }
 
