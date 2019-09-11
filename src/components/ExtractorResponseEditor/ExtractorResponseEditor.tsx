@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -63,10 +63,10 @@ const externalChangeOperations = ['insert_node', 'remove_node']
 
 /**
  * The higher level goal behind this component is for consumers to think of it like a normal controlled <input value={value} onChange={this.onChangeValue} />
- * However, instead of editing a simple string of text we are editing an extractorResponse object. Then it becomes easy to understand the 
+ * However, instead of editing a simple string of text we are editing an extractorResponse object. Then it becomes easy to understand the
  * abstractions and encapsulation.  Example: for normal <input /> the user can change cursor position and selection, but only when characters are changed,
  * does the onChange get called.  For the ExtractorResponse allows certain operations to change and only exposes the changes externally
- * 
+ *
  * The other important concept is the translation of state from the external domain to internal domain.  Externally the consumers know extractorResponses / entities
  * however internally it stores as generic options list and a Slate.js value object.
  */
@@ -207,7 +207,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
          * If the text you select has a prebuilt entity detected within same region
          * it opens the entity creator modal with that prebuilt type pre-selected to help prevent mismatches.
          * This means `entityTypeFilter` and `builtInTypeFilter` do need to remain a string since the pre-built types/names are not EntityTypes
-         * 
+         *
          * TODO: In future look at adding explicit resolver preset parameter and remove casting
          */
         let builtInTypeFilter: string | null = null

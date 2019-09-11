@@ -1,16 +1,16 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
 import { IOption, IPosition } from './models'
-import FuseMatch from './FuseMatch'
+import { FuseMatch } from '../FuseMatch'
 import './EntityPicker.css'
 import * as OF from 'office-ui-fabric-react'
 import { usePicker } from './usePicker'
 
 interface Props {
-    /** 
+    /**
      * This is kind of a one-off property for the scenario when we want the picker to show a warning message, although
      * it was easier than showing a completely different component
      */

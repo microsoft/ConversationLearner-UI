@@ -367,7 +367,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     @autobind
     onChangeSearchString(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
-        if (!newValue) {
+        if (typeof newValue === 'undefined') {
             return
         }
 
@@ -874,12 +874,20 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         if (!action) {
                             throw new Error(`Could not find action by id: ${ss.predictedAction} in list of actions`)
                         }
-                        keys.push(action.payload)
+
+                        let payload = ''
+                        try {
+                            payload = CLM.ActionBase.GetPayload(action, Util.getDefaultEntityMap(this.props.entities))
+                        }
+                        catch {
+                            // Backwards compatibility to models with old payload type
+                        }
+                        keys.push(payload)
                     }
                 }
 
                 const searchString = keys.join(' ').toLowerCase();
-                return searchString.indexOf(searchValue) > -1;
+                return searchString.includes(searchValue);
             })
     }
 
