@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { Value } from 'slate'
@@ -67,7 +67,7 @@ export const tokenizeText = (text: string, tokenRegex: RegExp): IToken[] => {
         return tokens
     }
 
-    let result: RegExpExecArray | null = null 
+    let result: RegExpExecArray | null = null
     let lastIndex = tokenRegex.lastIndex
     // tslint:disable-next-line:no-conditional-assignment
     while ((result = tokenRegex.exec(text)) !== null) {
@@ -117,6 +117,16 @@ export const findLastIndex = <T>(xs: T[], f: (x: T) => boolean): number => {
     return -1
 }
 
+/**
+ * For each customEntity, find the indicies of the start and end tokens within the entity boundaries
+ *
+ *         [   custom entity  ]
+ * [token0 token1 token2 token3 token4 token5]
+ *         [1,               3]
+ *
+ * @param tokens Array of Tokens
+ * @param customEntities Array of Custom Entities
+ */
 export const addTokenIndicesToCustomEntities = (tokens: IToken[], customEntities: models.IGenericEntity<any>[]): ICustomEntityWithTokenIndices[] => {
     return customEntities.map<ICustomEntityWithTokenIndices>(ce => {
         const startTokenIndex = tokens.findIndex(t => t.isSelectable === true && ce.startIndex < t.endIndex && t.endIndex <= ce.endIndex)
@@ -125,26 +135,26 @@ export const addTokenIndicesToCustomEntities = (tokens: IToken[], customEntities
             console.warn(`Could not find valid token for custom entity: `, ce)
         }
 
-//         if (startTokenIndex !== -1 && endTokenIndex !== -1) {
-//             const startToken = tokens[startTokenIndex]
-//             const endToken = tokens[endTokenIndex]
+        //         if (startTokenIndex !== -1 && endTokenIndex !== -1) {
+        //             const startToken = tokens[startTokenIndex]
+        //             const endToken = tokens[endTokenIndex]
 
-//             console.log(`
-// token indices found:
-// ce.startIndex: ${ce.startIndex}
-// ce.endIndex: ${ce.endIndex}
+        //             console.log(`
+        // token indices found:
+        // ce.startIndex: ${ce.startIndex}
+        // ce.endIndex: ${ce.endIndex}
 
-// startTokenIndex: ${startTokenIndex}
-// startToken.isSelectable: ${startToken.isSelectable}
-// startToken.startIndex: ${startToken.startIndex}
-// startToken.endIndex: ${startToken.endIndex}
+        // startTokenIndex: ${startTokenIndex}
+        // startToken.isSelectable: ${startToken.isSelectable}
+        // startToken.startIndex: ${startToken.startIndex}
+        // startToken.endIndex: ${startToken.endIndex}
 
-// endTokenIndex: ${endTokenIndex}
-// endToken.isSelectable: ${endToken.isSelectable}
-// endToken.startIndex: ${endToken.startIndex}
-// endToken.endIndex: ${endToken.endIndex}
-// `)
-//         }
+        // endTokenIndex: ${endTokenIndex}
+        // endToken.isSelectable: ${endToken.isSelectable}
+        // endToken.startIndex: ${endToken.startIndex}
+        // endToken.endIndex: ${endToken.endIndex}
+        // `)
+        //         }
 
         return {
             ...ce,
@@ -154,12 +164,24 @@ export const addTokenIndicesToCustomEntities = (tokens: IToken[], customEntities
     })
 }
 
+/**
+ * (IToken[], ICustomEntityWithTokenIndicies[]) => (IToken | IEntityPlaceholder)[]
+ * Given tokens and custom entities associated with tokens, replace tokens with entities placeholders
+ * These entity placeholders eventually get converted to slate inline segments
+ *
+ * Simplified visual
+ * [token0, token1, token2, token3, token4, token5, token6], [{token6, [1, 3]}]
+ * [token0, [token1, token2, token3], token4, token5, token6]
+ *
+ * @param tokens Array of Tokens
+ * @param customEntitiesWithTokens Array of Custom Entities with Token Indicies
+ */
 export const wrapTokensWithEntities = (tokens: IToken[], customEntitiesWithTokens: ICustomEntityWithTokenIndices[]): TokenArray => {
     // If there are no entities than no work to do, return tokens
     if (customEntitiesWithTokens.length === 0) {
         return tokens
     }
-    
+
     const sortedCustomEntities = [...customEntitiesWithTokens].sort((a, b) => a.startIndex - b.startIndex)
     // Include all non labeled tokens before first entity
     const firstCet = sortedCustomEntities[0]
@@ -190,7 +212,7 @@ export const labelTokens = (tokens: IToken[], customEntities: models.IGenericEnt
     return wrapTokensWithEntities(tokens, addTokenIndicesToCustomEntities(tokens, customEntities))
 }
 
-export const convertToSlateNodes = (tokensWithEntities: TokenArray): any[] => {
+export const convertToSlateNodes = (tokensWithEntities: TokenArray, inlineNodeType: string = models.NodeType.CustomEntityNodeType): any[] => {
     const nodes: any[] = []
 
     // If there are no tokens, just return empty text node to ensure valid SlateValue object
@@ -214,10 +236,10 @@ export const convertToSlateNodes = (tokensWithEntities: TokenArray): any[] => {
     for (const tokenOrEntity of tokensWithEntities) {
         if ((tokenOrEntity as IEntityPlaceholder).entity) {
             const entityPlaceholder: IEntityPlaceholder = tokenOrEntity as any
-            const nestedNodes = convertToSlateNodes(entityPlaceholder.tokens)
+            const nestedNodes = convertToSlateNodes(entityPlaceholder.tokens, inlineNodeType)
             nodes.push({
                 "kind": "inline",
-                "type": models.NodeType.CustomEntityNodeType,
+                "type": inlineNodeType,
                 "isVoid": false,
                 "data": entityPlaceholder.entity.data,
                 "nodes": nestedNodes
@@ -263,8 +285,8 @@ export const convertToSlateNodes = (tokensWithEntities: TokenArray): any[] => {
     return nodes
 }
 
-export const convertToSlateValue = (tokensWithEntities: TokenArray): any => {
-    const nodes = convertToSlateNodes(tokensWithEntities)
+export const convertToSlateValue = (tokensWithEntities: TokenArray, inlineNodeType: string = models.NodeType.CustomEntityNodeType): any => {
+    const nodes = convertToSlateNodes(tokensWithEntities, inlineNodeType)
     const document = {
         "document": {
             "nodes": [
@@ -282,19 +304,108 @@ export const convertToSlateValue = (tokensWithEntities: TokenArray): any => {
     return Value.fromJSON(document)
 }
 
+function convertSegmentsToSlateValue(normalizedSegements: models.ISegement[], inlineType: string = models.NodeType.CustomEntityNodeType) {
+    const nodes = normalizedSegements
+        .map(segement => {
+            if (segement.type === 'inline') {
+                return {
+                    "kind": "inline",
+                    "type": inlineType,
+                    "isVoid": false,
+                    "data": segement.data,
+                    "nodes": [
+                        {
+                            "kind": "text",
+                            "leaves": [
+                                {
+                                    "kind": "leaf",
+                                    "text": segement.text,
+                                    "marks": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+
+            return {
+                "kind": "text",
+                "leaves": [
+                    {
+                        "kind": "leaf",
+                        "text": segement.text,
+                        "marks": []
+                    }
+                ]
+            }
+        })
+
+    const document = {
+        "document": {
+            "nodes": [
+                {
+                    "kind": "block",
+                    "type": "paragraph",
+                    "isVoid": false,
+                    "data": {},
+                    "nodes": nodes
+                }
+            ]
+        }
+    }
+
+    return document
+}
+
+
 /**
- * Note: this is more like a negative match used to determine characters that split the string instead of 
+ * Note: this is more like a negative match used to determine characters that split the string instead of
  * positive match would specify characters which are tokens. Only chose this because it seems like a much
  * simpler regex / smaller set of characters, but I imagine alternative approach would work
  */
 export const tokenizeRegex = /\s+|[.?,!]/g
 
-export const convertEntitiesAndTextToTokenizedEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineType: string) => {
+/**
+ * Used for conversion of text and custom entities. For proper usage within extractor editor we need to tokenize the text.
+ * This is what makes it different from the below method which doesnt need to be tokenized.
+ *
+ * @param text plain text
+ * @param customEntities array of entities
+ * @param inlineType
+ */
+export const convertEntitiesAndTextToTokenizedEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineNodeType: string) => {
     const labeledTokens = labelTokens(tokenizeText(text, tokenizeRegex), customEntities)
-    return convertToSlateValue(labeledTokens)
+    return convertToSlateValue(labeledTokens, inlineNodeType)
 }
 
-export const convertEntitiesAndTextToEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineType: string) => {
+/**
+ * Used for conversion of text and prebuilt entities. Because the user can't editing label for prebuilts we don't need to tokenize the text.
+ * It can be split precisely and only on entity boundaries.
+ *
+ * Works by incrementially spliting the initial segment per entity
+ *  0123456789012345678901234567
+ * 'I am some sample user input' [[5,6],[17,21]]
+ * 'I am ','some', 'sample user input'
+ * 'I am ','some', 'sample','user',' input'
+ *
+ * Some and User would be highlighted because they are labels.
+ *
+ * Algorithm was done this was to help be robust against overlapping entities and partially complete and skip them, but I think it still fails
+ * Could change to single pass algorithm that first checkx entity boundaries upfront. This might be simpler.
+ *
+ * @param text Plain text
+ * @param customEntities Array of Entities (Likely Prebult entities)
+ * @param inlineNodeType The node type to use for Slate nodes. (Likely Prebult)
+ */
+export const convertEntitiesAndTextToEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineNodeType: string) => {
+    const initialSegment: models.ISegement = {
+        text,
+        startIndex: 0,
+        endIndex: text.length,
+        type: models.SegementType.Normal,
+        data: {}
+    }
+
     const normalizedSegements = customEntities.reduce<models.ISegement[]>((segements, entity) => {
         const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= entity.startIndex && entity.endIndex <= seg.endIndex)
         if (segementIndexWhereEntityBelongs === -1) {
@@ -345,140 +456,22 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
 
         return [...newSegements, ...nextSegements]
     }, [
-            {
-                text,
-                startIndex: 0,
-                endIndex: text.length,
-                type: models.SegementType.Normal,
-                data: {}
-            }
-        ])
+        initialSegment
+    ])
 
     // console.log(`convertEntitiesAndTextToEditorValue: `, normalizedSegements.map(s => `[${s.startIndex}, '${s.text}', ${s.endIndex}]`).join(', '))
-    const nodes = normalizedSegements
-        .map(segement => {
-            if (segement.type === 'inline') {
-                return {
-                    "kind": "inline",
-                    "type": inlineType,
-                    "isVoid": false,
-                    "data": segement.data,
-                    "nodes": [
-                        {
-                            "kind": "text",
-                            "leaves": [
-                                {
-                                    "kind": "leaf",
-                                    "text": segement.text,
-                                    "marks": []
-                                }
-                            ]
-                        }
-                    ]
-                }
-            }
-
-            return {
-                "kind": "text",
-                "leaves": [
-                    {
-                        "kind": "leaf",
-                        "text": segement.text,
-                        "marks": []
-                    }
-                ]
-            }
-        })
-
-    const document = {
-        "document": {
-            "nodes": [
-                {
-                    "kind": "block",
-                    "type": "paragraph",
-                    "isVoid": false,
-                    "data": {},
-                    "nodes": nodes
-                }
-            ]
-        }
-    }
+    const document = convertSegmentsToSlateValue(normalizedSegements, inlineNodeType);
 
     return Value.fromJSON(document)
 }
 
-export const convertMatchedTextIntoMatchedOption = <T>(inputText: string, matches: [number, number][], original: T): models.MatchedOption<T> => {
-    const matchedStrings = matches.reduce<models.ISegement[]>((segements, [startIndex, originalEndIndex]) => {
-        // TODO: For some reason the Fuse.io library returns the end index before the last character instead of after
-        // I opened issue here for explanation: https://github.com/krisk/Fuse/issues/212
-        const endIndex = originalEndIndex + 1
-        const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= startIndex && endIndex <= seg.endIndex)
-        const prevSegements = segements.slice(0, segementIndexWhereEntityBelongs)
-        const nextSegements = segements.slice(segementIndexWhereEntityBelongs + 1, segements.length)
-        const segementWhereEntityBelongs = segements[segementIndexWhereEntityBelongs]
-
-        const prevSegementEndIndex = startIndex - segementWhereEntityBelongs.startIndex
-        const prevSegementText = segementWhereEntityBelongs.text.substring(0, prevSegementEndIndex)
-        const prevSegement: models.ISegement = {
-            ...segementWhereEntityBelongs,
-            text: prevSegementText,
-            endIndex: startIndex,
-        }
-
-        const nextSegementStartIndex = endIndex - segementWhereEntityBelongs.startIndex
-        const nextSegementText = segementWhereEntityBelongs.text.substring(nextSegementStartIndex, segementWhereEntityBelongs.text.length)
-        const nextSegement: models.ISegement = {
-            ...segementWhereEntityBelongs,
-            text: nextSegementText,
-            startIndex: endIndex,
-        }
-
-        const newSegement: models.ISegement = {
-            text: segementWhereEntityBelongs.text.substring(prevSegementEndIndex, nextSegementStartIndex),
-            startIndex: startIndex,
-            endIndex: endIndex,
-            type: models.SegementType.Inline,
-            data: {
-                matched: true
-            }
-        }
-
-        const newSegements = []
-        if (prevSegement.startIndex !== prevSegement.endIndex) {
-            newSegements.push(prevSegement)
-        }
-
-        if (newSegement.startIndex !== newSegement.endIndex) {
-            newSegements.push(newSegement)
-        }
-
-        if (nextSegement.startIndex !== nextSegement.endIndex) {
-            newSegements.push(nextSegement)
-        }
-
-        return [...prevSegements, ...newSegements, ...nextSegements]
-    }, [
-            {
-                text: inputText,
-                startIndex: 0,
-                endIndex: inputText.length,
-                type: models.SegementType.Normal,
-                data: {
-                    matched: false
-                }
-            }
-        ]).map(({ text, data }) => ({
-            text,
-            matched: data.matched
-        }))
-
-    return {
-        highlighted: false,
-        original,
-        matchedStrings
-    }
-}
-
+/**
+ * Given slate change object return array of entities contained.
+ * Essentially scans slate object for inline noes that have entity data (type: mention-inline-node)
+ * Reconstructs index boundaries from indicies on start and end tokens
+ *
+ * @param change Slate change object.
+ */
 export const getEntitiesFromValueUsingTokenData = (change: any): models.IGenericEntity<models.IGenericEntityData<CLM.PredictedEntity>>[] => {
     const entityInlineNodes = change.value.document.filterDescendants((node: any) => node.type === models.NodeType.CustomEntityNodeType)
     return (entityInlineNodes.map((entityNode: any) => {
@@ -522,7 +515,7 @@ export const convertPredictedEntityToGenericEntity = (pe: CLM.PredictedEntity, e
             option: {
                 id: pe.entityId,
                 name: entityName,
-                type: pe.builtinType, 
+                type: pe.builtinType,
                 resolverType: null
             },
             text: pe.entityText,
@@ -577,7 +570,7 @@ export const convertExtractorResponseToEditorModels = (extractResponse: CLM.Extr
                 id: e.entityId,
                 name: util.entityDisplayName(e),
                 type: e.entityType,
-                resolverType: e.resolverType                
+                resolverType: e.resolverType
             })
         )
 
@@ -608,3 +601,4 @@ export const convertExtractorResponseToEditorModels = (extractResponse: CLM.Extr
         preBuiltEntities
     }
 }
+
