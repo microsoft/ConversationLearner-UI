@@ -45,8 +45,10 @@ export enum TipType {
     ENTITY_EXTRACTOR_TEXTVARIATION = 'entityExtractorTextVariation',
     ENTITY_EXTRACTOR_WARNING = 'extractorWarning',
     ENTITY_MULTIVALUE = 'isBucketable',
+    ENTITY_RANGE_INPUT = 'isRangeInput',
     ENTITY_NAME = 'entityName',
     ENTITY_NEGATABLE = 'isNegatable',
+    ENTITY_QUANTIZE = 'isQuantized',
     ENTITY_PROGAMMATIC = 'isProgrammatic',
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
@@ -233,7 +235,7 @@ export function getTip(tipType: string) {
                     <p><FormattedMessageId id={FM.TOOLTIP_ACTION_SET_ENTITY} /></p>
                 </div>
             )
-            // return render(FM.TOOLTIP_ACTION_SET_ENTITY_TITLE, [FM.TOOLTIP_ACTION_SET_ENTITY])
+        // return render(FM.TOOLTIP_ACTION_SET_ENTITY_TITLE, [FM.TOOLTIP_ACTION_SET_ENTITY])
         case TipType.ACTION_ENTITIES:
             return (
                 <div>
@@ -290,7 +292,7 @@ export function getTip(tipType: string) {
                     { key: 'Disqualifying:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW4 }
                 ]);
         case TipType.ACTION_REPROMPT:
-                    return render(FM.TOOLTIP_ACTION_REPROMPT_TITLE, [FM.TOOLTIP_ACTION_REPROMPT]);
+            return render(FM.TOOLTIP_ACTION_REPROMPT_TITLE, [FM.TOOLTIP_ACTION_REPROMPT]);
         case TipType.ACTION_REQUIRED:
             return render(
                 FM.TOOLTIP_ACTION_REQUIRED_TITLE,
@@ -456,6 +458,16 @@ export function getTip(tipType: string) {
                     />
                 </div>
             )
+        case TipType.ENTITY_RANGE_INPUT:
+            return (
+                <div>
+                    <ul>
+                        <li>Determine which numerical ranges you need to change bot responses on.</li>
+                        <li>For single value entities the range is determined by the labeled value. Example: If entity 'age' is &lt;18 bot will restrict resuls from containing R rated movies.</li>
+                        <li>For multi-value entities the range is dteremined by the number of values. Example: If 1 result, show that result, if 2 results show card, if 3+ results ask for filter.</li>
+                    </ul>
+                </div>
+            )
         case TipType.ENTITY_NEGATABLE:
             return (
                 <div>
@@ -481,6 +493,12 @@ export function getTip(tipType: string) {
                         width="60%"
                         alt="Entity Type Custom"
                     />
+                </div>
+            )
+        case TipType.ENTITY_QUANTIZE:
+            return (
+                <div>
+                    Quantize Help Text
                 </div>
             )
         case TipType.ENTITY_PROGAMMATIC:

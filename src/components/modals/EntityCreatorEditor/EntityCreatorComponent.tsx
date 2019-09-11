@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -15,6 +15,7 @@ import './styles.css'
 import { FM } from '../../../react-intl-messages'
 import FormattedMessageId from '../../FormattedMessageId'
 import { InjectedIntlProps } from 'react-intl'
+import HelpIcon from 'src/components/HelpIcon'
 
 export interface IEnumValueForDisplay extends CLM.EnumValue {
     allowDelete: boolean
@@ -43,6 +44,18 @@ interface ReceivedProps {
 
     isNegatable: boolean
     onChangeNegatable: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
+
+    isQuantized: boolean
+    onChangeQuantize: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
+
+    rangePointsString: string
+    rangePoints: number[]
+    onChangeRangePoints: (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => void
+    onGetRangePointsErrorMessage: (value: string) => string
+    onResetRangeLabel: (index: number) => void
+
+    rangesLabels: string[]
+    onChangeRangeLabel: (index: number, value: string) => void
 
     isEditing: boolean
     requiredActions: CLM.ActionBase[]
@@ -139,7 +152,7 @@ const EditComponent: React.FC<Props> = (props) => {
             />
         }
         {props.entityTypeKey === CLM.EntityType.ENUM &&
-            
+
             props.enumValues.map((value, index) => {
                 return (
                     <div
@@ -172,7 +185,7 @@ const EditComponent: React.FC<Props> = (props) => {
 
         }
         <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
-            {props.entityTypeKey !== CLM.EntityType.ENUM &&            
+            {props.entityTypeKey !== CLM.EntityType.ENUM &&
                 <TC.Checkbox
                     data-testid="entity-creator-multi-valued-checkbox"
                     label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_MULTIVALUE_LABEL)}
@@ -191,6 +204,71 @@ const EditComponent: React.FC<Props> = (props) => {
                     tipType={ToolTip.TipType.ENTITY_NEGATABLE}
                 />
             }
+            {props.entityTypeKey === CLM.EntityType.LUIS &&
+                <TC.Checkbox
+                    data-testid="entity-creator-quantize-checkbox"
+                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_QUANTIZE_LABEL)}
+                    checked={props.isQuantized}
+                    onChange={props.onChangeQuantize}
+                    tipType={ToolTip.TipType.ENTITY_QUANTIZE}
+                />
+            }
+            {props.isQuantized && (
+                <div>
+                    <h3>Quantize Options</h3>
+                    <p>Specify ranges using comma delimited format. See help for details.</p>
+                    <div>
+                        <OF.Label className="cl-label">Range Points
+                            <HelpIcon tipType={ToolTip.TipType.ENTITY_RANGE_INPUT} />
+                        </OF.Label>
+                        <OF.TextField
+                            data-testid="entity-creator-quantize-input-range"
+                            onGetErrorMessage={props.onGetRangePointsErrorMessage}
+                            onChange={props.onChangeRangePoints}
+                            placeholder={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER)}
+                            // Required true without label adds space for astrisk to end, which causes horizontal scrollbar on modal
+                            // Force required false, but validate as required true
+                            required={false} // {props.isQuantized}
+                            value={props.rangePointsString}
+                            autoComplete="off"
+                        />
+                    </div>
+                    <OF.Label className="cl-label">Range Labels: [{props.rangePoints.join(', ')}]
+                            <HelpIcon tipType={ToolTip.TipType.ENTITY_RANGE_INPUT} />
+                    </OF.Label>
+                    <div className="cl-entity-creator-quantize-range-labels">
+                        {props.rangesLabels.length === 0
+                            ? 'No Ranges detected from input'
+                            : props.rangesLabels.map((rangeLabel, i) => (
+                                <>
+                                    <OF.TextField
+                                        data-testid="entity-creator-quantize-range-label-value"
+                                        onGetErrorMessage={props.onGetRangePointsErrorMessage}
+                                        onChange={props.onChangeRangePoints}
+                                        placeholder={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_NAME_PLACEHOLDER)}
+                                        // Required true without label adds space for astrisk to end, which causes horizontal scrollbar on modal
+                                        // Force required false, but validate as required true
+                                        // required={props.isQuantized}
+                                        required={false}
+                                        // Disable Editing generated labels for now
+                                        readOnly={true}
+                                        value={rangeLabel}
+                                        autoComplete="off"
+                                    />
+                                    <OF.IconButton
+                                        data-testid="entity-range-label-reset"
+                                        disabled={true}
+                                        className={`cl-inputWithButton-button`}
+                                        iconProps={{ iconName: 'Refresh' }}
+                                        onClick={() => props.onResetRangeLabel(i)}
+                                        ariaDescription="Reset Label"
+                                    />
+                                </>
+                            ))
+                        }
+                    </div>
+                </div>
+            )}
         </div>
     </div>
 }
@@ -247,7 +325,7 @@ const Component: React.SFC<Props> = (props) => {
         </div >
         <div className="cl-modal_footer cl-modal-buttons">
             <div className="cl-modal-buttons_secondary">
-                {props.isEditing && 
+                {props.isEditing &&
                     <OF.DefaultButton
                         onClick={props.onClickTrainDialogs}
                         disabled={!props.isSaveButtonDisabled} // Disable so user doesn't lose work if clicked

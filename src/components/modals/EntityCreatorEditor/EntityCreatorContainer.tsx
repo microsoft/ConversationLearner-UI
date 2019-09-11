@@ -30,6 +30,7 @@ const initState: ComponentState = {
     isPrebuilt: false,
     isMultivalueVal: false,
     isNegatableVal: false,
+    isQuantized: false,
     isEditing: false,
     enumValues: [],
     title: '',
@@ -40,27 +41,34 @@ const initState: ComponentState = {
     isDeleteErrorModalOpen: false,
     deleteEnumCheck: null,
     showValidationWarning: false,
-    newOrEditedEntity: null
+    newOrEditedEntity: null,
+    rangePointsString: '',
+    rangePoints: [],
+    rangesLabels: [],
 }
 
 interface ComponentState {
     entityNameVal: string
     entityTypeVal: string
-    entityResolverVal: string,
+    entityResolverVal: string
     isPrebuilt: boolean
     isMultivalueVal: boolean
     isNegatableVal: boolean
+    isQuantized: boolean
     isEditing: boolean
     enumValues: (CLM.EnumValue | null)[]
     title: string
     hasPendingChanges: boolean
-    isConfirmEditModalOpen: boolean,
-    isConfirmDeleteModalOpen: boolean,
-    needPrebuiltWarning: string | null,
-    isDeleteErrorModalOpen: boolean,
-    deleteEnumCheck: CLM.EnumValue | null,
-    showValidationWarning: boolean,
+    isConfirmEditModalOpen: boolean
+    isConfirmDeleteModalOpen: boolean
+    needPrebuiltWarning: string | null
+    isDeleteErrorModalOpen: boolean
+    deleteEnumCheck: CLM.EnumValue | null
+    showValidationWarning: boolean
     newOrEditedEntity: CLM.EntityBase | null
+    rangePointsString: string
+    rangePoints: number[]
+    rangesLabels: string[]
 }
 
 export const getPrebuiltEntityName = (preBuiltType: string): string => {
@@ -424,6 +432,86 @@ class Container extends React.Component<Props, ComponentState> {
         }))
     }
 
+    onChangeQuantize = () => {
+        this.setState(prevState => ({
+            isQuantized: !prevState.isQuantized,
+        }))
+    }
+
+    onChangeRangePoints = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, rangePointsString?: string) => {
+        if (typeof rangePointsString === 'undefined') {
+            return
+        }
+
+        // TODO: Parse numbers from rangePointsString
+        const rangePoints = this.getRangePointsFromString(rangePointsString)
+        const defaultRangeLabels = this.getDefaultLabelsFromRangePoints(rangePoints)
+
+        // Merge user editted labels on top of generated labels preserving index
+        // Note: If user inserted range, edited label will be at incorrect index
+        const mergedRangeLabels = [...defaultRangeLabels]
+        for (const [i, label] of this.state.rangesLabels) {
+            mergedRangeLabels[i] = label
+        }
+
+        this.setState({
+            rangePointsString,
+            rangePoints,
+            rangesLabels: mergedRangeLabels
+        })
+    }
+
+    onResetRangeLabel = (rangeLabelIndex: number) => {
+        const rangePoints = this.getRangePointsFromString(this.state.rangePointsString)
+        const defaultRangeLabels = this.getDefaultLabelsFromRangePoints(rangePoints)
+        const rangesLabels = [...this.state.rangesLabels]
+        rangesLabels[rangeLabelIndex] = defaultRangeLabels[rangeLabelIndex]
+
+        this.setState({
+            rangesLabels
+        })
+    }
+
+    private getRangePointsFromString(rangePointsString: string): number[] {
+        const rangePoints = rangePointsString
+            .trim()
+            .split(',')
+            .map(s => s.trim().replace(/[^\d]/g, ''))
+            .map(s => Number(s))
+
+        return rangePoints
+    }
+
+    private getDefaultLabelsFromRangePoints(rangePoints: number[]): string[] {
+        return [
+            '<18',
+            '18-65',
+            '65+'
+        ]
+    }
+
+    onChangeRangeLabel = (index: number, label: string): void => {
+        const rangesLabels = [...this.state.rangesLabels]
+
+        // TODO: Implement
+        // Code should be similar to onChangeEnum value
+        // If emput, recomput default, otherwise set user value
+
+        this.setState({
+            rangesLabels
+        })
+    }
+
+    onGetRangePointsErrorMessage = (rangePointsString: string): string => {
+        const { intl } = this.props
+
+        if (rangePointsString.length === 0) {
+            return Util.formatMessageId(intl, FM.FIELDERROR_REQUIREDVALUE)
+        }
+
+        return ''
+    }
+
     onGetNameErrorMessage = (value: string): string => {
         const { intl } = this.props
 
@@ -780,6 +868,17 @@ class Container extends React.Component<Props, ComponentState> {
 
             isNegatable={this.state.isNegatableVal}
             onChangeNegatable={this.onChangeReversible}
+
+            isQuantized={this.state.isQuantized}
+            onChangeQuantize={this.onChangeQuantize}
+
+            rangePointsString={this.state.rangePointsString}
+            rangePoints={this.state.rangePoints}
+            onChangeRangePoints={this.onChangeRangePoints}
+            onGetRangePointsErrorMessage={this.onGetRangePointsErrorMessage}
+            rangesLabels={this.state.rangesLabels}
+            onChangeRangeLabel={this.onChangeRangeLabel}
+            onResetRangeLabel={this.onResetRangeLabel}
 
             isEditing={this.state.isEditing}
             requiredActions={this.getRequiredActions()}

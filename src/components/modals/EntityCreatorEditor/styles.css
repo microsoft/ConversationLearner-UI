@@ -6,3 +6,10 @@
     display: grid;
     grid-gap: 0.5em;
 }
+
+.cl-entity-creator-quantize-range-labels {
+    display: grid;
+    grid-template: auto / 1fr min-content;
+    grid-gap: 0.5em 0.5em;
+    padding: 0.5em 0;
+}
