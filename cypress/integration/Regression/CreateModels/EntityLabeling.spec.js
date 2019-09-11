@@ -9,7 +9,6 @@ import * as entities from '../../../support/Entities'
 import * as actions from '../../../support/Actions'
 import * as train from '../../../support/Train'
 import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
-import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
 describe('Entity Labeling - Create Model', () => {

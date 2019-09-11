@@ -27,6 +27,10 @@ export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyActi
 export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-no-click"]', true) }
 export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-selected"]', false) }
 
+export function VerifyContainsTextAction(expectedResponse) { VerifyActionExists('[data-testid="action-scorer-text-response"]', expectedResponse) }
+export function VerifyContainsApiAction(apiName) { VerifyActionExists('[data-testid="action-scorer-api-name"]', apiName) }
+export function VerifyContainsEndSessionAction(expectedData) { VerifyActionExists('[data-testid="action-scorer-session-response-user"]', expectedData) }
+
 
 // To VALIDATE All of the Data in the Score Actions Grid use this class. 
 // Here is the development process:
@@ -115,6 +119,14 @@ export function FindActionRowElements(selector, expectedData) {
   if (elements.length == 0) { return 'Found ZERO parent elements containing div.ms-DetailsRow-fields' }
 
   return elements
+}
+
+export function VerifyActionExists(selector, expectedData) {
+  cy.WaitForStableDOM()
+  cy.Enqueue(() => {
+    const rowElementsOrErrorMessage = FindActionRowElements(selector, expectedData)
+    if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
+  })
 }
 
 export function ClickActionButon(selector, expectedData) {
