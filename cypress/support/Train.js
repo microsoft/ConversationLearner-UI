@@ -20,6 +20,8 @@ function Today() { return Cypress.moment().format("MM/DD/YYYY") }
 
 export const TypeYourMessageSelector = 'input.wc-shellinput[placeholder="Type your message..."]' // data-testid NOT possible
 export const ScoreActionsButtonSelector = '[data-testid="score-actions-button"]'
+export const TurnUndoButtonSelector = '[data-testid="edit-teach-dialog-undo-button"]'
+export const EntityLabelUndoButtonSelector = '[data-testid="undo-changes-button"]'
 
 export function TypeAlternativeInput(trainMessage) { cy.Get('[data-testid="entity-extractor-alternative-input-text"]').type(`${trainMessage}{enter}`) }
 export function ClickSetInitialStateButton() { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
@@ -49,13 +51,18 @@ export function ClickConfirmDeleteLogDialogButton() { popupModal.VerifyExactTitl
 export function VerifyDeleteButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Delete') }
 export function VerifyAbandonBranchButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Abandon Branch') }
 
+export function VerifyTurnUndoButtonIsPresent() { cy.Get(TurnUndoButtonSelector) }
+export function VerifyTurnUndoButtonIsMissing() { cy.DoesNotContain(TurnUndoButtonSelector) }
+export function ClickTurnUndoButton() { cy.Get(TurnUndoButtonSelector).Click() }
+
 export function VerifySubmitChangesButtonIsDisabled() { cy.Get('[data-testid="submit-changes-button"].is-disabled') }
 export function VerifySubmitChangesButtonIsEnabled() { cy.Get('[data-testid="submit-changes-button"]:not(.is-disabled)') }
-export function VerifyUndoButtonIsDisabled() { cy.Get('[data-testid="undo-changes-button"].is-disabled') }
-export function VerifyUndoButtonIsEnabled() { cy.Get('[data-testid="undo-changes-button"]:not(.is-disabled)') }
-
 export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
-export function ClickUndoButton() { cy.Get('[data-testid="undo-changes-button"]').Click() }
+
+export function VerifyEntityLabelUndoButtonIsDisabled() { cy.Get(EntityLabelUndoButtonSelector + '.is-disabled') }
+export function VerifyEntityLabelUndoButtonIsEnabled() { cy.Get(EntityLabelUndoButtonSelector + ':not(.is-disabled)') }
+export function ClickEntityLabelUndoButton() { cy.Get(EntityLabelUndoButtonSelector).Click() }
+
 export function ClickNewEntityButton() { cy.Get('[data-testid="entity-extractor-create-button"]').Click() }
 
 export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }
@@ -94,6 +101,9 @@ export function AddTags(tags) {
   tags.forEach(tag => { tagList += `${tag}{enter}` })
   cy.Get('[data-testid="tags-input-tag-input"]').type(tagList)
 }
+
+export function VerifyChatPanelIsDisabled() { cy.Get('div.cl-chatmodal_webchat').find('div.cl-overlay') }
+export function VerifyChatPanelIsEnabled() { cy.Get('div.cl-chatmodal_webchat').DoesNotContain('div.cl-overlay') }
 
 export function GetAllChatMessageElements() { 
   const elements = Cypress.$('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
