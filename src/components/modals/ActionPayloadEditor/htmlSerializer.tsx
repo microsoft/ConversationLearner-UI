@@ -44,6 +44,7 @@ const rules: any[] = [
         serialize(obj: SlateValue, children: any): object | void {
             switch (obj.type) {
                 case BLOCK_TAGS.p:
+                case 'paragraph':
                     return <p>{children}</p>
             }
         },
