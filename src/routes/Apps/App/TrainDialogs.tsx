@@ -1320,7 +1320,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
 
     @autobind
     onChangeSearchString(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
-        if (!newValue) {
+        if (typeof newValue === 'undefined') {
             return
         }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { EntityBase, PredictedEntity } from '@conversationlearner/models'
@@ -19,7 +19,7 @@ export interface InternalPredictedEntity {
 export interface IEntityPickerProps {
     isOverlappingOtherEntities: boolean
     isVisible: boolean
-    position: IPosition | null, 
+    position: IPosition | null,
     builtInTypeFilter: string | null
 }
 
@@ -66,27 +66,6 @@ export interface ISegement {
     endIndex: number
     type: SegementType
     data: any
-}
-
-export interface FuseResult<T> {
-    item: T
-    matches: FuseMatch[]
-}
-
-export interface FuseMatch {
-    indices: [number, number][]
-    key: string
-}
-
-export interface MatchedOption<T> {
-    highlighted: boolean
-    matchedStrings: MatchedString[]
-    original: T
-}
-
-export interface MatchedString {
-    text: string
-    matched: boolean
 }
 
 export enum ExtractorStatus {
