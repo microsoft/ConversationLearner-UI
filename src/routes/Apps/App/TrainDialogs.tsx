@@ -31,9 +31,9 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
-import './TrainDialogs.css'
 import { autobind } from 'core-decorators'
-import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator';
+import { DispatcherAlgorithmType } from '../../../components/modals/DispatcherCreator'
+import './TrainDialogs.css'
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -1463,7 +1463,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const isEditingDisabled = (this.props.editingPackageId !== this.props.app.devPackageId) || this.props.invalidBot
 
         // Assume if app has DISPATCH actions, it must be dispatcher model
-        const isDispatchModel = this.props.actions.some(a => a.actionType === ActionTypes.DISPATCH)
+        const isDispatchModel = this.props.actions.some(a => a.actionType === CLM.ActionTypes.DISPATCH)
 
         return (
             <div className="cl-page">
