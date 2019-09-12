@@ -622,10 +622,10 @@ export default class ClClient {
         return response.data
     }
 
-    // AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
+    // AT.CREATE_TEACH_SESSION_FROMTRAINDIALOGASYNC
     // filteredDialog = dialog to ignore when checking for conflicting labels
     async teachSessionFromTrainDialog(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string, filteredDialog: string | null): Promise<CLM.TeachWithActivities> {
-        let url = `/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`
+        let url = `/app/${appId}/teachwithactivities?username=${userName}&userid=${userId}`
         if (filteredDialog) {
             url = `${url}&filteredDialog=${filteredDialog}`
         }
