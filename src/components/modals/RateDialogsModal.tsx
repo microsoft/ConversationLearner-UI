@@ -27,8 +27,8 @@ interface ComponentState {
     changedItems: CLM.TranscriptValidationResult[]
     resultIndex: number
     webchatKey: number,
-    history1: BotChat.Activity[] | undefined
-    history2: BotChat.Activity[] | undefined
+    activities1: BotChat.Activity[] | undefined
+    activities2: BotChat.Activity[] | undefined
     missingLog: boolean,
     // Are webchat columns flipped (for test randomization)
     isFlipped: boolean,
@@ -43,8 +43,8 @@ const initialState: ComponentState = {
     changedItems: [],
     webchatKey: 0,
     resultIndex: 0,
-    history1: [],
-    history2: [],
+    activities1: [],
+    activities2: [],
     missingLog: false,
     isFlipped: false,
     selectedActivityIndex: null,
@@ -165,8 +165,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
 
         const validationResult = this.state.changedItems[this.state.resultIndex]
 
-        let history1: BotChat.Activity[] = []
-        let history2: BotChat.Activity[] = []
+        let activities1: BotChat.Activity[] = []
+        let activities2: BotChat.Activity[] = []
         let missingLog = false
         if (validationResult.sourceActivities) {
             let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceActivities, null, this.props.entities, this.props.actions, this.props.app)
@@ -176,28 +176,28 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                 trainDialogs: []
             }
             const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-            history1 = teachWithActivities.activities
+            activities1 = teachWithActivities.activities
         }
         if (validationResult.logDialogId) {
             const logDialog = await ((this.props.fetchLogDialogAsync(this.props.app.appId, validationResult.logDialogId, true, true) as any) as Promise<CLM.LogDialog>)
             if (!logDialog) {
-                history2 = []
+                activities2 = []
                 missingLog = true
             }
             else {
                 const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
                 const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-                history2 = teachWithActivities.activities
+                activities2 = teachWithActivities.activities
             }
         }
 
         // Find turn with first inconsistency
-        const maxLength = Math.max(history1.length, history2.length)
+        const maxLength = Math.max(activities1.length, activities2.length)
         let stopTurn = -1
         const replayError = new CLM.ReplayErrorTranscriptValidation()
         for (let i = 0; i < maxLength; i = i + 1) {
-            const activity1 = history1[i] as BB.Activity
-            const activity2 = history2[i] as BB.Activity
+            const activity1 = activities1[i] as BB.Activity
+            const activity2 = activities2[i] as BB.Activity
             if (!OBIUtils.isSameActivity(activity1, activity2)) {
                 if (activity1) {
                     activity1.channelData.clData = {...activity1.channelData.clData, replayError  }
@@ -211,15 +211,15 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         }
 
         // Cut off history at first inconsistency
-        history1 = history1.slice(0, stopTurn)
-        history2 = history2.slice(0, stopTurn)
+        activities1 = activities1.slice(0, stopTurn)
+        activities2 = activities2.slice(0, stopTurn)
 
         // Focuse same button (otherwise last choise will be active)
         this.focusSameButton()
 
         this.setState({
-            history1,
-            history2,
+            activities1,
+            activities2,
             missingLog,
             webchatKey: this.state.webchatKey + 1,
             scrollPosition: 0,
@@ -249,8 +249,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        const leftHistory = this.state.isFlipped ? this.state.history2 : this.state.history1
-        const rightHistory = this.state.isFlipped ? this.state.history1 : this.state.history2
+        const leftHistory = this.state.isFlipped ? this.state.activities2 : this.state.activities1
+        const rightHistory = this.state.isFlipped ? this.state.activities1 : this.state.activities2
 
         return (
             <div>
