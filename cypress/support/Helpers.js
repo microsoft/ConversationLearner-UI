@@ -1,3 +1,5 @@
+import { func } from "prop-types";
+
 /**
 * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
@@ -25,10 +27,24 @@ export function SkipRemainingTestsOfSuiteIfFailed() {
 // NOTE: the '-+-' is a signature for filtering console output
 export function ConLog(funcName, message) { console.log(`-+- ${Cypress.moment().format("HH:mm:ss..SSS")} - ${funcName} - ${message}`) }
 
-export function Dump(funcName, object) {
+export function DumpObject(funcName, object) {
   let propertyList = ''
   for (let property in object) propertyList += `${(propertyList.length == 0 ? '' : ', ')}${property}: ${object[property]}`
   ConLog(funcName, propertyList)
+}
+
+export function NumberToStringWithLeadingZeros(number, length) {
+  let string = String(number)
+  if (string.length < length) { string = '0'.repeat(length - string.length) + string }
+  return string
+}
+
+export function DumpElements(funcName, elements) {
+  let elementList = `Dump of ${elements.length} elements:\n`
+  for (let i = 0; i < elements.length; i++) { 
+    elementList += `${NumberToStringWithLeadingZeros(i,3)}: ${elements[i].outerHTML.replace(/\n/g, '\n     ')}\n` 
+  }
+  ConLog(funcName, elementList)
 }
 
 export function RemoveDuplicates(inputArray) {
@@ -41,13 +57,14 @@ export function RemoveDuplicates(inputArray) {
 }
 
 export function StringArrayFromElementText(selector, retainMarkup = false) {
+  let funcName = `StringArrayFromElementText(${selector})`
   let elements = Cypress.$(selector)
-  ConLog(`StringArrayFromElementText(${selector})`, `Number of Elements Found: ${elements.length}`)
+  ConLog(funcName, `Number of Elements Found: ${elements.length}`)
   let returnValues = []
   for (let i = 0; i < elements.length; i++)  {
     let text = retainMarkup ? elements[i].innerHTML : TextContentWithoutNewlines(elements[i])
     returnValues.push(text)
-    ConLog(`StringArrayFromElementText(${selector})`, text)
+    ConLog(funcName, text)
   }
   return returnValues
 }

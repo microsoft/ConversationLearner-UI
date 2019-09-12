@@ -1,8 +1,11 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { IOption, NodeTypes } from "./APEModels"
+import { TextVariation, EntityBase, LabeledEntity } from '@conversationlearner/models'
+import { convertEntitiesAndTextToEditorValue } from '../../ExtractorResponseEditor/utilities'
+import { IGenericEntity, IGenericEntityData } from "../../ExtractorResponseEditor/models"
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.
@@ -112,4 +115,53 @@ export const getAllEntitiesFromValue = (value: any): IOption[] => {
 
     return depthFirstSearch(tree, n => n.type === NodeTypes.Mention && n.data.completed === true, n => false)
         .map<IOption>(n => n.data.option)
+}
+
+/**
+ * Create SlateValue from Text Variation
+ * Note: InlineNodeType shouldn't really be exposed here, but it's needed currently.
+ *
+ * This function is intended to be used to create Text Action Payloads which only use the 'mention-inline-node'.
+ * However, it could be used to create extractor SlateValues which use 'custom-inline-node' or 'prebuilt' types.
+ *
+ * @param textVariation Text Variation (text + labelEntities)
+ * @param entities List of Entities
+ * @param inlineNodeType Type of Slate node to create for the Entities
+ */
+export const createSlateValueFromTextVariation = (textVariation: TextVariation, entities: EntityBase[], inlineNodeType = NodeTypes.Mention): object => {
+    const sortedLabelEntities = [...textVariation.labelEntities]
+        .sort((a, b) => a.startCharIndex - b.startCharIndex)
+
+    const genericEntities = sortedLabelEntities
+        // TODO: Check on type of Data. IGenericEntityData<>
+        // Note: This might affect serialization as it looks for ID and Name properties
+        .map<IGenericEntity<IGenericEntityData<LabeledEntity>>>(le => {
+            const entity = entities.find(e => e.entityId === le.entityId)
+            if (!entity) {
+                throw new Error(`Could not find matching entity for given label entity with id: ${le.entityId}`)
+            }
+
+            const ge: IGenericEntity<IGenericEntityData<LabeledEntity>> = {
+                startIndex: le.startCharIndex,
+                endIndex: le.endCharIndex,
+                data: {
+                    text: le.entityText,
+                    displayName: entity.entityName,
+                    // Create fake option from Entity
+                    option: {
+                        id: entity.entityId,
+                        name: entity.entityName,
+                        type: entity.entityType,
+                        resolverType: null
+                    },
+                    original: le
+                }
+            }
+
+            return ge
+        })
+
+    const slateValue = convertEntitiesAndTextToEditorValue(textVariation.text, genericEntities, inlineNodeType)
+
+    return slateValue
 }
