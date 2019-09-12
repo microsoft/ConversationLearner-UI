@@ -44,7 +44,7 @@ export async function onInsertAction(
     else if (scoreIndex === null) {
         history.rounds[roundIndex].scorerSteps = []
     }
-    // Or remove following scorer steps 
+    // Or remove following scorer steps
     else {
         history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex + 1);
     }
@@ -87,7 +87,7 @@ export async function onInsertAction(
     if (curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined) {
         curRound.scorerSteps = [scorerStep]
     }
-    // Or insert 
+    // Or insert
     else if (scoreIndex === null) {
         curRound.scorerSteps = [scorerStep, ...curRound.scorerSteps]
     }
@@ -161,14 +161,14 @@ export async function onInsertInput(
         // Copy scorer steps below the injected input for new Round
         scorerSteps = trainDialog.rounds[roundIndex].scorerSteps
 
-        // Remove scorer steps above injected input from round 
+        // Remove scorer steps above injected input from round
         newTrainDialog.rounds[roundIndex].scorerSteps = []
     }
     else {
         // Copy scorer steps below the injected input for new Round
         scorerSteps = trainDialog.rounds[roundIndex].scorerSteps.slice(scoreIndex + 1)
 
-        // Remove scorer steps above injected input from round 
+        // Remove scorer steps above injected input from round
         newTrainDialog.rounds[roundIndex].scorerSteps.splice(scoreIndex + 1, Infinity)
     }
 
@@ -226,7 +226,7 @@ export async function onChangeAction(
 
         const replacedAction = actions.find(a => a.actionId === oldTrainScorerStep.labelAction)
         let importHash: string | null = null
-        
+
         // If replacing imported action
         if (oldTrainScorerStep.importText) {
             // Substitue entityIds back into import text to build import hash lookup
@@ -241,7 +241,7 @@ export async function onChangeAction(
         }
 
         // Attach hash of import text to selected action for future lookups
-        if (importHash) { 
+        if (importHash) {
             const action = actions.find(a => a.actionId === trainScorerStep.labelAction)
             if (action) {
                 // Add new hash to action and save it
@@ -330,10 +330,10 @@ export async function onDeleteTurn(
             previousRound.scorerSteps = previousRound.scorerSteps.filter(ss => ss.labelAction !== undefined)
         }
 
-        // Delete round 
+        // Delete round
         newTrainDialog.rounds.splice(roundIndex, 1)
     }
-    else { //CLM.SenderType.Bot 
+    else { //CLM.SenderType.Bot
         if (scoreIndex === null) {
             throw new Error("Unexpected null scoreIndex")
         }
@@ -380,7 +380,7 @@ export async function onUpdateHistory(
 
     appId: string,
     user: User,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string) => Promise<CLM.TeachWithHistory>
+    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string) => Promise<CLM.TeachWithActivities>
 ) {
     const teachWithHistory = await fetchHistoryAsync(appId, newTrainDialog, user.name, user.id)
 
@@ -442,7 +442,7 @@ export async function onEditTeach(
         sourceLogDialogId?: string | null,
         sourceTrainDialogId?: string | null,
     ) => Promise<CLM.TrainDialog>,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string) => Promise<CLM.TeachWithHistory>
+    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string) => Promise<CLM.TeachWithActivities>
 ) {
     // Get train dialog associated with the teach session
     const trainDialog = await fetchTrainDialogAsync(app.appId, teachSession.trainDialogId, false)
@@ -465,7 +465,7 @@ export async function onEditTeach(
     selectedActivity.channelData.clData = clData
 
     await editHandler(trainDialog, selectedActivity, args)
-} 
+}
 
 // Returns placeholder if it exists, otherwise creates it if given creation action
 export async function getPlaceholderAPIAction(
@@ -477,7 +477,7 @@ export async function getPlaceholderAPIAction(
 ): Promise<CLM.ActionBase | null> {
     // Check if it has been attached to real api call
     const apiHash = Util.hashText(placeholderName)
-    let placeholder = actions.find(a => {return a.clientData && a.clientData.importHashes 
+    let placeholder = actions.find(a => {return a.clientData && a.clientData.importHashes
         ? (a.clientData.importHashes.find(h => h === apiHash) !== undefined)
         : false
     })
@@ -521,7 +521,7 @@ export function scorerStepFromActivity(trainDialog: CLM.TrainDialog, selectedAct
     if (clData.roundIndex !== null) {
         const round = trainDialog.rounds[clData.roundIndex]
         if (round.scorerSteps.length > 0) {
-            // If a score round 
+            // If a score round
             if (typeof clData.scoreIndex === "number") {
                 return round.scorerSteps[clData.scoreIndex];
             }
@@ -541,13 +541,13 @@ export async function getAPIPlaceholderScorerStep(
     filledEntityMap: CLM.FilledEntityMap,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
 ): Promise<CLM.TrainScorerStep> {
-    
+
     const placeholderAction = await getPlaceholderAPIAction(appId, placeholderName, isTerminal, actions, createActionThunkAsync)
 
     if (!placeholderAction) {
         throw new Error("Unable to create API placeholder Action")
     }
-    
+
     const filledEntities = filledEntityMap.FilledEntities()
 
     // Generate placeholder

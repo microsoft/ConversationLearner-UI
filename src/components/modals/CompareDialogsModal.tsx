@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -69,7 +69,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         if (resultIndex === this.props.transcriptValidationResults.length) {
             resultIndex = 0
         }
-        this.setState({resultIndex})       
+        this.setState({resultIndex})
     }
 
     @autobind
@@ -122,7 +122,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                 entities: this.props.entities,
                 trainDialogs: []
             }
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
             history1 = teachWithHistory.history
         }
         if (validationResult.logDialogId) {
@@ -133,11 +133,11 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             }
             else {
                 const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
-                const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+                const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
                 history2 = teachWithHistory.history
             }
         }
-        
+
         // Mark turns that are not aligned
         const replayError = new CLM.ReplayErrorTranscriptValidation()
 
@@ -160,7 +160,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         }
 
         this.setState({
-            history1, 
+            history1,
             history2,
             missingLog,
             webchatKey: this.state.webchatKey + 1,
@@ -241,7 +241,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                 </div>
                             </div>
                             <div>
-                                {this.state.missingLog 
+                                {this.state.missingLog
                                     ?
                                     <div className="cl-compare-dialogs-title cl-errorpanel">
                                         Log Dialog doesn't exist
@@ -303,7 +303,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                     text={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
                                     iconProps={{ iconName: 'Cancel' }}
                                 />
-                                
+
                             </div>
                         </div>
                     </div>

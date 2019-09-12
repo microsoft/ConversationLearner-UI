@@ -913,7 +913,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             }
 
             const conflictIgnoreId = this.state.currentTrainDialog ? this.state.currentTrainDialog.trainDialogId : null
-            const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput, conflictIgnoreId) as any) as Promise<CLM.TeachWithHistory>)
+            const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput, conflictIgnoreId) as any) as Promise<CLM.TeachWithActivities>)
 
             const editType =
                 (this.state.editType !== EditDialogType.NEW &&
@@ -1233,7 +1233,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         // If auto importing and new dialog has matched all actions
         if (this.state.importAutoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
             // Fetch activityHistory as needed for validation checks
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, newTrainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
             await Util.setStateAsync(this, {
                 activityHistory: teachWithHistory.history,
                 editType: EditDialogType.IMPORT
@@ -1788,7 +1788,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         };
 
         try {
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
 
             this.setState({
                 activityHistory: teachWithHistory.history,

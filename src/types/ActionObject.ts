@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
@@ -195,14 +195,14 @@ export type FetchAction = {
     type: AT.FETCH_TRAIN_DIALOGS_FULFILLED,
     allTrainDialogs: CLM.TrainDialog[],
 } | {
-    type: AT.FETCH_HISTORY_ASYNC,
+    type: AT.FETCH_ACTIVITIES_ASYNC,
     appId: string,
     userName: string,
     userId: string,
     trainDialog: CLM.TrainDialog
 } | {
-    type: AT.FETCH_HISTORY_FULFILLED,
-    teachWithHistory: CLM.TeachWithHistory,
+    type: AT.FETCH_ACTIVITIES_FULFILLED,
+    teachWithActivities: CLM.TeachWithActivities,
 } | {
     type: AT.FETCH_LOG_DIALOG_ASYNC,
     appId: string,
@@ -269,14 +269,14 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_ACTION_EDIT_VALIDATION_FULFILLED
 } | {
-    type: AT.FETCH_SCOREFROMHISTORY_ASYNC,
+    type: AT.FETCH_SCOREFROMTRAINDIALOG_ASYNC,
     appId: string,
     trainDialog: CLM.TrainDialog
 } | {
-    type: AT.FETCH_SCOREFROMHISTORY_FULFILLED,
+    type: AT.FETCH_SCOREFROMTRAINDIALOG_FULFILLED,
     uiScoreResponse: CLM.UIScoreResponse
 } | {
-    type: AT.FETCH_SCOREFROMHISTORY_REJECTED
+    type: AT.FETCH_SCOREFROMTRAINDIALOG_REJECTED
 } | {
     type: AT.FETCH_EXTRACTFROMHISTORY_ASYNC,
     appId: string,
@@ -392,16 +392,16 @@ export type CreateAction = {
     teachSession: CLM.Teach,
     memories: CLM.Memory[]
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC,
+    type: AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_ASYNC,
     appId: string,
     userName: string,
     userId: string,
     trainDialog: CLM.TrainDialog
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROMHISTORY_FULFILLED,
-    teachWithHistory: CLM.TeachWithHistory
+    type: AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_FULFILLED,
+    teachWithActivities: CLM.TeachWithActivities
 } | {
-    type: AT.CREATE_TEACH_SESSION_FROMHISTORY_REJECTED
+    type: AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_REJECTED
 }
 
 export type DeleteAction = {

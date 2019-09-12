@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -55,7 +55,7 @@ const initialState: ComponentState = {
 }
 
 class RateDialogsModal extends React.Component<Props, ComponentState> {
-    
+
     state = initialState
 
     private sameButtonRef = React.createRef<OF.IButton>()
@@ -143,7 +143,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             }
             result.rating = CLM.TranscriptRating.SAME
         })
-    
+
         this.props.onClose(set)
     }
 
@@ -153,7 +153,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         if (resultIndex === this.state.changedItems.length) {
             this.saveResults()
         }
-        this.setState({resultIndex})       
+        this.setState({resultIndex})
     }
 
     async onChangedDialog() {
@@ -175,7 +175,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                 entities: this.props.entities,
                 trainDialogs: []
             }
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
             history1 = teachWithHistory.history
         }
         if (validationResult.logDialogId) {
@@ -186,11 +186,11 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             }
             else {
                 const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
-                const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+                const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
                 history2 = teachWithHistory.history
             }
         }
-        
+
         // Find turn with first inconsistency
         const maxLength = Math.max(history1.length, history2.length)
         let stopTurn = -1
@@ -218,7 +218,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         this.focusSameButton()
 
         this.setState({
-            history1, 
+            history1,
             history2,
             missingLog,
             webchatKey: this.state.webchatKey + 1,
@@ -312,7 +312,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                                 className='cl-rate-dialogs-left-button'
                                 iconProps={{ iconName: 'Trophy2'}}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
-                                text={'Left Better'} 
+                                text={'Left Better'}
                             />
                             <OF.DefaultButton
                                 className='cl-rate-dialogs-same-button'
@@ -327,7 +327,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                                 className='cl-rate-dialogs-right-button'
                                 iconProps={{ iconName: 'Trophy2'}}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
-                                text={'Right Better'} 
+                                text={'Right Better'}
                             />
                         </div>
                         <div className="cl-rate-dialogs-button-bar">
