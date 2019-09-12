@@ -30,7 +30,6 @@ export interface DialogRenderData {
     scoreResponse?: CLM.ScoreResponse
     scoreInput?: CLM.ScoreInput
     selectedActionId?: string
-    forcedActionId?: string
     extractResponses?: CLM.ExtractResponse[]
 }
 
@@ -640,7 +639,6 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
     return mergedTrainDialog
 }
 
-
 export function filledEntityIdMap(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): Map<string, string> {
     const filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(filledEntities, entities)
     const filledIdMap = filledEntityMap.EntityMapToIdMap()
@@ -703,9 +701,8 @@ export function getDialogRenderData(
     let scorerStep: CLM.TrainScorerStep | undefined
     let scoreResponse: CLM.ScoreResponse | undefined
     let round: CLM.TrainRound | undefined
-    let memories: CLM.Memory[] = [];
-    let prevMemories: CLM.Memory[] = [];
-    let forcedActionId: string | undefined
+    let memories: CLM.Memory[] = []
+    let prevMemories: CLM.Memory[] = []
 
     if (roundIndex !== null && roundIndex < trainDialog.rounds.length) {
         round = trainDialog.rounds[roundIndex];
@@ -716,7 +713,6 @@ export function getDialogRenderData(
                 if (!scorerStep) {
                     throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
                 }
-                forcedActionId = scorerStep.forcedActionId
 
                 let selectedAction = actions.find(action => action.actionId === scorerStep!.labelAction);
 
@@ -800,7 +796,6 @@ export function getDialogRenderData(
         dialogMode: (senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
         scoreInput: scorerStep ? scorerStep.input : undefined,
         scoreResponse: scoreResponse,
-        forcedActionId,
         roundIndex,
         textVariations: round ? round.extractorStep.textVariations : [],
         memories: filterDummyEntities(memories),

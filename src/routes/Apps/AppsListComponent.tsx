@@ -14,7 +14,7 @@ import { FM } from '../../react-intl-messages'
 import { User, AppCreatorType, FeatureStrings } from '../../types'
 import { autobind } from 'core-decorators';
 import { OBIImportData } from '../../Utils/obiUtils'
-import DispatcherCreator, { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator'
+import DispatcherCreator, { DispatcherAlgorithmType } from '../../components/modals/DispatcherCreator'
 
 export interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: CLM.AppBase, props: Props) => JSX.Element
@@ -117,7 +117,6 @@ function getColumns(intl: InjectedIntl): ISortableRenderableColumn[] {
 interface Props extends InjectedIntlProps {
     user: User
     apps: CLM.AppBase[]
-    canImportOBI: boolean,
     activeApps: { [appId: string]: string }
     onClickApp: (app: CLM.AppBase) => void
     selection: OF.ISelection
@@ -206,7 +205,8 @@ export class Component extends React.Component<Props, ComponentState> {
     render() {
         const props = this.props
         const computedApps = this.getSortedApplications(this.state.sortColumn, this.props.apps)
-        const isDispatcherFeaturesEnabled = this.props.featuresString.includes(FeatureStrings.DISPATCHER)
+        const isDispatcherFeaturesEnabled = Util.isFeatureEnabled(this.props.featuresString, FeatureStrings.DISPATCHER)
+        const canImportOBI = Util.isFeatureEnabled(this.props.featuresString, FeatureStrings.CCI)
 
         return <div className="cl-o-app-columns">
             <div className="cl-app_content">
@@ -239,7 +239,7 @@ export class Component extends React.Component<Props, ComponentState> {
                                 iconProps={{ iconName: 'CloudDownload' }}
                             />
                         }
-                        {this.props.canImportOBI &&
+                        {canImportOBI &&
                             <OF.DefaultButton
                                 onClick={props.onClickImportOBI}
                                 ariaDescription={Util.formatMessageId(props.intl, FM.APPSLIST_IMPORTOBI_BUTTONARIADESCRIPTION)}

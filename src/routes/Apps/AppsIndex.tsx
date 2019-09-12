@@ -17,7 +17,7 @@ import { CL_IMPORT_TUTORIALS_USER_ID } from '../../types/const'
 import { OBIImportData } from '../../Utils/obiUtils'
 import * as DispatchUtils from '../../Utils/dispatchUtils'
 import { SourceAndModelPair } from '../../types/models'
-import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator';
+import { DispatcherAlgorithmType } from '../../components/modals/DispatcherCreator';
 
 class AppsIndex extends React.Component<Props> {
     updateAppsAndBot() {
@@ -112,7 +112,6 @@ class AppsIndex extends React.Component<Props> {
         )
     }
 }
-
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({

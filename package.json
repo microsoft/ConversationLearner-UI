@@ -21,7 +21,7 @@
   },
   "private": true,
   "dependencies": {
-    "@conversationlearner/models": "0.208.1",
+    "@conversationlearner/models": "0.209.0",
     "@conversationlearner/webchat": "0.155.0",
     "@cypress/webpack-preprocessor": "4.0.3",
     "adaptivecards": "1.2.0",
@@ -60,11 +60,13 @@
     "redux-observable": "^0.17.0",
     "redux-thunk": "^2.2.0",
     "rxjs": "^5.5.12",
+    "sentence-generator": "^1.0.1",
     "slate": "0.31.3",
     "slate-html-serializer": "0.4.16",
     "slate-plain-serializer": "0.4.16",
     "slate-react": "0.10.17",
     "string-similarity": "^3.0.0",
+    "txtgen": "^2.2.2",
     "url": "^0.11.0",
     "uuid": "^3.3.2"
   },
