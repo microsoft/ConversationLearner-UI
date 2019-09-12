@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as IntlMessages from '../react-intl-messages'
+import * as Const from '../types/const'
 import { MessageValue } from 'react-intl'
 import * as moment from 'moment'
 import * as stringify from 'fast-json-stable-stringify'
@@ -269,3 +270,9 @@ export function hashText(text: string) {
     return `0000000${(hval >>> 0).toString(16)}`.substr(-8)
 }
 
+export function isFeatureEnabled(featureString: string | undefined, feature: Const.FeatureStrings) {
+    if (featureString && featureString.toUpperCase().includes(feature)) {
+        return true
+    }
+    return false
+}

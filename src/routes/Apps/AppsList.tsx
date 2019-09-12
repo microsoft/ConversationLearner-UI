@@ -164,7 +164,6 @@ class AppsList extends React.Component<Props, ComponentState> {
 
             user={this.props.user}
             apps={this.props.apps}
-            canImportOBI={this.props.settings.features !== undefined && this.props.settings.features.indexOf("CCI") >= 0}
             activeApps={this.props.activeApps}
             onClickApp={this.onClickApp}
             selection={this.selection}

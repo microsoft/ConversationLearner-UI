@@ -532,6 +532,12 @@ i[data-icon-name="Edit"]:hover {
   /* TODO: Remove padding here, it should be the content inside that decides padding, otherwise all modals should have padding */
   padding: 1em;
 }
+
+
+.cl-modal.cl-modal--high {
+  margin-top: -490px;
+}
+
 @media (max-width: 600px) {
   .cl-modal.cl-modal--small {
     width: 80%;
