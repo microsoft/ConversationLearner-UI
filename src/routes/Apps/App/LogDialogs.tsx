@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -322,11 +322,6 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             }
         }
 
-        // TODO: Handle reload when actions not yet loaded
-        if (this.props.actions.length === 0) {
-            return
-        }
-
         // If dialog id is in query param and edit modal not open, open it
         if (selectedDialogId &&
             (!this.state.isEditDialogModalOpen && !this.state.isTeachDialogModalOpen)) {
@@ -372,7 +367,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     @autobind
     onChangeSearchString(event?: React.ChangeEvent<HTMLInputElement>, newValue?: string) {
-        if (!newValue) {
+        if (typeof newValue === 'undefined') {
             return
         }
 
@@ -879,12 +874,20 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         if (!action) {
                             throw new Error(`Could not find action by id: ${ss.predictedAction} in list of actions`)
                         }
-                        keys.push(action.payload)
+
+                        let payload = ''
+                        try {
+                            payload = CLM.ActionBase.GetPayload(action, Util.getDefaultEntityMap(this.props.entities))
+                        }
+                        catch {
+                            // Backwards compatibility to models with old payload type
+                        }
+                        keys.push(payload)
                     }
                 }
 
                 const searchString = keys.join(' ').toLowerCase();
-                return searchString.indexOf(searchValue) > -1;
+                return searchString.includes(searchValue);
             })
     }
 

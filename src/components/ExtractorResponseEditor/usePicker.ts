@@ -1,11 +1,11 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
 import * as Fuse from 'fuse.js'
-import { IOption, FuseResult, MatchedOption } from './models'
-import { convertMatchedTextIntoMatchedOption } from './utilities'
+import { IOption } from './models'
+import { FuseResult, MatchedOption, convertMatchedTextIntoMatchedOption } from '../FuseMatch'
 
 /**
  * See http://fusejs.io/ for information about options meaning and configuration
@@ -65,7 +65,7 @@ export const usePicker = (
             onSelectOption(option.original)
         }
     }
-    
+
     React.useEffect(() => {
         fuseRef.current = new Fuse(options, fuseOptions)
         const computed = getMatchedOptions(searchText, options, fuseRef.current, maxDisplayedOptions)
