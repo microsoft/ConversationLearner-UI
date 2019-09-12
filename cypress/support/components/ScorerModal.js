@@ -6,6 +6,11 @@
 import * as actionTypeSelector from '../../support/components/ActionTypeSelector'
 import * as helpers from '../../support/Helpers'
 
+const SelectorTextResponse = '[data-testid="action-scorer-text-response"]'
+const SelectorApiName = '[data-testid="action-scorer-api-name"]'
+const SelectorApiResponse = '[data-testid="action-scorer-api"]'
+const SelectorEndSessionResponse = '[data-testid="action-scorer-session-response-user"]'
+
 export const stateEnum = { selected: 1, qualified: 2, disqualified: 3 }
 export const entityQualifierStateEnum = { unknown: 'unknown', green: 'Green', greenStrikeout: 'GreenStrikeout', red: 'Red', redStrikeout: 'RedStrikeout' }
 
@@ -14,22 +19,26 @@ export function ClickRefreshScoreButton() { cy.Get('[data-testid="teach-session-
 export function ClickAddActionButton() { cy.Get('[data-testid="action-scorer-add-action-button"]').Click() }
 export function VerifyMissingActionNotice() { cy.Get('.cl-font--warning').ExactMatch('MISSING ACTION') }
 
-export function ClickTextAction(expectedResponse) { ClickActionButon('[data-testid="action-scorer-text-response"]', expectedResponse) }
-export function ClickApiAction(apiName) { ClickActionButon('[data-testid="action-scorer-api-name"]', apiName) }
-export function ClickEndSessionAction(expectedData) { ClickActionButon('[data-testid="action-scorer-session-response-user"]', expectedData) }
+export function ClickTextAction(expectedResponse) { ClickActionButon(SelectorTextResponse, expectedResponse) }
+export function ClickApiAction(apiName) { ClickActionButon(SelectorApiName, apiName) }
+export function ClickEndSessionAction(expectedData) { ClickActionButon(SelectorEndSessionResponse, expectedData) }
 export function ClickSetEntityAction(enumValue) { ClickActionButon('[data-testid="action-scorer-action-set-entity"]', enumValue) }
 
 
-export function VerifyContainsEnabledAction(expectedResponse) { VerifyActionState('[data-testid="action-scorer-text-response"]', expectedResponse, '[data-testid="action-scorer-button-clickable"]', false) }
-export function VerifyContainsDisabledAction(expectedResponse) { VerifyActionState('[data-testid="action-scorer-text-response"]', expectedResponse, '[data-testid="action-scorer-button-no-click"]', true) }
+export function VerifyContainsEnabledAction(expectedResponse) { VerifyActionState(SelectorTextResponse, expectedResponse, '[data-testid="action-scorer-button-clickable"]', false) }
+export function VerifyContainsDisabledAction(expectedResponse) { VerifyActionState(SelectorTextResponse, expectedResponse, '[data-testid="action-scorer-button-no-click"]', true) }
 
-export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-clickable"]', false) }
-export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-no-click"]', true) }
-export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-selected"]', false) }
+export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyActionState(SelectorEndSessionResponse, expectedData, '[data-testid="action-scorer-button-clickable"]', false) }
+export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyActionState(SelectorEndSessionResponse, expectedData, '[data-testid="action-scorer-button-no-click"]', true) }
+export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyActionState(SelectorEndSessionResponse, expectedData, '[data-testid="action-scorer-button-selected"]', false) }
 
-export function VerifyContainsTextAction(expectedResponse) { VerifyActionExists('[data-testid="action-scorer-text-response"]', expectedResponse) }
-export function VerifyContainsApiAction(apiName) { VerifyActionExists('[data-testid="action-scorer-api-name"]', apiName) }
-export function VerifyContainsEndSessionAction(expectedData) { VerifyActionExists('[data-testid="action-scorer-session-response-user"]', expectedData) }
+export function ClickTextEntityValueNameToggleButon(expectedResponse) { ClickEntityValueNameToggleButon(SelectorTextResponse, expectedResponse) }
+export function ClickApiEntityValueNameToggleButon(apiName) { ClickEntityValueNameToggleButon(SelectorApiName, apiName) }
+export function ClickEndSessionEntityValueNameToggleButon(expectedData) { ClickEntityValueNameToggleButon(SelectorEndSessionResponse, expectedData) }
+
+export function VerifyContainsTextAction(expectedResponse) { VerifyActionExists(SelectorTextResponse, expectedResponse) }
+export function VerifyContainsApiAction(apiResponse) { VerifyActionExists(SelectorApiResponse, apiResponse) }
+export function VerifyContainsEndSessionAction(expectedData) { VerifyActionExists(SelectorEndSessionResponse, expectedData) }
 
 
 // To VALIDATE All of the Data in the Score Actions Grid use this class. 

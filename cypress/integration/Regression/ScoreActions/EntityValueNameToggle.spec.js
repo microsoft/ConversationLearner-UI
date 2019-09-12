@@ -16,27 +16,31 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Entity Value-Name Toggle - Score Actions', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  let generatedScoreActionsData = new scorerModal.GeneratedData('comprehensive3.json')
+  let generatedScoreActionsData = new scorerModal.GeneratedData('comprehensive4.json')
 
   context('Setup', () => {
     it('Create a model to test against and navigate to Train Dialogs', () => {
-      models.ImportModel('z-valueNameToggle', 'z-comprehensive3.cl')
+      models.ImportModel('z-valueNameToggle', 'z-comprehensive4.cl')
       modelPage.NavigateToTrainDialogs()
     })
   })
 
   context('Train Dialog', () => {
     it('Edit the Train Dialog and Bring up Score Actions Panel', () => {
-      train.EditTraining('Hi', 
-                         'Set Entities: 1stArg: FirstArg - 2ndArg: SecondArg - fruit: PEACHES - name: Cindy - disqualifier: DISQUALIFIED', 
-                         'Uhhhh...')
+      train.EditTraining('Hi', 'Mangoes and Peaches', 'Goodbye')
       train.SelectChatTurnExactMatch('Uhhhh…')
     })
 
-    it('', () => {
+    it('Toggle a Text Action then verify text changes', () => {
+      scorerModal.ClickTextEntityValueNameToggleButon('Hello Jeff')
+      scorerModal.VerifyContainsTextAction('Hello $name')
+      scorerModal.ClickTextEntityValueNameToggleButon('Hello $name')
+      scorerModal.VerifyContainsTextAction('Hello Jeff')
     })
 
-    it('', () => {
+    it('Toggle an API Action then verify text changes', () => {
+      scorerModal.ClickApiEntityValueNameToggleButon('RenderTheArgs')
+      scorerModal.VerifyContainsApiAction('RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"333"fourthArg:"4444"fifthArg:"five"sixthArg:"six"seventhArg:"seven"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"three"fourthArg:"four"fifthArg:"55555"sixthArg:"666666"seventhArg:"7777777"')
     })
 
     it('', () => {
