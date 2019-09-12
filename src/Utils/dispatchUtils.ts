@@ -1,8 +1,8 @@
 import * as CLM from '@conversationlearner/models'
-import { SourceAndModelPair } from "src/types/models"
+import { SourceAndModelPair } from "../types/models"
 import * as uuid from 'uuid/v4'
 import * as Util from './util'
-import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator'
+import { DispatcherAlgorithmType } from '../components/modals/DispatcherCreator'
 
 /**
  * Generations new source based on child sources and given algorithm

@@ -14,7 +14,7 @@ import { FM } from '../../react-intl-messages'
 import { User, AppCreatorType, FeatureStrings } from '../../types'
 import { autobind } from 'core-decorators';
 import { OBIImportData } from '../../Utils/obiUtils'
-import DispatcherCreator, { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator'
+import DispatcherCreator, { DispatcherAlgorithmType } from '../../components/modals/DispatcherCreator'
 
 export interface ISortableRenderableColumn extends OF.IColumn {
     render: (app: CLM.AppBase, props: Props) => JSX.Element

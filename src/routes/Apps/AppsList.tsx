@@ -16,7 +16,7 @@ import { fetchTutorialsThunkAsync } from '../../actions/appActions'
 import { CL_IMPORT_TUTORIALS_USER_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators'
-import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator';
+import { DispatcherAlgorithmType } from '../../components/modals/DispatcherCreator';
 
 interface ComponentState {
     isDispatcherCreateModalOpen: boolean
