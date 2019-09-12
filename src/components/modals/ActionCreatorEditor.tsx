@@ -540,7 +540,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         const isTerminalChanged = initialEditState!.isTerminal !== this.state.isTerminal
         const isRepromptChanged = initialEditState!.reprompt !== this.state.reprompt
+        const isSelectedApiChanged = initialEditState.selectedApiOptionKey !== this.state.selectedApiOptionKey
+        const isSelectedCardChanged = initialEditState.selectedCardOptionKey !== this.state.selectedCardOptionKey
+
         const hasPendingChanges = isAnyPayloadChanged
+            || isSelectedApiChanged
+            || isSelectedCardChanged
             || expectedEntitiesChanged
             || requiredEntitiesChanged
             || disqualifyingEntitiesChanged
