@@ -168,15 +168,15 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         let history1: BotChat.Activity[] = []
         let history2: BotChat.Activity[] = []
         let missingLog = false
-        if (validationResult.sourceHistory) {
-            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceHistory, null, this.props.entities, this.props.actions, this.props.app)
+        if (validationResult.sourceActivities) {
+            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceActivities, null, this.props.entities, this.props.actions, this.props.app)
             trainDialog.definitions = {
                 actions: this.props.actions,
                 entities: this.props.entities,
                 trainDialogs: []
             }
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-            history1 = teachWithHistory.history
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            history1 = teachWithActivities.activities
         }
         if (validationResult.logDialogId) {
             const logDialog = await ((this.props.fetchLogDialogAsync(this.props.app.appId, validationResult.logDialogId, true, true) as any) as Promise<CLM.LogDialog>)
@@ -186,8 +186,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             }
             else {
                 const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
-                const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-                history2 = teachWithHistory.history
+                const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+                history2 = teachWithActivities.activities
             }
         }
 
@@ -358,7 +358,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchLogDialogAsync: actions.log.fetchLogDialogThunkAsync,
-        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
+        fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

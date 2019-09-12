@@ -52,7 +52,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             getSortValue: action => action.actionId,
             render: (action, component, index) => {
 
-                // If I'm not in Teach or clicked on history item, highlight selected
+                // If I'm not in Teach or clicked on activity item, highlight selected
                 let selected = false
                 if (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected) {
                     const score: number | string = (action as CLM.ScoredAction).score

@@ -82,11 +82,11 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     // Set from and recipient data from proper rendering
-    cleanTranscript(history: BB.Activity[]): void {
+    cleanTranscript(activities: BB.Activity[]): void {
         const userAccount: BB.ChannelAccount = { id: this.props.user.id, name: this.props.user.name, role: "user", aadObjectId: '' }
         const botAccount: BB.ChannelAccount = { id: `BOT-${this.props.user.id}`, name: CLM.CL_USER_NAME_ID, role: "bot", aadObjectId: '' }
 
-        for (let activity of history) {
+        for (let activity of activities) {
             if (!activity.recipient) {
                 if (activity.from.role === "bot") {
                     activity.recipient = userAccount
@@ -115,15 +115,15 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         let history1: BotChat.Activity[] = []
         let history2: BotChat.Activity[] = []
         let missingLog = false
-        if (validationResult.sourceHistory) {
-            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceHistory, this.props.lgMap, this.props.entities, this.props.actions, this.props.app)
+        if (validationResult.sourceActivities) {
+            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceActivities, this.props.lgMap, this.props.entities, this.props.actions, this.props.app)
             trainDialog.definitions = {
                 actions: this.props.actions,
                 entities: this.props.entities,
                 trainDialogs: []
             }
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-            history1 = teachWithHistory.history
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            history1 = teachWithActivities.activities
         }
         if (validationResult.logDialogId) {
             const logDialog = await ((this.props.fetchLogDialogAsync(this.props.app.appId, validationResult.logDialogId, true, true) as any) as Promise<CLM.LogDialog>)
@@ -133,8 +133,8 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             }
             else {
                 const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
-                const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-                history2 = teachWithHistory.history
+                const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+                history2 = teachWithActivities.activities
             }
         }
 
@@ -316,7 +316,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchLogDialogAsync: actions.log.fetchLogDialogThunkAsync,
-        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
+        fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

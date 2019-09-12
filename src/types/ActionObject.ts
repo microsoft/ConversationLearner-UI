@@ -278,15 +278,15 @@ export type FetchAction = {
 } | {
     type: AT.FETCH_SCOREFROMTRAINDIALOG_REJECTED
 } | {
-    type: AT.FETCH_EXTRACTFROMHISTORY_ASYNC,
+    type: AT.FETCH_EXTRACTFROMTRAINDIALOG_ASYNC,
     appId: string,
     trainDialog: CLM.TrainDialog,
     userInput: CLM.UserInput
 } | {
-    type: AT.FETCH_EXTRACTFROMHISTORY_FULFILLED,
+    type: AT.FETCH_EXTRACTFROMTRAINDIALOG_FULFILLED,
     extractResponse: CLM.ExtractResponse
 } | {
-    type: AT.FETCH_EXTRACTFROMHISTORY_REJECTED
+    type: AT.FETCH_EXTRACTFROMTRAINDIALOG_REJECTED
 } | {
     type: AT.FETCH_TRAINDIALOGREPLAY_ASYNC,
     appId: string,
