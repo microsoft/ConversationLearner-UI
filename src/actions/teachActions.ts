@@ -54,6 +54,9 @@ export const createTeachSessionThunkAsync = (appId: string, initialEntityMap: CL
     }
 }
 
+// --------------------------
+// TeachSessionFromTrainDialog
+// --------------------------
 const createTeachSessionFromTrainDialogAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
     return {
         type: AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_ASYNC,

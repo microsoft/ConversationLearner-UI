@@ -143,6 +143,9 @@ export const fetchTrainDialogThunkAsync = (appId: string, trainDialogId: string,
     }
 }
 
+// --------------------------
+// ScoreFromTrainDialog
+// --------------------------
 const scoreFromTrainDialogAsync = (appId: string, trainDialog: CLM.TrainDialog): ActionObject => {
     return {
         type: AT.FETCH_SCOREFROMTRAINDIALOG_ASYNC,
@@ -189,6 +192,9 @@ export const scoreFromTrainDialogThunkAsync = (appId: string, trainDialog: CLM.T
     }
 }
 
+// --------------------------
+// ExtractFromTrainDialog
+// --------------------------
 const extractFromTrainDialogAsync = (appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): ActionObject => {
     return {
         type: AT.FETCH_EXTRACTFROMTRAINDIALOG_ASYNC,
@@ -592,6 +598,9 @@ export const deleteTrainDialogThunkAsync = (app: CLM.AppBase, trainDialogId: str
     }
 }
 
+// ----------------------------------------
+// Activities
+// ----------------------------------------
 const fetchActivitiesAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
     return {
         type: AT.FETCH_ACTIVITIES_ASYNC,

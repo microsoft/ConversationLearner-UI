@@ -393,6 +393,7 @@ export default class ClClient {
         })
     }
 
+    //AT.FETCH_SCOREFROMTRAINDIALOG_ASYNC
     async trainDialogScoreFromTrainDialog(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.UIScoreResponse> {
         const response = await this.send<CLM.UIScoreResponse>({
             method: 'post',
@@ -402,6 +403,7 @@ export default class ClClient {
         return response.data
     }
 
+    //AT.FETCH_EXTRACTFROMTRAINDIALOG_ASYNC
     async trainDialogExtractFromTrainDialog(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): Promise<CLM.ExtractResponse> {
         const response = await this.send<CLM.ExtractResponse>({
             method: 'post',
@@ -620,6 +622,7 @@ export default class ClClient {
         return response.data
     }
 
+    // AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
     // filteredDialog = dialog to ignore when checking for conflicting labels
     async teachSessionFromTrainDialog(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string, filteredDialog: string | null): Promise<CLM.TeachWithActivities> {
         let url = `/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`
