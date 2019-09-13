@@ -183,13 +183,13 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onSelectActivity(history: BotChat.Activity[] | undefined, activity: Activity) {
-        if (!history || history.length === 0) {
+    onSelectActivity(activities: BotChat.Activity[] | undefined, activity: Activity) {
+        if (!activities || activities.length === 0) {
             return
         }
 
         // Look up index
-        const selectedActivityIndex = history.findIndex(a => a.id === activity.id)
+        const selectedActivityIndex = activities.findIndex(a => a.id === activity.id)
         if (selectedActivityIndex > -1) {
             this.setState({
                 selectedActivityIndex
