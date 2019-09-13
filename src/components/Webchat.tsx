@@ -41,6 +41,7 @@ export function renderActivity(
     let messageColor = `wc-message-color-${activityProps.fromMe ? userFillColor : 'bot'}`
     let messageFillColor = `wc-message-fillcolor-${activityProps.fromMe ? userFillColor : 'bot'}`
     let messageBorder = ''
+
     if (clData) {
         if (clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.WARNING) {

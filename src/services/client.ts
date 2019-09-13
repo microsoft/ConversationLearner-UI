@@ -393,8 +393,8 @@ export default class ClClient {
         })
     }
 
-    //AT.FETCH_SCOREFROMHISTORY_ASYNC
-    async trainDialogScoreFromHistory(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.UIScoreResponse> {
+    //AT.FETCH_SCOREFROMTRAINDIALOG_ASYNC
+    async trainDialogScoreFromTrainDialog(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.UIScoreResponse> {
         const response = await this.send<CLM.UIScoreResponse>({
             method: 'post',
             url: `/app/${appId}/scorefromhistory`,
@@ -403,8 +403,8 @@ export default class ClClient {
         return response.data
     }
 
-    //AT.FETCH_EXTRACTFROMHISTORY_ASYNC
-    async trainDialogExtractFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): Promise<CLM.ExtractResponse> {
+    //AT.FETCH_EXTRACTFROMTRAINDIALOG_ASYNC
+    async trainDialogExtractFromTrainDialog(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): Promise<CLM.ExtractResponse> {
         const response = await this.send<CLM.ExtractResponse>({
             method: 'post',
             url: `/app/${appId}/extractfromhistory`,
@@ -455,8 +455,8 @@ export default class ClClient {
         return response.data.appList.apps
     }
 
-    async history(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean): Promise<CLM.TeachWithHistory> {
-        const response = await this.send<CLM.TeachWithHistory>({
+    async history(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean): Promise<CLM.TeachWithActivities> {
+        const response = await this.send<CLM.TeachWithActivities>({
             method: 'post',
             url: `/app/${appId}/history?username=${userName}&userid=${userId}&useMarkdown=${useMarkdown}`,
             data: trainDialog
@@ -614,22 +614,22 @@ export default class ClClient {
         return response.data
     }
 
-    async teachSessionFromBranch(appId: string, trainDialogId: string, userName: string, userId: string, turnIndex: number): Promise<CLM.TeachWithHistory> {
-        const response = await this.send<CLM.TeachWithHistory>({
+    async teachSessionFromBranch(appId: string, trainDialogId: string, userName: string, userId: string, turnIndex: number): Promise<CLM.TeachWithActivities> {
+        const response = await this.send<CLM.TeachWithActivities>({
             method: 'post',
             url: `/app/${appId}/traindialog/${trainDialogId}/branch/${turnIndex}?username=${userName}&userid=${userId}`
         })
         return response.data
     }
 
-    // AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
+    // AT.CREATE_TEACH_SESSION_FROMTRAINDIALOGASYNC
     // filteredDialog = dialog to ignore when checking for conflicting labels
-    async teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string, filteredDialog: string | null): Promise<CLM.TeachWithHistory> {
-        let url = `/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`
+    async teachSessionFromTrainDialog(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string, filteredDialog: string | null): Promise<CLM.TeachWithActivities> {
+        let url = `/app/${appId}/teachwithactivities?username=${userName}&userid=${userId}`
         if (filteredDialog) {
             url = `${url}&filteredDialog=${filteredDialog}`
         }
-        const response = await this.send<CLM.TeachWithHistory>({
+        const response = await this.send<CLM.TeachWithActivities>({
             method: 'post',
             url,
             data: {

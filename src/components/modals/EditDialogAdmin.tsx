@@ -336,7 +336,6 @@ class EditDialogAdmin extends React.Component<Props, ComponentState> {
                                 scoreResponse={renderData.scoreResponse}
                                 scoreInput={renderData.scoreInput}
                                 selectedActionId={undefined}  // Will always be first one when editing
-                                forcedActionId={renderData.forcedActionId}
                                 memories={renderData.memories}
                                 onActionSelected={this.props.onChangeAction}
                                 onActionCreatorClosed={this.props.onActionCreatorClosed}

@@ -52,7 +52,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             getSortValue: action => action.actionId,
             render: (action, component, index) => {
 
-                // If I'm not in Teach or clicked on history item, highlight selected
+                // If I'm not in Teach or clicked on activity item, highlight selected
                 let selected = false
                 if (component.props.dialogType !== CLM.DialogType.TEACH || component.props.historyItemSelected) {
                     const score: number | string = (action as CLM.ScoredAction).score
@@ -63,20 +63,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                     else if (component.props.selectedActionId === action.actionId) {
                         selected = true
                     }
-                }
-
-                // Was it a reprompt?
-                if (action.actionId === component.props.forcedActionId) {
-                    return (
-                        <OF.PrimaryButton
-                            className="ms-Button--selected"
-                            data-testid="action-scorer-button-selected"
-                            disabled={false}
-                            ariaDescription={Util.formatMessageId(intl, FM.BUTTON_REPROMPT)}
-                            text={Util.formatMessageId(intl, FM.BUTTON_REPROMPT)}
-                            onClick={() => component.handleReselectAction(action)}
-                        />
-                    )
                 }
 
                 const buttonText = Util.formatMessageId(intl, selected ? FM.BUTTON_SELECTED : FM.BUTTON_SELECT)
@@ -200,11 +186,6 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             isSorted: true,
             isSortedDescending: true,
             getSortValue: (actionForRender, component) => {
-
-                // Put forced actions at the top
-                if (actionForRender.actionId === component.props.forcedActionId) {
-                    return 100
-                }
 
                 let score: number | undefined
 
@@ -1059,7 +1040,6 @@ export interface ReceivedProps {
     scoreResponse: CLM.ScoreResponse,
     scoreInput: CLM.ScoreInput,
     selectedActionId: string | undefined,
-    forcedActionId: string | undefined,
     memories: CLM.Memory[],
     canEdit: boolean,
     isEndSessionAvailable: boolean,

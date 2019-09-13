@@ -15,7 +15,7 @@ class TestWaitModal extends React.Component<Props> {
                 <OF.Modal
                     isOpen={this.props.open}
                     isBlocking={true}
-                    containerClassName='cl-modal cl-modal--small'
+                    containerClassName='cl-modal cl-modal--small cl-modal--high'
                 >
                     <div className='cl-modal_header'>
                         <span className={OF.FontClassNames.xxLarge}>

@@ -16,7 +16,7 @@ import { fetchTutorialsThunkAsync } from '../../actions/appActions'
 import { CL_IMPORT_TUTORIALS_USER_ID, State, AppCreatorType } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators'
-import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator';
+import { DispatcherAlgorithmType } from '../../components/modals/DispatcherCreator';
 
 interface ComponentState {
     isDispatcherCreateModalOpen: boolean
@@ -164,7 +164,6 @@ class AppsList extends React.Component<Props, ComponentState> {
 
             user={this.props.user}
             apps={this.props.apps}
-            canImportOBI={this.props.settings.features !== undefined && this.props.settings.features.indexOf("CCI") >= 0}
             activeApps={this.props.activeApps}
             onClickApp={this.onClickApp}
             selection={this.selection}

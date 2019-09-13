@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -7,9 +7,7 @@ import * as OF from 'office-ui-fabric-react'
 import * as Fuse from 'fuse.js'
 import { FM } from '../react-intl-messages'
 import FormattedMessageId from './FormattedMessageId'
-import FuseMatch from './ExtractorResponseEditor/FuseMatch'
-import { FuseResult, MatchedOption } from './ExtractorResponseEditor/models'
-import { convertMatchedTextIntoMatchedOption } from './ExtractorResponseEditor/utilities'
+import { FuseMatch, FuseResult, MatchedOption, convertMatchedTextIntoMatchedOption } from './FuseMatch'
 import './TagsInput.css'
 
 interface ITag {
@@ -256,7 +254,7 @@ class Component extends React.Component<Props, State> {
                     </button>
                     : <>
                         <form onSubmit={this.onSubmit} className="cl-tags__form">
-                            <input 
+                            <input
                                 type="text"
                                 ref={this.inputRef}
                                 id={this.props.id}
@@ -292,7 +290,7 @@ class Component extends React.Component<Props, State> {
             </div>
         )
     }
-    
+
     private scrollHighlightedElementIntoView(resultsElement: HTMLDivElement) {
         const selectedElement = resultsElement.querySelector('.cl-tags__suggested-tags__button--highlight') as HTMLUListElement
         if (selectedElement) {

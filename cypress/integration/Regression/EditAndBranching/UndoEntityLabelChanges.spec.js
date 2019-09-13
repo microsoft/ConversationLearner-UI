@@ -25,7 +25,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
       train.EditTraining('The user asks a silly question', 'The user asks their final question', 'The Bot responds once again')
       train.SelectChatTurnExactMatch('The user asks a silly question')
       train.VerifySubmitChangesButtonIsDisabled()
-      train.VerifyUndoButtonIsDisabled()
+      train.VerifyEntityLabelUndoButtonIsDisabled()
     })
     
     it('Verify that after selecting an entity to label, we can select a different user turn and label text', () => {
@@ -58,11 +58,11 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
 
     it('Verify the "Submit Changes" and "Undo" buttons are enabled', () => {
       train.VerifySubmitChangesButtonIsEnabled()
-      train.VerifyUndoButtonIsEnabled()
+      train.VerifyEntityLabelUndoButtonIsEnabled()
     })
 
     it('Undo the change and verify that the Entity label is restored', () => {
-      train.ClickUndoButton()
+      train.ClickEntityLabelUndoButton()
       train.VerifyTextIsLabeledAsEntity('user', 'one')
     })
 
@@ -84,7 +84,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     // When this block of code breaks, it is likely because this bug has been fixed. Comment it out and uncomment the next.
     // THERE IS ALSO ANOTHER LINE OF CODE COMMENTED OUT FURTHER BELOW THAT MUST BE RE-ENABLED ONCE FIXED!
     it('Undo the change and verify that the Entity label is restored', () => {
-      train.ClickUndoButton()
+      train.ClickEntityLabelUndoButton()
       train.VerifyTextIsLabeledAsEntity('user', 'two')
       train.SelectChatTurnExactMatch('Bot responds with a silly answer')
       train.SelectChatTurnExactMatch('The user asks a silly question')
@@ -94,7 +94,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     // Bug 2262: Undo Entity Label Changes not-rerendering correctly
     // Confirm that this bug no longer reproduces.
     // it('Undo the change and verify that the Entity label is restored', () => {
-    //   train.ClickUndoButton()
+    //   train.ClickEntityLabelUndoButton()
     //   train.VerifyTextIsLabeledAsEntity('user', 'one')
     // })
 
@@ -105,7 +105,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     it('Verify undo on a totally new Entity labeled word works', () => {
       train.SelectChatTurnExactMatch('The user asks another question')
       train.LabelTextAsEntity('user', 'one')
-      train.ClickUndoButton()
+      train.ClickEntityLabelUndoButton()
       train.VerifyTextIsNotLabeledAsEntity('user', 'one')
     })
 
@@ -118,7 +118,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
       //train.LabelTextAsEntity('asks', 'one')
 
       train.LabelTextAsEntity('question', 'three')
-      train.ClickUndoButton()
+      train.ClickEntityLabelUndoButton()
       train.VerifyTextIsLabeledAsEntity('user', 'one')
       train.VerifyTextIsLabeledAsEntity('asks', 'two')
       train.VerifyTextIsNotLabeledAsEntity('question', 'three')
@@ -135,7 +135,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
       train.ClickNewEntityButton()
       entities.CreateNewEntity({ name: 'four' })
       train.VerifyTextIsLabeledAsEntity('user', 'four')
-      train.ClickUndoButton()
+      train.ClickEntityLabelUndoButton()
       train.VerifyTextIsNotLabeledAsEntity('user', 'four')
     })
 
@@ -143,7 +143,7 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
       train.SelectChatTurnExactMatch('The user asks a silly question')
       train.RemoveEntityLabel('user', 'one')
       train.VerifySubmitChangesButtonIsEnabled()
-      train.VerifyUndoButtonIsEnabled()
+      train.VerifyEntityLabelUndoButtonIsEnabled()
       train.LabelTextAsEntity('user', 'one')
     })
 
@@ -151,15 +151,15 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
     // When this block of code breaks, it is likely because this bug has been fixed. Comment it out and uncomment the next.
     it('Verify that the "Submit Changes" and "Undo" buttons are enabled', () => {
       train.VerifySubmitChangesButtonIsEnabled()
-      train.VerifyUndoButtonIsEnabled()
-      train.ClickUndoButton()
+      train.VerifyEntityLabelUndoButtonIsEnabled()
+      train.ClickEntityLabelUndoButton()
     })
     
     // Bug 2263: Submit Changes button is enabled, select user turns disabled, after no net change
     // Confirm that this bug no longer reproduces.
     // it('Verify that the "Submit Changes" and "Undo" buttons are disabled', () => {
     //   train.VerifySubmitChangesButtonIsDisabled()
-    //   train.VerifyUndoButtonIsDisabled()
+    //   train.VerifyEntityLabelUndoButtonIsDisabled()
     // })
 
     it('Verify that the user chat turn did not change', () => {

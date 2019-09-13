@@ -540,7 +540,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         const isTerminalChanged = initialEditState!.isTerminal !== this.state.isTerminal
         const isRepromptChanged = initialEditState!.reprompt !== this.state.reprompt
+        const isSelectedApiChanged = initialEditState.selectedApiOptionKey !== this.state.selectedApiOptionKey
+        const isSelectedCardChanged = initialEditState.selectedCardOptionKey !== this.state.selectedCardOptionKey
+
         const hasPendingChanges = isAnyPayloadChanged
+            || isSelectedApiChanged
+            || isSelectedCardChanged
             || expectedEntitiesChanged
             || requiredEntitiesChanged
             || disqualifyingEntitiesChanged
@@ -935,7 +940,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             actionType: CLM.ActionTypes[this.state.selectedActionTypeOptionKey],
             entityId: this.state.selectedEntityOptionKey,
             enumValueId: this.state.selectedEnumValueOptionKey,
-            clientData: this.props.action ? this.props.action.clientData : undefined
+            clientData: this.props.action
+                ? this.props.action.clientData
+                : { importHashes: [] }
         })
 
         if (this.state.isEditing && this.props.action) {
