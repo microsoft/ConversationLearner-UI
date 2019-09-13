@@ -672,10 +672,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         };
 
         try {
-            const teachWithHistory = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
             this.setState({
-                activityHistory: teachWithHistory.activities,
-                lastAction: teachWithHistory.lastAction,
+                activityHistory: teachWithActivities.activities,
+                lastAction: teachWithActivities.lastAction,
                 currentTrainDialog: trainDialog,
                 isEditDialogModalOpen: true,
                 selectedActivityIndex: null,
@@ -1091,7 +1091,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         originalTrainDialogId={null}
                         onClose={this.onCloseTeachSession}
                         onSetInitialEntities={null}
-                        onEditTeach={(historyIndex, editHandlerArgs, tags, description, editHandler) => this.onEditTeach(historyIndex, editHandlerArgs ? editHandlerArgs : undefined, tags, description, editHandler)}
+                        onEditTeach={(activityIndex, editHandlerArgs, tags, description, editHandler) => this.onEditTeach(activityIndex, editHandlerArgs ? editHandlerArgs : undefined, tags, description, editHandler)}
                         onInsertAction={(trainDialog, activity, editHandlerArgs) => this.onInsertAction(trainDialog, activity, editHandlerArgs.isLastActivity!)}
                         onInsertInput={(trainDialog, activity, editHandlerArgs) => this.onInsertInput(trainDialog, activity, editHandlerArgs.userInput)}
                         onDeleteTurn={(trainDialog, activity) => this.onDeleteTurn(trainDialog, activity)}
@@ -1172,16 +1172,16 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
 
         try {
-            const teachWithHistory = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
 
             this.setState({
-                activityHistory: teachWithHistory.activities,
-                lastAction: teachWithHistory.lastAction,
+                activityHistory: teachWithActivities.activities,
+                lastAction: teachWithActivities.lastAction,
                 currentLogDialogId: logDialog.logDialogId,
                 currentTrainDialog: CLM.ModelUtils.ToTrainDialog(logDialog),
                 isEditDialogModalOpen: true,
                 editType: EditDialogType.LOG_ORIGINAL,
-                validationErrors: teachWithHistory.replayErrors
+                validationErrors: teachWithActivities.replayErrors
             })
         }
         catch (error) {
@@ -1191,7 +1191,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
     // User has edited an Activity in a TeachSession
     private async onEditTeach(
-        historyIndex: number | null,
+        activityIndex: number | null,
         args: DialogEditing.EditHandlerArgs | undefined,
         tags: string[],
         description: string,
@@ -1203,7 +1203,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             }
 
             await DialogEditing.onEditTeach(
-                historyIndex,
+                activityIndex,
                 args,
                 tags,
                 description,
