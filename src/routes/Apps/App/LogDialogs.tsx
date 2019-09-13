@@ -416,11 +416,11 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.entities,
                 this.props.actions,
                 this.props.app.appId,
-                this.props.scoreFromHistoryThunkAsync as any,
+                this.props.scoreFromTrainDialogThunkAsync as any,
                 this.props.clearWebchatScrollPosition,
             )
 
-            await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NEXT)
+            await this.onUpdateActivities(newTrainDialog, selectedActivity, SelectionType.NEXT)
         }
         catch (error) {
             if (error instanceof EntityLabelConflictError) {
@@ -455,7 +455,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.editActionThunkAsync as any
             )
 
-            await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
+            await this.onUpdateActivities(newTrainDialog, selectedActivity, SelectionType.NONE)
         }
         catch (error) {
             console.warn(`Error when attempting to change an Action: `, error)
@@ -480,7 +480,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.trainDialogReplayThunkAsync as any,
             )
 
-            await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NONE)
+            await this.onUpdateActivities(newTrainDialog, selectedActivity, SelectionType.NONE)
         }
         catch (error) {
             console.warn(`Error when attempting to change extraction: `, error)
@@ -498,7 +498,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
             this.props.trainDialogReplayThunkAsync as any,
         )
 
-        await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.CURRENT)
+        await this.onUpdateActivities(newTrainDialog, selectedActivity, SelectionType.CURRENT)
     }
 
     @autobind
@@ -512,7 +512,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.trainDialogReplayThunkAsync as any,
             )
 
-            await this.onUpdateHistory(newTrainDialog, null, SelectionType.NONE)
+            await this.onUpdateActivities(newTrainDialog, null, SelectionType.NONE)
         }
         catch (error) {
             console.warn(`Error when attempting to Replay a train dialog: `, error)
@@ -533,12 +533,12 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.app.appId,
                 this.props.entities,
                 this.props.actions,
-                this.props.extractFromHistoryThunkAsync as any,
+                this.props.extractFromTrainDialogThunkAsync as any,
                 this.props.trainDialogReplayThunkAsync as any,
                 this.props.clearWebchatScrollPosition,
             )
 
-            await this.onUpdateHistory(newTrainDialog, selectedActivity, SelectionType.NEXT)
+            await this.onUpdateActivities(newTrainDialog, selectedActivity, SelectionType.NEXT)
         }
         catch (error) {
             if (error instanceof EntityLabelConflictError) {
@@ -561,7 +561,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 // Delete the teach session w/o saving
                 await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
             }
-            const teachWithHistory = await ((this.props.createTeachSessionFromHistoryThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput, null) as any) as Promise<CLM.TeachWithHistory>)
+            const teachWithActivities = await ((this.props.createTeachSessionFromTrainDialogThunkAsync(this.props.app, newTrainDialog, this.props.user.name, this.props.user.id, initialUserInput, null) as any) as Promise<CLM.TeachWithActivities>)
 
             // Update currentTrainDialog with tags and description
             const currentTrainDialog = this.state.currentTrainDialog ? {
@@ -572,8 +572,8 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
             // Note: Don't clear currentTrainDialog so I can delete it if I save my edits
             this.setState({
-                activityHistory: teachWithHistory.history,
-                lastAction: teachWithHistory.lastAction,
+                activityHistory: teachWithActivities.activities,
+                lastAction: teachWithActivities.lastAction,
                 isEditDialogModalOpen: false,
                 selectedActivityIndex: null,
                 isTeachDialogModalOpen: true,
@@ -615,7 +615,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 await ((this.props.deleteTeachSessionThunkAsync(this.props.teachSession.teach, this.props.app) as any) as Promise<void>)
 
                 // Generate activityHistory
-                await this.onUpdateHistory(trainDialog, null, SelectionType.NONE)
+                await this.onUpdateActivities(trainDialog, null, SelectionType.NONE)
             }
 
         }
@@ -625,21 +625,21 @@ class LogDialogs extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onUpdateHistory(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType) {
+    async onUpdateActivities(newTrainDialog: CLM.TrainDialog, selectedActivity: Activity | null, selectionType: SelectionType) {
         try {
-            const { teachWithHistory, activityIndex } = await DialogEditing.onUpdateHistory(
+            const { teachWithActivities, activityIndex } = await DialogEditing.onUpdateActivities(
                 newTrainDialog,
                 selectedActivity,
                 selectionType,
 
                 this.props.app.appId,
                 this.props.user,
-                this.props.fetchHistoryThunkAsync as any
+                this.props.fetchActivitiesThunkAsync as any
             )
 
             this.setState({
-                activityHistory: teachWithHistory.history,
-                lastAction: teachWithHistory.lastAction,
+                activityHistory: teachWithActivities.activities,
+                lastAction: teachWithActivities.lastAction,
                 currentTrainDialog: newTrainDialog,
                 isEditDialogModalOpen: true,
                 isTeachDialogModalOpen: false,
@@ -672,9 +672,9 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         };
 
         try {
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            const teachWithHistory = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialogWithDefinitions, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
             this.setState({
-                activityHistory: teachWithHistory.history,
+                activityHistory: teachWithHistory.activities,
                 lastAction: teachWithHistory.lastAction,
                 currentTrainDialog: trainDialog,
                 isEditDialogModalOpen: true,
@@ -1172,10 +1172,10 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
 
         try {
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
+            const teachWithHistory = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
 
             this.setState({
-                activityHistory: teachWithHistory.history,
+                activityHistory: teachWithHistory.activities,
                 lastAction: teachWithHistory.lastAction,
                 currentLogDialogId: logDialog.logDialogId,
                 currentTrainDialog: CLM.ModelUtils.ToTrainDialog(logDialog),
@@ -1215,7 +1215,7 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                 this.props.entities,
                 this.props.fetchTrainDialogThunkAsync as any,
                 this.props.deleteTeachSessionThunkAsync as any,
-                this.props.fetchHistoryThunkAsync as any,
+                this.props.fetchActivitiesThunkAsync as any,
             )
         }
         catch (error) {
@@ -1230,7 +1230,7 @@ const mapDispatchToProps = (dispatch: any) => {
         clearWebchatScrollPosition: actions.display.clearWebchatScrollPosition,
         createActionThunkAsync: actions.action.createActionThunkAsync,
         createChatSessionThunkAsync: actions.chat.createChatSessionThunkAsync,
-        createTeachSessionFromHistoryThunkAsync: actions.teach.createTeachSessionFromHistoryThunkAsync,
+        createTeachSessionFromTrainDialogThunkAsync: actions.teach.createTeachSessionFromTrainDialogThunkAsync,
         createTrainDialogThunkAsync: actions.train.createTrainDialogThunkAsync,
         deleteLogDialogThunkAsync: actions.log.deleteLogDialogThunkAsync,
         deleteLogDialogsThunkAsync: actions.log.deleteLogDialogsThunkAsync,
@@ -1238,14 +1238,14 @@ const mapDispatchToProps = (dispatch: any) => {
         deleteTrainDialogThunkAsync: actions.train.deleteTrainDialogThunkAsync,
         editActionThunkAsync: actions.action.editActionThunkAsync,
         editTrainDialogThunkAsync: actions.train.editTrainDialogThunkAsync,
-        extractFromHistoryThunkAsync: actions.train.extractFromHistoryThunkAsync,
+        extractFromTrainDialogThunkAsync: actions.train.extractFromTrainDialogThunkAsync,
         fetchLogDialogAsync: actions.log.fetchLogDialogThunkAsync,
         fetchAllLogDialogsThunkAsync: actions.log.fetchAllLogDialogsThunkAsync,
-        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
+        fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
         fetchTrainDialogThunkAsync: actions.train.fetchTrainDialogThunkAsync,
         trainDialogMergeThunkAsync: actions.train.trainDialogMergeThunkAsync,
         trainDialogReplaceThunkAsync: actions.train.trainDialogReplaceThunkAsync,
-        scoreFromHistoryThunkAsync: actions.train.scoreFromHistoryThunkAsync,
+        scoreFromTrainDialogThunkAsync: actions.train.scoreFromTrainDialogThunkAsync,
         trainDialogReplayThunkAsync: actions.train.trainDialogReplayThunkAsync,
     }, dispatch)
 }

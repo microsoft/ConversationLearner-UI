@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
@@ -55,11 +55,11 @@ export const createTeachSessionThunkAsync = (appId: string, initialEntityMap: CL
 }
 
 // --------------------------
-// TeachSessionFromHistory
+// TeachSessionFromTrainDialog
 // --------------------------
-const createTeachSessionFromHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
+const createTeachSessionFromTrainDialogAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
     return {
-        type: AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC,
+        type: AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_ASYNC,
         appId: appId,
         userName: userName,
         userId: userId,
@@ -67,32 +67,32 @@ const createTeachSessionFromHistoryAsync = (appId: string, trainDialog: CLM.Trai
     }
 }
 
-const createTeachSessionFromHistoryFulfilled = (teachWithHistory: CLM.TeachWithHistory): ActionObject => {
+const createTeachSessionFromTrainDialogFulfilled = (teachWithActivities: CLM.TeachWithActivities): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
-        type: AT.CREATE_TEACH_SESSION_FROMHISTORY_FULFILLED,
-        teachWithHistory: teachWithHistory
+        type: AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_FULFILLED,
+        teachWithActivities,
     }
 }
 
-const createTeachSessionFromHistoryRejected = (): ActionObject =>
+const createTeachSessionFromTrainDialogRejected = (): ActionObject =>
     ({
-        type: AT.CREATE_TEACH_SESSION_FROMHISTORY_REJECTED
+        type: AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_REJECTED
     })
 
-export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string, initialUserInput: CLM.UserInput | null, filteredDialogId: string | null) => {
+export const createTeachSessionFromTrainDialogThunkAsync = (app: CLM.AppBase, trainDialog: CLM.TrainDialog, userName: string, userId: string, initialUserInput: CLM.UserInput | null, filteredDialogId: string | null) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC)
-        dispatch(createTeachSessionFromHistoryAsync(app.appId, trainDialog, userName, userId))
+        const clClient = ClientFactory.getInstance(AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_ASYNC)
+        dispatch(createTeachSessionFromTrainDialogAsync(app.appId, trainDialog, userName, userId))
 
         try {
-            const teachWithHistory = await clClient.teachSessionFromHistory(app.appId, trainDialog, initialUserInput, userName, userId, filteredDialogId)
-            dispatch(createTeachSessionFromHistoryFulfilled(teachWithHistory))
-            return teachWithHistory
+            const teachWithActivities = await clClient.teachSessionFromTrainDialog(app.appId, trainDialog, initialUserInput, userName, userId, filteredDialogId)
+            dispatch(createTeachSessionFromTrainDialogFulfilled(teachWithActivities))
+            return teachWithActivities
         }
         catch (e) {
-            dispatch(createTeachSessionFromHistoryRejected())
-            
+            dispatch(createTeachSessionFromTrainDialogRejected())
+
             const error = e as AxiosError
             if (error.response && error.response.status === 409) {
                 const textVariations: CLM.TextVariation[] = error.response.data.reason
@@ -100,7 +100,7 @@ export const createTeachSessionFromHistoryThunkAsync = (app: CLM.AppBase, trainD
                 throw conflictError
             }
 
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_ASYNC))
             throw error
         }
     }
@@ -166,7 +166,7 @@ export const deleteTeachSessionThunkAsync = (
             if (save) {
                 dispatch(fetchApplicationTrainingStatusThunkAsync(app.appId))
             }
-            
+
             return newTrainDialog
 
         } catch (e) {

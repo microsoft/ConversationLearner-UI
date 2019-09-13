@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -27,8 +27,8 @@ interface ComponentState {
     changedItems: CLM.TranscriptValidationResult[]
     resultIndex: number
     webchatKey: number,
-    history1: BotChat.Activity[] | undefined
-    history2: BotChat.Activity[] | undefined
+    activities1: BotChat.Activity[] | undefined
+    activities2: BotChat.Activity[] | undefined
     missingLog: boolean,
     // Are webchat columns flipped (for test randomization)
     isFlipped: boolean,
@@ -43,8 +43,8 @@ const initialState: ComponentState = {
     changedItems: [],
     webchatKey: 0,
     resultIndex: 0,
-    history1: [],
-    history2: [],
+    activities1: [],
+    activities2: [],
     missingLog: false,
     isFlipped: false,
     selectedActivityIndex: null,
@@ -55,7 +55,7 @@ const initialState: ComponentState = {
 }
 
 class RateDialogsModal extends React.Component<Props, ComponentState> {
-    
+
     state = initialState
 
     private sameButtonRef = React.createRef<OF.IButton>()
@@ -143,7 +143,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             }
             result.rating = CLM.TranscriptRating.SAME
         })
-    
+
         this.props.onClose(set)
     }
 
@@ -153,7 +153,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         if (resultIndex === this.state.changedItems.length) {
             this.saveResults()
         }
-        this.setState({resultIndex})       
+        this.setState({resultIndex})
     }
 
     async onChangedDialog() {
@@ -165,39 +165,39 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
 
         const validationResult = this.state.changedItems[this.state.resultIndex]
 
-        let history1: BotChat.Activity[] = []
-        let history2: BotChat.Activity[] = []
+        let activities1: BotChat.Activity[] = []
+        let activities2: BotChat.Activity[] = []
         let missingLog = false
-        if (validationResult.sourceHistory) {
-            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceHistory, null, this.props.entities, this.props.actions, this.props.app)
+        if (validationResult.sourceActivities) {
+            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceActivities, null, this.props.entities, this.props.actions, this.props.app)
             trainDialog.definitions = {
                 actions: this.props.actions,
                 entities: this.props.entities,
                 trainDialogs: []
             }
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            history1 = teachWithHistory.history
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            activities1 = teachWithActivities.activities
         }
         if (validationResult.logDialogId) {
             const logDialog = await ((this.props.fetchLogDialogAsync(this.props.app.appId, validationResult.logDialogId, true, true) as any) as Promise<CLM.LogDialog>)
             if (!logDialog) {
-                history2 = []
+                activities2 = []
                 missingLog = true
             }
             else {
                 const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
-                const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-                history2 = teachWithHistory.history
+                const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+                activities2 = teachWithActivities.activities
             }
         }
-        
+
         // Find turn with first inconsistency
-        const maxLength = Math.max(history1.length, history2.length)
+        const maxLength = Math.max(activities1.length, activities2.length)
         let stopTurn = -1
         const replayError = new CLM.ReplayErrorTranscriptValidation()
         for (let i = 0; i < maxLength; i = i + 1) {
-            const activity1 = history1[i] as BB.Activity
-            const activity2 = history2[i] as BB.Activity
+            const activity1 = activities1[i] as BB.Activity
+            const activity2 = activities2[i] as BB.Activity
             if (!OBIUtils.isSameActivity(activity1, activity2)) {
                 if (activity1) {
                     activity1.channelData.clData = {...activity1.channelData.clData, replayError  }
@@ -211,15 +211,15 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         }
 
         // Cut off history at first inconsistency
-        history1 = history1.slice(0, stopTurn)
-        history2 = history2.slice(0, stopTurn)
+        activities1 = activities1.slice(0, stopTurn)
+        activities2 = activities2.slice(0, stopTurn)
 
         // Focuse same button (otherwise last choise will be active)
         this.focusSameButton()
 
         this.setState({
-            history1, 
-            history2,
+            activities1,
+            activities2,
             missingLog,
             webchatKey: this.state.webchatKey + 1,
             scrollPosition: 0,
@@ -249,8 +249,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     render() {
-        const leftHistory = this.state.isFlipped ? this.state.history2 : this.state.history1
-        const rightHistory = this.state.isFlipped ? this.state.history1 : this.state.history2
+        const leftHistory = this.state.isFlipped ? this.state.activities2 : this.state.activities1
+        const rightHistory = this.state.isFlipped ? this.state.activities1 : this.state.activities2
 
         return (
             <div>
@@ -312,7 +312,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                                 className='cl-rate-dialogs-left-button'
                                 iconProps={{ iconName: 'Trophy2'}}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
-                                text={'Left Better'} 
+                                text={'Left Better'}
                             />
                             <OF.DefaultButton
                                 className='cl-rate-dialogs-same-button'
@@ -327,7 +327,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                                 className='cl-rate-dialogs-right-button'
                                 iconProps={{ iconName: 'Trophy2'}}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
-                                text={'Right Better'} 
+                                text={'Right Better'}
                             />
                         </div>
                         <div className="cl-rate-dialogs-button-bar">
@@ -358,7 +358,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchLogDialogAsync: actions.log.fetchLogDialogThunkAsync,
-        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
+        fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -29,8 +29,8 @@ import { autobind } from 'core-decorators';
 interface ComponentState {
     resultIndex: number
     webchatKey: number,
-    history1: BotChat.Activity[] | undefined
-    history2: BotChat.Activity[] | undefined
+    activities1: BotChat.Activity[] | undefined
+    activities2: BotChat.Activity[] | undefined
     missingLog: boolean,
     selectedActivityIndex: number | null
     scrollPosition: number | null
@@ -39,8 +39,8 @@ interface ComponentState {
 const initialState: ComponentState = {
     webchatKey: 0,
     resultIndex: 0,
-    history1: [],
-    history2: [],
+    activities1: [],
+    activities2: [],
     missingLog: false,
     selectedActivityIndex: null,
     scrollPosition: 0
@@ -69,7 +69,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         if (resultIndex === this.props.transcriptValidationResults.length) {
             resultIndex = 0
         }
-        this.setState({resultIndex})       
+        this.setState({resultIndex})
     }
 
     @autobind
@@ -82,11 +82,11 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     // Set from and recipient data from proper rendering
-    cleanTranscript(history: BB.Activity[]): void {
+    cleanTranscript(activities: BB.Activity[]): void {
         const userAccount: BB.ChannelAccount = { id: this.props.user.id, name: this.props.user.name, role: "user", aadObjectId: '' }
         const botAccount: BB.ChannelAccount = { id: `BOT-${this.props.user.id}`, name: CLM.CL_USER_NAME_ID, role: "bot", aadObjectId: '' }
 
-        for (let activity of history) {
+        for (let activity of activities) {
             if (!activity.recipient) {
                 if (activity.from.role === "bot") {
                     activity.recipient = userAccount
@@ -112,43 +112,43 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
 
         const validationResult = this.props.transcriptValidationResults[this.state.resultIndex]
 
-        let history1: BotChat.Activity[] = []
-        let history2: BotChat.Activity[] = []
+        let activities1: BotChat.Activity[] = []
+        let activities2: BotChat.Activity[] = []
         let missingLog = false
-        if (validationResult.sourceHistory) {
-            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceHistory, this.props.lgMap, this.props.entities, this.props.actions, this.props.app)
+        if (validationResult.sourceActivities) {
+            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceActivities, this.props.lgMap, this.props.entities, this.props.actions, this.props.app)
             trainDialog.definitions = {
                 actions: this.props.actions,
                 entities: this.props.entities,
                 trainDialogs: []
             }
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            history1 = teachWithHistory.history
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            activities1 = teachWithActivities.activities
         }
         if (validationResult.logDialogId) {
             const logDialog = await ((this.props.fetchLogDialogAsync(this.props.app.appId, validationResult.logDialogId, true, true) as any) as Promise<CLM.LogDialog>)
             if (!logDialog) {
-                history2 = []
+                activities2 = []
                 missingLog = true
             }
             else {
                 const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
-                const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-                history2 = teachWithHistory.history
+                const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+                activities2 = teachWithActivities.activities
             }
         }
-        
+
         // Mark turns that are not aligned
         const replayError = new CLM.ReplayErrorTranscriptValidation()
 
         // Tested dialog may have extra step as .transcript could end on a user input
-        if (history2.length > history2.length) {
-            history2 = history2.slice(history1.length, history2.length)
+        if (activities2.length > activities2.length) {
+            activities2 = activities2.slice(activities1.length, activities2.length)
         }
 
-        for (let i = 0; i < history1.length; i = i + 1) {
-            const activity1 = history1[i] as BB.Activity
-            const activity2 = history2[i] as BB.Activity
+        for (let i = 0; i < activities1.length; i = i + 1) {
+            const activity1 = activities1[i] as BB.Activity
+            const activity2 = activities2[i] as BB.Activity
             if (!OBIUtils.isSameActivity(activity1, activity2)) {
                 if (activity1) {
                     activity1.channelData.clData = {...activity1.channelData.clData, replayError  }
@@ -160,8 +160,8 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         }
 
         this.setState({
-            history1, 
-            history2,
+            activities1,
+            activities2,
             missingLog,
             webchatKey: this.state.webchatKey + 1,
             scrollPosition: 0
@@ -222,12 +222,12 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                 </div>
                                 <div className="cl-compare-dialogs-webchat">
                                     <Webchat
-                                        isOpen={this.state.history1 !== undefined}
+                                        isOpen={this.state.activities1 !== undefined}
                                         key={`A-${this.state.webchatKey}`}
                                         app={this.props.app}
-                                        history={this.state.history1 || []}
+                                        history={this.state.activities1 || []}
                                         onPostActivity={() => {}}
-                                        onSelectActivity={(activity) => this.onSelectActivity(this.state.history1, activity)}
+                                        onSelectActivity={(activity) => this.onSelectActivity(this.state.activities1, activity)}
                                         onScrollChange={this.onScrollChange}
                                         hideInput={true}
                                         focusInput={false}
@@ -241,7 +241,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                 </div>
                             </div>
                             <div>
-                                {this.state.missingLog 
+                                {this.state.missingLog
                                     ?
                                     <div className="cl-compare-dialogs-title cl-errorpanel">
                                         Log Dialog doesn't exist
@@ -260,12 +260,12 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
 
                                 <div className="cl-compare-dialogs-webchat">
                                     <Webchat
-                                        isOpen={this.state.history2 !== undefined}
+                                        isOpen={this.state.activities2 !== undefined}
                                         key={`B-${this.state.webchatKey}`}
                                         app={this.props.app}
-                                        history={this.state.history2 || []}
+                                        history={this.state.activities2 || []}
                                         onPostActivity={() => {}}
-                                        onSelectActivity={(activity) => this.onSelectActivity(this.state.history2, activity)}
+                                        onSelectActivity={(activity) => this.onSelectActivity(this.state.activities2, activity)}
                                         onScrollChange={this.onScrollChange}
                                         hideInput={true}
                                         focusInput={false}
@@ -303,7 +303,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                     text={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
                                     iconProps={{ iconName: 'Cancel' }}
                                 />
-                                
+
                             </div>
                         </div>
                     </div>
@@ -316,7 +316,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchLogDialogAsync: actions.log.fetchLogDialogThunkAsync,
-        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
+        fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {
