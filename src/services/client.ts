@@ -397,7 +397,7 @@ export default class ClClient {
     async trainDialogScoreFromTrainDialog(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.UIScoreResponse> {
         const response = await this.send<CLM.UIScoreResponse>({
             method: 'post',
-            url: `/app/${appId}/scorefromhistory`,
+            url: `/app/${appId}/scorefromtraindialog`,
             data: trainDialog
         })
         return response.data
@@ -407,7 +407,7 @@ export default class ClClient {
     async trainDialogExtractFromTrainDialog(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): Promise<CLM.ExtractResponse> {
         const response = await this.send<CLM.ExtractResponse>({
             method: 'post',
-            url: `/app/${appId}/extractfromhistory`,
+            url: `/app/${appId}/extractfromtraindialog`,
             data: { trainDialog, userInput }
         })
         return response.data
