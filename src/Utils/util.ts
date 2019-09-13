@@ -254,6 +254,11 @@ export function isTemplateTitleGeneric(template: CLM.Template): boolean {
     return (titleVariable !== undefined)
 }
 
+// Create recursive partial of an object
+export type RecursivePartial<T> = {
+    [P in keyof T]?: RecursivePartial<T[P]>;
+}
+
 // Calculate a 32 bit FNV-1a hash
 // Ref.: http://isthe.com/chongo/tech/comp/fnv/
 export function hashText(text: string) {

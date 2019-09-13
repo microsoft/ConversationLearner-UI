@@ -564,6 +564,49 @@ export function findActionFromHashText(hashText: string, actions: CLM.ActionBase
     return matchedActions[0]
 }
 
+// Note: Transcripts are partials of partials of BB.Activity, so need to use "any"
+export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activity>[], transcript2: Util.RecursivePartial<BB.Activity>[]): boolean {
+    if (transcript1.length !== transcript2.length) {
+        return false
+    }
+    if (transcript1.length === 0 || transcript2.length === 0) {
+        throw new Error("Transcript has no turns")
+    }
+    if (!transcript1[0].conversation || !transcript2[0].conversation) {
+        throw new Error("Not a valid transcript. Conversation not defined")
+    }
+    if (transcript1[0].conversation.id !== transcript2[0].conversation.id) {
+        throw new Error("Not a valid comparison.  ConversationIds do not match.")
+    }
+    if (transcript1[0].channelId === transcript2[0].channelId) {
+        throw new Error("Not a valid comparison.  Same channel.") 
+    }
+    for (let i = 0; i < transcript1.length; i = i + 1) {
+        const activity1 = transcript1[i]
+        const activity2 = transcript2[i]
+        if (activity1.type !== activity2.type) {
+            return false
+        }
+        if (!activity1.from || !activity2.from) {
+            throw new Error("Not a valid transcript.  Has no from")
+        }
+        if (activity1.from.role !== activity2.from.role) {
+            return false
+        }
+        if (activity1.text !== activity2.text) {
+            // If different user input, not a valid comparison
+            if (activity1.from.role === "user") {
+                throw new Error("Not a valid comparison.  Inconsistent User Input")
+            }
+            // If different bot reponse, transcripts are different
+            else {
+                return false
+            }
+        }
+    }
+    return true
+}
+
 export async function importActionOutput(
     actionResults: TranscriptActionOutput[], 
     entities: CLM.EntityBase[],
