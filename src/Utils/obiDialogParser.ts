@@ -58,9 +58,9 @@ export class ObiDialogParser {
             return null
         }
     
-        return this.getTrainDialogsfromOBIDialog(mainDialog)
+        return await this.getTrainDialogsfromOBIDialog(mainDialog)
     }
-    
+
     private addToLUMap(text: string, luMap: Map<string, string[]>): any {
         const keys = text.split('##')
         for (const key of keys) {

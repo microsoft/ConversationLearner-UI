@@ -442,7 +442,6 @@ class TeachSessionAdmin extends React.Component<Props, ComponentState> {
                                 scoreResponse={renderData.scoreResponse}
                                 scoreInput={renderData.scoreInput}
                                 selectedActionId={renderData.selectedActionId}
-                                forcedActionId={undefined}  // No forced actions during training
                                 memories={renderData.memories}
                                 onActionSelected={this.onActionScorerSubmit}
                                 onActionCreatorClosed={() => {}}

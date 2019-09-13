@@ -16,7 +16,7 @@ import { AxiosError } from 'axios'
 import { setErrorDisplay } from './displayActions'
 import { EntityLabelConflictError } from '../types/errors'
 import { ActionTypes } from '@conversationlearner/models';
-import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator';
+import { DispatcherAlgorithmType } from '../components/modals/DispatcherCreator';
 
 // --------------------------
 // CreateTrainDialog

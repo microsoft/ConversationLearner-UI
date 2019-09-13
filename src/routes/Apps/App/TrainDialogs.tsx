@@ -31,10 +31,9 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
+import { autobind } from 'core-decorators'
+import { DispatcherAlgorithmType } from '../../../components/modals/DispatcherCreator'
 import './TrainDialogs.css'
-import { autobind } from 'core-decorators';
-import { ActionTypes } from '@conversationlearner/models';
-import { DispatcherAlgorithmType } from 'src/components/modals/DispatcherCreator';
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -1239,6 +1238,12 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                 editType: EditDialogType.IMPORT
             })
             newTrainDialog.validity = CLM.Validity.VALID
+
+            // Should re-prompt train dialogs be created
+            if (Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.REPROMPT)) {
+                await OBIUtils.addRepromptExamples(this.props.app.appId, newTrainDialog, this.props.actions, this.props.createTrainDialogThunkAsync as any)
+            }
+
             await this.onCreateTrainDialog(newTrainDialog)
         }
         else {
@@ -1460,7 +1465,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         const isEditingDisabled = (this.props.editingPackageId !== this.props.app.devPackageId) || this.props.invalidBot
 
         // Assume if app has DISPATCH actions, it must be dispatcher model
-        const isDispatchModel = this.props.actions.some(a => a.actionType === ActionTypes.DISPATCH)
+        const isDispatchModel = this.props.actions.some(a => a.actionType === CLM.ActionTypes.DISPATCH)
 
         return (
             <div className="cl-page">
@@ -1485,7 +1490,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                         componentRef={this.newTeachSessionButtonRef}
                         iconProps={{ iconName: 'Add' }}
                     />
-                    {this.props.settings.features && this.props.settings.features.toLowerCase().includes(FeatureStrings.CCI.toLowerCase()) &&
+                    {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
                         <OF.DefaultButton
                             iconProps={{
                                 iconName: "DownloadDocument"
