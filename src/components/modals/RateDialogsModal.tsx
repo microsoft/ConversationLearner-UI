@@ -210,7 +210,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             }
         }
 
-        // Cut off history at first inconsistency
+        // Cut off activities at first inconsistency
         activities1 = activities1.slice(0, stopTurn)
         activities2 = activities2.slice(0, stopTurn)
 
