@@ -16,40 +16,31 @@ import * as helpers from '../../../support/Helpers'
 
 describe('Entity Value-Name Toggle - Score Actions', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
-  let generatedScoreActionsData = new scorerModal.GeneratedData('comprehensive4.json')
+  let generatedScoreActionsData = new scorerModal.GeneratedData('EntityValueNameToggle.json')
 
   context('Setup', () => {
     it('Create a model to test against and navigate to Train Dialogs', () => {
-      models.ImportModel('z-valueNameToggle', 'z-comprehensive4.cl')
+      models.ImportModel('z-valueNameToggle', 'z-valueNameToggle.cl')
       modelPage.NavigateToTrainDialogs()
     })
   })
 
-/*
-Planning and Design - I'm looking for feedback about this, will write up a new Feature Work Item if you all agree...
-
-As I am writing tests for this Entity Value/Name Toggle feature it occurs to me that this is more complex than it needs to be, not only for the test code, but also for the user. It seems to me that we should have only one toggle switch and it should affect all Actions in the Score Actions panel, rather than one for each action.
-
-The way it is now, the user has to click on multiple toggles to see all the Entity names in the Score Actions panel...as for test code, I'm writing code to test the various times the toggle switch is present or not and if it has an affect or not.
-
-It all seems like unnecessary overkill for such a simple control.
-
-So far I have designed the model to be used for this test suite about 90%. I've added the scenarios to the Test Grid. I coded up the helper methods I need to test with, and coded up a small test suite that verified the helper method before I realized there was more scenarios to test than I had accounted for.
-
-The point is, that I do have more work to do on this if we leave this feature as it is. But if we intend to change it, I shouldn't continue coding as I have been doing. So for now I am putting this feature on pause and will move along to other test cases to revisit this once we have a decision.
-*/
-
   context('Train Dialog', () => {
     it('Edit the Train Dialog and Bring up Score Actions Panel', () => {
-      train.EditTraining('Hi', 'Mangoes and Peaches', 'Goodbye')
-      train.SelectChatTurnExactMatch('Uhhhh…')
+      train.EditTraining('Testing Entity Value/Name Toggle feature.', "We're done here.", 'Goodbye $name')
     })
 
+    it('Select and Verify the Presence or Absence of Toggle Button for Each Bot Turn', () => {
+      // While verifying everything in the Score Actions Panel this also verifies 
+      // the presence or absense of the toggle switch on all Actions at each turn.
+      // These will vary due to the values contained (or not) in Entities.
+      train.VerifyEachBotChatTurn(() => { generatedScoreActionsData.VerifyScoreActionsListUnwrapped() })      
+    })
+
+
     it('Toggle a Text Action then verify text changes', () => {
-      scorerModal.ClickTextEntityValueNameToggleButon('Hello Jeff')
+      scorerModal.ClickTextEntityValueNameToggleButon('Hello Billy Bob')
       scorerModal.VerifyContainsTextAction('Hello $name')
-      scorerModal.ClickTextEntityValueNameToggleButon('Hello $name')
-      scorerModal.VerifyContainsTextAction('Hello Jeff')
     })
 
     it('Toggle an API Action then verify text changes', () => {
@@ -57,23 +48,41 @@ The point is, that I do have more work to do on this if we leave this feature as
       scorerModal.VerifyContainsApiAction('RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"333"fourthArg:"4444"fifthArg:"five"sixthArg:"six"seventhArg:"seven"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"three"fourthArg:"four"fifthArg:"55555"sixthArg:"666666"seventhArg:"7777777"')
     })
 
-    it('Toggle an API Action then verify text changes', () => {
-      scorerModal.ClickEndSessionEntityValueNameToggleButon('EndSessionGoodbye')
-      scorerModal.VerifyContainsEndSessionAction('')
+    it('Toggle a Card Action then verify text changes', () => {
+      scorerModal.ClickCardEntityValueNameToggleButon('promptWithPicture')
+      scorerModal.VerifyContainsCardAction('promptWithPicturetitle:Do you like flowers?image:https://cdn.pixabay.com/photo/2018/10/30/16/06/water-lily-3784022__340.jpgline1:Flowers make life beautifulline2:$fruit start out as a flowerline3:Bees Like Flowersbutton1:I Like Flowersbutton2:Flowers are for the birds and bees')
     })
 
-    it('', () => {
+    it('Toggle an EndSession Action then verify text changes', () => {
+      scorerModal.ClickEndSessionEntityValueNameToggleButon('Goodbye Billy Bob')
+      scorerModal.VerifyContainsEndSessionAction('Goodbye $name')
     })
 
-    it('', () => {
+    // Since we toggled multiple items, reverify the entire grid.
+    // This will verify that each toggled Action remained in the
+    // toggled state and were not affected by toggling other actions.
+    generatedScoreActionsData.VerifyScoreActionsList()
+
+    it('Toggle all Actions back to their original state and then verify text changes', () => {
+      scorerModal.ClickTextEntityValueNameToggleButon('Hello $name')
+      scorerModal.VerifyContainsTextAction('Hello Billy Bob')
+
+      scorerModal.ClickApiEntityValueNameToggleButon('RenderTheArgs')
+      scorerModal.VerifyContainsApiAction('RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"1 One"secondArg:"Two 2 Two 2"thirdArg:"333"fourthArg:"4444"fifthArg:"five"sixthArg:"six"seventhArg:"seven"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"1 One"secondArg:"Two 2 Two 2"thirdArg:"three"fourthArg:"four"fifthArg:"55555"sixthArg:"666666"seventhArg:"7777777"')
+
+      scorerModal.ClickCardEntityValueNameToggleButon('promptWithPicture')
+      scorerModal.VerifyContainsCardAction('promptWithPicturetitle:Do you like flowers?image:https://cdn.pixabay.com/photo/2018/10/30/16/06/water-lily-3784022__340.jpgline1:Flowers make life beautifulline2:ORANGES start out as a flowerline3:Bees Like Flowersbutton1:I Like Flowersbutton2:Flowers are for the birds and bees')
+
+      scorerModal.ClickEndSessionEntityValueNameToggleButon('Goodbye $name')
+      scorerModal.VerifyContainsEndSessionAction('Goodbye Billy Bob')
     })
 
-    it('', () => {
-    })
+    // Since we toggled multiple items, reverify the entire grid.
+    // This will verify that each toggled Action remained in the
+    // toggled state and were not affected by toggling other actions.
+    generatedScoreActionsData.VerifyScoreActionsList()
 
-    it('', () => {
-    })
-
+    generatedScoreActionsData.SaveGeneratedData()
   })
 
   // Manually EXPORT this to fixtures folder and name it 'z-comprehensive1.cl'

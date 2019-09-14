@@ -9,6 +9,8 @@ import * as helpers from '../../support/Helpers'
 const SelectorTextResponse = '[data-testid="action-scorer-text-response"]'
 const SelectorApiName = '[data-testid="action-scorer-api-name"]'
 const SelectorApiResponse = '[data-testid="action-scorer-api"]'
+const SelectorCardName = '[data-testid="action-scorer-card-name"]'
+const SelectorCardResponse = '[data-testid="action-scorer-card"]'
 const SelectorEndSessionResponse = '[data-testid="action-scorer-session-response-user"]'
 
 export const stateEnum = { selected: 1, qualified: 2, disqualified: 3 }
@@ -34,10 +36,12 @@ export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyAct
 
 export function ClickTextEntityValueNameToggleButon(expectedResponse) { ClickEntityValueNameToggleButon(SelectorTextResponse, expectedResponse) }
 export function ClickApiEntityValueNameToggleButon(apiName) { ClickEntityValueNameToggleButon(SelectorApiName, apiName) }
+export function ClickCardEntityValueNameToggleButon(cardName) { ClickEntityValueNameToggleButon(SelectorCardName, cardName) }
 export function ClickEndSessionEntityValueNameToggleButon(expectedData) { ClickEntityValueNameToggleButon(SelectorEndSessionResponse, expectedData) }
 
 export function VerifyContainsTextAction(expectedResponse) { VerifyActionExists(SelectorTextResponse, expectedResponse) }
 export function VerifyContainsApiAction(apiResponse) { VerifyActionExists(SelectorApiResponse, apiResponse) }
+export function VerifyContainsCardAction(cardResponse) { VerifyActionExists(SelectorCardResponse, cardResponse) }
 export function VerifyContainsEndSessionAction(expectedData) { VerifyActionExists(SelectorEndSessionResponse, expectedData) }
 
 
@@ -87,7 +91,6 @@ export class GeneratedData {
       })
     } else {
       it('Verify the Score Actions data', () => {
-cy.pause()        
         cy.WaitForStableDOM().then(() => VerifyScoreActions(this.data[this.index++], acceptableScoreDeviation))
       })
     }
@@ -244,7 +247,12 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
         }
       })
 
-      
+      // Verify Entity Value/Name Toggle Control.
+      const elements = Cypress.$(rowElement).find('[data-testid="action-scorer-entity-toggle"]')
+      if ((elements.length == 1) !== expectedScoreAction.hasEntityValueNameToggle) {
+        AccumulateErrors(`Expected to find the Entity Value/Name Toggle switch to be ${expectedScoreAction.hasEntityValueNameToggle? 'present' : 'absent'}`)
+      }
+ 
       // Verify the score.
       FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
         const score = helpers.TextContentWithoutNewlines(elements[0])
@@ -340,17 +348,23 @@ export function GenerateScoreActionsDataFromGrid() {
     const rowElement = Cypress.$(rowsElements[rowIndex]).find('div.ms-DetailsRow-fields')[0]
     helpers.ConLog(funcName, `Row #: ${rowIndex} - Element found: ${rowElement.outerHTML}`)
 
-    // Verify the button.
+    // The selection button.
     FindWithinAndCapture(rowElement, `find('[data-testid^="action-scorer-button-"]')`, elements => {
       const attr = elements.attr('data-testid')
       rowData.buttonTestId = attr
     })
-    
+
+
     // Response
     FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-text-response"], [data-testid="action-scorer-api"], [data-testid="action-scorer-session-response-user"], [data-testid="action-scorer-card"], [data-testid="action-scorer-action-set-entity"]')`, elements => {
       const responseData = helpers.TextContentWithoutNewlines(elements[0])
       rowData.response = responseData
     })
+
+    
+    // Entity Value/Name Toggle Control.
+    const elements = Cypress.$(rowElement).find('[data-testid="action-scorer-entity-toggle"]')
+    rowData.hasEntityValueNameToggle = elements.length == 1
 
     
     // Action Type.
