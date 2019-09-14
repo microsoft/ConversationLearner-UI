@@ -144,40 +144,40 @@ export const fetchTrainDialogThunkAsync = (appId: string, trainDialogId: string,
 }
 
 // --------------------------
-// ScoreFromHistory
+// ScoreFromTrainDialog
 // --------------------------
-const scoreFromHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog): ActionObject => {
+const scoreFromTrainDialogAsync = (appId: string, trainDialog: CLM.TrainDialog): ActionObject => {
     return {
-        type: AT.FETCH_SCOREFROMHISTORY_ASYNC,
+        type: AT.FETCH_SCOREFROMTRAINDIALOG_ASYNC,
         appId,
         trainDialog
     }
 }
 
-const scoreFromHistoryFulfilled = (uiScoreResponse: CLM.UIScoreResponse): ActionObject => {
+const scoreFromTrainDialogFulfilled = (uiScoreResponse: CLM.UIScoreResponse): ActionObject => {
     return {
-        type: AT.FETCH_SCOREFROMHISTORY_FULFILLED,
+        type: AT.FETCH_SCOREFROMTRAINDIALOG_FULFILLED,
         uiScoreResponse
     }
 }
 
-const scoreFromHistoryRejected = (): ActionObject =>
+const scoreFromTrainDialogRejected = (): ActionObject =>
     ({
-        type: AT.FETCH_SCOREFROMHISTORY_REJECTED
+        type: AT.FETCH_SCOREFROMTRAINDIALOG_REJECTED
     })
 
-export const scoreFromHistoryThunkAsync = (appId: string, trainDialog: CLM.TrainDialog) => {
+export const scoreFromTrainDialogThunkAsync = (appId: string, trainDialog: CLM.TrainDialog) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.FETCH_SCOREFROMHISTORY_ASYNC)
-        dispatch(scoreFromHistoryAsync(appId, trainDialog))
+        const clClient = ClientFactory.getInstance(AT.FETCH_SCOREFROMTRAINDIALOG_ASYNC)
+        dispatch(scoreFromTrainDialogAsync(appId, trainDialog))
 
         try {
-            const uiScoreResponse = await clClient.trainDialogScoreFromHistory(appId, trainDialog)
-            dispatch(scoreFromHistoryFulfilled(uiScoreResponse))
+            const uiScoreResponse = await clClient.trainDialogScoreFromTrainDialog(appId, trainDialog)
+            dispatch(scoreFromTrainDialogFulfilled(uiScoreResponse))
             return uiScoreResponse
         }
         catch (e) {
-            dispatch(scoreFromHistoryRejected())
+            dispatch(scoreFromTrainDialogRejected())
 
             const error = e as AxiosError
             if (error.response && error.response.status === 409) {
@@ -186,48 +186,48 @@ export const scoreFromHistoryThunkAsync = (appId: string, trainDialog: CLM.Train
                 throw conflictError
             }
 
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_SCOREFROMHISTORY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_SCOREFROMTRAINDIALOG_ASYNC))
             throw error
         }
     }
 }
 
 // --------------------------
-// ExtractFromHistory
+// ExtractFromTrainDialog
 // --------------------------
-const extractFromHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): ActionObject => {
+const extractFromTrainDialogAsync = (appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): ActionObject => {
     return {
-        type: AT.FETCH_EXTRACTFROMHISTORY_ASYNC,
+        type: AT.FETCH_EXTRACTFROMTRAINDIALOG_ASYNC,
         appId,
         trainDialog,
         userInput
     }
 }
 
-const extractFromHistoryFulfilled = (extractResponse: CLM.ExtractResponse): ActionObject => {
+const extractFromTrainDialogFulfilled = (extractResponse: CLM.ExtractResponse): ActionObject => {
     return {
-        type: AT.FETCH_EXTRACTFROMHISTORY_FULFILLED,
+        type: AT.FETCH_EXTRACTFROMTRAINDIALOG_FULFILLED,
         extractResponse
     }
 }
 
-const extractFromHistoryRejected = (): ActionObject =>
+const extractFromTrainDialogRejected = (): ActionObject =>
     ({
-        type: AT.FETCH_EXTRACTFROMHISTORY_REJECTED
+        type: AT.FETCH_EXTRACTFROMTRAINDIALOG_REJECTED
     })
 
-export const extractFromHistoryThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput) => {
+export const extractFromTrainDialogThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.FETCH_EXTRACTFROMHISTORY_ASYNC)
-        dispatch(extractFromHistoryAsync(appId, trainDialog, userInput))
+        const clClient = ClientFactory.getInstance(AT.FETCH_EXTRACTFROMTRAINDIALOG_ASYNC)
+        dispatch(extractFromTrainDialogAsync(appId, trainDialog, userInput))
 
         try {
-            const extractResponse = await clClient.trainDialogExtractFromHistory(appId, trainDialog, userInput)
-            dispatch(extractFromHistoryFulfilled(extractResponse))
+            const extractResponse = await clClient.trainDialogExtractFromTrainDialog(appId, trainDialog, userInput)
+            dispatch(extractFromTrainDialogFulfilled(extractResponse))
             return extractResponse
         }
         catch (e) {
-            dispatch(extractFromHistoryRejected())
+            dispatch(extractFromTrainDialogRejected())
 
             const error = e as AxiosError
             if (error.response && error.response.status === 409) {
@@ -236,7 +236,7 @@ export const extractFromHistoryThunkAsync = (appId: string, trainDialog: CLM.Tra
                 throw conflictError
             }
 
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_EXTRACTFROMHISTORY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_EXTRACTFROMTRAINDIALOG_ASYNC))
             throw error
         }
     }
@@ -599,11 +599,11 @@ export const deleteTrainDialogThunkAsync = (app: CLM.AppBase, trainDialogId: str
 }
 
 // ----------------------------------------
-// History
+// Activities
 // ----------------------------------------
-const fetchHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
+const fetchActivitiesAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string): ActionObject => {
     return {
-        type: AT.FETCH_HISTORY_ASYNC,
+        type: AT.FETCH_ACTIVITIES_ASYNC,
         appId: appId,
         userName: userName,
         userId: userId,
@@ -611,26 +611,26 @@ const fetchHistoryAsync = (appId: string, trainDialog: CLM.TrainDialog, userName
     }
 }
 
-const fetchHistoryFulfilled = (teachWithHistory: CLM.TeachWithHistory): ActionObject => {
+const fetchActivitiesFulfilled = (teachWithActivities: CLM.TeachWithActivities): ActionObject => {
     // Needs a fulfilled version to handle response from Epic
     return {
-        type: AT.FETCH_HISTORY_FULFILLED,
-        teachWithHistory: teachWithHistory
+        type: AT.FETCH_ACTIVITIES_FULFILLED,
+        teachWithActivities,
     }
 }
 
-export const fetchHistoryThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean = true) => {
+export const fetchActivitiesThunkAsync = (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean = true) => {
     return async (dispatch: Dispatch<any>) => {
-        const clClient = ClientFactory.getInstance(AT.FETCH_HISTORY_ASYNC)
-        dispatch(fetchHistoryAsync(appId, trainDialog, userName, userId))
+        const clClient = ClientFactory.getInstance(AT.FETCH_ACTIVITIES_ASYNC)
+        dispatch(fetchActivitiesAsync(appId, trainDialog, userName, userId))
 
         try {
-            const teachWithHistory = await clClient.history(appId, trainDialog, userName, userId, useMarkdown)
-            dispatch(fetchHistoryFulfilled(teachWithHistory))
-            return teachWithHistory
+            const teachWithActivities = await clClient.history(appId, trainDialog, userName, userId, useMarkdown)
+            dispatch(fetchActivitiesFulfilled(teachWithActivities))
+            return teachWithActivities
         } catch (e) {
             const error = e as AxiosError
-            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_HISTORY_ASYNC))
+            dispatch(setErrorDisplay(ErrorType.Error, error.message, error.response ? JSON.stringify(error.response, null, '  ') : "", AT.FETCH_ACTIVITIES_ASYNC))
             throw e
         }
     }

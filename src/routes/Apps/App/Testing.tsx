@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -104,7 +104,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
         // Check if I'm done importing files
         if (this.state.transcriptIndex === this.state.transcriptFiles.length) {
-            this.setState({ 
+            this.setState({
                 transcriptFiles: [],
                 lgMap: null
             })
@@ -192,7 +192,7 @@ class Testing extends React.Component<Props, ComponentState> {
             transcriptValidationResult = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<CLM.TranscriptValidationResult>)
         }
         // Store the transcript for later comparison
-        transcriptValidationResult.sourceHistory = transcript
+        transcriptValidationResult.sourceActivities = transcript
         transcriptValidationResult.fileName = fileName
 
         // Need to check that dialog as still open as user may canceled the test
