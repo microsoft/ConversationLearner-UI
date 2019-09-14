@@ -19,7 +19,7 @@ export async function onInsertAction(
     entities: CLM.EntityBase[],
     actions: CLM.ActionBase[],
     appId: string,
-    scoreFromHistory: (appId: string, history: CLM.TrainDialog) => Promise<CLM.UIScoreResponse>,
+    scoreFromTrainDialog: (appId: string, trainDialog: CLM.TrainDialog) => Promise<CLM.UIScoreResponse>,
     clearWebChatScrollPosition: () => void,
 ) {
     const clData: CLM.CLChannelData = selectedActivity.channelData.clData
@@ -33,24 +33,24 @@ export async function onInsertAction(
 
     // Created shorted version of TrainDialog at insert point
     // Copy, Remove rounds / scorer steps below insert
-    const history = Util.deepCopy(trainDialog)
-    history.definitions = definitions
-    history.rounds = history.rounds.slice(0, roundIndex + 1)
+    const trainDialogCopy = Util.deepCopy(trainDialog)
+    trainDialogCopy.definitions = definitions
+    trainDialogCopy.rounds = trainDialogCopy.rounds.slice(0, roundIndex + 1)
 
     // Remove action-less dummy step (used for rendering) if it exits
-    if (history.rounds[roundIndex].scorerSteps.length > 0 && history.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
-        history.rounds[roundIndex].scorerSteps = []
+    if (trainDialogCopy.rounds[roundIndex].scorerSteps.length > 0 && trainDialogCopy.rounds[roundIndex].scorerSteps[0].labelAction === undefined) {
+        trainDialogCopy.rounds[roundIndex].scorerSteps = []
     }
     else if (scoreIndex === null) {
-        history.rounds[roundIndex].scorerSteps = []
+        trainDialogCopy.rounds[roundIndex].scorerSteps = []
     }
-    // Or remove following scorer steps 
+    // Or remove following scorer steps
     else {
-        history.rounds[roundIndex].scorerSteps = history.rounds[roundIndex].scorerSteps.slice(0, scoreIndex + 1);
+        trainDialogCopy.rounds[roundIndex].scorerSteps = trainDialogCopy.rounds[roundIndex].scorerSteps.slice(0, scoreIndex + 1);
     }
 
     // Get a score for this step
-    const uiScoreResponse = await scoreFromHistory(appId, history)
+    const uiScoreResponse = await scoreFromTrainDialog(appId, trainDialogCopy)
     if (!uiScoreResponse.scoreResponse) {
         throw new Error("Empty Score Response")
     }
@@ -87,7 +87,7 @@ export async function onInsertAction(
     if (curRound.scorerSteps.length === 0 || curRound.scorerSteps[0].labelAction === undefined) {
         curRound.scorerSteps = [scorerStep]
     }
-    // Or insert 
+    // Or insert
     else if (scoreIndex === null) {
         curRound.scorerSteps = [scorerStep, ...curRound.scorerSteps]
     }
@@ -112,7 +112,7 @@ export async function onInsertInput(
     appId: string,
     entities: CLM.EntityBase[],
     actions: CLM.ActionBase[],
-    extractFromHistory: (appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput) => Promise<CLM.ExtractResponse>,
+    extractFromTrainDialog: (appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput) => Promise<CLM.ExtractResponse>,
     trainDialogReplay: (appId: string, trainDialog: CLM.TrainDialog) => Promise<CLM.TrainDialog>,
     clearWebChatScrollPosition: () => void,
 ) {
@@ -142,7 +142,7 @@ export async function onInsertInput(
     const userInput: CLM.UserInput = { text: inputText }
 
     // Get extraction
-    const extractResponse = await extractFromHistory(appId, partialTrainDialog, userInput)
+    const extractResponse = await extractFromTrainDialog(appId, partialTrainDialog, userInput)
 
     if (!extractResponse) {
         throw new Error("No extract response")
@@ -161,14 +161,14 @@ export async function onInsertInput(
         // Copy scorer steps below the injected input for new Round
         scorerSteps = trainDialog.rounds[roundIndex].scorerSteps
 
-        // Remove scorer steps above injected input from round 
+        // Remove scorer steps above injected input from round
         newTrainDialog.rounds[roundIndex].scorerSteps = []
     }
     else {
         // Copy scorer steps below the injected input for new Round
         scorerSteps = trainDialog.rounds[roundIndex].scorerSteps.slice(scoreIndex + 1)
 
-        // Remove scorer steps above injected input from round 
+        // Remove scorer steps above injected input from round
         newTrainDialog.rounds[roundIndex].scorerSteps.splice(scoreIndex + 1, Infinity)
     }
 
@@ -226,7 +226,7 @@ export async function onChangeAction(
 
         const replacedAction = actions.find(a => a.actionId === oldTrainScorerStep.labelAction)
         let importHash: string | null = null
-        
+
         // If replacing imported action
         if (oldTrainScorerStep.importText) {
             // Substitue entityIds back into import text to build import hash lookup
@@ -241,7 +241,7 @@ export async function onChangeAction(
         }
 
         // Attach hash of import text to selected action for future lookups
-        if (importHash) { 
+        if (importHash) {
             const action = actions.find(a => a.actionId === trainScorerStep.labelAction)
             if (action) {
                 // Add new hash to action and save it
@@ -330,10 +330,10 @@ export async function onDeleteTurn(
             previousRound.scorerSteps = previousRound.scorerSteps.filter(ss => ss.labelAction !== undefined)
         }
 
-        // Delete round 
+        // Delete round
         newTrainDialog.rounds.splice(roundIndex, 1)
     }
-    else { //CLM.SenderType.Bot 
+    else { //CLM.SenderType.Bot
         if (scoreIndex === null) {
             throw new Error("Unexpected null scoreIndex")
         }
@@ -373,24 +373,24 @@ export async function onReplayTrainDialog(
     return replayedDialog
 }
 
-export async function onUpdateHistory(
+export async function onUpdateActivities(
     newTrainDialog: CLM.TrainDialog,
     selectedActivity: Activity | null,
     selectionType: SelectionType,
 
     appId: string,
     user: User,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string) => Promise<CLM.TeachWithHistory>
+    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string) => Promise<CLM.TeachWithActivities>
 ) {
-    const teachWithHistory = await fetchHistoryAsync(appId, newTrainDialog, user.name, user.id)
+    const teachWithActivities = await fetchActivitiesAsync(appId, newTrainDialog, user.name, user.id)
 
     let activityIndex: number | null = null
 
     // If activity was selected, calculate activity to select after update
     if (selectedActivity !== null) {
         // LogDialogs used state:
-        // activityIndex = selectedActivity ? DialogUtils.matchedActivityIndex(selectedActivity, this.state.history) : null
-        activityIndex = selectedActivity ? DialogUtils.matchedActivityIndex(selectedActivity, teachWithHistory.history) : null
+        // activityIndex = selectedActivity ? DialogUtils.matchedActivityIndex(selectedActivity, this.state.activities) : null
+        activityIndex = selectedActivity ? DialogUtils.matchedActivityIndex(selectedActivity, teachWithActivities.activities) : null
         if (activityIndex !== null && selectionType === SelectionType.NEXT) {
             // Select next activity, useful for when inserting a step
             activityIndex = activityIndex + 1
@@ -409,7 +409,7 @@ export async function onUpdateHistory(
     }
 
     return {
-        teachWithHistory,
+        teachWithActivities,
         activityIndex
     }
 }
@@ -424,7 +424,7 @@ export interface EditHandlerArgs {
 }
 
 export async function onEditTeach(
-    historyIndex: number | null,
+    activityIndex: number | null,
     args: EditHandlerArgs | undefined,
     tags: string[],
     description: string,
@@ -442,7 +442,7 @@ export async function onEditTeach(
         sourceLogDialogId?: string | null,
         sourceTrainDialogId?: string | null,
     ) => Promise<CLM.TrainDialog>,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string) => Promise<CLM.TeachWithHistory>
+    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string) => Promise<CLM.TeachWithActivities>
 ) {
     // Get train dialog associated with the teach session
     const trainDialog = await fetchTrainDialogAsync(app.appId, teachSession.trainDialogId, false)
@@ -457,15 +457,17 @@ export async function onEditTeach(
     // Delete the teach session w/o saving
     await deleteTeachSessionAsync(teachSession, app)
 
-    // Generate history
-    const teachWithHistory = await fetchHistoryAsync(app.appId, trainDialog, user.name, user.id)
+    // Generate activities
+    const teachWithActivities = await fetchActivitiesAsync(app.appId, trainDialog, user.name, user.id)
     // If no index given, select last activity
-    const selectedActivity = historyIndex ? teachWithHistory.history[historyIndex] : teachWithHistory.history[teachWithHistory.history.length - 1]
-    const clData: CLM.CLChannelData = { ...selectedActivity.channelData.clData, activityIndex: historyIndex }
+    const selectedActivity = activityIndex
+        ? teachWithActivities.activities[activityIndex]
+        : teachWithActivities.activities[teachWithActivities.activities.length - 1]
+    const clData: CLM.CLChannelData = { ...selectedActivity.channelData.clData, activityIndex: activityIndex }
     selectedActivity.channelData.clData = clData
 
     await editHandler(trainDialog, selectedActivity, args)
-} 
+}
 
 // Returns placeholder if it exists, otherwise creates it if given creation action
 export async function getPlaceholderAPIAction(
@@ -477,7 +479,7 @@ export async function getPlaceholderAPIAction(
 ): Promise<CLM.ActionBase | null> {
     // Check if it has been attached to real api call
     const apiHash = Util.hashText(placeholderName)
-    let placeholder = actions.find(a => {return a.clientData && a.clientData.importHashes 
+    let placeholder = actions.find(a => {return a.clientData && a.clientData.importHashes
         ? (a.clientData.importHashes.find(h => h === apiHash) !== undefined)
         : false
     })
@@ -521,7 +523,7 @@ export function scorerStepFromActivity(trainDialog: CLM.TrainDialog, selectedAct
     if (clData.roundIndex !== null) {
         const round = trainDialog.rounds[clData.roundIndex]
         if (round.scorerSteps.length > 0) {
-            // If a score round 
+            // If a score round
             if (typeof clData.scoreIndex === "number") {
                 return round.scorerSteps[clData.scoreIndex];
             }
@@ -541,13 +543,13 @@ export async function getAPIPlaceholderScorerStep(
     filledEntityMap: CLM.FilledEntityMap,
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
 ): Promise<CLM.TrainScorerStep> {
-    
+
     const placeholderAction = await getPlaceholderAPIAction(appId, placeholderName, isTerminal, actions, createActionThunkAsync)
 
     if (!placeholderAction) {
         throw new Error("Unable to create API placeholder Action")
     }
-    
+
     const filledEntities = filledEntityMap.FilledEntities()
 
     // Generate placeholder

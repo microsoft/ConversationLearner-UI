@@ -8,17 +8,18 @@ import * as Util from './util'
 import * as DialogEditing from './dialogEditing'
 import * as DialogUtils from './dialogUtils'
 import * as OBITypes from '../types/obiTypes'
+import * as textgen from 'txtgen'
 import Plain from 'slate-plain-serializer'
 import { REPROMPT_SELF } from '../types/const'
 import { ImportedAction } from '../types/models'
 import { User } from '../types'
 
 export async function toTranscripts(
-    appDefinition: CLM.AppDefinition, 
+    appDefinition: CLM.AppDefinition,
     appId: string,
     user: User,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
-    ): Promise<BB.Transcript[]> {
+    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
+): Promise<BB.Transcript[]> {
 
     const definitions = {
         entities: appDefinition.entities,
@@ -26,7 +27,7 @@ export async function toTranscripts(
         trainDialogs: []
     }
 
-    return Promise.all(appDefinition.trainDialogs.map(td => getHistory(appId, td, user, definitions, fetchHistoryAsync)))
+    return Promise.all(appDefinition.trainDialogs.map(td => getActivities(appId, td, user, definitions, fetchActivitiesAsync)))
 }
 
 export interface OBIImportData {
@@ -43,14 +44,14 @@ export interface ComposerDialog {
     lgMap: Map<string, CLM.LGItem>
 }
 
-async function getHistory(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
-    ): Promise<BB.Transcript> {
+async function getActivities(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
+    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
+): Promise<BB.Transcript> {
     const newTrainDialog = Util.deepCopy(trainDialog)
     newTrainDialog.definitions = definitions
 
-    const teachWithHistory = await fetchHistoryAsync(appId, newTrainDialog, user.name, user.id, false)
-    return { activities: teachWithHistory.history }
+    const teachWithActivities = await fetchActivitiesAsync(appId, newTrainDialog, user.name, user.id, false)
+    return { activities: teachWithActivities.activities }
 }
 
 interface TranscriptActionInput {
@@ -119,6 +120,73 @@ export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.L
     }
 }
 
+export async function addRepromptExamples(
+    appId: string, 
+    trainDialog: CLM.TrainDialog,
+    actions: CLM.ActionBase[],
+    createTrainDialogThunkAsync: (appId: string, newTrainDialog: CLM.TrainDialog) => Promise<CLM.TrainDialog>): Promise<void> {
+
+    const repromptDialogs: CLM.TrainDialog[] = []
+
+    trainDialog.rounds.forEach((round, roundIndex) => {
+        round.scorerSteps.forEach((ss, ssIndex) => {
+            const action = actions.find(a => a.actionId === ss.labelAction)
+            if (!action) {
+                throw new Error("Undefined action")
+            }
+            if (action.repromptActionId) {
+                const repromptAction = actions.find(a => a.actionId === ss.labelAction)
+                if (!repromptAction) {
+                    throw new Error("Undefined action")
+                }
+
+                const newTrainDialog = Util.deepCopy(trainDialog)
+                const newExtractorStep: CLM.TrainExtractorStep = {
+                    textVariations: makeOutOfDomainTextVariations()
+                }
+                const newScorerStep: CLM.TrainScorerStep = {
+                    input: ss.input,
+                    labelAction: action.repromptActionId === REPROMPT_SELF ? action.actionId : action.repromptActionId,
+                    logicResult: undefined,
+                    scoredAction: {
+                        actionId: repromptAction.actionId,
+                        payload: repromptAction.payload, 
+                        isTerminal: repromptAction.isTerminal,
+                        actionType: repromptAction.actionType,
+                        score: 100
+                    }
+                }
+                const newRound: CLM.TrainRound = {
+                    extractorStep: newExtractorStep,
+                    scorerSteps: [newScorerStep]
+                }
+
+                newTrainDialog.rounds.splice(roundIndex + 1, 0, newRound)
+                repromptDialogs.push(newTrainDialog)
+            }
+        })
+    })
+    // Add reprompt train dialogs
+    for (const td of repromptDialogs) {
+        await createTrainDialogThunkAsync(appId, td)
+    }
+
+    for (let i = 0; i < 1000; i = i + 1 ) {
+        console.log(`"${textgen.sentence()}",`)
+    }
+}
+
+function makeOutOfDomainTextVariations(): CLM.TextVariation[] {
+    const textVariations: CLM.TextVariation[] = []
+    while (textVariations.length < CLM.MAX_TEXT_VARIATIONS) {
+        textVariations.push({
+            text: textgen.sentence(),
+            labelEntities: []
+        })
+    }
+    return textVariations
+}
+
 // Convert .transcript file into a TrainDialog
 export async function trainDialogFromTranscriptImport(
     transcript: BB.Activity[],
@@ -129,9 +197,9 @@ export async function trainDialogFromTranscriptImport(
 
     createActionThunkAsync?: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
     createEntityThunkAsync?: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
-    ): Promise<CLM.TrainDialog> {
+): Promise<CLM.TrainDialog> {
     const transcriptHash = Util.hashText(JSON.stringify(transcript))
-    
+
     let trainDialog: CLM.TrainDialog = {
         trainDialogId: undefined!,
         version: undefined!,
@@ -140,13 +208,13 @@ export async function trainDialogFromTranscriptImport(
         sourceLogDialogId: undefined!,
         initialFilledEntities: [],
         rounds: [],
-        tags: [], 
+        tags: [],
         description: '',
         createdDateTime: new Date().toJSON(),
         lastModifiedDateTime: new Date().toJSON(),
         // It's initially invalid
         validity: CLM.Validity.INVALID,
-        clientData: {importHashes: [transcriptHash]}
+        clientData: { importHashes: [transcriptHash] }
     }
 
     // If I have an LG map, substitute in LG values
@@ -176,7 +244,7 @@ export async function trainDialogFromTranscriptImport(
                         if (textVariations.length < CLM.MAX_TEXT_VARIATIONS && activity.text !== tv.text) {
 
                             let altTextVariation: CLM.TextVariation = {
-                                text: tv.text, 
+                                text: tv.text,
                                 labelEntities: []
                             }
                             textVariations.push(altTextVariation)
@@ -396,7 +464,7 @@ async function createActionFromImport(
     importText: string,
     templates: CLM.Template[],
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
-    ): Promise<CLM.ActionBase> {
+): Promise<CLM.ActionBase> {
     const template = DialogUtils.bestTemplateMatch(importedAction, templates)
     const actionType = template ? CLM.ActionTypes.CARD : CLM.ActionTypes.TEXT
     const repromptActionId = template && importedAction.buttons.length > 0 ? REPROMPT_SELF : undefined
@@ -411,7 +479,7 @@ async function createActionFromImport(
         const textBody = template.variables.find(v => v.type === "TextBody" || v.type === "TextBlock")
         if (textBody) {
             const title = Plain.deserialize(importedAction.text)
-            actionArguments.push({parameter: textBody.key, value: {json: title.toJSON()}})
+            actionArguments.push({ parameter: textBody.key, value: { json: title.toJSON() } })
         }
 
         // Map additional variables to buttons
@@ -419,7 +487,7 @@ async function createActionFromImport(
             const buttons = importedAction.buttons.map(t => Plain.deserialize(t))
             buttons.forEach((button, index) => {
                 if ((index + 1) < template.variables.length) {
-                    actionArguments.push({parameter: template.variables[index + 1].key, value: {json: button.toJSON()}})
+                    actionArguments.push({ parameter: template.variables[index + 1].key, value: { json: button.toJSON() } })
                 }
             })
         }
@@ -455,14 +523,14 @@ async function createActionFromImport(
         actionType,
         entityId: undefined,
         enumValueId: undefined,
-        clientData: { importHashes: [Util.hashText(importText)]}
+        clientData: { importHashes: [Util.hashText(importText)] }
     })
 
     const newAction = await createActionThunkAsync(appId, action)
     if (!newAction) {
         throw new Error("Unable to create action")
     }
-    return newAction     
+    return newAction
 }
 
 // NOTE: eventually LGItems could be adaptive cards
@@ -471,7 +539,7 @@ export function importedActionFromImportText(importText: string, isTerminal: boo
     try {
         const lgItem: CLM.LGItem = JSON.parse(importText)
         // Assume reprompt if item has buttons
-        return { text: lgItem.text, buttons: lgItem.suggestions, isTerminal, reprompt: lgItem.suggestions.length > 0}
+        return { text: lgItem.text, buttons: lgItem.suggestions, isTerminal, reprompt: lgItem.suggestions.length > 0 }
     }
     catch (e) {
         // Assume no repropmt for plain text
@@ -497,14 +565,14 @@ export function findActionFromHashText(hashText: string, actions: CLM.ActionBase
 }
 
 export async function importActionOutput(
-    actionResults: TranscriptActionOutput[], 
+    actionResults: TranscriptActionOutput[],
     entities: CLM.EntityBase[],
     app: CLM.AppBase,
     createEntityThunkAsync?: ((appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>)
-    ): Promise<CLM.FilledEntity[]> {
+): Promise<CLM.FilledEntity[]> {
 
     const filledEntities: CLM.FilledEntity[] = []
-    
+
     for (const actionResult of actionResults) {
         // Check if entity already exists
         const foundEntity = entities.find(e => e.entityName === actionResult.entityName)
@@ -537,7 +605,7 @@ export async function importActionOutput(
             if (!entityId) {
                 throw new Error("Invalid Entity Definition")
             }
-        
+
         }
         else {
             entityId = "UNKNOWN ENTITY"
@@ -556,3 +624,356 @@ export async function importActionOutput(
     }
     return filledEntities
 }
+
+const nouns = [
+    "conclusion",
+    "nature",
+    "wood",
+    "ratio",
+    "family",
+    "actor",
+    "poet",
+    "anxiety",
+    "nation",
+    "death",
+    "writer",
+    "poetry",
+    "concept",
+    "discussion",
+    "impression",
+    "population",
+    "negotiation",
+    "complaint",
+    "mud",
+    "promotion",
+    "currency",
+    "ambition",
+    "dinner",
+    "problem",
+    "hall",
+    "length",
+    "enthusiasm",
+    "profession",
+    "driver",
+    "supermarket",
+    "conversation",
+    "election",
+    "application",
+    "tennis",
+    "alcohol",
+    "responsibility",
+    "understanding",
+    "loss",
+    "data",
+    "ad",
+    "menu",
+    "beer",
+    "percentage",
+    "salad",
+    "efficiency",
+    "housing",
+    "awareness",
+    "association",
+    "ladder",
+    "office",
+    "competition",
+    "priority",
+    "union",
+    "phone",
+    "road",
+    "oven",
+    "buyer",
+    "topic",
+    "contract",
+    "police",
+    "childhood",
+    "flight",
+    "activity",
+    "reality",
+    "obligation",
+    "power",
+    "cigarette",
+    "student",
+    "storage",
+    "volume",
+    "communication",
+    "estate",
+    "introduction",
+    "story",
+    "user",
+    "technology",
+    "writing",
+    "context",
+    "feedback",
+    "argument",
+    "night",
+    "collection",
+    "database",
+    "dad",
+    "signature",
+    "recording",
+    "sister",
+    "confusion",
+    "reputation",
+    "steak",
+    "tooth",
+    "exam",
+    "grocery",
+    "ear",
+    "breath",
+    "orange",
+    "thing",
+    "description",
+    "indication",
+    "economics",
+    "birthday",
+    "opinion",
+    "funeral",
+    "king",
+    "law",
+    "audience",
+    "wealth",
+    "version",
+    "lady",
+    "president",
+    "lake",
+    "shopping",
+    "difference",
+    "gate",
+    "honey",
+    "hair",
+    "affair",
+    "explanation",
+    "solution",
+    "debt",
+    "atmosphere",
+    "friendship",
+    "employer",
+    "emotion",
+    "operation",
+    "disaster",
+    "teaching",
+    "wedding",
+    "video",
+    "safety",
+    "development",
+    "throat",
+    "theory",
+    "airport",
+    "music",
+    "memory",
+    "meaning",
+    "tongue",
+    "administration",
+    "foundation",
+    "policy",
+    "marketing",
+    "protection",
+    "guest",
+    "industry",
+    "historian",
+    "cookie",
+    "initiative",
+    "fishing",
+    "chest",
+    "truth",
+    "agency",
+    "government",
+    "penalty",
+    "army",
+    "extent",
+    "importance",
+    "employee",
+    "candidate",
+    "organization",
+    "chemistry",
+    "error",
+    "village",
+    "agreement",
+    "opportunity",
+    "unit",
+    "maintenance",
+    "attitude",
+    "patience",
+    "role",
+    "control",
+    "security",
+    "method",
+    "hat",
+    "engine",
+    "outcome",
+    "country",
+    "cancer",
+    "disease",
+    "republic",
+    "basis",
+    "permission",
+    "manufacturer",
+    "entry",
+    "response",
+    "investment",
+    "passion",
+    "system",
+    "vehicle",
+    "satisfaction",
+    "week",
+    "politics",
+    "song",
+    "recipe",
+    "county",
+    "preparation",
+    "skill",
+    "situation",
+    "celebration",
+    "intention"    
+]
+
+const adjectives = [
+"inner",
+"suitable",
+"exciting",
+"aware",
+"electrical",
+"boring",
+"accurate",
+"practical",
+"mental",
+"asleep",
+"large",
+"additional",
+"obvious",
+"cultural",
+"similar",
+"wooden",
+"suspicious",
+"unfair",
+"careful",
+"entire",
+"logical",
+"conscious",
+"significant",
+"nice",
+"civil",
+"psychological",
+"medical",
+"legal",
+"strong",
+"southern",
+"informal",
+"hungry",
+"dangerous",
+"realistic",
+"guilty",
+"mad",
+"impossible",
+"visible",
+"former",
+"healthy",
+"remarkable",
+"anxious",
+"sorry",
+"poor",
+"difficult",
+"cute",
+"tiny",
+"distinct",
+"desperate",
+"successfully",
+"federal",
+"unlikely",
+"traditional",
+"ugly",
+"successful",
+"aggressive",
+"dramatic",
+"rare",
+"responsible",
+"several",
+"afraid",
+"latter",
+"unusual",
+"lucky",
+"terrible",
+"recent",
+"curious",
+"available",
+"automatic",
+"serious",
+"numerous",
+"decent",
+"angry",
+"electronic",
+"tall",
+"used",
+"various",
+"able",
+"basic",
+"relevant",
+"eastern",
+"happy",
+"willing",
+"intelligent",
+"weak",
+"foreign",
+"actual",
+"immediate",
+"interesting",
+"administrative",
+"reasonable",
+"impressive",
+"existing",
+"hot",
+"expensive",
+"obviously",
+"nervous",
+"educational",
+"comprehensive",
+"acceptable",
+"competitive",
+"pregnant",
+"pure",
+"consistent",
+"historical",
+"confident",
+"technical",
+"huge",
+"substantial",
+"global",
+"united",
+"emotional",
+"massive",
+"efficient",
+"strict",
+"typical",
+"powerful",
+"known",
+"unhappy",
+"unable",
+"severe",
+"financial",
+"every",
+"political",
+"embarrassed",
+"pleasant",
+"scared",
+"wonderful",
+"useful",
+"friendly",
+"environmental",
+"odd",
+"helpful",
+"important",
+"capable",
+"critical",
+"different",
+"popular",
+"famous",
+"old",
+"sufficient",
+"alive",
+"lonely",
+"sudden"
+]
+
+textgen.addNouns(nouns)
+textgen.addAdjectives(adjectives)

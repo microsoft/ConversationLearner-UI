@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { ActionObject, TeachSessionState } from '../types'
@@ -35,17 +35,17 @@ const teachSessionReducer: Reducer<TeachSessionState> = produce((state: TeachSes
             state.dialogMode = DialogMode.Wait
             state.memories = action.memories
             return
-        case AT.CREATE_TEACH_SESSION_FROMHISTORY_FULFILLED:
+        case AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_FULFILLED:
             return {
                 ...initialState,
-                teach: action.teachWithHistory.teach,
-                dialogMode: action.teachWithHistory.dialogMode,
-                memories: action.teachWithHistory.memories,
-                prevMemories: action.teachWithHistory.prevMemories,
-                scoreResponse: action.teachWithHistory.scoreResponse,
-                scoreInput: action.teachWithHistory.scoreInput,
-                extractResponses: action.teachWithHistory.extractResponse ? [action.teachWithHistory.extractResponse] : [],
-                uiScoreInput: action.teachWithHistory.uiScoreInput
+                teach: action.teachWithActivities.teach,
+                dialogMode: action.teachWithActivities.dialogMode,
+                memories: action.teachWithActivities.memories,
+                prevMemories: action.teachWithActivities.prevMemories,
+                scoreResponse: action.teachWithActivities.scoreResponse,
+                scoreInput: action.teachWithActivities.scoreInput,
+                extractResponses: action.teachWithActivities.extractResponse ? [action.teachWithActivities.extractResponse] : [],
+                uiScoreInput: action.teachWithActivities.uiScoreInput
             }
         case AT.DELETE_TEACH_SESSION_FULFILLED:
             if (state.teach && state.teach.teachId !== action.teachSessionGUID) {
@@ -61,7 +61,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = produce((state: TeachSes
             // Replace existing extract response (if any) with new one
             const extractResponses = state.extractResponses.filter(e => e.text !== action.uiExtractResponse.extractResponse.text);
             extractResponses.push(action.uiExtractResponse.extractResponse);
-            
+
             state.extractResponses = extractResponses
             state.dialogMode = DialogMode.Extractor
             state.memories = action.uiExtractResponse.memories
@@ -74,7 +74,7 @@ const teachSessionReducer: Reducer<TeachSessionState> = produce((state: TeachSes
             if (index < 0) {
                 return
             }
-            
+
             state.extractResponses[index] = action.extractResponse
             state.dialogMode = DialogMode.Extractor
             return

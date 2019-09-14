@@ -501,7 +501,17 @@ export const getPreBuiltEntityDisplayName = (entity: CLM.EntityBase, pe: CLM.Pre
     }
 
     const names = pe.builtinType.split('.')
-    return names[names.length - 1]
+    const [builtinPrefix, ...segements] = names
+    /**
+     * Expect resolutions to have builtinType to be of form:
+     * builtin.datetimeV2.duration
+     * If it somehow is not '.'(period) delimeted. Return whole type
+     */
+    if (segements.length === 0) {
+        return builtinPrefix
+    }
+
+    return segements.join('.')
 }
 
 export const convertPredictedEntityToGenericEntity = (pe: CLM.PredictedEntity, entityName: string, displayName: string): models.IGenericEntity<models.IGenericEntityData<CLM.PredictedEntity>> =>

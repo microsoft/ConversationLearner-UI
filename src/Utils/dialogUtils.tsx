@@ -30,7 +30,6 @@ export interface DialogRenderData {
     scoreResponse?: CLM.ScoreResponse
     scoreInput?: CLM.ScoreInput
     selectedActionId?: string
-    forcedActionId?: string
     extractResponses?: CLM.ExtractResponse[]
 }
 
@@ -357,12 +356,12 @@ export function hasImportActions(trainDialog: CLM.TrainDialog): boolean {
     return false
 }
 
-// Does history have any replay errors
-export function getMostSevereReplayError(history: BotChat.Activity[]): CLM.ReplayError | null {
+// Do activities have any replay errors
+export function getMostSevereReplayError(activities: BotChat.Activity[]): CLM.ReplayError | null {
     // Return most severe error level found
     let worstReplayError: CLM.ReplayError | null = null
-    for (const h of history) {
-        const clData: CLM.CLChannelData = h.channelData.clData
+    for (const a of activities) {
+        const clData: CLM.CLChannelData = a.channelData.clData
         if (clData && clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
                 return clData.replayError
@@ -380,9 +379,9 @@ export function getMostSevereReplayError(history: BotChat.Activity[]): CLM.Repla
 }
 
 // Given train dialog and rendered activity, return validity
-export function getTrainDialogValidity(trainDialog: CLM.TrainDialog, history: BotChat.Activity[]): CLM.Validity | undefined {
+export function getTrainDialogValidity(trainDialog: CLM.TrainDialog, activities: BotChat.Activity[]): CLM.Validity | undefined {
     // Look for individual replay errors
-    const worstReplayError = getMostSevereReplayError(history)
+    const worstReplayError = getMostSevereReplayError(activities)
     if (worstReplayError) {
         if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING || worstReplayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
             return CLM.Validity.INVALID
@@ -640,7 +639,6 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
     return mergedTrainDialog
 }
 
-
 export function filledEntityIdMap(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): Map<string, string> {
     const filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(filledEntities, entities)
     const filledIdMap = filledEntityMap.EntityMapToIdMap()
@@ -703,9 +701,8 @@ export function getDialogRenderData(
     let scorerStep: CLM.TrainScorerStep | undefined
     let scoreResponse: CLM.ScoreResponse | undefined
     let round: CLM.TrainRound | undefined
-    let memories: CLM.Memory[] = [];
-    let prevMemories: CLM.Memory[] = [];
-    let forcedActionId: string | undefined
+    let memories: CLM.Memory[] = []
+    let prevMemories: CLM.Memory[] = []
 
     if (roundIndex !== null && roundIndex < trainDialog.rounds.length) {
         round = trainDialog.rounds[roundIndex];
@@ -716,7 +713,6 @@ export function getDialogRenderData(
                 if (!scorerStep) {
                     throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
                 }
-                forcedActionId = scorerStep.forcedActionId
 
                 let selectedAction = actions.find(action => action.actionId === scorerStep!.labelAction);
 
@@ -800,7 +796,6 @@ export function getDialogRenderData(
         dialogMode: (senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
         scoreInput: scorerStep ? scorerStep.input : undefined,
         scoreResponse: scoreResponse,
-        forcedActionId,
         roundIndex,
         textVariations: round ? round.extractorStep.textVariations : [],
         memories: filterDummyEntities(memories),

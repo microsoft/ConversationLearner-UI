@@ -6,6 +6,7 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as ValidityUtils from '../../../Utils/validityUtils'
 import * as CLM from '@conversationlearner/models'
+import * as Util from '../../../Utils/util'
 import Entities from './Entities'
 import TrainDialogs from './TrainDialogs'
 import Actions from './Actions'
@@ -273,7 +274,7 @@ class Index extends React.Component<Props, ComponentState> {
                                             <OF.Icon iconName="List" /><span>Log Dialogs</span>
                                             <span className="count">{this.state.modelLoaded && ((filteredLogDialogs.length > TRIPLE_DIGIT_LOGDIALOG_COUNT) ? `${TRIPLE_DIGIT_LOGDIALOG_COUNT}+` : filteredLogDialogs.length)}</span>
                                         </NavLink>
-                                        {this.props.settings.features.toLowerCase().includes(FeatureStrings.CCI.toLowerCase()) &&
+                                        {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
                                             <NavLink className="cl-nav-link" data-testid="app-index-nav-link-testing" to={{ pathname: `${match.url}/testing`, state: { app } }}>
                                                 <OF.Icon iconName="TestPlan" /><span>Testing</span>
                                             </NavLink>
