@@ -5,13 +5,8 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as entities from '../../../support/Entities'
-import * as actions from '../../../support/Actions'
-import * as actionModal from '../../../support/components/ActionModal'
 import * as scorerModal from '../../../support/components/ScorerModal'
-import * as common from '../../../support/Common'
 import * as train from '../../../support/Train'
-import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
 describe('Entity Value-Name Toggle - Score Actions', () => {
@@ -26,7 +21,7 @@ describe('Entity Value-Name Toggle - Score Actions', () => {
   })
 
   context('Train Dialog', () => {
-    it('Edit the Train Dialog and Bring up Score Actions Panel', () => {
+    it('Edit the Train Dialog', () => {
       train.EditTraining('Testing Entity Value/Name Toggle feature.', "We're done here.", 'Goodbye $name')
     })
 
