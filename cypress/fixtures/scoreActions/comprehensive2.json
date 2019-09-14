@@ -3,8 +3,9 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "I like ORANGES too",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
-      "score": "61.4%",
+      "score": "84.4%",
       "entities": [
         {
           "name": "fruit",
@@ -16,32 +17,18 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: ORANGES",
+      "hasEntityValueNameToggle": false,
       "type": "SET_ENTITY",
-      "score": "30.1%",
-      "entities": [],
-      "wait": false
-    },
-    {
-      "buttonTestId": "action-scorer-button-clickable",
-      "response": "What kind of fruit do you like?",
-      "type": "TEXT",
-      "score": "4.0%",
-      "entities": [],
-      "wait": true
-    },
-    {
-      "buttonTestId": "action-scorer-button-clickable",
-      "response": "Hello",
-      "type": "TEXT",
-      "score": "3.2%",
+      "score": "9.7%",
       "entities": [],
       "wait": false
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello Jeff",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
-      "score": "1.3%",
+      "score": "3.7%",
       "entities": [
         {
           "name": "name",
@@ -52,7 +39,26 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
+      "response": "What kind of fruit do you like?",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "1.2%",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "1.0%",
+      "entities": [],
+      "wait": false
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: APPLES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "Training...",
       "entities": [],
@@ -61,6 +67,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: BANANAS",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "Training...",
       "entities": [],
@@ -69,6 +76,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: MANGOES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "Training...",
       "entities": [],
@@ -77,6 +85,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: PEACHES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "Training...",
       "entities": [],
@@ -85,6 +94,7 @@
     {
       "buttonTestId": "action-scorer-button-no-click",
       "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "Disqualified",
       "entities": [
@@ -100,8 +110,9 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "I like ORANGES too",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
-      "score": "61.4%",
+      "score": "84.4%",
       "entities": [
         {
           "name": "fruit",
@@ -113,32 +124,18 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: ORANGES",
+      "hasEntityValueNameToggle": false,
       "type": "SET_ENTITY",
-      "score": "30.1%",
-      "entities": [],
-      "wait": false
-    },
-    {
-      "buttonTestId": "action-scorer-button-clickable",
-      "response": "What kind of fruit do you like?",
-      "type": "TEXT",
-      "score": "4.0%",
-      "entities": [],
-      "wait": true
-    },
-    {
-      "buttonTestId": "action-scorer-button-clickable",
-      "response": "Hello",
-      "type": "TEXT",
-      "score": "3.2%",
+      "score": "9.7%",
       "entities": [],
       "wait": false
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello Jeff",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
-      "score": "1.3%",
+      "score": "3.7%",
       "entities": [
         {
           "name": "name",
@@ -148,8 +145,27 @@
       "wait": false
     },
     {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "What kind of fruit do you like?",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "1.2%",
+      "entities": [],
+      "wait": true
+    },
+    {
+      "buttonTestId": "action-scorer-button-clickable",
+      "response": "Hello",
+      "hasEntityValueNameToggle": false,
+      "type": "TEXT",
+      "score": "1.0%",
+      "entities": [],
+      "wait": false
+    },
+    {
       "buttonTestId": "action-scorer-button-selected",
       "response": "Uhhhh...",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "-",
       "entities": [],
@@ -158,6 +174,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: APPLES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -166,6 +183,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: BANANAS",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -174,6 +192,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: MANGOES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -182,6 +201,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: PEACHES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -190,6 +210,7 @@
     {
       "buttonTestId": "action-scorer-button-no-click",
       "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"$2ndArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"$2ndArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "hasEntityValueNameToggle": false,
       "type": "API",
       "score": "Disqualified",
       "entities": [
@@ -211,6 +232,7 @@
     {
       "buttonTestId": "action-scorer-button-no-click",
       "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "Disqualified",
       "entities": [
@@ -226,6 +248,7 @@
     {
       "buttonTestId": "action-scorer-button-selected",
       "response": "Uhhhh...",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "100.0%",
       "entities": [],
@@ -234,6 +257,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "-",
       "entities": [],
@@ -242,6 +266,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello Jeff",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
       "score": "-",
       "entities": [
@@ -255,6 +280,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "What kind of fruit do you like?",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "-",
       "entities": [],
@@ -263,6 +289,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: ORANGES",
+      "hasEntityValueNameToggle": false,
       "type": "SET_ENTITY",
       "score": "-",
       "entities": [],
@@ -271,6 +298,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "I like ORANGES too",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
       "score": "-",
       "entities": [
@@ -284,6 +312,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: APPLES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -292,6 +321,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: BANANAS",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -300,6 +330,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: MANGOES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -308,6 +339,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: PEACHES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -316,6 +348,7 @@
     {
       "buttonTestId": "action-scorer-button-no-click",
       "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "Disqualified",
       "entities": [
@@ -329,6 +362,7 @@
     {
       "buttonTestId": "action-scorer-button-no-click",
       "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"$2ndArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"$2ndArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "hasEntityValueNameToggle": false,
       "type": "API",
       "score": "Disqualified",
       "entities": [
@@ -352,6 +386,7 @@
     {
       "buttonTestId": "action-scorer-button-selected",
       "response": "Uhhhh...",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "100.0%",
       "entities": [],
@@ -360,6 +395,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "-",
       "entities": [],
@@ -368,6 +404,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello Jeff",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
       "score": "-",
       "entities": [
@@ -381,6 +418,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "What kind of fruit do you like?",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "-",
       "entities": [],
@@ -389,6 +427,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: ORANGES",
+      "hasEntityValueNameToggle": false,
       "type": "SET_ENTITY",
       "score": "-",
       "entities": [],
@@ -397,6 +436,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "I like ORANGES too",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
       "score": "-",
       "entities": [
@@ -410,6 +450,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: APPLES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -418,6 +459,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: BANANAS",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -426,6 +468,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: MANGOES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -434,6 +477,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: PEACHES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -442,6 +486,7 @@
     {
       "buttonTestId": "action-scorer-button-no-click",
       "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "Disqualified",
       "entities": [
@@ -455,6 +500,7 @@
     {
       "buttonTestId": "action-scorer-button-no-click",
       "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"OneFromAnEntity\"secondArg:\"$2ndArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"OneFromAnEntity\"secondArg:\"$2ndArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Disqualified",
       "entities": [
@@ -478,6 +524,7 @@
     {
       "buttonTestId": "action-scorer-button-selected",
       "response": "Uhhhh...",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "100.0%",
       "entities": [],
@@ -486,6 +533,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "-",
       "entities": [],
@@ -494,6 +542,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello Jeff",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
       "score": "-",
       "entities": [
@@ -507,6 +556,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "What kind of fruit do you like?",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "-",
       "entities": [],
@@ -515,6 +565,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: ORANGES",
+      "hasEntityValueNameToggle": false,
       "type": "SET_ENTITY",
       "score": "-",
       "entities": [],
@@ -523,6 +574,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "I like ORANGES too",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
       "score": "-",
       "entities": [
@@ -536,6 +588,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: APPLES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -544,6 +597,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: BANANAS",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -552,6 +606,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: MANGOES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -560,6 +615,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: PEACHES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -568,6 +624,7 @@
     {
       "buttonTestId": "action-scorer-button-no-click",
       "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "Disqualified",
       "entities": [
@@ -581,6 +638,7 @@
     {
       "buttonTestId": "action-scorer-button-no-click",
       "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"OneFromAnEntity\"secondArg:\"TwoToBeUsedByApiCall\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"OneFromAnEntity\"secondArg:\"TwoToBeUsedByApiCall\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Disqualified",
       "entities": [
@@ -604,6 +662,7 @@
     {
       "buttonTestId": "action-scorer-button-selected",
       "response": "Uhhhh...",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "100.0%",
       "entities": [],
@@ -612,6 +671,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "-",
       "entities": [],
@@ -620,6 +680,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello Jeff",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
       "score": "-",
       "entities": [
@@ -633,6 +694,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "What kind of fruit do you like?",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "-",
       "entities": [],
@@ -641,6 +703,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: ORANGES",
+      "hasEntityValueNameToggle": false,
       "type": "SET_ENTITY",
       "score": "-",
       "entities": [],
@@ -649,6 +712,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "I like ORANGES too",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
       "score": "-",
       "entities": [
@@ -662,6 +726,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"OneFromAnEntity\"secondArg:\"TwoToBeUsedByApiCall\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"OneFromAnEntity\"secondArg:\"TwoToBeUsedByApiCall\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "-",
       "entities": [
@@ -683,6 +748,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: APPLES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -691,6 +757,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: BANANAS",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -699,6 +766,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: MANGOES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -707,6 +775,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "fruit: PEACHES",
+      "hasEntityValueNameToggle": false,
       "type": "MISSING ACTION",
       "score": "-",
       "entities": [],
@@ -715,6 +784,7 @@
     {
       "buttonTestId": "action-scorer-button-no-click",
       "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "Disqualified",
       "entities": [
