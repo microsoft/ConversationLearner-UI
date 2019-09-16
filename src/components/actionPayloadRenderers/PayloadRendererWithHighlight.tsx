@@ -11,6 +11,7 @@ import { Editor } from 'slate-react'
 import { NodeTypes } from '../modals/ActionPayloadEditor/APEModels'
 import * as Util from '../../Utils/util'
 import SlateTransformer from '../modals/ActionPayloadEditor/slateTransformer'
+import { getEntityIds } from '../modals/ActionPayloadEditor/slateSerializer'
 import './PayloadRendererWithHighlight.css'
 
 interface EntityComponentProps {
@@ -42,19 +43,25 @@ export const OptionalHighlight = (props: NodeProps) => {
 }
 
 interface Props {
+    showMissingEntities: boolean
     value: SlateValue
     entities: EntityBase[]
     memories?: Memory[]
 }
 
 const Component: React.FC<Props> = (props) => {
-
+    const hasEntities = React.useMemo(() => getEntityIds(props.value.document).length >= 1, [props.value])
     const slateValues = React.useMemo(() => {
         const entityEntryMap = Util.createEntityMapWithNamesAndValues(props.entities, props.memories)
-        const valueShowingEntityNames = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(props.value), entityEntryMap, e => `$${e.name}`)
-        const valueShowingCurrentMemory = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(props.value), entityEntryMap, e => e.value ? e.value : `$${e.name}`)
+        const valueShowingEntityNames = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(props.value), entityEntryMap, e => `$${e.name}`, props.showMissingEntities)
+        const valueShowingCurrentMemory = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(props.value), entityEntryMap, e => e.value ? e.value : `$${e.name}`, props.showMissingEntities)
+
+        // Show toggle if we have memory, payload has entities, and any entities have memory values
+        const showToggle = hasEntities
+            && Object.values(entityEntryMap).some(entry => entry.value)
 
         return {
+            showToggle,
             names: Value.fromJSON(valueShowingEntityNames),
             values: Value.fromJSON(valueShowingCurrentMemory),
         }
@@ -76,7 +83,6 @@ const Component: React.FC<Props> = (props) => {
         setIsOriginalVisivilble(x => !x)
     }
 
-    const [showToggle] = React.useState(Array.isArray(props.memories))
     const slateValue = isOriginalVisible
         ? slateValues.names
         : slateValues.values
@@ -85,12 +91,12 @@ const Component: React.FC<Props> = (props) => {
         <div className={`${OF.FontClassNames.mediumPlus}`}>
             <Editor
                 data-testid="action-payload-editor"
-                className="cl-action-payload-editor"
+                className={`cl-action-payload-editor ${hasEntities ? 'cl-action-payload-editor--has-entities': ''}`}
                 value={slateValue}
                 renderNode={renderNode}
                 readOnly={true}
             />
-            {showToggle && <div>
+            {slateValues.showToggle && <div>
                 <OF.Toggle
                     checked={isOriginalVisible}
                     onChange={onChangeVisible}

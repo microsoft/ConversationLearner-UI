@@ -55,19 +55,23 @@ function updateNodeOptionNames(node: any, options: IOption[], newName?: string) 
     }
 }
 
-function replaceEntityNodesWithValues(node: any, entityValuesMap: Record<string, Util.EntityMapEntry>, replacerFn: (entityEntry: Util.EntityMapEntry) => string, entitiesRequired: boolean = true): any {
+function replaceEntityNodesWithValues(node: any, entityValuesMap: Record<string, Util.EntityMapEntry>, replacerFn: (entityEntry: Util.EntityMapEntry) => string, entitiesRequired: boolean): any {
     // Function operates on nodes, if top level value, start with document
     if (node.kind === "value") {
-        const document = replaceEntityNodesWithValues(node.document, entityValuesMap, replacerFn)
+        const document = replaceEntityNodesWithValues(node.document, entityValuesMap, replacerFn, entitiesRequired)
         node.document = document
         return node
     }
 
     if (node.kind === 'inline' && node.type === NodeTypes.Optional) {
-        console.log(`Traverse optional node: `, { node })
+        // Empty
+        if (Array.isArray(node.nodes)) {
+            node.nodes = node.nodes
+                .map((n: any) => replaceEntityNodesWithValues(n, entityValuesMap, replacerFn, false))
+                .filter((n: any) => n)
+        }
     }
-
-    if (node.kind === 'inline' && node.type === NodeTypes.Mention) {
+    else if (node.kind === 'inline' && node.type === NodeTypes.Mention) {
         // This check is required because when input is Slate Value node is Immutable.Map object
         // but it could also be a node from value.toJSON()
         const data = typeof node.data.toJS === 'function'
@@ -102,20 +106,28 @@ function replaceEntityNodesWithValues(node: any, entityValuesMap: Record<string,
             ]
 
             // If entity does not have value, mark as missing
-            if (typeof entityEntry.value === "undefined") {
+            if (entitiesRequired && typeof entityEntry.value === "undefined") {
                 node.data = {
                     ...data,
                     entityMissing: true
                 }
             }
         }
+
+        if (Array.isArray(node.nodes)) {
+            node.nodes = node.nodes
+                .map((n: any) => replaceEntityNodesWithValues(n, entityValuesMap, replacerFn, entitiesRequired))
+                .filter((n: any) => n)
+        }
+    }
+    else {
+        if (Array.isArray(node.nodes)) {
+            node.nodes = node.nodes
+                .map((n: any) => replaceEntityNodesWithValues(n, entityValuesMap, replacerFn, entitiesRequired))
+                .filter((n: any) => n)
+        }
     }
 
-    if (Array.isArray(node.nodes)) {
-        node.nodes = node.nodes
-            .map((n: any) => replaceEntityNodesWithValues(n, entityValuesMap, replacerFn))
-            .filter((n: any) => n)
-    }
 
     return node
 }

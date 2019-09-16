@@ -139,6 +139,7 @@ function serializeNode(node: any, entityValues: Map<string, string>, options: IO
         : serializedChildren
 }
 
-export default {
+export {
     serialize,
+    getEntityIds,
 }
