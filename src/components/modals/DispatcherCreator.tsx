@@ -21,7 +21,8 @@ import { TipType } from '../ToolTips/ToolTips'
 export enum DispatcherAlgorithmType {
     DeterministicSingleTransfer = "Deterministic Single Transfer",
     RandomSingleTransfer = 'Random Single Transfer',
-    RandomMultiTransfer = 'Random Multi Transfer'
+    RandomMultiTransfer = 'Random Multi Transfer',
+    TestData = 'Test Data',
 }
 
 interface ComponentState {
@@ -163,6 +164,10 @@ class Component extends React.Component<Props, ComponentState> {
                                 {
                                     key: DispatcherAlgorithmType.RandomMultiTransfer,
                                     text: DispatcherAlgorithmType.RandomMultiTransfer
+                                },
+                                {
+                                    key: DispatcherAlgorithmType.TestData,
+                                    text: DispatcherAlgorithmType.TestData
                                 },
                             ]}
                             selectedKey={this.state.dispatcherAlgorithmType}
