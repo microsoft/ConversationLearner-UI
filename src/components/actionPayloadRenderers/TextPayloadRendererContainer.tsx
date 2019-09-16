@@ -38,7 +38,7 @@ export default class Component extends React.Component<Props> {
                 <PayloadRendererWithHighlight
                     value={valueCopy}
                     entities={entities}
-                    memories={memories}
+                    memories={memories ? memories : undefined}
                 />
 
                 <TextPayloadRenderer

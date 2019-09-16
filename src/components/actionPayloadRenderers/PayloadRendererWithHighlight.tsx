@@ -3,11 +3,14 @@
  * Licensed under the MIT License.
  */
 import * as React from 'react'
+import * as OF from 'office-ui-fabric-react'
 import { EntityBase, Memory } from '@conversationlearner/models'
 import { SlateValue } from '../modals/ActionPayloadEditor'
 import { Value } from 'slate'
 import { Editor } from 'slate-react'
 import { NodeTypes } from '../modals/ActionPayloadEditor/APEModels'
+import * as Util from '../../Utils/util'
+import SlateTransformer from '../modals/ActionPayloadEditor/slateTransformer'
 import './PayloadRendererWithHighlight.css'
 
 interface EntityComponentProps {
@@ -22,8 +25,9 @@ interface NodeProps extends EntityComponentProps {
 }
 
 export const EntityHighlight = (props: NodeProps) => {
+    const isEntityMissing = props.node.data.get('entityMissing')
     return (
-        <span className="payload-entity" {...props.attributes}>
+        <span className={`cl-action-payload-entity ${isEntityMissing ? 'cl-action-payload-entity--missing' : ''}`} {...props.attributes}>
             {props.children}
         </span>
     )
@@ -31,7 +35,7 @@ export const EntityHighlight = (props: NodeProps) => {
 
 export const OptionalHighlight = (props: NodeProps) => {
     return (
-        <span className="payload-optional" {...props.attributes}>
+        <span className="cl-action-payload-optional" {...props.attributes}>
             {props.children}
         </span>
     )
@@ -40,12 +44,22 @@ export const OptionalHighlight = (props: NodeProps) => {
 interface Props {
     value: SlateValue
     entities: EntityBase[]
-    // TODO: Find better alternative than null
-    // When memories is null it's assumed parent doesn't have access to it and intends to fallback to the entity names
-    memories: Memory[] | null
+    memories?: Memory[]
 }
 
 const Component: React.FC<Props> = (props) => {
+
+    const slateValues = React.useMemo(() => {
+        const entityEntryMap = Util.createEntityMapWithNamesAndValues(props.entities, props.memories)
+        const valueShowingEntityNames = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(props.value), entityEntryMap, e => `$${e.name}`)
+        const valueShowingCurrentMemory = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(props.value), entityEntryMap, e => e.value ? e.value : `$${e.name}`)
+
+        return {
+            names: Value.fromJSON(valueShowingEntityNames),
+            values: Value.fromJSON(valueShowingCurrentMemory),
+        }
+    }, [props.value, props.entities])
+
     const renderNode = (props: any): React.ReactNode | void => {
         switch (props.node.type) {
             case NodeTypes.Mention:
@@ -57,14 +71,33 @@ const Component: React.FC<Props> = (props) => {
         }
     }
 
+    const [isOriginalVisible, setIsOriginalVisivilble] = React.useState(false)
+    const onChangeVisible = () => {
+        setIsOriginalVisivilble(x => !x)
+    }
+
+    const [showToggle] = React.useState(Array.isArray(props.memories))
+    const slateValue = isOriginalVisible
+        ? slateValues.names
+        : slateValues.values
+
     return (
-        <Editor
-            data-testid="action-payload-editor"
-            className="action-payload-editor"
-            value={Value.fromJSON(props.value)}
-            renderNode={renderNode}
-            readOnly={true}
-        />
+        <div className={`${OF.FontClassNames.mediumPlus}`}>
+            <Editor
+                data-testid="action-payload-editor"
+                className="cl-action-payload-editor"
+                value={slateValue}
+                renderNode={renderNode}
+                readOnly={true}
+            />
+            {showToggle && <div>
+                <OF.Toggle
+                    checked={isOriginalVisible}
+                    onChange={onChangeVisible}
+                />
+            </div>}
+        </div>
+
     )
 }
 

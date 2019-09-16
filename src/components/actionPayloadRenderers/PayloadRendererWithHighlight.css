@@ -1,11 +1,23 @@
-.payload-entity {
-    padding: 2px;
-    border-radius: 3px;
-    background-color: rgba(38, 73, 230, 0.438);
+.cl-action-payload-editor {
+    line-height: 1.9em;
 }
 
-.payload-optional {
-    padding: 4px;
-    border-radius: 3px;
-    background-color: rgba(224, 155, 26, 0.658);
+.cl-action-payload-entity {
+    padding: 1px 0;
+    border-radius: 2px;
+    border: 1px solid rgba(5, 7, 109, 0.137);
+    /* background: #e0ffe0; */
+    background: #c2daf0;
+}
+
+.cl-action-payload-entity--missing {
+    /* background-color: rgb(238, 60, 15); */
+    background-color: #ffe0e0;
+}
+
+.cl-action-payload-optional {
+    padding: 3px 0;
+    border-radius: 4px;
+    border: 1px solid rgb(230, 171, 94);
+    background: rgb(255, 210, 184);
 }
