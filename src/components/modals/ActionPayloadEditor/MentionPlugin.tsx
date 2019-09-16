@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -134,8 +134,10 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
 
         renderNode(props: any): React.ReactNode | void {
             switch (props.node.type) {
-                case NodeTypes.Mention: return <MentionNode {...props} />
-                default: return
+                case NodeTypes.Mention:
+                    return <MentionNode {...props} />
+                default:
+                    return
             }
         }
     }

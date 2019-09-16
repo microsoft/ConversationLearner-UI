@@ -1,11 +1,12 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
 import { TextAction, EntityBase, Memory } from '@conversationlearner/models'
 import * as Util from '../../Utils/util'
 import TextPayloadRenderer from './TextPayloadRenderer'
+import PayloadRendererWithHighlight from './PayloadRendererWithHighlight'
 
 interface Props {
     textAction: TextAction
@@ -19,7 +20,7 @@ export default class Component extends React.Component<Props> {
     render() {
         const { entities, memories, textAction } = this.props
         const defaultEntityMap = Util.getDefaultEntityMap(entities)
-        
+        const valueCopy = Util.deepCopy(textAction.value)
         let renderStringUsingEntityNames: string
         try {
             renderStringUsingEntityNames = textAction.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
@@ -32,9 +33,19 @@ export default class Component extends React.Component<Props> {
             ? null
             : textAction.renderValue(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
 
-        return (<TextPayloadRenderer
-            original={renderStringUsingEntityNames}
-            currentMemory={renderStringUsingCurrentMemory}
-        />)
+        return (
+            <div>
+                <PayloadRendererWithHighlight
+                    value={valueCopy}
+                    entities={entities}
+                    memories={memories}
+                />
+
+                <TextPayloadRenderer
+                    original={renderStringUsingEntityNames}
+                    currentMemory={renderStringUsingCurrentMemory}
+                />
+            </div>
+        )
     }
 }

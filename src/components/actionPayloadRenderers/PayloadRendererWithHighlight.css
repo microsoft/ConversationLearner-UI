@@ -1,0 +1,11 @@
+.payload-entity {
+    padding: 2px;
+    border-radius: 3px;
+    background-color: rgba(38, 73, 230, 0.438);
+}
+
+.payload-optional {
+    padding: 4px;
+    border-radius: 3px;
+    background-color: rgba(224, 155, 26, 0.658);
+}
