@@ -516,7 +516,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             </div>
                         }
                         {isValid && duplicateEntityNames.length > 0 &&
-                            <div className='cl-label'>
+                            <div className='cl-label' data-testid="entity-extractor-duplicate-entity-warning">
                                 <OF.Icon
                                     className={`cl-icon cl-color-warning`}
                                     iconName="IncidentTriangle"
