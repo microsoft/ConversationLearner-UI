@@ -229,7 +229,7 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
     if (action.actionType === CLM.ActionTypes.TEXT) {
         const textAction = new CLM.TextAction(action)
         return (<ActionPayloadRenderers.TextPayloadRendererWithHighlights
-                value={textAction.value}
+                textAction={textAction}
                 entities={component.props.entities}
                 showMissingEntities={false}
             />)
@@ -237,29 +237,29 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
     else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
         const apiAction = new CLM.ApiAction(action)
         const callback = component.props.botInfo.callbacks.find(t => t.name === apiAction.name)
-        return (<ActionPayloadRenderers.ApiPayloadRendererContainer
+        return (<ActionPayloadRenderers.ApiPayloadRendererWithHighlights
             apiAction={apiAction}
             entities={component.props.entities}
-            memories={null}
             callback={callback}
+            showMissingEntities={false}
         />)
     }
     else if (action.actionType === CLM.ActionTypes.CARD) {
         const cardAction = new CLM.CardAction(action)
-        return (<ActionPayloadRenderers.CardPayloadRendererContainer
+        return (<ActionPayloadRenderers.CardPayloadRendererWithHighlights
             isValidationError={isValidationError}
             cardAction={cardAction}
             entities={component.props.entities}
-            memories={null}
             onClickViewCard={() => component.onClickViewCard(action)}
+            showMissingEntities={false}
         />)
     }
     else if (action.actionType === CLM.ActionTypes.END_SESSION) {
         const sessionAction = new CLM.SessionAction(action)
-        return (<ActionPayloadRenderers.SessionPayloadRendererContainer
+        return (<ActionPayloadRenderers.SessionPayloadRendererWithHighlights
             sessionAction={sessionAction}
             entities={component.props.entities}
-            memories={null}
+            showMissingEntities={false}
         />)
     }
     else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {

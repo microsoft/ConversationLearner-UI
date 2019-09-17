@@ -5,16 +5,25 @@ import SlateTransformer from '../modals/ActionPayloadEditor/slateTransformer'
 import SlateSerializer from '../modals/ActionPayloadEditor/slateSerializer'
 import { Value } from 'slate'
 
-export function usePayloadRenderer(value: any, entities: CLM.EntityBase[], showMissingEntities: boolean, memories?: CLM.Memory[]) {
-    const hasEntities = React.useMemo(() => SlateSerializer.getEntityIds(value.document).length >= 1, [value])
+export function usePayloadRenderer(
+    value: any,
+    entities: CLM.EntityBase[],
+    showMissingEntities: boolean,
+    memories?: CLM.Memory[]
+) {
+    const entityIds = SlateSerializer.getEntityIds(value.document)
+    const hasEntities = entityIds.length >= 1
+
     const slateValues = React.useMemo(() => {
         const entityEntryMap = Util.createEntityMapWithNamesAndValues(entities, memories)
         const valueShowingEntityNames = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(value), entityEntryMap, e => `$${e.name}`, showMissingEntities)
         const valueShowingCurrentMemory = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(value), entityEntryMap, e => e.value ? e.value : `$${e.name}`, showMissingEntities)
 
-        // Show toggle if we have memory, payload has entities, and any entities have memory values
+        // Show toggle if payload has entities and any of those entities have memory values
         const showToggle = hasEntities
-            && Object.values(entityEntryMap).some(entry => entry.value)
+            && Object.entries(entityEntryMap)
+                .filter(([entityId, entityEntry]) => entityIds.includes(entityId))
+                .some(([entityId, entityEntry]) => entityEntry.value)
 
         return {
             showToggle,
@@ -27,4 +36,71 @@ export function usePayloadRenderer(value: any, entities: CLM.EntityBase[], showM
         ...slateValues,
         hasEntities
     }
+}
+
+export type RenderedActionArgumentWithHighlights = {
+    parameter: string
+    entityIds: string[]
+    hasEntities: boolean
+    jsonValueShowingEntityNames?: object
+    jsonValueShowingCurrentMemory?: object
+}
+
+export function useMultiPayloadRenderer(
+    actionArguments: CLM.ActionArgument[],
+    entities: CLM.EntityBase[],
+    showMissingEntities: boolean,
+    memories?: CLM.Memory[]
+) {
+    const slateValuesAndToggle = React.useMemo(() => {
+        const entityEntryMap = Util.createEntityMapWithNamesAndValues(entities, memories)
+
+        const renderedArgumentsWithHighlights = actionArguments
+            .map<RenderedActionArgumentWithHighlights>(aa => {
+                // Argument might not have a value if user left it blank
+                if (!aa.value) {
+                    return {
+                        ...aa,
+                        entityIds: [],
+                        hasEntities: false
+                    }
+                }
+
+                const entityIds = SlateSerializer.getEntityIds((aa.value as any).document)
+                const hasEntities = entityIds.length >= 1
+                const jsonValueShowingEntityNames = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(aa.value), entityEntryMap, e => `$${e.name}`, showMissingEntities)
+                const jsonValueShowingCurrentMemory = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(aa.value), entityEntryMap, e => e.value ? e.value : `$${e.name}`, showMissingEntities)
+
+                return {
+                    ...aa,
+                    entityIds,
+                    hasEntities,
+                    jsonValueShowingEntityNames,
+                    jsonValueShowingCurrentMemory,
+                }
+            })
+
+        const duplicatedEntityIds = renderedArgumentsWithHighlights.reduce((total, rArg) => [...total, ...rArg.entityIds], [])
+        const entityIdsReferencedInValues = [...new Set(duplicatedEntityIds)]
+
+        // Show toggle any of the payloads has entities and any of those entities have memory values
+        const showToggle = renderedArgumentsWithHighlights.some(aa => aa.hasEntities)
+            && Object.entries(entityEntryMap)
+                .filter(([entityId, entityEntry]) => entityIdsReferencedInValues.includes(entityId))
+                .some(([entityId, entityEntry]) => entityEntry.value)
+
+        // Convert JSON objects representing values into actual SlateValues
+        const slateValues = renderedArgumentsWithHighlights.map(rArg => ({
+            ...rArg,
+            valueShowingEntityNames: Value.fromJSON(rArg.jsonValueShowingEntityNames),
+            valueShowingCurrentMemory: Value.fromJSON(rArg.jsonValueShowingCurrentMemory),
+        }))
+
+        return {
+            showToggle,
+            slateValues
+        }
+    }, [actionArguments.length, entities, memories, showMissingEntities])
+
+    return slateValuesAndToggle
 }

@@ -3,15 +3,21 @@
  * Licensed under the MIT License.
  */
 import TextPayloadRendererContainer from './TextPayloadRendererContainer'
-import ApiPayloadRendererContainer from './ApiPayloadRendererContainer'
-import CardPayloadRendererContainer from './CardPayloadRendererContainer'
-import SessionPayloadRendererContainer from './SessionPayloadRendererContainer'
 import TextPayloadRendererWithHighlights from './TextPayloadRendererWithHighlight'
+import ApiPayloadRendererContainer from './ApiPayloadRendererContainer'
+import ApiPayloadRendererWithHighlights from './ApiPayloadRendererWithHighlights'
+import CardPayloadRendererContainer from './CardPayloadRendererContainer'
+import CardPayloadRendererWithHighlights from './CardPayloadRendererWithHighlights'
+import SessionPayloadRendererContainer from './SessionPayloadRendererContainer'
+import SessionPayloadRendererWithHighlights from './SessionPayloadRendererWithHighlights'
 
 export {
     ApiPayloadRendererContainer,
+    ApiPayloadRendererWithHighlights,
     CardPayloadRendererContainer,
+    CardPayloadRendererWithHighlights,
     TextPayloadRendererContainer,
     TextPayloadRendererWithHighlights,
     SessionPayloadRendererContainer,
+    SessionPayloadRendererWithHighlights,
 }

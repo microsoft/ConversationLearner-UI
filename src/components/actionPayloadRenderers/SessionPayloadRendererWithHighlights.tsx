@@ -7,17 +7,17 @@ import * as OF from 'office-ui-fabric-react'
 import * as CLM from '@conversationlearner/models'
 import { usePayloadRenderer } from './payloadRendererHooks'
 import PayloadRendererWithHighlights from './PayloadRendererWithHighlights'
+import './SessionPayloadRendererWithHighlights.css'
 
 interface Props {
-    textAction: CLM.TextAction
+    sessionAction: CLM.SessionAction
     entities: CLM.EntityBase[]
     showMissingEntities: boolean
     memories?: CLM.Memory[]
 }
 
-
 const Component: React.FC<Props> = (props) => {
-    const payloadRenderData = usePayloadRenderer(props.textAction.value, props.entities, props.showMissingEntities, props.memories)
+    const payloadRenderData = usePayloadRenderer(props.sessionAction.value, props.entities, props.showMissingEntities, props.memories)
 
     const [isOriginalVisible, setIsOriginalVisivilble] = React.useState(false)
     const onChangeVisible = () => {
@@ -29,14 +29,19 @@ const Component: React.FC<Props> = (props) => {
         : payloadRenderData.slateValueShowingMemory
 
     return (
-        <div className={`cl-text-payload ${OF.FontClassNames.mediumPlus}`}>
-            <div data-testid="action-scorer-text-response">
-                <PayloadRendererWithHighlights
-                    slateValue={visibleSlateValue}
-                    hasEntities={payloadRenderData.hasEntities}
-                />
+        <div className={`cl-sesson-payload ${OF.FontClassNames.mediumPlus}`}>
+            <div>
+                <div className="cl-sesson-payload__header">
+                    EndSession
+                </div>
+                <div data-testid="action-scorer-session-response-user">
+                    <PayloadRendererWithHighlights
+                        slateValue={visibleSlateValue}
+                        hasEntities={payloadRenderData.hasEntities}
+                    />
+                </div>
             </div>
-            {payloadRenderData.showToggle && <div>
+            {payloadRenderData.showToggle && <div className="cl-sesson-payload__toggle">
                 <OF.Toggle
                     checked={isOriginalVisible}
                     onChange={onChangeVisible}
