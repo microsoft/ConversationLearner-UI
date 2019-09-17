@@ -11,7 +11,7 @@ import { Editor } from 'slate-react'
 import { NodeTypes } from '../modals/ActionPayloadEditor/APEModels'
 import * as Util from '../../Utils/util'
 import SlateTransformer from '../modals/ActionPayloadEditor/slateTransformer'
-import { getEntityIds } from '../modals/ActionPayloadEditor/slateSerializer'
+import SlateSerializer from '../modals/ActionPayloadEditor/slateSerializer'
 import './PayloadRendererWithHighlight.css'
 
 interface EntityComponentProps {
@@ -50,7 +50,7 @@ interface Props {
 }
 
 const Component: React.FC<Props> = (props) => {
-    const hasEntities = React.useMemo(() => getEntityIds(props.value.document).length >= 1, [props.value])
+    const hasEntities = React.useMemo(() => SlateSerializer.getEntityIds(props.value.document).length >= 1, [props.value])
     const slateValues = React.useMemo(() => {
         const entityEntryMap = Util.createEntityMapWithNamesAndValues(props.entities, props.memories)
         const valueShowingEntityNames = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(props.value), entityEntryMap, e => `$${e.name}`, props.showMissingEntities)

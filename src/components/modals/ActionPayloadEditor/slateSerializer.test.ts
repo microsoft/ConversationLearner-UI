@@ -4,7 +4,7 @@
  */
 import { NodeTypes } from './APEModels'
 import Plain from 'slate-plain-serializer'
-import * as EntityIdSerializer from './slateSerializer'
+import EntityIdSerializer from './slateSerializer'
 
 describe('EntityIdSerializer', () => {
     const emptyMap = new Map<string, string>()
