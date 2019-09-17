@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -29,7 +29,7 @@ export default class Component extends React.Component<Props, State> {
     render() {
         const showToggle = this.props.currentMemory !== null && this.props.currentMemory !== this.props.original
 
-        return <div className={`${OF.FontClassNames.mediumPlus}`}>
+        return <div className={`cl-text-payload ${OF.FontClassNames.mediumPlus}`}>
             <div data-testid="action-scorer-text-response">{(this.props.currentMemory === null || this.state.isOriginalVisible)
                 ? this.props.original
                 : this.props.currentMemory

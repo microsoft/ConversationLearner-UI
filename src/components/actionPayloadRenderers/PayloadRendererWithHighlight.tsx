@@ -88,7 +88,7 @@ const Component: React.FC<Props> = (props) => {
         : slateValues.values
 
     return (
-        <div className={`${OF.FontClassNames.mediumPlus}`}>
+        <div className={`cl-action-payload-renderer ${OF.FontClassNames.mediumPlus}`}>
             <Editor
                 data-testid="action-payload-editor"
                 className={`cl-action-payload-editor ${hasEntities ? 'cl-action-payload-editor--has-entities': ''}`}
