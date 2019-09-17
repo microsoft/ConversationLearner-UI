@@ -55,6 +55,16 @@ function updateNodeOptionNames(node: any, options: IOption[], newName?: string) 
     }
 }
 
+/**
+ * Replaces entity nodes with values. The values name be entity names, memory values, etc.
+ * This is more flexible than the other functions which only replace with fixed thing name or memory and cant recognize missing entities
+ * Hopefully the other functions will be retired and replaced in future.
+ *
+ * @param node Slate node (Value, Document, Block, Inline, Text, etc)
+ * @param entityValuesMap Map from entityId to entityEntry which has name and ?value
+ * @param replacerFn Function to be run on each replacement of entity node. Can be anything, but usually replaces with entity name or memory value
+ * @param entitiesRequired Boolean indicating if `entityMissing` flag should be added when entity without memory value is present
+ */
 function replaceEntityNodesWithValues(node: any, entityValuesMap: Record<string, Util.EntityMapEntry>, replacerFn: (entityEntry: Util.EntityMapEntry) => string, entitiesRequired: boolean): any {
     // Function operates on nodes, if top level value, start with document
     if (node.kind === "value") {
@@ -64,63 +74,58 @@ function replaceEntityNodesWithValues(node: any, entityValuesMap: Record<string,
     }
 
     if (node.kind === 'inline' && node.type === NodeTypes.Optional) {
-        // Empty
+        // Note: For nodes within an optional we force `entitiesRequired` to false to prevent `entityMissing` data from being added.
         if (Array.isArray(node.nodes)) {
             node.nodes = node.nodes
                 .map((n: any) => replaceEntityNodesWithValues(n, entityValuesMap, replacerFn, false))
                 .filter((n: any) => n)
         }
     }
-    else if (node.kind === 'inline' && node.type === NodeTypes.Mention) {
-        // This check is required because when input is Slate Value node is Immutable.Map object
-        // but it could also be a node from value.toJSON()
-        const data = typeof node.data.toJS === 'function'
-            ? node.data.toJS()
-            : node.data
-        const option = data.option
+    else {
+        if (node.kind === 'inline' && node.type === NodeTypes.Mention) {
+            // This check is required because when input is Slate Value node is Immutable.Map object
+            // but it could also be a node from value.toJSON()
+            const data = typeof node.data.toJS === 'function'
+                ? node.data.toJS()
+                : node.data
+            const option = data.option
 
-        if (!option) {
-            throw new Error(`Attempting to get inline node option, but node did not have option`)
-        }
-
-        const entityId = option.id
-        const entityEntry = entityValuesMap[entityId]
-
-        // If entity value exists, replace children with text node of value
-        // If entity value does NOT exist, set data to missing
-        if (entityEntry) {
-            const text = replacerFn(entityEntry)
-            const textNode = {
-                "kind": "text",
-                "leaves": [
-                    {
-                        "kind": "leaf",
-                        "text": text,
-                        "marks": []
-                    }
-                ]
+            if (!option) {
+                throw new Error(`Attempting to get inline node option, but node did not have option`)
             }
 
-            node.nodes = [
-                textNode
-            ]
+            const entityId = option.id
+            const entityEntry = entityValuesMap[entityId]
 
-            // If entity does not have value, mark as missing
-            if (entitiesRequired && typeof entityEntry.value === "undefined") {
-                node.data = {
-                    ...data,
-                    entityMissing: true
+            // If entity value exists, replace children with text node of value
+            // If entity value does NOT exist, set data to missing
+            if (entityEntry) {
+                const text = replacerFn(entityEntry)
+                const textNode = {
+                    "kind": "text",
+                    "leaves": [
+                        {
+                            "kind": "leaf",
+                            "text": text,
+                            "marks": []
+                        }
+                    ]
+                }
+
+                node.nodes = [
+                    textNode
+                ]
+
+                // If entity does not have value, mark as missing
+                if (entitiesRequired && typeof entityEntry.value === "undefined") {
+                    node.data = {
+                        ...data,
+                        entityMissing: true
+                    }
                 }
             }
         }
 
-        if (Array.isArray(node.nodes)) {
-            node.nodes = node.nodes
-                .map((n: any) => replaceEntityNodesWithValues(n, entityValuesMap, replacerFn, entitiesRequired))
-                .filter((n: any) => n)
-        }
-    }
-    else {
         if (Array.isArray(node.nodes)) {
             node.nodes = node.nodes
                 .map((n: any) => replaceEntityNodesWithValues(n, entityValuesMap, replacerFn, entitiesRequired))
