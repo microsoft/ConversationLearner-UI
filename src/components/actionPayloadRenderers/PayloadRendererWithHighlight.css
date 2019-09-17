@@ -16,13 +16,17 @@
     padding: 1px 0;
     border-radius: 2px;
     border: 1px solid rgba(5, 7, 109, 0.137);
-    /* background: #e0ffe0; */
     background: #c2daf0;
 }
 
-.cl-action-payload-entity--missing {
-    /* background-color: rgb(238, 60, 15); */
+.cl-action-payload-entity--required.cl-action-payload-entity--missing {
+    border-color: #e9b4b4;
     background-color: #ffe0e0;
+}
+
+.cl-action-payload-entity--filled {
+    border-color: rgb(142, 228, 165);
+    background-color: rgb(189, 245, 204);
 }
 
 .cl-action-payload-optional {

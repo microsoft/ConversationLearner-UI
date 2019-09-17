@@ -117,11 +117,22 @@ function replaceEntityNodesWithValues(node: any, entityValuesMap: Record<string,
                 ]
 
                 // If entity does not have value, mark as missing
-                if (entitiesRequired && typeof entityEntry.value === "undefined") {
-                    node.data = {
-                        ...data,
-                        entityMissing: true
+                const entityFilledData: Record<string, boolean> = {}
+
+                if (typeof entityEntry.value === "undefined") {
+                    entityFilledData.missing = true
+
+                    if (entitiesRequired) {
+                        entityFilledData.required = true
                     }
+                }
+                else {
+                    entityFilledData.filled = true
+                }
+
+                node.data = {
+                    ...data,
+                    ...entityFilledData,
                 }
             }
         }

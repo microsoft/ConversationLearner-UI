@@ -12,6 +12,7 @@ import { NodeTypes } from '../modals/ActionPayloadEditor/APEModels'
 import * as Util from '../../Utils/util'
 import SlateTransformer from '../modals/ActionPayloadEditor/slateTransformer'
 import SlateSerializer from '../modals/ActionPayloadEditor/slateSerializer'
+import classnames from 'classnames'
 import './PayloadRendererWithHighlight.css'
 
 interface EntityComponentProps {
@@ -26,9 +27,19 @@ interface NodeProps extends EntityComponentProps {
 }
 
 export const EntityHighlight = (props: NodeProps) => {
-    const isEntityMissing = props.node.data.get('entityMissing')
+    const isEntityMissing = props.node.data.get('missing')
+    const isEntityRequired = props.node.data.get('required')
+    const isEntityFilled = props.node.data.get('filled')
+
+    const classNames = classnames({
+        'cl-action-payload-entity': true,
+        'cl-action-payload-entity--filled': isEntityFilled,
+        'cl-action-payload-entity--missing': isEntityMissing,
+        'cl-action-payload-entity--required': isEntityRequired,
+    })
+
     return (
-        <span className={`cl-action-payload-entity ${isEntityMissing ? 'cl-action-payload-entity--missing' : ''}`} {...props.attributes}>
+        <span className={classNames} {...props.attributes}>
             {props.children}
         </span>
     )
