@@ -1,9 +1,3 @@
-.cl-action-payload-renderer {
-    display: grid;
-    grid-template: auto / 1fr min-content;
-    grid-gap: 1em;
-}
-
 .cl-action-payload-editor {
     /* Empty */
 }
