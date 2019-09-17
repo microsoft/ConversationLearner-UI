@@ -94,10 +94,24 @@ describe('Other Errors - ErrorHandling', () => {
 
     it('Submit the change and verify warning message under Chat Panel changes', () => {
       train.ClickSubmitChangesButton()
+//train.VerifyWarningMessage('Entity or Action changes require replay of the TrainDialog')
     })
+    
+    // it('Click replay and veriy that all the warnings go away', () => {
+    //   train.ClickReplayButton()
+    //   train.VerifyNoWarningMessage()
+    // })
     
     it('Verify the Action uses the corrected value in the name Entity', () => {
       train.VerifyChatTurnIsAnExactMatch('Hello Joe', 2, 1) 
     })
+    
+    it('', () => {
+    })
+    
+    it('', () => {
+    })
+    
+
   })
 })
