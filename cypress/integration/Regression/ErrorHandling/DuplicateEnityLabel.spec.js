@@ -63,7 +63,7 @@ describe('Other Errors - ErrorHandling', () => {
 
     it('Select the offensive User turn and verify warning message under chat panel changes', () => {
       train.SelectChatTurnExactMatch('My name is Joe Schmo')
-      train.VerifyWarningMessage('Non-multivalue Entity labeled with more than one value: "word"')
+      train.VerifyWarningMessage('Non-multivalue Entity labeled with more than one value: "word"')
     })
 
     it('Remove one of the erroneous labels', () => {
@@ -81,7 +81,7 @@ describe('Other Errors - ErrorHandling', () => {
 
     it('Select the offensive User turn again and verify warning message under chat panel changed due to correcting 1 of the Entity labels', () => {
       train.SelectChatTurnExactMatch('My name is Joe Schmo')
-      train.VerifyWarningMessage('Non-multivalue Entity labeled with more than one value: "name"')
+      train.VerifyWarningMessage('Non-multivalue Entity labeled with more than one value: "name"')
     })
 
     it('Remove one of the erroneous labels', () => {

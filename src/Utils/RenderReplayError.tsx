@@ -98,8 +98,10 @@ export function renderReplayError(replayError: CLM.ReplayError): React.ReactNode
             return (
                 <div className="cl-editdialog-warning" data-testid="dialog-modal-warning">
                     <div className={OF.FontClassNames.mediumPlus}>
-                        <FormattedMessageId id={FM.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE} />
-                        {`: "${(replayError as CLM.EntityUnexpectedMultivalue).entityName}"`}
+                        <span>
+                            <FormattedMessageId id={FM.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE} />
+                            {`: "${(replayError as CLM.EntityUnexpectedMultivalue).entityName}"`}
+                        </span>
                         <HelpIcon tipType={TipType.REPLAYERROR_DESC_ENTITY_UNEXPECTED_MULTIVALUE} customClass="cl-icon-redbackground" />
                     </div>
                 </div>
