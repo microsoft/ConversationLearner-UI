@@ -4,7 +4,7 @@
  */
 import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
-import { EntityBase, Memory } from '@conversationlearner/models'
+import * as CLM from '@conversationlearner/models'
 import { SlateValue } from '../modals/ActionPayloadEditor'
 import { Value } from 'slate'
 import { Editor } from 'slate-react'
@@ -13,7 +13,7 @@ import * as Util from '../../Utils/util'
 import SlateTransformer from '../modals/ActionPayloadEditor/slateTransformer'
 import SlateSerializer from '../modals/ActionPayloadEditor/slateSerializer'
 import classnames from 'classnames'
-import './PayloadRendererWithHighlight.css'
+import './TextPayloadRendererWithHighlight.css'
 
 interface EntityComponentProps {
     editor: any
@@ -56,16 +56,16 @@ export const OptionalHighlight = (props: NodeProps) => {
 interface Props {
     showMissingEntities: boolean
     value: SlateValue
-    entities: EntityBase[]
-    memories?: Memory[]
+    entities: CLM.EntityBase[]
+    memories?: CLM.Memory[]
 }
 
-const Component: React.FC<Props> = (props) => {
-    const hasEntities = React.useMemo(() => SlateSerializer.getEntityIds(props.value.document).length >= 1, [props.value])
+export function usePayloadRenderer(value: any, entities: CLM.EntityBase[], showMissingEntities: boolean, memories?: CLM.Memory[]) {
+    const hasEntities = React.useMemo(() => SlateSerializer.getEntityIds(value.document).length >= 1, [value])
     const slateValues = React.useMemo(() => {
-        const entityEntryMap = Util.createEntityMapWithNamesAndValues(props.entities, props.memories)
-        const valueShowingEntityNames = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(props.value), entityEntryMap, e => `$${e.name}`, props.showMissingEntities)
-        const valueShowingCurrentMemory = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(props.value), entityEntryMap, e => e.value ? e.value : `$${e.name}`, props.showMissingEntities)
+        const entityEntryMap = Util.createEntityMapWithNamesAndValues(entities, memories)
+        const valueShowingEntityNames = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(value), entityEntryMap, e => `$${e.name}`, showMissingEntities)
+        const valueShowingCurrentMemory = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(value), entityEntryMap, e => e.value ? e.value : `$${e.name}`, showMissingEntities)
 
         // Show toggle if we have memory, payload has entities, and any entities have memory values
         const showToggle = hasEntities
@@ -73,10 +73,19 @@ const Component: React.FC<Props> = (props) => {
 
         return {
             showToggle,
-            names: Value.fromJSON(valueShowingEntityNames),
-            values: Value.fromJSON(valueShowingCurrentMemory),
+            slateValueShowingNames: Value.fromJSON(valueShowingEntityNames),
+            slateValueShowingMemory: Value.fromJSON(valueShowingCurrentMemory),
         }
-    }, [props.value, props.entities])
+    }, [value, entities])
+
+    return {
+        ...slateValues,
+        hasEntities
+    }
+}
+
+const Component: React.FC<Props> = (props) => {
+    const payloadRenderData = usePayloadRenderer(props.value, props.entities, props.showMissingEntities, props.memories)
 
     const renderNode = (props: any): React.ReactNode | void => {
         switch (props.node.type) {
@@ -94,20 +103,25 @@ const Component: React.FC<Props> = (props) => {
         setIsOriginalVisivilble(x => !x)
     }
 
-    const slateValue = isOriginalVisible
-        ? slateValues.names
-        : slateValues.values
+    const visibleSlateValue = isOriginalVisible
+        ? payloadRenderData.slateValueShowingNames
+        : payloadRenderData.slateValueShowingMemory
+
+    const editorClassnames = classnames({
+        'cl-action-payload-editor': true,
+        'cl-action-payload-editor--has-entities': payloadRenderData.hasEntities,
+    })
 
     return (
         <div className={`cl-action-payload-renderer ${OF.FontClassNames.mediumPlus}`}>
             <Editor
-                data-testid="action-payload-editor"
-                className={`cl-action-payload-editor ${hasEntities ? 'cl-action-payload-editor--has-entities': ''}`}
-                value={slateValue}
+                data-testid="action-scorer-text-response"
+                className={editorClassnames}
+                value={visibleSlateValue}
                 renderNode={renderNode}
                 readOnly={true}
             />
-            {slateValues.showToggle && <div>
+            {payloadRenderData.showToggle && <div>
                 <OF.Toggle
                     checked={isOriginalVisible}
                     onChange={onChangeVisible}

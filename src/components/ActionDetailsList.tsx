@@ -228,7 +228,7 @@ export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, ma
 function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetailsList, isValidationError: boolean) {
     if (action.actionType === CLM.ActionTypes.TEXT) {
         const textAction = new CLM.TextAction(action)
-        return (<ActionPayloadRenderers.PayloadRendererWithHighlights
+        return (<ActionPayloadRenderers.TextPayloadRendererWithHighlights
                 value={textAction.value}
                 entities={component.props.entities}
                 showMissingEntities={false}

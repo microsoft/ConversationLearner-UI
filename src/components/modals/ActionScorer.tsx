@@ -131,7 +131,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 if (action.actionType === CLM.ActionTypes.TEXT) {
                     const textAction = new CLM.TextAction(action)
                     return (
-                        <ActionPayloadRenderers.PayloadRendererWithHighlights
+                        <ActionPayloadRenderers.TextPayloadRendererWithHighlights
                             showMissingEntities={true}
                             value={textAction.value}
                             entities={component.props.entities}

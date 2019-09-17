@@ -19,6 +19,7 @@
     background: #c2daf0;
 }
 
+/* Only color red if required and missing */
 .cl-action-payload-entity--required.cl-action-payload-entity--missing {
     border-color: #e9b4b4;
     background-color: #ffe0e0;

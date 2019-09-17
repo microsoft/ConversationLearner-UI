@@ -6,12 +6,12 @@ import TextPayloadRendererContainer from './TextPayloadRendererContainer'
 import ApiPayloadRendererContainer from './ApiPayloadRendererContainer'
 import CardPayloadRendererContainer from './CardPayloadRendererContainer'
 import SessionPayloadRendererContainer from './SessionPayloadRendererContainer'
-import PayloadRendererWithHighlights from './PayloadRendererWithHighlight'
+import TextPayloadRendererWithHighlights from './TextPayloadRendererWithHighlight'
 
 export {
     ApiPayloadRendererContainer,
     CardPayloadRendererContainer,
     TextPayloadRendererContainer,
+    TextPayloadRendererWithHighlights,
     SessionPayloadRendererContainer,
-    PayloadRendererWithHighlights,
 }
