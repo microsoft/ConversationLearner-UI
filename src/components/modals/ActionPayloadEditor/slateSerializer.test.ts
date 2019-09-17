@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Copyright (c) Microsoft Corporation. All rights reserved.  
  * Licensed under the MIT License.
  */
 import { NodeTypes } from './APEModels'
@@ -225,7 +225,7 @@ describe('EntityIdSerializer', () => {
             expect(plainString).toEqual(`some text to start $entityName1 some other text [some stuff $entityName2 ending optional node ]ending text`)
             expect(partialString).toEqual(`some text to start Custom Entity 1 Value some other text ending text`)
         })
-
+        
         test('given slate value with custom optional inline nodes with matching value in map are preserved', () => {
             expect(entityIdString).toEqual(`some text to start Custom Entity 1 Value some other text some stuff Custom Entity 2 Value ending optional node ending text`)
         })

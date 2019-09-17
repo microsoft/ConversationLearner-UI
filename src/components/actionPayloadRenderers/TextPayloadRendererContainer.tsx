@@ -19,6 +19,7 @@ export default class Component extends React.Component<Props> {
     render() {
         const { entities, memories, textAction } = this.props
         const defaultEntityMap = Util.getDefaultEntityMap(entities)
+        
         let renderStringUsingEntityNames: string
         try {
             renderStringUsingEntityNames = textAction.renderValue(defaultEntityMap, { preserveOptionalNodeWrappingCharacters: true })
@@ -31,11 +32,9 @@ export default class Component extends React.Component<Props> {
             ? null
             : textAction.renderValue(Util.createEntityMapFromMemories(entities, memories), { fallbackToOriginal: true })
 
-        return (
-            <TextPayloadRenderer
-                original={renderStringUsingEntityNames}
-                currentMemory={renderStringUsingCurrentMemory}
-            />
-        )
+        return (<TextPayloadRenderer
+            original={renderStringUsingEntityNames}
+            currentMemory={renderStringUsingCurrentMemory}
+        />)
     }
 }
