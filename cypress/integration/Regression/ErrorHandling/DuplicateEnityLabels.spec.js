@@ -5,13 +5,10 @@
 
 import * as models from '../../../support/Models'
 import * as modelPage from '../../../support/components/ModelPage'
-import * as memoryTableComponent from '../../../support/components/MemoryTableComponent'
-import * as scorerModal from '../../../support/components/ScorerModal'
 import * as train from '../../../support/Train'
-import * as common from '../../../support/Common'
 import * as helpers from '../../../support/Helpers'
 
-describe('Other Errors - ErrorHandling', () => {
+describe('Duplicate Entity Labels - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
@@ -70,7 +67,7 @@ describe('Other Errors - ErrorHandling', () => {
       train.RemoveEntityLabel('My', 'word')
     })
 
-    it('Verify the warning message in the Entity label panel changes', () => {
+    it('Verify the warning message in the Entity label panel changed', () => {
       train.VerifyDuplicateEntityLabelsWarning('name')
     })
 
