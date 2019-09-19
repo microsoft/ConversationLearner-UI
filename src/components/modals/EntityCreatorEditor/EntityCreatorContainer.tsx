@@ -202,6 +202,14 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+        // If resolver type was changed from NONE to other, force the resolution required
+        // Ideally this would only happen once, but is likey used rarely
+        if (this.state.entityResolverVal !== NONE_RESOLVER_KEY && prevState.entityResolverVal === NONE_RESOLVER_KEY) {
+            this.setState({
+                isResolutionRequired: true
+            })
+        }
+
         const entity = this.props.entity
         if (!entity) {
             return
@@ -423,7 +431,7 @@ class Container extends React.Component<Props, ComponentState> {
             entityResolverVal: obj.key as string
         })
     }
-    onChangeResolverStrict = () => {
+    onChangeResolverResolutionRequired = () => {
         this.setState(prevState => ({
             isResolutionRequired: !prevState.isResolutionRequired,
         }))
@@ -828,7 +836,7 @@ class Container extends React.Component<Props, ComponentState> {
             onChangeResolver={this.onChangeResolverType}
 
             isResolutionRequired={this.state.isResolutionRequired}
-            onChangeResolverStrict={this.onChangeResolverStrict}
+            onChangeResolverResolutionRequired={this.onChangeResolverResolutionRequired}
 
             enumValues={enumValues}
             onChangeEnum={this.onChangeEnum}
