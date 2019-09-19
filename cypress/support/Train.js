@@ -29,12 +29,17 @@ export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).C
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
-export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
+
 export function VerifyWarningMessage(expectedMessage) { cy.Get('[data-testid="dialog-modal-warning"]').find('span').ExactMatch(expectedMessage) }
+export function VerifyNoWarningMessage() { cy.DoesNotContain('[data-testid="dialog-modal-warning"]') }
+
+export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
 export function VerifyErrorPopup(expectedMessage) { cy.Get('p.ms-Dialog-title').ExactMatch(expectedMessage) }
+
 export function ClickPopupConfirmCancelOkButton() { cy.Get('[data-testid="confirm-cancel-modal-ok"]').Click() }
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="chat-edit-delete-turn-button"]').Click() }
+
 export function VerifyTypeYourMessageIsPresent() { cy.Get(TypeYourMessageSelector) }
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
 export function VerifyScoreActionsButtonIsPresent() { cy.Get(ScoreActionsButtonSelector) }
@@ -62,6 +67,10 @@ export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-change
 export function VerifyEntityLabelUndoButtonIsDisabled() { cy.Get(EntityLabelUndoButtonSelector + '.is-disabled') }
 export function VerifyEntityLabelUndoButtonIsEnabled() { cy.Get(EntityLabelUndoButtonSelector + ':not(.is-disabled)') }
 export function ClickEntityLabelUndoButton() { cy.Get(EntityLabelUndoButtonSelector).Click() }
+
+// expectedEntities is a string segment that you will see in the UI warning message.
+export function VerifyDuplicateEntityLabelsWarning(expectedEntities) { cy.Get('[data-testid="entity-extractor-duplicate-entity-warning"]').contains(`Entities that are not multi-value (i.e. ${expectedEntities}) will only store the last labelled utterance`) }
+export function VerifyNoDuplicateEntityLabelsWarning() { cy.DoesNotContain('[data-testid="entity-extractor-duplicate-entity-warning"]') }
 
 export function ClickNewEntityButton() { cy.Get('[data-testid="entity-extractor-create-button"]').Click() }
 
