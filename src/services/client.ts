@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as CLM from '@conversationlearner/models'
@@ -215,9 +215,16 @@ export default class ClClient {
             url: `/app/${appId}/entity`,
             data: entity
         })
+
         const changeEntityResponse = response.data;
         entity.entityId = changeEntityResponse.entityId;
         entity.negativeId = changeEntityResponse.negativeEntityId;
+
+        // Note: Is synchronous API and could return whole object but there was hesitance of breaking change
+        // Make second request to get other fields from new entity such as enumValueIds
+        const newEntity = await this.entitiesGetById(appId, entity.entityId)
+        Object.assign(entity, newEntity)
+
         return entity
     }
 
@@ -244,9 +251,18 @@ export default class ClClient {
             url: `/app/${appId}/entity/${entity.entityId}`,
             data: entityToSend
         })
+
         const changeEntityResponse = response.data;
         entity.entityId = changeEntityResponse.entityId;
         entity.negativeId = changeEntityResponse.negativeEntityId;
+
+        // TODO: Might be able to avoid since we still return the changeEntityResponse instead of updatedEntity
+        // people should be using the return value instead of relying on mutation of passed in value
+        // Note: Is synchronous API and could return whole object but there was hesitance of breaking change
+        // Make second request to get other fields from new entity such as enumValueIds
+        const newEntity = await this.entitiesGetById(appId, entity.entityId)
+        Object.assign(entity, newEntity)
+
         return changeEntityResponse
     }
 
@@ -377,21 +393,21 @@ export default class ClClient {
         })
     }
 
-    //AT.FETCH_SCOREFROMHISTORY_ASYNC
-    async trainDialogScoreFromHistory(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.UIScoreResponse> {
+    //AT.FETCH_SCOREFROMTRAINDIALOG_ASYNC
+    async trainDialogScoreFromTrainDialog(appId: string, trainDialog: CLM.TrainDialog): Promise<CLM.UIScoreResponse> {
         const response = await this.send<CLM.UIScoreResponse>({
             method: 'post',
-            url: `/app/${appId}/scorefromhistory`,
+            url: `/app/${appId}/scorefromtraindialog`,
             data: trainDialog
         })
         return response.data
     }
 
-    //AT.FETCH_EXTRACTFROMHISTORY_ASYNC
-    async trainDialogExtractFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): Promise<CLM.ExtractResponse> {
+    //AT.FETCH_EXTRACTFROMTRAINDIALOG_ASYNC
+    async trainDialogExtractFromTrainDialog(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput): Promise<CLM.ExtractResponse> {
         const response = await this.send<CLM.ExtractResponse>({
             method: 'post',
-            url: `/app/${appId}/extractfromhistory`,
+            url: `/app/${appId}/extractfromtraindialog`,
             data: { trainDialog, userInput }
         })
         return response.data
@@ -439,8 +455,8 @@ export default class ClClient {
         return response.data.appList.apps
     }
 
-    async history(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean): Promise<CLM.TeachWithHistory> {
-        const response = await this.send<CLM.TeachWithHistory>({
+    async history(appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean): Promise<CLM.TeachWithActivities> {
+        const response = await this.send<CLM.TeachWithActivities>({
             method: 'post',
             url: `/app/${appId}/history?username=${userName}&userid=${userId}&useMarkdown=${useMarkdown}`,
             data: trainDialog
@@ -598,22 +614,22 @@ export default class ClClient {
         return response.data
     }
 
-    async teachSessionFromBranch(appId: string, trainDialogId: string, userName: string, userId: string, turnIndex: number): Promise<CLM.TeachWithHistory> {
-        const response = await this.send<CLM.TeachWithHistory>({
+    async teachSessionFromBranch(appId: string, trainDialogId: string, userName: string, userId: string, turnIndex: number): Promise<CLM.TeachWithActivities> {
+        const response = await this.send<CLM.TeachWithActivities>({
             method: 'post',
             url: `/app/${appId}/traindialog/${trainDialogId}/branch/${turnIndex}?username=${userName}&userid=${userId}`
         })
         return response.data
     }
 
-    // AT.CREATE_TEACH_SESSION_FROMHISTORYASYNC
+    // AT.CREATE_TEACH_SESSION_FROMTRAINDIALOGASYNC
     // filteredDialog = dialog to ignore when checking for conflicting labels
-    async teachSessionFromHistory(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string, filteredDialog: string | null): Promise<CLM.TeachWithHistory> {
-        let url = `/app/${appId}/teachwithhistory?username=${userName}&userid=${userId}`
+    async teachSessionFromTrainDialog(appId: string, trainDialog: CLM.TrainDialog, userInput: CLM.UserInput | null, userName: string, userId: string, filteredDialog: string | null): Promise<CLM.TeachWithActivities> {
+        let url = `/app/${appId}/teachwithactivities?username=${userName}&userid=${userId}`
         if (filteredDialog) {
             url = `${url}&filteredDialog=${filteredDialog}`
         }
-        const response = await this.send<CLM.TeachWithHistory>({
+        const response = await this.send<CLM.TeachWithActivities>({
             method: 'post',
             url,
             data: {

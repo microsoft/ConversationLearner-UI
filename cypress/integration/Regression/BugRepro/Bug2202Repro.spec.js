@@ -8,7 +8,7 @@ import * as modelPage from '../../../support/components/ModelPage'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
-describe("Bug 2202 Repro - EditAndBranching", () => {
+describe("Bug 2202 Repro", () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {

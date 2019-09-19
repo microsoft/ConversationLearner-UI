@@ -4,6 +4,7 @@
  */
 import * as CLM from '@conversationlearner/models'
 import * as IntlMessages from '../react-intl-messages'
+import * as Const from '../types/const'
 import { MessageValue } from 'react-intl'
 import * as moment from 'moment'
 import * as stringify from 'fast-json-stable-stringify'
@@ -236,27 +237,27 @@ export const getSetEntityActionsFromEnumEntity = (entity: CLM.EntityBase): CLM.A
 export function readFileAsync(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-    
+
         reader.onload = (e: Event) => {
             resolve(reader.result as any);
         };
-    
+
         reader.onerror = reject;
-    
+
         reader.readAsText(file);
     })
 }
 
 // Returns true is primary template body is variable substitution
 export function isTemplateTitleGeneric(template: CLM.Template): boolean {
-    const titleVariable = template.variables.find(v => v.key === "title" && v.type === "TextBlock")
+    const titleVariable = template.variables.find(v => v.key === "title" && (v.type === "TextBlock" || v.type === "TextBody"))
     return (titleVariable !== undefined)
 }
 
 // Calculate a 32 bit FNV-1a hash
 // Ref.: http://isthe.com/chongo/tech/comp/fnv/
 export function hashText(text: string) {
-    // tslint:disable:no-bitwise 
+    // tslint:disable:no-bitwise
     let l = text.length
     let hval = 0x811C9DC5  // seed
 
@@ -269,3 +270,9 @@ export function hashText(text: string) {
     return `0000000${(hval >>> 0).toString(16)}`.substr(-8)
 }
 
+export function isFeatureEnabled(featureString: string | undefined, feature: Const.FeatureStrings) {
+    if (featureString && featureString.toUpperCase().includes(feature.toUpperCase())) {
+        return true
+    }
+    return false
+}

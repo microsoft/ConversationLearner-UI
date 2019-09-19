@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react';
@@ -58,9 +58,9 @@ class ExportChoice extends React.Component<Props, ComponentState> {
 
     async onExportTranscripts() {
         const appDefinition = await (this.props.fetchAppSourceThunkAsync(this.props.app.appId, this.props.editingPackageId, false) as any as Promise<CLM.AppDefinition>)
-        
-        const transcripts = await OBIUtil.toTranscripts(appDefinition, this.props.app.appId, this.props.user, this.props.fetchHistoryThunkAsync as any)
-        
+
+        const transcripts = await OBIUtil.toTranscripts(appDefinition, this.props.app.appId, this.props.user, this.props.fetchActivitiesThunkAsync as any)
+
         const zip = new AdmZip()
         transcripts.forEach(t => {
             const content = JSON.stringify(t.activities)
@@ -117,7 +117,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
                     onChange={this.onChoiceChange}
                     required={false}
                 />
-    
+
                 </div>
                 <div className='cl-modal_footer'>
                     <div className="cl-modal-buttons">
@@ -146,7 +146,7 @@ class ExportChoice extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchAppSourceThunkAsync: actions.app.fetchAppSourceThunkAsync,
-        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync
+        fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

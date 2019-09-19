@@ -30,7 +30,6 @@ export interface DialogRenderData {
     scoreResponse?: CLM.ScoreResponse
     scoreInput?: CLM.ScoreInput
     selectedActionId?: string
-    forcedActionId?: string
     extractResponses?: CLM.ExtractResponse[]
 }
 
@@ -62,7 +61,7 @@ export function internalConflict(textVariation: CLM.TextVariation, trainDialog: 
 /**
  * If text variation has same text, but different entities, return true
  * Otherwise. return false
- * 
+ *
  * @param tvA Text Variation A
  * @param tvB Text Variation B
  */
@@ -94,9 +93,9 @@ export function isConflictingTextVariation(tvA: CLM.TextVariation, tvB: CLM.Text
 /**
  * If text variation have different entities present they don't qualify as equivalent variations, return true
  * Otherwise, return false
- * 
+ *
  * Note: incompatibility is usually computed for text variations within same round / extraction step
- * 
+ *
  * @param tvA Text Variation A
  * @param tvB Text Variation B
  */
@@ -118,11 +117,11 @@ export function isIncompatibleTextVariation(tvA: CLM.TextVariation, tvB: CLM.Tex
 }
 
 /**
- * Given new text variation and train dialogs return new set of train dialogs with 
+ * Given new text variation and train dialogs return new set of train dialogs with
  * all matching text variations updated and validity changed.
  * If any text variation in any round is a conflict, correct that variation and set Validity to WARNING
  * If any corrected text variation becomes incompatible with other text variations in the extraction step set Validity to INVALID
- * 
+ *
  * @param attemptedTextVariation Text Variation with new/updated Labels
  * @param trainDialogs Existing Train Dialogs with old/outdated labels
  */
@@ -260,12 +259,12 @@ export function hasEndSession(trainDialog: CLM.TrainDialog, allActions: CLM.Acti
     return false
 }
 
-// Return best action from ScoreResponse 
+// Return best action from ScoreResponse
 export function getBestAction(scoreResponse: CLM.ScoreResponse, allActions: CLM.ActionBase[], canEndSession: boolean): CLM.ScoredAction | undefined {
 
     const scoredActions = scoreResponse.scoredActions
 
-    // Get highest scoring Action 
+    // Get highest scoring Action
     let best
     for (const test of scoredActions) {
 
@@ -357,12 +356,12 @@ export function hasImportActions(trainDialog: CLM.TrainDialog): boolean {
     return false
 }
 
-// Does history have any replay errors
-export function getMostSevereReplayError(history: BotChat.Activity[]): CLM.ReplayError | null {
+// Do activities have any replay errors
+export function getMostSevereReplayError(activities: BotChat.Activity[]): CLM.ReplayError | null {
     // Return most severe error level found
     let worstReplayError: CLM.ReplayError | null = null
-    for (const h of history) {
-        const clData: CLM.CLChannelData = h.channelData.clData
+    for (const a of activities) {
+        const clData: CLM.CLChannelData = a.channelData.clData
         if (clData && clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
                 return clData.replayError
@@ -380,9 +379,9 @@ export function getMostSevereReplayError(history: BotChat.Activity[]): CLM.Repla
 }
 
 // Given train dialog and rendered activity, return validity
-export function getTrainDialogValidity(trainDialog: CLM.TrainDialog, history: BotChat.Activity[]): CLM.Validity | undefined {
+export function getTrainDialogValidity(trainDialog: CLM.TrainDialog, activities: BotChat.Activity[]): CLM.Validity | undefined {
     // Look for individual replay errors
-    const worstReplayError = getMostSevereReplayError(history)
+    const worstReplayError = getMostSevereReplayError(activities)
     if (worstReplayError) {
         if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING || worstReplayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
             return CLM.Validity.INVALID
@@ -538,7 +537,7 @@ export function doesTrainDialogMatch(trainDialog1: CLM.TrainDialog, trainDialog2
     while (roundIndex < maxRounds) {
         const round1 = trainDialog1.rounds[roundIndex]
         const round2 = trainDialog2.rounds[roundIndex]
-        // If one ran out of rounds that's ok, one dialog can be longer than the other  
+        // If one ran out of rounds that's ok, one dialog can be longer than the other
         if ((round1 && !round2) || (round2 && !round1)) {
             return true
         }
@@ -594,7 +593,7 @@ export function mergeTrainDialogTags(trainDialog1: CLM.TrainDialog, trainDialog2
 }
 
 export function mergeTrainDialogDescription(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): string {
-    // Assume longest description is best 
+    // Assume longest description is best
     return trainDialog1.description.length > trainDialog2.description.length
         ? trainDialog1.description : trainDialog2.description
 }
@@ -639,7 +638,6 @@ export function mergeTrainDialogs(trainDialog1: CLM.TrainDialog, trainDialog2: C
 
     return mergedTrainDialog
 }
-
 
 export function filledEntityIdMap(filledEntities: CLM.FilledEntity[], entities: CLM.EntityBase[]): Map<string, string> {
     const filledEntityMap = CLM.FilledEntityMap.FromFilledEntities(filledEntities, entities)
@@ -703,20 +701,18 @@ export function getDialogRenderData(
     let scorerStep: CLM.TrainScorerStep | undefined
     let scoreResponse: CLM.ScoreResponse | undefined
     let round: CLM.TrainRound | undefined
-    let memories: CLM.Memory[] = [];
-    let prevMemories: CLM.Memory[] = [];
-    let forcedActionId: string | undefined
+    let memories: CLM.Memory[] = []
+    let prevMemories: CLM.Memory[] = []
 
     if (roundIndex !== null && roundIndex < trainDialog.rounds.length) {
         round = trainDialog.rounds[roundIndex];
         if (round.scorerSteps.length > 0) {
-            // If a score round 
+            // If a score round
             if (typeof scoreIndex === "number") {
                 scorerStep = round.scorerSteps[scoreIndex];
                 if (!scorerStep) {
                     throw new Error(`Cannot get score step at index: ${scoreIndex} from array of length: ${round.scorerSteps.length}`)
                 }
-                forcedActionId = scorerStep.forcedActionId
 
                 let selectedAction = actions.find(action => action.actionId === scorerStep!.labelAction);
 
@@ -786,13 +782,20 @@ export function getDialogRenderData(
                 prevMemories = getPrevMemories(trainDialog, entities, roundIndex, scoreIndex)
             }
         }
+        // Round has no scorer steps so there is no filled entities to use
+        // Assume memory hasn't been modified and it's same as memory from previous round
+        // TODO: Could have been modified by label entities
+        // but that's not accounted for in ANY client calculations becaused SDK controls overwrite or adding based on entity multivalue
+        else if (scoreIndex === null) {
+            memories = getPrevMemories(trainDialog, entities, roundIndex, scoreIndex)
+            prevMemories = memories
+        }
     }
 
     return {
         dialogMode: (senderType === CLM.SenderType.User) ? CLM.DialogMode.Extractor : CLM.DialogMode.Scorer,
         scoreInput: scorerStep ? scorerStep.input : undefined,
         scoreResponse: scoreResponse,
-        forcedActionId,
         roundIndex,
         textVariations: round ? round.extractorStep.textVariations : [],
         memories: filterDummyEntities(memories),
@@ -810,7 +813,7 @@ export function bestTemplateMatch(importedAction: ImportedAction, templates: CLM
             // Calculate number of buttons on the template
             // TODO: support other button types
             const templateButtonCount = (template.body.match(/Action.Submit/g) || []).length
-            
+
             // If cound is the same, find string similarity in body
             if (templateButtonCount === importedAction.buttons.length) {
                 const score = (template && template.body)
@@ -823,12 +826,12 @@ export function bestTemplateMatch(importedAction: ImportedAction, templates: CLM
                 // Try to map to generic card with right number of buttons if no winner yet
                 else if (!bestTemplate && Util.isTemplateTitleGeneric(template)) {
                     if (templateButtonCount === importedAction.buttons.length) {
-                        bestTemplate = template 
+                        bestTemplate = template
                     }
                 }
             }
         }
     }
-    
+
     return bestTemplate
 }

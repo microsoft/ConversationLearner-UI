@@ -107,6 +107,7 @@ export enum FM {
     APPCREATOR_FIELDS_IMPORT_NAME_LABEL = 'AppCreator.fields.importname.label',
     APPCREATOR_FIELDS_NAME_PLACEHOLDER = 'AppCreator.fields.name.placeholder',
     APPCREATOR_FIELDS_LOCALE_LABEL = 'AppCreator.fields.locale.label',
+    APPCREATOR_FIELDS_DISPATCHER_ALGORITHM_LABEL = 'AppCreator.fields.dispatcherAlgorithm.label',
     APPCREATOR_COPYBUTTON_ARIADESCRIPTION = 'AppCreator.copyButton.ariaDescription',
     APPCREATOR_COPYBUTTON_TEXT = 'AppCreator.copyButton.text',
     APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION = 'AppCreator.importButton.ariaDescription',
@@ -115,6 +116,9 @@ export enum FM {
     APPCREATOR_CHOOSE_FILE_BUTTON_TEXT = 'AppCreator.chooseFileButton.text',
     APPCREATOR_CANCELBUTTON_ARIADESCRIPTION = 'AppCreator.cancelButton.ariaDescription',
     APPCREATOR_CANCELBUTTON_TEXT = 'AppCreator.cancelButton.text',
+
+    // Dispatcher Creator
+    DISPATCHCREATOR_ALGORITHM_TYPE_LABEL = 'DispatcherCreator.algorithmType.label',
 
     // Apps List
     APPSLIST_SUBTITLE = 'AppsList.subtitle',
@@ -256,6 +260,7 @@ export enum FM {
     // EntityCreatorEditor
     ENTITYCREATOREDITOR_FIELDERROR_NOBLANK = 'EntityCreatorEditor.fieldError.noblank',
     ENTITYCREATOREDITOR_FIELDERROR_RESERVED = 'EntityCreatorEditor.fields.reserved',
+    ENTITYCREATOREDITOR_FIELDERROR_ENUM_MAX_LENGTH = 'EntityCreatorEditor.fields.enumMaxLength',
     ENTITYCREATOREDITOR_ENTITYOPTION_ENUM = 'EntityCreatorEditor.entityOption.enum',
     ENTITYCREATOREDITOR_ENTITYOPTION_LUIS = 'EntityCreatorEditor.entityOption.new',
     ENTITYCREATOREDITOR_ENTITYOPTION_PROG = 'EntityCreatorEditor.entityOption.programmatic',
@@ -701,6 +706,7 @@ export default {
         [FM.APPCREATOR_FIELDS_IMPORT_NAME_LABEL]: 'New Model Name',
         [FM.APPCREATOR_FIELDS_NAME_PLACEHOLDER]: 'Model name...',
         [FM.APPCREATOR_FIELDS_LOCALE_LABEL]: 'Locale',
+        [FM.APPCREATOR_FIELDS_DISPATCHER_ALGORITHM_LABEL]: 'Algorithm Type',
         [FM.APPCREATOR_COPYBUTTON_ARIADESCRIPTION]: 'Copy',
         [FM.APPCREATOR_COPYBUTTON_TEXT]: 'Copy',
         [FM.APPCREATOR_IMPORT_BUTTON_ARIADESCRIPTION]: 'Import application',
@@ -709,6 +715,9 @@ export default {
         [FM.APPCREATOR_CHOOSE_FILE_BUTTON_TEXT]: 'Select File',
         [FM.APPCREATOR_CANCELBUTTON_ARIADESCRIPTION]: 'Cancel',
         [FM.APPCREATOR_CANCELBUTTON_TEXT]: 'Cancel',
+
+        // Dispatch Creator
+        [FM.DISPATCHCREATOR_ALGORITHM_TYPE_LABEL]: 'Algorithm Type',
 
         // App
         [FM.APP_HEADER_MODELS]: 'My Models',
@@ -1086,6 +1095,7 @@ export default {
         // EntityCreatorEditor
         [FM.ENTITYCREATOREDITOR_FIELDERROR_NOBLANK]: 'May not be blank',
         [FM.ENTITYCREATOREDITOR_FIELDERROR_RESERVED]: 'Name is reserved.',
+        [FM.ENTITYCREATOREDITOR_FIELDERROR_ENUM_MAX_LENGTH]: 'Value must not be greater than 10 characters.',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM]: 'Enum',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_LUIS]: 'Custom Trained',
         [FM.ENTITYCREATOREDITOR_ENTITYOPTION_PROG]: 'Programmatic',
@@ -1249,10 +1259,10 @@ export default {
         [AT.CREATE_APP_TAG_ASYNC]: 'Creating Application Tag',
         [AT.CREATE_CHAT_SESSION_ASYNC]: 'Creating Chat Session',
         [AT.CREATE_TEACH_SESSION_ASYNC]: 'Creating Teach Session',
-        [AT.CREATE_TEACH_SESSION_FROMHISTORY_ASYNC]: 'Creating Teach Session from history',
+        [AT.CREATE_TEACH_SESSION_FROMTRAINDIALOG_ASYNC]: 'Creating Teach Session from Train Dialog',
         [AT.CREATE_TRAIN_DIALOG_ASYNC]: 'Creating Train Dialog',
         [AT.FETCH_BOTINFO_ASYNC]: 'Fetching Bot information',
-        [AT.FETCH_HISTORY_ASYNC]: 'Fetching history',
+        [AT.FETCH_ACTIVITIES_ASYNC]: 'Fetching activities',
         [AT.FETCH_TUTORIALS_ASYNC]: 'Fetching tutorials',
         [AT.FETCH_APPSOURCE_ASYNC]: 'Fetching Application source',
         [AT.FETCH_ENTITY_DELETE_VALIDATION_ASYNC]: 'Fetching entity deletion information',

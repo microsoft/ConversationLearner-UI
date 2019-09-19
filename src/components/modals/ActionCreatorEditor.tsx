@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -184,7 +184,7 @@ const getSuggestedTags = (filterText: string, allTags: OF.ITag[], tagsToExclude:
     let availableTags = allTags
         .filter(tag => !tagsToExclude.some(t => t.key === tag.key))
 
-    // Check for mutually exclusive conditions and remove them 
+    // Check for mutually exclusive conditions and remove them
     availableTags = availableTags
         .filter(tag => !mutuallyExclusive.some(t => isConditionMutuallyExclusive(t, tag)))
 
@@ -540,11 +540,16 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         const isTerminalChanged = initialEditState!.isTerminal !== this.state.isTerminal
         const isRepromptChanged = initialEditState!.reprompt !== this.state.reprompt
+        const isSelectedApiChanged = initialEditState.selectedApiOptionKey !== this.state.selectedApiOptionKey
+        const isSelectedCardChanged = initialEditState.selectedCardOptionKey !== this.state.selectedCardOptionKey
+
         const hasPendingChanges = isAnyPayloadChanged
+            || isSelectedApiChanged
+            || isSelectedCardChanged
             || expectedEntitiesChanged
             || requiredEntitiesChanged
             || disqualifyingEntitiesChanged
-            || isTerminalChanged 
+            || isTerminalChanged
             || isRepromptChanged
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
@@ -558,7 +563,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         if (props.importedAction) {
             let values = Plain.deserialize(DialogUtils.cleanText(props.importedAction.text))
             this.onChangePayloadEditor(values, TEXT_SLOT)
-            await Util.setStateAsync(this, { 
+            await Util.setStateAsync(this, {
                 isTerminal: props.importedAction.isTerminal,
                 reprompt: props.importedAction.reprompt
             })
@@ -608,7 +613,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
     }
 
-    // Return list of any strings that look like they should be attached to 
+    // Return list of any strings that look like they should be attached to
     // entities but aren't
     untaggedEntities(): string[] {
         const primaryEntries = Object.entries(this.state.slateValuesMap)
@@ -847,15 +852,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         /**
          * If action type if TEXT
          * Then payload map has single value named TEXT_SLOT:
-         * 
+         *
          * E.g.
          * {
          *   [TEXT_SLOT]: {...slate value...}
          * }
-         * 
+         *
          * Otherwise action type is CARD or API and we assume each value in the map is
          * a template variable or argument value respectively
-         * 
+         *
          * E.g.
          * {
          *   [templateVariable1]: { ...slate value...},
@@ -935,7 +940,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             actionType: CLM.ActionTypes[this.state.selectedActionTypeOptionKey],
             entityId: this.state.selectedEntityOptionKey,
             enumValueId: this.state.selectedEnumValueOptionKey,
-            clientData: this.props.action ? this.props.action.clientData : undefined
+            clientData: this.props.action
+                ? this.props.action.clientData
+                : { importHashes: [] }
         })
 
         if (this.state.isEditing && this.props.action) {
@@ -1124,7 +1131,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 : this.state.isTerminal
 
         // Reprompt only allowed on CARD and TEXT actions
-        const reprompt = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT) 
+        const reprompt = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
             ? this.state.reprompt
             : false
 
@@ -1249,6 +1256,12 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         return <CLTagItem key={props.index} {...renderProps}>{props.item.name}</CLTagItem>
     }
 
+    onDismissPicker(event: any, selectedItem?: OF.ITag | undefined) {
+        if (event && typeof event.preventDefault === "function") {
+            event.preventDefault()
+        }
+    }
+
     // Payload editor is trying to submit action
     async onSubmitPayloadEditor(): Promise<void> {
         if (!this.saveDisabled()) {
@@ -1317,7 +1330,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         // SET_ENTITY Actions are immutable
         if (this.props.action
             && (this.props.action.actionType === CLM.ActionTypes.SET_ENTITY
-            || this.props.action.actionType === CLM.ActionTypes.DISPATCH)) {
+                || this.props.action.actionType === CLM.ActionTypes.DISPATCH)) {
             return true
         }
 
@@ -1654,6 +1667,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                     }
                                     selectedItems={this.state.expectedEntityTags}
                                     tipType={ToolTip.TipType.ACTION_SUGGESTED}
+                                    onDismiss={this.onDismissPicker}
                                 />
                             </div>
                             )}
@@ -1678,6 +1692,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         }
                                         selectedItems={this.state.requiredEntityTags}
                                         tipType={ToolTip.TipType.ACTION_REQUIRED}
+                                        onDismiss={this.onDismissPicker}
                                     />
                                 </div>
 
@@ -1697,6 +1712,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         }
                                         selectedItems={this.state.negativeEntityTags}
                                         tipType={ToolTip.TipType.ACTION_NEGATIVE}
+                                        onDismiss={this.onDismissPicker}
                                     />
                                 </div>
                             </>}

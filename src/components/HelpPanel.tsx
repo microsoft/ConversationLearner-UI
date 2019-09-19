@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -21,15 +21,12 @@ class HelpPanel extends React.Component<Props> {
     render() {
         return (
             <OF.Panel
-                focusTrapZoneProps={{}}
-                isBlocking={true}
                 isOpen={this.props.tipType !== ToolTip.TipType.NONE}
                 isLightDismiss={true}
                 onDismiss={() => { this.onDismiss() }}
                 type={OF.PanelType.medium}
                 customWidth="400px"
                 closeButtonAriaLabel="Close"
-                hasCloseButton={true}
                 isFooterAtBottom={true}
                 onRenderFooterContent={this._onRenderFooterContent}
             >

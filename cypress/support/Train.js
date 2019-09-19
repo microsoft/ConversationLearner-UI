@@ -18,9 +18,10 @@ let editedChatMessages
 
 function Today() { return Cypress.moment().format("MM/DD/YYYY") }
 
-export const AllChatMessagesSelector = 'div[data-testid="web-chat-utterances"] > div.wc-message-content > div'
 export const TypeYourMessageSelector = 'input.wc-shellinput[placeholder="Type your message..."]' // data-testid NOT possible
 export const ScoreActionsButtonSelector = '[data-testid="score-actions-button"]'
+export const TurnUndoButtonSelector = '[data-testid="edit-teach-dialog-undo-button"]'
+export const EntityLabelUndoButtonSelector = '[data-testid="undo-changes-button"]'
 
 export function TypeAlternativeInput(trainMessage) { cy.Get('[data-testid="entity-extractor-alternative-input-text"]').type(`${trainMessage}{enter}`) }
 export function ClickSetInitialStateButton() { cy.Get('[data-testid="teach-session-set-initial-state"]').Click() }
@@ -28,15 +29,15 @@ export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).C
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
-export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
-export function GetAllChatMessages() { return helpers.StringArrayFromElementText(AllChatMessagesSelector) }
 export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
 export function VerifyWarningMessage(expectedMessage) { cy.Get('[data-testid="dialog-modal-warning"]').find('span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
 export function VerifyErrorPopup(expectedMessage) { cy.Get('p.ms-Dialog-title').ExactMatch(expectedMessage) }
 export function ClickPopupConfirmCancelOkButton() { cy.Get('[data-testid="confirm-cancel-modal-ok"]').Click() }
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="chat-edit-delete-turn-button"]').Click() }
+export function VerifyTypeYourMessageIsPresent() { cy.Get(TypeYourMessageSelector) }
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
+export function VerifyScoreActionsButtonIsPresent() { cy.Get(ScoreActionsButtonSelector) }
 export function VerifyScoreActionsButtonIsMissing() { cy.DoesNotContain(ScoreActionsButtonSelector) }
 
 export function ClickSaveCloseButton() { cy.Get('[data-testid="edit-teach-dialog-close-save-button"]').Click() }
@@ -50,7 +51,20 @@ export function ClickConfirmDeleteLogDialogButton() { popupModal.VerifyExactTitl
 export function VerifyDeleteButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Delete') }
 export function VerifyAbandonBranchButtonLabel() { cy.Get('[data-testid="edit-dialog-modal-abandon-delete-button"]').contains('Abandon Branch') }
 
-export function ClickUndoButton() { cy.Get('[data-testid="edit-teach-dialog-undo-button"]').Click() }
+export function VerifyTurnUndoButtonIsPresent() { cy.Get(TurnUndoButtonSelector) }
+export function VerifyTurnUndoButtonIsMissing() { cy.DoesNotContain(TurnUndoButtonSelector) }
+export function ClickTurnUndoButton() { cy.Get(TurnUndoButtonSelector).Click() }
+
+export function VerifySubmitChangesButtonIsDisabled() { cy.Get('[data-testid="submit-changes-button"].is-disabled') }
+export function VerifySubmitChangesButtonIsEnabled() { cy.Get('[data-testid="submit-changes-button"]:not(.is-disabled)') }
+export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-changes-button"]').Click() }
+
+export function VerifyEntityLabelUndoButtonIsDisabled() { cy.Get(EntityLabelUndoButtonSelector + '.is-disabled') }
+export function VerifyEntityLabelUndoButtonIsEnabled() { cy.Get(EntityLabelUndoButtonSelector + ':not(.is-disabled)') }
+export function ClickEntityLabelUndoButton() { cy.Get(EntityLabelUndoButtonSelector).Click() }
+
+export function ClickNewEntityButton() { cy.Get('[data-testid="entity-extractor-create-button"]').Click() }
+
 export function ClickConfirmAbandonDialogButton() { return cy.Get('[data-testid="confirm-cancel-modal-accept"]').Click() }
 export function ClickReplayButton() { cy.Get('[data-testid="edit-dialog-modal-replay-button"]').Click() }
 
@@ -88,6 +102,49 @@ export function AddTags(tags) {
   cy.Get('[data-testid="tags-input-tag-input"]').type(tagList)
 }
 
+export function VerifyChatPanelIsDisabled() { cy.Get('div.cl-chatmodal_webchat').find('div.cl-overlay') }
+export function VerifyChatPanelIsEnabled() { cy.Get('div.cl-chatmodal_webchat').DoesNotContain('div.cl-overlay') }
+
+export function GetAllChatMessageElements() { 
+  const elements = Cypress.$('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
+  helpers.DumpElements('GetAllChatMessageElements', elements)
+  return elements
+}
+
+export function GetChatTurnText(element, retainMarkup = false) {
+  let pElements = Cypress.$(element).find('p')
+  let text = ''
+  for (let ip = 0; ip < pElements.length; ip++) {
+    text += retainMarkup ? pElements[ip].innerHTML : helpers.TextContentWithoutNewlines(pElements[ip])
+  }
+  return text
+}
+
+export function GetAllChatMessages(retainMarkup = false) {
+  let funcName = `GetAllChatMessages(retainMarkup: ${retainMarkup})`
+  let elements = GetAllChatMessageElements()
+
+  helpers.ConLog(funcName, `Number of Chat Elements Found: ${elements.length}`)
+  let returnValues = []
+  for (let i = 0; i < elements.length; i++)  {
+    let text = GetChatTurnText(elements[i], retainMarkup)
+    returnValues.push(text)
+    helpers.ConLog(funcName, text)
+  }
+  return returnValues
+}
+
+export function VerifyNoChatTurnSelected() { cy.Get('[data-testid="chat-edit-add-user-input-button"], [data-testid="chat-edit-delete-turn-button"]').should('have.length', 0) }
+export function VerifySelectedChatTurn(expectedMessage) { 
+  cy.Get('[data-testid="chat-edit-add-user-input-button"], [data-testid="chat-edit-delete-turn-button"]')
+    .parents('div.wc-message-wrapper')
+    .find('div[data-testid="web-chat-utterances"] > div.wc-message-content > div')
+    .then(elements => {
+      let text = GetChatTurnText(elements[0])
+      if (text !== expectedMessage) { throw new Error (`Expecting selected chat turn to be '${expectedMessage}', instead '${text}' was selected.`) }
+    })
+}
+
 // Verify that the branch button is within the same control group as the message.
 export function VerifyBranchButtonGroupContainsMessage(message) {
   cy.Get('[data-testid="edit-dialog-modal-branch-button"]').as('branchButton')
@@ -101,7 +158,7 @@ export function AbandonBranchChanges() {
 
 export function VerifyChatMessageCount(expectedCount) {
   cy.wrap(1, {timeout: 10000}).should(() => {
-    let actualCount = GetAllChatMessages().length
+    let actualCount = GetAllChatMessageElements().length
     if(actualCount != expectedCount) {
       throw new Error(`Expecting the number of chat messages to be ${expectedCount} instead it is ${actualCount}`)
     }
@@ -115,6 +172,13 @@ export function VerifyChatMessageCount(expectedCount) {
 // instance of a message.
 // RETURNS: The index of the selected turn.
 
+export function SelectLastChatTurn() {
+  cy.WaitForStableDOM().then(() => {
+    const elements = GetAllChatMessageElements()
+    cy.wrap(elements[elements.length - 1]).Click()
+  })
+}
+
 export function SelectChatTurnExactMatch(message, index = 0) { 
   return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText === transformedMessage)}
 
@@ -122,13 +186,13 @@ export function SelectChatTurnStartsWith(message, index = 0) {
   return SelectChatTurnInternal(message, index, (elementText, transformedMessage) => elementText.startsWith(transformedMessage))}
 
 function SelectChatTurnInternal(message, index, matchPredicate) {
-  const funcName = `SelectChatTurnInternal(${message}, ${index})`
+  const funcName = `SelectChatTurnInternal('${message}', ${index})`
   cy.ConLog(funcName, `Start`)
 
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
     message = message.replace(/'/g, "’")
-    const elements = Cypress.$(AllChatMessagesSelector)
+    const elements = GetAllChatMessageElements() //Cypress.$(AllChatMessagesSelector)
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (let i = 0; i < elements.length; i++) {
       const innerText = helpers.TextContentWithoutNewlines(elements[i])
@@ -175,7 +239,7 @@ export function VerifyChatTurnControlButtons(element, index) {
   if (element.classList.contains('wc-message-from-me')) turnIsUserTurn = true
   else if (element.classList.contains('wc-message-from-bot')) turnIsUserTurn = false
   else {
-    helpers.Dump(`VerifyChatTurnControlButtons()`, element)
+    helpers.ConLog(`VerifyChatTurnControlButtons()`, element.outerHTML)
     throw new Error('Expecting element to contain class with either "wc-message-from-me" or "wc-message-from-bot" (see console output for element dump)')
   }
 
@@ -216,9 +280,46 @@ export function VerifyCyDoesNotContainMethodWorksWithSpecialChatSelector(userMes
   })
 }
 
+// This works whether text is a word or a phrase.
+export function VerifyCanLabelTextAsEntity(text) { _VerifyLabelTextAsEntity(text, 'be.visible') }
+export function VerifyCanNotLabelTextAsEntity(text) { _VerifyLabelTextAsEntity(text, 'be.hidden') }
+function _VerifyLabelTextAsEntity(text, verification) {
+  cy.Get('body').trigger('Test_SelectWord', { detail: text })
+  cy.Get('[data-testid="entity-picker-entity-search"').should(verification)
+}
+
+export function VerifyTextIsLabeledAsEntity(text, entity) {
+  cy.WaitForStableDOM().then(() => {
+    if (!IsTextLabeledAsEntity(text, entity)) { throw new Error(`Failed to find "${text}" labeled as "${entity}"`) }
+  })
+}
+
+export function VerifyTextIsNotLabeledAsEntity(text, entity) {
+  cy.WaitForStableDOM().then(() => {
+    if (IsTextLabeledAsEntity(text, entity)) { throw new Error(`We found that "${text}" is labeled as "${entity}" - it should have no label`) }
+  })
+}
+
+function IsTextLabeledAsEntity(text, entity) {
+  let isLabeled = false
+  const elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
+
+  // If you need to find a phrase, this part of the code will fail, 
+  // you will need to upgrade this code in that case.
+  for (let i = 0; i < elements.length; i++) {
+    if (helpers.TextContentWithoutNewlines(elements[i]) === text) {
+      isLabeled = Cypress.$(elements[i]).parents('.cl-entity-node--custom')
+                        .find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`)
+                        .length > 0
+      break;
+    }
+  }
+  return isLabeled
+}
+
 export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
   function LabelIt() {
-    // This actually works if text is a word or a phrase.
+    // This works whether text is a word or a phrase.
     cy.Get('body').trigger('Test_SelectWord', { detail: text })
     cy.Get('[data-testid="fuse-match-option"]').contains(entity).Click()
   }
@@ -227,50 +328,35 @@ export function LabelTextAsEntity(text, entity, itMustNotBeLabeledYet = true) {
     LabelIt()
   } else {
     // First make sure it is not already labeled before trying to label it.
-    cy.WaitForStableDOM()
-    cy.Enqueue(() => {
-      let labeledAlready = false
-      const elements = Cypress.$('[data-testid="token-node-entity-value"] > span > span')
-
-      // If you need to find a phrase, this part of the code will fail, 
-      // you will need to upgrade this code in that case.
-      for (let i = 0; i < elements.length; i++) {
-        if (helpers.TextContentWithoutNewlines(elements[i]) === text) {
-          labeledAlready = Cypress.$(elements[i]).parents('.cl-entity-node--custom')
-                            .find(`[data-testid="custom-entity-name-button"]:contains('${entity}')`)
-                            .length > 0
-          break;
-        }
-      }
-      
-      if (!labeledAlready) {
-        LabelIt()
-      }
-    })
+    cy.WaitForStableDOM().then(() => { if (!IsTextLabeledAsEntity(text, entity)) LabelIt() })
   }
 }
 
-// Verify that a specific word of a user utterance has been labeled as an entity.
+// SelectEntityLabel and RemoveEntityLabel
 // word = a word within the utterance that should already be labeled
 // entity = name of entity the word was labeled with
-// *** This may work for multiple word labels, but you must only pass in the one
+// index = into one of the alternative inputs
+// *** This does work for multiple word labels, but you must pass in only one
 // *** word that uniquely identifies the labeled text
-export function RemoveEntityLabel(word, entity, index = 0) {
+export function SelectEntityLabel(word, entity, index = 0) {
   cy.Get('div.slate-editor').then(elements => {
     expect(elements.length).to.be.at.least(index - 1)
     cy.wrap(elements[index]).within(() => {
-      cy.wrap(elements[index]).click()
       cy.Get('[data-testid="token-node-entity-value"] > span > span')
         .ExactMatch(word)
         .parents('.cl-entity-node--custom')
         .find('[data-testid="custom-entity-name-button"]')
         .contains(entity)
         .Click()
-
-      cy.Get('button[title="Unselect Entity"]').Click()
     })
   })
 }
+export function RemoveEntityLabel(word, entity, index = 0) {
+  SelectEntityLabel(word, entity, index)
+  cy.Get('button[title="Unselect Entity"]').Click() 
+}
+
+
 
 // Verify that a specific word of a user utterance has been labeled as an entity.
 //  word = a word within the utterance that should already be labeled
@@ -357,7 +443,7 @@ export function InsertBotResponseAfter(existingMessage, newMessage, index = 0) {
 export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expectedTurnCount, turnIndex) {
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound === turnTextThatShouldNotMatch) { 
-      throw new Error(`Chat turn ${turnIndex} should NOT be an exact match to: ${turnTextThatShouldNotMatch}`) 
+      throw new Error(`Chat turn ${turnIndex} should NOT be an exact match to: ${turnTextThatShouldNotMatch}, but it is`) 
     }
   })
 }
@@ -365,18 +451,30 @@ export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expe
 export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount, turnIndex) { 
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) { 
-      throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}`) 
+      if (chatMessageFound !== expectedTurnText.replace(/'/g, "’")) {
+        throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
+      }
     }
   })
 }
 
+export function VerifyChatTurnIsAnExactMatchWithMarkup(expectedTurnText, expectedTurnCount, turnIndex) { 
+  VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
+    if (chatMessageFound !== expectedTurnText) { 
+      if (chatMessageFound !== expectedTurnText.replace(/'/g, "’")) {
+        throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
+      }
+    }
+  }, true)
+}
+
 // This function does the hard work of retrying until the chat message count is what we expect
 // before it verifies a specific chat turn with a custom verification.
-function VerifyChatTurnInternal(expectedTurnCount, turnIndex, doVerification) {
+function VerifyChatTurnInternal(expectedTurnCount, turnIndex, verificationFunc, retainMarkup = false) {
   cy.WaitForStableDOM()
   let chatMessages
   cy.wrap(1).should(() => { 
-    chatMessages = GetAllChatMessages()
+    chatMessages = GetAllChatMessages(retainMarkup)
     if (chatMessages.length != expectedTurnCount) { 
       throw new Error(`${chatMessages.length} chat turns were found, however we were expecting ${expectedTurnCount}`)
     }
@@ -385,7 +483,7 @@ function VerifyChatTurnInternal(expectedTurnCount, turnIndex, doVerification) {
       throw new Error(`VerifyChatTurnInternal(${expectedTurnCount}, ${turnIndex}): ${chatMessages.length} is not enough chat turns to find the requested turnIndex`) 
     }
     
-    doVerification(chatMessages[turnIndex])
+    verificationFunc(chatMessages[turnIndex])
   })
 }
 
@@ -460,8 +558,8 @@ export function EditTraining(firstInput, lastInput, lastResponse) {
     helpers.ConLog(funcName2, `Row #${trainDialogIndex}`)
 
     cy.wrap(1, {timeout: 8000}).should(() => {
-      const allChatMessages = GetAllChatMessages()
-      if (allChatMessages.length > 0) {
+      const allChatMessageElements = GetAllChatMessageElements()
+      if (allChatMessageElements.length > 0) {
         helpers.ConLog(funcName2, `The expected Train Dialog from row #${trainDialogIndex} has loaded`)
         return
       }
@@ -809,8 +907,8 @@ export function AbandonDialog() {
   ClickConfirmAbandonDialogButton()
 }
 
-export function EditTrainingNEW(scenario, tags) {
-  const funcName = `EditTrainingNEW(${scenario}, ${tags})`
+export function EditTrainingByDescriptionAndTags(desctiption, tags) {
+  const funcName = `EditTrainingByDescriptionAndTags(${desctiption}, ${tags})`
   cy.Enqueue(() => {
     const tagsFromGrid = trainDialogsGrid.GetTags()
     const scenarios = trainDialogsGrid.GetDescription()
@@ -818,13 +916,13 @@ export function EditTrainingNEW(scenario, tags) {
     helpers.ConLog(funcName, `Row Count: ${scenarios.length}`)
 
     for (let i = 0; i < scenarios.length; i++) {
-      if (scenarios[i] === scenario && tagsFromGrid[i] == tags) {
+      if (scenarios[i] === desctiption && tagsFromGrid[i] == tags) {
         helpers.ConLog(funcName, `ClickTraining for row: ${i}`)
         trainDialogsGrid.ClickTraining(i)
         return
       }
     }
-    throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${scenario}' -- tags: ${tags}`)
+    throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${desctiption}' -- tags: ${tags}`)
   })
 }
 
@@ -888,4 +986,33 @@ export function GetAllTrainDialogGridRows() {
   }
   
   return allRowData
+}
+
+export class BotChatElements {
+  constructor() {
+    this.botChatElements = Cypress.$('div.wc-message-from-bot[data-testid="web-chat-utterances"]')
+    this.index = this.botChatElements.length > 0 ? 0 : undefined
+  }
+  
+  SelectNext() {
+    if (!this.index) { return undefined }
+
+    const chatText = helpers.TextContentWithoutNewlines(botChatElements[i])
+    it(`Select Bot Response: ${chatText.substring(0,32)}`, () => {
+      Cypress.$(botChatElements[i]).Click()
+    })
+
+    return this.botChatElements.length >= ++this.index ? 0 : undefined
+  }
+}
+
+export function VerifyEachBotChatTurn(verificationFunction) {
+  cy.Get('div.wc-message-from-bot[data-testid="web-chat-utterances"]').then(botChatElements => {
+    for (let i = 0; i < botChatElements.length; i++) {
+      const chatText = helpers.TextContentWithoutNewlines(botChatElements[i])
+      cy.log(`Select Bot Response: ${chatText.substring(0,32)}`)
+      cy.wrap(botChatElements[i]).Click()
+      verificationFunction()
+    }
+  })
 }

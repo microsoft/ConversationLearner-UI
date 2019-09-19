@@ -62,8 +62,8 @@ function ModelShouldBeDeleted(modelName) {
     return false
   }
 
-const funcName = `ModelShouldBeDeleted(${modelName})`
-helpers.ConLog(funcName, 'Starts with "z-"')
+  const funcName = `ModelShouldBeDeleted(${modelName})`
+  helpers.ConLog(funcName, 'Starts with "z-"')
 
   // Test created Model names end with a suffix like this...  "-0425-135703x"
   // The moment format for the suffix is...                   "-MMDD-HHmmss*" where '*' is the Build Key
@@ -74,18 +74,20 @@ helpers.ConLog(funcName, 'Starts with "z-"')
   if (modelNameSuffix[0] != '-') {
     // Something is wrong with the format of this model name, 
     // so to be safe we will not delete it.
+    helpers.ConLog(funcName, `modelNameSuffix: '${modelNameSuffix}' - should start with '-' but does not`)
     return false
   }
 
-helpers.ConLog(funcName, 'Suffix starts with "-"')
+  helpers.ConLog(funcName, 'Suffix starts with "-"')
 
   if (modelNameSuffix[suffixLength - 1] == helpers.GetBuildKey()) {
     // The Build Key in the model matches the Build Key of this test 
     // run so we can safely delete a model we created.
+    helpers.ConLog(funcName, 'This model can be deleted')
     return true
   }
 
-helpers.ConLog(funcName, 'Key is from another build')
+  helpers.ConLog(funcName, 'Key is from another build')
 
   // This model was created by some other test run, so we need to verify
   // that the model is too old to still be in use. 5 minutes old is adequate
@@ -94,7 +96,7 @@ helpers.ConLog(funcName, 'Key is from another build')
   const modelCreatedTime = Cypress.moment(modelNameSuffix, suffixFormat)
   let momentModelIsTooOldToSave = Cypress.moment().subtract(5, 'm')
 
-helpers.ConLog(funcName, `Model is old enough to delete: ${modelCreatedTime.isBefore(momentModelIsTooOldToSave)}`)
+  helpers.ConLog(funcName, `Model is old enough to delete: ${modelCreatedTime.isBefore(momentModelIsTooOldToSave)}`)
 
   return modelCreatedTime.isBefore(momentModelIsTooOldToSave)
 }
