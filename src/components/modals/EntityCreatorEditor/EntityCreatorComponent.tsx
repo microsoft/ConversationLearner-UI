@@ -75,8 +75,8 @@ interface ReceivedProps {
     selectedResolverKey: string
     resolverOptions: OF.IDropdownOption[]
     onChangeResolver: (option?: OF.IDropdownOption) => void
-    isResolverStrict: boolean
-    onChangeResolverStrict: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
+    isResolutionRequired: boolean
+    onChangeResolverResolutionRequired: (ev?: React.FormEvent<HTMLElement | HTMLInputElement>, checked?: boolean) => void
 
     enumValues: (IEnumValueForDisplay | null)[]
     onChangeEnum: (index: number, value?: string) => void
@@ -173,15 +173,14 @@ const EditComponent: React.FC<Props> = (props) => {
                     </div>
                 )
             })
-
         }
         <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
             {props.entityTypeKey == CLM.EntityType.LUIS &&
                 <TC.Checkbox
                     data-testid="entity-creator-resolver-strict"
-                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_STRICT_LABEL)}
-                    checked={props.isResolverStrict}
-                    onChange={props.onChangeResolverStrict}
+                    label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_RESOLUTION_REQUIRED_LABEL)}
+                    checked={props.isResolutionRequired}
+                    onChange={props.onChangeResolverResolutionRequired}
                     disabled={props.selectedResolverKey === NONE_RESOLVER_KEY}
                     tipType={ToolTip.TipType.ENTITY_RESOLVER_STRICT}
                 />

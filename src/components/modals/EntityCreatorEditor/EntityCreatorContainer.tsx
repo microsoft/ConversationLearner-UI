@@ -31,7 +31,7 @@ const initState: ComponentState = {
     isPrebuilt: false,
     isMultivalueVal: false,
     isNegatableVal: false,
-    isResolverStrict: false,
+    isResolutionRequired: false,
     isEditing: false,
     enumValues: [],
     title: '',
@@ -52,7 +52,7 @@ interface ComponentState {
     isPrebuilt: boolean
     isMultivalueVal: boolean
     isNegatableVal: boolean
-    isResolverStrict: boolean
+    isResolutionRequired: boolean
     isEditing: boolean
     enumValues: (CLM.EnumValue | null)[]
     title: string
@@ -180,7 +180,7 @@ class Container extends React.Component<Props, ComponentState> {
                     isPrebuilt: isPrebuilt,
                     isMultivalueVal: nextProps.entity.isMultivalue,
                     isNegatableVal: nextProps.entity.isNegatible,
-                    isResolverStrict: nextProps.entity.isResolverStrict,
+                    isResolutionRequired: nextProps.entity.isResolutionRequired,
                     isEditing: true,
                     title: nextProps.intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
@@ -207,7 +207,7 @@ class Container extends React.Component<Props, ComponentState> {
             return
         }
 
-        const isResolverStrictChanged = this.state.isResolverStrict !== entity.isResolverStrict
+        const isResolutionRequiredChanged = this.state.isResolutionRequired !== entity.isResolutionRequired
         const isNameChanged = this.state.entityNameVal !== entity.entityName
         const isMultiValueChanged = this.state.isMultivalueVal !== entity.isMultivalue
         const isNegatableChanged = this.state.isNegatableVal !== entity.isNegatible
@@ -219,7 +219,7 @@ class Container extends React.Component<Props, ComponentState> {
             hasPendingEnumChanges = !this.areEnumsIdentical(newEnums, oldEnums)
         }
         const hasPendingChanges = isNameChanged
-            || isResolverStrictChanged
+            || isResolutionRequiredChanged
             || isMultiValueChanged
             || isNegatableChanged
             || isResolverChanged
@@ -265,7 +265,7 @@ class Container extends React.Component<Props, ComponentState> {
             resolverType,
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
-            isResolverStrict: this.state.isResolverStrict,
+            isResolutionRequired: this.state.isResolutionRequired,
             isMultivalue: this.state.isMultivalueVal,
             isNegatible: this.state.isNegatableVal,
             negativeId: null,
@@ -425,7 +425,7 @@ class Container extends React.Component<Props, ComponentState> {
     }
     onChangeResolverStrict = () => {
         this.setState(prevState => ({
-            isResolverStrict: !prevState.isResolverStrict,
+            isResolutionRequired: !prevState.isResolutionRequired,
         }))
     }
     onChangeMultivalue = () => {
@@ -827,7 +827,7 @@ class Container extends React.Component<Props, ComponentState> {
             resolverOptions={this.resolverOptions}
             onChangeResolver={this.onChangeResolverType}
 
-            isResolverStrict={this.state.isResolverStrict}
+            isResolutionRequired={this.state.isResolutionRequired}
             onChangeResolverStrict={this.onChangeResolverStrict}
 
             enumValues={enumValues}

@@ -48,7 +48,7 @@ export enum TipType {
     ENTITY_NAME = 'entityName',
     ENTITY_NEGATABLE = 'isNegatable',
     ENTITY_PROGAMMATIC = 'isProgrammatic',
-    ENTITY_RESOLVER_STRICT = 'isResolverStrict',
+    ENTITY_RESOLVER_STRICT = 'isResolutionRequired',
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
     ENTITY_RESOLVER = 'entityResolver',

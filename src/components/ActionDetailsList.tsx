@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -219,7 +219,7 @@ export interface ReceivedProps {
     onSelectAction: (action: CLM.ActionBase) => void
 }
 
-// Props types inferred from mapStateToProps 
+// Props types inferred from mapStateToProps
 const stateProps = returntypeof(mapStateToProps);
 type Props = typeof stateProps & ReceivedProps & InjectedIntlProps
 
@@ -278,9 +278,9 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
 
 function renderCondition(text: string, isRequired: boolean): JSX.Element {
     return (
-        <div 
-            className='ms-ListItem is-selectable ms-ListItem-primaryText' 
-            key={text} 
+        <div
+            className='ms-ListItem is-selectable ms-ListItem-primaryText'
+            key={text}
             data-testid={isRequired ? "action-details-required-entities" : "action-details-disqualifying-entities"}
         >
                 {text}
@@ -291,14 +291,14 @@ function renderConditions(entityIds: string[], conditions: CLM.Condition[], allE
     if (entityIds.length === 0 && (!conditions || conditions.length === 0)) {
         return ([
             <OF.Icon
-                key="empty" 
-                iconName="Remove" 
-                className="cl-icon" 
+                key="empty"
+                iconName="Remove"
+                className="cl-icon"
                 data-testid={isRequired ? "action-details-empty-required-entities" : "action-details-empty-disqualifying-entities"}
-            /> 
+            />
         ])
     }
-    
+
     const elements: JSX.Element[] = []
     entityIds.forEach(entityId => {
         const entity = allEntities.find(e => e.entityId === entityId)
