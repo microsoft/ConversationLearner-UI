@@ -182,7 +182,7 @@ const EditComponent: React.FC<Props> = (props) => {
                     checked={props.isResolutionRequired}
                     onChange={props.onChangeResolverResolutionRequired}
                     disabled={props.selectedResolverKey === NONE_RESOLVER_KEY}
-                    tipType={ToolTip.TipType.ENTITY_RESOLVER_STRICT}
+                    tipType={ToolTip.TipType.ENTITY_RESOLVER_RESOLUTION_REQUIRED}
                 />
             }
             {props.entityTypeKey !== CLM.EntityType.ENUM &&

@@ -48,10 +48,10 @@ export enum TipType {
     ENTITY_NAME = 'entityName',
     ENTITY_NEGATABLE = 'isNegatable',
     ENTITY_PROGAMMATIC = 'isProgrammatic',
-    ENTITY_RESOLVER_STRICT = 'isResolutionRequired',
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
     ENTITY_RESOLVER = 'entityResolver',
+    ENTITY_RESOLVER_RESOLUTION_REQUIRED = 'isResolutionRequired',
 
     EXPORT_CHOICE = 'EXPORT_CHOICE',
 
@@ -495,16 +495,6 @@ export function getTip(tipType: string) {
                     The "isLoggedIn" Entity is set in code. When not set, it can be used to disqualify Actions that require authorized users
                 </div>
             )
-        case TipType.ENTITY_RESOLVER_STRICT:
-            return (
-                <div>
-                    <h3>Strict Resolvers</h3>
-                    <p>Entities with strict resolvers must have resolution in order to be present (predicted or labeled manually).</p>
-                    <p>Select this option if the entity only makes sense with concrete resolved value. <br />
-                    E.g. `numberOfPeople` has resolutin of type `number`</p>
-                    <p>Warning: If entity is predicted, but no matching resolution is available then entity will be removed</p>
-                </div>
-            )
         case TipType.ENTITY_TYPE:
             return (
                 <div>
@@ -554,7 +544,22 @@ export function getTip(tipType: string) {
                     />
                 </div>
             )
-
+        case TipType.ENTITY_RESOLVER_RESOLUTION_REQUIRED:
+            return (
+                <div>
+                    <h3>Resolution Required</h3>
+                    <p>When a <HelpLink label="Resolver Type" tipType={TipType.ENTITY_RESOLVER} /> is added to an entity any matching resolution type predicted within the labels boundaries will be promoted to that entity; however if no resolutoin was available the label is still valid and will exist. This is more flexible but means you cannot rely on the resolution and must write code that is robust if there is none.</p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_TYPE_MEMORY.png"
+                        width="80%"
+                        alt="Entity Type Custom"
+                    />
+                    <p>Select this option if the entity only makes sense with concrete resolved value.<br />
+                        E.g. `numberOfPeople` has resolutin of type `number`</p>
+                    <p>Warning: If entity is predicted, but no matching resolution is available then entity will be removed</p>
+                </div>
+            )
         case TipType.EXPORT_CHOICE:
             return (
                 <div>
