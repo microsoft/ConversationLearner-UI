@@ -216,7 +216,6 @@ export class ObiDialogParser {
     }
 
     private async getScorerStepFromActivity(prompt: string): Promise<CLM.TrainScorerStep> {
-
         const parsedActivity = prompt.substring(prompt.indexOf("[") + 1, prompt.lastIndexOf("]")).trim()
         let response = this.composerDialog.lgMap.get(parsedActivity)
         if (!response) {
@@ -249,14 +248,14 @@ export class ObiDialogParser {
      */
     private async createActionFromHttpRequest(step: OBIDialog, nextStep: string | OBIDialog): Promise<CLM.TrainScorerStep> {
         if (!step.url) {
-            // TODO(thpar) : validate other properties ?
             throw new Error('HTTP requests require url')
         }
         const isTerminal = false // TODO - calculate this...
         const hashText = JSON.stringify(step)
         let action: CLM.ActionBase | undefined | null = OBIUtils.findActionFromHashText(hashText, this.actions)
-        // TODO(thpar) : is this a problem ?  Here we're hashing on the whole thing but may have a different widget calling
-        // the same URL...  Deal with this...
+        // TODO(thpar) : is this a problem ?
+        // Here we're hashing on the whole thing but may have a different widget calling the same URL...
+        // Deal with this...
         if (!action && this.createActionThunkAsync) {
             action = await DialogEditing.getPlaceholderAPIAction(this.app.appId, step.url, isTerminal,
                 this.actions, this.createActionThunkAsync as any)
@@ -265,7 +264,7 @@ export class ObiDialogParser {
         let actionOutputEntities: OBIUtils.ActionOutput[] = []
         if (step.responseFields) {
             actionOutputEntities = step.responseFields.map(
-                // TODO - use something other than empty string here ?
+                // TODO(thpar) : Update value to support undefined ?
                 (field) => { return { entityName: field, value: "" } }
             )
         }
@@ -277,8 +276,7 @@ export class ObiDialogParser {
             maskedActions: []
         }
         return {
-            // TODO(thpar): Change text ??
-            importText: "DIALOG_PLACEHOLDER",
+            importText: undefined,
             input: scoreInput,
             labelAction: CLM.CL_STUB_IMPORT_ACTION_ID,
             logicResult: undefined,
