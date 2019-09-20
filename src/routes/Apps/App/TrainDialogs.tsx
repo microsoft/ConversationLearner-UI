@@ -888,6 +888,10 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
 
             // If auto importing and new dialog has matched all actions
+            // !!! thpar@ : When we get here, we have a round with 3 scorer steps
+            // - "Can't parse LG"
+            // - One without any filled entities
+            // - "Success"
             if (this.state.importAutoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
                 // Fetch activityHistory as needed for validation checks
                 await Util.setStateAsync(this, {
@@ -1082,8 +1086,8 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
     }
 
     async importOBIFiles(obiImportData: OBIUtils.OBIImportData): Promise<void> {
-
-        const obiDialogParser = new OBIDialogParser.ObiDialogParser()
+        const obiDialogParser = new OBIDialogParser.ObiDialogParser(this.props.app, this.props.actions, this.props.entities,
+            this.props.createActionThunkAsync as any, this.props.createEntityThunkAsync as any)
         try {
             const importedTrainDialogs = await obiDialogParser.getTrainDialogs(obiImportData.files)
 

@@ -123,6 +123,11 @@ export interface OBIDialog {
      */
     property?: string;
     /**
+     * If the result is expected to be structured data such as a JSON object, this holds
+     * the names of the fields or properties in that response object.
+     */
+    responseFields?: string[]
+    /**
      * Configured recognizer to generate intent and entites from user utterance
      */
     recognizer?: Recognizer | string;

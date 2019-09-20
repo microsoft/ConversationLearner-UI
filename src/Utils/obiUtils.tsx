@@ -62,10 +62,10 @@ export interface TranscriptActionCall {
     type: string
     actionName: string
     actionInput: TranscriptActionInput[]
-    actionOutput: TranscriptActionOutput[]
+    actionOutput: ActionOutput[]
 }
 
-interface TranscriptActionOutput {
+export interface ActionOutput {
     entityName: string,
     value: string
 }
@@ -564,8 +564,13 @@ export function findActionFromHashText(hashText: string, actions: CLM.ActionBase
     return matchedActions[0]
 }
 
+/**
+ * Given the {entityName, entityValue} results from some action being imported, returns
+ * an array of FilledEntity instances representing those results.
+ * Entities that do not yet exist will be created once.
+ */
 export async function importActionOutput(
-    actionResults: TranscriptActionOutput[],
+    actionResults: ActionOutput[],
     entities: CLM.EntityBase[],
     app: CLM.AppBase,
     createEntityThunkAsync?: ((appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>)
@@ -601,11 +606,9 @@ export async function importActionOutput(
             }
 
             entityId = await ((createEntityThunkAsync(app.appId, newEntity) as any) as Promise<string>)
-
             if (!entityId) {
                 throw new Error("Invalid Entity Definition")
             }
-
         }
         else {
             entityId = "UNKNOWN ENTITY"
