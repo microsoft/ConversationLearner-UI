@@ -141,11 +141,11 @@ export class ObiDialogParser {
         if (obiDialog.steps) {
             for (let i = 0; i < obiDialog.steps.length; i = i + 1) {
                 const step = obiDialog.steps[i]
-                const nextStep = obiDialog.steps[i + 1]
-                if (typeof step === "string") {
+                const nextStep = (i + 1 < obiDialog.steps.length) ? obiDialog.steps[i + 1] : undefined
+                if (typeof step === "string" || typeof nextStep === "string") {
                     throw new Error("Unexected step of type string")
                 }
-                else if (step.$type === OBIStepType.SEND_ACTIVITY) {
+                if (step.$type === OBIStepType.SEND_ACTIVITY) {
                     if (!trainRound) {
                         trainRound = {
                             extractorStep: { textVariations: [] },
@@ -246,16 +246,15 @@ export class ObiDialogParser {
      * output parameters of the response object.  Note that as of 2019.09, this field is specific
      * to ConversationLearner and is not part of the OBI spec.
      */
-    private async createActionFromHttpRequest(step: OBIDialog, nextStep: string | OBIDialog): Promise<CLM.TrainScorerStep> {
+    private async createActionFromHttpRequest(step: OBIDialog, nextStep: OBIDialog | undefined):
+        Promise<CLM.TrainScorerStep> {
         if (!step.url) {
             throw new Error('HTTP requests require url')
         }
-        const isTerminal = false // TODO - calculate this...
+        const isTerminal = (!nextStep || nextStep.$type === OBIStepType.TEXT_INPUT ||
+            nextStep.$type === OBIStepType.END_TURN)
         const hashText = JSON.stringify(step)
         let action: CLM.ActionBase | undefined | null = OBIUtils.findActionFromHashText(hashText, this.actions)
-        // TODO(thpar) : is this a problem ?
-        // Here we're hashing on the whole thing but may have a different widget calling the same URL...
-        // Deal with this...
         if (!action && this.createActionThunkAsync) {
             action = await DialogEditing.getPlaceholderAPIAction(this.app.appId, step.url, isTerminal,
                 this.actions, this.createActionThunkAsync as any)
@@ -264,8 +263,7 @@ export class ObiDialogParser {
         let actionOutputEntities: OBIUtils.ActionOutput[] = []
         if (step.responseFields) {
             actionOutputEntities = step.responseFields.map(
-                // TODO(thpar) : Update value to support undefined ?
-                (field) => { return { entityName: field, value: "" } }
+                (field) => { return { entityName: field } }
             )
         }
         const filledEntities = await OBIUtils.importActionOutput(actionOutputEntities, this.entities, this.app,
@@ -279,11 +277,11 @@ export class ObiDialogParser {
         let scoredAction: CLM.ScoredAction | undefined
         if (action) {
             scoredAction = {
-            actionId: action.actionId,
-            payload: action.payload,
-            isTerminal: action.isTerminal,
-            actionType: CLM.ActionTypes.API_LOCAL,
-            score: 1
+                actionId: action.actionId,
+                payload: action.payload,
+                isTerminal: action.isTerminal,
+                actionType: CLM.ActionTypes.API_LOCAL,
+                score: 1
             }
         }
         return {

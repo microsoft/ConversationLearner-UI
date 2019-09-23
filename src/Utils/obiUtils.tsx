@@ -67,7 +67,7 @@ export interface TranscriptActionCall {
 
 export interface ActionOutput {
     entityName: string,
-    value: string
+    value?: string
 }
 
 export function isSameActivity(activity1: BB.Activity, activity2: BB.Activity): boolean {
@@ -614,7 +614,7 @@ export async function importActionOutput(
             entityId = "UNKNOWN ENTITY"
         }
         const memoryValue: CLM.MemoryValue = {
-            userText: actionResult.value,
+            userText: actionResult.value ? actionResult.value : null,
             displayText: null,
             builtinType: null,
             resolution: {}
