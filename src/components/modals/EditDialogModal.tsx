@@ -416,8 +416,8 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
     // Returns true if blocking error exists
     hasBlockingError(): boolean {
-        if (!this.props.activityHistory || this.props.activityHistory.length === 0) {
-            return false
+    if (this.props.activityHistory.length === 0) {
+        return false
         }
         for (const activity of this.props.activityHistory) {
             const clData: CLM.CLChannelData = activity.channelData.clData
