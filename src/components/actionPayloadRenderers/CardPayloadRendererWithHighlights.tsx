@@ -31,8 +31,8 @@ const Component: React.FC<Props> = (props) => {
             <div data-testid="action-scorer-card">
                 <div className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-card-name">{props.cardAction.templateName}</div>
                 <div className="cl-card-payload__arguments ms-ListItem-primaryText">
-                    {payloadRenderData.slateValues.length !== 0
-                        && payloadRenderData.slateValues.map((argument, i) => {
+                    {payloadRenderData.renderedArguments.length !== 0
+                        && payloadRenderData.renderedArguments.map((argument, i) => {
                             const visibleSlateValue = isOriginalVisible
                                 ? argument.valueShowingEntityNames
                                 : argument.valueShowingCurrentMemory

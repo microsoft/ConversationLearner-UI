@@ -46,10 +46,10 @@ const Component: React.FC<Props> = (props) => {
                 <div className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-api-name">{name}</div>
                 {showLogicFunction && !isPlaceholder &&
                     <div className="cl-api-payload__fn">
-                        <div className="cl-api-payload__signature">logic(memoryManager{logicPayloadRenderData.slateValues.length !== 0 && `, ${logicPayloadRenderData.slateValues.map(a => a.parameter).join(', ')}`})</div>
+                        <div className="cl-api-payload__signature">logic(memoryManager{logicPayloadRenderData.renderedArguments.length !== 0 && `, ${logicPayloadRenderData.renderedArguments.map(a => a.parameter).join(', ')}`})</div>
                         <div className="cl-api-payload__arguments ms-ListItem-primaryText">
-                            {logicPayloadRenderData.slateValues.length !== 0
-                                && logicPayloadRenderData.slateValues.map((argument, i) => {
+                            {logicPayloadRenderData.renderedArguments.length !== 0
+                                && logicPayloadRenderData.renderedArguments.map((argument, i) => {
                                     const visibleSlateValue = isOriginalVisible
                                         ? argument.valueShowingEntityNames
                                         : argument.valueShowingCurrentMemory
@@ -69,10 +69,10 @@ const Component: React.FC<Props> = (props) => {
                 }
                 {showRenderFunction && !isPlaceholder &&
                     <div className="cl-api-payload__fn">
-                        <div className="cl-api-payload__signature">render(result, memoryManager{renderPayloadRenderData.slateValues.length !== 0 && `, ${renderPayloadRenderData.slateValues.map(a => a.parameter).join(', ')}`})</div>
+                        <div className="cl-api-payload__signature">render(result, memoryManager{renderPayloadRenderData.renderedArguments.length !== 0 && `, ${renderPayloadRenderData.renderedArguments.map(a => a.parameter).join(', ')}`})</div>
                         <div className="cl-api-payload__arguments ms-ListItem-primaryText">
-                            {renderPayloadRenderData.slateValues.length !== 0
-                                && renderPayloadRenderData.slateValues.map((argument, i) => {
+                            {renderPayloadRenderData.renderedArguments.length !== 0
+                                && renderPayloadRenderData.renderedArguments.map((argument, i) => {
                                     const visibleSlateValue = isOriginalVisible
                                         ? argument.valueShowingEntityNames
                                         : argument.valueShowingCurrentMemory

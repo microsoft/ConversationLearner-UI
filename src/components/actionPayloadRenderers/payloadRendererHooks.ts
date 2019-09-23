@@ -14,7 +14,7 @@ export function usePayloadRenderer(
     const entityIds = SlateSerializer.getEntityIds(value.document)
     const hasEntities = entityIds.length >= 1
 
-    const slateValues = React.useMemo(() => {
+    const renderedValues = React.useMemo(() => {
         const entityEntryMap = Util.createEntityMapWithNamesAndValues(entities, memories)
         const valueShowingEntityNames = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(value), entityEntryMap, e => `$${e.name}`, showMissingEntities)
         const valueShowingCurrentMemory = SlateTransformer.replaceEntityNodesWithValues(Util.deepCopy(value), entityEntryMap, e => e.value ? e.value : `$${e.name}`, showMissingEntities)
@@ -33,7 +33,7 @@ export function usePayloadRenderer(
     }, [value, entities])
 
     return {
-        ...slateValues,
+        ...renderedValues,
         hasEntities
     }
 }
@@ -52,7 +52,7 @@ export function useMultiPayloadRenderer(
     showMissingEntities: boolean,
     memories?: CLM.Memory[]
 ) {
-    const slateValuesAndToggle = React.useMemo(() => {
+    const renderedArgumentsAndToggle = React.useMemo(() => {
         const entityEntryMap = Util.createEntityMapWithNamesAndValues(entities, memories)
 
         const renderedArgumentsWithHighlights = actionArguments
@@ -90,17 +90,17 @@ export function useMultiPayloadRenderer(
                 .some(([entityId, entityEntry]) => entityEntry.value)
 
         // Convert JSON objects representing values into actual SlateValues
-        const slateValues = renderedArgumentsWithHighlights.map(rArg => ({
-            ...rArg,
-            valueShowingEntityNames: Value.fromJSON(rArg.jsonValueShowingEntityNames),
-            valueShowingCurrentMemory: Value.fromJSON(rArg.jsonValueShowingCurrentMemory),
+        const renderedArguments = renderedArgumentsWithHighlights.map(renderArg => ({
+            ...renderArg,
+            valueShowingEntityNames: Value.fromJSON(renderArg.jsonValueShowingEntityNames),
+            valueShowingCurrentMemory: Value.fromJSON(renderArg.jsonValueShowingCurrentMemory),
         }))
 
         return {
             showToggle,
-            slateValues
+            renderedArguments
         }
     }, [actionArguments.length, entities, memories, showMissingEntities])
 
-    return slateValuesAndToggle
+    return renderedArgumentsAndToggle
 }
