@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -97,9 +97,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }
         },
         {
-            key: 'isBucketable',
+            key: 'isMultivalue',
             name: intl.formatMessage({
-                id: FM.ENTITIES_COLUMNS_IS_BUCKETABLE,
+                id: FM.ENTITIES_COLUMNS_IS_MULTIVALUE,
                 defaultMessage: 'Multi-Value'
             }),
             fieldName: 'isMultivalue',
@@ -278,7 +278,7 @@ class Entities extends React.Component<Props, ComponentState> {
 
     @autobind
     onSearch(newValue: string) {
-        // runs when user changes the text 
+        // runs when user changes the text
         const lcString = newValue.toLowerCase();
         this.setState({
             searchValue: lcString

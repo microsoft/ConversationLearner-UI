@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -129,9 +129,9 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             }
         },
         {
-            key: 'isBucketable',
-            name: formatMessageId(intl, FM.ENTITIES_COLUMNS_IS_BUCKETABLE),
-            fieldName: 'isBucketable',
+            key: 'isMultivalue',
+            name: formatMessageId(intl, FM.ENTITIES_COLUMNS_IS_MULTIVALUE),
+            fieldName: 'isMultivalue',
             minWidth: 80,
             maxWidth: 100,
             isResizable: true,

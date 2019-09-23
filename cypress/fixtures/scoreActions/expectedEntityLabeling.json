@@ -3,6 +3,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "100.0%",
       "entities": [
@@ -16,6 +17,7 @@
     {
       "buttonTestId": "action-scorer-button-no-click",
       "response": "Hello $name",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "Disqualified",
       "entities": [
@@ -31,6 +33,7 @@
     {
       "buttonTestId": "action-scorer-button-clickable",
       "response": "Hello David",
+      "hasEntityValueNameToggle": true,
       "type": "TEXT",
       "score": "100.0%",
       "entities": [
@@ -44,6 +47,7 @@
     {
       "buttonTestId": "action-scorer-button-no-click",
       "response": "What's your name?",
+      "hasEntityValueNameToggle": false,
       "type": "TEXT",
       "score": "Disqualified",
       "entities": [

@@ -36,6 +36,7 @@ export default class Component extends React.Component<Props, State> {
             }</div>
             {showToggle && <div>
                 <OF.Toggle
+                    data-testid="action-scorer-entity-toggle"
                     checked={this.state.isOriginalVisible}
                     onChange={this.onChangeVisible}
                 />
