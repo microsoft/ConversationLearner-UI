@@ -13,7 +13,7 @@ import ConfirmCancelModal from './ConfirmCancelModal'
 import actionTypeRenderer from '../ActionTypeRenderer'
 import EditApiPlaceholder from '../modals/EditApiPlaceholder'
 import ActionCreatorEditor from './ActionCreatorEditor'
-import AdaptiveCardViewer , { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
+import AdaptiveCardViewer, { getRawTemplateText } from './AdaptiveCardViewer/AdaptiveCardViewer'
 import { ImportedAction } from '../../types/models'
 import { compareTwoStrings } from 'string-similarity'
 import { bindActionCreators } from 'redux';
@@ -131,41 +131,45 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                 if (action.actionType === CLM.ActionTypes.TEXT) {
                     const textAction = new CLM.TextAction(action)
                     return (
-                        <ActionPayloadRenderers.TextPayloadRendererContainer
+                        <ActionPayloadRenderers.TextPayloadRendererWithHighlights
                             textAction={textAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
+                            showMissingEntities={true}
                         />)
                 }
                 else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
                     const apiAction = new CLM.ApiAction(action)
                     const callback = component.props.botInfo.callbacks.find(t => t.name === apiAction.name)
                     return (
-                        <ActionPayloadRenderers.ApiPayloadRendererContainer
+                        <ActionPayloadRenderers.ApiPayloadRendererWithHighlights
                             apiAction={apiAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
                             callback={callback}
+                            showMissingEntities={true}
                         />)
                 }
                 else if (action.actionType === CLM.ActionTypes.CARD) {
                     const cardAction = new CLM.CardAction(action)
                     return (
-                        <ActionPayloadRenderers.CardPayloadRendererContainer
+                        <ActionPayloadRenderers.CardPayloadRendererWithHighlights
                             isValidationError={false}
                             cardAction={cardAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
                             onClickViewCard={(_, showOriginal) => component.onClickViewCard(action, showOriginal)}
+                            showMissingEntities={true}
                         />)
                 }
                 else if (action.actionType === CLM.ActionTypes.END_SESSION) {
                     const sessionAction = new CLM.SessionAction(action)
                     return (
-                        <ActionPayloadRenderers.SessionPayloadRendererContainer
+                        <ActionPayloadRenderers.SessionPayloadRendererWithHighlights
                             sessionAction={sessionAction}
                             entities={component.props.entities}
                             memories={component.props.memories}
+                            showMissingEntities={true}
                         />)
                 }
                 else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
@@ -262,7 +266,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 70,
             isResizable: false,
             getSortValue: action => action.repromptActionId !== undefined ? 'a' : 'b',
-            render: action => <OF.Icon iconName={action.repromptActionId !== undefined ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait"/>
+            render: action => <OF.Icon iconName={action.repromptActionId !== undefined ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait" />
         },
         {
             key: 'actionType',
@@ -964,18 +968,18 @@ class ActionScorer extends React.Component<Props, ComponentState> {
                                 iconProps={{ iconName: 'Handwriting' }}
                             />
                         </div>
-                    <OF.DetailsList
-                        className={OF.FontClassNames.mediumPlus}
-                        items={this.state.actionForRender}
-                        columns={this.state.columns}
-                        checkboxVisibility={OF.CheckboxVisibility.hidden}
-                        onRenderItemColumn={this.renderItemColumn}
-                        onColumnHeaderClick={this.onColumnClick}
-                        onRenderDetailsHeader={(
-                            detailsHeaderProps: OF.IDetailsHeaderProps,
-                            defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
-                            onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
-                    />
+                        <OF.DetailsList
+                            className={OF.FontClassNames.mediumPlus}
+                            items={this.state.actionForRender}
+                            columns={this.state.columns}
+                            checkboxVisibility={OF.CheckboxVisibility.hidden}
+                            onRenderItemColumn={this.renderItemColumn}
+                            onColumnHeaderClick={this.onColumnClick}
+                            onRenderDetailsHeader={(
+                                detailsHeaderProps: OF.IDetailsHeaderProps,
+                                defaultRender: OF.IRenderFunction<OF.IDetailsHeaderProps>) =>
+                                onRenderDetailsHeader(detailsHeaderProps, defaultRender)}
+                        />
                     </div>
                 }
 

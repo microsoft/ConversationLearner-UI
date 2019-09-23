@@ -2,8 +2,13 @@
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
- .cl-text-payload {
+
+.cl-sesson-payload {
     display: grid;
     grid-template: auto / 1fr min-content;
     grid-gap: 1em;
+}
+
+.cl-sesson-payload__header {
+    font-style: italic;
 }

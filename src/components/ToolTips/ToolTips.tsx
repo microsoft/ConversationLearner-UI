@@ -44,7 +44,7 @@ export enum TipType {
     ENTITY_EXTRACTOR_HELP = 'entityExtractorHelp',
     ENTITY_EXTRACTOR_TEXTVARIATION = 'entityExtractorTextVariation',
     ENTITY_EXTRACTOR_WARNING = 'extractorWarning',
-    ENTITY_MULTIVALUE = 'isBucketable',
+    ENTITY_MULTIVALUE = 'isMultivalue',
     ENTITY_NAME = 'entityName',
     ENTITY_NEGATABLE = 'isNegatable',
     ENTITY_PROGAMMATIC = 'isProgrammatic',

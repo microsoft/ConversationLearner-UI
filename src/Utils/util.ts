@@ -55,6 +55,10 @@ export function packageReferences(app: CLM.AppBase): CLM.PackageReference[] {
     ]
 }
 
+/**
+ * Create map of [entityId, memoryValue]
+ * Assumes memory value's are associated with entity by entityName (NOT entityId)
+ */
 export function createEntityMapFromMemories(entities: CLM.EntityBase[], memories: CLM.Memory[]): Map<string, string> {
     return memories.reduce((map, m) => {
         const entity = entities.find(e => e.entityName === m.entityName)
@@ -63,6 +67,28 @@ export function createEntityMapFromMemories(entities: CLM.EntityBase[], memories
         }
         return map
     }, new Map<string, string>())
+}
+
+export type EntityMapEntry = {
+    name: string,
+    value?: string,
+}
+
+export function createEntityMapWithNamesAndValues(entities: CLM.EntityBase[], memories?: CLM.Memory[]): Record<string, EntityMapEntry> {
+    return entities.reduce<Record<string, EntityMapEntry>>((map, e) => {
+        const entry: EntityMapEntry = {
+            name: e.entityName,
+        }
+
+        const memory = memories && memories.find(m => m.entityName == e.entityName)
+        if (memory) {
+            entry.value = CLM.memoryValuesAsString(memory.entityValues)
+        }
+
+        map[e.entityId] = entry
+
+        return map
+    }, {})
 }
 
 export const CL_DEMO_ID = '4433d65080bc95c0f2bddd26b5a0c816d09619cd4f8be0fec99fd2944e536888'
