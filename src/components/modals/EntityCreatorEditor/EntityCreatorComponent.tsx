@@ -181,7 +181,7 @@ const EditComponent: React.FC<Props> = (props) => {
                     label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_RESOLUTION_REQUIRED_LABEL)}
                     checked={props.isResolutionRequired}
                     onChange={props.onChangeResolverResolutionRequired}
-                    disabled={props.selectedResolverKey === NONE_RESOLVER_KEY}
+                    disabled={props.selectedResolverKey === NONE_RESOLVER_KEY || props.isEditing}
                     tipType={ToolTip.TipType.ENTITY_RESOLVER_RESOLUTION_REQUIRED}
                 />
             }
