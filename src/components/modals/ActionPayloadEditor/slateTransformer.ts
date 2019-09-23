@@ -97,8 +97,7 @@ function replaceEntityNodesWithValues(node: any, entityValuesMap: Record<string,
             const entityId = option.id
             const entityEntry = entityValuesMap[entityId]
 
-            // If entity value exists, replace children with text node of value
-            // If entity value does NOT exist, set data to missing
+            // If entity entry exists, replace children with text node of value
             if (entityEntry) {
                 const text = replacerFn(entityEntry)
                 const textNode = {
@@ -117,6 +116,7 @@ function replaceEntityNodesWithValues(node: any, entityValuesMap: Record<string,
                 ]
 
                 // If entity does not have value, mark as missing
+                // Otherwise, mark as filled
                 const entityFilledData: Record<string, boolean> = {}
 
                 if (typeof entityEntry.value === "undefined") {
