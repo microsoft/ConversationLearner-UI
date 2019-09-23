@@ -202,11 +202,17 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
-        // If resolver type was changed from NONE to other, force the resolution required
-        // Ideally this would only happen once, but is likey used rarely
+        // Force changes to isResolutionRequired when resolutionType changes
+        // If NONE to other, enabled and true
+        // If oter to NONE, disabled and false
         if (this.state.entityResolverVal !== NONE_RESOLVER_KEY && prevState.entityResolverVal === NONE_RESOLVER_KEY) {
             this.setState({
                 isResolutionRequired: true
+            })
+        }
+        else if (this.state.entityResolverVal === NONE_RESOLVER_KEY && prevState.entityResolverVal !== NONE_RESOLVER_KEY) {
+            this.setState({
+                isResolutionRequired: false
             })
         }
 
