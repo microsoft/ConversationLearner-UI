@@ -888,10 +888,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
 
             // If auto importing and new dialog has matched all actions
-            // !!! thpar@ : When we get here, we have a round with 3 scorer steps
-            // - "Can't parse LG"
-            // - One without any filled entities
-            // - "Success"
             if (this.state.importAutoCreate && !DialogUtils.hasImportActions(newTrainDialog)) {
                 // Fetch activityHistory as needed for validation checks
                 await Util.setStateAsync(this, {
