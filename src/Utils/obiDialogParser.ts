@@ -111,28 +111,21 @@ export class ObiDialogParser {
                         if (typeof step === "string") {
                             throw new Error("Unexpected string step")
                         }
-                        else {
-                            if (step.$type === OBIStepType.BEGIN_DIALOG && typeof step.dialog === "string") {
-
-                                const subDialog = this.composerDialog.dialogs.find(d => d.$id === step.dialog)
-                                if (!subDialog) {
-                                    throw new Error(`Dialog name ${step.dialog} undefined`)
-                                }
-
-                                const childDialogs = await this.getTrainDialogsfromOBIDialog(subDialog)
-
-                                // Add extractor step to all the children
-                                childDialogs.forEach(td => {
-                                    td.rounds[0].extractorStep = extractorStep
-                                })
-
-                                // Add children to train dialog list
-                                trainDialogs = [...trainDialogs, ...childDialogs]
-                            }
-                            else {
-                                console.log(`Unhandled OBI Type: ${step.$type}`)
-                            }
+                        if (step.$type !== OBIStepType.BEGIN_DIALOG || typeof step.dialog !== "string") {
+                            console.log(`Unhandled OBI Type: ${step.$type}`)
+                            continue
                         }
+                        const subDialog = this.composerDialog.dialogs.find(d => d.$id === step.dialog)
+                        if (!subDialog) {
+                            throw new Error(`Dialog name ${step.dialog} undefined`)
+                        }
+                        const childDialogs = await this.getTrainDialogsfromOBIDialog(subDialog)
+                        // Add extractor step to all the children
+                        childDialogs.forEach(td => {
+                            td.rounds[0].extractorStep = extractorStep
+                        })
+                        // Add children to train dialog list
+                        trainDialogs = [...trainDialogs, ...childDialogs]
                     }
                 }
             }
