@@ -121,7 +121,7 @@ export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.L
 }
 
 export async function addRepromptExamples(
-    appId: string, 
+    appId: string,
     trainDialog: CLM.TrainDialog,
     actions: CLM.ActionBase[],
     createTrainDialogThunkAsync: (appId: string, newTrainDialog: CLM.TrainDialog) => Promise<CLM.TrainDialog>): Promise<void> {
@@ -150,7 +150,7 @@ export async function addRepromptExamples(
                     logicResult: undefined,
                     scoredAction: {
                         actionId: repromptAction.actionId,
-                        payload: repromptAction.payload, 
+                        payload: repromptAction.payload,
                         isTerminal: repromptAction.isTerminal,
                         actionType: repromptAction.actionType,
                         score: 100
@@ -589,6 +589,7 @@ export async function importActionOutput(
                 resolverType: "none",
                 createdDateTime: new Date().toJSON(),
                 lastModifiedDateTime: new Date().toJSON(),
+                isResolutionRequired: false,
                 isMultivalue: false,
                 isNegatible: false,
                 negativeId: null,
@@ -825,7 +826,7 @@ const nouns = [
     "skill",
     "situation",
     "celebration",
-    "intention"    
+    "intention"
 ]
 
 const adjectives = [
