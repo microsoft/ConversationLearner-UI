@@ -266,9 +266,7 @@ class Container extends React.Component<Props, ComponentState> {
     convertStateToEntity(state: ComponentState, originalEntity?: CLM.EntityBase): CLM.EntityBase {
         let entityName = this.state.entityNameVal
         const entityType = this.state.entityTypeVal
-        const resolverType = this.state.entityResolverVal === NONE_RESOLVER_KEY
-            ? null
-            : this.state.entityResolverVal
+        const resolverType = this.state.entityResolverVal
         if (this.state.isPrebuilt) {
             entityName = getPrebuiltEntityName(entityType)
         }
