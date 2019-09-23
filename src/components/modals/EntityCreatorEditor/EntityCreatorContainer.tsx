@@ -75,9 +75,15 @@ class Container extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        this.state = { ...initState, entityTypeVal: CLM.EntityType.LUIS, entityResolverVal: this.NONE_RESOLVER }
+        this.state = {
+            ...initState,
+            entityTypeVal: CLM.EntityType.LUIS,
+            entityResolverVal: this.NONE_RESOLVER,
+        }
         this.staticEntityOptions = this.getStaticEntityOptions(this.props.intl)
+        this.entityOptions = this.staticEntityOptions
         this.staticResolverOptions = this.getStaticResolverOptions(this.props.intl)
+        this.entityOptions = this.staticResolverOptions
     }
 
     getStaticEntityOptions(intl: InjectedIntl): CLDropdownOption[] {
@@ -99,18 +105,6 @@ class Container extends React.Component<Props, ComponentState> {
                 text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITYOPTION_ENUM),
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
-            },
-            {
-                key: 'divider',
-                text: '-',
-                itemType: OF.DropdownMenuItemType.Divider,
-                style: 'clDropdown--normal'
-            },
-            {
-                key: 'Header',
-                text: 'Pre-Trained',
-                itemType: OF.DropdownMenuItemType.Header,
-                style: 'clDropdown--normal'
             }
         ]
     }
@@ -151,10 +145,10 @@ class Container extends React.Component<Props, ComponentState> {
                         style: 'clDropdown--normal'
                     }))
 
+            this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
+
             if (nextProps.entity === null) {
-                const filteredPreBuiltOptions = localePreBuiltOptions.filter(entityOption => !nextProps.entities.some(e => !e.doNotMemorize && e.entityType === entityOption.key))
-                this.entityOptions = [...this.staticEntityOptions, ...filteredPreBuiltOptions]
-                this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
+                this.entityOptions = [...this.staticEntityOptions]
 
                 this.setState({
                     ...initState,
@@ -167,8 +161,7 @@ class Container extends React.Component<Props, ComponentState> {
                     enumValues: this.initEnumValues(undefined)
                 });
             } else {
-                this.entityOptions = [...this.staticEntityOptions, ...localePreBuiltOptions]
-                this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
+                this.entityOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
                 const entityType = nextProps.entity.entityType
                 const isPrebuilt = CLM.isPrebuilt(nextProps.entity)
                 const resolverType = nextProps.entity.resolverType === null ? this.NONE_RESOLVER : nextProps.entity.resolverType
