@@ -260,7 +260,7 @@ export class ObiDialogParser {
             action = await DialogEditing.getPlaceholderAPIAction(this.app.appId, step.url, isTerminal,
                 this.actions, this.createActionThunkAsync as any)
         }
-
+        // Create an entity for each output parameter in the action.
         let actionOutputEntities: OBIUtils.ActionOutput[] = []
         if (step.responseFields) {
             actionOutputEntities = step.responseFields.map(
@@ -275,12 +275,23 @@ export class ObiDialogParser {
             context: {},
             maskedActions: []
         }
+        // Create a scored action for this action; this will allow the action to be matched during import.
+        let scoredAction: CLM.ScoredAction | undefined
+        if (action) {
+            scoredAction = {
+            actionId: action.actionId,
+            payload: action.payload,
+            isTerminal: action.isTerminal,
+            actionType: CLM.ActionTypes.API_LOCAL,
+            score: 1
+            }
+        }
         return {
             importText: undefined,
             input: scoreInput,
             labelAction: CLM.CL_STUB_IMPORT_ACTION_ID,
             logicResult: undefined,
-            scoredAction: undefined
+            scoredAction
         }
     }
 
