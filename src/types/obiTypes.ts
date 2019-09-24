@@ -125,6 +125,7 @@ export interface OBIDialog {
     /**
      * If the result is expected to be structured data such as a JSON object, this holds
      * the names of the fields or properties in that response object.
+     * NOTA BENE : This field was manually added; it will be lost if this file is re-generated from schema.
      */
     responseFields?: string[]
     /**

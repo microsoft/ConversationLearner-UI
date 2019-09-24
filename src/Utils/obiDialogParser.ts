@@ -132,8 +132,7 @@ export class ObiDialogParser {
         }
         let trainRound: CLM.TrainRound | undefined
         if (obiDialog.steps) {
-            for (let i = 0; i < obiDialog.steps.length; i = i + 1) {
-                const step = obiDialog.steps[i]
+            for (const [i, step] of obiDialog.steps.entries()) {
                 const nextStep = (i + 1 < obiDialog.steps.length) ? obiDialog.steps[i + 1] : undefined
                 if (typeof step === "string" || typeof nextStep === "string") {
                     throw new Error("Unexected step of type string")
@@ -244,6 +243,7 @@ export class ObiDialogParser {
         if (!step.url) {
             throw new Error('HTTP requests require url')
         }
+        // TODO(thpar) : revisit logic for this.
         const isTerminal = (!nextStep || nextStep.$type === OBIStepType.TEXT_INPUT ||
             nextStep.$type === OBIStepType.END_TURN)
         const hashText = JSON.stringify(step)
@@ -253,7 +253,7 @@ export class ObiDialogParser {
                 this.actions, this.createActionThunkAsync as any)
         }
         // Create an entity for each output parameter in the action.
-        let actionOutputEntities: OBIUtils.ActionOutput[] = []
+        let actionOutputEntities: OBIUtils.OBIActionOutput[] = []
         if (step.responseFields) {
             actionOutputEntities = step.responseFields.map(
                 (field) => { return { entityName: field } }

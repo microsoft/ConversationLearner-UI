@@ -62,10 +62,10 @@ export interface TranscriptActionCall {
     type: string
     actionName: string
     actionInput: TranscriptActionInput[]
-    actionOutput: ActionOutput[]
+    actionOutput: OBIActionOutput[]
 }
 
-export interface ActionOutput {
+export interface OBIActionOutput {
     entityName: string,
     value?: string
 }
@@ -570,7 +570,7 @@ export function findActionFromHashText(hashText: string, actions: CLM.ActionBase
  * Entities that do not yet exist will be created once.
  */
 export async function importActionOutput(
-    actionResults: ActionOutput[],
+    actionResults: OBIActionOutput[],
     entities: CLM.EntityBase[],
     app: CLM.AppBase,
     createEntityThunkAsync?: ((appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>)
