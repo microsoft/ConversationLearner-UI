@@ -6,11 +6,15 @@ describe('Resolution Required', () => {
     const testData = {
         modelName: `IsResRequired`,
         modelFile: 'isResolutionRequired.cl',
+        entityName01: 'fruits',
+        entityName02: 'vegetables',
     }
 
     before(() => {
         cy.visit('/')
         util.importModel(testData.modelName, testData.modelFile)
+        cy.get(s.trainingStatus.running, { timeout: constants.training.timeout })
+        cy.get(s.trainingStatus.completed, { timeout: constants.training.timeout })
     })
 
     describe('Entity Option Behavior', () => {
@@ -57,8 +61,31 @@ describe('Resolution Required', () => {
     })
 
     describe('Entity Label Behavior', () => {
-        it('given no resolution, entity label with option False should be allowed and label with option True should be removed', () => {
+        before(() => {
+            cy.reload()
 
+            cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                .should('not.exist')
+
+            cy.get(s.model.buttonNavTrainDialogs)
+                .click()
+
+            cy.get(s.trainDialogs.buttonNew)
+                .click()
+        })
+
+        it('given no resolution, entity label with option False should be allowed and label with option True should be removed', () => {
+            // We know imported model has learned to label words preceeding fruits and vegetables
+            // Fruits has resolution required False which means label will not be affected (exist)
+            // Vegetables has resolution required True which means label will be removed (not exist)
+            util.inputText('I have many fruits and many vegetables')
+
+            cy.get(s.extractionEditor.customButton)
+                .contains(testData.entityName01)
+
+            cy.get(s.extractionEditor.customButton)
+                .contains(testData.entityName02)
+                .should('not.exist')
         })
     })
 })

@@ -789,7 +789,7 @@ class Container extends React.Component<Props, ComponentState> {
                 }
             })
 
-        const isEditing = typeof this.props.entity === 'object'
+        const isEditing = this.props.entity != null
 
         return <Component
             open={this.props.open}
