@@ -32,7 +32,6 @@ const initState: ComponentState = {
     isMultivalueVal: false,
     isNegatableVal: false,
     isResolutionRequired: false,
-    isEditing: false,
     enumValues: [],
     title: '',
     hasPendingChanges: false,
@@ -53,7 +52,6 @@ interface ComponentState {
     isMultivalueVal: boolean
     isNegatableVal: boolean
     isResolutionRequired: boolean
-    isEditing: boolean
     enumValues: (CLM.EnumValue | null)[]
     title: string
     hasPendingChanges: boolean
@@ -181,7 +179,6 @@ class Container extends React.Component<Props, ComponentState> {
                     isMultivalueVal: nextProps.entity.isMultivalue,
                     isNegatableVal: nextProps.entity.isNegatible,
                     isResolutionRequired: nextProps.entity.isResolutionRequired,
-                    isEditing: true,
                     title: nextProps.intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
                         defaultMessage: 'Edit Entity'
@@ -202,18 +199,22 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+        // If editing resolution option is disabled so preserve value
+        // Otherwise,
         // Force changes to isResolutionRequired when resolutionType changes
         // If NONE to other, enabled and true
         // If oter to NONE, disabled and false
-        if (this.state.entityResolverVal !== NONE_RESOLVER_KEY && prevState.entityResolverVal === NONE_RESOLVER_KEY) {
-            this.setState({
-                isResolutionRequired: true
-            })
-        }
-        else if (this.state.entityResolverVal === NONE_RESOLVER_KEY && prevState.entityResolverVal !== NONE_RESOLVER_KEY) {
-            this.setState({
-                isResolutionRequired: false
-            })
+        if (this.props.entity == null) {
+            if (this.state.entityResolverVal !== NONE_RESOLVER_KEY && prevState.entityResolverVal === NONE_RESOLVER_KEY) {
+                this.setState({
+                    isResolutionRequired: true
+                })
+            }
+            else if (this.state.entityResolverVal === NONE_RESOLVER_KEY && prevState.entityResolverVal !== NONE_RESOLVER_KEY) {
+                this.setState({
+                    isResolutionRequired: false
+                })
+            }
         }
 
         const entity = this.props.entity
@@ -296,7 +297,7 @@ class Container extends React.Component<Props, ComponentState> {
             newOrEditedEntity.enumValues = this.state.enumValues.filter(v => v) as CLM.EnumValue[]
         }
         // Set entity id if we're editing existing id.
-        if (this.state.isEditing && this.props.entity) {
+        if (this.props.entity) {
             newOrEditedEntity.entityId = this.props.entity.entityId
 
             if (newOrEditedEntity.isNegatible) {
@@ -316,7 +317,7 @@ class Container extends React.Component<Props, ComponentState> {
         let needValidationWarning = false
 
         // If editing check for validation errors
-        if (this.state.isEditing) {
+        if (this.props.entity) {
             const appId = this.props.app.appId
             const isMultiValueChanged = this.props.entity ? newOrEditedEntity.isMultivalue !== this.props.entity.isMultivalue : false
             const isNegatableChanged = this.props.entity ? newOrEditedEntity.isNegatible !== this.props.entity.isNegatible : false
@@ -352,16 +353,15 @@ class Container extends React.Component<Props, ComponentState> {
     saveAndClose(newOrEditedEntity: CLM.EntityBase) {
         const appId = this.props.app.appId
 
-        if (!this.state.isEditing) {
-            this.props.createEntityThunkAsync(appId, newOrEditedEntity)
-            this.props.handleClose()
-            return
+        const originalEntity = this.props.entity
+        if (originalEntity) {
+            this.props.editEntityThunkAsync(appId, newOrEditedEntity, originalEntity)
         }
         else {
-            // We know props.entity is valid because we're not editing
-            this.props.editEntityThunkAsync(appId, newOrEditedEntity, this.props.entity!)
-            this.props.handleClose()
+            this.props.createEntityThunkAsync(appId, newOrEditedEntity)
         }
+
+        this.props.handleClose()
     }
 
     onClickCancel = () => {
@@ -789,6 +789,8 @@ class Container extends React.Component<Props, ComponentState> {
                 }
             })
 
+        const isEditing = this.props.entity != null
+
         return <Component
             open={this.props.open}
             title={title}
@@ -796,7 +798,7 @@ class Container extends React.Component<Props, ComponentState> {
             entityOptions={this.entityOptions}
 
             entityTypeKey={this.state.entityTypeVal}
-            isTypeDisabled={this.state.isEditing || this.props.entityTypeFilter != null}
+            isTypeDisabled={isEditing || this.props.entityTypeFilter != null}
             onChangeType={this.onChangeType}
 
             name={name}
@@ -812,7 +814,7 @@ class Container extends React.Component<Props, ComponentState> {
             isNegatable={this.state.isNegatableVal}
             onChangeNegatable={this.onChangeReversible}
 
-            isEditing={this.state.isEditing}
+            isEditing={isEditing}
             requiredActions={this.getRequiredActions()}
             disqualifiedActions={this.getDisqualifiedActions()}
 
@@ -825,7 +827,7 @@ class Container extends React.Component<Props, ComponentState> {
 
             isConfirmDeleteModalOpen={this.state.isConfirmDeleteModalOpen}
             isDeleteErrorModalOpen={this.state.isDeleteErrorModalOpen}
-            showDelete={this.state.isEditing && !!this.props.handleDelete}
+            showDelete={isEditing && !!this.props.handleDelete}
             onClickDelete={this.onClickDelete}
             onCancelDelete={this.onCancelDelete}
             onConfirmDelete={this.onConfirmDelete}

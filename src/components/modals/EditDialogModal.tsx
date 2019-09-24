@@ -385,7 +385,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
 
         const importedAction = this.getImportedAction(activity)
-        this.setState({importedAction})
+        this.setState({ importedAction })
     }
 
     onPendingStatusChanged(changed: boolean) {
@@ -637,7 +637,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
-            return formatMessageId(intl, FM.BUTTON_ABANDON)
+                return formatMessageId(intl, FM.BUTTON_ABANDON)
             case EditDialogType.IMPORT:
                 return formatMessageId(intl, FM.BUTTON_ABANDON_IMPORT)
             case EditDialogType.BRANCH:
@@ -1052,7 +1052,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
                                     description={this.state.description}
                                     onChangeDescription={this.onChangeDescription}
-                                    onActionCreatorClosed={() => this.setState({importedAction: undefined})}
+                                    onActionCreatorClosed={() => this.setState({ importedAction: undefined })}
                                 />
                             </div>
                             {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay" />}

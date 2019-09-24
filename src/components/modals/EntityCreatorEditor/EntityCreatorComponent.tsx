@@ -177,7 +177,7 @@ const EditComponent: React.FC<Props> = (props) => {
         <div className="cl-entity-creator-checkboxes cl-entity-creator-form">
             {props.entityTypeKey == CLM.EntityType.LUIS &&
                 <TC.Checkbox
-                    data-testid="entity-creator-resolver-strict"
+                    data-testid="entity-creator-resolution-required"
                     label={Util.formatMessageId(props.intl, FM.ENTITYCREATOREDITOR_FIELDS_RESOLVER_RESOLUTION_REQUIRED_LABEL)}
                     checked={props.isResolutionRequired}
                     onChange={props.onChangeResolverResolutionRequired}
