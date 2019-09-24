@@ -12,7 +12,7 @@ describe('Duplicate Entity Labels - ErrorHandling', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 
   context('Setup', () => {
-    it('Should import a model to test against, navigate to Train Dialogs view and wait for training status to complete', () => {
+    it('Should import a model to test against and navigate to Train Dialogs view', () => {
       models.ImportModel('z-dupEntLabel', 'z-dupEntLabel.cl')
       modelPage.NavigateToTrainDialogs()
     })
