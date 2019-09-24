@@ -40,6 +40,8 @@ const selectors = {
         name: '[data-testid="entities-name"]',
     },
     entity: {
+        checkboxResolutionRequired: '[data-testid="entity-creator-resolution-required"] .ms-Checkbox',
+        dropDownResolverType: '[data-testid="entity-creator-resolver-type-dropdown"]',
         dropDownType: '[data-testid="entity-creator-entity-type-dropdown"]',
         modal: '[data-testid="entity-creator-modal"]',
         name: '[data-testid="entity-creator-entity-name-text"]',
