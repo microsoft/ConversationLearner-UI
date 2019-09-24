@@ -385,7 +385,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         })
 
         const importedAction = this.getImportedAction(activity)
-        this.setState({importedAction})
+        this.setState({ importedAction })
     }
 
     onPendingStatusChanged(changed: boolean) {
@@ -447,7 +447,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
 
         const importText = curRound.scorerSteps[scoreIndex].importText
-        const isTerminal = senderType === CLM.SenderType.Bot 
+        const isTerminal = senderType === CLM.SenderType.Bot
             ? curRound.scorerSteps.length === scoreIndex + 1
             : false
 
@@ -490,12 +490,12 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             senderType !== CLM.SenderType.User ||
             (hasNoScorerStep && this.props.trainDialog.rounds.length > 1)
 
-        const hideBranch =  
-            !canBranch || 
+        const hideBranch =
+            !canBranch ||
             !this.props.onBranchDialog ||
             this.state.pendingExtractionChanges ||
             this.props.editState !== EditState.CAN_EDIT
-        
+
         const isLastActivity = activity === this.props.activityHistory[this.props.activityHistory.length - 1]
         const selectionType = isLastActivity ? SelectionType.NONE : SelectionType.NEXT
         const isEndSession = isLastActivity && this.state.hasEndSession
@@ -637,7 +637,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         switch (this.props.editType) {
             case EditDialogType.NEW:
-            return formatMessageId(intl, FM.BUTTON_ABANDON)
+                return formatMessageId(intl, FM.BUTTON_ABANDON)
             case EditDialogType.IMPORT:
                 return formatMessageId(intl, FM.BUTTON_ABANDON_IMPORT)
             case EditDialogType.BRANCH:
@@ -900,7 +900,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         const replayError = DialogUtils.getReplayError(this.state.selectedActivity)
         if (this.props.editState === EditState.INVALID_BOT) {
             return (
-                <div 
+                <div
                     className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
                     data-testid="dialog-modal-warning"
                 >
@@ -911,7 +911,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         if (this.props.editState === EditState.INVALID_PACKAGE) {
             return (
-                <div 
+                <div
                     className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
                     data-testid="dialog-modal-warning"
                 >
@@ -930,7 +930,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.WARNING &&
                 this.props.trainDialog.validity !== CLM.Validity.INVALID) {
                 return (
-                    <div 
+                    <div
                         className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
                         data-testid="dialog-modal-warning"
                     >
@@ -940,7 +940,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
             }
             else if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.ERROR || worstReplayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
                 return (
-                    <div 
+                    <div
                         className={`cl-editdialog-error ${OF.FontClassNames.mediumPlus}`}
                         data-testid="dialog-modal-error-noselection"
                     >
@@ -955,7 +955,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         if (this.props.trainDialog.validity === CLM.Validity.UNKNOWN) {
             return (
-                <div 
+                <div
                     className={`cl-editdialog-caution ${OF.FontClassNames.mediumPlus}`}
                     data-testid="dialog-modal-caution"
                 >
@@ -966,7 +966,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
         }
         else if (this.props.trainDialog.validity === CLM.Validity.WARNING) {
             return (
-                <div 
+                <div
                     className={`cl-editdialog-warning ${OF.FontClassNames.mediumPlus}`}
                     data-testid="dialog-modal-warning"
                 >
@@ -1051,7 +1051,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
                                     description={this.state.description}
                                     onChangeDescription={this.onChangeDescription}
-                                    onActionCreatorClosed={() => this.setState({importedAction: undefined})}
+                                    onActionCreatorClosed={() => this.setState({ importedAction: undefined })}
                                 />
                             </div>
                             {this.props.editState !== EditState.CAN_EDIT && <div className="cl-overlay" />}

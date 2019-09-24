@@ -12,7 +12,7 @@ export class ObiTranscriptParser {
     private actions: CLM.ActionBase[] = []
     private entities: CLM.EntityBase[] = []
     private trainDialogs: CLM.TrainDialog[] = []
-    private createActionThunkAsync: ((appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>) | undefined
+    private createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
     private createEntityThunkAsync: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
     
     constructor(
