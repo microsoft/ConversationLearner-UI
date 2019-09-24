@@ -20,6 +20,11 @@ describe('Resolution Required', () => {
     describe('Entity Option Behavior', () => {
         describe('New Entity', () => {
             before(() => {
+                cy.reload()
+
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
+
                 cy.get(s.model.buttonNavEntities)
                     .click()
 
@@ -54,8 +59,20 @@ describe('Resolution Required', () => {
         })
 
         describe('Editing', () => {
-            it('should be disabled when editing', () => {
+            before(() => {
+                cy.reload()
 
+                cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+                    .should('not.exist')
+
+                cy.get(s.entities.name)
+                    .contains(testData.entityName01)
+                    .click()
+            })
+
+            it('should be disabled when editing', () => {
+                cy.get(s.entity.checkboxResolutionRequired)
+                    .should('have.class', 'is-disabled')
             })
         })
     })
