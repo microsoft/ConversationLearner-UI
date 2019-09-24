@@ -51,6 +51,7 @@ export enum TipType {
     ENTITY_TYPE = 'entityType',
     ENTITY_VALUE = 'entityValues',
     ENTITY_RESOLVER = 'entityResolver',
+    ENTITY_RESOLVER_RESOLUTION_REQUIRED = 'isResolutionRequired',
 
     EXPORT_CHOICE = 'EXPORT_CHOICE',
 
@@ -233,7 +234,7 @@ export function getTip(tipType: string) {
                     <p><FormattedMessageId id={FM.TOOLTIP_ACTION_SET_ENTITY} /></p>
                 </div>
             )
-            // return render(FM.TOOLTIP_ACTION_SET_ENTITY_TITLE, [FM.TOOLTIP_ACTION_SET_ENTITY])
+        // return render(FM.TOOLTIP_ACTION_SET_ENTITY_TITLE, [FM.TOOLTIP_ACTION_SET_ENTITY])
         case TipType.ACTION_ENTITIES:
             return (
                 <div>
@@ -290,7 +291,7 @@ export function getTip(tipType: string) {
                     { key: 'Disqualifying:', value: FM.TOOLTIP_ACTION_DISQUAL_ROW4 }
                 ]);
         case TipType.ACTION_REPROMPT:
-                    return render(FM.TOOLTIP_ACTION_REPROMPT_TITLE, [FM.TOOLTIP_ACTION_REPROMPT]);
+            return render(FM.TOOLTIP_ACTION_REPROMPT_TITLE, [FM.TOOLTIP_ACTION_REPROMPT]);
         case TipType.ACTION_REQUIRED:
             return render(
                 FM.TOOLTIP_ACTION_REQUIRED_TITLE,
@@ -543,7 +544,37 @@ export function getTip(tipType: string) {
                     />
                 </div>
             )
+        case TipType.ENTITY_RESOLVER_RESOLUTION_REQUIRED:
+            return (
+                <div>
+                    <h2>Resolution Required</h2>
 
+                    <h3>What does it do?</h3>
+                    <p>This option requires that a resolution is available for the label.</p>
+
+                    <h3>When to use?</h3>
+                    <p>Select this option if the entity only makes sense with concrete resolved value.</p>
+
+                    <h3>Details</h3>
+                    <p>When a <HelpLink label="Resolver Type" tipType={TipType.ENTITY_RESOLVER} /> is added to an entity any matching resolution type predicted within the labels boundaries will be promoted to that entity; however, if no resolution was available the label is still valid and will exist. This is more flexible but means you cannot rely on the resolution and any code must not be dependent on that data.</p>
+
+                    <h3>Example:</h3>
+                    <p>Imagine scenario where all your trainings have labeled numbers such as below.</p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/ToolTip_ENTITY_RESOLVER_RESOLUTION_REQUIRED_01.png"
+                        width="50%"
+                        alt="Entity Labeling"
+                    />
+                    <p>When running dialogs through your bot the entities always have number resolution. This can mislead you into thinking it will work in all cases. However, the entity extraction can learn to label based on word sequence and such as words preceeding 'fruit' or 'vegetable' should be labeled regardless if the label can be resolvable to a number. This can result in phrases from users like 'many' or 'a lot' which are appropriate before 'fruits' or 'vegetables' to be labeled even they cannot be resolved into a number. You can use this "Resolution Required" option to disallow this case and remove these labels without resolution.</p>
+                    <img
+                        className="cl-panelimage"
+                        src="https://blisstorage.blob.core.windows.net/uiimages/TooTip_ENTITY_RESOLVER_RESOLUTION_REQUIRED_02.png"
+                        width="80%"
+                        alt="Resolution Required"
+                    />
+                </div>
+            )
         case TipType.EXPORT_CHOICE:
             return (
                 <div>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -219,7 +219,7 @@ export interface ReceivedProps {
     onSelectAction: (action: CLM.ActionBase) => void
 }
 
-// Props types inferred from mapStateToProps 
+// Props types inferred from mapStateToProps
 const stateProps = returntypeof(mapStateToProps);
 type Props = typeof stateProps & ReceivedProps & InjectedIntlProps
 
@@ -228,38 +228,38 @@ export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, ma
 function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetailsList, isValidationError: boolean) {
     if (action.actionType === CLM.ActionTypes.TEXT) {
         const textAction = new CLM.TextAction(action)
-        return (<ActionPayloadRenderers.TextPayloadRendererContainer
-            textAction={textAction}
-            entities={component.props.entities}
-            memories={null}
-        />)
+        return (<ActionPayloadRenderers.TextPayloadRendererWithHighlights
+                textAction={textAction}
+                entities={component.props.entities}
+                showMissingEntities={false}
+            />)
     }
     else if (action.actionType === CLM.ActionTypes.API_LOCAL) {
         const apiAction = new CLM.ApiAction(action)
         const callback = component.props.botInfo.callbacks.find(t => t.name === apiAction.name)
-        return (<ActionPayloadRenderers.ApiPayloadRendererContainer
+        return (<ActionPayloadRenderers.ApiPayloadRendererWithHighlights
             apiAction={apiAction}
             entities={component.props.entities}
-            memories={null}
             callback={callback}
+            showMissingEntities={false}
         />)
     }
     else if (action.actionType === CLM.ActionTypes.CARD) {
         const cardAction = new CLM.CardAction(action)
-        return (<ActionPayloadRenderers.CardPayloadRendererContainer
+        return (<ActionPayloadRenderers.CardPayloadRendererWithHighlights
             isValidationError={isValidationError}
             cardAction={cardAction}
             entities={component.props.entities}
-            memories={null}
             onClickViewCard={() => component.onClickViewCard(action)}
+            showMissingEntities={false}
         />)
     }
     else if (action.actionType === CLM.ActionTypes.END_SESSION) {
         const sessionAction = new CLM.SessionAction(action)
-        return (<ActionPayloadRenderers.SessionPayloadRendererContainer
+        return (<ActionPayloadRenderers.SessionPayloadRendererWithHighlights
             sessionAction={sessionAction}
             entities={component.props.entities}
-            memories={null}
+            showMissingEntities={false}
         />)
     }
     else if (action.actionType === CLM.ActionTypes.SET_ENTITY) {
@@ -278,12 +278,12 @@ function getActionPayloadRenderer(action: CLM.ActionBase, component: ActionDetai
 
 function renderCondition(text: string, isRequired: boolean): JSX.Element {
     return (
-        <div 
-            className='ms-ListItem is-selectable ms-ListItem-primaryText' 
-            key={text} 
+        <div
+            className='ms-ListItem is-selectable ms-ListItem-primaryText'
+            key={text}
             data-testid={isRequired ? "action-details-required-entities" : "action-details-disqualifying-entities"}
         >
-                {text}
+            {text}
         </div>
     )
 }
@@ -291,14 +291,14 @@ function renderConditions(entityIds: string[], conditions: CLM.Condition[], allE
     if (entityIds.length === 0 && (!conditions || conditions.length === 0)) {
         return ([
             <OF.Icon
-                key="empty" 
-                iconName="Remove" 
-                className="cl-icon" 
+                key="empty"
+                iconName="Remove"
+                className="cl-icon"
                 data-testid={isRequired ? "action-details-empty-required-entities" : "action-details-empty-disqualifying-entities"}
-            /> 
+            />
         ])
     }
-    
+
     const elements: JSX.Element[] = []
     entityIds.forEach(entityId => {
         const entity = allEntities.find(e => e.entityId === entityId)
@@ -458,7 +458,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 50,
             isResizable: false,
             getSortValue: action => action.isTerminal ? 'a' : 'b',
-            render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait"/>
+            render: action => <OF.Icon iconName={action.isTerminal ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait" />
         },
         {
             key: 'actionReprompt',
@@ -467,7 +467,7 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
             minWidth: 70,
             isResizable: false,
             getSortValue: action => action.repromptActionId !== undefined ? 'a' : 'b',
-            render: action => <OF.Icon iconName={action.repromptActionId !== undefined ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait"/>
+            render: action => <OF.Icon iconName={action.repromptActionId !== undefined ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait" />
         },
         {
             key: 'createdDateTime',
