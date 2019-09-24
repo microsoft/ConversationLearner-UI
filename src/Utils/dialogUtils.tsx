@@ -12,7 +12,7 @@ import { deepCopy, getDefaultEntityMap } from './util'
 import { Activity } from 'botframework-directlinejs'
 import { ImportedAction } from '../types/models'
 import TagsReadOnly from '../components/TagsReadOnly'
-import { fromLogTag } from 'src/types'
+import { fromLogTag } from '../types'
 
 const MAX_SAMPLE_INPUT_LENGTH = 150
 

@@ -8,7 +8,7 @@ import { makeTrainDialog, makeExtractorStep, makeScorerStep, makeLabelEntities }
 import { deepCopy } from './util'
 import * as CLM from '@conversationlearner/models'
 import * as uuid from 'uuid/v4'
-import { fromLogTag } from 'src/types'
+import { fromLogTag } from '../types'
 
 describe('dialogUtils', () => {
 
