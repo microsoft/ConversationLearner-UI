@@ -467,16 +467,20 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         // Check that name isn't in use
-        if (!this.state.isEditing) {
-            const foundEntity = this.props.entities.find(e => e.entityName === this.state.entityNameVal);
-            if (foundEntity) {
-                if (CLM.isPrebuilt(foundEntity)
-                    && typeof foundEntity.doNotMemorize !== 'undefined'
-                    && foundEntity.doNotMemorize) {
-                    return ''
-                }
-                return Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
+        const entity = this.props.entity
+        const otherEntities = entity
+            ? this.props.entities
+                .filter(e => e.entityId !== entity.entityId)
+            : this.props.entities
+
+        const foundEntity = otherEntities.find(e => e.entityName === this.state.entityNameVal)
+        if (foundEntity) {
+            if (CLM.isPrebuilt(foundEntity)
+                && typeof foundEntity.doNotMemorize !== 'undefined'
+                && foundEntity.doNotMemorize) {
+                return ''
             }
+            return Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
         }
 
         if (!this.state.isPrebuilt && (value.toLowerCase().substring(0, prebuiltPrefix.length) === prebuiltPrefix)) {
