@@ -28,7 +28,7 @@ import { State, TeachSessionState } from '../../types'
 import { renderReplayError } from '../../Utils/RenderReplayError'
 import { Activity } from 'botframework-directlinejs'
 import { FM } from '../../react-intl-messages'
-import { SelectionType } from '../../types/const'
+import { SelectionType, fromLogTag } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '.'
 import './TeachSessionModal.css'
@@ -238,7 +238,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
     onClickSave() {
         const tags = this.state.tags
         if (this.props.editType === EditDialogType.LOG_EDITED) {
-            tags.push('from-log')
+            tags.push(fromLogTag)
         }
 
         this.props.onClose(true, tags, this.state.description, false)

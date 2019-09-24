@@ -23,7 +23,7 @@ import { formatMessageId, equal, deepCopy } from '../../Utils/util'
 import { State } from '../../types'
 import { EditDialogAdmin, EditDialogType, EditState } from '.'
 import { Activity } from 'botframework-directlinejs'
-import { SelectionType } from '../../types/const'
+import { SelectionType, fromLogTag } from '../../types/const'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -696,7 +696,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
 
         const trainDialog: CLM.TrainDialog = {
             ...this.props.trainDialog,
-            tags: this.state.tags,
+            tags: [...this.state.tags, fromLogTag],
             description: this.state.description
         }
         this.props.onSaveDialog(trainDialog)
@@ -706,7 +706,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
     onClickSave() {
         const trainDialog: CLM.TrainDialog = {
             ...this.props.trainDialog,
-            tags: [...this.state.tags, 'from-log'],
+            tags: [...this.state.tags],
             description: this.state.description
         }
 
@@ -719,6 +719,7 @@ class EditDialogModal extends React.Component<Props, ComponentState> {
                 this.props.onCreateDialog(trainDialog)
                 break;
             case EditDialogType.LOG_EDITED:
+                trainDialog.tags.push(fromLogTag)
                 this.props.onSaveDialog(trainDialog)
                 break;
             case EditDialogType.LOG_ORIGINAL:
