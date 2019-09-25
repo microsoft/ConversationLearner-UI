@@ -1026,61 +1026,58 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         iconProps={{ iconName: 'Delete' }}
                     />
                 </div>
-                {
-                    isPlaceholderVisible
-                        ? <div className="cl-page-placeholder">
-                            <div className="cl-page-placeholder__content">
-                                <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
-                                <OF.PrimaryButton
-                                    iconProps={{
-                                        iconName: "Add"
-                                    }}
-                                    disabled={isEditingDisabled}
-                                    onClick={this.onClickNewChatSession}
-                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                                    text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
-                                />
-                            </div>
-                        </div>
-                        : <>
-                            <div>
-                                <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
-                                    Search:
-                                </OF.Label>
-                                <OF.SearchBox
-                                    id="logdialogs-input-search"
-                                    data-testid="logdialogs-search-box"
-                                    className={OF.FontClassNames.mediumPlus}
-                                    onChange={this.onChangeSearchString}
-                                    onSearch={this.onSearch}
-                                />
-                            </div>
-                            <OF.DetailsList
-                                data-testid="logdialogs-details-list"
-                                key={this.state.dialogKey}
-                                className={OF.FontClassNames.mediumPlus}
-                                items={computedLogDialogs}
-                                selection={this.selection}
-                                getKey={getDialogKey}
-                                setKey="selectionKey"
-                                columns={this.state.columns}
-                                checkboxVisibility={OF.CheckboxVisibility.onHover}
-                                onColumnHeaderClick={this.onClickColumnHeader}
-                                onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
-                                onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
-                                onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
+
+                    <div className={`cl-page-placeholder ${isPlaceholderVisible ? '' : 'cl-page-placeholder--none'}`}>
+                        <div className="cl-page-placeholder__content">
+                            <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
+                            <OF.PrimaryButton
+                                iconProps={{
+                                    iconName: "Add"
+                                }}
+                                disabled={isEditingDisabled}
+                                onClick={this.onClickNewChatSession}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
+                                text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
                             />
-                        </>
-                }
+                        </div>
+                    </div>
+                    <>
+                        <div className={isPlaceholderVisible ? 'cl-hidden' : ''}>
+                            <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
+                                Search:
+                            </OF.Label>
+                            <OF.SearchBox
+                                id="logdialogs-input-search"
+                                data-testid="logdialogs-search-box"
+                                className={OF.FontClassNames.mediumPlus}
+                                onChange={this.onChangeSearchString}
+                                onSearch={this.onSearch}
+                            />
+                        </div>
+                        <OF.DetailsList
+                            data-testid="logdialogs-details-list"
+                            key={this.state.dialogKey}
+                            className={`${OF.FontClassNames.mediumPlus} ${isPlaceholderVisible ? 'cl-hidden' : ''}`}
+                            items={computedLogDialogs}
+                            selection={this.selection}
+                            getKey={getDialogKey}
+                            setKey="selectionKey"
+                            columns={this.state.columns}
+                            checkboxVisibility={OF.CheckboxVisibility.onHover}
+                            onColumnHeaderClick={this.onClickColumnHeader}
+                            onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                            onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
+                            onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
+                        />
+                    </>
 
 
-
-                <ChatSessionModal
-                    app={this.props.app}
-                    editingPackageId={this.props.editingPackageId}
-                    open={this.state.isChatSessionWindowOpen}
-                    onClose={this.onCloseChatSessionWindow}
-                />
+                    <ChatSessionModal
+                        app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
+                        open={this.state.isChatSessionWindowOpen}
+                        onClose={this.onCloseChatSessionWindow}
+                    />
                 {
                     teachSession && teachSession.teach &&
                     <TeachSessionModal
