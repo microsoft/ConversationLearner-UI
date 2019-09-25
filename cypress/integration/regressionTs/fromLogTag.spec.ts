@@ -58,9 +58,16 @@ describe('From Log Tag', () => {
 
         cy.get(s.mergeModal.buttonSaveAsIs)
             .click()
+        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+            .should('not.exist')
 
         cy.get(s.model.buttonNavTrainDialogs)
             .click()
+
+        // Need to reload to ensure tags actually persist on dialog
+        cy.reload()
+        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+            .should('not.exist')
 
         cy.get(s.trainDialogs.descriptions)
             .contains(description)
@@ -96,9 +103,16 @@ describe('From Log Tag', () => {
 
         cy.get(s.mergeModal.buttonSaveAsIs)
             .click()
+        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+            .should('not.exist')
 
         cy.get(s.model.buttonNavTrainDialogs)
             .click()
+
+        // Need to reload to ensure tags actually persist on dialog
+        cy.reload()
+        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+            .should('not.exist')
 
         cy.get(s.trainDialogs.descriptions)
             .contains(userInput)
@@ -130,8 +144,16 @@ describe('From Log Tag', () => {
         cy.get(s.mergeModal.buttonSaveAsIs)
             .click()
 
+        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+            .should('not.exist')
+
         cy.get(s.model.buttonNavTrainDialogs)
             .click()
+
+        // Need to reload to ensure tags actually persist on dialog
+        cy.reload()
+        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+            .should('not.exist')
 
         cy.get(s.trainDialogs.descriptions)
             .contains(userInput)
@@ -155,6 +177,11 @@ describe('From Log Tag', () => {
 
         cy.get(s.model.buttonNavTrainDialogs)
             .click()
+
+        // Need to reload to ensure tags actually persist on dialog
+        cy.reload()
+        cy.get(s.common.spinner, { timeout: constants.spinner.timeout })
+            .should('not.exist')
 
         cy.get(s.trainDialogs.descriptions)
             .contains(testData.trainDialogInput)

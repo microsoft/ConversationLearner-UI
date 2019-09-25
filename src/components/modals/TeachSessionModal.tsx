@@ -236,7 +236,7 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickSave() {
-        const tags = this.state.tags
+        const tags = [...this.state.tags]
         if (this.props.editType === EditDialogType.LOG_EDITED) {
             tags.push(fromLogTag)
         }
