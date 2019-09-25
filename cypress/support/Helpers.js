@@ -151,14 +151,8 @@ export function ExactMatch(elements, expectedText) {
   for (let i = 0; i < elements.length; i++) {
     const elementText = TextContentWithoutNewlines(elements[i])
     ConLog(funcName, `elementText: '${elementText}'`)
-    if (elementText == expectedText) {
-      ConLog(funcName, `Found it`)
-      return elements[i]
-    } else { 
-      ConLog(funcName, `Not a match -- '${elementText}' != '${expectedText}'`)
-    }
+    if (elementText === expectedText) return elements[i]
   }
-  ConLog(funcName, `An exact match was not found`)
   return []
 }
 
