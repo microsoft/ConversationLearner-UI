@@ -82,7 +82,7 @@ export class GeneratedData {
   // In many cases the score deviates significantly and that is not considered an error. But, in some cases, with a well
   // trained model, these values should deviate only slightly, for those pass in acceptableScoreDeviation as the 
   // percentage points that we can allow the score to deviate and still be acceptable.
-  VerifyScoreActionsList(acceptableScoreDeviation = 50) {
+  VerifyScoreActionsList(acceptableScoreDeviation = 70) {
     if (this.generateScoreActionsData) {
       it('GENERATE the Score Actions data', () => {
         if (this.generateScoreActionsData == 'pause') { cy.pause() }
@@ -96,13 +96,13 @@ export class GeneratedData {
     }
   }
 
-  VerifyScoreActionsListUnwrapped(acceptableScoreDeviation = 10) {
+  VerifyScoreActionsListUnwrapped(acceptableScoreDeviation = 70) {
     if (this.generateScoreActionsData) {
       if (this.generateScoreActionsData == 'pause') { cy.pause() }
       else { cy.wait(2000) }
       cy.WaitForStableDOM().then(() => { this.data.push(GenerateScoreActionsDataFromGrid()) })
     } else {
-      cy.WaitForStableDOM().then(() => VerifyScoreActions(this.data[this.index++], acceptableScoreDeviation))
+      cy.WaitForStableDOM().then(() => (this.data[this.index++], acceptableScoreDeviation))
     }
   }
 
@@ -197,9 +197,10 @@ export function VerifyNoEnabledSelectActionButtons() {
   })
 }
 
-// In some cases the score deviates significantly and that is not considered an error. For those pass in 
-// acceptableScoreDeviation as the percentage points that we can allow the score to deviate and still be acceptable.
-export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviation = 10) {
+// In many cases the score deviates significantly and that is not considered an error. But for those that should 
+// remain within a defined range, pass in acceptableScoreDeviation as the points that we can allow the score to 
+// deviate and still be acceptable.
+export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviation = 70) {
   const funcName = 'VerifyScoreActions'
   let expectedScoreAction
   let errorMessages = []
@@ -263,7 +264,7 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
           const expectedScore = +expectedScoreAction.score.replace(/(\.|%)/gm, '')
           helpers.ConLog(funcName, `actualScore: ${actualScore} - expectedScore: ${expectedScore}`)
           if (actualScore < expectedScore - acceptableDeviation || actualScore > expectedScore + acceptableDeviation) {
-            AccumulateErrors(`Expected to find a score within ${acceptableScoreDeviation}% of '${expectedScoreAction.score}' but instead found '${score}'`)
+            AccumulateErrors(`Expected to find a score within ${acceptableScoreDeviation} points of '${expectedScoreAction.score}' but instead found '${score}'`)
           }
           return
         }
