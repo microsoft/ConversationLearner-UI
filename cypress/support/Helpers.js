@@ -88,6 +88,7 @@ export function Moment(dateTime) {
 
 // This will return only the printable Inner Text of an element without markup nor newline characters.
 // Needed because each browser handles this functionality differently.
+// This converts the ’ to a '
 export function TextContentWithoutNewlines(element) {
   if (element === undefined) { 
     ConLog('TextContentWithoutNewlines', 'undefined element has been passed in.')
@@ -100,7 +101,7 @@ export function TextContentWithoutNewlines(element) {
     return '' 
   }
 
-  const returnValue = textContent.replace(/[^\x20-\x7E]/gm, '')
+  const returnValue = textContent.replace(/’/g, "'").replace(/([^\x20-\x7E])/gm, '')
   ConLog('TextContentWithoutNewlines', returnValue)
   return returnValue
 }

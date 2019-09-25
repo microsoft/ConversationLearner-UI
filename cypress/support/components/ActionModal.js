@@ -57,7 +57,7 @@ function SelectFromDropdown(selector, option)
 
 export function TypeResponse(textToType) {
   cy.Get('.cl-modal_body').within(() => {
-    cy.Get('div[data-slate-editor="true"]')
+    cy.Get('[data-testid="action-text-response-editor"]').find('div[data-slate-editor="true"]')
       .clear()
       .type(textToType)
   })

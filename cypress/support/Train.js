@@ -200,8 +200,8 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
 
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
-    message = message.replace(/'/g, "’")
-    const elements = GetAllChatMessageElements() //Cypress.$(AllChatMessagesSelector)
+    //message = message.replace(/'/g, "’")
+    const elements = GetAllChatMessageElements()
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (let i = 0; i < elements.length; i++) {
       const innerText = helpers.TextContentWithoutNewlines(elements[i])
@@ -646,12 +646,11 @@ export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
       throw new Error(`Did not find expected Text Chat Message '${expectedMessage}' at index: ${expectedIndexOfMessage}`)
     }
     
-    const expectedUtterance = expectedMessage.replace(/'/g, "’")
     let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
     helpers.ConLog('VerifyTextChatMessage', textContentWithoutNewlines)
 
-    if (helpers.TextContentWithoutNewlines(elements[0]) !== expectedUtterance) {
-      throw new Error(`Expected to find '${expectedUtterance}' in the text chat pane, instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
+    if (helpers.TextContentWithoutNewlines(elements[0]) !== expectedMessage) {
+      throw new Error(`Expected to find '${expectedMessage}' in the text chat pane, instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
     }
   })
 }
