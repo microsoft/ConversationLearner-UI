@@ -86,7 +86,7 @@ export function Moment(dateTime) {
   return undefined
 }
 
-// This will return the Inner Text of an element without markup nor newline characters.
+// This will return only the printable Inner Text of an element without markup nor newline characters.
 // Needed because each browser handles this functionality differently.
 export function TextContentWithoutNewlines(element) {
   if (element === undefined) { 
@@ -100,7 +100,7 @@ export function TextContentWithoutNewlines(element) {
     return '' 
   }
 
-  const returnValue = textContent.replace(/(\r\n|\n|\r)/gm, '')
+  const returnValue = textContent.replace(/[^\x20-\x7E]/gm, '')
   ConLog('TextContentWithoutNewlines', returnValue)
   return returnValue
 }
@@ -151,8 +151,14 @@ export function ExactMatch(elements, expectedText) {
   for (let i = 0; i < elements.length; i++) {
     const elementText = TextContentWithoutNewlines(elements[i])
     ConLog(funcName, `elementText: '${elementText}'`)
-    if (elementText === expectedText) return elements[i]
+    if (elementText == expectedText) {
+      ConLog(funcName, `Found it`)
+      return elements[i]
+    } else { 
+      ConLog(funcName, `Not a match -- '${elementText}' != '${expectedText}'`)
+    }
   }
+  ConLog(funcName, `An exact match was not found`)
   return []
 }
 
