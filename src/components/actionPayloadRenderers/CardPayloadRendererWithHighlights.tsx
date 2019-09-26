@@ -26,6 +26,12 @@ const Component: React.FC<Props> = (props) => {
         setIsOriginalVisivilble(x => !x)
     }
 
+    const onClickViewCard = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement | HTMLDivElement | OF.BaseButton | OF.Button, MouseEvent>) => {
+        event.preventDefault()
+        event.stopPropagation()
+        props.onClickViewCard(props.cardAction, isOriginalVisible)
+    }
+
     return (
         <div className="cl-card-payload">
             <div data-testid="action-scorer-card">
@@ -58,7 +64,7 @@ const Component: React.FC<Props> = (props) => {
                 <OF.IconButton
                     disabled={props.isValidationError}
                     className="ms-Button--primary cl-button--viewCard"
-                    onClick={() => props.onClickViewCard(props.cardAction, isOriginalVisible)}
+                    onClick={onClickViewCard}
                     ariaDescription="ViewCard"
                     iconProps={{ iconName: 'RedEye' }}
                 />

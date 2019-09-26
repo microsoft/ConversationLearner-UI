@@ -144,7 +144,8 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             this.setState({
                 value: convertEntitiesAndTextToTokenizedEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
                 preBuiltEditorValues: nextProps.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(nextProps.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType)),
-                isSelectionOverlappingOtherEntities: false
+                isSelectionOverlappingOtherEntities: false,
+                isDeleteButtonVisible: false,
             })
             this.props.onClosePicker()
         }
