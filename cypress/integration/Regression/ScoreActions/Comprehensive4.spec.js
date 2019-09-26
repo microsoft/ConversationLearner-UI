@@ -37,12 +37,6 @@ describe('Comprehensive 4 - Score Actions', () => {
       train.ClickScoreActionsButton()
     })
 
-it('Bot Responds with End Session', () => {
-  scorerModal.ClickAddActionButton()
-  actions.CreateNewAction({ type: 'END_SESSION', responseNameData: "Goodbye" })
-  train.SelectLastChatTurn()
-})
-
     it('Bot Response APPLES', () => {
         scorerModal.ClickSetEntityAction('fruit: APPLES')
     })
