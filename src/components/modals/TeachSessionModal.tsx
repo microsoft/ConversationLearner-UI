@@ -28,9 +28,8 @@ import { State, TeachSessionState } from '../../types'
 import { renderReplayError } from '../../Utils/RenderReplayError'
 import { Activity } from 'botframework-directlinejs'
 import { FM } from '../../react-intl-messages'
-import { SelectionType } from '../../types/const'
+import { EditDialogType, SelectionType } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { EditDialogType } from '.'
 import './TeachSessionModal.css'
 import { autobind } from 'core-decorators';
 

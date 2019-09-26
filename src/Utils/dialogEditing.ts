@@ -9,7 +9,7 @@ import * as DialogUtils from './dialogUtils'
 import * as OBIUtils from './obiUtils'
 import { Activity } from 'botframework-directlinejs'
 import { SelectionType, User } from '../types'
-import { EditDialogType } from '../components/modals';
+import { EditDialogType } from '../types/const';
 
 export async function onInsertAction(
     trainDialog: CLM.TrainDialog,

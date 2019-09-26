@@ -7,7 +7,7 @@ import * as OF from 'office-ui-fabric-react'
 import AddButtonInput from '../AddButtonInput'
 import AddScoreButton from '../AddButtonScore'
 import './TreeView.css';
-import { EditDialogType } from '../';
+import { EditDialogType } from '../../../types/const'
 import { TreeNode, TreeScorerStep, TreeUserInput } from './TreeNodeLabel'
 
 interface TreeNodeReceivedProps {
