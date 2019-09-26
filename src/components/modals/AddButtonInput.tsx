@@ -6,7 +6,7 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import { FM } from '../../react-intl-messages'
 import FormattedMessageId from '../FormattedMessageId'
-import { EditDialogType } from '.'
+import { EditDialogType } from '../../types/const'
 import './AddButton.css'
 
 interface Props {

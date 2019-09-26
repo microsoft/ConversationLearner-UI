@@ -21,7 +21,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { EditDialogType } from '.';
+import { EditDialogType } from '../../types/const'
 import { FM } from '../../react-intl-messages'
 import './CompareDialogsModal.css'
 import { autobind } from 'core-decorators';
