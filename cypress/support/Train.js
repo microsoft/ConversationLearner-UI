@@ -210,7 +210,11 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
         if (index > 0) index--
         else {
           helpers.ConLog(funcName, `FOUND!`)
+          
+          // It appears that this does not work all the time, seen it happen once so far.
+          // Perhaps because it needs to be scrolled into view.
           elements[i].click()
+
           return i
         }
       }
