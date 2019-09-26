@@ -22,26 +22,6 @@ import TextboxRestrictable from './TextboxRestrictable'
 import PackageCreator from './PackageCreator'
 import PackageTable from './PackageTable'
 
-// What is being edited
-export enum EditDialogType {
-    NEW = 'NEW',
-    TRAIN_EDITED = 'TRAIN_EDITED',
-    TRAIN_ORIGINAL = 'TRAIN_ORIGINAL',
-    LOG_EDITED = 'LOG_EDITED',
-    LOG_ORIGINAL = 'LOG_ORIGINAL',
-    BRANCH = 'BRANCH',
-    IMPORT = 'IMPORT'
-}
-
-// State of current edited dialog
-export enum EditState {
-    CAN_EDIT = 'CAN_EDIT',
-    // Running bot not compatible with Model
-    INVALID_BOT = 'INVALID_BOT',
-    // Attempting to edit older package id
-    INVALID_PACKAGE = 'INVALID_PACKAGE'
-}
-
 export {
     ActionCreatorEditor,
     ActionDeleteModal,
