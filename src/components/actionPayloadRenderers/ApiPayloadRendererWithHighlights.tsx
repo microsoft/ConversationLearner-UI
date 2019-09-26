@@ -43,7 +43,7 @@ const Component: React.FC<Props> = (props) => {
     return (
         <div className="cl-api-payload">
             <div data-testid="action-scorer-api">
-                <div className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-api-name">{name}</div>
+                <div className={OF.FontClassNames.mediumPlus} data-testid="action-scorer-api-name">{props.apiAction.name}</div>
                 {showLogicFunction && !isPlaceholder &&
                     <div className="cl-api-payload__fn">
                         <div className="cl-api-payload__signature">logic(memoryManager{logicPayloadRenderData.renderedArguments.length !== 0 && `, ${logicPayloadRenderData.renderedArguments.map(a => a.parameter).join(', ')}`})</div>
