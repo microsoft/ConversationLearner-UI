@@ -101,7 +101,7 @@ export function TextContentWithoutNewlines(element) {
     return '' 
   }
 
-  const returnValue = textContent.replace(/’/g, "'").replace(/([^\x20-\x7E])/gm, '')
+  const returnValue = textContent.replace(/’/g, "'").replace(/([^◾️\x20-\x7E])/gm, '')
   ConLog('TextContentWithoutNewlines', returnValue)
   return returnValue
 }
