@@ -101,6 +101,7 @@ export function TextContentWithoutNewlines(element) {
     return '' 
   }
 
+  // See the Cheat Sheet on https://www.regextester.com/15 for help with this 'NOT ^' regex string
   const returnValue = textContent.replace(/’/g, "'").replace(/([^◾️\x20-\x7E])/gm, '')
   ConLog('TextContentWithoutNewlines', returnValue)
   return returnValue
