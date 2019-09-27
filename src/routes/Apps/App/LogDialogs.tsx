@@ -26,7 +26,8 @@ import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import { EntityLabelConflictError } from '../../../types/errors'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
+import { PartialTrainDialog } from '../../../types/models'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: CLM.LogDialog, component: LogDialogs) => React.ReactNode
@@ -697,6 +698,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
 
         if (shouldMerge) {
             await ((this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags, null) as any) as Promise<void>)
+        }
+        else {
+            // The dialog exists as side affect of closing each session but tags and description where not updated since merge modal was possible.
+            const partialDialog: PartialTrainDialog = {
+                trainDialogId: this.state.mergeNewTrainDialog.trainDialogId,
+                tags: this.state.mergeNewTrainDialog.tags,
+                description: this.state.mergeNewTrainDialog.description
+            }
+            await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, partialDialog) as any) as Promise<void>)
         }
 
         if (this.state.currentLogDialogId) {

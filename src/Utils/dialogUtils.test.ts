@@ -1,13 +1,14 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 
-import { doesTrainDialogMatch, findMatchingTrainDialog, isPrimaryTrainDialog, mergeTrainDialogs, hasInternalLabelConflict, isConflictingTextVariation, isIncompatibleTextVariation, getCorrectedDialogs } from './dialogUtils'
+import { doesTrainDialogMatch, findMatchingTrainDialog, isPrimaryTrainDialog, mergeTrainDialogs, mergeTrainDialogTags, hasInternalLabelConflict, isConflictingTextVariation, isIncompatibleTextVariation, getCorrectedDialogs } from './dialogUtils'
 import { makeTrainDialog, makeExtractorStep, makeScorerStep, makeLabelEntities } from './testDataUtil'
 import { deepCopy } from './util'
 import * as CLM from '@conversationlearner/models'
 import * as uuid from 'uuid/v4'
+import { fromLogTag } from '../types'
 
 describe('dialogUtils', () => {
 
@@ -405,6 +406,25 @@ describe('dialogUtils', () => {
             result = mergeTrainDialogs(trainDialog1C, trainDialog2)
             expect(result.tags.length).toEqual(2)
             expect(result.description).toEqual("this is a long description")
+        })
+    })
+
+    describe('mergeTrainDialogTags', () => {
+        test('given dialog 1 with from log tag remove on merged tags', () => {
+            // Arrange
+            const dialog1Tags = [fromLogTag]
+            const dialog2Tags = ['othertag']
+
+            const dialog1 = makeTrainDialog([])
+            dialog1.tags = dialog1Tags
+            const dialog2 = makeTrainDialog([])
+            dialog2.tags = dialog2Tags
+
+            // Act
+            const mergedTags = mergeTrainDialogTags(dialog1, dialog2)
+
+            // Assert
+            expect(mergedTags).not.toContain(fromLogTag)
         })
     })
 

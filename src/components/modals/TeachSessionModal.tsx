@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -28,7 +28,7 @@ import { State, TeachSessionState } from '../../types'
 import { renderReplayError } from '../../Utils/RenderReplayError'
 import { Activity } from 'botframework-directlinejs'
 import { FM } from '../../react-intl-messages'
-import { EditDialogType, SelectionType } from '../../types/const'
+import { EditDialogType, SelectionType, fromLogTag } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './TeachSessionModal.css'
 import { autobind } from 'core-decorators';
@@ -235,7 +235,12 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
     @autobind
     onClickSave() {
-        this.props.onClose(true, this.state.tags, this.state.description, false)
+        const tags = [...this.state.tags]
+        if (this.props.editType === EditDialogType.LOG_EDITED) {
+            tags.push(fromLogTag)
+        }
+
+        this.props.onClose(true, tags, this.state.description, false)
     }
 
     @autobind
@@ -301,10 +306,10 @@ class TeachModal extends React.Component<Props, ComponentState> {
 
             if (buttonSubmit) {
                 // For now always add button response to bottom of dialog even
-                // when card is selected.  In future  want to add below the 
+                // when card is selected.  In future  want to add below the
                 // selected card but webchat injects imback at bottom, which causes a jump
                 // Need to update webchat to change behavior when activity is selected to not send message
-                /*            
+                /*
                 // If selected was a selected, insert it
                 if (this.state.selectedActivityIndex) {
                     this.onSubmitAddUserInput(userInput.text)

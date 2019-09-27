@@ -61,3 +61,5 @@ export enum FeatureStrings {
     DISPATCHER = "dispatcher",
     REPROMPT = "REPROMPT"  // Create re-prompt train dialogs
 }
+
+export const fromLogTag = 'from-log'

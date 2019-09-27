@@ -34,6 +34,7 @@ import { TeachSessionState } from '../../../types/StateTypes'
 import { autobind } from 'core-decorators'
 import { DispatcherAlgorithmType } from '../../../components/modals/DispatcherCreator'
 import './TrainDialogs.css'
+import { PartialTrainDialog } from 'src/types/models'
 
 export interface EditHandlerArgs {
     userInput?: string,
@@ -482,7 +483,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             if (this.props.teachSession.dialogMode !== CLM.DialogMode.EndSession) {
 
                 if (save) {
-
                     // If editing an existing train dialog, extract its dialogId
                     const sourceTrainDialogId = this.sourceTrainDialogId()
 
@@ -789,6 +789,15 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             await this.mergeTrainDialogs(this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags)
         }
         else {
+            // The dialog exists as side affect of closing each session but tags and description where not updated since merge modal was possible.
+            const partialDialog: PartialTrainDialog = {
+                trainDialogId: this.state.mergeNewTrainDialog.trainDialogId,
+                tags: this.state.mergeNewTrainDialog.tags,
+                description: this.state.mergeNewTrainDialog.description
+            }
+
+            await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, partialDialog) as any) as Promise<void>)
+
             // If editing an existing Train Dialog, replace existing with the new one
             if (sourceTrainDialogId) {
                 await ((this.props.trainDialogReplaceThunkAsync(this.props.app.appId, sourceTrainDialogId, this.state.mergeNewTrainDialog) as any) as Promise<void>)
@@ -1142,7 +1151,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             this.props.trainDialogs,
             this.props.createActionThunkAsync as any,
             this.props.createEntityThunkAsync as any
-            )
+        )
 
         try {
             const importedTrainDialogs = await obiTranscriptParser.getTrainDialogs(transcriptFiles, lgFiles)
