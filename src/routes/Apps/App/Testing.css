@@ -3,7 +3,6 @@
 }
 
 .cl-testing-body {
-  margin-bottom: 20px;
   margin-top: 20px;
   width: 100%;
   overflow: auto;
@@ -11,9 +10,20 @@
   min-height: 260px;
 }
 
+.cl-testing-trascript-group {
+  margin: 15px;
+}
+
 .cl-testing-result-group {
+  display: inline-block;
   margin-bottom: 20px;
   border-bottom: 1px solid var(--cl-color-botchat-grey);
+}
+
+.cl-testing-source-title {
+  text-align: center;
+  font-weight: 600;
+  line-height: 40px;
 }
 
 .cl-test-disabled {
@@ -21,13 +31,22 @@
 }
 
 .cl-testing-result {
-  font-size: 22px;
+  font-size: 16px;
   padding-left: 70px;
-  padding-top: 10px;
-  padding-bottom: 10px;
   border-top: 1px solid var(--cl-color-botchat-grey);
   position: relative;
   overflow: auto;
+  height: 42px;
+}
+
+.cl-testing-result-item {
+  flex-shrink: 1;
+  margin: 1px;
+  display: inline-block;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  padding: 4px;
+  text-align: center;
 }
 
 .cl-testing-subresult {
@@ -54,7 +73,7 @@
 }
 
 .cl-testing-result-value {
-  width: 130px;
+  width: 70px;
   float: left;
 }
 
@@ -64,7 +83,7 @@
 }
 
 .cl-testing-result-percent {
-  width: 130px;
+  width: 70px;
   float: left;
 }
 

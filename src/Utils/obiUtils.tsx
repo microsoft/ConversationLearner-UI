@@ -8,7 +8,6 @@ import * as Util from './util'
 import * as DialogEditing from './dialogEditing'
 import * as DialogUtils from './dialogUtils'
 import * as OBITypes from '../types/obiTypes'
-import * as textgen from 'txtgen'
 import Plain from 'slate-plain-serializer'
 import { REPROMPT_SELF } from '../types/const'
 import { ImportedAction } from '../types/models'
@@ -44,6 +43,48 @@ export interface ComposerDialog {
     lgMap: Map<string, CLM.LGItem>
 }
 
+export async function getLogDialogActivities(
+    appId: string, 
+    logDialogId: string, 
+    user: User, 
+    actions: CLM.ActionBase[],
+    entities: CLM.EntityBase[],
+    conversationId: string | undefined,
+    channelId: string | undefined,
+    fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean) => Promise<CLM.LogDialog>,
+    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
+    ): Promise<Util.RecursivePartial<BB.Activity>[]> {
+
+    // Fetch the LogDialog
+    const logDialog = await fetchLogDialogThunkAsync(appId, logDialogId, true, true)
+    if (!logDialog) {
+        throw new Error("No log dialog!") //LARS handle gracefully w/o killing test
+    }
+
+    // Convert to TrainDialog
+    const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, actions, entities)
+
+    // Return history LARS rename hisotyr vars
+    const teachWithHistory = await fetchHistoryAsync(appId, trainDialog, user.name, user.id, false)
+    const activites = teachWithHistory.history
+    if (conversationId || channelId) {
+        addIds(activites, conversationId, channelId)
+    }
+    return activites
+}
+
+function addIds(activities: Util.RecursivePartial<BB.Activity>[], conversationId: string | undefined, channelId: string | undefined): void {
+    activities.forEach(a => {
+        if (channelId) {
+            a.channelId = channelId
+        }
+        if (conversationId) {
+            a.conversation = { id: conversationId }
+        }
+    })
+}
+
+// LARS rename
 async function getHistory(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
     fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
     ): Promise<BB.Transcript> {
@@ -106,7 +147,7 @@ export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.L
     for (let activity of transcript) {
         if (activity.type && activity.type === 'message' && activity.from.role === 'bot') {
 
-            if (activity.text.startsWith('[') && activity.text.endsWith(']')) {
+            if (activity.text && activity.text.startsWith('[') && activity.text.endsWith(']')) {
 
                 const lgName = activity.text.substring(activity.text.indexOf("[") + 1, activity.text.lastIndexOf("]")).trim()
                 let response = lgMap.get(lgName)
@@ -118,73 +159,6 @@ export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.L
             }
         }
     }
-}
-
-export async function addRepromptExamples(
-    appId: string, 
-    trainDialog: CLM.TrainDialog,
-    actions: CLM.ActionBase[],
-    createTrainDialogThunkAsync: (appId: string, newTrainDialog: CLM.TrainDialog) => Promise<CLM.TrainDialog>): Promise<void> {
-
-    const repromptDialogs: CLM.TrainDialog[] = []
-
-    trainDialog.rounds.forEach((round, roundIndex) => {
-        round.scorerSteps.forEach((ss, ssIndex) => {
-            const action = actions.find(a => a.actionId === ss.labelAction)
-            if (!action) {
-                throw new Error("Undefined action")
-            }
-            if (action.repromptActionId) {
-                const repromptAction = actions.find(a => a.actionId === ss.labelAction)
-                if (!repromptAction) {
-                    throw new Error("Undefined action")
-                }
-
-                const newTrainDialog = Util.deepCopy(trainDialog)
-                const newExtractorStep: CLM.TrainExtractorStep = {
-                    textVariations: makeOutOfDomainTextVariations()
-                }
-                const newScorerStep: CLM.TrainScorerStep = {
-                    input: ss.input,
-                    labelAction: action.repromptActionId === REPROMPT_SELF ? action.actionId : action.repromptActionId,
-                    logicResult: undefined,
-                    scoredAction: {
-                        actionId: repromptAction.actionId,
-                        payload: repromptAction.payload, 
-                        isTerminal: repromptAction.isTerminal,
-                        actionType: repromptAction.actionType,
-                        score: 100
-                    }
-                }
-                const newRound: CLM.TrainRound = {
-                    extractorStep: newExtractorStep,
-                    scorerSteps: [newScorerStep]
-                }
-
-                newTrainDialog.rounds.splice(roundIndex + 1, 0, newRound)
-                repromptDialogs.push(newTrainDialog)
-            }
-        })
-    })
-    // Add reprompt train dialogs
-    for (const td of repromptDialogs) {
-        await createTrainDialogThunkAsync(appId, td)
-    }
-
-    for (let i = 0; i < 1000; i = i + 1 ) {
-        console.log(`"${textgen.sentence()}",`)
-    }
-}
-
-function makeOutOfDomainTextVariations(): CLM.TextVariation[] {
-    const textVariations: CLM.TextVariation[] = []
-    while (textVariations.length < CLM.MAX_TEXT_VARIATIONS) {
-        textVariations.push({
-            text: textgen.sentence(),
-            labelEntities: []
-        })
-    }
-    return textVariations
 }
 
 // Convert .transcript file into a TrainDialog
@@ -261,8 +235,7 @@ export async function trainDialogFromTranscriptImport(
                 trainDialog.rounds.push(curRound)
             }
             else if (activity.from.role === "bot") {
-                const hashText = hashTextFromActivity(activity, entities, nextFilledEntities)
-                let action: CLM.ActionBase | undefined | null = findActionFromHashText(hashText, actions)
+                let action = findMatchedAction(activity, entities, actions, nextFilledEntities)
                 let logicResult: CLM.LogicResult | undefined
                 let scoredAction: CLM.ScoredAction | undefined
                 let filledEntities = Util.deepCopy(nextFilledEntities)
@@ -325,6 +298,26 @@ export async function trainDialogFromTranscriptImport(
         }
     }
     return trainDialog
+}
+
+// Given an Activity try to find a matching action
+function findMatchedAction(activity: BB.Activity, entities: CLM.EntityBase[], actions: CLM.ActionBase[], filledEntities: CLM.FilledEntity[]): CLM.ActionBase | undefined {
+    // If actionId provided return the action
+    if (activity.channelData && activity.channelData) {
+        const clData: CLM.CLChannelData = activity.channelData.clData
+        if (clData.actionId) {
+            const action = actions.find(a => a.actionId === clData.actionId)
+            if (action) {
+                return action
+            }
+            else {
+                throw new Error("Provided ActionId does not exist in this model")
+            }
+        }
+    }
+    // Otherwise try to look it up by hashing the activity content and looking up
+    const hashText = hashTextFromActivity(activity, entities, filledEntities)
+    return (hashText ? findActionFromHashText(hashText, actions) : undefined)
 }
 
 // Generate entity map for an action, filling in any missing entities with a blank value
@@ -549,6 +542,7 @@ export function importedActionFromImportText(importText: string, isTerminal: boo
 
 // Search for an action by hash
 export function findActionFromHashText(hashText: string, actions: CLM.ActionBase[]): CLM.ActionBase | undefined {
+
     const importHash = Util.hashText(hashText)
 
     // Try to find matching action with same hash
@@ -667,356 +661,3 @@ export async function importActionOutput(
     }
     return filledEntities
 }
-
-const nouns = [
-    "conclusion",
-    "nature",
-    "wood",
-    "ratio",
-    "family",
-    "actor",
-    "poet",
-    "anxiety",
-    "nation",
-    "death",
-    "writer",
-    "poetry",
-    "concept",
-    "discussion",
-    "impression",
-    "population",
-    "negotiation",
-    "complaint",
-    "mud",
-    "promotion",
-    "currency",
-    "ambition",
-    "dinner",
-    "problem",
-    "hall",
-    "length",
-    "enthusiasm",
-    "profession",
-    "driver",
-    "supermarket",
-    "conversation",
-    "election",
-    "application",
-    "tennis",
-    "alcohol",
-    "responsibility",
-    "understanding",
-    "loss",
-    "data",
-    "ad",
-    "menu",
-    "beer",
-    "percentage",
-    "salad",
-    "efficiency",
-    "housing",
-    "awareness",
-    "association",
-    "ladder",
-    "office",
-    "competition",
-    "priority",
-    "union",
-    "phone",
-    "road",
-    "oven",
-    "buyer",
-    "topic",
-    "contract",
-    "police",
-    "childhood",
-    "flight",
-    "activity",
-    "reality",
-    "obligation",
-    "power",
-    "cigarette",
-    "student",
-    "storage",
-    "volume",
-    "communication",
-    "estate",
-    "introduction",
-    "story",
-    "user",
-    "technology",
-    "writing",
-    "context",
-    "feedback",
-    "argument",
-    "night",
-    "collection",
-    "database",
-    "dad",
-    "signature",
-    "recording",
-    "sister",
-    "confusion",
-    "reputation",
-    "steak",
-    "tooth",
-    "exam",
-    "grocery",
-    "ear",
-    "breath",
-    "orange",
-    "thing",
-    "description",
-    "indication",
-    "economics",
-    "birthday",
-    "opinion",
-    "funeral",
-    "king",
-    "law",
-    "audience",
-    "wealth",
-    "version",
-    "lady",
-    "president",
-    "lake",
-    "shopping",
-    "difference",
-    "gate",
-    "honey",
-    "hair",
-    "affair",
-    "explanation",
-    "solution",
-    "debt",
-    "atmosphere",
-    "friendship",
-    "employer",
-    "emotion",
-    "operation",
-    "disaster",
-    "teaching",
-    "wedding",
-    "video",
-    "safety",
-    "development",
-    "throat",
-    "theory",
-    "airport",
-    "music",
-    "memory",
-    "meaning",
-    "tongue",
-    "administration",
-    "foundation",
-    "policy",
-    "marketing",
-    "protection",
-    "guest",
-    "industry",
-    "historian",
-    "cookie",
-    "initiative",
-    "fishing",
-    "chest",
-    "truth",
-    "agency",
-    "government",
-    "penalty",
-    "army",
-    "extent",
-    "importance",
-    "employee",
-    "candidate",
-    "organization",
-    "chemistry",
-    "error",
-    "village",
-    "agreement",
-    "opportunity",
-    "unit",
-    "maintenance",
-    "attitude",
-    "patience",
-    "role",
-    "control",
-    "security",
-    "method",
-    "hat",
-    "engine",
-    "outcome",
-    "country",
-    "cancer",
-    "disease",
-    "republic",
-    "basis",
-    "permission",
-    "manufacturer",
-    "entry",
-    "response",
-    "investment",
-    "passion",
-    "system",
-    "vehicle",
-    "satisfaction",
-    "week",
-    "politics",
-    "song",
-    "recipe",
-    "county",
-    "preparation",
-    "skill",
-    "situation",
-    "celebration",
-    "intention"    
-]
-
-const adjectives = [
-"inner",
-"suitable",
-"exciting",
-"aware",
-"electrical",
-"boring",
-"accurate",
-"practical",
-"mental",
-"asleep",
-"large",
-"additional",
-"obvious",
-"cultural",
-"similar",
-"wooden",
-"suspicious",
-"unfair",
-"careful",
-"entire",
-"logical",
-"conscious",
-"significant",
-"nice",
-"civil",
-"psychological",
-"medical",
-"legal",
-"strong",
-"southern",
-"informal",
-"hungry",
-"dangerous",
-"realistic",
-"guilty",
-"mad",
-"impossible",
-"visible",
-"former",
-"healthy",
-"remarkable",
-"anxious",
-"sorry",
-"poor",
-"difficult",
-"cute",
-"tiny",
-"distinct",
-"desperate",
-"successfully",
-"federal",
-"unlikely",
-"traditional",
-"ugly",
-"successful",
-"aggressive",
-"dramatic",
-"rare",
-"responsible",
-"several",
-"afraid",
-"latter",
-"unusual",
-"lucky",
-"terrible",
-"recent",
-"curious",
-"available",
-"automatic",
-"serious",
-"numerous",
-"decent",
-"angry",
-"electronic",
-"tall",
-"used",
-"various",
-"able",
-"basic",
-"relevant",
-"eastern",
-"happy",
-"willing",
-"intelligent",
-"weak",
-"foreign",
-"actual",
-"immediate",
-"interesting",
-"administrative",
-"reasonable",
-"impressive",
-"existing",
-"hot",
-"expensive",
-"obviously",
-"nervous",
-"educational",
-"comprehensive",
-"acceptable",
-"competitive",
-"pregnant",
-"pure",
-"consistent",
-"historical",
-"confident",
-"technical",
-"huge",
-"substantial",
-"global",
-"united",
-"emotional",
-"massive",
-"efficient",
-"strict",
-"typical",
-"powerful",
-"known",
-"unhappy",
-"unable",
-"severe",
-"financial",
-"every",
-"political",
-"embarrassed",
-"pleasant",
-"scared",
-"wonderful",
-"useful",
-"friendly",
-"environmental",
-"odd",
-"helpful",
-"important",
-"capable",
-"critical",
-"different",
-"popular",
-"famous",
-"old",
-"sufficient",
-"alive",
-"lonely",
-"sudden"
-]
-
-textgen.addNouns(nouns)
-textgen.addAdjectives(adjectives)

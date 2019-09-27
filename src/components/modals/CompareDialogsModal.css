@@ -1,9 +1,18 @@
 .cl-compare-dialogs-modal {
     height: 100%;
-    display: grid;
-    grid-template-columns: 475px 475px;
-    grid-column-gap: 0.5em;
     overflow-y: hidden;
+    overflow-x: auto;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.cl-compare-dialogs-channel {
+    width: 475px;
+    display: inline-block;
+    height: 100%;
+    white-space: normal;
+    margin-left: 2px;
+    margin-right: 2px;
 }
 
 .cl-compare-dialogs-webchat {
@@ -46,8 +55,19 @@
 }
 
 .cl-modal.cl-modal--compare-dialogs {
-    width: 965px;
     height: 96%;
+}
+
+.cl-compare-dialogs-small {
+    width: 564px;
+}
+
+.cl-compare-dialogs-med {
+    width: 965px;
+}
+
+.cl-compare-dialogs-large {
+    width: 1437px;
 }
 
 .cl-modal.cl-modal--compare-dialogs > * {

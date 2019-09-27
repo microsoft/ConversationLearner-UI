@@ -1239,11 +1239,6 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
             })
             newTrainDialog.validity = CLM.Validity.VALID
 
-            // Should re-prompt train dialogs be created
-            if (Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.REPROMPT)) {
-                await OBIUtils.addRepromptExamples(this.props.app.appId, newTrainDialog, this.props.actions, this.props.createTrainDialogThunkAsync as any)
-            }
-
             await this.onCreateTrainDialog(newTrainDialog)
         }
         else {

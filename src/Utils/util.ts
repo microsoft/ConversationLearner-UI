@@ -18,6 +18,25 @@ export function equal<T extends number | string | boolean>(as: T[], bs: T[]): bo
         && as.every((a, i) => a === bs[i])
 }
 
+// Return random number between min and max
+export function randomInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+export function percentOf(count: number, total: number): string {
+    if (total === 0) {
+        return "-"
+    }
+    return `${(count / total * 100).toFixed(1)}%`
+}
+
+// Convert rgb to hex allowing for non-whole numbers
+export function rgbToHex(r: number, g: number, b: number) {
+    // tslint:disable:prefer-template
+    // tslint:disable:no-bitwise
+    return "#" + ((1 << 24) + (Math.trunc(r) << 16) + (Math.trunc(g) << 8) + Math.trunc(b)).toString(16).slice(1);
+  }
+
 export function replace<T>(xs: T[], updatedX: T, getId: (x: T) => object | number | string): T[] {
     const index = xs.findIndex(x => getId(x) === getId(updatedX))
     if (index < 0) {
@@ -280,4 +299,28 @@ export function isFeatureEnabled(featureString: string | undefined, feature: Con
         return true
     }
     return false
+}
+
+// Can by JSON.stringify to serialize Map type objects
+// i.e. JSON.stringify({object with map}, mapReplacer)
+export function mapReplacer(key: any, value: any) {
+    if (value instanceof Map) {
+        return {
+            dataType: 'Map',
+            value: [...value]
+        }
+    } else {
+        return value;
+    }
+}
+
+// Can be used JSON.stringify to de-serialize Map type objects
+// i.e. JSON.parse({object with map}, mapReviver)
+export function mapReviver(key: any, value: any) {
+    if (typeof value === 'object' && value !== null) {
+        if (value.dataType === 'Map') {
+            return new Map(value.value)
+        }
+    }
+    return value
 }

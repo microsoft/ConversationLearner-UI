@@ -466,6 +466,12 @@ export enum FM {
     TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE = 'TeachSessionModal.edit.confirmDelete.title',
     TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION = 'TeachSessionModal.initstate.ariaDescription',
     TEACHSESSIONMODAL_INITSTATE_TEXT = 'TeachSessionModal.initstate.text',
+    
+    // Testing
+    TESTING_NAME_LABEL = 'Testing.testname.label',
+    TESTING_TABLE_SOURCE_LABEL = 'Testing.tablesource.lable',
+    TESTING_TABLE_COUNT_LABEL = 'Testing.tablecount.label',
+
     // TextVariation
     TEXTVARIATION_PLACEHOLDER = 'TextVariationCreator.placeholder',
 
@@ -591,14 +597,20 @@ export enum FM {
     TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON = 'TranscriptImporter.transcriptbutton',
     TRANSCRIPT_IMPORTER_LG_BUTTON = 'TranscriptImporter.lgbutton',
 
+    // TranscriptLoader
+    TRANSCRIPT_LOADER_TITLE = 'TranscriptPicker.title',
+
+    // TranscriptTestPicker
+    TRANSCRIPT_TESTPICKER_TITLE = 'TranscriptTestPicker.title',
+    TRANSCRIPT_TESTPICKER_SOURCE = 'TranscriptTestPicker.source',
+
     // Transcript Validator
     TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
     TRANSCRIPT_VALIDATOR_SUBTITLE = 'TranscriptValidator.subtitle',
-    TRANSCRIPT_VALIDATOR_PICKER_TITLE = 'TranscriptValidatorPicker.title',
     TRANSCRIPT_VALIDATOR_FILESAVE = 'TranscriptValidator.FileSave',
     TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER = 'TranscriptValidator.FileSavePlaceholder',
-    TRANSCRIPT_VALIDATOR_NAME_LABEL = 'TranscriptValidator.FileSavePlaceholder',
-    TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST = 'TranscriptValidator.button.NewTest',
+    TRANSCRIPT_VALIDATOR_BUTTON_ADD_TRANSCRIPTS = 'TranscriptValidator.button.AddTranscripts',
+    TRANSCRIPT_VALIDATOR_BUTTON_TEST_MODEL = 'TranscriptValidator.button.NewTest',
     TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS = 'TranscriptValidator.button.LoadResults',
     TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS = 'TranscriptValidator.button.SaveResults',
 
@@ -1031,6 +1043,11 @@ export default {
         [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
         [FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME]: 'Created',
 
+        // Testing
+        [FM.TESTING_NAME_LABEL]: 'Test Name',
+        [FM.TESTING_TABLE_SOURCE_LABEL]: 'Source',
+        [FM.TESTING_TABLE_COUNT_LABEL]: '# Transcripts',
+
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
 
@@ -1228,14 +1245,20 @@ export default {
         [FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON]: '.transcript files',
         [FM.TRANSCRIPT_IMPORTER_LG_BUTTON]: '.lg files',
 
+        // TranscriptLoader
+        [FM.TRANSCRIPT_LOADER_TITLE]: 'Select Transcript files to add',
+
+        // TranscriptTestPicker
+        [FM.TRANSCRIPT_TESTPICKER_TITLE]: 'Select Transcripts to Test',
+        [FM.TRANSCRIPT_TESTPICKER_SOURCE]: ' Source:',
+
         // Transcript Validator
         [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Testing',
         [FM.TRANSCRIPT_VALIDATOR_SUBTITLE]: `Compare Model's output to .transcript files`,
-        [FM.TRANSCRIPT_VALIDATOR_PICKER_TITLE]: 'Select Transcript files to test',
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE]: 'Name for Test Results',
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER]: 'Name',
-        [FM.TRANSCRIPT_VALIDATOR_NAME_LABEL]: 'Test Name',
-        [FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST]: 'New Test',
+        [FM.TRANSCRIPT_VALIDATOR_BUTTON_ADD_TRANSCRIPTS]: 'Add Transcripts',
+        [FM.TRANSCRIPT_VALIDATOR_BUTTON_TEST_MODEL]: 'Test Model',
         [FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS]: 'Load Results',
         [FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS]: 'Save Results',
 

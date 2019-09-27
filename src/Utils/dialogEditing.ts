@@ -474,7 +474,7 @@ export async function getPlaceholderAPIAction(
     isTerminal: boolean,
     actions: CLM.ActionBase[],
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null> | null
-): Promise<CLM.ActionBase | null> {
+): Promise<CLM.ActionBase | undefined> {
     // Check if it has been attached to real api call
     const apiHash = Util.hashText(placeholderName)
     let placeholder = actions.find(a => {return a.clientData && a.clientData.importHashes 
@@ -507,7 +507,7 @@ export async function getPlaceholderAPIAction(
 
         return newAction
     }
-    return null
+    return undefined
 }
 
 export function scorerStepFromActivity(trainDialog: CLM.TrainDialog, selectedActivity: Activity): CLM.TrainScorerStep | undefined {
