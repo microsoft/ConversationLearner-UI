@@ -2,6 +2,7 @@ const selectors = {
     common: {
         spinner: '.cl-spinner',
         dropDownOptions: 'button.ms-Dropdown-item',
+        gridRow: '[data-automationid="DetailsRowFields"]',
     },
     homePage: {
         link: '#uiLink',
@@ -110,6 +111,7 @@ const selectors = {
         actionScorer: {
             rowField: '[data-automationid="DetailsRowFields"]',
             buttonCreate: '[data-testid="action-scorer-add-action-button"]',
+            buttonSelected: '[data-testid="action-scorer-button-selected"]',
         },
     },
     mergeModal: {
@@ -147,6 +149,7 @@ const selectors = {
     logDialog: {
         buttonDone: '[data-testid="chat-session-modal-done-testing-button"]',
         inputMessage: 'input[placeholder="Type your message..."]',
+        modal: '.cl-modal--log',
     },
     logConversionConflictsModal: {
         modal: '[data-testid="log-conversion-conflicts-modal"]',

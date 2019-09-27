@@ -70,6 +70,10 @@
     text-align: center;
 }
 
+.cl-page-placeholder--none {
+    display: none;
+}
+
 .cl-page-placeholder__description {
     margin-bottom: 1em;
 }

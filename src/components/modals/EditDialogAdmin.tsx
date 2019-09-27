@@ -19,7 +19,7 @@ import { connect } from 'react-redux'
 import { State } from '../../types'
 import { Activity } from 'botframework-directlinejs'
 import { FM } from '../../react-intl-messages'
-import { EditDialogType, EditState } from '.'
+import { EditDialogType, EditState } from '../../types/const'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import './EditDialogAdmin.css'
 import "./TeachSessionModal.css"
