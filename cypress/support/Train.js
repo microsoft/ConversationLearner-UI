@@ -200,7 +200,6 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
 
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
-    //message = message.replace(/'/g, "’")
     const elements = GetAllChatMessageElements()
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (let i = 0; i < elements.length; i++) {
@@ -464,7 +463,7 @@ export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expe
 export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount, turnIndex) { 
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) { 
-      if (chatMessageFound !== expectedTurnText) { //.replace(/'/g, "’")) {
+      if (chatMessageFound !== expectedTurnText) {
         throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
       }
     }
@@ -474,7 +473,7 @@ export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount
 export function VerifyChatTurnIsAnExactMatchWithMarkup(expectedTurnText, expectedTurnCount, turnIndex) { 
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) { 
-      if (chatMessageFound !== expectedTurnText) { //.replace(/'/g, "’")) {
+      if (chatMessageFound !== expectedTurnText) {
         throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
       }
     }
@@ -711,7 +710,7 @@ export function VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, 
 }
 
 export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage) {
-  const expectedUtterance = 'EndSession: ' + expectedData //.replace(/'/g, "’")
+  const expectedUtterance = 'EndSession: ' + expectedData
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
     const element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
@@ -858,7 +857,7 @@ export function VerifyAllChatMessages(chatMessagesToBeVerified) {
 
 export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
   cy.Enqueue(() => {
-    originalMessage = originalMessage //.replace(/'/g, "’")
+    originalMessage = originalMessage
 
     SelectChatTurnExactMatch(originalMessage, originalIndex)
 
