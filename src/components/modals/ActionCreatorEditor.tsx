@@ -13,6 +13,7 @@ import * as ActionPayloadEditor from './ActionPayloadEditor'
 import Plain from 'slate-plain-serializer'
 import actions from '../../actions'
 import ActionDeleteModal from './ActionDeleteModal'
+import ConditionCreatorModal, { Condition } from './ConditionCreatorModal'
 import ConfirmCancelModal from './ConfirmCancelModal'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import AdaptiveCardViewer from './AdaptiveCardViewer/AdaptiveCardViewer'
@@ -32,8 +33,14 @@ import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import './ActionCreatorEditor.css'
 import { autobind } from 'core-decorators';
+import { TagItemSuggestion } from 'office-ui-fabric-react'
 
 const TEXT_SLOT = '#TEXT_SLOT#'
+
+const addConditionPlaceholder: OF.ITag = {
+    key: 'addConditionPlaceholder',
+    name: 'Add Condition',
+}
 
 const convertEntityToDropdownOption = (entity: CLM.EntityBase): OF.IDropdownOption =>
     ({
@@ -261,6 +268,7 @@ interface ComponentState {
     isEditing: boolean
     isEntityEditorModalOpen: boolean
     isCardViewerModalOpen: boolean
+    isConditionCreatorModalOpen: boolean
     isConfirmDeleteModalOpen: boolean
     isConfirmDeleteInUseModalOpen: boolean
     isConfirmEditModalOpen: boolean
@@ -300,6 +308,7 @@ const initialState: Readonly<ComponentState> = {
     isEditing: false,
     isEntityEditorModalOpen: false,
     isCardViewerModalOpen: false,
+    isConditionCreatorModalOpen: false,
     isConfirmDeleteModalOpen: false,
     isConfirmDeleteInUseModalOpen: false,
     isConfirmEditModalOpen: false,
@@ -1037,6 +1046,18 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    onClickCreateConditionCreator(condition: Condition) {
+
+    }
+
+    @autobind
+    onClickCancelConditionCreator() {
+        this.setState({
+            isConditionCreatorModalOpen: false,
+        })
+    }
+
+    @autobind
     onCancelDeleteInUse() {
         this.setState({
             isConfirmDeleteInUseModalOpen: false,
@@ -1204,15 +1225,29 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     onResolveRequiredEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
-        return getSuggestedTags(
+        const suggestedTags = getSuggestedTags(
             filterText,
             this.state.availableConditionalTags,
             [...selectedTags, ...this.state.requiredEntityTagsFromPayload, ...this.state.negativeEntityTags, ...this.state.expectedEntityTags],
             this.state.requiredEntityTags
         )
+
+        return [
+            addConditionPlaceholder,
+            ...suggestedTags
+        ]
     }
 
     onChangeRequiredEntityTags = (tags: IConditionalTag[]) => {
+        const containsAddConditionPlaceholder = tags.some(t => t.key === addConditionPlaceholder.key)
+        // Assume if list has this item the user clicked the suggestion and intends to add condition
+        if (containsAddConditionPlaceholder) {
+            this.setState({
+                isConditionCreatorModalOpen: true,
+            })
+            return
+        }
+
         this.setState({
             requiredEntityTags: tags
         })
@@ -1228,6 +1263,11 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         renderProps.highlight = locked
 
         return <CLTagItem key={props.index} {...renderProps}>{props.item.name}</CLTagItem>
+    }
+
+    @autobind
+    onRenderRequiredEntitySuggestion(props: OF.ITag, itemProps: OF.ISuggestionItemProps<OF.ITag>): JSX.Element {
+        return <TagItemSuggestion>Custom! {props.name}</TagItemSuggestion>
     }
 
     onResolveNegativeEntityTags = (filterText: string, selectedTags: OF.ITag[]): OF.ITag[] => {
@@ -1679,15 +1719,16 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                         data-testid="action-required-entities"
                                         nonRemovableTags={this.state.requiredEntityTagsFromPayload}
                                         nonRemoveableStrikethrough={false}
-                                        label="Required Entities"
+                                        label="Required Entities or Conditions"
                                         onResolveSuggestions={this.onResolveRequiredEntityTags}
                                         onRenderItem={this.onRenderRequiredEntityTag}
+                                        onRenderSuggestionsItem={this.onRenderRequiredEntitySuggestion}
                                         getTextFromItem={item => item.name}
                                         onChange={this.onChangeRequiredEntityTags}
                                         pickerSuggestionsProps={
                                             {
-                                                suggestionsHeaderText: 'Entities',
-                                                noResultsFoundText: 'No Entities Found'
+                                                suggestionsHeaderText: 'Entities or Conditions',
+                                                noResultsFoundText: 'No Entities or Conditions Found'
                                             }
                                         }
                                         selectedItems={this.state.requiredEntityTags}
@@ -1699,15 +1740,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                                 <div className="cl-action-creator--disqualifying-entities">
                                     <TC.TagPicker
                                         data-testid="action-disqualifying-entities"
-                                        label="Disqualifying Entities"
+                                        label="Disqualifying Entities or Conditions"
                                         onResolveSuggestions={this.onResolveNegativeEntityTags}
                                         onRenderItem={this.onRenderNegativeEntityTag}
                                         getTextFromItem={item => item.name}
                                         onChange={this.onChangeNegativeEntityTags}
                                         pickerSuggestionsProps={
                                             {
-                                                suggestionsHeaderText: 'Entities',
-                                                noResultsFoundText: 'No Entities Found'
+                                                suggestionsHeaderText: 'Entities or Conditions',
+                                                noResultsFoundText: 'No Entities or Conditions Found'
                                             }
                                         }
                                         selectedItems={this.state.negativeEntityTags}
@@ -1846,6 +1887,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                         ? this.getRenderedActionArguments(this.state.slateValuesMap, this.props.entities)
                         : []}
                     hideUndefined={false}
+                />
+                <ConditionCreatorModal
+                    entities={this.props.entities}
+                    conditions={[]}
+                    isOpen={this.state.isConditionCreatorModalOpen}
+                    onClickCreate={this.onClickCreateConditionCreator}
+                    onClickCancel={this.onClickCancelConditionCreator}
                 />
             </OF.Modal>
         );
