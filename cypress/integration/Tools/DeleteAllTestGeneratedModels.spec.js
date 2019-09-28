@@ -72,10 +72,9 @@ function ModelShouldBeDeleted(modelName) {
 
   const modelNameSuffix = modelName.substring(modelName.length - suffixLength)
   if (modelNameSuffix[0] != '-') {
-    // Something is wrong with the format of this model name, 
-    // so to be safe we will not delete it.
-    helpers.ConLog(funcName, `modelNameSuffix: '${modelNameSuffix}' - should start with '-' but does not`)
-    return false
+    // Something is wrong with the format of this model name, it will be deleted. 
+    helpers.ConLog(funcName, `modelNameSuffix: '${modelNameSuffix}' - should start with '-' but does not. It will be deleted. Following the standard will ensure that your model is not accidentally deleted by another process before your test is done using it.`)
+    return true
   }
 
   helpers.ConLog(funcName, 'Suffix starts with "-"')
