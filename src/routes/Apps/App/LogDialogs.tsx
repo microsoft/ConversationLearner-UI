@@ -18,15 +18,16 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../../types'
-import { SelectionType } from '../../../types/const'
-import { ChatSessionModal, EditDialogModal, TeachSessionModal, EditDialogType, EditState, MergeModal, ConfirmCancelModal } from '../../../components/modals'
+import { EditDialogType, EditState, SelectionType } from '../../../types/const'
+import { ChatSessionModal, EditDialogModal, TeachSessionModal, MergeModal, ConfirmCancelModal } from '../../../components/modals'
 import LogConversionConflictModal, { ConflictPair } from '../../../components/modals/LogConversionConflictModal'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../../react-intl-messages'
 import { Activity } from 'botframework-directlinejs'
 import { TeachSessionState } from '../../../types/StateTypes'
 import { EntityLabelConflictError } from '../../../types/errors'
-import { autobind } from 'core-decorators';
+import { autobind } from 'core-decorators'
+import { PartialTrainDialog } from '../../../types/models'
 
 interface IRenderableColumn extends OF.IColumn {
     render: (x: CLM.LogDialog, component: LogDialogs) => React.ReactNode
@@ -698,6 +699,15 @@ class LogDialogs extends React.Component<Props, ComponentState> {
         if (shouldMerge) {
             await ((this.props.trainDialogMergeThunkAsync(this.props.app.appId, this.state.mergeNewTrainDialog, this.state.mergeExistingTrainDialog, description, tags, null) as any) as Promise<void>)
         }
+        else {
+            // The dialog exists as side affect of closing each session but tags and description where not updated since merge modal was possible.
+            const partialDialog: PartialTrainDialog = {
+                trainDialogId: this.state.mergeNewTrainDialog.trainDialogId,
+                tags: this.state.mergeNewTrainDialog.tags,
+                description: this.state.mergeNewTrainDialog.description
+            }
+            await ((this.props.editTrainDialogThunkAsync(this.props.app.appId, partialDialog) as any) as Promise<void>)
+        }
 
         if (this.state.currentLogDialogId) {
             await ((this.props.deleteLogDialogThunkAsync(this.props.app, this.state.currentLogDialogId, this.props.editingPackageId) as any) as Promise<void>)
@@ -1026,61 +1036,58 @@ class LogDialogs extends React.Component<Props, ComponentState> {
                         iconProps={{ iconName: 'Delete' }}
                     />
                 </div>
-                {
-                    isPlaceholderVisible
-                        ? <div className="cl-page-placeholder">
-                            <div className="cl-page-placeholder__content">
-                                <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
-                                <OF.PrimaryButton
-                                    iconProps={{
-                                        iconName: "Add"
-                                    }}
-                                    disabled={isEditingDisabled}
-                                    onClick={this.onClickNewChatSession}
-                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
-                                    text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
-                                />
-                            </div>
-                        </div>
-                        : <>
-                            <div>
-                                <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
-                                    Search:
-                                </OF.Label>
-                                <OF.SearchBox
-                                    id="logdialogs-input-search"
-                                    data-testid="logdialogs-search-box"
-                                    className={OF.FontClassNames.mediumPlus}
-                                    onChange={this.onChangeSearchString}
-                                    onSearch={this.onSearch}
-                                />
-                            </div>
-                            <OF.DetailsList
-                                data-testid="logdialogs-details-list"
-                                key={this.state.dialogKey}
-                                className={OF.FontClassNames.mediumPlus}
-                                items={computedLogDialogs}
-                                selection={this.selection}
-                                getKey={getDialogKey}
-                                setKey="selectionKey"
-                                columns={this.state.columns}
-                                checkboxVisibility={OF.CheckboxVisibility.onHover}
-                                onColumnHeaderClick={this.onClickColumnHeader}
-                                onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
-                                onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
-                                onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
+
+                    <div className={`cl-page-placeholder ${isPlaceholderVisible ? '' : 'cl-page-placeholder--none'}`}>
+                        <div className="cl-page-placeholder__content">
+                            <div className={`cl-page-placeholder__description ${OF.FontClassNames.xxLarge}`}>Create a Log Dialog</div>
+                            <OF.PrimaryButton
+                                iconProps={{
+                                    iconName: "Add"
+                                }}
+                                disabled={isEditingDisabled}
+                                onClick={this.onClickNewChatSession}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONARIALDESCRIPTION)}
+                                text={Util.formatMessageId(this.props.intl, FM.LOGDIALOGS_CREATEBUTTONTITLE)}
                             />
-                        </>
-                }
+                        </div>
+                    </div>
+                    <>
+                        <div className={isPlaceholderVisible ? 'cl-hidden' : ''}>
+                            <OF.Label htmlFor="logdialogs-input-search" className={OF.FontClassNames.medium}>
+                                Search:
+                            </OF.Label>
+                            <OF.SearchBox
+                                id="logdialogs-input-search"
+                                data-testid="logdialogs-search-box"
+                                className={OF.FontClassNames.mediumPlus}
+                                onChange={this.onChangeSearchString}
+                                onSearch={this.onSearch}
+                            />
+                        </div>
+                        <OF.DetailsList
+                            data-testid="logdialogs-details-list"
+                            key={this.state.dialogKey}
+                            className={`${OF.FontClassNames.mediumPlus} ${isPlaceholderVisible ? 'cl-hidden' : ''}`}
+                            items={computedLogDialogs}
+                            selection={this.selection}
+                            getKey={getDialogKey}
+                            setKey="selectionKey"
+                            columns={this.state.columns}
+                            checkboxVisibility={OF.CheckboxVisibility.onHover}
+                            onColumnHeaderClick={this.onClickColumnHeader}
+                            onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
+                            onRenderItemColumn={(logDialog, i, column: IRenderableColumn) => returnErrorStringWhenError(() => column.render(logDialog, this))}
+                            onItemInvoked={logDialog => this.onClickLogDialogItem(logDialog)}
+                        />
+                    </>
 
 
-
-                <ChatSessionModal
-                    app={this.props.app}
-                    editingPackageId={this.props.editingPackageId}
-                    open={this.state.isChatSessionWindowOpen}
-                    onClose={this.onCloseChatSessionWindow}
-                />
+                    <ChatSessionModal
+                        app={this.props.app}
+                        editingPackageId={this.props.editingPackageId}
+                        open={this.state.isChatSessionWindowOpen}
+                        onClose={this.onCloseChatSessionWindow}
+                    />
                 {
                     teachSession && teachSession.teach &&
                     <TeachSessionModal

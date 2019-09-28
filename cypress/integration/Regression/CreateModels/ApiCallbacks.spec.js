@@ -58,7 +58,7 @@ describe('API Callbacks - CreateModels', () => {
         responseNameData: 'LogicWithArgs', 
         type: 'API',
         logicArgs: ['$1stArg{enter}', '$2ndArg{enter}'],
-        validateApiResponse: 'LogicWithArgslogic(memoryManager, firstArg, secondArg)firstArg:"$1stArg"secondArg:"$2ndArg"'
+        validateApiResponse: 'LogicWithArgslogic(memoryManager, firstArg, secondArg)firstArg:$1stArgsecondArg:$2ndArg'
       })
     })
 
@@ -76,7 +76,7 @@ describe('API Callbacks - CreateModels', () => {
         type: 'API',
         logicArgs: ['$1stArg{enter}', '$2ndArg{enter}', '333', '4444', 'five', 'six', 'seven'],                                          
         renderArgs: ['$1stArg{enter}', '$2ndArg{enter}', 'three', 'four', '55555', '666666', '7777777'],
-        validateApiResponse: 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"333"fourthArg:"4444"fifthArg:"five"sixthArg:"six"seventhArg:"seven"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"three"fourthArg:"four"fifthArg:"55555"sixthArg:"666666"seventhArg:"7777777"'
+        validateApiResponse: 'RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:$2ndArgthirdArg:333fourthArg:4444fifthArg:fivesixthArg:sixseventhArg:sevenrender(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:$2ndArgthirdArg:threefourthArg:fourfifthArg:55555sixthArg:666666seventhArg:7777777'
       })
     })
 
@@ -85,7 +85,7 @@ describe('API Callbacks - CreateModels', () => {
         responseNameData: 'TextCard', 
         type: 'API', 
         renderArgs: ['Greetings', 'Have a great day!'], 
-        validateApiResponse: 'TextCardrender(result, memoryManager, cardTitle, cardText)cardTitle:"Greetings"cardText:"Have a great day!"'
+        validateApiResponse: 'TextCardrender(result, memoryManager, cardTitle, cardText)cardTitle:GreetingscardText:Have a great day!'
       })
     })
   })

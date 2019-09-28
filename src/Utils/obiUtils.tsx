@@ -62,12 +62,12 @@ export interface TranscriptActionCall {
     type: string
     actionName: string
     actionInput: TranscriptActionInput[]
-    actionOutput: TranscriptActionOutput[]
+    actionOutput: OBIActionOutput[]
 }
 
-interface TranscriptActionOutput {
+export interface OBIActionOutput {
     entityName: string,
-    value: string
+    value?: string
 }
 
 export function isSameActivity(activity1: BB.Activity, activity2: BB.Activity): boolean {
@@ -121,7 +121,7 @@ export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.L
 }
 
 export async function addRepromptExamples(
-    appId: string, 
+    appId: string,
     trainDialog: CLM.TrainDialog,
     actions: CLM.ActionBase[],
     createTrainDialogThunkAsync: (appId: string, newTrainDialog: CLM.TrainDialog) => Promise<CLM.TrainDialog>): Promise<void> {
@@ -150,7 +150,7 @@ export async function addRepromptExamples(
                     logicResult: undefined,
                     scoredAction: {
                         actionId: repromptAction.actionId,
-                        payload: repromptAction.payload, 
+                        payload: repromptAction.payload,
                         isTerminal: repromptAction.isTerminal,
                         actionType: repromptAction.actionType,
                         score: 100
@@ -564,8 +564,13 @@ export function findActionFromHashText(hashText: string, actions: CLM.ActionBase
     return matchedActions[0]
 }
 
+/**
+ * Given the {entityName, entityValue} results from some action being imported, returns
+ * an array of FilledEntity instances representing those results.
+ * Entities that do not yet exist will be created once.
+ */
 export async function importActionOutput(
-    actionResults: TranscriptActionOutput[],
+    actionResults: OBIActionOutput[],
     entities: CLM.EntityBase[],
     app: CLM.AppBase,
     createEntityThunkAsync?: ((appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>)
@@ -589,6 +594,7 @@ export async function importActionOutput(
                 resolverType: "none",
                 createdDateTime: new Date().toJSON(),
                 lastModifiedDateTime: new Date().toJSON(),
+                isResolutionRequired: false,
                 isMultivalue: false,
                 isNegatible: false,
                 negativeId: null,
@@ -601,17 +607,15 @@ export async function importActionOutput(
             }
 
             entityId = await ((createEntityThunkAsync(app.appId, newEntity) as any) as Promise<string>)
-
             if (!entityId) {
                 throw new Error("Invalid Entity Definition")
             }
-
         }
         else {
             entityId = "UNKNOWN ENTITY"
         }
         const memoryValue: CLM.MemoryValue = {
-            userText: actionResult.value,
+            userText: actionResult.value ? actionResult.value : null,
             displayText: null,
             builtinType: null,
             resolution: {}
@@ -825,7 +829,7 @@ const nouns = [
     "skill",
     "situation",
     "celebration",
-    "intention"    
+    "intention"
 ]
 
 const adjectives = [

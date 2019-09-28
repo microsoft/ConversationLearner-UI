@@ -15,7 +15,7 @@ import { FM } from '../../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { TreeNodeLabel, TreeNode, TreeScorerStep } from './TreeNodeLabel'
 import { TreeNodeExpanded } from './TreeNodeExpanded'
-import { EditDialogType, EditState } from '..'
+import { EditDialogType, EditState } from '../../../types/const'
 import './TreeView.css';
 import { autobind } from 'core-decorators';
 

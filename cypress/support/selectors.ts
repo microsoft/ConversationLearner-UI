@@ -2,6 +2,7 @@ const selectors = {
     common: {
         spinner: '.cl-spinner',
         dropDownOptions: 'button.ms-Dropdown-item',
+        gridRow: '[data-automationid="DetailsRowFields"]',
     },
     homePage: {
         link: '#uiLink',
@@ -40,6 +41,8 @@ const selectors = {
         name: '[data-testid="entities-name"]',
     },
     entity: {
+        checkboxResolutionRequired: '[data-testid="entity-creator-resolution-required"] .ms-Checkbox',
+        dropDownResolverType: '[data-testid="entity-creator-resolver-type-dropdown"]',
         dropDownType: '[data-testid="entity-creator-entity-type-dropdown"]',
         modal: '[data-testid="entity-creator-modal"]',
         name: '[data-testid="entity-creator-entity-name-text"]',
@@ -108,6 +111,7 @@ const selectors = {
         actionScorer: {
             rowField: '[data-automationid="DetailsRowFields"]',
             buttonCreate: '[data-testid="action-scorer-add-action-button"]',
+            buttonSelected: '[data-testid="action-scorer-button-selected"]',
         },
     },
     mergeModal: {
@@ -145,6 +149,7 @@ const selectors = {
     logDialog: {
         buttonDone: '[data-testid="chat-session-modal-done-testing-button"]',
         inputMessage: 'input[placeholder="Type your message..."]',
+        modal: '.cl-modal--log',
     },
     logConversionConflictsModal: {
         modal: '[data-testid="log-conversion-conflicts-modal"]',

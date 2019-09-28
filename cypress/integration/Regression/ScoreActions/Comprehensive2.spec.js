@@ -104,7 +104,7 @@ describe('Comprehensive 2 - Score Actions', () => {
     generatedScoreActionsData.VerifyScoreActionsList()
 
     it('Select RenderTheArgs API action', () => {
-      train.SelectApiTextAction('RenderTheArgs', 'The Logic Args: ‘OneFromAnEntity’, ‘TwoToBeUsedByApiCall’, ‘333’, ‘4444’, ‘five’, ‘six’, ‘seven’The Render Args: ‘OneFromAnEntity’, ‘TwoToBeUsedByApiCall’, ‘three’, ‘four’, ‘55555’, ‘666666’, ‘7777777’')
+      train.SelectApiTextAction('RenderTheArgs', "The Logic Args: 'OneFromAnEntity', 'TwoToBeUsedByApiCall', '333', '4444', 'five', 'six', 'seven'The Render Args: 'OneFromAnEntity', 'TwoToBeUsedByApiCall', 'three', 'four', '55555', '666666', '7777777'")
     })
 
     it('Save the Train Dialog', () => {

@@ -67,7 +67,7 @@ describe('Comprehensive 1 - Score Actions', () => {
       train.RemoveEntityLabel('My', 'name')
       train.LabelTextAsEntity('Jeff', 'name')
     })
-//>>>>>>>>>>
+
     it('Uses the "name" Entity in a new Bot Response', () => {
       train.ClickScoreActionsButton()
       scorerModal.ClickAddActionButton()

@@ -36,6 +36,14 @@ describe('API Create Multiple Exceptions - ErrorHandling', () => {
       train.ClickPopupConfirmCancelOkButton()
       trainDialogsGrid.VerifyPageTitle()
     })
+
+    it('Wait for Training Status to be complete due to bug 2316', () => {
+      // Bug 2316: TDs with EntityDetectionCallback Errors should NOT be part of the training since they are discarded
+      // This TD should not influence the next TD that is created since it is being discarded.
+      // However, bug 2316 shows that at least sometimes this Training does have an influence on the next training
+      // and it should not.
+      cy.WaitForTrainingStatusCompleted()
+    })
   })
 
   context('Train Dialog that will be Saved', () => {

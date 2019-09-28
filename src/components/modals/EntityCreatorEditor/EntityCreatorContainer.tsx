@@ -22,15 +22,16 @@ import { autobind } from 'core-decorators';
 const entityNameMaxLength = 30
 const enumMaxLength = 10
 const prebuiltPrefix = 'builtin-'
+export const NONE_RESOLVER_KEY = 'none'
 
 const initState: ComponentState = {
     entityNameVal: '',
-    entityTypeVal: '',
-    entityResolverVal: '',
+    entityTypeVal: CLM.EntityType.LUIS,
+    entityResolverVal: NONE_RESOLVER_KEY,
     isPrebuilt: false,
     isMultivalueVal: false,
     isNegatableVal: false,
-    isEditing: false,
+    isResolutionRequired: false,
     enumValues: [],
     title: '',
     hasPendingChanges: false,
@@ -50,7 +51,7 @@ interface ComponentState {
     isPrebuilt: boolean
     isMultivalueVal: boolean
     isNegatableVal: boolean
-    isEditing: boolean
+    isResolutionRequired: boolean
     enumValues: (CLM.EnumValue | null)[]
     title: string
     hasPendingChanges: boolean
@@ -75,7 +76,7 @@ class Container extends React.Component<Props, ComponentState> {
 
     constructor(props: Props) {
         super(props)
-        this.state = { ...initState, entityTypeVal: CLM.EntityType.LUIS, entityResolverVal: this.NONE_RESOLVER }
+        this.state = { ...initState }
         this.staticEntityOptions = this.getStaticEntityOptions(this.props.intl)
         this.staticResolverOptions = this.getStaticResolverOptions(this.props.intl)
     }
@@ -115,18 +116,11 @@ class Container extends React.Component<Props, ComponentState> {
         ]
     }
 
-    get NONE_RESOLVER(): string {
-        return this.props.intl.formatMessage({
-            id: FM.ENTITYCREATOREDITOR_ENTITY_RESOLVEROPTION_NONE,
-            defaultMessage: 'none'
-        });
-    }
-
     getStaticResolverOptions(intl: InjectedIntl): CLDropdownOption[] {
         return [
             {
-                key: this.NONE_RESOLVER,
-                text: this.NONE_RESOLVER,
+                key: NONE_RESOLVER_KEY,
+                text: Util.formatMessageId(intl, FM.ENTITYCREATOREDITOR_ENTITY_RESOLVEROPTION_NONE),
                 itemType: OF.DropdownMenuItemType.Normal,
                 style: 'clDropdown--command'
             }
@@ -163,7 +157,9 @@ class Container extends React.Component<Props, ComponentState> {
                         defaultMessage: 'Create an Entity'
                     }),
                     entityTypeVal: CLM.EntityType.LUIS,
-                    entityResolverVal: nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS ? nextProps.entityTypeFilter : this.NONE_RESOLVER,
+                    entityResolverVal: (nextProps.entityTypeFilter && nextProps.entityTypeFilter !== CLM.EntityType.LUIS)
+                        ? nextProps.entityTypeFilter
+                        : NONE_RESOLVER_KEY,
                     enumValues: this.initEnumValues(undefined)
                 });
             } else {
@@ -171,7 +167,9 @@ class Container extends React.Component<Props, ComponentState> {
                 this.resolverOptions = [...this.staticResolverOptions, ...localePreBuiltOptions]
                 const entityType = nextProps.entity.entityType
                 const isPrebuilt = CLM.isPrebuilt(nextProps.entity)
-                const resolverType = nextProps.entity.resolverType === null ? this.NONE_RESOLVER : nextProps.entity.resolverType
+                const resolverType = nextProps.entity.resolverType === null
+                    ? NONE_RESOLVER_KEY
+                    : nextProps.entity.resolverType
 
                 this.setState({
                     entityNameVal: nextProps.entity.entityName,
@@ -180,7 +178,7 @@ class Container extends React.Component<Props, ComponentState> {
                     isPrebuilt: isPrebuilt,
                     isMultivalueVal: nextProps.entity.isMultivalue,
                     isNegatableVal: nextProps.entity.isNegatible,
-                    isEditing: true,
+                    isResolutionRequired: nextProps.entity.isResolutionRequired,
                     title: nextProps.intl.formatMessage({
                         id: FM.ENTITYCREATOREDITOR_TITLE_EDIT,
                         defaultMessage: 'Edit Entity'
@@ -201,11 +199,30 @@ class Container extends React.Component<Props, ComponentState> {
     }
 
     componentDidUpdate(prevProps: Props, prevState: ComponentState) {
+        // If editing resolution option is disabled so preserve value
+        // Otherwise,
+        // Force changes to isResolutionRequired when resolutionType changes
+        // If NONE to other, enabled and true
+        // If oter to NONE, disabled and false
+        if (this.props.entity == null) {
+            if (this.state.entityResolverVal !== NONE_RESOLVER_KEY && prevState.entityResolverVal === NONE_RESOLVER_KEY) {
+                this.setState({
+                    isResolutionRequired: true
+                })
+            }
+            else if (this.state.entityResolverVal === NONE_RESOLVER_KEY && prevState.entityResolverVal !== NONE_RESOLVER_KEY) {
+                this.setState({
+                    isResolutionRequired: false
+                })
+            }
+        }
+
         const entity = this.props.entity
         if (!entity) {
             return
         }
 
+        const isResolutionRequiredChanged = this.state.isResolutionRequired !== entity.isResolutionRequired
         const isNameChanged = this.state.entityNameVal !== entity.entityName
         const isMultiValueChanged = this.state.isMultivalueVal !== entity.isMultivalue
         const isNegatableChanged = this.state.isNegatableVal !== entity.isNegatible
@@ -216,7 +233,12 @@ class Container extends React.Component<Props, ComponentState> {
             const oldEnums = entity.enumValues || []
             hasPendingEnumChanges = !this.areEnumsIdentical(newEnums, oldEnums)
         }
-        const hasPendingChanges = isNameChanged || isMultiValueChanged || isNegatableChanged || isResolverChanged || hasPendingEnumChanges
+        const hasPendingChanges = isNameChanged
+            || isResolutionRequiredChanged
+            || isMultiValueChanged
+            || isNegatableChanged
+            || isResolverChanged
+            || hasPendingEnumChanges
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
             this.setState({
@@ -253,9 +275,10 @@ class Container extends React.Component<Props, ComponentState> {
         const newOrEditedEntity: CLM.EntityBase = {
             entityId: undefined!,
             entityName,
-            resolverType: resolverType,
+            resolverType,
             createdDateTime: new Date().toJSON(),
             lastModifiedDateTime: new Date().toJSON(),
+            isResolutionRequired: this.state.isResolutionRequired,
             isMultivalue: this.state.isMultivalueVal,
             isNegatible: this.state.isNegatableVal,
             negativeId: null,
@@ -274,7 +297,7 @@ class Container extends React.Component<Props, ComponentState> {
             newOrEditedEntity.enumValues = this.state.enumValues.filter(v => v) as CLM.EnumValue[]
         }
         // Set entity id if we're editing existing id.
-        if (this.state.isEditing && this.props.entity) {
+        if (this.props.entity) {
             newOrEditedEntity.entityId = this.props.entity.entityId
 
             if (newOrEditedEntity.isNegatible) {
@@ -294,7 +317,7 @@ class Container extends React.Component<Props, ComponentState> {
         let needValidationWarning = false
 
         // If editing check for validation errors
-        if (this.state.isEditing) {
+        if (this.props.entity) {
             const appId = this.props.app.appId
             const isMultiValueChanged = this.props.entity ? newOrEditedEntity.isMultivalue !== this.props.entity.isMultivalue : false
             const isNegatableChanged = this.props.entity ? newOrEditedEntity.isNegatible !== this.props.entity.isNegatible : false
@@ -330,16 +353,15 @@ class Container extends React.Component<Props, ComponentState> {
     saveAndClose(newOrEditedEntity: CLM.EntityBase) {
         const appId = this.props.app.appId
 
-        if (!this.state.isEditing) {
-            this.props.createEntityThunkAsync(appId, newOrEditedEntity)
-            this.props.handleClose()
-            return
+        const originalEntity = this.props.entity
+        if (originalEntity) {
+            this.props.editEntityThunkAsync(appId, newOrEditedEntity, originalEntity)
         }
         else {
-            // We know props.entity is valid because we're not editing
-            this.props.editEntityThunkAsync(appId, newOrEditedEntity, this.props.entity!)
-            this.props.handleClose()
+            this.props.createEntityThunkAsync(appId, newOrEditedEntity)
         }
+
+        this.props.handleClose()
     }
 
     onClickCancel = () => {
@@ -410,8 +432,13 @@ class Container extends React.Component<Props, ComponentState> {
     }
     onChangeResolverType = (obj: CLDropdownOption) => {
         this.setState({
-            entityResolverVal: obj.text
+            entityResolverVal: obj.key as string
         })
+    }
+    onChangeResolverResolutionRequired = () => {
+        this.setState(prevState => ({
+            isResolutionRequired: !prevState.isResolutionRequired,
+        }))
     }
     onChangeMultivalue = () => {
         this.setState(prevState => ({
@@ -440,16 +467,20 @@ class Container extends React.Component<Props, ComponentState> {
         }
 
         // Check that name isn't in use
-        if (!this.state.isEditing) {
-            const foundEntity = this.props.entities.find(e => e.entityName === this.state.entityNameVal);
-            if (foundEntity) {
-                if (CLM.isPrebuilt(foundEntity)
-                    && typeof foundEntity.doNotMemorize !== 'undefined'
-                    && foundEntity.doNotMemorize) {
-                    return ''
-                }
-                return Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
+        const entity = this.props.entity
+        const otherEntities = entity
+            ? this.props.entities
+                .filter(e => e.entityId !== entity.entityId)
+            : this.props.entities
+
+        const foundEntity = otherEntities.find(e => e.entityName === this.state.entityNameVal)
+        if (foundEntity) {
+            if (CLM.isPrebuilt(foundEntity)
+                && typeof foundEntity.doNotMemorize !== 'undefined'
+                && foundEntity.doNotMemorize) {
+                return ''
             }
+            return Util.formatMessageId(intl, FM.FIELDERROR_DISTINCT)
         }
 
         if (!this.state.isPrebuilt && (value.toLowerCase().substring(0, prebuiltPrefix.length) === prebuiltPrefix)) {
@@ -758,6 +789,8 @@ class Container extends React.Component<Props, ComponentState> {
                 }
             })
 
+        const isEditing = this.props.entity != null
+
         return <Component
             open={this.props.open}
             title={title}
@@ -765,7 +798,7 @@ class Container extends React.Component<Props, ComponentState> {
             entityOptions={this.entityOptions}
 
             entityTypeKey={this.state.entityTypeVal}
-            isTypeDisabled={this.state.isEditing || this.props.entityTypeFilter != null}
+            isTypeDisabled={isEditing || this.props.entityTypeFilter != null}
             onChangeType={this.onChangeType}
 
             name={name}
@@ -781,7 +814,7 @@ class Container extends React.Component<Props, ComponentState> {
             isNegatable={this.state.isNegatableVal}
             onChangeNegatable={this.onChangeReversible}
 
-            isEditing={this.state.isEditing}
+            isEditing={isEditing}
             requiredActions={this.getRequiredActions()}
             disqualifiedActions={this.getDisqualifiedActions()}
 
@@ -794,7 +827,7 @@ class Container extends React.Component<Props, ComponentState> {
 
             isConfirmDeleteModalOpen={this.state.isConfirmDeleteModalOpen}
             isDeleteErrorModalOpen={this.state.isDeleteErrorModalOpen}
-            showDelete={this.state.isEditing && !!this.props.handleDelete}
+            showDelete={isEditing && !!this.props.handleDelete}
             onClickDelete={this.onClickDelete}
             onCancelDelete={this.onCancelDelete}
             onConfirmDelete={this.onConfirmDelete}
@@ -811,6 +844,9 @@ class Container extends React.Component<Props, ComponentState> {
             selectedResolverKey={this.state.entityResolverVal}
             resolverOptions={this.resolverOptions}
             onChangeResolver={this.onChangeResolverType}
+
+            isResolutionRequired={this.state.isResolutionRequired}
+            onChangeResolverResolutionRequired={this.onChangeResolverResolutionRequired}
 
             enumValues={enumValues}
             onChangeEnum={this.onChangeEnum}

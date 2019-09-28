@@ -200,8 +200,7 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
 
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
-    message = message.replace(/'/g, "’")
-    const elements = GetAllChatMessageElements() //Cypress.$(AllChatMessagesSelector)
+    const elements = GetAllChatMessageElements()
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (let i = 0; i < elements.length; i++) {
       const innerText = helpers.TextContentWithoutNewlines(elements[i])
@@ -210,7 +209,11 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
         if (index > 0) index--
         else {
           helpers.ConLog(funcName, `FOUND!`)
+          
+          // It appears that this does not work all the time, seen it happen once so far.
+          // Perhaps because it needs to be scrolled into view.
           elements[i].click()
+
           return i
         }
       }
@@ -460,7 +463,7 @@ export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expe
 export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount, turnIndex) { 
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) { 
-      if (chatMessageFound !== expectedTurnText.replace(/'/g, "’")) {
+      if (chatMessageFound !== expectedTurnText) {
         throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
       }
     }
@@ -470,7 +473,7 @@ export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount
 export function VerifyChatTurnIsAnExactMatchWithMarkup(expectedTurnText, expectedTurnCount, turnIndex) { 
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) { 
-      if (chatMessageFound !== expectedTurnText.replace(/'/g, "’")) {
+      if (chatMessageFound !== expectedTurnText) {
         throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
       }
     }
@@ -646,12 +649,11 @@ export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
       throw new Error(`Did not find expected Text Chat Message '${expectedMessage}' at index: ${expectedIndexOfMessage}`)
     }
     
-    const expectedUtterance = expectedMessage.replace(/'/g, "’")
     let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
     helpers.ConLog('VerifyTextChatMessage', textContentWithoutNewlines)
 
-    if (helpers.TextContentWithoutNewlines(elements[0]) !== expectedUtterance) {
-      throw new Error(`Expected to find '${expectedUtterance}' in the text chat pane, instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
+    if (helpers.TextContentWithoutNewlines(elements[0]) !== expectedMessage) {
+      throw new Error(`Expected to find '${expectedMessage}' in the text chat pane, instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
     }
   })
 }
@@ -708,7 +710,7 @@ export function VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, 
 }
 
 export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage) {
-  const expectedUtterance = 'EndSession: ' + expectedData.replace(/'/g, "’")
+  const expectedUtterance = 'EndSession: ' + expectedData
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
     const element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
@@ -855,7 +857,7 @@ export function VerifyAllChatMessages(chatMessagesToBeVerified) {
 
 export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
   cy.Enqueue(() => {
-    originalMessage = originalMessage.replace(/'/g, "’")
+    originalMessage = originalMessage
 
     SelectChatTurnExactMatch(originalMessage, originalIndex)
 
