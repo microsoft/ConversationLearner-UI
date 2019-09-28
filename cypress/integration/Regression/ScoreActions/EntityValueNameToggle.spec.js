@@ -40,7 +40,7 @@ describe('Entity Value-Name Toggle - Score Actions', () => {
 
     it('Toggle an API Action then verify text changes', () => {
       scorerModal.ClickApiEntityValueNameToggleButon('RenderTheArgs')
-      scorerModal.VerifyContainsApiAction('RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"333"fourthArg:"4444"fifthArg:"five"sixthArg:"six"seventhArg:"seven"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"$1stArg"secondArg:"$2ndArg"thirdArg:"three"fourthArg:"four"fifthArg:"55555"sixthArg:"666666"seventhArg:"7777777"')
+      scorerModal.VerifyContainsApiAction('RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:$2ndArgthirdArg:333fourthArg:4444fifthArg:fivesixthArg:sixseventhArg:sevenrender(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:$2ndArgthirdArg:threefourthArg:fourfifthArg:55555sixthArg:666666seventhArg:7777777')
     })
 
     it('Toggle a Card Action then verify text changes', () => {
@@ -63,7 +63,7 @@ describe('Entity Value-Name Toggle - Score Actions', () => {
       scorerModal.VerifyContainsTextAction('Hello Billy Bob')
 
       scorerModal.ClickApiEntityValueNameToggleButon('RenderTheArgs')
-      scorerModal.VerifyContainsApiAction('RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"1 One"secondArg:"Two 2 Two 2"thirdArg:"333"fourthArg:"4444"fifthArg:"five"sixthArg:"six"seventhArg:"seven"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:"1 One"secondArg:"Two 2 Two 2"thirdArg:"three"fourthArg:"four"fifthArg:"55555"sixthArg:"666666"seventhArg:"7777777"')
+      scorerModal.VerifyContainsApiAction('RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:1 OnesecondArg:Two 2 Two 2thirdArg:333fourthArg:4444fifthArg:fivesixthArg:sixseventhArg:sevenrender(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:1 OnesecondArg:Two 2 Two 2thirdArg:threefourthArg:fourfifthArg:55555sixthArg:666666seventhArg:7777777')
 
       scorerModal.ClickCardEntityValueNameToggleButon('promptWithPicture')
       scorerModal.VerifyContainsCardAction('promptWithPicturetitle:Do you like flowers?image:https://cdn.pixabay.com/photo/2018/10/30/16/06/water-lily-3784022__340.jpgline1:Flowers make life beautifulline2:ORANGES start out as a flowerline3:Bees Like Flowersbutton1:I Like Flowersbutton2:Flowers are for the birds and bees')

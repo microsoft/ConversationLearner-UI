@@ -66,7 +66,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
-      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:\"1stArg and 2ndArg\"render(result, memoryManager)",
+      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:1stArg and 2ndArgrender(result, memoryManager)",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Training...",
@@ -80,7 +80,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
-      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:\"2ndArg: SecondArg and fruit: PEACHES\"render(result, memoryManager)",
+      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:2ndArg: SecondArg and fruit: PEACHESrender(result, memoryManager)",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Training...",
@@ -144,7 +144,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-no-click",
-      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:SecondArgthirdArg:333fourthArg:4444fifthArg:fivesixthArg:sixseventhArg:sevenrender(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:SecondArgthirdArg:threefourthArg:fourfifthArg:55555sixthArg:666666seventhArg:7777777",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Disqualified",
@@ -254,7 +254,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
-      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:\"1stArg and 2ndArg\"render(result, memoryManager)",
+      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:1stArg and 2ndArgrender(result, memoryManager)",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Training...",
@@ -268,7 +268,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
-      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:\"2ndArg: SecondArg and fruit: PEACHES\"render(result, memoryManager)",
+      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:2ndArg: SecondArg and fruit: PEACHESrender(result, memoryManager)",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Training...",
@@ -332,7 +332,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-no-click",
-      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:SecondArgthirdArg:333fourthArg:4444fifthArg:fivesixthArg:sixseventhArg:sevenrender(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:SecondArgthirdArg:threefourthArg:fourfifthArg:55555sixthArg:666666seventhArg:7777777",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Disqualified",
@@ -442,7 +442,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
-      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:\"1stArg and 2ndArg\"render(result, memoryManager)",
+      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:1stArg and 2ndArgrender(result, memoryManager)",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Training...",
@@ -456,7 +456,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
-      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:\"2ndArg: SecondArg and fruit: PEACHES\"render(result, memoryManager)",
+      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:2ndArg: SecondArg and fruit: PEACHESrender(result, memoryManager)",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Training...",
@@ -520,7 +520,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-no-click",
-      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:SecondArgthirdArg:333fourthArg:4444fifthArg:fivesixthArg:sixseventhArg:sevenrender(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:SecondArgthirdArg:threefourthArg:fourfifthArg:55555sixthArg:666666seventhArg:7777777",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Disqualified",
@@ -630,7 +630,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
-      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:\"1stArg and 2ndArg\"render(result, memoryManager)",
+      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:1stArg and 2ndArgrender(result, memoryManager)",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Training...",
@@ -644,7 +644,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
-      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:\"2ndArg: SecondArg and fruit: PEACHES\"render(result, memoryManager)",
+      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:2ndArg: SecondArg and fruit: PEACHESrender(result, memoryManager)",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Training...",
@@ -708,7 +708,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-no-click",
-      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:SecondArgthirdArg:333fourthArg:4444fifthArg:fivesixthArg:sixseventhArg:sevenrender(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:SecondArgthirdArg:threefourthArg:fourfifthArg:55555sixthArg:666666seventhArg:7777777",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Disqualified",
@@ -818,7 +818,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
-      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:\"1stArg and 2ndArg\"render(result, memoryManager)",
+      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:1stArg and 2ndArgrender(result, memoryManager)",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Training...",
@@ -832,7 +832,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
-      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:\"2ndArg: SecondArg and fruit: PEACHES\"render(result, memoryManager)",
+      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:2ndArg: SecondArg and fruit: PEACHESrender(result, memoryManager)",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Training...",
@@ -896,7 +896,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-no-click",
-      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:SecondArgthirdArg:333fourthArg:4444fifthArg:fivesixthArg:sixseventhArg:sevenrender(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:SecondArgthirdArg:threefourthArg:fourfifthArg:55555sixthArg:666666seventhArg:7777777",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Disqualified",
@@ -1015,7 +1015,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
-      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:\"1stArg and 2ndArg\"render(result, memoryManager)",
+      "response": "ClearMemorylogic(memoryManager, listOfEntitiesToClear)listOfEntitiesToClear:1stArg and 2ndArgrender(result, memoryManager)",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "-",
@@ -1029,7 +1029,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-clickable",
-      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:\"2ndArg: SecondArg and fruit: PEACHES\"render(result, memoryManager)",
+      "response": "SetMemorylogic(memoryManager, listOfEntitiesToSet)listOfEntitiesToSet:2ndArg: SecondArg and fruit: PEACHESrender(result, memoryManager)",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "-",
@@ -1093,7 +1093,7 @@
     },
     {
       "buttonTestId": "action-scorer-button-no-click",
-      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"333\"fourthArg:\"4444\"fifthArg:\"five\"sixthArg:\"six\"seventhArg:\"seven\"render(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:\"$1stArg\"secondArg:\"SecondArg\"thirdArg:\"three\"fourthArg:\"four\"fifthArg:\"55555\"sixthArg:\"666666\"seventhArg:\"7777777\"",
+      "response": "RenderTheArgslogic(memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:SecondArgthirdArg:333fourthArg:4444fifthArg:fivesixthArg:sixseventhArg:sevenrender(result, memoryManager, firstArg, secondArg, thirdArg, fourthArg, fifthArg, sixthArg, seventhArg)firstArg:$1stArgsecondArg:SecondArgthirdArg:threefourthArg:fourfifthArg:55555sixthArg:666666seventhArg:7777777",
       "hasEntityValueNameToggle": true,
       "type": "API",
       "score": "Disqualified",

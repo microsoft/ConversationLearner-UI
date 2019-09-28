@@ -6,7 +6,7 @@
 import * as popupModal from './PopupModal'
 import * as helpers from '../Helpers'
 
-export function ClickEntityType(type) { cy.Get(`button.ms-Dropdown-item`).contains(type).Click() }
+export function ClickEntityType(type) { cy.Get(`button.ms-Dropdown-item[title="${type}"]`).Click() }
 export function TypeEntityName(entityName) { cy.Get('[data-testid="entity-creator-entity-name-text"]').type(entityName) }
 export function ClickEntityTypeDropdown() { cy.Get('[data-testid="entity-creator-entity-type-dropdown"]').Click() }
 export function VerifyEntityTypeDisabled() { cy.Get('[aria-disabled="true"][data-testid="entity-creator-entity-type-dropdown"]') }

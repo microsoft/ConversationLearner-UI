@@ -36,7 +36,7 @@ describe('API Memory Manipulation - Train', () => {
       train.ClickScoreActionsButton()
       memoryTableComponent.VerifyEntityValues('Toppings', ['cheese', 'mushrooms', 'peppers', 'sausage', 'olives'])
       memoryTableComponent.VerifyEntityValues('OutOfStock', ['anchovies'])
-      train.SelectApiTextAction('OutOfStock', 'Sorry, we don’t have anchovies')
+      train.SelectApiTextAction('OutOfStock', "Sorry, we don't have anchovies")
       // Why don't we see a deleted Entity here? Add a test for it once this bug is fixed...
       // Bug 2171: Inconsistent showing of API deleted entity values
       train.SelectTextAction('You have cheese, mushrooms, peppers, sausage and olives on your pizza.')

@@ -50,6 +50,7 @@ export function VerifyListOfLogDialogs(expectedLogDialogs) {
   const funcName = 'VerifyListOfLogDialogs'
   cy.log(funcName, expectedLogDialogs)
   cy.Enqueue(() => {
+    // This data comes from the grid.
     const userInputs = GetUserInputs()
     const turnCounts = GetTurnCounts()
 

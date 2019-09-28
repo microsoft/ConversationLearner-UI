@@ -55,7 +55,7 @@ describe('Missing Action - ErrorHandling', () => {
       train.EditTraining(common.gonnaDeleteAnAction, common.gonnaDeleteAnAction, '')
       train.VerifyErrorMessage(common.trainDialogHasErrorsMessage)
 
-      train.SelectChatTurnStartsWith('ERROR: Can’t find Action Id')
+      train.SelectChatTurnStartsWith("ERROR: Can't find Action Id")
       train.VerifyErrorMessage('Action does not exist')
       scorerModal.VerifyMissingActionNotice()
     })
