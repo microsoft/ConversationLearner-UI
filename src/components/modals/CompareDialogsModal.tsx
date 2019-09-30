@@ -58,8 +58,8 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     async componentDidMount() {
 
         // Get conversationIds for the current comparision
-        const conversationIds = this.props.compareSource 
-            ? this.props.validationSet.getConversationIds(this.props.compareSource, this.props.compareType)
+        const conversationIds = this.props.compareSource && this.props.comparePivot 
+            ? this.props.validationSet.getComparisonConversationIds(this.props.compareSource, this.props.comparePivot, this.props.compareType)
             : this.props.validationSet.getAllConversationIds()
 
         // Gather items for each source
@@ -332,6 +332,7 @@ export interface ReceivedProps {
     lgMap: Map<string, CLM.LGItem> | null
     validationSet: Test.ValidationSet
     compareType: Test.ComparisonResultType
+    comparePivot?: string,
     compareSource?: string,
     onClose: () => void
 }

@@ -11,6 +11,7 @@ import * as OBIUtils from '../../../Utils/obiUtils'
 import * as Test from '../../../types/TestObjects'
 import actions from '../../../actions'
 import TranscriptRatings from '../../../components/modals/TranscriptRatings'
+import TranscriptComparisions from '../../../components/modals/TranscriptComparisons'
 import FormattedMessageId from '../../../components/FormattedMessageId'
 import CompareDialogsModal from '../../../components/modals/CompareDialogsModal'
 import RateDialogsModal from '../../../components/modals/RateDialogsModal'
@@ -37,25 +38,21 @@ interface ComponentState {
     validationSet: Test.ValidationSet | undefined
     isTranscriptLoaderOpen: boolean
     compareType: Test.ComparisonResultType | undefined
+    comparePivot: string | undefined
     compareSource: string | undefined
     isRateDialogsOpen: boolean
     isTestPickerOpen: boolean
-    comparePivot: string | undefined, 
     edited: boolean
 }
 
-interface SourceRenderData {
+interface RenderData {
     sourceName: string,
     transcriptCount: number,
-    reproduced: Test.SourceComparison[]
-    changed: Test.SourceComparison[]
-    no_transcript: Test.SourceComparison[]
-    invalid_transcript: Test.SourceComparison[]
 }
 
 interface IRenderableColumn extends OF.IColumn {
-    render: (renderResults: SourceRenderData) => JSX.Element | JSX.Element[]
-    getSortValue: (renderResults: SourceRenderData) => string
+    render: (renderResults: RenderData) => JSX.Element | JSX.Element[]
+    getSortValue: (renderResults: RenderData) => string
 }
 
 function getColumns(intl: InjectedIntl): IRenderableColumn[] {
@@ -104,40 +101,41 @@ class Testing extends React.Component<Props, ComponentState> {
             isTranscriptLoaderOpen: false,
             compareType: undefined,
             compareSource: undefined,
+            comparePivot: undefined,
             isRateDialogsOpen: false,
             isTestPickerOpen: false,
-            comparePivot: undefined,
             edited: false
         }
     }
 
-    componentDidUpdate(prevProps: Props, prevState: ComponentState) { 
-        // If no compare selected yet, do compare if more than one soucce loaded
-        if (this.state.validationSet && this.state.validationSet.sourceNames.length > 1 && !this.state.comparePivot) {
-            this.onCompare(this.state.validationSet.sourceNames[0])
+    async onTranscriptsChanged(): Promise<void> {
+        if (!this.state.validationSet || this.state.validationSet.sourceNames.length === 0) {
+            return
         }
-    }
 
+        const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+        validationSet.compareAll()
+        validationSet.initRating()
+        this.setState({validationSet})
+    }
     @autobind
     async onSubmitTranscriptLoader(transcriptFiles: File[], lgFiles: File[]): Promise<void> {
         if (transcriptFiles.length > 0) {
             const lgMap = await OBIUtils.lgMapFromLGFiles(lgFiles)
             const validationSet = this.state.validationSet 
-                ? new Test.ValidationSet(this.state.validationSet)
-                : new Test.ValidationSet({ appId: this.props.app.appId })
+                ? Test.ValidationSet.Create(this.state.validationSet)
+                : Test.ValidationSet.Create({ appId: this.props.app.appId })
             
             await validationSet.addTranscriptFiles(transcriptFiles)
 
             await Util.setStateAsync(this, {
                 validationSet,
                 lgMap,
-                edited: true
+                edited: true // LARS is this used
             })
 
-            // Recompare as new transcripts added
-            if (this.state.comparePivot) {
-                this.onCompare(this.state.comparePivot)
-            }
+            // Recompute comparisons and rankings
+            await this.onTranscriptsChanged()
         }
         this.setState({ isTranscriptLoaderOpen: false })
     }
@@ -149,7 +147,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
     @autobind
     onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
-        const validationSet = new Test.ValidationSet(this.state.validationSet)
+        const validationSet = Test.ValidationSet.Create(this.state.validationSet)
         validationSet.fileName = text
         this.setState({
             validationSet: validationSet,
@@ -158,11 +156,22 @@ class Testing extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onCancelTest() {
+    onCancelTest(): void {
         this.setState({
             testTranscripts: [],
             lgMap: null
         })
+    }
+
+    @autobind
+    onCompare(comparePivot: string | undefined): void {
+        if (!this.state.validationSet || this.state.validationSet.sourceNames.length === 0) {
+            return
+        }
+
+        const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+        validationSet.compareAll()
+        this.setState({validationSet})
     }
 
     @autobind
@@ -178,6 +187,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 testTranscripts: [],
                 lgMap: null
             })
+            await this.onTranscriptsChanged()
             this.onSave()
             return
         }
@@ -210,7 +220,7 @@ class Testing extends React.Component<Props, ComponentState> {
         }
 
         // Get transcriptComparison, create new one if doesn't exist
-        const validationSet = new Test.ValidationSet(this.state.validationSet)
+        const validationSet = Test.ValidationSet.Create(this.state.validationSet)
         const conversationId = validationSet.conversationId(transcript)
 
         const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
@@ -347,8 +357,8 @@ class Testing extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onView(compareType: Test.ComparisonResultType, compareSource?: string) {
-        this.setState({ compareType, compareSource })
+    onView(compareType: Test.ComparisonResultType, comparePivot?: string, compareSource?: string) {
+        this.setState({ compareType, comparePivot, compareSource })
     }
 
     @autobind
@@ -358,27 +368,34 @@ class Testing extends React.Component<Props, ComponentState> {
 
     @autobind
     onOpenRate() {
-        this.setState({ isRateDialogsOpen: true })
+        const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+        validationSet.initRating()
+        Util.setStateAsync(this, {validationSet, isRateDialogsOpen: true})
     }
 
     @autobind
     async onRate(ratingPair: Test.RatingPair) {
-        const validationSet = new Test.ValidationSet(this.state.validationSet)
+        const validationSet = Test.ValidationSet.Create(this.state.validationSet)
         validationSet.addRatingResult(ratingPair)
         Util.setStateAsync(this, {validationSet})
     }
 
     @autobind
-    onCloseRate() {
+    async onCloseRate() {
         this.setState({
             isRateDialogsOpen: false,
             edited: true
         })
-        // LARS update it
-        if (this.state.validationSet) {
-            this.state.validationSet.calcRankings()
-        }
+        await this.calcRankings()
         this.onSave()
+    }
+
+    async calcRankings() {
+        if (this.state.validationSet) {
+            const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+            validationSet.calcRankings()
+            await Util.setStateAsync(this, {validationSet})
+        }
     }
 
     @autobind
@@ -398,24 +415,6 @@ class Testing extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onCompare(comparePivot: string | undefined): Promise<void> {
-        if (!this.state.validationSet || this.state.validationSet.sourceNames.length === 0) {
-            return
-        }
-
-        const validationSet = new Test.ValidationSet(this.state.validationSet)
-        validationSet.compareAll()
-        this.setState({validationSet, comparePivot})
-    }
-
-    @autobind
-    async onChangeCompareSource(event: React.FormEvent<HTMLDivElement>, item: OF.IDropdownOption) {
-        if (item.text) {
-            this.onCompare(item.text)
-        }
-    }
-
-    @autobind
     onSave() {
 
         if (!this.state.validationSet || !this.state.validationSet.fileName || this.onGetNameErrorMessage(this.state.validationSet.fileName) !== '') {
@@ -423,6 +422,16 @@ class Testing extends React.Component<Props, ComponentState> {
         }
         const blob = new Blob([JSON.stringify(this.state.validationSet, Util.mapReplacer)], { type: "text/plain;charset=utf-8" })
         saveAs(blob, `${this.state.validationSet.fileName}${SAVE_SUFFIX}`)
+    }
+
+    @autobind
+    onClear() {
+        const validationSet = Test.ValidationSet.Create({ appId: this.props.app.appId })
+
+        // Clear filename so user can reload same file
+        let fileInput = (this.resultfileInput as HTMLInputElement)
+        fileInput.value = ""
+        this.setState({validationSet})
     }
 
     @autobind
@@ -435,7 +444,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 throw new Error("String Expected")
             }
             const set = JSON.parse(fileText, Util.mapReviver)// LARS no longer needed
-            const validationSet = new Test.ValidationSet(set)
+            const validationSet = Test.ValidationSet.Create(set)
             if (validationSet.items.length === 0) {
                 throw new Error("No test results found in file")
             }
@@ -471,44 +480,21 @@ class Testing extends React.Component<Props, ComponentState> {
         return ''
     }
 
-    resultRenderData(): SourceRenderData[] {
+    resultRenderData(): RenderData[] {
 
         if (!this.state.validationSet) {
             return []
         }
-        const renderResults: SourceRenderData[] = []
+        const renderResults: RenderData[] = []
         for (const sourceName of this.state.validationSet.sourceNames) {
 
             let items: Test.ValidationItem[] = this.state.validationSet.items
             .filter(i => i.sourceName === sourceName) 
 
-            if (this.state.comparePivot && sourceName !== this.state.comparePivot) {
-                const comparisons  = this.state.validationSet.getSourceComparisons(sourceName, this.state.comparePivot)
-
-                const reproduced = comparisons.filter(c => c.result === Test.ComparisonResultType.REPRODUCED)
-                const changed = comparisons.filter(c => c.result === Test.ComparisonResultType.CHANGED)
-                const no_transcript = comparisons.filter(tr => tr.result === Test.ComparisonResultType.NO_TRANSCRIPT)
-                const invalid_transcript = comparisons.filter(tr => tr.result === Test.ComparisonResultType.INVALID_TRANSCRIPT)
-
-                renderResults.push({
-                    sourceName: sourceName,
-                    transcriptCount: items.length,
-                    reproduced,
-                    changed,
-                    no_transcript,
-                    invalid_transcript
-                })
-            }
-            else {
-                renderResults.push({
-                    sourceName: sourceName,
-                    transcriptCount: items.length,
-                    reproduced: [],
-                    changed: [],
-                    no_transcript: [],
-                    invalid_transcript: []
-                })
-            }
+            renderResults.push({
+                sourceName: sourceName,
+                transcriptCount: items.length
+            })
         }
         return renderResults
     }
@@ -520,13 +506,6 @@ class Testing extends React.Component<Props, ComponentState> {
             || this.state.validationSet.items.length === 0
             || !this.state.validationSet.fileName
             || this.onGetNameErrorMessage(this.state.validationSet.fileName) !== ''
-
-        const hasNoTranscript = renderResults.some(rr => rr.no_transcript.length > 0)
-        const hasInvalidTranscript = renderResults.some(rr => rr.invalid_transcript.length > 0)
-
-        const numConversations = this.state.validationSet 
-            ? this.state.validationSet.numConversations()
-            : 0
 
         return (
             <div className="cl-page">
@@ -550,7 +529,7 @@ class Testing extends React.Component<Props, ComponentState> {
                     <div className="cl-modal-buttons_secondary">
                         <OF.DefaultButton
                             disabled={saveDisabled}
-                            onClick={() => this.onSave()}
+                            onClick={this.onSave}
                             ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS)}
                             text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS)}
                             iconProps={{ iconName: 'DownloadDocument' }}
@@ -560,6 +539,13 @@ class Testing extends React.Component<Props, ComponentState> {
                             text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                             onClick={() => this.resultfileInput.click()}
+                        />
+                        <OF.DefaultButton
+                            disabled={!this.state.validationSet || this.state.validationSet.sourceName.length === 0}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)}
+                            text={"Clear Results"/*LARS*/}
+                            iconProps={{ iconName: 'DownloadDocument' }}
+                            onClick={this.onClear}
                         />
                     </div>
                 </div>
@@ -584,7 +570,7 @@ class Testing extends React.Component<Props, ComponentState> {
                             columns={this.state.transcriptColumns}
                             checkboxVisibility={OF.CheckboxVisibility.hidden}
                             onRenderRow={(props, defaultRender) => <div data-selection-invoke={true}>{defaultRender && defaultRender(props)}</div>}
-                            onRenderItemColumn={(rr: SourceRenderData, i, column: IRenderableColumn) =>
+                            onRenderItemColumn={(rr: RenderData, i, column: IRenderableColumn) =>
                                 column.render(rr)}
                         />
                         : "None"
@@ -592,7 +578,6 @@ class Testing extends React.Component<Props, ComponentState> {
                         <div className="cl-modal-buttons cl-modal_footer">
                             <div className="cl-modal-buttons_primary">
                                 <OF.PrimaryButton
-                                //   className="cl-file-picker-button"
                                     ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_ADD_TRANSCRIPTS)}
                                     text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_ADD_TRANSCRIPTS)}
                                     iconProps={{ iconName: 'TestCase' }}
@@ -615,192 +600,15 @@ class Testing extends React.Component<Props, ComponentState> {
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <div className={OF.FontClassNames.mediumPlus}>
-                            <OF.Dropdown
-                                disabled={!this.state.validationSet || this.state.validationSet.sourceNames.length < 2}
-                                ariaLabel={"Compare Against"}//LARS
-                                label={"Compare Against"}//LARS
-                                selectedKey={this.state.validationSet && this.state.comparePivot 
-                                    ? this.state.validationSet.sourceNames.indexOf(this.state.comparePivot)
-                                    : -1
-                                }
-                                onChange={this.onChangeCompareSource}
-                                placeholder={Util.formatMessageId(this.props.intl, FM.TRAINDIALOGS_FILTERING_TAGS_LABEL)}
-                                options={this.state.validationSet 
-                                    ? this.state.validationSet.sourceNames
-                                        .map<OF.IDropdownOption>((tag, i) => ({
-                                            key: i,
-                                            text: tag
-                                        })) 
-                                    : []
-                                }
-                            />
-                        </div>
-                        <div className={`cl-testing-result-group ${!this.state.validationSet || this.state.validationSet.items.length === 0 ? ' cl-test-disabled' : ''}`}>
-                            <div className="cl-testing-result cl-testing-source-title"/>
-                            <div className="cl-testing-result">
-                                <span className="cl-testing-result-title">Reproduced: </span>
-                            </div>
-                            <div className="cl-testing-result">
-                                <span className="cl-testing-result-title">Changed: </span>
-                            </div>
-                            {hasNoTranscript &&
-                                <div className="cl-testing-result">
-                                    <span className="cl-testing-result-title">No Transcript: </span>
-                                </div>
-                            }
-                            {hasInvalidTranscript &&
-                                <div className="cl-testing-result">
-                                    <span className="cl-testing-result-title">Invalid Transcript: </span>
-                                </div>
-                            }
-                        </div>
-                        {this.state.comparePivot && renderResults
-                            .filter(rr => this.state.comparePivot && rr.sourceName !== this.state.comparePivot)
-                            .map(rr => {
-                            return (
-                                <div 
-                                    className={`cl-testing-result-group ${!this.state.validationSet || this.state.validationSet.items.length === 0 ? ' cl-test-disabled' : ''}`}
-                                    key={rr.sourceName}
-                                >
-                                    <div className="cl-testing-result cl-testing-source-title">
-                                        {rr.sourceName}
-                                    </div>
-                                    <div className="cl-testing-result">
-                                        <span className="cl-testing-result-item cl-testing-result-value">
-                                            {rr.reproduced.length}
-                                        </span>
-                                        <span className="cl-testing-result-item cl-testing-result-percent">
-                                            {Util.percentOf(rr.reproduced.length, numConversations)}
-                                        </span>
-                                        <div className="cl-buttons-row cl-testing-result-buttons">
-                                            <OF.DefaultButton
-                                                disabled={rr.reproduced.length === 0}
-                                                onClick={() => this.onView(Test.ComparisonResultType.REPRODUCED, rr.sourceName)}
-                                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                                iconProps={{ iconName: 'DiffSideBySide' }}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="cl-testing-result">
-                                        <span className="cl-testing-result-item cl-testing-result-value">
-                                            {rr.changed.length}
-                                        </span>
-                                        <span className="cl-testing-result-item cl-testing-result-percent">
-                                            {Util.percentOf(rr.changed.length, numConversations)}
-                                        </span>
-                                        <div className="cl-buttons-row cl-testing-result-buttons">
-                                            <OF.DefaultButton
-                                                disabled={rr.changed.length === 0}
-                                                onClick={() => this.onView(Test.ComparisonResultType.CHANGED, rr.sourceName)}
-                                                ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                                text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                                iconProps={{ iconName: 'DiffSideBySide' }}
-                                            />
-                                        </div>
-                                    </div>
-{/*
-                                    {rr.numChangedResults > 0 &&
-                                        <div className="cl-testing-subresult">
-                                            <span className="cl-testing-result-item cl-testing-result-item--match cl-testing-result-subvalue">
-                                                {rr.changed_better.length}
-                                            </span>
-                                            <span className="cl-testing-result-item cl-testing-result-item--match cl-testing-result-subpercent">
-                                                {Util.percentOf(rr.changed_better.length, numConversations)}
-                                            </span>
-                                        </div>
-                                    }
-                                    {rr.numChangedResults > 0 &&
-                                        <div className="cl-testing-subresult">
-                                            <span className="cl-testing-result-item cl-testing-result-subvalue">
-                                                {rr.changed_same.length}
-                                            </span>
-                                            <span className="cl-testing-result-item cl-testing-result-subpercent">
-                                                {this.percentOf(rr.changed_same.length, numConversations)}
-                                            </span>
-                                        </div>
-                                    }
-                                    {rr.numChangedResults > 0 &&
-                                        <div className="cl-testing-subresult">
-                                            <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-subvalue">
-                                                {rr.changed_worse.length}
-                                            </span>
-                                            <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-subpercent">
-                                                {this.percentOf(rr.changed_worse.length, numConversations)}
-                                            </span>
-                                        </div>
-                                    }
-                                    {rr.numChangedResults > 0 && rr.changed_notRated > 0 &&
-                                        <div className="cl-testing-subresult">
-                                            <span className="cl-testing-result-item cl-testing-result-subvalue">
-                                                {rr.changed_notRated}
-                                            </span>
-                                            <span className="cl-testing-result-item cl-testing-result-subpercent">
-                                                {this.percentOf(rr.changed_notRated, numConversations)}
-                                            </span>
-                                        </div>
-                                    }
-                                    */}
-                                    {hasNoTranscript &&
-                                        <div className="cl-testing-result">
-                                            <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-value">
-                                                {rr.no_transcript.length}
-                                            </span>
-                                            <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-percent">
-                                                {Util.percentOf(rr.no_transcript.length, numConversations)}
-                                            </span>
-                                            <div className="cl-buttons-row cl-testing-result-buttons">
-                                                <OF.DefaultButton
-                                                    disabled={rr.no_transcript.length === 0 || this.state.testTranscripts.length > 0}
-                                                    onClick={() => this.onView(Test.ComparisonResultType.NO_TRANSCRIPT, rr.sourceName)}
-                                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                                    iconProps={{ iconName: 'DiffSideBySide' }}
-                                                />
-                                            </div>
-                                        </div>
-                                    }
-                                    {hasInvalidTranscript &&
-                                        <div className="cl-testing-result">
-                                            <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-value">
-                                                {rr.invalid_transcript.length}
-                                            </span>
-                                            <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-percent">
-                                                {Util.percentOf(rr.invalid_transcript.length, numConversations)}
-                                            </span>
-                                            <div className="cl-buttons-row cl-testing-result-buttons">
-                                                <OF.DefaultButton
-                                                    disabled={rr.invalid_transcript.length === 0}
-                                                    onClick={() => this.onView(Test.ComparisonResultType.INVALID_TRANSCRIPT, rr.sourceName)}
-                                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                                    iconProps={{ iconName: 'DiffSideBySide' }}
-                                                />
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            )}
-                        )}
-                    </div>
-                    <div className="cl-testing-body">
-                        <TranscriptRatings
-                            validationSet={this.state.validationSet}
-                        />
-                        <div className="cl-modal_footer cl-modal-buttons">
-                            <div className="cl-modal-buttons_secondary">
-                                <OF.DefaultButton
-                                    disabled={saveDisabled}
-                                    onClick={() => this.onOpenRate()}
-                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
-                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
-                                    iconProps={{ iconName: 'DownloadDocument' }}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    <TranscriptComparisions
+                        validationSet={this.state.validationSet}
+                        onCompare={this.onCompare}
+                        onView={this.onView}
+                    />
+                    <TranscriptRatings
+                        validationSet={this.state.validationSet}
+                        onRate={this.onOpenRate}
+                    />
                 </div>
                 <TestWaitModal
                     open={this.state.testTranscripts.length > 0}
@@ -816,6 +624,7 @@ class Testing extends React.Component<Props, ComponentState> {
                         validationSet={this.state.validationSet}
                         compareType={this.state.compareType}
                         compareSource={this.state.compareSource}
+                        comparePivot={this.state.comparePivot}
                         onClose={this.onCloseView}
                     />
                 }

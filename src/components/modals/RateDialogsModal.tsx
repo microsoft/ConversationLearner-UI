@@ -57,7 +57,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     private sameButtonRef = React.createRef<OF.IButton>()
 
     async componentDidMount() {
-        const numberOfNeededRatings = this.props.validationSet.initRating()
+        const numberOfNeededRatings = this.props.validationSet.initRating() // LARS = just need number, not
         await Util.setStateAsync(this, { numberOfNeededRatings })
         await this.onChangedDialog()
     }
@@ -86,11 +86,11 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         if (this.state.ratingPair) {
             const ratingPair = Util.deepCopy(this.state.ratingPair)
             if (this.state.isFlipped) {
-                ratingPair.result = Test.RatingResult.SECOND
+                ratingPair.result = Test.RatingResult.FIRST
                 await this.props.onRate(ratingPair)
             }
             else {
-                ratingPair.result = Test.RatingResult.FIRST
+                ratingPair.result = Test.RatingResult.SECOND
                 await this.props.onRate(ratingPair)
             }
         }
@@ -113,11 +113,11 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         if (this.state.ratingPair) {
             const ratingPair = Util.deepCopy(this.state.ratingPair)
             if (this.state.isFlipped) {
-                ratingPair.result = Test.RatingResult.FIRST
+                ratingPair.result = Test.RatingResult.SECOND
                 await this.props.onRate(ratingPair)
             }
             else {
-                ratingPair.result = Test.RatingResult.SECOND
+                ratingPair.result = Test.RatingResult.FIRST
                 await this.props.onRate(ratingPair)
             }
         }
@@ -128,34 +128,6 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     @autobind
     saveResults() {
         this.props.onClose()
- /*LARS       const set = new Test.ValidationSet(this.props.validationSet)
-
-        this.state.betterIds.forEach(id => {
-            const result = set.comparisons[0].transcriptResults.find(tr => tr.logDialogId === id)//LARS
-            if (!result) {
-                throw new Error("Can't find log dialog id")
-            }
-            result.rating = CLM.TranscriptRating.BETTER
-        })
-
-        this.state.worseIds.forEach(id => {
-            const result = set.comparisons[0].transcriptResults.find(tr => tr.logDialogId === id)//LARS
-            if (!result) {
-                throw new Error("Can't find log dialog id")
-            }
-            result.rating = CLM.TranscriptRating.WORSE
-        })
-
-        this.state.sameIds.forEach(id => {
-            const result = set.comparisons[0].transcriptResults.find(tr => tr.logDialogId === id)//LARS
-            if (!result) {
-                throw new Error("Can't find log dialog id")
-            }
-            result.rating = CLM.TranscriptRating.SAME
-        })
-    
-        this.props.onClose(set)
-        */
     }
 
     @autobind

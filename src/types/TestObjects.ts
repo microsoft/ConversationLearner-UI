@@ -6,6 +6,7 @@ import * as Util from '../Utils/util'
 import * as BB from 'botbuilder'
 import * as OBIUtils from '../Utils/obiUtils'
 
+// LARS - goes away
 export enum ValidationRatingType {
     BEST = 'BEST',
     BETTER = 'BETTER',
@@ -56,24 +57,13 @@ export class ValidationSet {
     appId?: string
     fileName?: string
     items: ValidationItem[]
-    comparisons: SourceComparison[]
-    ratingPairs: RatingPair[]
     sourceNames: string[]
-
-    public constructor(init?: Partial<ValidationSet>) {
-        Object.assign(this, init)
-        if (!this.sourceNames) {
-            this.sourceNames = []
-        }
-        if (!this.items) {
-            this.items = []
-        }
-        if (!this.comparisons) {
-            this.comparisons = []
-        }
-        if (!this.ratingPairs) {
-            this.ratingPairs = []
-        }
+    ratingPairs: RatingPair[]
+    private comparisons: SourceComparison[]
+    
+    static Create(source?: Partial<ValidationSet>): ValidationSet {
+        let init = Util.deepCopy(source)
+        return new ValidationSet(init)
     }
 
     // Returns number of unique conversationIds included in set
@@ -114,10 +104,11 @@ export class ValidationSet {
         return [...new Set(conversationIds)]
     }
 
-    // Returns conversationIds for the given source and result type
-    getConversationIds(sourceName: string, resultType: ComparisonResultType): string[] {
+    // Returns conversationIds for the given comparison params
+    getComparisonConversationIds(pivotName: string, sourceName: string, resultType: ComparisonResultType): string[] {
         return this.comparisons
-            .filter(c => c.result === resultType  // LARS handle all
+            .filter(c => c.result === resultType
+                && c.sourceNames.includes(pivotName)
                 && c.sourceNames.includes(sourceName))
             .map(c => c.conversationId)
     }
@@ -186,7 +177,7 @@ export class ValidationSet {
         this.ratingPairs.push(ratingPair)
     }
 
-    compareAll() {
+    compareAllLARS() {
 
         // Delete any existing comparisons
         this.comparisons = []
@@ -242,6 +233,60 @@ export class ValidationSet {
         }
     }
 
+    compareAll() {
+
+        // Delete any existing comparisons
+        this.comparisons = []
+
+        // Now test each transcript against every other
+        for (const outerSource of this.sourceNames) {
+
+            // For each source
+            for (const innerSource of this.sourceNames) {
+
+                // Don't compare to self
+                if (innerSource !== outerSource) {
+
+                    // Get existing comparisons between these two
+                    const comparisons  = this.getSourceComparisons(innerSource, outerSource)
+
+                    // Loop through all conversations
+                    const allConversationIds = this.getAllConversationIds()
+                    for (const conversationId of allConversationIds) {
+
+                        // May have already done the comparison in the opposite direction
+                        if (!comparisons.find(c => c.conversationId === conversationId)) {
+
+                            // Find the matching transcripts
+                            let innerItem = this.items.find(i => i.sourceName === innerSource && i.conversationId === conversationId)
+                            let outerItem = this.items.find(i => i.sourceName === outerSource && i.conversationId === conversationId)
+
+                            // If either has no transcript
+                            if (!innerItem || !innerItem.transcript || !outerItem || !outerItem.transcript) {
+                                this.comparisons.push({ 
+                                    conversationId,
+                                    sourceNames: [innerSource, outerSource],
+                                    result: ComparisonResultType.NO_TRANSCRIPT
+                                })
+                            }
+                            else {
+                                const result = OBIUtils.areTranscriptsEqual(innerItem.transcript, outerItem.transcript)
+                                    ? ComparisonResultType.REPRODUCED 
+                                    : ComparisonResultType.CHANGED
+
+                                this.comparisons.push({ 
+                                    conversationId,
+                                    sourceNames: [innerSource, outerSource],
+                                    result
+                                })
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // Initialize slots used for rating transcripts
     // Return number of ratings needed
     initRating(): number {
@@ -255,7 +300,7 @@ export class ValidationSet {
                 // Don't compare to self
                 if (innerSource !== outerSource) {
 
-                    // Order by source alphabetically
+                    // Lookup is always alphabetical alphabetical
                     const sourceNames = [outerSource, innerSource].sort()
 
                     // Add new pair if it doesn't already exits
@@ -292,7 +337,14 @@ export class ValidationSet {
             }
         }
 
+        // Calculate initial rankings
+        this.calcRankings()
+
         // Return count of those haven't been rated
+        return this.ratingPairs.filter(rp => rp.result === RatingResult.UNKNOWN).length
+    }
+
+    numRatingsNeeded(): number {
         return this.ratingPairs.filter(rp => rp.result === RatingResult.UNKNOWN).length
     }
 
@@ -314,11 +366,50 @@ export class ValidationSet {
                 else if (ratingPair.result === RatingResult.SECOND && ratingPair.sourceNames[1] === item.sourceName) {
                     item.ranking = item.ranking ? item.ranking + 1 : 1
                 }
-                else {
+                else if (ratingPair.result === RatingResult.SAME) {
                     item.ranking = item.ranking || 0
                 }
             }
         }
+    }
+
+    // Return count of unratable items because there are
+    // no matching transcripts in the source
+    numUnratable(pivotSource: string, source: string) {
+        const pivotConversationIds = this.items.filter(i => i.sourceName === pivotSource).map(i => i.conversationId)
+        const conversationIds = this.items.filter(i => i.sourceName === source).map(i => i.conversationId)
+        const matches = pivotConversationIds.filter(id => conversationIds.includes(id))
+        return pivotConversationIds.length - matches.length
+    }
+
+    getRating(pivotSource: string, source: string, conversationId: string): RatingResult {
+        // Lookup is always alphabetical
+        const sourceNames = [pivotSource, source].sort()
+        const ratingPair = this.ratingPairs.find(rp => 
+            rp.conversationId === conversationId
+            && rp.sourceNames[0] === sourceNames[0]
+            && rp.sourceNames[1] === sourceNames[1]) 
+        return ratingPair ? ratingPair.result : RatingResult.UNKNOWN
+    }
+
+    // Return count of items that haven't been rated yet
+    numNotRated(pivotSource: string, source: string) {
+
+        // Get list of conversations that exist for both
+        const pivotConversationIds = this.items.filter(i => i.sourceName === pivotSource).map(i => i.conversationId)
+        const sourceConversationIds = this.items.filter(i => i.sourceName === source).map(i => i.conversationId)
+        const sharedConversationIds = pivotConversationIds.filter(id => sourceConversationIds.includes(id))
+        
+        // Lookup is always alphabetical
+        const sourceNames = [pivotSource, source].sort()
+
+        // Find ones that still need to be rated
+        return this.ratingPairs.filter(rp => 
+                rp.result === RatingResult.UNKNOWN
+                && rp.sourceNames[0] === sourceNames[0]
+                && rp.sourceNames[1] === sourceNames[1]
+                && sharedConversationIds.includes(rp.conversationId))
+                .length
     }
 
     // Return a random pair of sources needing to be compared
@@ -356,5 +447,21 @@ export class ValidationSet {
             throw new Error("Transcript does not have a channelId")
         }
         return transcript[0].channelId
+    }
+
+    private constructor(init?: Partial<ValidationSet>) {
+        Object.assign(this, init)
+        if (!this.sourceNames) {
+            this.sourceNames = []
+        }
+        if (!this.items) {
+            this.items = []
+        }
+        if (!this.comparisons) {
+            this.comparisons = []
+        }
+        if (!this.ratingPairs) {
+            this.ratingPairs = []
+        }
     }
 }
