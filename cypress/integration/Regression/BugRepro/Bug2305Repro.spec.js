@@ -19,11 +19,11 @@ describe('Bug 2305 Repro', () => {
   })
 
   context('Attempt to reproduce Bug 2305', () => {
-    it('New Train Dialog', () => {
+    it('Edit Train Dialog', () => {
       train.EditTraining('The green frog jumped.', 'The green frog jumped.', 'The only response')
     })
 
-    it('Add an additional identical turn', () => {
+    it('Add an additional turn', () => {
       train.TypeYourMessage('The brown dog ran.')
       train.ClickScoreActionsButton()
     })
@@ -40,7 +40,7 @@ describe('Bug 2305 Repro', () => {
     })
     
     // Bug 2305: "Save As Is" Fails with status code 404
-    // This code should work once bug 2305 is fixed...
+    // This code should work once this bug is fixed...
     // Uncomment this and comment out the above to detect a regression.
     // it('Verify that Bug 2305 did not reproduce', () => {
     //   const expectedTrainDialogs = [
