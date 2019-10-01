@@ -756,7 +756,7 @@ export function SaveAsIs(verificationFunction) {
         throw new Error('The Merge Modal popped up, and we clicked the Save As Is button...need to retry and wait for the grid to become visible')
       }
 
-      if (modelPage.IsOverlaid()) {
+      if (modelPage.IsOverlaid() && !helpers.HasErrorMessage()) {
         helpers.ConLog(funcName, 'modalPage.IsOverlaid')
         renderingShouldBeCompleteTime = new Date().getTime() + 1000
         throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
