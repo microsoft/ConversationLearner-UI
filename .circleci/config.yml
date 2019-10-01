@@ -1,5 +1,6 @@
 version: 2.1
 
+# https://circleci.com/docs/2.0/reusing-config/#the-commands-key
 commands:
   run-bot-and-ui:
     description: "Runs the sample bot and the UI to allow E2E test to be run."
@@ -48,6 +49,20 @@ commands:
       # For some reason this times out as failure even though the bot is running and request should succeed
       # - run: npx wait-on -- http://localhost:3978
       - run: npx wait-on -- http://localhost:3000
+  save-test-results:
+    description: "Save artifacts and test results"
+    steps:
+      - store_artifacts:
+          path: results
+
+      - store_artifacts:
+          path: cypress/videos
+
+      - store_artifacts:
+          path: cypress/screenshots
+
+      - store_test_results:
+          path: results
 
 jobs:
   build:
@@ -93,17 +108,7 @@ jobs:
       # Need to add in --parallel once we have a license for it from Cypress
       - run: npm run cypress -- run --record false --spec  "cypress/integration/smoke/**/*.spec.*"
 
-      - store_artifacts:
-          path: results
-
-      - store_artifacts:
-          path: cypress/videos
-
-      - store_artifacts:
-          path: cypress/screenshots
-
-      - store_test_results:
-          path: results
+      - save-test-results
 
   test-regression:
     docker:
@@ -120,46 +125,17 @@ jobs:
       # Need to add in --parallel once we have a license for it from Cypress
       - run: npm run cypress -- run --record false --spec  "cypress/integration/Regression/**/*.spec.js"
 
-      - store_artifacts:
-          path: results
-
-      - store_artifacts:
-          path: cypress/videos
-
-      - store_artifacts:
-          path: cypress/screenshots
-
-      - store_test_results:
-          path: results
+      - save-test-results
 
       - run:
           command: npm run cypress -- run --record false --spec  "cypress/integration/regressionTs/**/*.spec.*"
           when: always
 
-      - store_artifacts:
-          path: results
-
-      - store_artifacts:
-          path: cypress/videos
-
-      - store_artifacts:
-          path: cypress/screenshots
-
-      - store_test_results:
-          path: results
+      - save-test-results
 
       - run:
           command: npm run cypress -- run --record false --spec "cypress/integration/Tools/DeleteAllTestGeneratedModels.spec.js"
           when: always
-
-      - store_artifacts:
-          path: results
-
-      - store_artifacts:
-          path: cypress/videos
-
-      - store_artifacts:
-          path: cypress/screenshots
 
 workflows:
   build-test:
