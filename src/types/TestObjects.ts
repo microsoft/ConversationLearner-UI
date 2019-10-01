@@ -13,7 +13,6 @@ export enum ComparisonResultType {
     CHANGED = 'CHANGED',
     INVALID_TRANSCRIPT = 'INVALID_TRANSCRIPT',
     NO_TRANSCRIPT = 'NOTRANSCRIPT'
-    //LARS test failed
 }
 
 export interface ValidationItem {
@@ -53,7 +52,9 @@ export class ValidationSet {
     items: ValidationItem[]
     sourceNames: string[]
     ratingPairs: RatingPair[]
-    lgMap: Map<string, CLM.LGItem> 
+    lgMap: Map<string, CLM.LGItem>    // <lgName, LGItem
+    usesLgMap: Map<string, boolean>   // <sourceName, does it use 
+
     private comparisons: SourceComparison[]
     
     static Create(source?: Partial<ValidationSet>): ValidationSet {
@@ -98,6 +99,10 @@ export class ValidationSet {
         return [...new Set(conversationIds)].length
     }
 
+    usesLG(): boolean {
+        let temp = Array.from(this.usesLgMap.values()).find(v => v)
+        return temp || false
+    }
     getTranscripts(sourceName: string): BB.Activity[][] {
         return this.items
             .filter(i => i.sourceName === sourceName)
@@ -143,44 +148,40 @@ export class ValidationSet {
 
         // Re-generate transcript files
         this.generateFullTranscripts()
-        // LARS test send bad file
     }
 
     async addTranscriptFiles(transcriptFiles: File[]): Promise<void> {
         for (const file of transcriptFiles) {
             let fileContent = await Util.readFileAsync(file)
-            try {
 
-                // Store both the raw and substituted transcript
-                // Raw one is used for save / log
-                const rawTranscript: BB.Activity[] = JSON.parse(fileContent)
-                const transcript = Util.deepCopy(rawTranscript)
-                if (this.lgMap) {
-                    OBIUtils.substituteLG(transcript, this.lgMap)
-                }
-
-                const sourceName = this.sourceName(rawTranscript)
-                const conversationId = this.conversationId(rawTranscript)
-
-                const item: ValidationItem = { 
-                    sourceName: sourceName,
-                    conversationId,
-                    logDialogId: null, 
-                    ranking: undefined,
-                    rawTranscript,
-                    transcript
-                }
-
-                this.addValidationResult(item)
-
-                // Add sourceName if it doesn't exist
-                if (!this.sourceNames.includes(sourceName)) {
-                    this.sourceNames.push(sourceName)
-                }
+            // Store both the raw and substituted transcript
+            // Raw one is used for save / log
+            const rawTranscript: BB.Activity[] = JSON.parse(fileContent)
+            const transcript = Util.deepCopy(rawTranscript)
+            let transcriptUsesLG = false
+            if (this.lgMap) {
+                transcriptUsesLG = OBIUtils.substituteLG(transcript, this.lgMap)
             }
-            catch (e) {
-            //    const error = e as Error
-            //LARS    this.props.setErrorDisplay(ErrorType.Error, `.transcript file (${transcriptFile.name})`, error.message, null)
+
+            const sourceName = this.sourceName(rawTranscript)
+            const conversationId = this.conversationId(rawTranscript)
+
+            const item: ValidationItem = { 
+                sourceName: sourceName,
+                conversationId,
+                logDialogId: null, 
+                ranking: undefined,
+                rawTranscript,
+                transcript
+            }
+
+            this.addValidationResult(item)
+
+            this.usesLgMap.set(sourceName, transcriptUsesLG)
+
+            // Add sourceName if it doesn't exist
+            if (!this.sourceNames.includes(sourceName)) {
+                this.sourceNames.push(sourceName)
             }
         }
     }
@@ -204,6 +205,7 @@ export class ValidationSet {
         // Add sourceName if it doesn't exist
         if (!this.sourceNames.includes(item.sourceName)) {
             this.sourceNames.push(item.sourceName)
+            this.usesLgMap.set(item.sourceName, false)
         }
     }
 
@@ -217,62 +219,6 @@ export class ValidationSet {
 
         // Add new one
         this.ratingPairs.push(ratingPair)
-    }
-
-    compareAllLARS() {
-
-        // Delete any existing comparisons
-        this.comparisons = []
-
-        // Now test each transcript against every other
-        for (const outerSource of this.sourceNames) {
-
-            const outerTranscripts = this.getTranscripts(outerSource)
-
-            // For each source
-            for (const innerSource of this.sourceNames) {
-
-                // Don't compare to self
-                if (innerSource !== outerSource) {
-
-                    // Get existing comparisons between these two
-                    const comparisons  = this.getSourceComparisons(innerSource, outerSource)
-
-                    // For each transcript
-                    for (const outerTranscript of outerTranscripts) {
-
-                        const conversationId = this.conversationId(outerTranscript)
-
-                        // Only need to comparision in one direction
-                        if (!comparisons.find(c => c.conversationId === conversationId)) {
-                                
-                            // Find the matching transcript
-                            let item = this.items.find(i => i.sourceName === innerSource && i.conversationId === conversationId)
-
-                            // If no item 
-                            if (!item || !item.transcript) {
-                                this.comparisons.push({ 
-                                    conversationId,
-                                    sourceNames: [innerSource, outerSource],
-                                    result: ComparisonResultType.NO_TRANSCRIPT
-                                })
-                            }
-                            else {
-                                const result = OBIUtils.areTranscriptsEqual(outerTranscript, item.transcript)
-                                    ? ComparisonResultType.REPRODUCED 
-                                    : ComparisonResultType.CHANGED
-
-                                this.comparisons.push({ 
-                                    conversationId,
-                                    sourceNames: [innerSource, outerSource],
-                                    result
-                                })
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     compareAll() {
@@ -517,6 +463,9 @@ export class ValidationSet {
         }
         if (!this.lgMap) {
             this.lgMap = new Map<string, CLM.LGItem>()
+        }
+        if (!this.usesLgMap) {
+            this.usesLgMap = new Map<string, boolean>()
         }
     }
 }

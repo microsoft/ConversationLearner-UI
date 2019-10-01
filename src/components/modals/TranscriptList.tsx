@@ -6,10 +6,7 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as Test from '../../types/TestObjects'
-import { returntypeof } from 'react-redux-typescript'
-import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { State } from '../../types'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import '../../routes/Apps/App/Testing.css'
@@ -23,6 +20,7 @@ interface ComponentState {
 interface RenderData {
     sourceName: string,
     transcriptCount: number,
+    usesLG: boolean
 }
 
 interface IRenderableColumn extends OF.IColumn {
@@ -57,7 +55,16 @@ function getColumns(intl: InjectedIntl): IRenderableColumn[] {
                         {renderResults.transcriptCount}
                     </span>)
             }
-        }
+        },
+        {
+            key: 'useslg',
+            name: Util.formatMessageId(intl, FM.TESTING_TABLE_LG_LABEL),
+            fieldName: 'userlg',
+            minWidth: 50,
+            isResizable: false,
+            getSortValue: renderResults => renderResults.usesLG ? 'a' : 'b',
+            render: renderResults => <OF.Icon iconName={renderResults.usesLG ? 'CheckMark' : 'Remove'} className="cl-icon" data-testid="action-details-wait" />
+        },
     ]
 }
 
@@ -74,8 +81,8 @@ class TranscriptList extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onLoadLGFiles(files: any): void {
-        this.props.onLoadLGFiles(files)
+    async onLoadLGFiles(files: any): Promise<void> {
+        await this.props.onLoadLGFiles(files)
 
         // Clear filename so user can reload same file
         let fileInput = (this.loadLGFileInput as HTMLInputElement)
@@ -83,8 +90,8 @@ class TranscriptList extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onLoadTranscriptFiles(files: any): void {
-        this.props.onLoadTranscriptFiles(files)
+    async onLoadTranscriptFiles(files: any): Promise<void> {
+        await this.props.onLoadTranscriptFiles(files)
 
         // Clear filename so user can reload same file
         let fileInput = (this.loadTranscriptsFileInput as HTMLInputElement)
@@ -104,7 +111,8 @@ class TranscriptList extends React.Component<Props, ComponentState> {
 
             renderResults.push({
                 sourceName: sourceName,
-                transcriptCount: items.length
+                transcriptCount: items.length,
+                usesLG: this.props.validationSet.usesLgMap.get(sourceName) || false
             })
         }
         return renderResults
@@ -132,11 +140,6 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                     multiple={true}
                 />
                 <div className="cl-testing-trascript-group">
-                    {this.props.validationSet && this.props.validationSet.lgMap.size > 0 &&
-                        <div>
-                            {`${this.props.validationSet.lgMap.size} LG items loaded`}
-                        </div>
-                    }
                     {renderResults.length > 0
                     ?
                     <OF.DetailsList
@@ -148,27 +151,40 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                         onRenderItemColumn={(rr: RenderData, i, column: IRenderableColumn) =>
                             column.render(rr)}
                     />
-                    : "No Transcripts"
+                    : 
+                    <div className="cl-testing-warning">
+                        {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_WARNING_TITLE)}
+                    </div>
+                    }
+                    {this.props.validationSet && this.props.validationSet.lgMap.size > 0 &&
+                        <div>
+                            {`${this.props.validationSet.lgMap.size} ${Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_LGLOADED)}`}
+                        </div>
+                    }
+                    {this.props.validationSet && this.props.validationSet.lgMap.size === 0 && this.props.validationSet.usesLG() &&
+                        <div className="cl-text--warning">
+                            {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_NOLG)}
+                        </div>
                     }
                     <div className="cl-modal-buttons cl-modal_footer">
                         <div className="cl-modal-buttons_primary">
                             <OF.PrimaryButton
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_ADD_TRANSCRIPTS)}
-                                text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_ADD_TRANSCRIPTS)}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS)}
+                                text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS)}
                                 iconProps={{ iconName: 'TestCase' }}
                                 onClick={() => this.loadTranscriptsFileInput.click()}
                             />
                             <OF.PrimaryButton
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_ADD_TRANSCRIPTS)}
-                                text={"Add LG"}// LARS
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_ADD_LG)}
+                                text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_ADD_LG)}
                                 iconProps={{ iconName: 'TestCase' }}
                                 onClick={() => this.loadLGFileInput.click()}
                             />
                             <OF.DefaultButton
                                 disabled={!this.props.validationSet}
                                 onClick={() => this.props.onView(Test.ComparisonResultType.ALL)}
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_SAVE_RESULTS)}
-                                text="View Transcripts" // LARS
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_VIEW)}
+                                text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_VIEW)}
                                 iconProps={{ iconName: 'DownloadDocument' }}
                             />
                             <OF.PrimaryButton
@@ -186,26 +202,14 @@ class TranscriptList extends React.Component<Props, ComponentState> {
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
-    return bindActionCreators({
-    }, dispatch);//LARS remove
-}
-
-const mapStateToProps = (state: State) => {
-    return { // LARS remove
-    }
-}
-
 export interface ReceivedProps {
     validationSet: Test.ValidationSet | undefined
     onView: (compareType: Test.ComparisonResultType, comparePivot?: string, compareSource?: string) => void
-    onLoadTranscriptFiles: (transcriptFiles: any) => void
-    onLoadLGFiles: (lgFiles: any) => void
+    onLoadTranscriptFiles: (transcriptFiles: any) => Promise<void>
+    onLoadLGFiles: (lgFiles: any) => Promise<void>
     onTest: () => Promise<void>
 }
 
-// Props types inferred from mapStateToProps 
-const stateProps = returntypeof(mapStateToProps);
-type Props = typeof stateProps & ReceivedProps & InjectedIntlProps
+type Props = ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TranscriptList) as any)
+export default connect<{}, {}, ReceivedProps>(null)(injectIntl(TranscriptList) as any)

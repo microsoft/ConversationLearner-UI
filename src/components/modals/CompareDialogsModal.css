@@ -58,8 +58,12 @@
     height: 96%;
 }
 
+.cl-compare-dialogs--bodysmall {
+    margin-left: 60px;
+}
+
 .cl-compare-dialogs-small {
-    width: 564px;
+    width: 600px;
 }
 
 .cl-compare-dialogs-med {

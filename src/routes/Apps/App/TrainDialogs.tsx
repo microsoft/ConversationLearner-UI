@@ -1167,7 +1167,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
         }
         catch (e) {
             const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, error.message, error.message, null)//LARS
+            this.props.setErrorDisplay(ErrorType.Error, error.message, error.message, null)
             this.setState({
                 importedTrainDialogs: undefined,
                 isImportWaitModalOpen: false

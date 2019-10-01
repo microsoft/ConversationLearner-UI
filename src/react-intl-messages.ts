@@ -473,6 +473,7 @@ export enum FM {
     TESTING_NAME_LABEL = 'Testing.testname.label',
     TESTING_TABLE_SOURCE_LABEL = 'Testing.tablesource.lable',
     TESTING_TABLE_COUNT_LABEL = 'Testing.tablecount.label',
+    TESTING_TABLE_LG_LABEL = 'Testing.lg.label',
     TESTING_BUTTON_LOAD_RESULTS = 'Testing.button.LoadResults',
     TESTING_BUTTON_SAVE_RESULTS = 'Testing.button.SaveResults',
     TESTING_BUTTON_CLEAR_RESULTS = 'Testing.button.ClearResults',
@@ -609,6 +610,14 @@ export enum FM {
     TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON = 'TranscriptImporter.transcriptbutton',
     TRANSCRIPT_IMPORTER_LG_BUTTON = 'TranscriptImporter.lgbutton',
 
+    // TrainscriptList
+    TRANSCRIPTLIST_WARNING_TITLE = 'TranscriptList.warning.title',
+    TRANSCRIPTLIST_LGLOADED = 'TranscriptList.lgloaded',
+    TRANSCRIPTLIST_NOLG = 'TranscriptList.nolg',
+    TRANSCRIPTLIST_BUTTON_ADD_LG = 'TranscriptList.button.add',
+    TRANSCRIPTLIST_BUTTON_VIEW = 'TranscriptList.button.view',
+    TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS = 'TranscriptValidator.button.AddTranscripts',
+
     // TranscriptTestPicker
     TRANSCRIPT_TESTPICKER_TITLE = 'TranscriptTestPicker.title',
     TRANSCRIPT_TESTPICKER_SOURCE = 'TranscriptTestPicker.source',
@@ -622,7 +631,6 @@ export enum FM {
     TRANSCRIPT_VALIDATOR_SUBTITLE = 'TranscriptValidator.subtitle',
     TRANSCRIPT_VALIDATOR_FILESAVE = 'TranscriptValidator.FileSave',
     TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER = 'TranscriptValidator.FileSavePlaceholder',
-    TRANSCRIPT_VALIDATOR_BUTTON_ADD_TRANSCRIPTS = 'TranscriptValidator.button.AddTranscripts',
     TRANSCRIPT_VALIDATOR_BUTTON_TEST_MODEL = 'TranscriptValidator.button.NewTest',
 
     // TreeView
@@ -1243,6 +1251,7 @@ export default {
         [FM.TESTING_NAME_LABEL]: 'Test Name',
         [FM.TESTING_TABLE_SOURCE_LABEL]: 'Source',
         [FM.TESTING_TABLE_COUNT_LABEL]: '# Transcripts',
+        [FM.TESTING_TABLE_LG_LABEL]: 'Uses LG',
         [FM.TESTING_BUTTON_LOAD_RESULTS]: 'Load Results',
         [FM.TESTING_BUTTON_SAVE_RESULTS]: 'Save Results',
         [FM.TESTING_BUTTON_CLEAR_RESULTS]: 'Clear Results',
@@ -1250,7 +1259,6 @@ export default {
         [FM.TESTING_PIVOT_COMPARISON]: 'Comparisons',
         [FM.TESTING_PIVOT_RATING]: 'User Ratings',
 
-        
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
         
@@ -1268,6 +1276,14 @@ export default {
         [FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON]: '.transcript files',
         [FM.TRANSCRIPT_IMPORTER_LG_BUTTON]: '.lg files',
 
+        // TrainscriptList
+        [FM.TRANSCRIPTLIST_WARNING_TITLE]: 'Get started by loading some .transcript files',
+        [FM.TRANSCRIPTLIST_LGLOADED]: 'LG items loaded',
+        [FM.TRANSCRIPTLIST_NOLG]: 'No LG items loaded',
+        [FM.TRANSCRIPTLIST_BUTTON_ADD_LG]: 'Add LG',
+        [FM.TRANSCRIPTLIST_BUTTON_VIEW]: 'View Transcripts',
+        [FM.TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS]: 'Add Transcripts',
+
         // TranscriptTestPicker
         [FM.TRANSCRIPT_TESTPICKER_TITLE]: 'Select Transcripts to Test',
         [FM.TRANSCRIPT_TESTPICKER_SOURCE]: ' Source:',
@@ -1281,7 +1297,6 @@ export default {
         [FM.TRANSCRIPT_VALIDATOR_SUBTITLE]: `Compare Model's output to .transcript files`,
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE]: 'Name for Test Results',
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER]: 'Name',
-        [FM.TRANSCRIPT_VALIDATOR_BUTTON_ADD_TRANSCRIPTS]: 'Add Transcripts',
         [FM.TRANSCRIPT_VALIDATOR_BUTTON_TEST_MODEL]: 'Test Model',
 
         // UserInput Modal

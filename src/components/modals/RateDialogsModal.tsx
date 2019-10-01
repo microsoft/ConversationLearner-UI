@@ -57,7 +57,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     private sameButtonRef = React.createRef<OF.IButton>()
 
     async componentDidMount() {
-        const numberOfNeededRatings = this.props.validationSet.initRating() // LARS = just need number, not
+        const numberOfNeededRatings = this.props.validationSet.numRatingsNeeded()
         await Util.setStateAsync(this, { numberOfNeededRatings })
         await this.onChangedDialog()
     }
@@ -70,15 +70,6 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
         return renderActivity(activityProps, children, setRef, null, EditDialogType.IMPORT, this.state.selectedActivityIndex != null)
-    }
-
-    currentLogDialodId(): string {
-        return 'LARS'
-     /*   const logDialogId = this.state.changedItems[this.state.resultIndex].logDialogId
-        if (!logDialogId) {
-            throw new Error("Missing log dialog Id")
-        }
-        return logDialogId*/
     }
 
     @autobind

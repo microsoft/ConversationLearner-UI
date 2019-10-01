@@ -58,7 +58,7 @@ export async function getLogDialogActivities(
     // Fetch the LogDialog
     const logDialog = await fetchLogDialogThunkAsync(appId, logDialogId, true, true)
     if (!logDialog) {
-        throw new Error("No log dialog!") //LARS handle gracefully w/o killing test
+        return []
     }
 
     // Convert to TrainDialog
@@ -84,7 +84,6 @@ function addIds(activities: Util.RecursivePartial<BB.Activity>[], conversationId
     })
 }
 
-// LARS rename
 async function getActivities(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
     fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
     ): Promise<BB.Transcript> {
@@ -142,13 +141,15 @@ export async function lgMapFromLGFiles(lgFiles: File[] | null, lgMap?: Map<strin
 }
 
 // Given a transcript file, replace and LG references with actual LG content
-export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.LGItem>): void {
+// Returns true is any LG substitutions were made
+export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.LGItem>): boolean {
 
+    let usedLG = false
     for (let activity of transcript) {
         if (activity.type && activity.type === 'message' && activity.from.role === 'bot') {
 
             if (activity.text && activity.text.startsWith('[') && activity.text.endsWith(']')) {
-
+                usedLG = true
                 const lgName = activity.text.substring(activity.text.indexOf("[") + 1, activity.text.lastIndexOf("]")).trim()
                 let response = lgMap.get(lgName)
                 if (response) {
@@ -160,6 +161,7 @@ export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.L
             }
         }
     }
+    return usedLG
 }
 
 // Convert .transcript file into a TrainDialog

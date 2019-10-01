@@ -10,6 +10,7 @@ import * as Util from '../../Utils/util'
 import * as BB from 'botbuilder'
 import * as Test from '../../types/TestObjects'
 import * as OBIUtils from '../../Utils/obiUtils'
+import * as DialogUtils from '../../Utils/dialogUtils'
 import actions from '../../actions'
 import IndexButtons from '../IndexButtons'
 import Webchat, { renderActivity } from '../Webchat'
@@ -34,6 +35,7 @@ interface ComponentState {
     sourceItemMap: Map<string, Test.ValidationItem[]> | undefined
     selectedActivityIndex: number | null
     scrollPosition: number | null
+    logDialogId: string | undefined
 }
 
 interface RenderData {
@@ -49,7 +51,8 @@ const initialState: ComponentState = {
     rankMap: new Map<string, number | undefined>(),
     sourceItemMap: undefined,
     selectedActivityIndex: null,
-    scrollPosition: 0
+    scrollPosition: 0,
+    logDialogId: undefined
 }
 
 class CompareDialogsModal extends React.Component<Props, ComponentState> {
@@ -129,6 +132,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             return
         }
 
+        let logDialogId: string | undefined
         const activityMap = new Map<string, BB.Activity[]>()
         const rankMap = new Map<string, number | undefined>()
         const conversationId = this.props.conversationIds[this.state.conversationIndex]
@@ -163,6 +167,14 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                     }
                     // Computer rank with pivot offset
                     rankMap.set(sourceName, curItem.ranking !== undefined ? curItem.ranking - baseRank : undefined)
+
+                    // Note: assumes only on source with a logs attached to it
+                    if (curItem.logDialogId) {
+                        // Does log dialog still exist?
+                        if (this.props.logDialogs.find(ld => ld.logDialogId === curItem.logDialogId)) {
+                            logDialogId = curItem.logDialogId
+                        }
+                    }
                 }
             }
         }
@@ -171,19 +183,18 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             activityMap,
             rankMap,
             webchatKey: this.state.webchatKey + 1,
-            scrollPosition: 0
+            scrollPosition: 0,
+            logDialogId
         })
     }
 
     @autobind
     onEdit() {
-        /* LARS 
-        const validationResult = this.props.validationSet.comparisons[this.state.resultIndex]
-        
-        const { history } = this.props
-        let url = `/home/${this.props.app.appId}/logDialogs?${DialogUtils.DialogQueryParams.id}=${validationResult.logDialogId}`
-        history.push(url, { app: this.props.app })
-        */
+        if (this.state.logDialogId) {
+            const { history } = this.props
+            let url = `/home/${this.props.app.appId}/logDialogs?${DialogUtils.DialogQueryParams.id}=${this.state.logDialogId}`
+            history.push(url, { app: this.props.app })
+        }
     }
 
     // Keep scroll position of two webchats in lockstep
@@ -230,6 +241,8 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             ? "cl-compare-dialogs-med"
             : "cl-compare-dialogs-large"
 
+        const body = renderData.length === 1 ? 'cl-compare-dialogs--bodysmall' : ""
+
         return (
             <div>
                 <OF.Modal
@@ -237,7 +250,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                     isBlocking={true}
                     containerClassName={`cl-modal cl-modal--compare-dialogs ${size}`}
                 >
-                    <div className="cl-modal_body">
+                    <div className={`cl-modal_body ${body}`}>
                         <div className="cl-compare-dialogs-modal">
                             {renderData.map(rd => {
                                 return (
@@ -251,9 +264,6 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                             key={rd.sourceName}
                                         >
                                             {rd.sourceName}
-                                            <div className="cl-compare-dialogs-filename">
-                                                {5/*LARS this.props.transcriptValidationResults[this.state.resultIndex].fileName*/}
-                                            </div>
                                         </div>
                                         <div className="cl-compare-dialogs-webchat">
                                             <Webchat 
@@ -290,8 +300,12 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                     total={this.props.conversationIds.length}
                                 />
                             </div>
+                            <div className="cl-compare-dialogs-filename">
+                                {this.props.conversationIds[this.state.conversationIndex]}
+                            </div>
                             <div className="cl-modal-buttons_secondary">
                                 <OF.DefaultButton
+                                    disabled={!this.state.logDialogId}
                                     onClick={this.onEdit}
                                     ariaDescription={Util.formatMessageId(this.props.intl, FM.COMPAREDIALOGS_EDIT)}
                                     text={Util.formatMessageId(this.props.intl, FM.COMPAREDIALOGS_EDIT)}
@@ -326,7 +340,8 @@ const mapStateToProps = (state: State) => {
     return {
         user: state.user.user,
         entities: state.entities,
-        actions: state.actions
+        actions: state.actions,
+        logDialogs: state.logDialogs
     }
 }
 

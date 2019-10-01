@@ -7,10 +7,7 @@ import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as Test from '../../types/TestObjects'
 import { FM } from '../../react-intl-messages'
-import { returntypeof } from 'react-redux-typescript'
-import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { autobind } from 'core-decorators'
 import '../../routes/Apps/App/Testing.css'
@@ -38,8 +35,15 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
         }
     }
 
-    componentDidUpdate(prevProps: Props) {
-        // If no compare selected yet, do compare if more than one soucce loaded
+    componentDidMount() {
+        // If no compare selected yet, do compare if more than one source loaded
+        if (!this.state.comparePivot && this.props.validationSet && this.props.validationSet.sourceNames.length > 1) {
+            this.onCompare(this.props.validationSet.sourceNames[0])
+        }
+    }
+
+    componentDidUpdate() {
+        // If no compare selected yet, do compare if more than one source loaded
         if (!this.state.comparePivot && this.props.validationSet && this.props.validationSet.sourceNames.length > 1) {
             this.onCompare(this.props.validationSet.sourceNames[0])
         }
@@ -231,25 +235,12 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
-    return bindActionCreators({
-    }, dispatch);
-}
-
-const mapStateToProps = (state: State) => {
-    // LARS remove
-    return {
-    }
-}
-
 export interface ReceivedProps {
     validationSet: Test.ValidationSet | undefined
     onCompare: (comparePivot: string | undefined) => void
     onView: (compareType: Test.ComparisonResultType, comparePivot?: string, compareSource?: string) => void
 }
 
-// Props types inferred from mapStateToProps 
-const stateProps = returntypeof(mapStateToProps);
-type Props = typeof stateProps & ReceivedProps & InjectedIntlProps
+type Props = ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TranscriptComparisons) as any)
+export default connect<{}, {}, ReceivedProps>(null)(injectIntl(TranscriptComparisons) as any)

@@ -39,6 +39,7 @@ interface ComponentState {
     isRateDialogsOpen: boolean
     isTestPickerOpen: boolean
     edited: boolean
+    pivotSelection: string | undefined
 }
 
 class Testing extends React.Component<Props, ComponentState> {
@@ -55,7 +56,8 @@ class Testing extends React.Component<Props, ComponentState> {
             viewConversationPivot: undefined,
             isRateDialogsOpen: false,
             isTestPickerOpen: false,
-            edited: false
+            edited: false,
+            pivotSelection: undefined
         }
     }
 
@@ -74,19 +76,25 @@ class Testing extends React.Component<Props, ComponentState> {
     async onLoadTranscriptFiles(transcriptFiles: any): Promise<void> {
         if (transcriptFiles.length > 0) {
 
-            const validationSet = this.state.validationSet 
-                ? Test.ValidationSet.Create(this.state.validationSet)
-                : Test.ValidationSet.Create({ appId: this.props.app.appId })
-            
-            await validationSet.addTranscriptFiles(transcriptFiles)
+            try {
+                const validationSet = this.state.validationSet 
+                    ? Test.ValidationSet.Create(this.state.validationSet)
+                    : Test.ValidationSet.Create({ appId: this.props.app.appId })
+                
+                await validationSet.addTranscriptFiles(transcriptFiles)
 
-            await Util.setStateAsync(this, {
-                validationSet,
-                edited: true // LARS is this used
-            })
+                await Util.setStateAsync(this, {
+                    validationSet,
+                    edited: true // LARS is this used
+                })
 
-            // Recompute comparisons and rankings
-            await this.onTranscriptsChanged()
+                // Recompute comparisons and rankings
+                await this.onTranscriptsChanged()
+            }
+            catch (e) {
+                const error = e as Error
+                this.props.setErrorDisplay(ErrorType.Error, `invalid .transcript file`, error.message, null)
+            }
         }
     }
 
@@ -94,19 +102,25 @@ class Testing extends React.Component<Props, ComponentState> {
     async onLoadLGFiles(lgFiles: any): Promise<void> {
         if (lgFiles.length > 0) {
 
-            const validationSet = this.state.validationSet 
-                ? Test.ValidationSet.Create(this.state.validationSet)
-                : Test.ValidationSet.Create({ appId: this.props.app.appId })
-            
-            await validationSet.addLGFiles(lgFiles)
+            try {
+                const validationSet = this.state.validationSet 
+                    ? Test.ValidationSet.Create(this.state.validationSet)
+                    : Test.ValidationSet.Create({ appId: this.props.app.appId })
+                
+                await validationSet.addLGFiles(lgFiles)
 
-            await Util.setStateAsync(this, {
-                validationSet,
-                edited: true // LARS is this used
-            })
+                await Util.setStateAsync(this, {
+                    validationSet,
+                    edited: true // LARS is this used
+                })
 
-            // Recompute comparisons and rankings
-            await this.onTranscriptsChanged()
+                // Recompute comparisons and rankings
+                await this.onTranscriptsChanged()
+            }
+            catch (e) {
+                const error = e as Error
+                this.props.setErrorDisplay(ErrorType.Error, `invalid .lg file`, error.message, null)
+            }
         }
     }
 
@@ -482,36 +496,38 @@ class Testing extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
             <div className="cl-testing-body">
-                    <OF.Pivot linkSize={OF.PivotLinkSize.large}>
-                            <OF.PivotItem
-                                linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_DATA)}
-                            >
-                                <TranscriptList
-                                    validationSet={this.state.validationSet}
-                                    onView={this.onView}
-                                    onLoadTranscriptFiles={this.onLoadTranscriptFiles}
-                                    onLoadLGFiles={this.onLoadLGFiles}
-                                    onTest={this.onTest}
-                                />
-                            </OF.PivotItem>
-                            <OF.PivotItem
-                                linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_COMPARISON)}
-                            >
-                                <TranscriptComparisions
-                                    validationSet={this.state.validationSet}
-                                    onCompare={this.onCompare}
-                                    onView={this.onView}
-                                />
-                            </OF.PivotItem>
-                            <OF.PivotItem
-                                linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_RATING)}
-                            >
-                                <TranscriptRatings
-                                    validationSet={this.state.validationSet}
-                                    onRate={this.onOpenRate}
-                                    onView={this.onViewConversationIds}
-                                />
-                            </OF.PivotItem>
+                    <OF.Pivot 
+                        linkSize={OF.PivotLinkSize.large}
+                    >
+                        <OF.PivotItem
+                            linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_DATA)}
+                        >
+                            <TranscriptList
+                                validationSet={this.state.validationSet}
+                                onView={this.onView}
+                                onLoadTranscriptFiles={this.onLoadTranscriptFiles}
+                                onLoadLGFiles={this.onLoadLGFiles}
+                                onTest={this.onTest}
+                            />
+                        </OF.PivotItem>
+                        <OF.PivotItem
+                            linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_COMPARISON)}
+                        >
+                            <TranscriptComparisions
+                                validationSet={this.state.validationSet}
+                                onCompare={this.onCompare}
+                                onView={this.onView}
+                            />
+                        </OF.PivotItem>
+                        <OF.PivotItem
+                            linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_RATING)}
+                        >
+                            <TranscriptRatings
+                                validationSet={this.state.validationSet}
+                                onRate={this.onOpenRate}
+                                onView={this.onViewConversationIds}
+                            />
+                        </OF.PivotItem>
                     </OF.Pivot>
                 </div>
                 <TestWaitModal

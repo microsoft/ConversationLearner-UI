@@ -6,10 +6,7 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as Test from '../../types/TestObjects'
-import { returntypeof } from 'react-redux-typescript'
-import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import { autobind } from 'core-decorators'
@@ -47,6 +44,12 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
             minRank: 0,
             numRanks: 0,
             numConversations: 0
+        }
+    }
+
+    componentDidMount() {
+        if (this.props.validationSet) {
+            this.onUpdatePivot(this.state.ratePivot || this.props.validationSet.sourceNames[0])
         }
     }
 
@@ -285,24 +288,12 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
     }
 }
 
-const mapDispatchToProps = (dispatch: any) => {
-    return bindActionCreators({
-    }, dispatch);
-}
-
-const mapStateToProps = (state: State) => {
-    return { // LARS remove
-    }
-}
-
 export interface ReceivedProps {
     validationSet: Test.ValidationSet | undefined
     onView: (conversationIds: string[], conversationPivot?: string) => void
     onRate: () => void
 }
 
-// Props types inferred from mapStateToProps 
-const stateProps = returntypeof(mapStateToProps);
-type Props = typeof stateProps & ReceivedProps & InjectedIntlProps
+type Props = ReceivedProps & InjectedIntlProps
 
-export default connect<typeof stateProps, {}, ReceivedProps>(mapStateToProps, mapDispatchToProps)(injectIntl(TranscriptRatings) as any)
+export default connect<{}, {}, ReceivedProps>(null)(injectIntl(TranscriptRatings) as any)
