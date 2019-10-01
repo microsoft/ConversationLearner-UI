@@ -35,15 +35,15 @@ describe('Undo Entity Labeling - Edit and Branching', () => {
 
     // Bug 2264: Selecting a labeled Entity then selecting a different user turn disables the ability to label Entities
     // When this block of code breaks, it is likely because this bug has been fixed. Comment it out and uncomment the next.
-    it('Verify that Bug 2264 reproduces', () => {
-      train.VerifyCanNotLabelTextAsEntity('user')
-    })
+    // it('Verify that Bug 2264 reproduces', () => {
+    //   train.VerifyCanNotLabelTextAsEntity('user')
+    // })
 
     // Bug 2264: Selecting a labeled Entity then selecting a different user turn disables the ability to label Entities
     // Confirm that this bug no longer reproduces.
-    // it('Verify that Bug 2264 does not re-occur', () => {
-    //   train.VerifyCanLabelTextAsEntity('user')
-    // })
+    it('Verify that Bug 2264 does not re-occur', () => {
+      train.VerifyCanLabelTextAsEntity('user')
+    })
 
     it('Select a Bot turn to reset the internal UI state', () => {
       // This resets the internal UI state so that either the bug no longer has an effect,

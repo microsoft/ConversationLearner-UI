@@ -149,6 +149,7 @@ export function GetBuildKey() {
 export function VerifyErrorMessageContains(expectedMessage) { cy.Get('div.cl-errorpanel').contains(expectedMessage) }
 export function VerifyErrorMessageExactMatch(expectedMessage) { cy.Get('div.cl-errorpanel').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessages() { cy.DoesNotContain('div.cl-errorpanel') }
+export function HasErrorMessage() { return Cypress.$('div.cl-errorpanel').length > 0 }
 
 export function ExactMatch(elements, expectedText) {
   const funcName = `ExactMatch('${expectedText}')`
