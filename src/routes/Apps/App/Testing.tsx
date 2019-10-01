@@ -176,7 +176,7 @@ class Testing extends React.Component<Props, ComponentState> {
         if (!testItem.transcript) {
             throw new Error("Missing transcript")
         }
-        // Get transcriptComparison, create new one if doesn't exist
+        // Copy validation set
         const validationSet = Test.ValidationSet.Create(this.state.validationSet)
         const conversationId = testItem.conversationId
 
@@ -236,21 +236,20 @@ class Testing extends React.Component<Props, ComponentState> {
         else {
             const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<string | null>)
 
-            if (!logDialogId) {
-                throw new Error("No log dialog!") //LARS handle gracefully w/o killing test
+            let resultTranscript: BB.Activity[] | undefined
+            if (logDialogId) {
+
+                resultTranscript = await OBIUtils.getLogDialogActivities(
+                    this.props.app.appId, 
+                    logDialogId,
+                    this.props.user, 
+                    this.props.actions,
+                    this.props.entities,
+                    conversationId,
+                    sourceName,
+                    this.props.fetchLogDialogThunkAsync as any,
+                    this.props.fetchActivitiesThunkAsync as any) as BB.Activity[]
             }
-
-            const resultTranscript = await OBIUtils.getLogDialogActivities(
-                this.props.app.appId, 
-                logDialogId,
-                this.props.user, 
-                this.props.actions,
-                this.props.entities,
-                conversationId,
-                this.props.app.appName,
-                this.props.fetchLogDialogThunkAsync as any,
-                this.props.fetchActivitiesThunkAsync as any)
-
             validationResult = { 
                 sourceName,
                 conversationId,
@@ -288,7 +287,7 @@ class Testing extends React.Component<Props, ComponentState> {
     async startTest(sourceName: string): Promise<void> {
         if (this.state.validationSet) {
             const testItems = this.state.validationSet.getItems(sourceName)
-            await Util.setStateAsync(this, { testItems })
+            await Util.setStateAsync(this, { testItems, testIndex: 0 })
             await this.testNextTranscript()
         }
     }
@@ -483,23 +482,37 @@ class Testing extends React.Component<Props, ComponentState> {
                     </div>
                 </div>
             <div className="cl-testing-body">
-                    <TranscriptList
-                        validationSet={this.state.validationSet}
-                        onView={this.onView}
-                        onLoadTranscriptFiles={this.onLoadTranscriptFiles}
-                        onLoadLGFiles={this.onLoadLGFiles}
-                        onTest={this.onTest}
-                    />
-                    <TranscriptComparisions
-                        validationSet={this.state.validationSet}
-                        onCompare={this.onCompare}
-                        onView={this.onView}
-                    />
-                    <TranscriptRatings
-                        validationSet={this.state.validationSet}
-                        onRate={this.onOpenRate}
-                        onView={this.onViewConversationIds}
-                    />
+                    <OF.Pivot linkSize={OF.PivotLinkSize.large}>
+                            <OF.PivotItem
+                                linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_DATA)}
+                            >
+                                <TranscriptList
+                                    validationSet={this.state.validationSet}
+                                    onView={this.onView}
+                                    onLoadTranscriptFiles={this.onLoadTranscriptFiles}
+                                    onLoadLGFiles={this.onLoadLGFiles}
+                                    onTest={this.onTest}
+                                />
+                            </OF.PivotItem>
+                            <OF.PivotItem
+                                linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_COMPARISON)}
+                            >
+                                <TranscriptComparisions
+                                    validationSet={this.state.validationSet}
+                                    onCompare={this.onCompare}
+                                    onView={this.onView}
+                                />
+                            </OF.PivotItem>
+                            <OF.PivotItem
+                                linkText={Util.formatMessageId(this.props.intl, FM.TESTING_PIVOT_RATING)}
+                            >
+                                <TranscriptRatings
+                                    validationSet={this.state.validationSet}
+                                    onRate={this.onOpenRate}
+                                    onView={this.onViewConversationIds}
+                                />
+                            </OF.PivotItem>
+                    </OF.Pivot>
                 </div>
                 <TestWaitModal
                     open={this.state.testItems.length > 0}

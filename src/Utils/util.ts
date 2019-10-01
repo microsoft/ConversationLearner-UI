@@ -356,7 +356,7 @@ export function scaledColor(rating?: number): string {
         }
     }
 
-// Can by JSON.stringify to serialize Map type objects
+// Can be used JSON.stringify to serialize Map type objects
 // i.e. JSON.stringify({object with map}, mapReplacer)
 export function mapReplacer(key: any, value: any) {
     if (value instanceof Map) {
@@ -365,7 +365,7 @@ export function mapReplacer(key: any, value: any) {
             value: [...value]
         }
     } else {
-        return value;
+        return value
     }
 }
 

@@ -476,6 +476,9 @@ export enum FM {
     TESTING_BUTTON_LOAD_RESULTS = 'Testing.button.LoadResults',
     TESTING_BUTTON_SAVE_RESULTS = 'Testing.button.SaveResults',
     TESTING_BUTTON_CLEAR_RESULTS = 'Testing.button.ClearResults',
+    TESTING_PIVOT_DATA = 'Testing.pivot.data',
+    TESTING_PIVOT_COMPARISON = 'Testing.pivot.comparison',
+    TESTING_PIVOT_RATING = 'Testing.pivot.rating',
 
     // TextVariation
     TEXTVARIATION_PLACEHOLDER = 'TextVariationCreator.placeholder',
@@ -594,7 +597,8 @@ export enum FM {
 
     // TrainscriptComparisions
     TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE = 'TranscriptComparisons.dropdown.title',
- 
+    TRANSCRIPTCOMPARISONS_WARNING_TITLE = 'TranscriptComparisons.warning.title',
+
     // Trainscript Import Cancel
     TRANSCRIPT_IMPORT_CANCEL_TITLE = 'TranscriptImportCancel.title',
     TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL = 'TranscriptImportCancel.Checkbox.label',
@@ -611,6 +615,7 @@ export enum FM {
 
     // TrainscriptRatings
     TRANSCRIPTRATINGS_DROPDOWN_TITLE = 'TranscriptRatings.dropdown.label',
+    TRANSCRIPTRATINGS_WARNING_TITLE = 'TranscriptRatings.warning.title',
 
     // Transcript Validator
     TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
@@ -619,7 +624,7 @@ export enum FM {
     TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER = 'TranscriptValidator.FileSavePlaceholder',
     TRANSCRIPT_VALIDATOR_BUTTON_ADD_TRANSCRIPTS = 'TranscriptValidator.button.AddTranscripts',
     TRANSCRIPT_VALIDATOR_BUTTON_TEST_MODEL = 'TranscriptValidator.button.NewTest',
- 
+
     // TreeView
     TREEVIEW_TOGGLE_FULLSCREEN = 'TreeView.ToggleFullScreen',
 
@@ -1241,12 +1246,17 @@ export default {
         [FM.TESTING_BUTTON_LOAD_RESULTS]: 'Load Results',
         [FM.TESTING_BUTTON_SAVE_RESULTS]: 'Save Results',
         [FM.TESTING_BUTTON_CLEAR_RESULTS]: 'Clear Results',
+        [FM.TESTING_PIVOT_DATA]: 'Data',
+        [FM.TESTING_PIVOT_COMPARISON]: 'Comparisons',
+        [FM.TESTING_PIVOT_RATING]: 'User Ratings',
 
+        
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
         
         // TrainscriptComparisions
         [FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE]: 'Compare with',
+        [FM.TRANSCRIPTCOMPARISONS_WARNING_TITLE]: 'At least two sets of transcripts must be loaded for a comparison',
 
         // Transcript Import Cancel
         [FM.TRANSCRIPT_IMPORT_CANCEL_TITLE]: 'Are you sure you want to abandon this import?',
@@ -1264,6 +1274,7 @@ export default {
 
         // TrainscriptRatings
         [FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE]: 'Relative to',
+        [FM.TRANSCRIPTRATINGS_WARNING_TITLE]: 'At least two sets of transcripts must be loaded to rate them',
 
         // Transcript Validator
         [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Testing',

@@ -112,50 +112,52 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
 
         return (
             <div>
-            <div className={OF.FontClassNames.mediumPlus}>
-                <OF.Dropdown
-                    disabled={!this.props.validationSet || this.props.validationSet.sourceNames.length < 2}
-                    ariaLabel={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}
-                    label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}
-                    selectedKey={this.props.validationSet && this.state.comparePivot 
-                        ? this.props.validationSet.sourceNames.indexOf(this.state.comparePivot)
-                        : -1
-                    }
-                    onChange={this.onChangeCompareSource}
-                    options={this.props.validationSet 
-                        ? this.props.validationSet.sourceNames
-                            .map<OF.IDropdownOption>((tag, i) => ({
-                                key: i,
-                                text: tag
-                            })) 
-                        : []
-                    }
-                />
-            </div>
             {this.props.validationSet && this.props.validationSet.sourceNames.length > 1 
                 ?
-                <div className={`cl-testing-result-group ${!this.props.validationSet || this.props.validationSet.items.length === 0 ? ' cl-test-disabled' : ''}`}>
-                    <div className="cl-testing-result cl-testing-source-title"/>
-                    <div className="cl-testing-result">
-                        <span className="cl-testing-result-title">Reproduced: </span>
+                <>
+                    <div className={OF.FontClassNames.mediumPlus}>
+                        <OF.Dropdown
+                            disabled={!this.props.validationSet || this.props.validationSet.sourceNames.length < 2}
+                            ariaLabel={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}
+                            label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}
+                            selectedKey={this.props.validationSet && this.state.comparePivot 
+                                ? this.props.validationSet.sourceNames.indexOf(this.state.comparePivot)
+                                : -1
+                            }
+                            onChange={this.onChangeCompareSource}
+                            options={this.props.validationSet 
+                                ? this.props.validationSet.sourceNames
+                                    .map<OF.IDropdownOption>((tag, i) => ({
+                                        key: i,
+                                        text: tag
+                                    })) 
+                                : []
+                            }
+                        />
                     </div>
-                    <div className="cl-testing-result">
-                        <span className="cl-testing-result-title">Changed: </span>
+                    <div className={`cl-testing-result-group ${!this.props.validationSet || this.props.validationSet.items.length === 0 ? ' cl-test-disabled' : ''}`}>
+                        <div className="cl-testing-result cl-testing-source-title"/>
+                        <div className="cl-testing-result">
+                            <span className="cl-testing-result-title">Reproduced: </span>
+                        </div>
+                        <div className="cl-testing-result">
+                            <span className="cl-testing-result-title">Changed: </span>
+                        </div>
+                        {hasNoTranscript &&
+                            <div className="cl-testing-result">
+                                <span className="cl-testing-result-title">No Transcript: </span>
+                            </div>
+                        }
+                        {hasInvalidTranscript &&
+                            <div className="cl-testing-result">
+                                <span className="cl-testing-result-title">Invalid Transcript: </span>
+                            </div>
+                        }
                     </div>
-                    {hasNoTranscript &&
-                        <div className="cl-testing-result">
-                            <span className="cl-testing-result-title">No Transcript: </span>
-                        </div>
-                    }
-                    {hasInvalidTranscript &&
-                        <div className="cl-testing-result">
-                            <span className="cl-testing-result-title">Invalid Transcript: </span>
-                        </div>
-                    }
-                </div>
+                </>
                 :
-                <div>
-                    At least two set of transcripts must be loaded 
+                <div className="cl-testing-warning">
+                    {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_WARNING_TITLE)}
                 </div>
             }
             {this.state.comparePivot && renderResults

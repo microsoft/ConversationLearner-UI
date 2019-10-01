@@ -143,8 +143,16 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
     }
 
     render() {
+        
         return (
             <div>
+            {!this.props.validationSet || this.props.validationSet.sourceNames.length < 2 
+                ?
+                <div className="cl-testing-warning">
+                    {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_WARNING_TITLE)}
+                </div>
+                :
+                <>
                 <div className={OF.FontClassNames.mediumPlus}>
                     <OF.Dropdown
                         disabled={!this.props.validationSet || this.props.validationSet.sourceNames.length < 2}
@@ -270,6 +278,8 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                         )}
                     )
                 }
+                </>
+            }
             </div>
         )
     }

@@ -10,6 +10,12 @@
   min-height: 260px;
 }
 
+.cl-testing-warning {
+  font-weight: 700;
+  text-align: center;
+  margin: 50px;
+}
+
 .cl-testing-trascript-group {
   margin: 15px;
 }

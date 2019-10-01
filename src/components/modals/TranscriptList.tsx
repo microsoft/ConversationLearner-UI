@@ -14,6 +14,7 @@ import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import '../../routes/Apps/App/Testing.css'
 import './TranscriptRatings.css'
+import { autobind } from 'core-decorators'
 
 interface ComponentState {
     transcriptColumns: IRenderableColumn[]
@@ -72,6 +73,24 @@ class TranscriptList extends React.Component<Props, ComponentState> {
         }
     }
 
+    @autobind
+    onLoadLGFiles(files: any): void {
+        this.props.onLoadLGFiles(files)
+
+        // Clear filename so user can reload same file
+        let fileInput = (this.loadLGFileInput as HTMLInputElement)
+        fileInput.value = ""
+    }
+
+    @autobind
+    onLoadTranscriptFiles(files: any): void {
+        this.props.onLoadTranscriptFiles(files)
+
+        // Clear filename so user can reload same file
+        let fileInput = (this.loadTranscriptsFileInput as HTMLInputElement)
+        fileInput.value = ""
+    }
+
     renderData(): RenderData[] {
 
         if (!this.props.validationSet) {
@@ -100,7 +119,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                     hidden={true}
                     type="file"
                     style={{ display: 'none' }}
-                    onChange={(event) => this.props.onLoadTranscriptFiles(event.target.files)}
+                    onChange={(event) => this.onLoadTranscriptFiles(event.target.files)}
                     ref={ele => (this.loadTranscriptsFileInput = ele)}
                     multiple={true}
                 />
@@ -108,14 +127,16 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                     hidden={true}
                     type="file"
                     style={{ display: 'none' }}
-                    onChange={(event) => this.props.onLoadLGFiles(event.target.files)}
+                    onChange={(event) => this.onLoadLGFiles(event.target.files)}
                     ref={ele => (this.loadLGFileInput = ele)}
                     multiple={true}
                 />
-                <div className={OF.FontClassNames.mediumPlus}>
-                    Transcripts
-                </div>
                 <div className="cl-testing-trascript-group">
+                    {this.props.validationSet && this.props.validationSet.lgMap.size > 0 &&
+                        <div>
+                            {`${this.props.validationSet.lgMap.size} LG items loaded`}
+                        </div>
+                    }
                     {renderResults.length > 0
                     ?
                     <OF.DetailsList
@@ -127,7 +148,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                         onRenderItemColumn={(rr: RenderData, i, column: IRenderableColumn) =>
                             column.render(rr)}
                     />
-                    : "None"
+                    : "No Transcripts"
                     }
                     <div className="cl-modal-buttons cl-modal_footer">
                         <div className="cl-modal-buttons_primary">
