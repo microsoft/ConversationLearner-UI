@@ -37,9 +37,7 @@ interface ComponentState {
     transcriptColumns: IRenderableColumn[]
     validationSet: Test.ValidationSet | undefined
     isTranscriptLoaderOpen: boolean
-    compareType: Test.ComparisonResultType | undefined
-    comparePivot: string | undefined
-    compareSource: string | undefined
+    viewConversationIds: string[] | undefined
     isRateDialogsOpen: boolean
     isTestPickerOpen: boolean
     edited: boolean
@@ -99,9 +97,7 @@ class Testing extends React.Component<Props, ComponentState> {
             lgMap: null,
             validationSet: undefined,
             isTranscriptLoaderOpen: false,
-            compareType: undefined,
-            compareSource: undefined,
-            comparePivot: undefined,
+            viewConversationIds: undefined,
             isRateDialogsOpen: false,
             isTestPickerOpen: false,
             edited: false
@@ -358,12 +354,24 @@ class Testing extends React.Component<Props, ComponentState> {
 
     @autobind
     onView(compareType: Test.ComparisonResultType, comparePivot?: string, compareSource?: string) {
-        this.setState({ compareType, comparePivot, compareSource })
+
+        if (this.state.validationSet) {
+            const viewConversationIds = compareSource && comparePivot 
+            ? this.state.validationSet.getComparisonConversationIds(compareSource, comparePivot, compareType)
+            : this.state.validationSet.getAllConversationIds()
+
+            this.onViewConversationIds(viewConversationIds)
+        }
+    }
+
+    @autobind
+    onViewConversationIds(viewConversationIds: string[]) {
+        this.setState({ viewConversationIds })
     }
 
     @autobind
     onCloseView() {
-        this.setState({ compareType: undefined, compareSource: undefined })
+        this.setState({ viewConversationIds: undefined })
     }
 
     @autobind
@@ -608,6 +616,7 @@ class Testing extends React.Component<Props, ComponentState> {
                     <TranscriptRatings
                         validationSet={this.state.validationSet}
                         onRate={this.onOpenRate}
+                        onView={this.onViewConversationIds}
                     />
                 </div>
                 <TestWaitModal
@@ -617,14 +626,12 @@ class Testing extends React.Component<Props, ComponentState> {
                     total={this.state.testTranscripts.length}
                     onClose={this.onCancelTest}
                 />
-                {this.state.compareType && this.state.validationSet &&
+                {this.state.viewConversationIds && this.state.validationSet && 
                     <CompareDialogsModal
                         app={this.props.app}
                         lgMap={this.state.lgMap}
                         validationSet={this.state.validationSet}
-                        compareType={this.state.compareType}
-                        compareSource={this.state.compareSource}
-                        comparePivot={this.state.comparePivot}
+                        conversationIds={this.state.viewConversationIds}
                         onClose={this.onCloseView}
                     />
                 }

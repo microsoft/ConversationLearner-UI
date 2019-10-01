@@ -30,7 +30,6 @@ interface ComponentState {
     conversationIndex: number
     webchatKey: number
     activityMap: Map<string, BB.Activity[]>
-    conversationIds: string[]
     sourceItemMap: Map<string, Test.ValidationItem[]> | undefined
     selectedActivityIndex: number | null
     scrollPosition: number | null
@@ -46,7 +45,6 @@ const initialState: ComponentState = {
     webchatKey: 0,
     conversationIndex: 0,
     activityMap: new Map<string, BB.Activity[]>(),
-    conversationIds: [],
     sourceItemMap: undefined,
     selectedActivityIndex: null,
     scrollPosition: 0
@@ -57,19 +55,14 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
 
     async componentDidMount() {
 
-        // Get conversationIds for the current comparision
-        const conversationIds = this.props.compareSource && this.props.comparePivot 
-            ? this.props.validationSet.getComparisonConversationIds(this.props.compareSource, this.props.comparePivot, this.props.compareType)
-            : this.props.validationSet.getAllConversationIds()
-
         // Gather items for each source
         const sourceItemMap = new Map<string, Test.ValidationItem[]>()
         for (const sourceName of this.props.validationSet.sourceNames) {
-            const sourceItems = this.props.validationSet.getItems(sourceName, conversationIds)
+            const sourceItems = this.props.validationSet.getItems(sourceName, this.props.conversationIds)
             sourceItemMap.set(sourceName, sourceItems)
         }
 
-        await Util.setStateAsync(this, {conversationIds, sourceItemMap})
+        await Util.setStateAsync(this, {sourceItemMap})
         await this.onChangedDialog()
     }
 
@@ -86,7 +79,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     @autobind
     onNext() {
         let resultIndex = this.state.conversationIndex + 1
-        if (resultIndex === this.state.conversationIds.length) {
+        if (resultIndex === this.props.conversationIds.length) {
             resultIndex = 0
         }
         this.setState({conversationIndex: resultIndex})       
@@ -96,7 +89,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     onPrevious() {
         let resultIndex = this.state.conversationIndex - 1
         if (resultIndex < 0) {
-            resultIndex = this.state.conversationIds.length - 1
+            resultIndex = this.props.conversationIds.length - 1
         }
         this.setState({conversationIndex: resultIndex})
     }
@@ -129,13 +122,13 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         if (!this.state.sourceItemMap) {
             return
         }
-        if (this.state.conversationIndex >= this.state.conversationIds.length) {
+        if (this.state.conversationIndex >= this.props.conversationIds.length) {
             console.log("INVALID INDEX: CompareDialogModal")
             return
         }
 
         const activityMap = new Map<string, BB.Activity[]>()
-        const conversationId = this.state.conversationIds[this.state.conversationIndex]
+        const conversationId = this.props.conversationIds[this.state.conversationIndex]
 
         for (let sourceName of this.props.validationSet.sourceNames) {
 
@@ -284,7 +277,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                     onPrevious={this.onPrevious}
                                     onNext={this.onNext}
                                     curIndex={this.state.conversationIndex}
-                                    total={this.state.conversationIds.length}
+                                    total={this.props.conversationIds.length}
                                 />
                             </div>
                             <div className="cl-modal-buttons_secondary">
@@ -331,9 +324,7 @@ export interface ReceivedProps {
     app: CLM.AppBase
     lgMap: Map<string, CLM.LGItem> | null
     validationSet: Test.ValidationSet
-    compareType: Test.ComparisonResultType
-    comparePivot?: string,
-    compareSource?: string,
+    conversationIds: string[]
     onClose: () => void
 }
 

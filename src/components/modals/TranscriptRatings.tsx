@@ -18,7 +18,7 @@ import './TranscriptRatings.css'
 
 interface ComponentState {
     ratePivot: string | undefined
-    relativeRankings: RelativeRanking[]
+    relativeRankings: RelativeRanking[] // LARS goes away
     sourceRankMap: Map<string, RankCount[]>
     unRatableMap: Map<string, number>    // Number conversations missing transcript for comparison
     notRatedMap: Map<string, number>    // Number conversations that haven't been rated
@@ -36,6 +36,7 @@ interface RelativeRanking {
 
 interface RankCount {
     sourceName: string
+    conversationIds: string[]
     count: number
     rank: number
 }
@@ -102,7 +103,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
             if (sourceName !== ratePivot) {
                 const rankCounts: RankCount[] = []
                 for (let rank = minRank; rank <= maxRank; rank = rank + 1) {
-                    rankCounts.push({sourceName, rank, count: 0 })
+                    rankCounts.push({sourceName, rank, count: 0, conversationIds: [] })
                 }
                 sourceRankMap.set(sourceName, rankCounts)
                 // Get number that aren't rankable (as they don't have matching transcript)
@@ -129,8 +130,9 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                                 const rank = sourceItem.ranking - baseItem.ranking
                                 relativeRankings.push({conversationId, sourceName, rank })
 
-                                const rankCount = sourceRankMap.get(sourceName)!.find(r => r.rank === rank)
-                                rankCount!.count = rankCount!.count + 1
+                                const rankCount = sourceRankMap.get(sourceName)!.find(r => r.rank === rank)!
+                                rankCount.conversationIds.push(conversationId)
+                                rankCount.count = rankCount.count + 1
                             }
                         }
                     }
@@ -263,6 +265,8 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                                                 className="cl-transcriptrating-result"
                                                 style={{backgroundColor: `${this.getRatingColor(rc.rank)}`}}
                                                 key={`${rc.rank}-${sourceName}`}
+                                                onClick={() => this.props.onView(rc.conversationIds)}
+                                                role="button"
                                             >
                                                 <span className="cl-testing-result-item cl-testing-result-value">
                                                     {rc.count}
@@ -317,6 +321,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     validationSet: Test.ValidationSet | undefined
+    onView: (conversationIds: string[]) => void
     onRate: () => void
 }
 
