@@ -605,9 +605,6 @@ export enum FM {
     TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON = 'TranscriptImporter.transcriptbutton',
     TRANSCRIPT_IMPORTER_LG_BUTTON = 'TranscriptImporter.lgbutton',
 
-    // TranscriptLoader
-    TRANSCRIPT_LOADER_TITLE = 'TranscriptPicker.title',
-
     // TranscriptTestPicker
     TRANSCRIPT_TESTPICKER_TITLE = 'TranscriptTestPicker.title',
     TRANSCRIPT_TESTPICKER_SOURCE = 'TranscriptTestPicker.source',
@@ -1260,9 +1257,6 @@ export default {
         [FM.TRANSCRIPT_IMPORTER_DESCRIPTION]: 'Create Train Dialogs from .transcript files',
         [FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON]: '.transcript files',
         [FM.TRANSCRIPT_IMPORTER_LG_BUTTON]: '.lg files',
-
-        // TranscriptLoader
-        [FM.TRANSCRIPT_LOADER_TITLE]: 'Select Transcript files to add',
 
         // TranscriptTestPicker
         [FM.TRANSCRIPT_TESTPICKER_TITLE]: 'Select Transcripts to Test',

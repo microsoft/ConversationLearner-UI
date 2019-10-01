@@ -125,20 +125,20 @@ export function isSameActivity(activity1: BB.Activity, activity2: BB.Activity): 
     return true
 }
 
-export async function lgMapFromLGFiles(lgFiles: File[] | null): Promise<Map<string, CLM.LGItem>> {
-    const lgMap: Map<string, CLM.LGItem> = new Map()
+export async function lgMapFromLGFiles(lgFiles: File[] | null, lgMap?: Map<string, CLM.LGItem>): Promise<Map<string, CLM.LGItem>> {
+    const map = lgMap || new Map<string, CLM.LGItem>()
     if (lgFiles) {
         for (const lgFile of lgFiles) {
             if (lgFile.name.endsWith('.lg')) {
                 const fileText = await Util.readFileAsync(lgFile)
-                CLM.ObiUtils.addToLGMap(fileText, lgMap)
+                CLM.ObiUtils.addToLGMap(fileText, map)
             }
             else {
                 throw new Error(`Expecting .lg file.\n\n Given: ${lgFile.name}`)
             }
         }
     }
-    return lgMap
+    return map
 }
 
 // Given a transcript file, replace and LG references with actual LG content
@@ -151,11 +151,12 @@ export function substituteLG(transcript: BB.Activity[], lgMap: Map<string, CLM.L
 
                 const lgName = activity.text.substring(activity.text.indexOf("[") + 1, activity.text.lastIndexOf("]")).trim()
                 let response = lgMap.get(lgName)
-                if (!response) {
-                    throw new Error(`LG name ${lgName} undefined`)
+                if (response) {
+                    activity.text = (response.suggestions.length > 0) ? JSON.stringify(response) : response.text
                 }
-
-                activity.text = (response.suggestions.length > 0) ? JSON.stringify(response) : response.text
+                else {
+                    activity.text = `LG reference "${lgName}" not found`
+                }
             }
         }
     }

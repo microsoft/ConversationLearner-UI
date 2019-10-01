@@ -9,7 +9,7 @@ import { autobind } from 'core-decorators'
 import { connect } from 'react-redux'
 import { FM } from '../../react-intl-messages'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import './TranscriptLoader.css'   // LARS separate css
+import './TranscriptTestPicker.css'
 
 interface ComponentState {
     sourceName: string | undefined

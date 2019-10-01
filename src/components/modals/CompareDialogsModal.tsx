@@ -152,7 +152,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                     const curTranscript = curItem.transcript
                     // If I have a transcript for the given conversationId, generate actitityMap
                     if (curTranscript) {
-                        let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(curTranscript, this.props.lgMap, this.props.entities, this.props.actions, this.props.app)
+                        let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(curTranscript, null, this.props.entities, this.props.actions, this.props.app)
                         trainDialog.definitions = {
                             actions: this.props.actions,
                             entities: this.props.entities,
@@ -332,7 +332,6 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: CLM.AppBase
-    lgMap: Map<string, CLM.LGItem> | null
     validationSet: Test.ValidationSet
     conversationIds: string[]
     conversationPivot?: string

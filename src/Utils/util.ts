@@ -165,7 +165,7 @@ function normalizeActionAndStringify(newAction: CLM.ActionBase) {
 }
 
 export function deepCopy<T>(obj: T): T {
-    let copy: any;
+    let copy: any
 
     // Simple types, null or undefined
     if (obj === null || typeof obj !== "object") {
@@ -176,25 +176,30 @@ export function deepCopy<T>(obj: T): T {
     if (obj instanceof Date) {
         copy = new Date();
         copy.setTime(obj.getTime());
-        return copy as T;
+        return copy as T
+    }
+
+    // Map
+    if (obj instanceof Map) {
+        return new Map(obj) as unknown as T
     }
 
     // Array
     if (obj instanceof Array) {
-        copy = [];
+        copy = []
         obj.forEach((item, index) => copy[index] = deepCopy(obj[index]))
-        return copy as T;
+        return copy as T
     }
 
     // Handle Object
     if (obj instanceof Object) {
-        copy = {};
+        copy = {}
         Object.keys(obj).forEach(attr => {
             if ((obj as Object).hasOwnProperty(attr)) {
                 copy[attr] = deepCopy(obj[attr])
             }
         })
-        return copy as T;
+        return copy as T
     }
 
     throw new Error("Unknown Type");

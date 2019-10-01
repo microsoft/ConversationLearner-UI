@@ -5,6 +5,7 @@
 import * as Util from '../Utils/util'
 import * as BB from 'botbuilder'
 import * as OBIUtils from '../Utils/obiUtils'
+import * as CLM from '@conversationlearner/models'
 
 export enum ComparisonResultType {
     ALL = 'ALL',
@@ -18,6 +19,9 @@ export enum ComparisonResultType {
 export interface ValidationItem {
     sourceName: string
     conversationId: string
+    // Raw transcript before LG substitution
+    rawTranscript?: BB.Activity[]
+    // Transcript after LG substitution
     transcript?: BB.Activity[]
     ranking?: number
     logDialogId: string | null
@@ -49,11 +53,42 @@ export class ValidationSet {
     items: ValidationItem[]
     sourceNames: string[]
     ratingPairs: RatingPair[]
+    lgMap: Map<string, CLM.LGItem> 
     private comparisons: SourceComparison[]
     
     static Create(source?: Partial<ValidationSet>): ValidationSet {
         let init = Util.deepCopy(source)
         return new ValidationSet(init)
+    }
+
+    static Deserialize(fileText: string): ValidationSet {
+
+        const set = JSON.parse(fileText, Util.mapReviver)
+        const validationSet = this.Create(set)
+
+        if (validationSet.items.length === 0) {
+            throw new Error("No test results found in file")
+        }
+        /* Allow for now
+        if (validationSet.appId !== this.props.app.appId) {
+            throw new Error("Loaded results are from a different Model")
+        }*/
+
+        // Rehydrate transcripts
+        validationSet.generateFullTranscripts()
+
+        return validationSet
+    }
+
+    // Create blob for saving
+    serialize(): Blob {
+        // Make a copy and remove extraneous fields
+        const saveData = Util.deepCopy(this)
+        for (const item of saveData.items) {
+            // Only save raw transcript
+            delete item.transcript
+        }
+        return new Blob([JSON.stringify(saveData, Util.mapReplacer)], { type: "text/plain;charset=utf-8" })
     }
 
     // Returns number of unique conversationIds included in set
@@ -83,10 +118,10 @@ export class ValidationSet {
                 && conversationId === i.conversationId)
     }
 
-    getItems(sourceName: string, conversationIds: string[]): ValidationItem[] {
+    getItems(sourceName: string, conversationIds?: string[]): ValidationItem[] {
         return this.items
             .filter(i => i.sourceName === sourceName
-                && conversationIds.includes(i.conversationId))
+                && (!conversationIds || conversationIds.includes(i.conversationId)))
     }
 
     getAllConversationIds(): string[] {
@@ -103,19 +138,36 @@ export class ValidationSet {
             .map(c => c.conversationId)
     }
 
+    async addLGFiles(lgFiles: File[]): Promise<void> {
+        this.lgMap = await OBIUtils.lgMapFromLGFiles(lgFiles, this.lgMap)
+
+        // Re-generate transcript files
+        this.generateFullTranscripts()
+        // LARS test send bad file
+    }
+
     async addTranscriptFiles(transcriptFiles: File[]): Promise<void> {
         for (const file of transcriptFiles) {
             let fileContent = await Util.readFileAsync(file)
             try {
-                const transcript: BB.Activity[] = JSON.parse(fileContent)
-                const sourceName = this.sourceName(transcript)
-                const conversationId = this.conversationId(transcript)
+
+                // Store both the raw and substituted transcript
+                // Raw one is used for save / log
+                const rawTranscript: BB.Activity[] = JSON.parse(fileContent)
+                const transcript = Util.deepCopy(rawTranscript)
+                if (this.lgMap) {
+                    OBIUtils.substituteLG(transcript, this.lgMap)
+                }
+
+                const sourceName = this.sourceName(rawTranscript)
+                const conversationId = this.conversationId(rawTranscript)
 
                 const item: ValidationItem = { 
                     sourceName: sourceName,
                     conversationId,
                     logDialogId: null, 
                     ranking: undefined,
+                    rawTranscript,
                     transcript
                 }
 
@@ -439,6 +491,16 @@ export class ValidationSet {
         return transcript[0].channelId
     }
 
+    // Re-generate transcript files from rawTranscripts and lgMap
+    private generateFullTranscripts(): void {
+        for (const item of this.items) {
+            item.transcript = Util.deepCopy(item.rawTranscript)
+            if (item.transcript && this.lgMap) {
+                OBIUtils.substituteLG(item.transcript, this.lgMap)
+            }
+        }
+    }
+
     private constructor(init?: Partial<ValidationSet>) {
         Object.assign(this, init)
         if (!this.sourceNames) {
@@ -452,6 +514,9 @@ export class ValidationSet {
         }
         if (!this.ratingPairs) {
             this.ratingPairs = []
+        }
+        if (!this.lgMap) {
+            this.lgMap = new Map<string, CLM.LGItem>()
         }
     }
 }
