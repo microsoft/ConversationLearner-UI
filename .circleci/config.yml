@@ -1,4 +1,54 @@
 version: 2.1
+
+commands:
+  run-bot-and-ui:
+    description: "Runs the sample bot and the UI to allow E2E test to be run."
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
+            - v1-deps-{{ .Branch }}
+            - v1-deps
+
+      - run: node --version
+      - run: npm --version
+      - run: npm ci
+
+      - save_cache:
+          key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - ~/.npm
+            - ~/.cache
+
+      # Randomly pick 1 out of 5 LUIS Authoring Keys and set the BASH_ENV with it.
+      - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
+
+      # Clone the Samples BOT
+      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
+
+      # Install and build sample Bot application
+      - run: cd ../cl-samples && npm ci
+      - run: cd ../cl-samples && npm run build
+
+      # Run sample
+      - run:
+          command: cd ../cl-samples && npm run test-apicallbacks
+          background: true
+
+      # Run UI
+      - run:
+          command: npm start
+          background: true
+
+      # Ensure bot and ui are running
+      # TODO: Find out why this fails.
+      # For some reason this times out as failure even though the bot is running and request should succeed
+      # - run: npx wait-on -- http://localhost:3978
+      - run: npx wait-on -- http://localhost:3000
+
 jobs:
   build:
     docker:
@@ -37,50 +87,7 @@ jobs:
           ipc: host ## https://github.com/cypress-io/cypress/issues/350
     parallelism: 1
     steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
-            - v1-deps-{{ .Branch }}
-            - v1-deps
-
-      - run: node --version
-      - run: npm --version
-      - run: npm ci
-
-      - save_cache:
-          key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
-          paths:
-            - ~/.npm
-            - ~/.cache
-
-      # Randomly pick 1 out of 5 LUIS Authoring Keys and set the BASH_ENV with it.
-      - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
-
-      # Clone the Samples BOT
-      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
-
-      # Install and build sample Bot application
-      - run: cd ../cl-samples && npm ci
-      - run: cd ../cl-samples && npm run build
-
-      # Run sample
-      - run:
-          command: cd ../cl-samples && npm run test-apicallbacks
-          background: true
-
-      # Run UI
-      - run:
-          command: npm start
-          background: true
-
-      # Ensure bot and ui are running
-      # TODO: Find out why this fails.
-      # For some reason this times out as failure even though the bot is running and request should succeed
-      # - run: npx wait-on -- http://localhost:3978
-      - run: npx wait-on -- http://localhost:3000
+      - run-bot-and-ui
 
       # Run UI e2e tests
       # Need to add in --parallel once we have a license for it from Cypress
@@ -107,50 +114,7 @@ jobs:
           ipc: host ## https://github.com/cypress-io/cypress/issues/350
     parallelism: 1
     steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
-            - v1-deps-{{ .Branch }}
-            - v1-deps
-
-      - run: node --version
-      - run: npm --version
-      - run: npm ci
-
-      - save_cache:
-          key: v1-deps-{{ .Branch }}-{{ checksum "package.json" }}
-          paths:
-            - ~/.npm
-            - ~/.cache
-
-      # Randomly pick 1 out of 5 LUIS Authoring Keys and set the BASH_ENV with it.
-      - run: node .circleci/SetLuisAuthoringKey.js >> $BASH_ENV
-
-      # Clone the Samples BOT
-      - run: git clone https://github.com/Microsoft/ConversationLearner-Samples -b develop ../cl-samples
-
-      # Install and build sample Bot application
-      - run: cd ../cl-samples && npm ci
-      - run: cd ../cl-samples && npm run build
-
-      # Run sample
-      - run:
-          command: cd ../cl-samples && npm run test-apicallbacks
-          background: true
-
-      # Run UI
-      - run:
-          command: npm start
-          background: true
-
-      # Ensure bot and ui are running
-      # TODO: Find out why this fails.
-      # For some reason this times out as failure even though the bot is running and request should succeed
-      # - run: npx wait-on -- http://localhost:3978
-      - run: npx wait-on -- http://localhost:3000
+      - run-bot-and-ui
 
       # Run UI e2e tests
       # Need to add in --parallel once we have a license for it from Cypress
