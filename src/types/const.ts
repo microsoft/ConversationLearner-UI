@@ -60,3 +60,5 @@ export enum FeatureStrings {
     CCI = "CCI",
     DISPATCHER = "DISPATCHER",
 }
+
+export const fromLogTag = 'from-log'

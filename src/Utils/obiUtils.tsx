@@ -64,9 +64,9 @@ export async function getLogDialogActivities(
     // Convert to TrainDialog
     const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, actions, entities)
 
-    // Return history LARS rename hisotyr vars
-    const teachWithHistory = await fetchActivitiesAsync(appId, trainDialog, user.name, user.id, false)
-    const activites = teachWithHistory.activities
+    // Return activities
+    const teachWithActivities = await fetchActivitiesAsync(appId, trainDialog, user.name, user.id, false)
+    const activites = teachWithActivities.activities
     if (conversationId || channelId) {
         addIds(activites, conversationId, channelId)
     }
