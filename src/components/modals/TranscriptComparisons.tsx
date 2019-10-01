@@ -11,7 +11,6 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { State } from '../../types'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { FM } from '../../react-intl-messages'
 import { autobind } from 'core-decorators'
 import '../../routes/Apps/App/Testing.css'
 import './TranscriptRatings.css'
@@ -169,76 +168,56 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
                         <div className="cl-testing-result cl-testing-source-title">
                             {rr.sourceName}
                         </div>
-                        <div className="cl-testing-result">
+                        <div 
+                            className="cl-testing-result"
+                            onClick={() => this.props.onView(Test.ComparisonResultType.REPRODUCED, this.state.comparePivot, rr.sourceName)}
+                            role="button"
+                        >
                             <span className="cl-testing-result-item cl-testing-result-value">
                                 {rr.reproduced.length}
                             </span>
                             <span className="cl-testing-result-item cl-testing-result-percent">
                                 {Util.percentOf(rr.reproduced.length, numConversations)}
                             </span>
-                            <div className="cl-buttons-row cl-testing-result-buttons">
-                                <OF.DefaultButton
-                                    disabled={rr.reproduced.length === 0}
-                                    onClick={() => this.props.onView(Test.ComparisonResultType.REPRODUCED, this.state.comparePivot, rr.sourceName)}
-                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                    iconProps={{ iconName: 'DiffSideBySide' }}
-                                />
-                            </div>
                         </div>
-                        <div className="cl-testing-result">
+                        <div 
+                            className="cl-testing-result"
+                            onClick={() => this.props.onView(Test.ComparisonResultType.CHANGED, this.state.comparePivot, rr.sourceName)}
+                            role="button"
+                        >
                             <span className="cl-testing-result-item cl-testing-result-value">
                                 {rr.changed.length}
                             </span>
                             <span className="cl-testing-result-item cl-testing-result-percent">
                                 {Util.percentOf(rr.changed.length, numConversations)}
                             </span>
-                            <div className="cl-buttons-row cl-testing-result-buttons">
-                                <OF.DefaultButton
-                                    disabled={rr.changed.length === 0}
-                                    onClick={() => this.props.onView(Test.ComparisonResultType.CHANGED, this.state.comparePivot, rr.sourceName)}
-                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                    text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                    iconProps={{ iconName: 'DiffSideBySide' }}
-                                />
-                            </div>
                         </div>
                         {hasNoTranscript &&
-                            <div className="cl-testing-result">
+                            <div 
+                                className="cl-testing-result"
+                                onClick={() => this.props.onView(Test.ComparisonResultType.NO_TRANSCRIPT, this.state.comparePivot, rr.sourceName)}
+                                role="button"
+                            >
                                 <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-value">
                                     {rr.no_transcript.length}
                                 </span>
                                 <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-percent">
                                     {Util.percentOf(rr.no_transcript.length, numConversations)}
                                 </span>
-                                <div className="cl-buttons-row cl-testing-result-buttons">
-                                    <OF.DefaultButton
-                                        disabled={rr.no_transcript.length === 0}
-                                        onClick={() => this.props.onView(Test.ComparisonResultType.NO_TRANSCRIPT, this.state.comparePivot, rr.sourceName)}
-                                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                        iconProps={{ iconName: 'DiffSideBySide' }}
-                                    />
-                                </div>
                             </div>
                         }
                         {hasInvalidTranscript &&
-                            <div className="cl-testing-result">
+                            <div 
+                                className="cl-testing-result"
+                                onClick={() => this.props.onView(Test.ComparisonResultType.INVALID_TRANSCRIPT, this.state.comparePivot, rr.sourceName)}
+                                role="button"            
+                            >
                                 <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-value">
                                     {rr.invalid_transcript.length}
                                 </span>
                                 <span className="cl-testing-result-item cl-testing-result-item--mismatch cl-testing-result-percent">
                                     {Util.percentOf(rr.invalid_transcript.length, numConversations)}
                                 </span>
-                                <div className="cl-buttons-row cl-testing-result-buttons">
-                                    <OF.DefaultButton
-                                        disabled={rr.invalid_transcript.length === 0}
-                                        onClick={() => this.props.onView(Test.ComparisonResultType.INVALID_TRANSCRIPT, this.state.comparePivot, rr.sourceName)}
-                                        ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                        text={Util.formatMessageId(this.props.intl, FM.BUTTON_COMPARE)}
-                                        iconProps={{ iconName: 'DiffSideBySide' }}
-                                    />
-                                </div>
                             </div>
                         }
                     </div>

@@ -366,7 +366,9 @@ class Testing extends React.Component<Props, ComponentState> {
 
     @autobind
     onViewConversationIds(viewConversationIds: string[]) {
-        this.setState({ viewConversationIds })
+        if (viewConversationIds.length > 0) {
+            this.setState({ viewConversationIds })
+        }
     }
 
     @autobind
