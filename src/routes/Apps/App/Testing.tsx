@@ -38,6 +38,7 @@ interface ComponentState {
     validationSet: Test.ValidationSet | undefined
     isTranscriptLoaderOpen: boolean
     viewConversationIds: string[] | undefined
+    viewConversationPivot: string | undefined
     isRateDialogsOpen: boolean
     isTestPickerOpen: boolean
     edited: boolean
@@ -98,6 +99,7 @@ class Testing extends React.Component<Props, ComponentState> {
             validationSet: undefined,
             isTranscriptLoaderOpen: false,
             viewConversationIds: undefined,
+            viewConversationPivot: undefined,
             isRateDialogsOpen: false,
             isTestPickerOpen: false,
             edited: false
@@ -283,7 +285,6 @@ class Testing extends React.Component<Props, ComponentState> {
                 throw new Error("No log dialog!") //LARS handle gracefully w/o killing test
             }
 
-            // LARS: make return a plain BB.Activity
             const resultTranscript = await OBIUtils.getLogDialogActivities(
                 this.props.app.appId, 
                 logDialogId,
@@ -322,7 +323,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
         // If there's only one set of transcripts test on it
         if (this.state.validationSet.sourceNames.length === 1) {
-            this.startTest(this.state.validationSet.sourceNames[0])
+            await this.startTest(this.state.validationSet.sourceNames[0])
         }
         // Otherwise user must pick,
         else {
@@ -336,7 +337,7 @@ class Testing extends React.Component<Props, ComponentState> {
         if (this.state.validationSet) {
             const testTranscripts = this.state.validationSet.getTranscripts(sourceName)
             await Util.setStateAsync(this, { testTranscripts })
-            this.testNextTranscript()
+            await this.testNextTranscript()
         }
     }
 
@@ -356,34 +357,34 @@ class Testing extends React.Component<Props, ComponentState> {
             ? this.state.validationSet.getComparisonConversationIds(compareSource, comparePivot, compareType)
             : this.state.validationSet.getAllConversationIds()
 
-            this.onViewConversationIds(viewConversationIds)
+            this.onViewConversationIds(viewConversationIds, comparePivot)
         }
     }
 
     @autobind
-    onViewConversationIds(viewConversationIds: string[]) {
+    onViewConversationIds(viewConversationIds: string[], viewConversationPivot?: string) {
         if (viewConversationIds.length > 0) {
-            this.setState({ viewConversationIds })
+            this.setState({ viewConversationIds, viewConversationPivot })
         }
     }
 
     @autobind
     onCloseView() {
-        this.setState({ viewConversationIds: undefined })
+        this.setState({ viewConversationIds: undefined, viewConversationPivot: undefined })
     }
 
     @autobind
     onOpenRate() {
         const validationSet = Test.ValidationSet.Create(this.state.validationSet)
         validationSet.initRating()
-        Util.setStateAsync(this, {validationSet, isRateDialogsOpen: true})
+        this.setState({validationSet, isRateDialogsOpen: true})
     }
 
     @autobind
     async onRate(ratingPair: Test.RatingPair) {
         const validationSet = Test.ValidationSet.Create(this.state.validationSet)
         validationSet.addRatingResult(ratingPair)
-        Util.setStateAsync(this, {validationSet})
+        await Util.setStateAsync(this, {validationSet})
     }
 
     @autobind
@@ -415,9 +416,9 @@ class Testing extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onPickTestSubmit(sourceName: string) {
+    async onPickTestSubmit(sourceName: string) {
         this.setState({ isTestPickerOpen: false })
-        this.startTest(sourceName)
+        await this.startTest(sourceName)
     }
 
     @autobind
@@ -536,20 +537,20 @@ class Testing extends React.Component<Props, ComponentState> {
                         <OF.DefaultButton
                             disabled={saveDisabled}
                             onClick={this.onSave}
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS)}
-                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS)}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_SAVE_RESULTS)}
+                            text={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_SAVE_RESULTS)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                         />
                         <OF.DefaultButton
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)}
-                            text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_LOAD_RESULTS)}
+                            text={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_LOAD_RESULTS)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                             onClick={() => this.resultfileInput.click()}
                         />
                         <OF.DefaultButton
                             disabled={!this.state.validationSet || this.state.validationSet.sourceName.length === 0}
-                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS)}
-                            text={"Clear Results"/*LARS*/}
+                            ariaDescription={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_CLEAR_RESULTS)}
+                            text={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_CLEAR_RESULTS)}
                             iconProps={{ iconName: 'DownloadDocument' }}
                             onClick={this.onClear}
                         />
@@ -592,7 +593,7 @@ class Testing extends React.Component<Props, ComponentState> {
                                 <OF.DefaultButton
                                     disabled={!this.state.validationSet}
                                     onClick={() => this.onView(Test.ComparisonResultType.ALL)}
-                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS)}
+                                    ariaDescription={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_SAVE_RESULTS)}
                                     text="View Transcripts" // LARS
                                     iconProps={{ iconName: 'DownloadDocument' }}
                                 />
@@ -630,6 +631,7 @@ class Testing extends React.Component<Props, ComponentState> {
                         lgMap={this.state.lgMap}
                         validationSet={this.state.validationSet}
                         conversationIds={this.state.viewConversationIds}
+                        conversationPivot={this.state.viewConversationPivot}
                         onClose={this.onCloseView}
                     />
                 }

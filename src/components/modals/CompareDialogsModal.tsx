@@ -30,6 +30,7 @@ interface ComponentState {
     conversationIndex: number
     webchatKey: number
     activityMap: Map<string, BB.Activity[]>
+    rankMap: Map<string, number | undefined>
     sourceItemMap: Map<string, Test.ValidationItem[]> | undefined
     selectedActivityIndex: number | null
     scrollPosition: number | null
@@ -37,7 +38,7 @@ interface ComponentState {
 
 interface RenderData {
     activities: BB.Activity[] | undefined,
-    rating: Test.ValidationRatingType
+    ranking: number | undefined
     sourceName: string
 }
 
@@ -45,6 +46,7 @@ const initialState: ComponentState = {
     webchatKey: 0,
     conversationIndex: 0,
     activityMap: new Map<string, BB.Activity[]>(),
+    rankMap: new Map<string, number | undefined>(),
     sourceItemMap: undefined,
     selectedActivityIndex: null,
     scrollPosition: 0
@@ -55,7 +57,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
 
     async componentDidMount() {
 
-        // Gather items for each source
+        // Gather source items for for the requested conversations
         const sourceItemMap = new Map<string, Test.ValidationItem[]>()
         for (const sourceName of this.props.validationSet.sourceNames) {
             const sourceItems = this.props.validationSet.getItems(sourceName, this.props.conversationIds)
@@ -128,7 +130,17 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         }
 
         const activityMap = new Map<string, BB.Activity[]>()
+        const rankMap = new Map<string, number | undefined>()
         const conversationId = this.props.conversationIds[this.state.conversationIndex]
+
+        // Baseline rank is determined by pivot item (if provided)
+        let baseRank = 0
+        if (this.props.conversationPivot) {
+            const pivotItem = this.props.validationSet.getItem(this.props.conversationPivot, conversationId)
+            if (pivotItem && pivotItem.ranking) {
+                baseRank = pivotItem.ranking
+            }
+        }
 
         for (let sourceName of this.props.validationSet.sourceNames) {
 
@@ -149,12 +161,15 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                         const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
                         activityMap.set(sourceName, teachWithActivities.activities)
                     }
+                    // Computer rank with pivot offset
+                    rankMap.set(sourceName, curItem.ranking !== undefined ? curItem.ranking - baseRank : undefined)
                 }
             }
         }
 
         this.setState({
             activityMap,
+            rankMap,
             webchatKey: this.state.webchatKey + 1,
             scrollPosition: 0
         })
@@ -196,12 +211,12 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
 
         const renderData: RenderData[] = []
         this.props.validationSet.sourceNames.map(sourceName => {
-            //LARS get rating let results: Test.ValidationItem | undefined = this.props.validationSet.items[this.state.conversationIndex].resultsMap.get(sourceName)
             const activities = this.state.activityMap.get(sourceName)
+            const ranking = this.state.rankMap.get(sourceName)
             renderData.push({
                 activities,
-                rating: Test.ValidationRatingType.UNKNOWN, // LARS results.rating,
-                sourceName: sourceName
+                ranking,
+                sourceName
             })
         })
         return renderData
@@ -232,15 +247,10 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                     >
                                         <div 
                                             className="cl-compare-dialogs-title"
+                                            style={{backgroundColor: `${Util.scaledColor(rd.ranking)}`}}
                                             key={rd.sourceName}
                                         >
                                             {rd.sourceName}
-                                            {rd.rating === Test.ValidationRatingType.WORSE &&
-                                                <OF.Icon iconName='Trophy2' className="cl-compare-dialogs-title-icon-win"/>
-                                            }
-                                            {rd.rating === Test.ValidationRatingType.SAME &&
-                                                <OF.Icon iconName='CalculatorEqualTo' className="cl-compare-dialogs-title-icon-equal"/>
-                                            }
                                             <div className="cl-compare-dialogs-filename">
                                                 {5/*LARS this.props.transcriptValidationResults[this.state.resultIndex].fileName*/}
                                             </div>
@@ -250,9 +260,9 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                                 isOpen={rd.activities !== undefined}
                                                 key={`${rd.sourceName}-${this.state.webchatKey}`}
                                                 app={this.props.app}
-                                                history={rd.activities as any /*LARS history*/ || []}
+                                                history={rd.activities as any || []}
                                                 onPostActivity={() => {}}
-                                                onSelectActivity={(activity) => this.onSelectActivity(rd.activities as any /*lars*/, activity)}
+                                                onSelectActivity={(activity) => this.onSelectActivity(rd.activities as any, activity)}
                                                 onScrollChange={this.onScrollChange}
                                                 hideInput={true}
                                                 focusInput={false}
@@ -325,6 +335,7 @@ export interface ReceivedProps {
     lgMap: Map<string, CLM.LGItem> | null
     validationSet: Test.ValidationSet
     conversationIds: string[]
+    conversationPivot?: string
     onClose: () => void
 }
 

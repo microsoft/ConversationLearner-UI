@@ -327,6 +327,30 @@ export function isFeatureEnabled(featureString: string | undefined, feature: Con
     return false
 }
 
+// Generate colors that scale with number from red to green
+export function scaledColor(rating?: number): string {
+        if (rating === undefined) {
+            return "#ffffff"
+        }
+        if (rating === 0) {
+            return '#ffec8c'
+        }
+        if (rating > 0) {
+            const scale = Math.pow(0.9, rating - 1)
+            const r = scale * 224
+            const g = 255
+            const b = scale * 224
+            return rgbToHex(r, g, b)
+        }
+        else {
+            const scale = Math.pow(0.8, (-rating) - 1)
+            const r = 255
+            const g = scale * 224
+            const b = scale * 224
+            return rgbToHex(r, g, b)
+        }
+    }
+
 // Can by JSON.stringify to serialize Map type objects
 // i.e. JSON.stringify({object with map}, mapReplacer)
 export function mapReplacer(key: any, value: any) {

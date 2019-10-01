@@ -6,6 +6,7 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as Test from '../../types/TestObjects'
+import { FM } from '../../react-intl-messages'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -52,7 +53,7 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onCompare(comparePivot: string | undefined): Promise<void> {
+    onCompare(comparePivot: string | undefined): void {
         this.setState({comparePivot})
         this.props.onCompare(comparePivot)
     }
@@ -114,8 +115,8 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
             <div className={OF.FontClassNames.mediumPlus}>
                 <OF.Dropdown
                     disabled={!this.props.validationSet || this.props.validationSet.sourceNames.length < 2}
-                    ariaLabel={"Compare Against"}//LARS
-                    label={"Compare Against"}//LARS
+                    ariaLabel={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}
+                    label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}
                     selectedKey={this.props.validationSet && this.state.comparePivot 
                         ? this.props.validationSet.sourceNames.indexOf(this.state.comparePivot)
                         : -1

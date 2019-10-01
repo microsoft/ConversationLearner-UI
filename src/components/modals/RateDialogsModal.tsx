@@ -371,7 +371,7 @@ const mapStateToProps = (state: State) => {
 export interface ReceivedProps {
     app: CLM.AppBase
     validationSet: Test.ValidationSet
-    onRate: (ratingPair: Test.RatingPair) => Promise<void>
+    onRate: (ratingPair: Test.RatingPair) => void
     onClose: () => void
 }
 

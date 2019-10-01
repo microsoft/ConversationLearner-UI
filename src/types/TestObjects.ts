@@ -6,16 +6,6 @@ import * as Util from '../Utils/util'
 import * as BB from 'botbuilder'
 import * as OBIUtils from '../Utils/obiUtils'
 
-// LARS - goes away
-export enum ValidationRatingType {
-    BEST = 'BEST',
-    BETTER = 'BETTER',
-    SAME = 'SAME',
-    WORSE = 'WORSE',
-    WORST = 'WORST',
-    UNKNOWN = 'UNKNOWN'
-}
-
 export enum ComparisonResultType {
     ALL = 'ALL',
     REPRODUCED = 'REPRODUCED',
@@ -356,7 +346,7 @@ export class ValidationSet {
             const ratingParis = this.ratingPairs.filter(c => c.conversationId === item.conversationId)
 
             // Clear any old ranking
-            item.ranking = undefined
+            item.ranking = 0
             
             // Give a point for each time it was voted as better
             for (const ratingPair of ratingParis) {
@@ -366,8 +356,8 @@ export class ValidationSet {
                 else if (ratingPair.result === RatingResult.SECOND && ratingPair.sourceNames[1] === item.sourceName) {
                     item.ranking = item.ranking ? item.ranking + 1 : 1
                 }
-                else if (ratingPair.result === RatingResult.SAME) {
-                    item.ranking = item.ranking || 0
+                else if (ratingPair.result === RatingResult.NO_TRANSCRIPT || ratingPair.result === RatingResult.UNKNOWN) {
+                    item.ranking = undefined
                 }
             }
         }

@@ -18,7 +18,6 @@ import './TranscriptRatings.css'
 
 interface ComponentState {
     ratePivot: string | undefined
-    relativeRankings: RelativeRanking[] // LARS goes away
     sourceRankMap: Map<string, RankCount[]>
     unRatableMap: Map<string, number>    // Number conversations missing transcript for comparison
     notRatedMap: Map<string, number>    // Number conversations that haven't been rated
@@ -26,12 +25,6 @@ interface ComponentState {
     minRank: number
     numRanks: number
     numConversations: number
-}
-
-interface RelativeRanking {
-    conversationId: string,
-    sourceName: string,
-    rank: number
 }
 
 interface RankCount {
@@ -47,7 +40,6 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
         super(props)
         this.state = {
             ratePivot: undefined,
-            relativeRankings: [],
             sourceRankMap: new Map<string, RankCount[]>(),
             unRatableMap: new Map<string, number>(),
             notRatedMap: new Map<string, number>(),
@@ -67,17 +59,16 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    async onChangeRateSource(event: React.FormEvent<HTMLDivElement>, item: OF.IDropdownOption) {
+    onChangeRateSource(event: React.FormEvent<HTMLDivElement>, item: OF.IDropdownOption) {
         if (item.text) {
             this.onUpdatePivot(item.text)
         }
     }
 
     @autobind
-    async onUpdatePivot(ratePivot: string | undefined): Promise<void> {
+    onUpdatePivot(ratePivot: string | undefined): void {
         if (!ratePivot || !this.props.validationSet || this.props.validationSet.sourceNames.length < 2) {
             this.setState({
-                relativeRankings: [],
                 sourceRankMap: new Map<string, RankCount[]>(),
                 unRatableMap: new Map<string, number>(),
                 notRatedMap: new Map<string, number>(),
@@ -113,7 +104,6 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
         }
 
         // Calculate rankings relative to pivot
-        const relativeRankings: RelativeRanking[] = []
         const conversationIds = this.props.validationSet.getAllConversationIds()
         for (const conversationId of conversationIds) {
             // Get ranking of pivot item
@@ -128,8 +118,6 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                             if (sourceItem && sourceItem.ranking !== undefined) {
                                 // Adjust rank relative to pivot
                                 const rank = sourceItem.ranking - baseItem.ranking
-                                relativeRankings.push({conversationId, sourceName, rank })
-
                                 const rankCount = sourceRankMap.get(sourceName)!.find(r => r.rank === rank)!
                                 rankCount.conversationIds.push(conversationId)
                                 rankCount.count = rankCount.count + 1
@@ -144,7 +132,6 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
 
         this.setState({
             ratePivot, 
-            relativeRankings, 
             sourceRankMap, 
             unRatableMap,
             notRatedMap,
@@ -155,35 +142,14 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
         })
     }
 
-    // Generate colors that scale with rating
-    getRatingColor(rating: number): string {
-        if (rating === 0) {
-            return '#ffec8c'
-        }
-        if (rating > 0) {
-            const scale = Math.pow(0.9, rating - 1)
-            const r = scale * 224
-            const g = 255
-            const b = scale * 224
-            return Util.rgbToHex(r, g, b)
-        }
-        else {
-            const scale = Math.pow(0.8, (-rating) - 1)
-            const r = 255
-            const g = scale * 224
-            const b = scale * 224
-            return Util.rgbToHex(r, g, b)
-        }
-    }
-
     render() {
         return (
             <div>
                 <div className={OF.FontClassNames.mediumPlus}>
                     <OF.Dropdown
                         disabled={!this.props.validationSet || this.props.validationSet.sourceNames.length < 2}
-                        ariaLabel={"Relative To:"}//LARS
-                        label={"Relative To:"}//LARS
+                        ariaLabel={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE)}
+                        label={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE)}
                         selectedKey={this.props.validationSet && this.state.ratePivot 
                             ? this.props.validationSet.sourceNames.indexOf(this.state.ratePivot)
                             : -1
@@ -263,9 +229,9 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                                         return (
                                             <div  
                                                 className="cl-transcriptrating-result"
-                                                style={{backgroundColor: `${this.getRatingColor(rc.rank)}`}}
+                                                style={{backgroundColor: `${Util.scaledColor(rc.rank)}`}}
                                                 key={`${rc.rank}-${sourceName}`}
-                                                onClick={() => this.props.onView(rc.conversationIds)}
+                                                onClick={() => this.props.onView(rc.conversationIds, this.state.ratePivot)}
                                                 role="button"
                                             >
                                                 <span className="cl-testing-result-item cl-testing-result-value">
@@ -321,7 +287,7 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     validationSet: Test.ValidationSet | undefined
-    onView: (conversationIds: string[]) => void
+    onView: (conversationIds: string[], conversationPivot?: string) => void
     onRate: () => void
 }
 

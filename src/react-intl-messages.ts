@@ -473,6 +473,9 @@ export enum FM {
     TESTING_NAME_LABEL = 'Testing.testname.label',
     TESTING_TABLE_SOURCE_LABEL = 'Testing.tablesource.lable',
     TESTING_TABLE_COUNT_LABEL = 'Testing.tablecount.label',
+    TESTING_BUTTON_LOAD_RESULTS = 'Testing.button.LoadResults',
+    TESTING_BUTTON_SAVE_RESULTS = 'Testing.button.SaveResults',
+    TESTING_BUTTON_CLEAR_RESULTS = 'Testing.button.ClearResults',
 
     // TextVariation
     TEXTVARIATION_PLACEHOLDER = 'TextVariationCreator.placeholder',
@@ -589,6 +592,9 @@ export enum FM {
     TRAINDIALOGS_LISTVIEW_BUTTON = 'TrainDialogs.ListView.Button',
     TRAINDIALOGS_TREEVIEW_BUTTON = 'TrainDialogs.TreeView.Button',
 
+    // TrainscriptComparisions
+    TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE = 'TranscriptComparisons.dropdown.title',
+ 
     // Trainscript Import Cancel
     TRANSCRIPT_IMPORT_CANCEL_TITLE = 'TranscriptImportCancel.title',
     TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL = 'TranscriptImportCancel.Checkbox.label',
@@ -606,6 +612,9 @@ export enum FM {
     TRANSCRIPT_TESTPICKER_TITLE = 'TranscriptTestPicker.title',
     TRANSCRIPT_TESTPICKER_SOURCE = 'TranscriptTestPicker.source',
 
+    // TrainscriptRatings
+    TRANSCRIPTRATINGS_DROPDOWN_TITLE = 'TranscriptRatings.dropdown.label',
+
     // Transcript Validator
     TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
     TRANSCRIPT_VALIDATOR_SUBTITLE = 'TranscriptValidator.subtitle',
@@ -613,9 +622,7 @@ export enum FM {
     TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER = 'TranscriptValidator.FileSavePlaceholder',
     TRANSCRIPT_VALIDATOR_BUTTON_ADD_TRANSCRIPTS = 'TranscriptValidator.button.AddTranscripts',
     TRANSCRIPT_VALIDATOR_BUTTON_TEST_MODEL = 'TranscriptValidator.button.NewTest',
-    TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS = 'TranscriptValidator.button.LoadResults',
-    TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS = 'TranscriptValidator.button.SaveResults',
-
+ 
     // TreeView
     TREEVIEW_TOGGLE_FULLSCREEN = 'TreeView.ToggleFullScreen',
 
@@ -1045,14 +1052,6 @@ export default {
         [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
         [FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME]: 'Created',
 
-        // Testing
-        [FM.TESTING_NAME_LABEL]: 'Test Name',
-        [FM.TESTING_TABLE_SOURCE_LABEL]: 'Source',
-        [FM.TESTING_TABLE_COUNT_LABEL]: '# Transcripts',
-
-        // TextVariationCreator
-        [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
-
         // DemoImporter
         [FM.DEMOIMPORT_TITLE]: 'Import Demo Models',
         [FM.DEMOIMPORT_BUTTON_ARIADESCRIPTION]: 'Import Demo Models',
@@ -1238,6 +1237,20 @@ export default {
         [FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION]: 'Set Initial State',
         [FM.TEACHSESSIONMODAL_INITSTATE_TEXT]: 'Set Initial State',
 
+        // Testing
+        [FM.TESTING_NAME_LABEL]: 'Test Name',
+        [FM.TESTING_TABLE_SOURCE_LABEL]: 'Source',
+        [FM.TESTING_TABLE_COUNT_LABEL]: '# Transcripts',
+        [FM.TESTING_BUTTON_LOAD_RESULTS]: 'Load Results',
+        [FM.TESTING_BUTTON_SAVE_RESULTS]: 'Save Results',
+        [FM.TESTING_BUTTON_CLEAR_RESULTS]: 'Clear Results',
+
+        // TextVariationCreator
+        [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
+        
+        // TrainscriptComparisions
+        [FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE]: 'Compare with',
+
         // Transcript Import Cancel
         [FM.TRANSCRIPT_IMPORT_CANCEL_TITLE]: 'Are you sure you want to abandon this import?',
         [FM.TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL]: 'Skip remaining imports',
@@ -1255,6 +1268,9 @@ export default {
         [FM.TRANSCRIPT_TESTPICKER_TITLE]: 'Select Transcripts to Test',
         [FM.TRANSCRIPT_TESTPICKER_SOURCE]: ' Source:',
 
+        // TrainscriptRatings
+        [FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE]: 'Relative to',
+
         // Transcript Validator
         [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Testing',
         [FM.TRANSCRIPT_VALIDATOR_SUBTITLE]: `Compare Model's output to .transcript files`,
@@ -1262,8 +1278,6 @@ export default {
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER]: 'Name',
         [FM.TRANSCRIPT_VALIDATOR_BUTTON_ADD_TRANSCRIPTS]: 'Add Transcripts',
         [FM.TRANSCRIPT_VALIDATOR_BUTTON_TEST_MODEL]: 'Test Model',
-        [FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS]: 'Load Results',
-        [FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS]: 'Save Results',
 
         // UserInput Modal
         [FM.USERINPUT_ADD_TITLE]: 'Add User Input',
