@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -19,7 +19,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { EditDialogType } from '.';
+import { EditDialogType } from '../../types/const'
 import { FM } from '../../react-intl-messages'
 import './RateDialogsModal.css'
 
@@ -51,7 +51,7 @@ const initialState: ComponentState = {
 }
 
 class RateDialogsModal extends React.Component<Props, ComponentState> {
-    
+
     state = initialState
 
     private sameButtonRef = React.createRef<OF.IButton>()
@@ -136,7 +136,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         if (resultIndex === this.state.numberOfNeededRatings) {
             this.saveResults()
         }
-        this.setState({resultIndex})       
+        this.setState({resultIndex})
     }
 
     async onChangedDialog() {
@@ -171,8 +171,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                 entities: this.props.entities,
                 trainDialogs: []
             }
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            activities1 = teachWithHistory.history
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            activities1 = teachWithActivities.activities
         }
 
         if (transcript2) {
@@ -182,10 +182,10 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                 entities: this.props.entities,
                 trainDialogs: []
             }
-            const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-            activities2 = teachWithHistory.history
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            activities2 = teachWithActivities.activities
         }
-        
+
         // Find turn with first inconsistency
         const maxLength = Math.max(activities1.length, activities2.length)
         let stopTurn = -1
@@ -308,7 +308,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                                 className='cl-rate-dialogs-left-button'
                                 iconProps={{ iconName: 'Trophy2'}}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_PREVIOUS)}
-                                text={'Left Better'} 
+                                text={'Left Better'}
                             />
                             <OF.DefaultButton
                                 className='cl-rate-dialogs-same-button'
@@ -323,7 +323,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                                 className='cl-rate-dialogs-right-button'
                                 iconProps={{ iconName: 'Trophy2'}}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_NEXT)}
-                                text={'Right Better'} 
+                                text={'Right Better'}
                             />
                         </div>
                         <div className="cl-rate-dialogs-button-bar">
@@ -354,7 +354,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchLogDialogAsync: actions.log.fetchLogDialogThunkAsync,
-        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
+        fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

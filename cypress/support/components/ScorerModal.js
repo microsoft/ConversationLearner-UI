@@ -6,6 +6,13 @@
 import * as actionTypeSelector from '../../support/components/ActionTypeSelector'
 import * as helpers from '../../support/Helpers'
 
+const SelectorTextResponse = '[data-testid="action-scorer-text-response"]'
+const SelectorApiName = '[data-testid="action-scorer-api-name"]'
+const SelectorApiResponse = '[data-testid="action-scorer-api"]'
+const SelectorCardName = '[data-testid="action-scorer-card-name"]'
+const SelectorCardResponse = '[data-testid="action-scorer-card"]'
+const SelectorEndSessionResponse = '[data-testid="action-scorer-session-response-user"]'
+
 export const stateEnum = { selected: 1, qualified: 2, disqualified: 3 }
 export const entityQualifierStateEnum = { unknown: 'unknown', green: 'Green', greenStrikeout: 'GreenStrikeout', red: 'Red', redStrikeout: 'RedStrikeout' }
 
@@ -14,18 +21,28 @@ export function ClickRefreshScoreButton() { cy.Get('[data-testid="teach-session-
 export function ClickAddActionButton() { cy.Get('[data-testid="action-scorer-add-action-button"]').Click() }
 export function VerifyMissingActionNotice() { cy.Get('.cl-font--warning').ExactMatch('MISSING ACTION') }
 
-export function ClickTextAction(expectedResponse) { ClickActionButon('[data-testid="action-scorer-text-response"]', expectedResponse) }
-export function ClickApiAction(apiName) { ClickActionButon('[data-testid="action-scorer-api-name"]', apiName) }
-export function ClickEndSessionAction(expectedData) { ClickActionButon('[data-testid="action-scorer-session-response-user"]', expectedData) }
+export function ClickTextAction(expectedResponse) { ClickActionButon(SelectorTextResponse, expectedResponse) }
+export function ClickApiAction(apiName) { ClickActionButon(SelectorApiName, apiName) }
+export function ClickEndSessionAction(expectedData) { ClickActionButon(SelectorEndSessionResponse, expectedData) }
 export function ClickSetEntityAction(enumValue) { ClickActionButon('[data-testid="action-scorer-action-set-entity"]', enumValue) }
 
 
-export function VerifyContainsEnabledAction(expectedResponse) { VerifyActionState('[data-testid="action-scorer-text-response"]', expectedResponse, '[data-testid="action-scorer-button-clickable"]', false) }
-export function VerifyContainsDisabledAction(expectedResponse) { VerifyActionState('[data-testid="action-scorer-text-response"]', expectedResponse, '[data-testid="action-scorer-button-no-click"]', true) }
+export function VerifyContainsEnabledAction(expectedResponse) { VerifyActionState(SelectorTextResponse, expectedResponse, '[data-testid="action-scorer-button-clickable"]', false) }
+export function VerifyContainsDisabledAction(expectedResponse) { VerifyActionState(SelectorTextResponse, expectedResponse, '[data-testid="action-scorer-button-no-click"]', true) }
 
-export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-clickable"]', false) }
-export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-no-click"]', true) }
-export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyActionState('[data-testid="action-scorer-session-response-user"]', expectedData, '[data-testid="action-scorer-button-selected"]', false) }
+export function VerifyContainsEnabledEndSessionAction(expectedData) { VerifyActionState(SelectorEndSessionResponse, expectedData, '[data-testid="action-scorer-button-clickable"]', false) }
+export function VerifyContainsDisabledEndSessionAction(expectedData) { VerifyActionState(SelectorEndSessionResponse, expectedData, '[data-testid="action-scorer-button-no-click"]', true) }
+export function VerifyContainsSelectedEndSessionAction(expectedData) { VerifyActionState(SelectorEndSessionResponse, expectedData, '[data-testid="action-scorer-button-selected"]', false) }
+
+export function ClickTextEntityValueNameToggleButon(expectedResponse) { ClickEntityValueNameToggleButon(SelectorTextResponse, expectedResponse) }
+export function ClickApiEntityValueNameToggleButon(apiName) { ClickEntityValueNameToggleButon(SelectorApiName, apiName) }
+export function ClickCardEntityValueNameToggleButon(cardName) { ClickEntityValueNameToggleButon(SelectorCardName, cardName) }
+export function ClickEndSessionEntityValueNameToggleButon(expectedData) { ClickEntityValueNameToggleButon(SelectorEndSessionResponse, expectedData) }
+
+export function VerifyContainsTextAction(expectedResponse) { VerifyActionExists(SelectorTextResponse, expectedResponse) }
+export function VerifyContainsApiAction(apiResponse) { VerifyActionExists(SelectorApiResponse, apiResponse) }
+export function VerifyContainsCardAction(cardResponse) { VerifyActionExists(SelectorCardResponse, cardResponse) }
+export function VerifyContainsEndSessionAction(expectedData) { VerifyActionExists(SelectorEndSessionResponse, expectedData) }
 
 
 // To VALIDATE All of the Data in the Score Actions Grid use this class. 
@@ -65,7 +82,7 @@ export class GeneratedData {
   // In many cases the score deviates significantly and that is not considered an error. But, in some cases, with a well
   // trained model, these values should deviate only slightly, for those pass in acceptableScoreDeviation as the 
   // percentage points that we can allow the score to deviate and still be acceptable.
-  VerifyScoreActionsList(acceptableScoreDeviation = 50) {
+  VerifyScoreActionsList(acceptableScoreDeviation = 70) {
     if (this.generateScoreActionsData) {
       it('GENERATE the Score Actions data', () => {
         if (this.generateScoreActionsData == 'pause') { cy.pause() }
@@ -79,13 +96,13 @@ export class GeneratedData {
     }
   }
 
-  VerifyScoreActionsListUnwrapped(acceptableScoreDeviation = 10) {
+  VerifyScoreActionsListUnwrapped(acceptableScoreDeviation = 70) {
     if (this.generateScoreActionsData) {
       if (this.generateScoreActionsData == 'pause') { cy.pause() }
       else { cy.wait(2000) }
       cy.WaitForStableDOM().then(() => { this.data.push(GenerateScoreActionsDataFromGrid()) })
     } else {
-      cy.WaitForStableDOM().then(() => VerifyScoreActions(this.data[this.index++], acceptableScoreDeviation))
+      cy.WaitForStableDOM().then(() => (this.data[this.index++], acceptableScoreDeviation))
     }
   }
 
@@ -116,6 +133,14 @@ export function FindActionRowElements(selector, expectedData) {
   return elements
 }
 
+export function VerifyActionExists(selector, expectedData) {
+  cy.WaitForStableDOM()
+  cy.Enqueue(() => {
+    const rowElementsOrErrorMessage = FindActionRowElements(selector, expectedData)
+    if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
+  })
+}
+
 export function ClickActionButon(selector, expectedData) {
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
@@ -123,6 +148,16 @@ export function ClickActionButon(selector, expectedData) {
     if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
 
     cy.wrap(rowElementsOrErrorMessage).find('[data-testid="action-scorer-button-clickable"]').Click() 
+  })
+}
+
+export function ClickEntityValueNameToggleButon(selector, expectedData) {
+  cy.WaitForStableDOM()
+  cy.Enqueue(() => {
+    const rowElementsOrErrorMessage = FindActionRowElements(selector, expectedData)
+    if (typeof rowElementsOrErrorMessage == 'string') { throw new Error(rowElementsOrErrorMessage) }
+
+    cy.wrap(rowElementsOrErrorMessage).find('[data-testid="action-scorer-entity-toggle"]').Click() 
   })
 }
 
@@ -162,9 +197,10 @@ export function VerifyNoEnabledSelectActionButtons() {
   })
 }
 
-// In some cases the score deviates significantly and that is not considered an error. For those pass in 
-// acceptableScoreDeviation as the percentage points that we can allow the score to deviate and still be acceptable.
-export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviation = 10) {
+// In many cases the score deviates significantly and that is not considered an error. But for those that should 
+// remain within a defined range, pass in acceptableScoreDeviation as the points that we can allow the score to 
+// deviate and still be acceptable.
+export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviation = 70) {
   const funcName = 'VerifyScoreActions'
   let expectedScoreAction
   let errorMessages = []
@@ -212,7 +248,12 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
         }
       })
 
-      
+      // Verify Entity Value/Name Toggle Control.
+      const elements = Cypress.$(rowElement).find('[data-testid="action-scorer-entity-toggle"]')
+      if ((elements.length == 1) !== expectedScoreAction.hasEntityValueNameToggle) {
+        AccumulateErrors(`Expected to find the Entity Value/Name Toggle switch to be ${expectedScoreAction.hasEntityValueNameToggle? 'present' : 'absent'}`)
+      }
+ 
       // Verify the score.
       FindWithinAndVerify(rowElement, `find('[data-testid="action-scorer-score"]')`, elements => {
         const score = helpers.TextContentWithoutNewlines(elements[0])
@@ -223,7 +264,7 @@ export function VerifyScoreActions(expectedScoreActions, acceptableScoreDeviatio
           const expectedScore = +expectedScoreAction.score.replace(/(\.|%)/gm, '')
           helpers.ConLog(funcName, `actualScore: ${actualScore} - expectedScore: ${expectedScore}`)
           if (actualScore < expectedScore - acceptableDeviation || actualScore > expectedScore + acceptableDeviation) {
-            AccumulateErrors(`Expected to find a score within ${acceptableScoreDeviation}% of '${expectedScoreAction.score}' but instead found '${score}'`)
+            AccumulateErrors(`Expected to find a score within ${acceptableScoreDeviation} points of '${expectedScoreAction.score}' but instead found '${score}'`)
           }
           return
         }
@@ -308,17 +349,23 @@ export function GenerateScoreActionsDataFromGrid() {
     const rowElement = Cypress.$(rowsElements[rowIndex]).find('div.ms-DetailsRow-fields')[0]
     helpers.ConLog(funcName, `Row #: ${rowIndex} - Element found: ${rowElement.outerHTML}`)
 
-    // Verify the button.
+    // The selection button.
     FindWithinAndCapture(rowElement, `find('[data-testid^="action-scorer-button-"]')`, elements => {
       const attr = elements.attr('data-testid')
       rowData.buttonTestId = attr
     })
-    
+
+
     // Response
     FindWithinAndCapture(rowElement, `find('[data-testid="action-scorer-text-response"], [data-testid="action-scorer-api"], [data-testid="action-scorer-session-response-user"], [data-testid="action-scorer-card"], [data-testid="action-scorer-action-set-entity"]')`, elements => {
       const responseData = helpers.TextContentWithoutNewlines(elements[0])
       rowData.response = responseData
     })
+
+    
+    // Entity Value/Name Toggle Control.
+    const elements = Cypress.$(rowElement).find('[data-testid="action-scorer-entity-toggle"]')
+    rowData.hasEntityValueNameToggle = elements.length == 1
 
     
     // Action Type.

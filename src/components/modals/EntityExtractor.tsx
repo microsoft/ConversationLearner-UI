@@ -13,7 +13,7 @@ import actions from '../../actions'
 import HelpIcon from '../HelpIcon'
 import EntityCreatorEditor from './EntityCreatorEditor'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { EditDialogType } from '.'
+import { EditDialogType } from '../../types/const'
 import { FM } from '../../react-intl-messages'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
@@ -516,7 +516,7 @@ class EntityExtractor extends React.Component<Props, ComponentState> {
                             </div>
                         }
                         {isValid && duplicateEntityNames.length > 0 &&
-                            <div className='cl-label'>
+                            <div className='cl-label' data-testid="entity-extractor-duplicate-entity-warning">
                                 <OF.Icon
                                     className={`cl-icon cl-color-warning`}
                                     iconName="IncidentTriangle"

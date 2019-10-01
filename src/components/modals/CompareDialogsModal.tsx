@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -22,7 +22,7 @@ import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
-import { EditDialogType } from '.';
+import { EditDialogType } from '../../types/const'
 import { FM } from '../../react-intl-messages'
 import './CompareDialogsModal.css'
 
@@ -95,11 +95,11 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     // Set from and recipient data from proper rendering
-    cleanTranscript(history: BB.Activity[]): void {
+    cleanTranscript(activities: BB.Activity[]): void {
         const userAccount: BB.ChannelAccount = { id: this.props.user.id, name: this.props.user.name, role: "user", aadObjectId: '' }
         const botAccount: BB.ChannelAccount = { id: `BOT-${this.props.user.id}`, name: CLM.CL_USER_NAME_ID, role: "bot", aadObjectId: '' }
 
-        for (let activity of history) {
+        for (let activity of activities) {
             if (!activity.recipient) {
                 if (activity.from.role === "bot") {
                     activity.recipient = userAccount
@@ -146,8 +146,8 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                             entities: this.props.entities,
                             trainDialogs: []
                         }
-                        const teachWithHistory = await ((this.props.fetchHistoryThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithHistory>)
-                        activityMap.set(sourceName, teachWithHistory.history)
+                        const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+                        activityMap.set(sourceName, teachWithActivities.activities)
                     }
                 }
             }
@@ -178,13 +178,13 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onSelectActivity(history: BotChat.Activity[] | undefined, activity: Activity) {
-        if (!history || history.length === 0) {
+    onSelectActivity(activities: BotChat.Activity[] | undefined, activity: Activity) {
+        if (!activities || activities.length === 0) {
             return
         }
 
         // Look up index
-        const selectedActivityIndex = history.findIndex(a => a.id === activity.id)
+        const selectedActivityIndex = activities.findIndex(a => a.id === activity.id)
         if (selectedActivityIndex > -1) {
             this.setState({
                 selectedActivityIndex
@@ -293,7 +293,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                     text={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
                                     iconProps={{ iconName: 'Cancel' }}
                                 />
-                                
+
                             </div>
                         </div>
                     </div>
@@ -306,7 +306,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
         fetchLogDialogAsync: actions.log.fetchLogDialogThunkAsync,
-        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
+        fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
     }, dispatch);
 }
 const mapStateToProps = (state: State) => {

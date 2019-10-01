@@ -1,0 +1,32 @@
+.cl-action-payload-editor {
+    /* Empty */
+}
+
+.cl-action-payload-editor--has-entities {
+    line-height: 1.9em;
+}
+
+.cl-action-payload-entity {
+    padding: 1px 0;
+    border-radius: 2px;
+    border: 1px solid rgba(5, 7, 109, 0.137);
+    background: #c2daf0;
+}
+
+/* Only color red if required and missing */
+.cl-action-payload-entity--required.cl-action-payload-entity--missing {
+    border-color: #e9b4b4;
+    background-color: #ffe0e0;
+}
+
+.cl-action-payload-entity--filled {
+    border-color: rgb(142, 228, 165);
+    background-color: rgb(189, 245, 204);
+}
+
+.cl-action-payload-optional {
+    padding: 3px 0;
+    border-radius: 4px;
+    border: 1px solid rgb(230, 171, 94);
+    background: rgb(255, 210, 184);
+}

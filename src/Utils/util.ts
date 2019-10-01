@@ -74,6 +74,10 @@ export function packageReferences(app: CLM.AppBase): CLM.PackageReference[] {
     ]
 }
 
+/**
+ * Create map of [entityId, memoryValue]
+ * Assumes memory value's are associated with entity by entityName (NOT entityId)
+ */
 export function createEntityMapFromMemories(entities: CLM.EntityBase[], memories: CLM.Memory[]): Map<string, string> {
     return memories.reduce((map, m) => {
         const entity = entities.find(e => e.entityName === m.entityName)
@@ -82,6 +86,28 @@ export function createEntityMapFromMemories(entities: CLM.EntityBase[], memories
         }
         return map
     }, new Map<string, string>())
+}
+
+export type EntityMapEntry = {
+    name: string,
+    value?: string,
+}
+
+export function createEntityMapWithNamesAndValues(entities: CLM.EntityBase[], memories?: CLM.Memory[]): Record<string, EntityMapEntry> {
+    return entities.reduce<Record<string, EntityMapEntry>>((map, e) => {
+        const entry: EntityMapEntry = {
+            name: e.entityName,
+        }
+
+        const memory = memories && memories.find(m => m.entityName == e.entityName)
+        if (memory) {
+            entry.value = CLM.memoryValuesAsString(memory.entityValues)
+        }
+
+        map[e.entityId] = entry
+
+        return map
+    }, {})
 }
 
 export const CL_DEMO_ID = '4433d65080bc95c0f2bddd26b5a0c816d09619cd4f8be0fec99fd2944e536888'
@@ -256,13 +282,13 @@ export const getSetEntityActionsFromEnumEntity = (entity: CLM.EntityBase): CLM.A
 export function readFileAsync(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-    
+
         reader.onload = (e: Event) => {
             resolve(reader.result as any);
         };
-    
+
         reader.onerror = reject;
-    
+
         reader.readAsText(file);
     })
 }
@@ -281,7 +307,7 @@ export type RecursivePartial<T> = {
 // Calculate a 32 bit FNV-1a hash
 // Ref.: http://isthe.com/chongo/tech/comp/fnv/
 export function hashText(text: string) {
-    // tslint:disable:no-bitwise 
+    // tslint:disable:no-bitwise
     let l = text.length
     let hval = 0x811C9DC5  // seed
 
@@ -295,7 +321,7 @@ export function hashText(text: string) {
 }
 
 export function isFeatureEnabled(featureString: string | undefined, feature: Const.FeatureStrings) {
-    if (featureString && featureString.toUpperCase().includes(feature)) {
+    if (featureString && featureString.toUpperCase().includes(feature.toUpperCase())) {
         return true
     }
     return false

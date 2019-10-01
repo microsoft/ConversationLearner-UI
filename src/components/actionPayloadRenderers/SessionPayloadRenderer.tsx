@@ -30,7 +30,7 @@ export default class Component extends React.Component<Props, State> {
         const showToggle = this.props.currentMemory !== null && this.props.currentMemory !== this.props.original
 
         return <div className={`${OF.FontClassNames.mediumPlus}`}>
-            <div className="cl-payloadrenderer-session-primary" data-testid="action-scorer-session-response">
+            <div className="cl-payloadrenderer-session-primary">
                 EndSession
             </div>
             <div data-testid="action-scorer-session-response-user">
@@ -41,6 +41,7 @@ export default class Component extends React.Component<Props, State> {
             </div>
             {showToggle && <div>
                 <OF.Toggle
+                    data-testid="action-scorer-entity-toggle"
                     checked={this.state.isOriginalVisible}
                     onChange={this.onChangeVisible}
                 />

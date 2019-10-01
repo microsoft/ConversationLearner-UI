@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import { NodeTypes } from "./APEModels";
@@ -23,13 +23,14 @@ function serialize(value: any, entityValuesMap: Map<string, string>, userOptions
     }
 
     const valueAsJson = typeof value.toJSON === 'function' ? value.toJSON() : value
-    const processedDocument = removeOptionalNodesWithoutEntityValues(valueAsJson.document, Array.from(entityValuesMap.keys()))
+    const valueAsJsonClone = JSON.parse(JSON.stringify(valueAsJson))
+    const processedDocument = removeOptionalNodesWithoutEntityValues(valueAsJsonClone.document, Array.from(entityValuesMap.keys()))
     return serializeNode(processedDocument, entityValuesMap, options)
 }
 
 /**
  * Given node return filter out optional nodes without matching values provided
- * 
+ *
  * E.g. You are welcome[, $name] -> You are welcome
  * @param node Slate Node
  * @param entityValues Key Value pair of entity id to entity display value
@@ -89,7 +90,7 @@ function serializeNode(node: any, entityValues: Map<string, string>, options: IO
     }
 
     const serializedChildNodes = node.nodes.map((n: any) => serializeNode(n, entityValues, options))
-    
+
     if (node.kind === 'inline' && node.type === NodeTypes.Mention) {
         // This check is required because when input is Slate Value node is Immutable.Map object
         // but it could also be a node from value.toJSON()
@@ -139,5 +140,6 @@ function serializeNode(node: any, entityValues: Map<string, string>, options: IO
 }
 
 export default {
-    serialize
+    serialize,
+    getEntityIds,
 }

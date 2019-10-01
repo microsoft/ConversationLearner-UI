@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Microsoft Corporation. All rights reserved.  
+ * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
 import * as React from 'react'
@@ -220,7 +220,7 @@ class Testing extends React.Component<Props, ComponentState> {
         const conversationId = validationSet.conversationId(transcript)
 
         const transcriptValidationTurns: CLM.TranscriptValidationTurn[] = []
-        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", actionHashes: [], apiResults: []}
+        let transcriptValidationTurn: CLM.TranscriptValidationTurn = { inputText: "", apiResults: []}
         let invalidTranscript = false
         let apiResults: CLM.FilledEntity[] = []
 
@@ -240,14 +240,10 @@ class Testing extends React.Component<Props, ComponentState> {
                     if (transcriptValidationTurn.inputText !== "") {
                         transcriptValidationTurns.push(transcriptValidationTurn)
                     }
-                    transcriptValidationTurn = { inputText: activity.text, actionHashes: [], apiResults: []}
+                    transcriptValidationTurn = { inputText: activity.text, apiResults: []}
                 }
                 else if (activity.from.role === "bot") {
                     if (transcriptValidationTurn) {
-                        const hashText = OBIUtils.hashTextFromActivity(activity, entities, apiResults)
-                        const actionHash = Util.hashText(hashText)
-                        transcriptValidationTurn.actionHashes.push(actionHash)
-
                         // If API call include API results
                         if (activity.channelData && activity.channelData.type === "ActionCall") {
                             const actionCall = activity.channelData as OBIUtils.TranscriptActionCall
@@ -281,28 +277,28 @@ class Testing extends React.Component<Props, ComponentState> {
         }
         else {
             // LARS: should just return logdialogId
-            let larsResult = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<Test.ValidationItem>)
+            const logDialogId = await ((this.props.fetchTranscriptValidationThunkAsync(this.props.app.appId, this.props.editingPackageId, this.props.user.id, transcriptValidationTurns) as any) as Promise<string | null>)
 
-            if (!larsResult.logDialogId) {
+            if (!logDialogId) {
                 throw new Error("No log dialog!") //LARS handle gracefully w/o killing test
             }
 
             // LARS: make return a plain BB.Activity
             const resultTranscript = await OBIUtils.getLogDialogActivities(
                 this.props.app.appId, 
-                larsResult.logDialogId,
+                logDialogId,
                 this.props.user, 
                 this.props.actions,
                 this.props.entities,
                 conversationId,
                 this.props.app.appName,
                 this.props.fetchLogDialogThunkAsync as any,
-                this.props.fetchHistoryThunkAsync as any)
+                this.props.fetchActivitiesThunkAsync as any)
 
             validationResult = { 
                 sourceName: this.props.app.appName,
                 conversationId,
-                logDialogId: larsResult.logDialogId, 
+                logDialogId, 
                 transcript: resultTranscript as BB.Activity[]
             }
         }
@@ -677,7 +673,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
 const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        fetchHistoryThunkAsync: actions.train.fetchHistoryThunkAsync,
+        fetchActivitiesThunkAsync: actions.train.fetchActivitiesThunkAsync,
         fetchLogDialogThunkAsync: actions.log.fetchLogDialogThunkAsync,
         fetchTranscriptValidationThunkAsync: actions.app.fetchTranscriptValidationThunkAsync,
         setErrorDisplay: actions.display.setErrorDisplay

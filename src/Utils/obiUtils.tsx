@@ -14,11 +14,11 @@ import { ImportedAction } from '../types/models'
 import { User } from '../types'
 
 export async function toTranscripts(
-    appDefinition: CLM.AppDefinition, 
+    appDefinition: CLM.AppDefinition,
     appId: string,
     user: User,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
-    ): Promise<BB.Transcript[]> {
+    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
+): Promise<BB.Transcript[]> {
 
     const definitions = {
         entities: appDefinition.entities,
@@ -26,7 +26,7 @@ export async function toTranscripts(
         trainDialogs: []
     }
 
-    return Promise.all(appDefinition.trainDialogs.map(td => getHistory(appId, td, user, definitions, fetchHistoryAsync)))
+    return Promise.all(appDefinition.trainDialogs.map(td => getActivities(appId, td, user, definitions, fetchActivitiesAsync)))
 }
 
 export interface OBIImportData {
@@ -52,7 +52,7 @@ export async function getLogDialogActivities(
     conversationId: string | undefined,
     channelId: string | undefined,
     fetchLogDialogThunkAsync: (appId: string, logDialogId: string, replaceLocal: boolean, nullOnNotFound: boolean) => Promise<CLM.LogDialog>,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
+    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
     ): Promise<Util.RecursivePartial<BB.Activity>[]> {
 
     // Fetch the LogDialog
@@ -65,8 +65,8 @@ export async function getLogDialogActivities(
     const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, actions, entities)
 
     // Return history LARS rename hisotyr vars
-    const teachWithHistory = await fetchHistoryAsync(appId, trainDialog, user.name, user.id, false)
-    const activites = teachWithHistory.history
+    const teachWithHistory = await fetchActivitiesAsync(appId, trainDialog, user.name, user.id, false)
+    const activites = teachWithHistory.activities
     if (conversationId || channelId) {
         addIds(activites, conversationId, channelId)
     }
@@ -85,14 +85,14 @@ function addIds(activities: Util.RecursivePartial<BB.Activity>[], conversationId
 }
 
 // LARS rename
-async function getHistory(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
-    fetchHistoryAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithHistory>
+async function getActivities(appId: string, trainDialog: CLM.TrainDialog, user: User, definitions: CLM.AppDefinition,
+    fetchActivitiesAsync: (appId: string, trainDialog: CLM.TrainDialog, userName: string, userId: string, useMarkdown: boolean) => Promise<CLM.TeachWithActivities>
     ): Promise<BB.Transcript> {
     const newTrainDialog = Util.deepCopy(trainDialog)
     newTrainDialog.definitions = definitions
 
-    const teachWithHistory = await fetchHistoryAsync(appId, newTrainDialog, user.name, user.id, false)
-    return { activities: teachWithHistory.history }
+    const teachWithActivities = await fetchActivitiesAsync(appId, newTrainDialog, user.name, user.id, false)
+    return { activities: teachWithActivities.activities }
 }
 
 interface TranscriptActionInput {
@@ -103,12 +103,12 @@ export interface TranscriptActionCall {
     type: string
     actionName: string
     actionInput: TranscriptActionInput[]
-    actionOutput: TranscriptActionOutput[]
+    actionOutput: OBIActionOutput[]
 }
 
-interface TranscriptActionOutput {
+export interface OBIActionOutput {
     entityName: string,
-    value: string
+    value?: string
 }
 
 export function isSameActivity(activity1: BB.Activity, activity2: BB.Activity): boolean {
@@ -171,9 +171,9 @@ export async function trainDialogFromTranscriptImport(
 
     createActionThunkAsync?: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
     createEntityThunkAsync?: (appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>
-    ): Promise<CLM.TrainDialog> {
+): Promise<CLM.TrainDialog> {
     const transcriptHash = Util.hashText(JSON.stringify(transcript))
-    
+
     let trainDialog: CLM.TrainDialog = {
         trainDialogId: undefined!,
         version: undefined!,
@@ -182,13 +182,13 @@ export async function trainDialogFromTranscriptImport(
         sourceLogDialogId: undefined!,
         initialFilledEntities: [],
         rounds: [],
-        tags: [], 
+        tags: [],
         description: '',
         createdDateTime: new Date().toJSON(),
         lastModifiedDateTime: new Date().toJSON(),
         // It's initially invalid
         validity: CLM.Validity.INVALID,
-        clientData: {importHashes: [transcriptHash]}
+        clientData: { importHashes: [transcriptHash] }
     }
 
     // If I have an LG map, substitute in LG values
@@ -218,7 +218,7 @@ export async function trainDialogFromTranscriptImport(
                         if (textVariations.length < CLM.MAX_TEXT_VARIATIONS && activity.text !== tv.text) {
 
                             let altTextVariation: CLM.TextVariation = {
-                                text: tv.text, 
+                                text: tv.text,
                                 labelEntities: []
                             }
                             textVariations.push(altTextVariation)
@@ -457,7 +457,7 @@ async function createActionFromImport(
     importText: string,
     templates: CLM.Template[],
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>,
-    ): Promise<CLM.ActionBase> {
+): Promise<CLM.ActionBase> {
     const template = DialogUtils.bestTemplateMatch(importedAction, templates)
     const actionType = template ? CLM.ActionTypes.CARD : CLM.ActionTypes.TEXT
     const repromptActionId = template && importedAction.buttons.length > 0 ? REPROMPT_SELF : undefined
@@ -472,7 +472,7 @@ async function createActionFromImport(
         const textBody = template.variables.find(v => v.type === "TextBody" || v.type === "TextBlock")
         if (textBody) {
             const title = Plain.deserialize(importedAction.text)
-            actionArguments.push({parameter: textBody.key, value: {json: title.toJSON()}})
+            actionArguments.push({ parameter: textBody.key, value: { json: title.toJSON() } })
         }
 
         // Map additional variables to buttons
@@ -480,7 +480,7 @@ async function createActionFromImport(
             const buttons = importedAction.buttons.map(t => Plain.deserialize(t))
             buttons.forEach((button, index) => {
                 if ((index + 1) < template.variables.length) {
-                    actionArguments.push({parameter: template.variables[index + 1].key, value: {json: button.toJSON()}})
+                    actionArguments.push({ parameter: template.variables[index + 1].key, value: { json: button.toJSON() } })
                 }
             })
         }
@@ -516,14 +516,14 @@ async function createActionFromImport(
         actionType,
         entityId: undefined,
         enumValueId: undefined,
-        clientData: { importHashes: [Util.hashText(importText)]}
+        clientData: { importHashes: [Util.hashText(importText)] }
     })
 
     const newAction = await createActionThunkAsync(appId, action)
     if (!newAction) {
         throw new Error("Unable to create action")
     }
-    return newAction     
+    return newAction
 }
 
 // NOTE: eventually LGItems could be adaptive cards
@@ -532,7 +532,7 @@ export function importedActionFromImportText(importText: string, isTerminal: boo
     try {
         const lgItem: CLM.LGItem = JSON.parse(importText)
         // Assume reprompt if item has buttons
-        return { text: lgItem.text, buttons: lgItem.suggestions, isTerminal, reprompt: lgItem.suggestions.length > 0}
+        return { text: lgItem.text, buttons: lgItem.suggestions, isTerminal, reprompt: lgItem.suggestions.length > 0 }
     }
     catch (e) {
         // Assume no repropmt for plain text
@@ -601,15 +601,20 @@ export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activi
     return true
 }
 
+/**
+ * Given the {entityName, entityValue} results from some action being imported, returns
+ * an array of FilledEntity instances representing those results.
+ * Entities that do not yet exist will be created once.
+ */
 export async function importActionOutput(
-    actionResults: TranscriptActionOutput[], 
+    actionResults: OBIActionOutput[],
     entities: CLM.EntityBase[],
     app: CLM.AppBase,
     createEntityThunkAsync?: ((appId: string, entity: CLM.EntityBase) => Promise<CLM.EntityBase | null>)
-    ): Promise<CLM.FilledEntity[]> {
+): Promise<CLM.FilledEntity[]> {
 
     const filledEntities: CLM.FilledEntity[] = []
-    
+
     for (const actionResult of actionResults) {
         // Check if entity already exists
         const foundEntity = entities.find(e => e.entityName === actionResult.entityName)
@@ -626,6 +631,7 @@ export async function importActionOutput(
                 resolverType: "none",
                 createdDateTime: new Date().toJSON(),
                 lastModifiedDateTime: new Date().toJSON(),
+                isResolutionRequired: false,
                 isMultivalue: false,
                 isNegatible: false,
                 negativeId: null,
@@ -638,17 +644,15 @@ export async function importActionOutput(
             }
 
             entityId = await ((createEntityThunkAsync(app.appId, newEntity) as any) as Promise<string>)
-
             if (!entityId) {
                 throw new Error("Invalid Entity Definition")
             }
-        
         }
         else {
             entityId = "UNKNOWN ENTITY"
         }
         const memoryValue: CLM.MemoryValue = {
-            userText: actionResult.value,
+            userText: actionResult.value ? actionResult.value : null,
             displayText: null,
             builtinType: null,
             resolution: {}

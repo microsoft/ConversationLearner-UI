@@ -11,9 +11,8 @@ import * as BotChat from '@conversationlearner/webchat'
 import * as CLM from '@conversationlearner/models'
 import { BehaviorSubject, Observable, Subscription } from 'rxjs'
 import { Activity, Message } from 'botframework-directlinejs'
-import { EditDialogType } from './modals/.'
 import actions from '../actions'
-import { BOT_HOST_NAME } from '../types/const'
+import { BOT_HOST_NAME, EditDialogType } from '../types/const'
 
 const SUBMIT_KEY = 'submit'
 

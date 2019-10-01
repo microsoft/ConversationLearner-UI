@@ -29,12 +29,17 @@ export function ClickScoreActionsButton() { cy.Get(ScoreActionsButtonSelector).C
 export function VerifyEntityMemoryIsEmpty() { cy.Get('[data-testid="memory-table-empty"]').contains('Empty') }
 export function ClickAddAlternativeInputButton() { cy.Get('[data-testid="entity-extractor-add-alternative-input-button"]').Click() }
 export function ClickEntityDetectionToken(tokenValue) { cy.Get('[data-testid="token-node-entity-value"]').contains(tokenValue).Click() }
-export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
+
 export function VerifyWarningMessage(expectedMessage) { cy.Get('[data-testid="dialog-modal-warning"]').find('span').ExactMatch(expectedMessage) }
+export function VerifyNoWarningMessage() { cy.DoesNotContain('[data-testid="dialog-modal-warning"]') }
+
+export function VerifyErrorMessage(expectedMessage) { cy.Get('div.cl-editdialog-error').find('span').ExactMatch(expectedMessage) }
 export function VerifyNoErrorMessage() { cy.DoesNotContain('div.cl-editdialog-error') }
 export function VerifyErrorPopup(expectedMessage) { cy.Get('p.ms-Dialog-title').ExactMatch(expectedMessage) }
+
 export function ClickPopupConfirmCancelOkButton() { cy.Get('[data-testid="confirm-cancel-modal-ok"]').Click() }
 export function ClickDeleteChatTurn() { cy.Get('[data-testid="chat-edit-delete-turn-button"]').Click() }
+
 export function VerifyTypeYourMessageIsPresent() { cy.Get(TypeYourMessageSelector) }
 export function VerifyTypeYourMessageIsMissing() { cy.DoesNotContain(TypeYourMessageSelector) }
 export function VerifyScoreActionsButtonIsPresent() { cy.Get(ScoreActionsButtonSelector) }
@@ -62,6 +67,10 @@ export function ClickSubmitChangesButton() { cy.Get('[data-testid="submit-change
 export function VerifyEntityLabelUndoButtonIsDisabled() { cy.Get(EntityLabelUndoButtonSelector + '.is-disabled') }
 export function VerifyEntityLabelUndoButtonIsEnabled() { cy.Get(EntityLabelUndoButtonSelector + ':not(.is-disabled)') }
 export function ClickEntityLabelUndoButton() { cy.Get(EntityLabelUndoButtonSelector).Click() }
+
+// expectedEntities is a string segment that you will see in the UI warning message.
+export function VerifyDuplicateEntityLabelsWarning(expectedEntities) { cy.Get('[data-testid="entity-extractor-duplicate-entity-warning"]').contains(`Entities that are not multi-value (i.e. ${expectedEntities}) will only store the last labelled utterance`) }
+export function VerifyNoDuplicateEntityLabelsWarning() { cy.DoesNotContain('[data-testid="entity-extractor-duplicate-entity-warning"]') }
 
 export function ClickNewEntityButton() { cy.Get('[data-testid="entity-extractor-create-button"]').Click() }
 
@@ -191,8 +200,7 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
 
   cy.WaitForStableDOM()
   cy.Enqueue(() => {
-    message = message.replace(/'/g, "’")
-    const elements = GetAllChatMessageElements() //Cypress.$(AllChatMessagesSelector)
+    const elements = GetAllChatMessageElements()
     helpers.ConLog(funcName, `Chat message count: ${elements.length}`)
     for (let i = 0; i < elements.length; i++) {
       const innerText = helpers.TextContentWithoutNewlines(elements[i])
@@ -201,7 +209,11 @@ function SelectChatTurnInternal(message, index, matchPredicate) {
         if (index > 0) index--
         else {
           helpers.ConLog(funcName, `FOUND!`)
+          
+          // It appears that this does not work all the time, seen it happen once so far.
+          // Perhaps because it needs to be scrolled into view.
           elements[i].click()
+
           return i
         }
       }
@@ -451,7 +463,7 @@ export function VerifyChatTurnIsNotAnExactMatch(turnTextThatShouldNotMatch, expe
 export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount, turnIndex) { 
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) { 
-      if (chatMessageFound !== expectedTurnText.replace(/'/g, "’")) {
+      if (chatMessageFound !== expectedTurnText) {
         throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
       }
     }
@@ -461,7 +473,7 @@ export function VerifyChatTurnIsAnExactMatch(expectedTurnText, expectedTurnCount
 export function VerifyChatTurnIsAnExactMatchWithMarkup(expectedTurnText, expectedTurnCount, turnIndex) { 
   VerifyChatTurnInternal(expectedTurnCount, turnIndex, chatMessageFound => {
     if (chatMessageFound !== expectedTurnText) { 
-      if (chatMessageFound !== expectedTurnText.replace(/'/g, "’")) {
+      if (chatMessageFound !== expectedTurnText) {
         throw new Error(`Chat turn ${turnIndex} should be an exact match to: ${expectedTurnText}, however, we found ${chatMessageFound} instead`) 
       }
     }
@@ -637,12 +649,11 @@ export function VerifyTextChatMessage(expectedMessage, expectedIndexOfMessage) {
       throw new Error(`Did not find expected Text Chat Message '${expectedMessage}' at index: ${expectedIndexOfMessage}`)
     }
     
-    const expectedUtterance = expectedMessage.replace(/'/g, "’")
     let textContentWithoutNewlines = helpers.TextContentWithoutNewlines(elements[0])
     helpers.ConLog('VerifyTextChatMessage', textContentWithoutNewlines)
 
-    if (helpers.TextContentWithoutNewlines(elements[0]) !== expectedUtterance) {
-      throw new Error(`Expected to find '${expectedUtterance}' in the text chat pane, instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
+    if (helpers.TextContentWithoutNewlines(elements[0]) !== expectedMessage) {
+      throw new Error(`Expected to find '${expectedMessage}' in the text chat pane, instead we found '${textContentWithoutNewlines}' at index: ${expectedIndexOfMessage}`)
     }
   })
 }
@@ -699,7 +710,7 @@ export function VerifyPhotoCardChatMessage(expectedCardTitle, expectedCardText, 
 }
 
 export function VerifyEndSessionChatMessage(expectedData, expectedIndexOfMessage) {
-  const expectedUtterance = 'EndSession: ' + expectedData.replace(/'/g, "’")
+  const expectedUtterance = 'EndSession: ' + expectedData
   cy.Get('[data-testid="web-chat-utterances"]').then(elements => {
     if (!expectedIndexOfMessage) expectedIndexOfMessage = elements.length - 1
     const element = Cypress.$(elements[expectedIndexOfMessage]).find('div.wc-adaptive-card > div > div > p')[0]
@@ -745,7 +756,7 @@ export function SaveAsIs(verificationFunction) {
         throw new Error('The Merge Modal popped up, and we clicked the Save As Is button...need to retry and wait for the grid to become visible')
       }
 
-      if (modelPage.IsOverlaid()) {
+      if (modelPage.IsOverlaid() && !helpers.HasErrorMessage()) {
         helpers.ConLog(funcName, 'modalPage.IsOverlaid')
         renderingShouldBeCompleteTime = new Date().getTime() + 1000
         throw new Error('Overlay found thus Train Dialog Grid is not stable...retry until it is')
@@ -846,7 +857,7 @@ export function VerifyAllChatMessages(chatMessagesToBeVerified) {
 
 export function BranchChatTurn(originalMessage, newMessage, originalIndex = 0) {
   cy.Enqueue(() => {
-    originalMessage = originalMessage.replace(/'/g, "’")
+    originalMessage = originalMessage
 
     SelectChatTurnExactMatch(originalMessage, originalIndex)
 
@@ -907,8 +918,8 @@ export function AbandonDialog() {
   ClickConfirmAbandonDialogButton()
 }
 
-export function EditTrainingNEW(scenario, tags) {
-  const funcName = `EditTrainingNEW(${scenario}, ${tags})`
+export function EditTrainingByDescriptionAndTags(desctiption, tags) {
+  const funcName = `EditTrainingByDescriptionAndTags(${desctiption}, ${tags})`
   cy.Enqueue(() => {
     const tagsFromGrid = trainDialogsGrid.GetTags()
     const scenarios = trainDialogsGrid.GetDescription()
@@ -916,13 +927,13 @@ export function EditTrainingNEW(scenario, tags) {
     helpers.ConLog(funcName, `Row Count: ${scenarios.length}`)
 
     for (let i = 0; i < scenarios.length; i++) {
-      if (scenarios[i] === scenario && tagsFromGrid[i] == tags) {
+      if (scenarios[i] === desctiption && tagsFromGrid[i] == tags) {
         helpers.ConLog(funcName, `ClickTraining for row: ${i}`)
         trainDialogsGrid.ClickTraining(i)
         return
       }
     }
-    throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${scenario}' -- tags: ${tags}`)
+    throw new Error(`Can't Find Training to Edit. The grid should, but does not, contain a row with this data in it: scenario: '${desctiption}' -- tags: ${tags}`)
   })
 }
 

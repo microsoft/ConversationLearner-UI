@@ -12,6 +12,7 @@ import { deepCopy, getDefaultEntityMap } from './util'
 import { Activity } from 'botframework-directlinejs'
 import { ImportedAction } from '../types/models'
 import TagsReadOnly from '../components/TagsReadOnly'
+import { fromLogTag } from '../types'
 
 const MAX_SAMPLE_INPUT_LENGTH = 150
 
@@ -356,12 +357,12 @@ export function hasImportActions(trainDialog: CLM.TrainDialog): boolean {
     return false
 }
 
-// Does history have any replay errors
-export function getMostSevereReplayError(history: BotChat.Activity[]): CLM.ReplayError | null {
+// Do activities have any replay errors
+export function getMostSevereReplayError(activities: BotChat.Activity[]): CLM.ReplayError | null {
     // Return most severe error level found
     let worstReplayError: CLM.ReplayError | null = null
-    for (const h of history) {
-        const clData: CLM.CLChannelData = h.channelData.clData
+    for (const a of activities) {
+        const clData: CLM.CLChannelData = a.channelData.clData
         if (clData && clData.replayError) {
             if (clData.replayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING) {
                 return clData.replayError
@@ -379,9 +380,9 @@ export function getMostSevereReplayError(history: BotChat.Activity[]): CLM.Repla
 }
 
 // Given train dialog and rendered activity, return validity
-export function getTrainDialogValidity(trainDialog: CLM.TrainDialog, history: BotChat.Activity[]): CLM.Validity | undefined {
+export function getTrainDialogValidity(trainDialog: CLM.TrainDialog, activities: BotChat.Activity[]): CLM.Validity | undefined {
     // Look for individual replay errors
-    const worstReplayError = getMostSevereReplayError(history)
+    const worstReplayError = getMostSevereReplayError(activities)
     if (worstReplayError) {
         if (worstReplayError.errorLevel === CLM.ReplayErrorLevel.BLOCKING || worstReplayError.errorLevel === CLM.ReplayErrorLevel.ERROR) {
             return CLM.Validity.INVALID
@@ -589,7 +590,16 @@ export function isPrimaryTrainDialog(trainDialog1: CLM.TrainDialog, trainDialog2
 }
 
 export function mergeTrainDialogTags(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): string[] {
-    return [...trainDialog1.tags, ...trainDialog2.tags].filter((item, i, ar) => ar.indexOf(item) === i)
+    const dialog1Tags = [...trainDialog1.tags]
+    // If dialog 1 (saved dialog) has existing from log tag it was likely recently saved from log dialog
+    // Remove the tag to prevent pollutions of tags from other dialog
+    const fromTagIndex = dialog1Tags.findIndex(t => t === fromLogTag)
+    if (fromTagIndex >= 0) {
+        dialog1Tags.splice(fromTagIndex, 1)
+    }
+
+    const uniqueCombinedTags = [...new Set([...dialog1Tags, ...trainDialog2.tags])]
+    return uniqueCombinedTags
 }
 
 export function mergeTrainDialogDescription(trainDialog1: CLM.TrainDialog, trainDialog2: CLM.TrainDialog): string {
