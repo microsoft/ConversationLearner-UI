@@ -1496,9 +1496,7 @@ class TrainDialogs extends React.Component<Props, ComponentState> {
                     />
                     {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
                         <OF.DefaultButton
-                            iconProps={{
-                                iconName: "DownloadDocument"
-                            }}
+                            iconProps={{iconName: "CloudUpload"}}
                             disabled={isEditingDisabled}
                             onClick={this.onClickImportTranscripts}
                             ariaDescription={Util.formatMessageId(intl, FM.BUTTON_IMPORT)}

@@ -165,7 +165,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                         const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
                         activityMap.set(sourceName, teachWithActivities.activities)
                     }
-                    // Computer rank with pivot offset
+                    // Compute rank with pivot offset (doesn't apply when only one source)
                     if (this.props.validationSet.sourceNames.length > 1) {
                         rankMap.set(sourceName, curItem.ranking !== undefined ? curItem.ranking - baseRank : undefined)
                     }

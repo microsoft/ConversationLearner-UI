@@ -1248,7 +1248,7 @@ export default {
         [FM.TEACHSESSIONMODAL_INITSTATE_TEXT]: 'Set Initial State',
 
         // Testing
-        [FM.TESTING_NAME_LABEL]: 'Test Name',
+        [FM.TESTING_NAME_LABEL]: 'Name',
         [FM.TESTING_TABLE_SOURCE_LABEL]: 'Source',
         [FM.TESTING_TABLE_COUNT_LABEL]: '# Transcripts',
         [FM.TESTING_TABLE_LG_LABEL]: 'Uses LG',
@@ -1263,7 +1263,7 @@ export default {
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
         
         // TrainscriptComparisions
-        [FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE]: 'Compare with',
+        [FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE]: 'Compared to:',
         [FM.TRANSCRIPTCOMPARISONS_WARNING_TITLE]: 'At least two sets of transcripts must be loaded for a comparison',
 
         // Transcript Import Cancel
@@ -1289,12 +1289,12 @@ export default {
         [FM.TRANSCRIPT_TESTPICKER_SOURCE]: ' Source:',
 
         // TrainscriptRatings
-        [FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE]: 'Relative to',
+        [FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE]: 'Relative to:',
         [FM.TRANSCRIPTRATINGS_WARNING_TITLE]: 'At least two sets of transcripts must be loaded to rate them',
 
         // Transcript Validator
         [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Testing',
-        [FM.TRANSCRIPT_VALIDATOR_SUBTITLE]: `Compare Model's output to .transcript files`,
+        [FM.TRANSCRIPT_VALIDATOR_SUBTITLE]: `Compare and Rate .transcript files`,
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE]: 'Name for Test Results',
         [FM.TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER]: 'Name',
         [FM.TRANSCRIPT_VALIDATOR_BUTTON_TEST_MODEL]: 'Test Model',

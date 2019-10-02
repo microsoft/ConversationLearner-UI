@@ -38,8 +38,8 @@ interface ComponentState {
     viewConversationPivot: string | undefined
     isRateDialogsOpen: boolean
     isTestPickerOpen: boolean
-    edited: boolean
     pivotSelection: string | undefined
+    isSaveInputOpen: boolean
 }
 
 class Testing extends React.Component<Props, ComponentState> {
@@ -56,8 +56,8 @@ class Testing extends React.Component<Props, ComponentState> {
             viewConversationPivot: undefined,
             isRateDialogsOpen: false,
             isTestPickerOpen: false,
-            edited: false,
-            pivotSelection: undefined
+            pivotSelection: undefined,
+            isSaveInputOpen: false
         }
     }
 
@@ -128,10 +128,7 @@ class Testing extends React.Component<Props, ComponentState> {
     onChangeName(event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, text: string) {
         const validationSet = Test.ValidationSet.Create(this.state.validationSet)
         validationSet.fileName = text
-        this.setState({
-            validationSet: validationSet,
-            edited: true
-        })
+        this.setState({validationSet})
     }
 
     @autobind
@@ -347,8 +344,7 @@ class Testing extends React.Component<Props, ComponentState> {
     @autobind
     async onCloseRate() {
         this.setState({
-            isRateDialogsOpen: false,
-            edited: true
+            isRateDialogsOpen: false
         })
         await this.calcRankings()
         this.onSaveSet()
@@ -379,9 +375,22 @@ class Testing extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onSaveSet() {
+    async onSaveSet() {
 
-        if (!this.state.validationSet || !this.state.validationSet.fileName || this.onGetNameErrorMessage(this.state.validationSet.fileName) !== '') {
+        if (!this.state.validationSet) {
+            return
+        }
+
+        // If no name provided default to name of mddel
+        if (!this.state.validationSet.fileName) {
+            const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+            // Use app name, removing unsafe characters
+            validationSet.fileName = this.props.app.appName.replace(/[^a-zA-Z0-9-_\.]/g, '')
+            await Util.setStateAsync(this, {validationSet})
+
+        }
+
+        if (this.state.validationSet.fileName && this.onGetNameErrorMessage(this.state.validationSet.fileName) !== '') {
             return
         }
         const blob = this.state.validationSet.serialize()
@@ -424,8 +433,9 @@ class Testing extends React.Component<Props, ComponentState> {
     nameErrorCheck(value: string): string {
         const MAX_NAME_LENGTH = 30
 
+        // Allow empty name, will populate with Model name on save
         if (value.length === 0) {
-            return Util.formatMessageId(this.props.intl, FM.FIELDERROR_REQUIREDVALUE)
+            return ''
         }
 
         if (value.length > MAX_NAME_LENGTH) {
@@ -442,8 +452,7 @@ class Testing extends React.Component<Props, ComponentState> {
 
         const saveDisabled = !this.state.validationSet 
             || this.state.validationSet.items.length === 0
-            || !this.state.validationSet.fileName
-            || this.onGetNameErrorMessage(this.state.validationSet.fileName) !== ''
+            || (this.state.validationSet.fileName !== undefined && this.onGetNameErrorMessage(this.state.validationSet.fileName) !== '')
 
         return (
             <div className="cl-page">
@@ -463,7 +472,7 @@ class Testing extends React.Component<Props, ComponentState> {
                     onGetErrorMessage={value => this.onGetNameErrorMessage(value)}
                     value={this.state.validationSet ? this.state.validationSet.fileName : ""}
                 />
-                <div className="cl-modal_footer cl-modal-buttons">
+                <div className="cl-modal-buttons">
                     <input
                         hidden={true}
                         type="file"
@@ -472,25 +481,27 @@ class Testing extends React.Component<Props, ComponentState> {
                         ref={ele => (this.loadSetFileInput = ele)}
                         multiple={false}
                     />
-                    <div className="cl-modal-buttons_secondary">
+                    <div className="cl-modal-buttons_secondary"/>
+                    <div className="cl-modal-buttons_primary">
                         <OF.DefaultButton
                             disabled={saveDisabled}
                             onClick={this.onSaveSet}
                             ariaDescription={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_SAVE_RESULTS)}
                             text={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_SAVE_RESULTS)}
-                            iconProps={{ iconName: 'DownloadDocument' }}
+                            iconProps={{ iconName: 'CloudDownload' }}
                         />
                         <OF.DefaultButton
                             ariaDescription={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_LOAD_RESULTS)}
                             text={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_LOAD_RESULTS)}
-                            iconProps={{ iconName: 'DownloadDocument' }}
+                            iconProps={{ iconName: 'CloudUpload' }}
                             onClick={() => this.loadSetFileInput.click()}
                         />
                         <OF.DefaultButton
+                            className="cl-button-delete"
                             disabled={!this.state.validationSet || this.state.validationSet.sourceName.length === 0}
                             ariaDescription={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_CLEAR_RESULTS)}
                             text={Util.formatMessageId(this.props.intl, FM.TESTING_BUTTON_CLEAR_RESULTS)}
-                            iconProps={{ iconName: 'DownloadDocument' }}
+                            iconProps={{ iconName: 'RemoveFilter' }}
                             onClick={this.onClear}
                         />
                     </div>

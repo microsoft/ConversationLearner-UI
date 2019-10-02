@@ -119,7 +119,7 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
             {this.props.validationSet && this.props.validationSet.sourceNames.length > 1 
                 ?
                 <>
-                    <div className={OF.FontClassNames.mediumPlus}>
+                    <div className={`cl-testing-dropbox ${OF.FontClassNames.mediumPlus}`}>
                         <OF.Dropdown
                             disabled={!this.props.validationSet || this.props.validationSet.sourceNames.length < 2}
                             ariaLabel={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE)}

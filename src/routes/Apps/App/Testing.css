@@ -3,17 +3,27 @@
 }
 
 .cl-testing-body {
-  margin-top: 20px;
   width: 100%;
   overflow: auto;
   position: relative;
   min-height: 260px;
+  border-top: 3px solid var(--cl-color-botchat-grey);
+  margin-top: 10px;
+}
+
+.cl-testing-lglabel {
+  font-style: italic;
+  margin-top: 10px;
 }
 
 .cl-testing-warning {
   font-weight: 700;
   text-align: center;
   margin: 50px;
+}
+
+.cl-testing-dropbox {
+  width: 200px;
 }
 
 .cl-testing-trascript-group {
@@ -24,12 +34,6 @@
   display: inline-block;
   margin-bottom: 20px;
   border-bottom: 1px solid var(--cl-color-botchat-grey);
-}
-
-.cl-testing-source-title {
-  text-align: center;
-  font-weight: 600;
-  line-height: 40px;
 }
 
 .cl-test-disabled {
@@ -43,6 +47,13 @@
   position: relative;
   overflow: auto;
   height: 42px;
+}
+
+.cl-testing-source-title {
+  text-align: center;
+  font-weight: 600;
+  line-height: 40px;
+  border-top: none;
 }
 
 .cl-testing-result-item {

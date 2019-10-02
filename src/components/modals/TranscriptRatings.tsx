@@ -156,7 +156,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                 </div>
                 :
                 <>
-                <div className={OF.FontClassNames.mediumPlus}>
+                <div className={`cl-testing-dropbox ${OF.FontClassNames.mediumPlus}`}>
                     <OF.Dropdown
                         disabled={!this.props.validationSet || this.props.validationSet.sourceNames.length < 2}
                         ariaLabel={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE)}
@@ -183,7 +183,7 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                             onClick={this.props.onRate}
                             ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
                             text={Util.formatMessageId(this.props.intl, FM.BUTTON_RATE)}
-                            iconProps={{ iconName: 'DownloadDocument' }}
+                            iconProps={{ iconName: 'Compare' }}
                         />
                     </div>
                 </div>

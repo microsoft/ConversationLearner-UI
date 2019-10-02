@@ -152,12 +152,12 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                             column.render(rr)}
                     />
                     : 
-                    <div className="cl-testing-warning">
+                    <div className="cl-testing-lglabel cl-testing-warning">
                         {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_WARNING_TITLE)}
                     </div>
                     }
                     {this.props.validationSet && this.props.validationSet.lgMap.size > 0 &&
-                        <div>
+                        <div className="cl-testing-lglabel">
                             {`${this.props.validationSet.lgMap.size} ${Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_LGLOADED)}`}
                         </div>
                     }
@@ -167,25 +167,27 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                         </div>
                     }
                     <div className="cl-modal-buttons cl-modal_footer">
-                        <div className="cl-modal-buttons_primary">
+                        <div className="cl-modal-buttons_secondary">
                             <OF.PrimaryButton
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS)}
                                 text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS)}
-                                iconProps={{ iconName: 'TestCase' }}
+                                iconProps={{ iconName: 'BulkUpload' }}
                                 onClick={() => this.loadTranscriptsFileInput.click()}
                             />
                             <OF.PrimaryButton
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_ADD_LG)}
                                 text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_ADD_LG)}
-                                iconProps={{ iconName: 'TestCase' }}
+                                iconProps={{ iconName: 'BulkUpload' }}
                                 onClick={() => this.loadLGFileInput.click()}
                             />
+                        </div>
+                        <div className="cl-modal-buttons_primary">
                             <OF.DefaultButton
                                 disabled={!this.props.validationSet}
                                 onClick={() => this.props.onView(Test.ComparisonResultType.ALL)}
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_VIEW)}
                                 text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_VIEW)}
-                                iconProps={{ iconName: 'DownloadDocument' }}
+                                iconProps={{ iconName: 'DiffSideBySide' }}
                             />
                             <OF.PrimaryButton
                                 disabled={renderResults.length === 0}
