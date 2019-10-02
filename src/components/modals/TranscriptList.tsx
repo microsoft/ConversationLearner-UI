@@ -152,7 +152,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                             column.render(rr)}
                     />
                     : 
-                    <div className="cl-testing-lglabel cl-testing-warning">
+                    <div className="cl-testing-warning">
                         {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_WARNING_TITLE)}
                     </div>
                     }
@@ -162,7 +162,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                         </div>
                     }
                     {this.props.validationSet && this.props.validationSet.lgMap.size === 0 && this.props.validationSet.usesLG() &&
-                        <div className="cl-text--warning">
+                        <div className="cl-testing-lglabel cl-text--warning">
                             {Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_NOLG)}
                         </div>
                     }
