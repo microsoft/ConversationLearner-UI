@@ -1,0 +1,25 @@
+.cl-transcriptrating-result {
+    font-size: 16px;
+    border-top: 1px solid var(--cl-color-botchat-grey);
+    position: relative;
+    overflow: auto;
+    height: 42px;
+    display: block;
+}
+
+.cl-transcriptrating-ranktitles {
+    float: left;
+}
+
+.cl-transcriptrating-rankbar {
+    border-top: 1px solid var(--cl-color-botchat-grey);
+}
+
+.cl-transcriptrating-rankbutton {
+    padding-top: 5px;
+}
+
+.cl-transcriptrating-results {
+    margin-right: 5px;
+    float: left;
+}

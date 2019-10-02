@@ -9,8 +9,10 @@ import * as BotChat from '@conversationlearner/webchat'
 import * as Util from '../../Utils/util'
 import * as BB from 'botbuilder'
 import * as OBIUtils from '../../Utils/obiUtils'
+import * as Test from '../../types/TestObjects'
 import actions from '../../actions'
 import Webchat, { renderActivity } from '../Webchat'
+import { autobind } from 'core-decorators'
 import { Activity } from 'botframework-directlinejs'
 import { State } from '../../types'
 import { returntypeof } from 'react-redux-typescript'
@@ -19,12 +21,11 @@ import { connect } from 'react-redux'
 import { injectIntl, InjectedIntlProps } from 'react-intl'
 import { EditDialogType } from '../../types/const'
 import { FM } from '../../react-intl-messages'
-import './CompareDialogsModal.css'
 import './RateDialogsModal.css'
-import { autobind } from 'core-decorators';
 
 interface ComponentState {
-    changedItems: CLM.TranscriptValidationResult[]
+    numberOfNeededRatings: number
+    ratingPair: Test.RatingPair | undefined
     resultIndex: number
     webchatKey: number,
     activities1: BotChat.Activity[] | undefined
@@ -34,13 +35,11 @@ interface ComponentState {
     isFlipped: boolean,
     selectedActivityIndex: number | null
     scrollPosition: number | null
-    betterIds: string[],
-    worseIds: string[],
-    sameIds: string[]
 }
 
 const initialState: ComponentState = {
-    changedItems: [],
+    numberOfNeededRatings: 0,
+    ratingPair: undefined,
     webchatKey: 0,
     resultIndex: 0,
     activities1: [],
@@ -48,10 +47,7 @@ const initialState: ComponentState = {
     missingLog: false,
     isFlipped: false,
     selectedActivityIndex: null,
-    scrollPosition: 0,
-    betterIds: [],
-    worseIds: [],
-    sameIds: []
+    scrollPosition: 0
 }
 
 class RateDialogsModal extends React.Component<Props, ComponentState> {
@@ -61,8 +57,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     private sameButtonRef = React.createRef<OF.IButton>()
 
     async componentDidMount() {
-        const changedItems = this.props.transcriptValidationSet.transcriptValidationResults.filter(tr => tr.validity === CLM.TranscriptValidationResultType.CHANGED)
-        await Util.setStateAsync(this, {changedItems})
+        const numberOfNeededRatings = this.props.validationSet.numRatingsNeeded()
+        await Util.setStateAsync(this, { numberOfNeededRatings })
         await this.onChangedDialog()
     }
 
@@ -76,100 +72,93 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         return renderActivity(activityProps, children, setRef, null, EditDialogType.IMPORT, this.state.selectedActivityIndex != null)
     }
 
-    currentLogDialodId(): string {
-        const logDialogId = this.state.changedItems[this.state.resultIndex].logDialogId
-        if (!logDialogId) {
-            throw new Error("Missing log dialog Id")
-        }
-        return logDialogId
-    }
-
     @autobind
     async onRight() {
-        const logDialogId = this.currentLogDialodId()
-        if (this.state.isFlipped) {
-            await Util.setStateAsync(this, {worseIds: [...this.state.worseIds, logDialogId]})
-        }
-        else {
-            await Util.setStateAsync(this, {betterIds: [...this.state.betterIds, logDialogId]})
+        if (this.state.ratingPair) {
+            // Make copy so it can be edited
+            const ratingPair = Util.deepCopy(this.state.ratingPair)
+            if (this.state.isFlipped) {
+                ratingPair.result = Test.RatingResult.FIRST
+                await this.props.onRate(ratingPair)
+            }
+            else {
+                ratingPair.result = Test.RatingResult.SECOND
+                await this.props.onRate(ratingPair)
+            }
         }
         this.onNext()
+
     }
 
     @autobind
     async onSame() {
-        const logDialogId = this.currentLogDialodId()
-        await Util.setStateAsync(this, {sameIds: [...this.state.sameIds, logDialogId]})
+        if (this.state.ratingPair) {
+            // Make copy so it can be edited
+            const ratingPair = Util.deepCopy(this.state.ratingPair)
+            ratingPair.result = Test.RatingResult.SAME
+            await this.props.onRate(ratingPair)
+        }
         this.onNext()
     }
 
     @autobind
     async onLeft() {
-        const logDialogId = this.currentLogDialodId()
-        if (this.state.isFlipped) {
-            await Util.setStateAsync(this, {betterIds: [...this.state.betterIds, logDialogId]})
-        }
-        else {
-            await Util.setStateAsync(this, {worseIds: [...this.state.worseIds, logDialogId]})
+        if (this.state.ratingPair) {
+            // Make copy so it can be edited
+            const ratingPair = Util.deepCopy(this.state.ratingPair)
+            if (this.state.isFlipped) {
+                ratingPair.result = Test.RatingResult.SECOND
+                await this.props.onRate(ratingPair)
+            }
+            else {
+                ratingPair.result = Test.RatingResult.FIRST
+                await this.props.onRate(ratingPair)
+            }
         }
         this.onNext()
     }
 
-    //--- SAVE ------
     @autobind
-    saveResults() {
-        const set = Util.deepCopy(this.props.transcriptValidationSet)
-
-        this.state.betterIds.forEach(id => {
-            const result = set.transcriptValidationResults.find(tr => tr.logDialogId === id)
-            if (!result) {
-                throw new Error("Can't find log dialog id")
-            }
-            result.rating = CLM.TranscriptRating.BETTER
-        })
-
-        this.state.worseIds.forEach(id => {
-            const result = set.transcriptValidationResults.find(tr => tr.logDialogId === id)
-            if (!result) {
-                throw new Error("Can't find log dialog id")
-            }
-            result.rating = CLM.TranscriptRating.WORSE
-        })
-
-        this.state.sameIds.forEach(id => {
-            const result = set.transcriptValidationResults.find(tr => tr.logDialogId === id)
-            if (!result) {
-                throw new Error("Can't find log dialog id")
-            }
-            result.rating = CLM.TranscriptRating.SAME
-        })
-
-        this.props.onClose(set)
+    closeModal() {
+        this.props.onClose()
     }
 
     @autobind
     onNext() {
         let resultIndex = this.state.resultIndex + 1
-        if (resultIndex === this.state.changedItems.length) {
-            this.saveResults()
+        if (resultIndex === this.state.numberOfNeededRatings) {
+            this.closeModal()
         }
         this.setState({resultIndex})
     }
 
     async onChangedDialog() {
 
-        if (this.state.resultIndex >= this.state.changedItems.length) {
-            console.log("INVALID INDEX: CompareDialogModal")
+        if (this.state.resultIndex >= this.state.numberOfNeededRatings) {
+            console.log("INVALID INDEX:RateDialogModal")
             return
         }
 
-        const validationResult = this.state.changedItems[this.state.resultIndex]
+        // Get a random pair that still needs rating
+        const ratingPair = this.props.validationSet.getNeededRating()
 
+        // We're done
+        if (!ratingPair) {
+            this.closeModal()
+            return
+        }
+
+        // Generate activities for rating
+        const source1 = ratingPair.sourceNames[0]
+        const source2 = ratingPair.sourceNames[1]
+        const transcript1 = this.props.validationSet.getTranscript(source1, ratingPair.conversationId)
+        const transcript2 = this.props.validationSet.getTranscript(source2, ratingPair.conversationId)
         let activities1: BotChat.Activity[] = []
         let activities2: BotChat.Activity[] = []
+
         let missingLog = false
-        if (validationResult.sourceActivities) {
-            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(validationResult.sourceActivities, null, this.props.entities, this.props.actions, this.props.app)
+        if (transcript1) {
+            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(transcript1, null, this.props.entities, this.props.actions, this.props.app)
             trainDialog.definitions = {
                 actions: this.props.actions,
                 entities: this.props.entities,
@@ -178,17 +167,16 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
             activities1 = teachWithActivities.activities
         }
-        if (validationResult.logDialogId) {
-            const logDialog = await ((this.props.fetchLogDialogAsync(this.props.app.appId, validationResult.logDialogId, true, true) as any) as Promise<CLM.LogDialog>)
-            if (!logDialog) {
-                activities2 = []
-                missingLog = true
+
+        if (transcript2) {
+            let trainDialog = await OBIUtils.trainDialogFromTranscriptImport(transcript2, null, this.props.entities, this.props.actions, this.props.app)
+            trainDialog.definitions = {
+                actions: this.props.actions,
+                entities: this.props.entities,
+                trainDialogs: []
             }
-            else {
-                const trainDialog = CLM.ModelUtils.ToTrainDialog(logDialog, this.props.actions, this.props.entities)
-                const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-                activities2 = teachWithActivities.activities
-            }
+            const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
+            activities2 = teachWithActivities.activities
         }
 
         // Find turn with first inconsistency
@@ -214,11 +202,12 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         activities1 = activities1.slice(0, stopTurn)
         activities2 = activities2.slice(0, stopTurn)
 
-        // Focuse same button (otherwise last choise will be active)
+        // Focuse same button (otherwise last choice will be active)
         this.focusSameButton()
 
         this.setState({
-            activities1,
+            ratingPair,
+            activities1, 
             activities2,
             missingLog,
             webchatKey: this.state.webchatKey + 1,
@@ -257,12 +246,12 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                 <OF.Modal
                     isOpen={true}
                     isBlocking={true}
-                    containerClassName="cl-modal cl-modal--compare-dialogs"
+                    containerClassName="cl-modal cl-modal--rate-dialogs"
                 >
                     <div className="cl-modal_body">
-                        <div className="cl-compare-dialogs-modal">
+                        <div className="cl-rate-dialogs-modal">
                             <div>
-                                <div className="cl-compare-dialogs-webchat">
+                                <div className="cl-rate-dialogs-webchat">
                                     <Webchat
                                         isOpen={leftHistory !== undefined}
                                         key={`A-${this.state.webchatKey}`}
@@ -283,7 +272,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                                 </div>
                             </div>
                             <div>
-                                <div className="cl-compare-dialogs-webchat">
+                                <div className="cl-rate-dialogs-webchat">
                                     <Webchat
                                         isOpen={rightHistory !== undefined}
                                         key={`B-${this.state.webchatKey}`}
@@ -332,10 +321,10 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                         </div>
                         <div className="cl-rate-dialogs-button-bar">
                             <div className="cl-rate-dialogs-count">
-                                {`${this.state.resultIndex + 1} of ${this.state.changedItems.length}`}
+                                {`${this.state.resultIndex + 1} of ${this.state.numberOfNeededRatings}`}
                             </div>
                             <OF.DefaultButton
-                                onClick={this.saveResults}
+                                onClick={this.closeModal}
                                 className='cl-rate-dialogs-close-button'
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
                                 text={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
@@ -374,8 +363,9 @@ const mapStateToProps = (state: State) => {
 
 export interface ReceivedProps {
     app: CLM.AppBase
-    transcriptValidationSet: CLM.TranscriptValidationSet
-    onClose: (set: CLM.TranscriptValidationSet) => void
+    validationSet: Test.ValidationSet
+    onRate: (ratingPair: Test.RatingPair) => void
+    onClose: () => void
 }
 
 // Props types inferred from mapStateToProps & dispatchToProps

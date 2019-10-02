@@ -21,7 +21,7 @@
   },
   "private": true,
   "dependencies": {
-    "@conversationlearner/models": "0.210.0",
+    "@conversationlearner/models": "0.212.0",
     "@conversationlearner/webchat": "0.155.0",
     "@cypress/webpack-preprocessor": "4.0.3",
     "adaptivecards": "1.2.0",
@@ -67,7 +67,6 @@
     "slate-plain-serializer": "0.4.16",
     "slate-react": "0.10.17",
     "string-similarity": "^3.0.0",
-    "txtgen": "^2.2.2",
     "url": "^0.11.0",
     "uuid": "^3.3.2"
   },

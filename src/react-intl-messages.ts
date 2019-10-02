@@ -468,6 +468,23 @@ export enum FM {
     TEACHSESSIONMODAL_EDIT_CONFIRMDELETE_TITLE = 'TeachSessionModal.edit.confirmDelete.title',
     TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION = 'TeachSessionModal.initstate.ariaDescription',
     TEACHSESSIONMODAL_INITSTATE_TEXT = 'TeachSessionModal.initstate.text',
+    
+    // Testing
+    TESTING_NAME_LABEL = 'Testing.testname.label',
+    TESTING_TABLE_SOURCE_LABEL = 'Testing.tablesource.lable',
+    TESTING_TABLE_COUNT_LABEL = 'Testing.tablecount.label',
+    TESTING_TABLE_LG_LABEL = 'Testing.lg.label',
+    TESTING_BUTTON_LOAD_RESULTS = 'Testing.button.LoadResults',
+    TESTING_BUTTON_SAVE_RESULTS = 'Testing.button.SaveResults',
+    TESTING_BUTTON_CLEAR_RESULTS = 'Testing.button.ClearResults',
+    TESTING_PIVOT_DATA = 'Testing.pivot.data',
+    TESTING_PIVOT_COMPARISON = 'Testing.pivot.comparison',
+    TESTING_PIVOT_RATING = 'Testing.pivot.rating',
+    TESTING_TITLE = 'Testing.title',
+    TESTING_SUBTITLE = 'Testing.subtitle',
+    TESTING_FILESAVE = 'Testing.FileSave',
+    TESTING_CONFIRM_CLEAR_TITLE = 'Testiing.confirmclear.title',
+
     // TextVariation
     TEXTVARIATION_PLACEHOLDER = 'TextVariationCreator.placeholder',
 
@@ -583,6 +600,10 @@ export enum FM {
     TRAINDIALOGS_LISTVIEW_BUTTON = 'TrainDialogs.ListView.Button',
     TRAINDIALOGS_TREEVIEW_BUTTON = 'TrainDialogs.TreeView.Button',
 
+    // TrainscriptComparisions
+    TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE = 'TranscriptComparisons.dropdown.title',
+    TRANSCRIPTCOMPARISONS_WARNING_TITLE = 'TranscriptComparisons.warning.title',
+
     // Trainscript Import Cancel
     TRANSCRIPT_IMPORT_CANCEL_TITLE = 'TranscriptImportCancel.title',
     TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL = 'TranscriptImportCancel.Checkbox.label',
@@ -593,16 +614,22 @@ export enum FM {
     TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON = 'TranscriptImporter.transcriptbutton',
     TRANSCRIPT_IMPORTER_LG_BUTTON = 'TranscriptImporter.lgbutton',
 
-    // Transcript Validator
-    TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
-    TRANSCRIPT_VALIDATOR_SUBTITLE = 'TranscriptValidator.subtitle',
-    TRANSCRIPT_VALIDATOR_PICKER_TITLE = 'TranscriptValidatorPicker.title',
-    TRANSCRIPT_VALIDATOR_FILESAVE = 'TranscriptValidator.FileSave',
-    TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER = 'TranscriptValidator.FileSavePlaceholder',
-    TRANSCRIPT_VALIDATOR_NAME_LABEL = 'TranscriptValidator.FileSavePlaceholder',
-    TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST = 'TranscriptValidator.button.NewTest',
-    TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS = 'TranscriptValidator.button.LoadResults',
-    TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS = 'TranscriptValidator.button.SaveResults',
+    // TrainscriptList
+    TRANSCRIPTLIST_WARNING_TITLE = 'TranscriptList.warning.title',
+    TRANSCRIPTLIST_LGLOADED = 'TranscriptList.lgloaded',
+    TRANSCRIPTLIST_NOLG = 'TranscriptList.nolg',
+    TRANSCRIPTLIST_BUTTON_ADD_LG = 'TranscriptList.button.add',
+    TRANSCRIPTLIST_BUTTON_VIEW = 'TranscriptList.button.view',
+    TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS = 'TranscriptList.button.AddTranscripts',
+    TRANSCRIPTLIST_BUTTON_TEST_MODEL = 'TranscriptList.button.NewTest',
+
+    // TranscriptTestPicker
+    TRANSCRIPT_TESTPICKER_TITLE = 'TranscriptTestPicker.title',
+    TRANSCRIPT_TESTPICKER_SOURCE = 'TranscriptTestPicker.source',
+
+    // TrainscriptRatings
+    TRANSCRIPTRATINGS_DROPDOWN_TITLE = 'TranscriptRatings.dropdown.label',
+    TRANSCRIPTRATINGS_WARNING_TITLE = 'TranscriptRatings.warning.title',
 
     // TreeView
     TREEVIEW_TOGGLE_FULLSCREEN = 'TreeView.ToggleFullScreen',
@@ -1033,9 +1060,6 @@ export default {
         [FM.ACTIONDETAILSLIST_COLUMNS_ISTERMINAL]: 'Wait',
         [FM.ACTIONDETAILSLIST_COLUMNS_CREATED_DATE_TIME]: 'Created',
 
-        // TextVariationCreator
-        [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
-
         // DemoImporter
         [FM.DEMOIMPORT_TITLE]: 'Import Demo Models',
         [FM.DEMOIMPORT_BUTTON_ARIADESCRIPTION]: 'Import Demo Models',
@@ -1221,6 +1245,29 @@ export default {
         [FM.TEACHSESSIONMODAL_INITSTATE_ARIADESCRIPTION]: 'Set Initial State',
         [FM.TEACHSESSIONMODAL_INITSTATE_TEXT]: 'Set Initial State',
 
+        // Testing
+        [FM.TESTING_NAME_LABEL]: 'Name',
+        [FM.TESTING_TABLE_SOURCE_LABEL]: 'Source',
+        [FM.TESTING_TABLE_COUNT_LABEL]: '# Transcripts',
+        [FM.TESTING_TABLE_LG_LABEL]: 'Uses LG',
+        [FM.TESTING_BUTTON_LOAD_RESULTS]: 'Load Results',
+        [FM.TESTING_BUTTON_SAVE_RESULTS]: 'Save Results',
+        [FM.TESTING_BUTTON_CLEAR_RESULTS]: 'Clear Results',
+        [FM.TESTING_PIVOT_DATA]: 'Data',
+        [FM.TESTING_PIVOT_COMPARISON]: 'Comparisons',
+        [FM.TESTING_PIVOT_RATING]: 'User Ratings',
+        [FM.TESTING_TITLE]: 'Testing',
+        [FM.TESTING_SUBTITLE]: `Compare and Rate .transcript files`,
+        [FM.TESTING_FILESAVE]: 'Name for Test Results',
+        [FM.TESTING_CONFIRM_CLEAR_TITLE]: 'Are you sure you want clear this test?',
+
+        // TextVariationCreator
+        [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
+        
+        // TrainscriptComparisions
+        [FM.TRANSCRIPTCOMPARISONS_DROPDOWN_TITLE]: 'Compared to:',
+        [FM.TRANSCRIPTCOMPARISONS_WARNING_TITLE]: 'At least two sets of transcripts must be loaded for a comparison',
+
         // Transcript Import Cancel
         [FM.TRANSCRIPT_IMPORT_CANCEL_TITLE]: 'Are you sure you want to abandon this import?',
         [FM.TRANSCRIPT_IMPORT_CANCEL_CHECKBOX_LABEL]: 'Skip remaining imports',
@@ -1231,16 +1278,22 @@ export default {
         [FM.TRANSCRIPT_IMPORTER_TRANSCRIPT_BUTTON]: '.transcript files',
         [FM.TRANSCRIPT_IMPORTER_LG_BUTTON]: '.lg files',
 
-        // Transcript Validator
-        [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Testing',
-        [FM.TRANSCRIPT_VALIDATOR_SUBTITLE]: `Compare Model's output to .transcript files`,
-        [FM.TRANSCRIPT_VALIDATOR_PICKER_TITLE]: 'Select Transcript files to test',
-        [FM.TRANSCRIPT_VALIDATOR_FILESAVE]: 'Name for Test Results',
-        [FM.TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER]: 'Name',
-        [FM.TRANSCRIPT_VALIDATOR_NAME_LABEL]: 'Test Name',
-        [FM.TRANSCRIPT_VALIDATOR_BUTTON_NEW_TEST]: 'New Test',
-        [FM.TRANSCRIPT_VALIDATOR_BUTTON_LOAD_RESULTS]: 'Load Results',
-        [FM.TRANSCRIPT_VALIDATOR_BUTTON_SAVE_RESULTS]: 'Save Results',
+        // TrainscriptList
+        [FM.TRANSCRIPTLIST_WARNING_TITLE]: 'Get started by loading some .transcript files',
+        [FM.TRANSCRIPTLIST_LGLOADED]: 'LG items loaded',
+        [FM.TRANSCRIPTLIST_NOLG]: 'No LG items loaded',
+        [FM.TRANSCRIPTLIST_BUTTON_ADD_LG]: 'Add LG',
+        [FM.TRANSCRIPTLIST_BUTTON_VIEW]: 'View Transcripts',
+        [FM.TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS]: 'Add Transcripts',
+        [FM.TRANSCRIPTLIST_BUTTON_TEST_MODEL]: 'Test Model',
+
+        // TranscriptTestPicker
+        [FM.TRANSCRIPT_TESTPICKER_TITLE]: 'Select Transcripts to Test',
+        [FM.TRANSCRIPT_TESTPICKER_SOURCE]: ' Source:',
+
+        // TrainscriptRatings
+        [FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE]: 'Relative to:',
+        [FM.TRANSCRIPTRATINGS_WARNING_TITLE]: 'At least two sets of transcripts must be loaded to rate them',
 
         // UserInput Modal
         [FM.USERINPUT_ADD_TITLE]: 'Add User Input',

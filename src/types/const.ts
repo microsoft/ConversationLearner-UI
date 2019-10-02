@@ -58,8 +58,7 @@ export const ports: Readonly<any> = {
 
 export enum FeatureStrings {
     CCI = "CCI",
-    DISPATCHER = "dispatcher",
-    REPROMPT = "REPROMPT"  // Create re-prompt train dialogs
+    DISPATCHER = "DISPATCHER",
 }
 
 export const fromLogTag = 'from-log'
