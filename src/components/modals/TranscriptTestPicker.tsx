@@ -101,7 +101,6 @@ export interface ReceivedProps {
     onSubmit: (sourceName: string) => void
 }
 
-// Props types inferred from mapStateToProps & dispatchToProps
 type Props = ReceivedProps & InjectedIntlProps
 
 export default connect<{}, {}, ReceivedProps>(null)(injectIntl(TranscriptTestPicker))

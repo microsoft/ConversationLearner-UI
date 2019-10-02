@@ -6,12 +6,12 @@ import * as React from 'react'
 import * as OF from 'office-ui-fabric-react'
 import * as Util from '../../Utils/util'
 import * as Test from '../../types/TestObjects'
+import { autobind } from 'core-decorators'
 import { connect } from 'react-redux'
 import { injectIntl, InjectedIntl, InjectedIntlProps } from 'react-intl'
 import { FM } from '../../react-intl-messages'
 import '../../routes/Apps/App/Testing.css'
 import './TranscriptRatings.css'
-import { autobind } from 'core-decorators'
 
 interface ComponentState {
     transcriptColumns: IRenderableColumn[]
@@ -84,7 +84,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
     async onLoadLGFiles(files: any): Promise<void> {
         await this.props.onLoadLGFiles(files)
 
-        // Clear filename so user can reload same file
+        // Clear input so user can reload same file
         let fileInput = (this.loadLGFileInput as HTMLInputElement)
         fileInput.value = ""
     }
@@ -93,7 +93,7 @@ class TranscriptList extends React.Component<Props, ComponentState> {
     async onLoadTranscriptFiles(files: any): Promise<void> {
         await this.props.onLoadTranscriptFiles(files)
 
-        // Clear filename so user can reload same file
+        // Clear input so user can reload same file
         let fileInput = (this.loadTranscriptsFileInput as HTMLInputElement)
         fileInput.value = ""
     }
@@ -191,8 +191,8 @@ class TranscriptList extends React.Component<Props, ComponentState> {
                             />
                             <OF.PrimaryButton
                                 disabled={renderResults.length === 0}
-                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_TEST_MODEL)}
-                                text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPT_VALIDATOR_BUTTON_TEST_MODEL)}
+                                ariaDescription={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_TEST_MODEL)}
+                                text={Util.formatMessageId(this.props.intl, FM.TRANSCRIPTLIST_BUTTON_TEST_MODEL)}
                                 iconProps={{ iconName: 'TestCase' }}
                                 onClick={this.props.onTest}
                             />

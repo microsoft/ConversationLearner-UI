@@ -67,12 +67,15 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
         if (!this.props.validationSet) {
             return []
         }
+
+        // Gatcher up items by result type
         const renderResults: SourceRenderData[] = []
         for (const sourceName of this.props.validationSet.sourceNames) {
 
             let items: Test.ValidationItem[] = this.props.validationSet.items
             .filter(i => i.sourceName === sourceName) 
 
+            // Skip the pivot
             if (this.state.comparePivot && sourceName !== this.state.comparePivot) {
                 const comparisons  = this.props.validationSet.getSourceComparisons(sourceName, this.state.comparePivot)
 

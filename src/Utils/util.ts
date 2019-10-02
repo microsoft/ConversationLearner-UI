@@ -332,12 +332,13 @@ export function isFeatureEnabled(featureString: string | undefined, feature: Con
     return false
 }
 
-// Generate colors that scale with number from red to green
+// Generate colors that scale with number from red (neg) to green (pos)
 export function scaledColor(rating?: number): string {
         if (rating === undefined) {
             return "#ffffff"
         }
         if (rating === 0) {
+            // Yellow at zero
             return '#ffec8c'
         }
         if (rating > 0) {
@@ -356,7 +357,7 @@ export function scaledColor(rating?: number): string {
         }
     }
 
-// Can be used JSON.stringify to serialize Map type objects
+// Can be used by JSON.stringify to serialize Map type objects
 // i.e. JSON.stringify({object with map}, mapReplacer)
 export function mapReplacer(key: any, value: any) {
     if (value instanceof Map) {

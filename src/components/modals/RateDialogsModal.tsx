@@ -75,6 +75,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     @autobind
     async onRight() {
         if (this.state.ratingPair) {
+            // Make copy so it can be edited
             const ratingPair = Util.deepCopy(this.state.ratingPair)
             if (this.state.isFlipped) {
                 ratingPair.result = Test.RatingResult.FIRST
@@ -92,6 +93,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     @autobind
     async onSame() {
         if (this.state.ratingPair) {
+            // Make copy so it can be edited
             const ratingPair = Util.deepCopy(this.state.ratingPair)
             ratingPair.result = Test.RatingResult.SAME
             await this.props.onRate(ratingPair)
@@ -102,6 +104,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     @autobind
     async onLeft() {
         if (this.state.ratingPair) {
+            // Make copy so it can be edited
             const ratingPair = Util.deepCopy(this.state.ratingPair)
             if (this.state.isFlipped) {
                 ratingPair.result = Test.RatingResult.SECOND
@@ -115,9 +118,8 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
         this.onNext()
     }
 
-    //--- SAVE ------
     @autobind
-    saveResults() {
+    closeModal() {
         this.props.onClose()
     }
 
@@ -125,7 +127,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
     onNext() {
         let resultIndex = this.state.resultIndex + 1
         if (resultIndex === this.state.numberOfNeededRatings) {
-            this.saveResults()
+            this.closeModal()
         }
         this.setState({resultIndex})
     }
@@ -142,7 +144,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
 
         // We're done
         if (!ratingPair) {
-            this.saveResults()
+            this.closeModal()
             return
         }
 
@@ -196,11 +198,11 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
             }
         }
 
-        // Cut off history at first inconsistency
+        // Cut off activities at first inconsistency
         activities1 = activities1.slice(0, stopTurn)
         activities2 = activities2.slice(0, stopTurn)
 
-        // Focuse same button (otherwise last choise will be active)
+        // Focuse same button (otherwise last choice will be active)
         this.focusSameButton()
 
         this.setState({
@@ -322,7 +324,7 @@ class RateDialogsModal extends React.Component<Props, ComponentState> {
                                 {`${this.state.resultIndex + 1} of ${this.state.numberOfNeededRatings}`}
                             </div>
                             <OF.DefaultButton
-                                onClick={this.saveResults}
+                                onClick={this.closeModal}
                                 className='cl-rate-dialogs-close-button'
                                 ariaDescription={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}
                                 text={Util.formatMessageId(this.props.intl, FM.BUTTON_CLOSE)}

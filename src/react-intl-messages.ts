@@ -480,6 +480,9 @@ export enum FM {
     TESTING_PIVOT_DATA = 'Testing.pivot.data',
     TESTING_PIVOT_COMPARISON = 'Testing.pivot.comparison',
     TESTING_PIVOT_RATING = 'Testing.pivot.rating',
+    TESTING_TITLE = 'Testing.title',
+    TESTING_SUBTITLE = 'Testing.subtitle',
+    TESTING_FILESAVE = 'Testing.FileSave',
 
     // TextVariation
     TEXTVARIATION_PLACEHOLDER = 'TextVariationCreator.placeholder',
@@ -616,7 +619,8 @@ export enum FM {
     TRANSCRIPTLIST_NOLG = 'TranscriptList.nolg',
     TRANSCRIPTLIST_BUTTON_ADD_LG = 'TranscriptList.button.add',
     TRANSCRIPTLIST_BUTTON_VIEW = 'TranscriptList.button.view',
-    TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS = 'TranscriptValidator.button.AddTranscripts',
+    TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS = 'TranscriptList.button.AddTranscripts',
+    TRANSCRIPTLIST_BUTTON_TEST_MODEL = 'TranscriptList.button.NewTest',
 
     // TranscriptTestPicker
     TRANSCRIPT_TESTPICKER_TITLE = 'TranscriptTestPicker.title',
@@ -625,13 +629,6 @@ export enum FM {
     // TrainscriptRatings
     TRANSCRIPTRATINGS_DROPDOWN_TITLE = 'TranscriptRatings.dropdown.label',
     TRANSCRIPTRATINGS_WARNING_TITLE = 'TranscriptRatings.warning.title',
-
-    // Transcript Validator
-    TRANSCRIPT_VALIDATOR_TITLE = 'TranscriptValidator.title',
-    TRANSCRIPT_VALIDATOR_SUBTITLE = 'TranscriptValidator.subtitle',
-    TRANSCRIPT_VALIDATOR_FILESAVE = 'TranscriptValidator.FileSave',
-    TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER = 'TranscriptValidator.FileSavePlaceholder',
-    TRANSCRIPT_VALIDATOR_BUTTON_TEST_MODEL = 'TranscriptValidator.button.NewTest',
 
     // TreeView
     TREEVIEW_TOGGLE_FULLSCREEN = 'TreeView.ToggleFullScreen',
@@ -1258,6 +1255,9 @@ export default {
         [FM.TESTING_PIVOT_DATA]: 'Data',
         [FM.TESTING_PIVOT_COMPARISON]: 'Comparisons',
         [FM.TESTING_PIVOT_RATING]: 'User Ratings',
+        [FM.TESTING_TITLE]: 'Testing',
+        [FM.TESTING_SUBTITLE]: `Compare and Rate .transcript files`,
+        [FM.TESTING_FILESAVE]: 'Name for Test Results',
 
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
@@ -1283,7 +1283,8 @@ export default {
         [FM.TRANSCRIPTLIST_BUTTON_ADD_LG]: 'Add LG',
         [FM.TRANSCRIPTLIST_BUTTON_VIEW]: 'View Transcripts',
         [FM.TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS]: 'Add Transcripts',
-
+        [FM.TRANSCRIPTLIST_BUTTON_TEST_MODEL]: 'Test Model',
+        
         // TranscriptTestPicker
         [FM.TRANSCRIPT_TESTPICKER_TITLE]: 'Select Transcripts to Test',
         [FM.TRANSCRIPT_TESTPICKER_SOURCE]: ' Source:',
@@ -1291,13 +1292,6 @@ export default {
         // TrainscriptRatings
         [FM.TRANSCRIPTRATINGS_DROPDOWN_TITLE]: 'Relative to:',
         [FM.TRANSCRIPTRATINGS_WARNING_TITLE]: 'At least two sets of transcripts must be loaded to rate them',
-
-        // Transcript Validator
-        [FM.TRANSCRIPT_VALIDATOR_TITLE]: 'Testing',
-        [FM.TRANSCRIPT_VALIDATOR_SUBTITLE]: `Compare and Rate .transcript files`,
-        [FM.TRANSCRIPT_VALIDATOR_FILESAVE]: 'Name for Test Results',
-        [FM.TRANSCRIPT_VALIDATOR_FILESAVE_PLACEHOLDER]: 'Name',
-        [FM.TRANSCRIPT_VALIDATOR_BUTTON_TEST_MODEL]: 'Test Model',
 
         // UserInput Modal
         [FM.USERINPUT_ADD_TITLE]: 'Add User Input',

@@ -42,6 +42,7 @@ export enum RatingResult {
 }
 export interface RatingPair {
     conversationId: string
+    // Source names in alphabetical order
     sourceNames: [string, string] 
     result: RatingResult 
 }
@@ -52,8 +53,8 @@ export class ValidationSet {
     items: ValidationItem[]
     sourceNames: string[]
     ratingPairs: RatingPair[]
-    lgMap: Map<string, CLM.LGItem>    // <lgName, LGItem
-    usesLgMap: Map<string, boolean>   // <sourceName, does it use 
+    lgMap: Map<string, CLM.LGItem>    // <lgName, LGItem>
+    usesLgMap: Map<string, boolean>   // <sourceName, does it use  LG>
 
     private comparisons: SourceComparison[]
     
@@ -70,12 +71,12 @@ export class ValidationSet {
         if (validationSet.items.length === 0) {
             throw new Error("No test results found in file")
         }
-        /* Allow for now
+        /* TODO: Allow for now. 
         if (validationSet.appId !== this.props.app.appId) {
             throw new Error("Loaded results are from a different Model")
         }*/
 
-        // Rehydrate transcripts
+        // Rehydrate transcripts from rawTranscripts (that have LG refs)
         validationSet.generateFullTranscripts()
 
         return validationSet
@@ -86,7 +87,7 @@ export class ValidationSet {
         // Make a copy and remove extraneous fields
         const saveData = Util.deepCopy(this)
         for (const item of saveData.items) {
-            // Only save raw transcript
+            // Only save raw transcripts (with LG refs)
             delete item.transcript
         }
         return new Blob([JSON.stringify(saveData, Util.mapReplacer)], { type: "text/plain;charset=utf-8" })
@@ -99,10 +100,12 @@ export class ValidationSet {
         return [...new Set(conversationIds)].length
     }
 
+    // Returns true if any of the sources use LG refs
     usesLG(): boolean {
         let temp = Array.from(this.usesLgMap.values()).find(v => v)
         return temp || false
     }
+
     getTranscripts(sourceName: string): BB.Activity[][] {
         return this.items
             .filter(i => i.sourceName === sourceName)
@@ -155,7 +158,7 @@ export class ValidationSet {
             let fileContent = await Util.readFileAsync(file)
 
             // Store both the raw and substituted transcript
-            // Raw one is used for save / log
+            // Raw one is used for save 
             const rawTranscript: BB.Activity[] = JSON.parse(fileContent)
             const transcript = Util.deepCopy(rawTranscript)
             let transcriptUsesLG = false
@@ -177,7 +180,9 @@ export class ValidationSet {
 
             this.addValidationResult(item)
 
-            this.usesLgMap.set(sourceName, transcriptUsesLG)
+            if (transcriptUsesLG) {
+                this.usesLgMap.set(sourceName, transcriptUsesLG)
+            }
 
             // Add sourceName if it doesn't exist
             if (!this.sourceNames.includes(sourceName)) {
@@ -205,6 +210,7 @@ export class ValidationSet {
         // Add sourceName if it doesn't exist
         if (!this.sourceNames.includes(item.sourceName)) {
             this.sourceNames.push(item.sourceName)
+            // Validation results never have LG as they come from logDialogs
             this.usesLgMap.set(item.sourceName, false)
         }
     }
@@ -288,7 +294,7 @@ export class ValidationSet {
                 // Don't compare to self
                 if (innerSource !== outerSource) {
 
-                    // Lookup is always alphabetical alphabetical
+                    // Lookup is always alphabetical
                     const sourceNames = [outerSource, innerSource].sort()
 
                     // Add new pair if it doesn't already exits
@@ -400,7 +406,7 @@ export class ValidationSet {
                 .length
     }
 
-    // Return a random pair of sources needing to be compared
+    // Return a random pair of sources needing to be rated
     getNeededRating(): RatingPair | undefined {
 
         // Filter to only those that haven't been rated

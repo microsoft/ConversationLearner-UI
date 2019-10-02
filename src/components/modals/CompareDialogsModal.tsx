@@ -83,20 +83,20 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
 
     @autobind
     onNext() {
-        let resultIndex = this.state.conversationIndex + 1
-        if (resultIndex === this.props.conversationIds.length) {
-            resultIndex = 0
+        let conversationIndex = this.state.conversationIndex + 1
+        if (conversationIndex === this.props.conversationIds.length) {
+            conversationIndex = 0
         }
-        this.setState({conversationIndex: resultIndex})       
+        this.setState({conversationIndex})       
     }
 
     @autobind
     onPrevious() {
-        let resultIndex = this.state.conversationIndex - 1
-        if (resultIndex < 0) {
-            resultIndex = this.props.conversationIds.length - 1
+        let conversationIndex = this.state.conversationIndex - 1
+        if (conversationIndex < 0) {
+            conversationIndex = this.props.conversationIds.length - 1
         }
-        this.setState({conversationIndex: resultIndex})
+        this.setState({conversationIndex})
     }
 
     // Set from and recipient data from proper rendering
@@ -167,10 +167,12 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                     }
                     // Compute rank with pivot offset (doesn't apply when only one source)
                     if (this.props.validationSet.sourceNames.length > 1) {
+                        // Will set rank of base source to 0 and offset other from the base
                         rankMap.set(sourceName, curItem.ranking !== undefined ? curItem.ranking - baseRank : undefined)
                     }
 
-                    // Note: assumes only on source with a logs attached to it
+                    // Note: assumes only one source has a log attached to it
+                    // TODO: In future may want to support multiple sources with logs
                     if (curItem.logDialogId) {
                         // Does log dialog still exist?
                         if (this.props.logDialogs.find(ld => ld.logDialogId === curItem.logDialogId)) {

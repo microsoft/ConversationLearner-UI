@@ -160,7 +160,7 @@ class Testing extends React.Component<Props, ComponentState> {
             return
         }
 
-        // Pop the next file
+        // Get the next test item
         const testItem = this.state.testItems[this.state.testIndex]
         this.setState({ testIndex: this.state.testIndex + 1 })
 
@@ -169,7 +169,7 @@ class Testing extends React.Component<Props, ComponentState> {
         }
         catch (e) {
             const error = e as Error
-            this.props.setErrorDisplay(ErrorType.Error, "", error.message, null)
+            this.props.setErrorDisplay(ErrorType.Error, `Source: ${testItem.sourceName} Conversation: ${testItem.conversationId}`, error.message, null)
             this.setState({
                 testItems: []
             })
@@ -324,6 +324,8 @@ class Testing extends React.Component<Props, ComponentState> {
     @autobind
     onOpenRate() {
         const validationSet = Test.ValidationSet.Create(this.state.validationSet)
+        // TODO: consider only clearing when .transcripts have changed
+        // and allowing user to continue partially rated set of .transcripts
         validationSet.initRating()
         this.setState({validationSet, isRateDialogsOpen: true})
     }
@@ -375,7 +377,7 @@ class Testing extends React.Component<Props, ComponentState> {
             return
         }
 
-        // If no name provided default to name of mddel
+        // If no name provided default to name of model
         if (!this.state.validationSet.fileName) {
             const validationSet = Test.ValidationSet.Create(this.state.validationSet)
             // Use app name, removing unsafe characters
@@ -387,6 +389,7 @@ class Testing extends React.Component<Props, ComponentState> {
         if (this.state.validationSet.fileName && this.onGetNameErrorMessage(this.state.validationSet.fileName) !== '') {
             return
         }
+
         const blob = this.state.validationSet.serialize()
         saveAs(blob, `${this.state.validationSet.fileName}${SAVE_SUFFIX}`)
     }
@@ -424,7 +427,7 @@ class Testing extends React.Component<Props, ComponentState> {
     nameErrorCheck(value: string): string {
         const MAX_NAME_LENGTH = 30
 
-        // Allow empty name, will populate with Model name on save
+        // Allow empty name, will populate with Model name on save if empty
         if (value.length === 0) {
             return ''
         }
@@ -451,10 +454,10 @@ class Testing extends React.Component<Props, ComponentState> {
                     className={`cl-dialog-title cl-dialog-title--import ${OF.FontClassNames.xxLarge}`}
                 >
                     <OF.Icon iconName="TestPlan" />
-                    <FormattedMessageId id={FM.TRANSCRIPT_VALIDATOR_TITLE} />
+                    <FormattedMessageId id={FM.TESTING_TITLE} />
                 </span>
                 <span className={OF.FontClassNames.mediumPlus}>
-                    <FormattedMessageId id={FM.TRANSCRIPT_VALIDATOR_SUBTITLE} />
+                    <FormattedMessageId id={FM.TESTING_SUBTITLE} />
                 </span>
                 <OF.TextField
                     className={`${OF.FontClassNames.mediumPlus} ${!this.state.validationSet || this.state.validationSet.items.length === 0 ? ' cl-test-disabled' : ''}`}

@@ -43,6 +43,7 @@ export interface ComposerDialog {
     lgMap: Map<string, CLM.LGItem>
 }
 
+// Return activities for the given logDialogId
 export async function getLogDialogActivities(
     appId: string, 
     logDialogId: string, 
@@ -68,12 +69,13 @@ export async function getLogDialogActivities(
     const teachWithActivities = await fetchActivitiesAsync(appId, trainDialog, user.name, user.id, false)
     const activites = teachWithActivities.activities
     if (conversationId || channelId) {
-        addIds(activites, conversationId, channelId)
+        addActivityReferences(activites, conversationId, channelId)
     }
     return activites
 }
 
-function addIds(activities: Util.RecursivePartial<BB.Activity>[], conversationId: string | undefined, channelId: string | undefined): void {
+// Adds channelId and conversationId references to activities
+function addActivityReferences(activities: Util.RecursivePartial<BB.Activity>[], conversationId: string | undefined, channelId: string | undefined): void {
     activities.forEach(a => {
         if (channelId) {
             a.channelId = channelId
@@ -124,6 +126,7 @@ export function isSameActivity(activity1: BB.Activity, activity2: BB.Activity): 
     return true
 }
 
+// Add new LG references from .lg file to Map (creates new one if doesn't already exist)
 export async function lgMapFromLGFiles(lgFiles: File[] | null, lgMap?: Map<string, CLM.LGItem>): Promise<Map<string, CLM.LGItem>> {
     const map = lgMap || new Map<string, CLM.LGItem>()
     if (lgFiles) {
@@ -561,7 +564,7 @@ export function findActionFromHashText(hashText: string, actions: CLM.ActionBase
     return matchedActions[0]
 }
 
-// Note: Transcripts are partials of partials of BB.Activity, so need to use "any"
+// Transcripts are partials of partials of BB.Activity, so RecusivePartial
 export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activity>[], transcript2: Util.RecursivePartial<BB.Activity>[]): boolean {
     if (transcript1.length !== transcript2.length) {
         return false
