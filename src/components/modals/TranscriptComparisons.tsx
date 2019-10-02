@@ -145,19 +145,19 @@ class TranscriptComparisons extends React.Component<Props, ComponentState> {
                     <div className={`cl-testing-result-group ${!this.props.validationSet || this.props.validationSet.items.length === 0 ? ' cl-test-disabled' : ''}`}>
                         <div className="cl-testing-result cl-testing-source-title"/>
                         <div className="cl-testing-result">
-                            <span className="cl-testing-result-title">Reproduced: </span>
+                            <span className="cl-testing-source-title">Reproduced: </span>
                         </div>
                         <div className="cl-testing-result">
-                            <span className="cl-testing-result-title">Changed: </span>
+                            <span className="cl-testing-source-title">Changed: </span>
                         </div>
                         {hasNoTranscript &&
                             <div className="cl-testing-result">
-                                <span className="cl-testing-result-title">No Transcript: </span>
+                                <span className="cl-testing-source-title">No Transcript: </span>
                             </div>
                         }
                         {hasInvalidTranscript &&
                             <div className="cl-testing-result">
-                                <span className="cl-testing-result-title">Invalid Transcript: </span>
+                                <span className="cl-testing-source-title">Invalid Transcript: </span>
                             </div>
                         }
                     </div>

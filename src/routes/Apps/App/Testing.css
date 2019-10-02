@@ -24,6 +24,7 @@
 
 .cl-testing-dropbox {
   width: 200px;
+  margin-bottom: 20px;
 }
 
 .cl-testing-trascript-group {
@@ -34,6 +35,7 @@
   display: inline-block;
   margin-bottom: 20px;
   border-bottom: 1px solid var(--cl-color-botchat-grey);
+  width: 225px;
 }
 
 .cl-test-disabled {
@@ -41,18 +43,19 @@
 }
 
 .cl-testing-result {
-  font-size: 16px;
-  padding-left: 70px;
+  font-size: 14px;
+  padding-left: 20px;
   border-top: 1px solid var(--cl-color-botchat-grey);
   position: relative;
-  overflow: auto;
+  overflow: hidden;
   height: 42px;
 }
 
 .cl-testing-source-title {
   text-align: center;
   font-weight: 600;
-  line-height: 40px;
+  line-height: 42px;
+  line-height: 42px;
   border-top: none;
 }
 
@@ -75,10 +78,10 @@
 
 .cl-testing-result-title {
   width: 155px;
-  float: left;
-  text-align: right;
-  line-height: 40px;
-  padding-right: 10px;
+  text-align: center;
+  height: 40px;
+  display: block;
+  font-weight: 500;
 }
 
 .cl-testing-result-subtitle {
