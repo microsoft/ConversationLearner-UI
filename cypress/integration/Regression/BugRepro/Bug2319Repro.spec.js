@@ -27,14 +27,19 @@ describe('Bug 2319 Repro', () => {
 
     it('Add a user turn and Bot response', () => {
       train.TypeYourMessage('The user types anything.')
+      cy.wait(1400)
       train.ClickScoreActionsButton()
       train.SelectTextAction("Bot's only response.")
+      cy.wait(1400)
     })
 
     it('Add another user turn undo it, then add a different user turn', () => {
       train.TypeYourMessage('The user types something new.')
+      cy.wait(1400)
       train.ClickTurnUndoButton()
+      cy.wait(1400)
       train.TypeYourMessage('The user types something different.')
+      cy.wait(1400)
     })
 
     // Bug 2319: Undo causes Score Actions to happen at the wrong time and errors out
