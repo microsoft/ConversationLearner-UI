@@ -511,6 +511,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     requiredEntityTags,
                     isTerminal: action.isTerminal,
                     reprompt: action.repromptActionId !== undefined,
+                    entryNode: action.isEntryNode,
                     isEditing: true
                 }
 
@@ -1143,16 +1144,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 ? false
                 : this.state.isTerminal
 
-        // Reprompt only allowed on CARD and TEXT actions
+        // Reprompt and Entry node only allowed on CARD and TEXT actions
         const reprompt = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
             ? this.state.reprompt
             : false
+        const entryNode = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
+        ? this.state.entryNode
+        : false
 
-        // TODO(thpar) : Handle entryNode here ?
         await Util.setStateAsync(this, {
             isPayloadMissing,
             isTerminal,
             reprompt,
+            entryNode,
             selectedActionTypeOptionKey: actionTypeOption.key,
             selectedEntityOptionKey: undefined,
             selectedEnumValueOptionKey: undefined,
