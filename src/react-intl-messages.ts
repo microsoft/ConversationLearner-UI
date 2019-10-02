@@ -483,6 +483,7 @@ export enum FM {
     TESTING_TITLE = 'Testing.title',
     TESTING_SUBTITLE = 'Testing.subtitle',
     TESTING_FILESAVE = 'Testing.FileSave',
+    TESTING_CONFIRM_CLEAR_TITLE = 'Testiing.confirmclear.title',
 
     // TextVariation
     TEXTVARIATION_PLACEHOLDER = 'TextVariationCreator.placeholder',
@@ -1258,6 +1259,7 @@ export default {
         [FM.TESTING_TITLE]: 'Testing',
         [FM.TESTING_SUBTITLE]: `Compare and Rate .transcript files`,
         [FM.TESTING_FILESAVE]: 'Name for Test Results',
+        [FM.TESTING_CONFIRM_CLEAR_TITLE]: 'Are you sure you want clear this test?',
 
         // TextVariationCreator
         [FM.TEXTVARIATION_PLACEHOLDER]: 'Add alternative input...',
@@ -1284,7 +1286,7 @@ export default {
         [FM.TRANSCRIPTLIST_BUTTON_VIEW]: 'View Transcripts',
         [FM.TRANSCRIPTLIST_BUTTON_ADD_TRANSCRIPTS]: 'Add Transcripts',
         [FM.TRANSCRIPTLIST_BUTTON_TEST_MODEL]: 'Test Model',
-        
+
         // TranscriptTestPicker
         [FM.TRANSCRIPT_TESTPICKER_TITLE]: 'Select Transcripts to Test',
         [FM.TRANSCRIPT_TESTPICKER_SOURCE]: ' Source:',

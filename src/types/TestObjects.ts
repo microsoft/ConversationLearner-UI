@@ -87,6 +87,10 @@ export class ValidationSet {
         // Make a copy and remove extraneous fields
         const saveData = Util.deepCopy(this)
         for (const item of saveData.items) {
+            // Test results won't have raw transcript, so copy to transcript
+            if (!item.rawTranscript) {
+                item.rawTranscript = item.transcript
+            }
             // Only save raw transcripts (with LG refs)
             delete item.transcript
         }
@@ -368,26 +372,15 @@ export class ValidationSet {
     }
 
     // Return count of unratable items because there are
-    // no matching transcripts in the source
-    numUnratable(pivotSource: string, source: string) {
+    // no matching transcripts between the two sources
+    unratableConversationIds(pivotSource: string, source: string): string[] {
         const pivotConversationIds = this.items.filter(i => i.sourceName === pivotSource).map(i => i.conversationId)
         const conversationIds = this.items.filter(i => i.sourceName === source).map(i => i.conversationId)
-        const matches = pivotConversationIds.filter(id => conversationIds.includes(id))
-        return pivotConversationIds.length - matches.length
+        return pivotConversationIds.filter(id => !conversationIds.includes(id))
     }
 
-    getRating(pivotSource: string, source: string, conversationId: string): RatingResult {
-        // Lookup is always alphabetical
-        const sourceNames = [pivotSource, source].sort()
-        const ratingPair = this.ratingPairs.find(rp => 
-            rp.conversationId === conversationId
-            && rp.sourceNames[0] === sourceNames[0]
-            && rp.sourceNames[1] === sourceNames[1]) 
-        return ratingPair ? ratingPair.result : RatingResult.UNKNOWN
-    }
-
-    // Return count of items that haven't been rated yet
-    numNotRated(pivotSource: string, source: string) {
+    // Return list of conversationIds that haven't been rated yet
+    unratedConversationIds(pivotSource: string, source: string): string[] {
 
         // Get list of conversations that exist for both
         const pivotConversationIds = this.items.filter(i => i.sourceName === pivotSource).map(i => i.conversationId)
@@ -403,7 +396,17 @@ export class ValidationSet {
                 && rp.sourceNames[0] === sourceNames[0]
                 && rp.sourceNames[1] === sourceNames[1]
                 && sharedConversationIds.includes(rp.conversationId))
-                .length
+                .map(rp => rp.conversationId)
+    }
+
+    getRating(pivotSource: string, source: string, conversationId: string): RatingResult {
+        // Lookup is always alphabetical
+        const sourceNames = [pivotSource, source].sort()
+        const ratingPair = this.ratingPairs.find(rp => 
+            rp.conversationId === conversationId
+            && rp.sourceNames[0] === sourceNames[0]
+            && rp.sourceNames[1] === sourceNames[1]) 
+        return ratingPair ? ratingPair.result : RatingResult.UNKNOWN
     }
 
     // Return a random pair of sources needing to be rated

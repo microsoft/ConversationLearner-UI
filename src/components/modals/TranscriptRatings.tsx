@@ -16,8 +16,8 @@ import './TranscriptRatings.css'
 interface ComponentState {
     ratePivot: string | undefined
     sourceRankMap: Map<string, RankCount[]>
-    unRatableMap: Map<string, number>    // Number conversations missing transcript for comparison
-    notRatedMap: Map<string, number>    // Number conversations that haven't been rated
+    unRatableMap: Map<string, string[]>    // Number conversations missing transcript for comparison <sourceName, conversationId[]>
+    notRatedMap: Map<string, string[]>    // Number conversations that haven't been rated <sourceName, conversationId[]>
     maxRank: number
     minRank: number
     numRanks: number
@@ -38,8 +38,8 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
         this.state = {
             ratePivot: undefined,
             sourceRankMap: new Map<string, RankCount[]>(),
-            unRatableMap: new Map<string, number>(),
-            notRatedMap: new Map<string, number>(),
+            unRatableMap: new Map<string, string[]>(),
+            notRatedMap: new Map<string, string[]>(),
             maxRank: 0,
             minRank: 0,
             numRanks: 0,
@@ -73,8 +73,8 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
         if (!ratePivot || !this.props.validationSet || this.props.validationSet.sourceNames.length < 2) {
             this.setState({
                 sourceRankMap: new Map<string, RankCount[]>(),
-                unRatableMap: new Map<string, number>(),
-                notRatedMap: new Map<string, number>(),
+                unRatableMap: new Map<string, string[]>(),
+                notRatedMap: new Map<string, string[]>(),
                 maxRank: 0,
                 minRank: 0,
                 numRanks: 0,
@@ -90,8 +90,8 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
 
         // Generate rank count slots and set count to 0
         const sourceRankMap = new Map<string, RankCount[]>()
-        const unRatableMap = new Map<string, number>()
-        const notRatedMap = new Map<string, number>()
+        const unRatableMap = new Map<string, string[]>()
+        const notRatedMap = new Map<string, string[]>()
         for (const sourceName of this.props.validationSet.sourceNames) {
             // Don't generate for pivot source
             if (sourceName !== ratePivot) {
@@ -101,8 +101,8 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                 }
                 sourceRankMap.set(sourceName, rankCounts)
                 // Get number that aren't rankable (as they don't have matching transcript)
-                unRatableMap.set(sourceName, this.props.validationSet.numUnratable(ratePivot, sourceName))
-                notRatedMap.set(sourceName, this.props.validationSet.numNotRated(ratePivot, sourceName))
+                unRatableMap.set(sourceName, this.props.validationSet.unratableConversationIds(ratePivot, sourceName))
+                notRatedMap.set(sourceName, this.props.validationSet.unratedConversationIds(ratePivot, sourceName))
             }
         }
 
@@ -228,8 +228,8 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                 {Array.from(this.state.sourceRankMap.keys())
                     .map(sourceName => {
                         const rankCount: RankCount[] | undefined = this.state.sourceRankMap.get(sourceName)
-                        const unrankableCount = this.state.unRatableMap.get(sourceName) || 0
-                        const notRatedCount = this.state.notRatedMap.get(sourceName) || 0
+                        const unrankable = this.state.unRatableMap.get(sourceName) || []
+                        const notRated = this.state.notRatedMap.get(sourceName) || []
                         return (
                             <div key={sourceName}>
                                 <div className="cl-testing-result-title">
@@ -257,23 +257,27 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                                     <div
                                         className="cl-transcriptrating-result"
                                         style={{backgroundColor: '#e6e8ea'}}
+                                        onClick={() => this.props.onView(notRated, this.state.ratePivot)}
+                                        role="button"
                                     >
                                         <span className="cl-testing-result-item cl-testing-result-value">
-                                            {notRatedCount}
+                                            {notRated.length}
                                         </span>
                                         <span className="cl-testing-result-item cl-testing-result-percent">
-                                            {Util.percentOf(notRatedCount, this.state.numConversations)}
+                                            {Util.percentOf(notRated.length, this.state.numConversations)}
                                         </span>
                                     </div>
                                     <div
                                         className="cl-transcriptrating-result"
                                         style={{backgroundColor: '#dbdee1'}}
+                                        onClick={() => this.props.onView(unrankable, this.state.ratePivot)}
+                                        role="button"
                                     >
                                         <span className="cl-testing-result-item cl-testing-result-value">
-                                            {unrankableCount}
+                                            {unrankable.length}
                                         </span>
                                         <span className="cl-testing-result-item cl-testing-result-percent">
-                                            {Util.percentOf(unrankableCount, this.state.numConversations)}
+                                            {Util.percentOf(unrankable.length, this.state.numConversations)}
                                         </span>
                                     </div>
                                 </div>

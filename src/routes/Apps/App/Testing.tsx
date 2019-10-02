@@ -18,6 +18,7 @@ import CompareDialogsModal from '../../../components/modals/CompareDialogsModal'
 import RateDialogsModal from '../../../components/modals/RateDialogsModal'
 import TestWaitModal from '../../../components/modals/ProgressModal'
 import TranscriptTestPicker from '../../../components/modals/TranscriptTestPicker'
+import ConfirmCancelModal from '../../../components/modals/ConfirmCancelModal'
 import { autobind } from 'core-decorators'
 import { connect } from 'react-redux'
 import { saveAs } from 'file-saver'
@@ -38,6 +39,7 @@ interface ComponentState {
     viewConversationPivot: string | undefined
     isRateDialogsOpen: boolean
     isTestPickerOpen: boolean
+    isConfirmClearModalOpen: boolean
     pivotSelection: string | undefined
     isSaveInputOpen: boolean
 }
@@ -56,6 +58,7 @@ class Testing extends React.Component<Props, ComponentState> {
             viewConversationPivot: undefined,
             isRateDialogsOpen: false,
             isTestPickerOpen: false,
+            isConfirmClearModalOpen: false,
             pivotSelection: undefined,
             isSaveInputOpen: false
         }
@@ -371,6 +374,28 @@ class Testing extends React.Component<Props, ComponentState> {
     }
 
     @autobind
+    onClear() {
+        this.setState({isConfirmClearModalOpen: true})
+    }
+
+    @autobind
+    onConfirmClear() {
+        const validationSet = Test.ValidationSet.Create({ appId: this.props.app.appId })
+
+        // Clear filename so user can reload same file
+        let fileInput = (this.loadSetFileInput as HTMLInputElement)
+        fileInput.value = ""
+        this.setState({validationSet, isConfirmClearModalOpen: false})
+    }
+
+    @autobind
+    onCancelClear() {
+        this.setState({
+            isConfirmClearModalOpen: false,
+        })
+    }
+
+    @autobind
     async onSaveSet() {
 
         if (!this.state.validationSet) {
@@ -392,16 +417,6 @@ class Testing extends React.Component<Props, ComponentState> {
 
         const blob = this.state.validationSet.serialize()
         saveAs(blob, `${this.state.validationSet.fileName}${SAVE_SUFFIX}`)
-    }
-
-    @autobind
-    onClear() {
-        const validationSet = Test.ValidationSet.Create({ appId: this.props.app.appId })
-
-        // Clear filename so user can reload same file
-        let fileInput = (this.loadSetFileInput as HTMLInputElement)
-        fileInput.value = ""
-        this.setState({validationSet})
     }
 
     @autobind
@@ -535,6 +550,12 @@ class Testing extends React.Component<Props, ComponentState> {
                         </OF.PivotItem>
                     </OF.Pivot>
                 </div>
+                <ConfirmCancelModal
+                    open={this.state.isConfirmClearModalOpen}
+                    onCancel={this.onCancelClear}
+                    onConfirm={this.onConfirmClear}
+                    title={Util.formatMessageId(this.props.intl, FM.TESTING_CONFIRM_CLEAR_TITLE)}
+                />
                 <TestWaitModal
                     open={this.state.testItems.length > 0}
                     title={"Testing"}
