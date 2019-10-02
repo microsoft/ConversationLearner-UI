@@ -87,8 +87,21 @@ const convertEntityIdsToTags = (ids: string[], entities: CLM.EntityBase[], expan
         .reduce((a, b) => [...a, ...b], [])
 }
 
-const toConditionName = (entity: CLM.EntityBase, enumValue: CLM.EnumValue): string => {
+const getEnumConditionName = (entity: CLM.EntityBase, enumValue: CLM.EnumValue): string => {
     return `${entity.entityName} = ${enumValue.enumValue}`
+}
+
+const conditionDisplay: Record<CLM.ConditionType, string> = {
+    [CLM.ConditionType.EQUAL]: '==',
+    [CLM.ConditionType.NOT_EQUAL]: '!=',
+    [CLM.ConditionType.GREATER_THAN]: '>',
+    [CLM.ConditionType.GREATER_THAN_OR_EQUAL]: '>=',
+    [CLM.ConditionType.LESS_THAN]: '<',
+    [CLM.ConditionType.LESS_THEN_OR_EQUAL]: '<=',
+}
+
+const getValueConditionName = (entity: CLM.EntityBase, condition: CLM.Condition): string => {
+    return `${entity.entityName} ${conditionDisplay[condition.condition]} ${condition.value}`
 }
 
 const convertConditionalsToTags = (conditions: CLM.Condition[], entities: CLM.EntityBase[]): IConditionalTag[] => {
@@ -102,19 +115,34 @@ const convertConditionalsToTags = (conditions: CLM.Condition[], entities: CLM.En
             console.log(`ERROR: Condition refers to Entity without Enums ${entity.entityName}`)
         }
         else {
-            const enumValue = entity.enumValues.find(e => e.enumValueId === c.valueId)
-            if (!enumValue) {
-                console.log(`ERROR: Condition refers to non-existent EnumValue: ${c.valueId}`)
+            const enumValueId = c.valueId
+            if (enumValueId) {
+                const enumValue = entity.enumValues.find(e => e.enumValueId === enumValueId)
+                if (!enumValue) {
+                    console.log(`ERROR: Condition refers to non-existent EnumValue: ${enumValueId}`)
+                }
+                else {
+                    const conditionalTag: IConditionalTag = {
+                        key: `${c.entityId}${enumValueId}`,
+                        name: getEnumConditionName(entity, enumValue),
+                        condition: c
+                    }
+
+                    tags.push(conditionalTag)
+                }
             }
             else {
-                tags.push({
-                    key: c.valueId,
-                    name: toConditionName(entity, enumValue),
+                const conditionalTag: IConditionalTag = {
+                    key: `${c.entityId}`,
+                    name: getValueConditionName(entity, c),
                     condition: c
-                })
+                }
+
+                tags.push(conditionalTag)
             }
         }
     })
+
     return tags
 }
 
@@ -133,7 +161,7 @@ const convertEntityToConditionalTags = (entity: CLM.EntityBase, expand = true): 
         const conditionalTags = entity.enumValues.map<IConditionalTag>(enumValue =>
             ({
                 key: enumValue.enumValueId!,
-                name: toConditionName(entity, enumValue),
+                name: getEnumConditionName(entity, enumValue),
                 condition: {
                     entityId: entity.entityId,
                     valueId: enumValue.enumValueId!,

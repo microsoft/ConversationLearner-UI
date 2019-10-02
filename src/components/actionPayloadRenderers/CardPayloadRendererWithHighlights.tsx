@@ -58,6 +58,7 @@ const Component: React.FC<Props> = (props) => {
             <div>
                 {payloadRenderData.showToggle
                     && <OF.Toggle
+                        data-testid="action-scorer-entity-toggle"
                         checked={isOriginalVisible}
                         onChange={onChangeVisible}
                     />}

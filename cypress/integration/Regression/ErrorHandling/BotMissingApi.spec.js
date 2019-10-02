@@ -46,7 +46,7 @@ describe('Bot Missing API - ErrorHandling', () => {
 
     it('Should verify the Train Dialog shows error and warning messages', () => {
       train.EditTraining('Lets have that greeting.', 'How about some text?', 'Just a simple text action...')
-      train.VerifyChatTurnIsAnExactMatch('ERROR: API callback with name “RandomGreeting” is not defined', 6, 1)
+      train.VerifyChatTurnIsAnExactMatch('ERROR: API callback with name "RandomGreeting" is not defined', 6, 1)
       train.VerifyWarningMessage('Running Bot not compatible with this Model')
     })
     

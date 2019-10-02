@@ -94,6 +94,7 @@ const Component: React.FC<Props> = (props) => {
             {showToggle
                 && <div>
                     <OF.Toggle
+                        data-testid="action-scorer-entity-toggle"
                         checked={isOriginalVisible}
                         onChange={onChangeVisible}
                     />
