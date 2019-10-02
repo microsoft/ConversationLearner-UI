@@ -23,7 +23,7 @@ import { Value } from 'slate'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { State } from '../../types'
+import { FeatureStrings, State } from '../../types'
 import { REPROMPT_SELF } from '../../types/const'
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
 import { withRouter } from 'react-router-dom'
@@ -1752,15 +1752,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             disabled={!this.state.isTerminal || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                             tipType={ToolTip.TipType.ACTION_REPROMPT}
                         />
-                        <TC.Checkbox
-                            data-testid="action-creator-entry-node-checkbox"
-                            label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL)}
-                            checked={this.state.entryNode}
-                            onChange={this.onChangeEntryNodeCheckbox}
-                            style={{ marginTop: '1em', display: 'inline-block' }}
-                            disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
-                            tipType={ToolTip.TipType.ACTION_ENTRY_NODE}
-                        />
+                        {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
+                            <TC.Checkbox
+                                data-testid="action-creator-entry-node-checkbox"
+                                label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL)}
+                                checked={this.state.entryNode}
+                                onChange={this.onChangeEntryNodeCheckbox}
+                                style={{ marginTop: '1em', display: 'inline-block' }}
+                                disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                tipType={ToolTip.TipType.ACTION_ENTRY_NODE}
+                            />
+                        }
                         <div
                             data-testid="action-warning-nowait-expected"
                             className="cl-error-message-label"
@@ -1895,7 +1897,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
         actions: state.actions,
         trainDialogs: state.trainDialogs,
         botInfo: state.bot.botInfo,
-        browserId: state.bot.browserId
+        browserId: state.bot.browserId,
+        settings: state.settings
     }
 }
 
