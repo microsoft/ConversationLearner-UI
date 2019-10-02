@@ -166,7 +166,9 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                         activityMap.set(sourceName, teachWithActivities.activities)
                     }
                     // Computer rank with pivot offset
-                    rankMap.set(sourceName, curItem.ranking !== undefined ? curItem.ranking - baseRank : undefined)
+                    if (this.props.validationSet.sourceNames.length > 1) {
+                        rankMap.set(sourceName, curItem.ranking !== undefined ? curItem.ranking - baseRank : undefined)
+                    }
 
                     // Note: assumes only on source with a logs attached to it
                     if (curItem.logDialogId) {
@@ -252,6 +254,9 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                 >
                     <div className={`cl-modal_body ${body}`}>
                         <div className="cl-compare-dialogs-modal">
+                            <div className="cl-compare-dialogs-filename">
+                                    {this.props.conversationIds[this.state.conversationIndex]}
+                            </div>
                             {renderData.map(rd => {
                                 return (
                                     <div 
@@ -299,9 +304,6 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                     curIndex={this.state.conversationIndex}
                                     total={this.props.conversationIds.length}
                                 />
-                            </div>
-                            <div className="cl-compare-dialogs-filename">
-                                {this.props.conversationIds[this.state.conversationIndex]}
                             </div>
                             <div className="cl-modal-buttons_secondary">
                                 <OF.DefaultButton

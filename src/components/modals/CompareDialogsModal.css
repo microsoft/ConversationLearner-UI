@@ -49,9 +49,11 @@
     -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
     font-size: 12px;
-    margin-top: -23px;
+    margin-top: -8px;
     white-space: nowrap;
     opacity: 0.4;
+    position: absolute;
+    right: 10px;
 }
 
 .cl-modal.cl-modal--compare-dialogs {
