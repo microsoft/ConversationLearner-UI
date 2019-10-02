@@ -351,21 +351,18 @@ export class ValidationSet {
 
         for (const item of this.items) {
             // Get ratingpairs for this item
-            const ratingParis = this.ratingPairs.filter(c => c.conversationId === item.conversationId)
+            const ratingPairs = this.ratingPairs.filter(c => c.conversationId === item.conversationId)
 
             // Clear any old ranking
             item.ranking = 0
             
             // Give a point for each time it was voted as better
-            for (const ratingPair of ratingParis) {
+            for (const ratingPair of ratingPairs) {
                 if (ratingPair.result === RatingResult.FIRST && ratingPair.sourceNames[0] === item.sourceName) {
                     item.ranking = item.ranking ? item.ranking + 1 : 1
                 }
                 else if (ratingPair.result === RatingResult.SECOND && ratingPair.sourceNames[1] === item.sourceName) {
                     item.ranking = item.ranking ? item.ranking + 1 : 1
-                }
-                else if (ratingPair.result === RatingResult.NO_TRANSCRIPT || ratingPair.result === RatingResult.UNKNOWN) {
-                    item.ranking = undefined
                 }
             }
         }
