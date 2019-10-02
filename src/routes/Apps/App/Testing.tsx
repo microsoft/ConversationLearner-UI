@@ -83,10 +83,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 
                 await validationSet.addTranscriptFiles(transcriptFiles)
 
-                await Util.setStateAsync(this, {
-                    validationSet,
-                    edited: true // LARS is this used
-                })
+                await Util.setStateAsync(this, {validationSet})
 
                 // Recompute comparisons and rankings
                 await this.onTranscriptsChanged()
@@ -109,10 +106,7 @@ class Testing extends React.Component<Props, ComponentState> {
                 
                 await validationSet.addLGFiles(lgFiles)
 
-                await Util.setStateAsync(this, {
-                    validationSet,
-                    edited: true // LARS is this used
-                })
+                await Util.setStateAsync(this, {validationSet})
 
                 // Recompute comparisons and rankings
                 await this.onTranscriptsChanged()
@@ -418,10 +412,7 @@ class Testing extends React.Component<Props, ComponentState> {
             }
             const validationSet = Test.ValidationSet.Deserialize(fileText)
 
-            await Util.setStateAsync(this, {
-                validationSet,
-                edited: false
-            })
+            await Util.setStateAsync(this, {validationSet})
         }
         catch (e) {
             const error = e as Error
