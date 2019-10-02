@@ -379,7 +379,7 @@ class Settings extends React.Component<Props, ComponentState> {
                             onClick={this.onClickExport}
                             ariaDescription={Util.formatMessageId(intl, FM.BUTTON_EXPORT)}
                             text={Util.formatMessageId(intl, FM.BUTTON_EXPORT)}
-                            iconProps={{ iconName: 'DownloadDocument' }}
+                            iconProps={{ iconName: 'CloudDownload' }}
                         />
                         <OF.DefaultButton
                             data-testid="settings-copy-model-button"
