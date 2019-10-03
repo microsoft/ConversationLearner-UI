@@ -249,7 +249,7 @@ export async function onChangeAction(
                 if (!newAction.clientData || !newAction.clientData.importHashes) {
                     newAction.clientData = { importHashes: []}
                 }
-                newAction.clientData!.importHashes!.push(importHash)
+                newAction.clientData.importHashes!.push(importHash)
                 await editActionThunkAsync(appId, newAction)
 
                 // Test if new lookup can be used on any other imported actions
@@ -470,7 +470,7 @@ export async function onEditTeach(
 }
 
 // Returns placeholder if it exists, otherwise creates it if given creation action
-export async function getPlaceholderAPIAction(
+export async function getOrCreatePlaceholderAPIAction(
     appId: string,
     placeholderName: string | "",
     isTerminal: boolean,
@@ -544,7 +544,8 @@ export async function getAPIPlaceholderScorerStep(
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null>
 ): Promise<CLM.TrainScorerStep> {
 
-    const placeholderAction = await getPlaceholderAPIAction(appId, placeholderName, isTerminal, actions, createActionThunkAsync)
+    const placeholderAction = await getOrCreatePlaceholderAPIAction(appId, placeholderName, isTerminal,
+        actions, createActionThunkAsync)
 
     if (!placeholderAction) {
         throw new Error("Unable to create API placeholder Action")

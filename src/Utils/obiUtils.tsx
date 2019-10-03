@@ -252,7 +252,8 @@ export async function trainDialogFromTranscriptImport(
                     const isTerminal = !nextActivity || nextActivity.from.role === "user"
 
                     if (!action) {
-                        action = await DialogEditing.getPlaceholderAPIAction(app.appId, actionCall.actionName, isTerminal, actions, createActionThunkAsync as any)
+                        action = await DialogEditing.getOrCreatePlaceholderAPIAction(app.appId, actionCall.actionName,
+                            isTerminal, actions, createActionThunkAsync as any)
                     }
                     // Throw error if I was supposed to create actions
                     if (!action && createActionThunkAsync) {
