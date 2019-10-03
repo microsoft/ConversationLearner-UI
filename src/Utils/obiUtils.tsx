@@ -611,7 +611,7 @@ export function areTranscriptsEqual(transcript1: Util.RecursivePartial<BB.Activi
 /**
  * Given the {entityName, entityValue} results from some action being imported, returns
  * an array of FilledEntity instances representing those results.
- * Entities that do not yet exist will be created once.
+ * Entities that do not yet exist will be created and added to `entities`.
  */
 export async function importActionOutput(
     actionResults: OBIActionOutput[],
