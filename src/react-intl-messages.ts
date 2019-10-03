@@ -39,6 +39,7 @@ export enum FM {
     ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT = 'ActionCreatorEditor.traindialogsButton.text',
     ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL = 'ActionCreatorEditor.checkboxTerminalLabel',
     ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL = 'ActionCreatorEditor.checkboxRepromptLabel',
+    ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL = 'ActionCreatorEditor.checkboxEntryNodeLabel',
     ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE = 'ActionCreatorEditor.confirmDeleteTitle',
     ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING = 'ActionCreatorEditor.confirmDeleteWarning',
     ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE = 'ActionCreatorEditor.confirmEditTitle',
@@ -513,6 +514,9 @@ export enum FM {
     TOOLTIP_ACTION_DISQUAL_ROW3 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW3',
     TOOLTIP_ACTION_DISQUAL_ROW4 = 'ToolTip.ACTION_NEGATIVE_TITLE_ROW4',
 
+    TOOLTIP_ACTION_ENTRY_NODE = 'ToolTip.ACTION_ENTRY_NODE',
+    TOOLTIP_ACTION_ENTRY_NODE_TITLE = 'ToolTip.ACTION_ENTRY_NODE_TITLE',
+
     TOOLTIP_ACTION_REPROMPT = 'ToolTip.ACTION_REPROMPT',
     TOOLTIP_ACTION_REPROMPT_TITLE = 'ToolTip.ACTION_REPROMPT_TITLE',
 
@@ -680,6 +684,7 @@ export default {
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL]: 'Wait for Response?',
         [FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL]: 'Reprompt on unexected user input',
+        [FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL]: 'Direct unknown user 1st utterance to this action',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this Action?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure?',
@@ -949,6 +954,9 @@ export default {
         [FM.TOOLTIP_ACTION_DISQUAL_ROW2]: '$paymentDetails',
         [FM.TOOLTIP_ACTION_DISQUAL_ROW3]: '"When were you born?"',
         [FM.TOOLTIP_ACTION_DISQUAL_ROW4]: '$birthdate',
+
+        [FM.TOOLTIP_ACTION_ENTRY_NODE]: "When selected and not in a Train Dialog, Bot will direct dialog flow to this action if it isn't confident on how to respond to the user's first utterance.",
+        [FM.TOOLTIP_ACTION_ENTRY_NODE_TITLE]: 'Unknown user 1st turn utterance',
 
         [FM.TOOLTIP_ACTION_REPROMPT]: "When selected and not in a Train Dialog, Bot will repeat the given action if it isn't confident on how to respond to the user's input.",
         [FM.TOOLTIP_ACTION_REPROMPT_TITLE]: 'Reprompt',

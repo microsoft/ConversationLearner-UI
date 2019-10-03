@@ -23,7 +23,7 @@ import { Value } from 'slate'
 import { returntypeof } from 'react-redux-typescript'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { State } from '../../types'
+import { FeatureStrings, State } from '../../types'
 import { REPROMPT_SELF } from '../../types/const'
 import { CLTagItem, ICLPickerItemProps } from './CLTagItem'
 import { withRouter } from 'react-router-dom'
@@ -281,6 +281,7 @@ interface ComponentState {
     secondarySlateValuesMap: SlateValueMap
     isTerminal: boolean
     reprompt: boolean
+    entryNode: boolean
     selectedCardIndex: number
 }
 
@@ -322,6 +323,7 @@ const initialState: Readonly<ComponentState> = {
     secondarySlateValuesMap: {},
     isTerminal: true,
     reprompt: false,
+    entryNode: false,
     selectedCardIndex: 0
 }
 
@@ -509,6 +511,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     requiredEntityTags,
                     isTerminal: action.isTerminal,
                     reprompt: action.repromptActionId !== undefined,
+                    entryNode: action.isEntryNode,
                     isEditing: true
                 }
 
@@ -538,8 +541,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const requiredEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.requiredEntityTags, initialEditState.requiredEntityTags)
         const disqualifyingEntitiesChanged = !initialEditState || !this.areTagsIdentical(this.state.negativeEntityTags, initialEditState.negativeEntityTags)
 
-        const isTerminalChanged = initialEditState!.isTerminal !== this.state.isTerminal
-        const isRepromptChanged = initialEditState!.reprompt !== this.state.reprompt
+        const isTerminalChanged = initialEditState.isTerminal !== this.state.isTerminal
+        const isRepromptChanged = initialEditState.reprompt !== this.state.reprompt
+        const isEntryNodeChanged = initialEditState.entryNode !== this.state.entryNode
         const isSelectedApiChanged = initialEditState.selectedApiOptionKey !== this.state.selectedApiOptionKey
         const isSelectedCardChanged = initialEditState.selectedCardOptionKey !== this.state.selectedCardOptionKey
 
@@ -551,6 +555,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             || disqualifyingEntitiesChanged
             || isTerminalChanged
             || isRepromptChanged
+            || isEntryNodeChanged
 
         if (prevState.hasPendingChanges !== hasPendingChanges) {
             this.setState({
@@ -565,7 +570,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             this.onChangePayloadEditor(values, TEXT_SLOT)
             await Util.setStateAsync(this, {
                 isTerminal: props.importedAction.isTerminal,
-                reprompt: props.importedAction.reprompt
+                reprompt: props.importedAction.reprompt,
+                entryNode: props.importedAction.entryNode
             })
 
             // If a good card match exists switch to card view
@@ -657,6 +663,13 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     onChangeRepromptCheckbox() {
         this.setState(prevState => ({
             reprompt: !prevState.reprompt
+        }))
+    }
+
+    @autobind
+    onChangeEntryNodeCheckbox() {
+        this.setState(prevState => ({
+            entryNode: !prevState.entryNode
         }))
     }
 
@@ -939,6 +952,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             packageDeletionId: 0,
             actionType: CLM.ActionTypes[this.state.selectedActionTypeOptionKey],
             entityId: this.state.selectedEntityOptionKey,
+            isEntryNode: this.state.entryNode,
             enumValueId: this.state.selectedEnumValueOptionKey,
             clientData: this.props.action
                 ? this.props.action.clientData
@@ -1130,15 +1144,19 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                 ? false
                 : this.state.isTerminal
 
-        // Reprompt only allowed on CARD and TEXT actions
+        // Reprompt and Entry node only allowed on CARD and TEXT actions
         const reprompt = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
             ? this.state.reprompt
             : false
+        const entryNode = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
+        ? this.state.entryNode
+        : false
 
         await Util.setStateAsync(this, {
             isPayloadMissing,
             isTerminal,
             reprompt,
+            entryNode,
             selectedActionTypeOptionKey: actionTypeOption.key,
             selectedEntityOptionKey: undefined,
             selectedEnumValueOptionKey: undefined,
@@ -1734,6 +1752,17 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             disabled={!this.state.isTerminal || [CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                             tipType={ToolTip.TipType.ACTION_REPROMPT}
                         />
+                        {Util.isFeatureEnabled(this.props.settings.features, FeatureStrings.CCI) &&
+                            <TC.Checkbox
+                                data-testid="action-creator-entry-node-checkbox"
+                                label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL)}
+                                checked={this.state.entryNode}
+                                onChange={this.onChangeEntryNodeCheckbox}
+                                style={{ marginTop: '1em', display: 'inline-block' }}
+                                disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
+                                tipType={ToolTip.TipType.ACTION_ENTRY_NODE}
+                            />
+                        }
                         <div
                             data-testid="action-warning-nowait-expected"
                             className="cl-error-message-label"
@@ -1868,7 +1897,8 @@ const mapStateToProps = (state: State, ownProps: any) => {
         actions: state.actions,
         trainDialogs: state.trainDialogs,
         botInfo: state.bot.botInfo,
-        browserId: state.bot.browserId
+        browserId: state.bot.browserId,
+        settings: state.settings
     }
 }
 
