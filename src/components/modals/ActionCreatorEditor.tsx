@@ -281,7 +281,7 @@ interface ComponentState {
     secondarySlateValuesMap: SlateValueMap
     isTerminal: boolean
     reprompt: boolean
-    entryNode: boolean
+    isEntryNode: boolean
     selectedCardIndex: number
 }
 
@@ -323,7 +323,7 @@ const initialState: Readonly<ComponentState> = {
     secondarySlateValuesMap: {},
     isTerminal: true,
     reprompt: false,
-    entryNode: false,
+    isEntryNode: false,
     selectedCardIndex: 0
 }
 
@@ -511,7 +511,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                     requiredEntityTags,
                     isTerminal: action.isTerminal,
                     reprompt: action.repromptActionId !== undefined,
-                    entryNode: action.isEntryNode,
+                    isEntryNode: action.isEntryNode,
                     isEditing: true
                 }
 
@@ -543,7 +543,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
 
         const isTerminalChanged = initialEditState.isTerminal !== this.state.isTerminal
         const isRepromptChanged = initialEditState.reprompt !== this.state.reprompt
-        const isEntryNodeChanged = initialEditState.entryNode !== this.state.entryNode
+        const isEntryNodeChanged = initialEditState.isEntryNode !== this.state.isEntryNode
         const isSelectedApiChanged = initialEditState.selectedApiOptionKey !== this.state.selectedApiOptionKey
         const isSelectedCardChanged = initialEditState.selectedCardOptionKey !== this.state.selectedCardOptionKey
 
@@ -667,9 +667,9 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
     }
 
     @autobind
-    onChangeEntryNodeCheckbox() {
+    onChangeIsEntryNodeCheckbox() {
         this.setState(prevState => ({
-            entryNode: !prevState.entryNode
+            isEntryNode: !prevState.isEntryNode
         }))
     }
 
@@ -952,7 +952,7 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
             packageDeletionId: 0,
             actionType: CLM.ActionTypes[this.state.selectedActionTypeOptionKey],
             entityId: this.state.selectedEntityOptionKey,
-            isEntryNode: this.state.entryNode,
+            isEntryNode: this.state.isEntryNode,
             enumValueId: this.state.selectedEnumValueOptionKey,
             clientData: this.props.action
                 ? this.props.action.clientData
@@ -1148,15 +1148,15 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
         const reprompt = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
             ? this.state.reprompt
             : false
-        const entryNode = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
-        ? this.state.entryNode
-        : false
+        const isEntryNode = (actionTypeOption.key === CLM.ActionTypes.CARD || actionTypeOption.key === CLM.ActionTypes.TEXT)
+            ? this.state.isEntryNode
+            : false
 
         await Util.setStateAsync(this, {
             isPayloadMissing,
             isTerminal,
             reprompt,
-            entryNode,
+            isEntryNode,
             selectedActionTypeOptionKey: actionTypeOption.key,
             selectedEntityOptionKey: undefined,
             selectedEnumValueOptionKey: undefined,
@@ -1756,8 +1756,8 @@ class ActionCreatorEditor extends React.Component<Props, ComponentState> {
                             <TC.Checkbox
                                 data-testid="action-creator-entry-node-checkbox"
                                 label={Util.formatMessageId(intl, FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL)}
-                                checked={this.state.entryNode}
-                                onChange={this.onChangeEntryNodeCheckbox}
+                                checked={this.state.isEntryNode}
+                                onChange={this.onChangeIsEntryNodeCheckbox}
                                 style={{ marginTop: '1em', display: 'inline-block' }}
                                 disabled={[CLM.ActionTypes.END_SESSION, CLM.ActionTypes.SET_ENTITY, CLM.ActionTypes.DISPATCH].includes(this.state.selectedActionTypeOptionKey as CLM.ActionTypes)}
                                 tipType={ToolTip.TipType.ACTION_ENTRY_NODE}
