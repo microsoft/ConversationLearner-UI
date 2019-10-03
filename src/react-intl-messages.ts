@@ -684,7 +684,7 @@ export default {
         [FM.ACTIONCREATOREDITOR_TRAINDIALOGSBUTTON_TEXT]: 'Train Dialogs',
         [FM.ACTIONCREATOREDITOR_CHECKBOX_TERMINAL_LABEL]: 'Wait for Response?',
         [FM.ACTIONCREATOREDITOR_CHECKBOX_REPROMPT_LABEL]: 'Reprompt on unexected user input',
-        [FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL]: 'Direct unknown user 1st utterance to this action',
+        [FM.ACTIONCREATOREDITOR_CHECKBOX_ENTRY_NODE_LABEL]: 'Direct unknown user 1st input to this action',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_TITLE]: 'Are you sure you want to delete this Action?',
         [FM.ACTIONCREATOREDITOR_CONFIRM_DELETE_WARNING]: 'This Action is used by one or more Training Dialogs.',
         [FM.ACTIONCREATOREDITOR_CONFIRM_EDIT_TITLE]: 'Are you sure?',
@@ -955,8 +955,8 @@ export default {
         [FM.TOOLTIP_ACTION_DISQUAL_ROW3]: '"When were you born?"',
         [FM.TOOLTIP_ACTION_DISQUAL_ROW4]: '$birthdate',
 
-        [FM.TOOLTIP_ACTION_ENTRY_NODE]: "When selected and not in a Train Dialog, Bot will direct dialog flow to this action if it isn't confident on how to respond to the user's first utterance.",
-        [FM.TOOLTIP_ACTION_ENTRY_NODE_TITLE]: 'Unknown user 1st turn utterance',
+        [FM.TOOLTIP_ACTION_ENTRY_NODE]: "When selected and not in a Train Dialog, Bot will direct dialog flow to this action if it isn't confident on how to respond to the user's first input.",
+        [FM.TOOLTIP_ACTION_ENTRY_NODE_TITLE]: 'Unknown user 1st turn input',
 
         [FM.TOOLTIP_ACTION_REPROMPT]: "When selected and not in a Train Dialog, Bot will repeat the given action if it isn't confident on how to respond to the user's input.",
         [FM.TOOLTIP_ACTION_REPROMPT_TITLE]: 'Reprompt',
