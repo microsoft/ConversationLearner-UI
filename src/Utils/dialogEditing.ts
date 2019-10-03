@@ -490,9 +490,9 @@ export async function getOrCreatePlaceholderAPIAction(
         placeholder = actions.filter(a => CLM.ActionBase.isPlaceholderAPI(a))
             .map(aa => new CLM.ApiAction(aa))
             .find(aaa => aaa.name === placeholderName)
-    }
-    if (placeholder) {
-        return placeholder
+        if (placeholder) {
+            return placeholder
+        }
     }
 
     // If create action is available create a new action
