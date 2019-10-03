@@ -9,6 +9,9 @@ import * as actions from '../../../support/Actions'
 import * as train from '../../../support/Train'
 import * as helpers from '../../../support/Helpers'
 
+// This test case was intended to reproduce bug 2319 but it does not work.
+// Manual reproduction is 100%, so I can only guess that Cypress somehow changes the environment
+// in such a way that the UI code works fine.
 describe('Bug 2319 Repro', () => {
   afterEach(helpers.SkipRemainingTestsOfSuiteIfFailed)
 

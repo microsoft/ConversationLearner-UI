@@ -398,6 +398,7 @@ function VerifyEntityLabelConflictPopupAndClickButton(textEntityPairs, buttonSel
     .siblings('[data-testid="extractor-response-editor-entity-labeler"]')
     .within(() => { textEntityPairs.forEach(textEntityPair => VerifyEntityLabel(textEntityPair.text, textEntityPair.entity)) })
   
+  //data-testid="extract-conflict-modal-conflicting-labels"
   cy.get(buttonSelector).Click()  
 }
 
