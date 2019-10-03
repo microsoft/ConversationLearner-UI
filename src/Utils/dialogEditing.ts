@@ -469,10 +469,14 @@ export async function onEditTeach(
     await editHandler(trainDialog, selectedActivity, args)
 }
 
+<<<<<<< HEAD
 /**
  * Returns placeholder if it exists, otherwise creates it if given creation action.
  * Will add the new action to `actions` if one is created.
  */
+=======
+// Returns placeholder if it exists, otherwise creates it if given creation action
+>>>>>>> fix: update action and entity storage
 export async function getOrCreatePlaceholderAPIAction(
     appId: string,
     placeholderName: string | "",
