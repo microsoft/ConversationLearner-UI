@@ -654,6 +654,9 @@ export async function importActionOutput(
             if (!entityId) {
                 throw new Error("Invalid Entity Definition")
             }
+            // Record the created entity in the input entity list.
+            newEntity.entityId = entityId
+            entities.push(newEntity)
         }
         else {
             entityId = "UNKNOWN ENTITY"

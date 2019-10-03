@@ -477,7 +477,7 @@ export async function getOrCreatePlaceholderAPIAction(
     actions: CLM.ActionBase[],
     createActionThunkAsync: (appId: string, action: CLM.ActionBase) => Promise<CLM.ActionBase | null> | null
 ): Promise<CLM.ActionBase | undefined> {
-    // Check if it has been attached to real api call
+    // Get the action if it has been attached to real API call.
     const apiHash = Util.hashText(placeholderName)
     let placeholder = actions.find(a => {return a.clientData && a.clientData.importHashes
         ? (a.clientData.importHashes.find(h => h === apiHash) !== undefined)
@@ -489,9 +489,9 @@ export async function getOrCreatePlaceholderAPIAction(
         placeholder = actions.filter(a => CLM.ActionBase.isPlaceholderAPI(a))
             .map(aa => new CLM.ApiAction(aa))
             .find(aaa => aaa.name === placeholderName)
-    }
-    if (placeholder) {
-        return placeholder
+        if (placeholder) {
+            return placeholder
+        }
     }
 
     // If create action is available create a new action
@@ -506,7 +506,7 @@ export async function getOrCreatePlaceholderAPIAction(
         if (!newAction) {
             throw new Error("Failed to create placeholder API")
         }
-
+        actions.push(newAction)
         return newAction
     }
     return undefined
