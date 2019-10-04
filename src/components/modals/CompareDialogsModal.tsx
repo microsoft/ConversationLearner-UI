@@ -14,6 +14,7 @@ import * as DialogUtils from '../../Utils/dialogUtils'
 import actions from '../../actions'
 import IndexButtons from '../IndexButtons'
 import Webchat, { renderActivity } from '../Webchat'
+import { ActivityHeight } from '../../types/models'
 import { autobind } from 'core-decorators';
 import { withRouter } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
@@ -30,12 +31,14 @@ import './CompareDialogsModal.css'
 interface ComponentState {
     conversationIndex: number
     webchatKey: number
-    activityMap: Map<string, BB.Activity[]>
-    rankMap: Map<string, number | undefined>
-    sourceItemMap: Map<string, Test.ValidationItem[]> | undefined
+    activityMap: {[key: string]: BB.Activity[]}
+    rankMap: {[key: string]: number | undefined}
+    sourceItemMap: {[key: string]: Test.ValidationItem[]} | undefined
     selectedActivityIndex: number | null
     scrollPosition: number | null
     logDialogId: string | undefined
+    haveActivityHeights: boolean
+    activityHeights: ActivityHeight[]
 }
 
 interface RenderData {
@@ -47,12 +50,14 @@ interface RenderData {
 const initialState: ComponentState = {
     webchatKey: 0,
     conversationIndex: 0,
-    activityMap: new Map<string, BB.Activity[]>(),
-    rankMap: new Map<string, number | undefined>(),
+    activityMap: {},
+    rankMap: {},
     sourceItemMap: undefined,
     selectedActivityIndex: null,
     scrollPosition: 0,
-    logDialogId: undefined
+    logDialogId: undefined,
+    haveActivityHeights: false,
+    activityHeights: []
 }
 
 class CompareDialogsModal extends React.Component<Props, ComponentState> {
@@ -64,7 +69,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         const sourceItemMap = new Map<string, Test.ValidationItem[]>()
         for (const sourceName of this.props.validationSet.sourceNames) {
             const sourceItems = this.props.validationSet.getItems(sourceName, this.props.conversationIds)
-            sourceItemMap.set(sourceName, sourceItems)
+            sourceItemMap[sourceName] = sourceItems
         }
 
         await Util.setStateAsync(this, {sourceItemMap})
@@ -75,10 +80,52 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         if (this.state.conversationIndex !== prevState.conversationIndex) {
             await this.onChangedDialog()
         }
+
+        if (!this.state.haveActivityHeights) {
+            // Check to see if all activity heights have been gathered
+            const haveHeights = this.state.activityHeights.length > 0 && this.state.activityHeights.filter(ah => ah.height === undefined).length === 0
+            
+            if (haveHeights) {
+                // If I have them calcluate padding to align acitivity horizontally
+                const activityHeights = [...this.state.activityHeights]
+                const numActivities = Math.max(...Object.values(this.state.activityMap).map(ah => ah.length))
+                for (let index = 0; index < numActivities; index = index + 1) {
+                    // Get max height for this index
+                    const maxHeight = Math.max(...this.state.activityHeights
+                        .filter(ah => ah.index === index) 
+                        .map(ah => ah.height || 0))
+                    
+                    const itemHeights = activityHeights.filter(ah => ah.index === index)
+                    for (const activityHeight of itemHeights) {
+                        if (activityHeight.height) {
+                            // Calcluate padding to make this activity the same height
+                            activityHeight.padding = (maxHeight > activityHeight.height) 
+                                ? maxHeight - activityHeight.height
+                                : 0
+                        }
+                    }
+                }
+                this.setState({
+                    activityHeights, 
+                    scrollPosition: 0,
+                    haveActivityHeights: true})  
+            }
+        }
     }
 
     renderActivity(activityProps: BotChat.WrappedActivityProps, children: React.ReactNode, setRef: (div: HTMLDivElement | null) => void): JSX.Element {
-        return renderActivity(activityProps, children, setRef, null, EditDialogType.IMPORT, this.state.selectedActivityIndex != null)
+
+        // Pad activity to align the activities in chat window
+        let padding = 0
+        if (this.state.haveActivityHeights && activityProps.activity.id) {
+            // Find height lookup
+            const activityHeight = this.state.activityHeights.find(ah => ah.id === activityProps.activity.id)
+            
+            if (activityHeight && activityHeight.padding) {
+                padding = activityHeight.padding
+            }
+        }
+        return renderActivity(activityProps, children, setRef, null, EditDialogType.IMPORT, this.state.selectedActivityIndex != null, padding, !this.state.haveActivityHeights)
     }
 
     @autobind
@@ -133,8 +180,8 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         }
 
         let logDialogId: string | undefined
-        const activityMap = new Map<string, BB.Activity[]>()
-        const rankMap = new Map<string, number | undefined>()
+        const activityMap = {}
+        const rankMap = {}
         const conversationId = this.props.conversationIds[this.state.conversationIndex]
 
         // Baseline rank is determined by pivot item (if provided)
@@ -146,9 +193,11 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             }
         }
 
+        let minActivities: number = 0
         for (let sourceName of this.props.validationSet.sourceNames) {
 
-            const validationItems = this.state.sourceItemMap.get(sourceName)
+            const unratedConversationIds = this.props.validationSet.unratedConversationIds(sourceName, this.props.conversationPivot)
+            const validationItems = this.state.sourceItemMap[sourceName]
 
             if (validationItems) {
                 const curItem = validationItems.find(i => i.conversationId === conversationId)
@@ -163,12 +212,22 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                             trainDialogs: []
                         }
                         const teachWithActivities = await ((this.props.fetchActivitiesThunkAsync(this.props.app.appId, trainDialog, this.props.user.name, this.props.user.id) as any) as Promise<CLM.TeachWithActivities>)
-                        activityMap.set(sourceName, teachWithActivities.activities)
+                        activityMap[sourceName] = teachWithActivities.activities
+
+                        // Keep track of the shortest number of activities
+                        if (!minActivities || teachWithActivities.activities.length < minActivities) {
+                            minActivities = teachWithActivities.activities.length
+                        }
+                    }
+
+                    // Rank is undefined if it still needs to be rated
+                    if (unratedConversationIds.includes(curItem.conversationId)) {
+                        rankMap[sourceName] = undefined
                     }
                     // Compute rank with pivot offset (doesn't apply when only one source)
-                    if (this.props.validationSet.sourceNames.length > 1) {
+                    else if (this.props.validationSet.sourceNames.length > 1) {
                         // Will set rank of base source to 0 and offset other from the base
-                        rankMap.set(sourceName, curItem.ranking !== undefined ? curItem.ranking - baseRank : undefined)
+                        rankMap[sourceName] = curItem.ranking !== undefined ? curItem.ranking - baseRank : undefined
                     }
 
                     // Note: assumes only one source has a log attached to it
@@ -183,12 +242,35 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             }
         }
 
+        // Trim any extra activities
+        for (const key of Object.keys(activityMap)) {
+            activityMap[key].splice(minActivities)
+        }
+                
+        // Initialize activity heights for lookup
+        const activityHeights: ActivityHeight[] = []
+        for (const [sourceName, activities] of Object.entries(activityMap)) {
+            for (const [index, activity] of Object.entries(activities as BB.Activity[])) {
+                if (activity.id) {
+                    const activityHeight: ActivityHeight = {
+                        sourceName,
+                        index: +index,  // Convert to number
+                        id: activity.id,
+                        height: undefined,
+                        padding: undefined
+                    }
+                    activityHeights.push(activityHeight)
+                }
+            }
+        }
+
         this.setState({
             activityMap,
             rankMap,
             webchatKey: this.state.webchatKey + 1,
-            scrollPosition: 0,
-            logDialogId
+            logDialogId,
+            haveActivityHeights: false,
+            activityHeights
         })
     }
 
@@ -201,7 +283,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         }
     }
 
-    // Keep scroll position of two webchats in lockstep
+    // Keep scroll position of webchats in lockstep
     @autobind
     onScrollChange(scrollPosition: number) {
         this.setState({scrollPosition})
@@ -222,12 +304,36 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
         }
     }
 
+    // Keep track of render height for each activity.  This allows us to
+    // align acitivities across multiple webchat windows by adding padding
+    @autobind
+    onActivityHeight(sourceName: string, index: number, height: number): void {
+    
+        // Find height for this item
+        let activityHeight = this.state.activityHeights.find(ac =>
+            ac.sourceName === sourceName && ac.index === index)
+
+        if (activityHeight) {
+            // If height hasn't been set
+            if (!activityHeight.height) {
+                // Set state via function so events don't clobber each other
+                this.setState(prevState => {
+                     // Update height
+                    activityHeight = prevState.activityHeights.find(ac =>
+                        ac.sourceName === sourceName && ac.index === index)!
+                    activityHeight.height = height
+                    return {activityHeights: prevState.activityHeights}
+                })
+            } 
+        }
+    }
+
     getRenderData(): RenderData[] {
 
         const renderData: RenderData[] = []
         this.props.validationSet.sourceNames.map(sourceName => {
-            const activities = this.state.activityMap.get(sourceName)
-            const ranking = this.state.rankMap.get(sourceName)
+            const activities = this.state.activityMap[sourceName]
+            const ranking = this.state.rankMap[sourceName]
             renderData.push({
                 activities,
                 ranking,
@@ -243,7 +349,9 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
             ? "cl-compare-dialogs-small"
             : renderData.length === 2
             ? "cl-compare-dialogs-med"
-            : "cl-compare-dialogs-large"
+            : renderData.length === 3
+            ? "cl-compare-dialogs-large"
+            : "cl-compare-dialogs-overhang"
 
         const body = renderData.length === 1 ? 'cl-compare-dialogs--bodysmall' : ""
 
@@ -285,6 +393,7 @@ class CompareDialogsModal extends React.Component<Props, ComponentState> {
                                                 focusInput={false}
                                                 renderActivity={(props, children, setRef) => this.renderActivity(props, children, setRef)}
                                                 renderInput={() => null}
+                                                onActivityHeight={(index, height) => this.onActivityHeight(rd.sourceName, index, height)}
                                                 selectedActivityIndex={this.state.selectedActivityIndex}
                                                 forceScrollPosition={this.state.scrollPosition}
                                                 instantScroll={true}

@@ -101,8 +101,8 @@ class TranscriptRatings extends React.Component<Props, ComponentState> {
                 }
                 sourceRankMap.set(sourceName, rankCounts)
                 // Get number that aren't rankable (as they don't have matching transcript)
-                unRatableMap.set(sourceName, this.props.validationSet.unratableConversationIds(ratePivot, sourceName))
-                notRatedMap.set(sourceName, this.props.validationSet.unratedConversationIds(ratePivot, sourceName))
+                unRatableMap.set(sourceName, this.props.validationSet.unratableConversationIds(sourceName, ratePivot))
+                notRatedMap.set(sourceName, this.props.validationSet.unratedConversationIds(sourceName, ratePivot))
             }
         }
 
