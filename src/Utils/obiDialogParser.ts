@@ -6,6 +6,7 @@ import * as CLM from '@conversationlearner/models'
 import * as DialogEditing from './dialogEditing'
 import * as OBIUtils from './obiUtils'
 import * as Util from './util'
+import * as stripJson from 'strip-json-comments'
 import { OBIDialog } from '../types/obiTypes'
 
 enum OBIStepType {
@@ -50,7 +51,7 @@ export class ObiDialogParser {
         for (const file of files) {
             if (file.name.endsWith('.dialog')) {
                 const fileText = await Util.readFileAsync(file)
-                const obiDialog: OBIDialog = JSON.parse(fileText)
+                const obiDialog: OBIDialog = JSON.parse(stripJson(fileText))
                 // Set name, removing suffix
                 obiDialog.$id = this.removeSuffix(file.name)
                 dialogs.push(obiDialog)
